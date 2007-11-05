@@ -44,8 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -57,8 +55,6 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
@@ -76,7 +72,6 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.SeenMap;
@@ -88,20 +83,13 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.ic.DocumentDownload;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ic.ICException;
 import com.sitescape.team.module.ic.RecordType;
-import com.sitescape.team.module.profile.index.ProfileIndexUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
-import com.sitescape.team.portlet.binder.AdvancedSearchController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.search.filter.SearchFilter;
-import com.sitescape.team.search.filter.SearchFilterKeys;
-import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.OperationAccessControlException;
@@ -121,7 +109,6 @@ import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
-import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.Favorites;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -169,12 +156,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxUploadImageFile(request, response); 
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 				ajaxUploadICalendarFile(request, response);
-			} else if (op.equals(WebKeys.OPERATION_ADD_TO_CLIPBOARD)) {
-				ajaxAddToClipboard(request, response);
-			} else if (op.equals(WebKeys.OPERATION_CLEAR_CLIPBOARD)) {
-				ajaxClearClipboard(request, response);
-			} else if (op.equals(WebKeys.OPERATION_REMOVE_FROM_CLIPBOARD)) {
-				ajaxRemoveFromClipboard(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 				ajaxSetBinderOwnerId(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
@@ -206,7 +187,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 
-			//Check for calls from "ss_fetch_url" (which don't output in xml format)
+			//Check for calls from "ss_fetch_url" (which return 
 			if (op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS) ||
@@ -218,8 +199,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_SHOW_MY_TEAMS)) {
 				return new ModelAndView("forum/fetch_url_return", model);
+			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
+						op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL) ||
+						op.equals(WebKeys.OPERATION_SHOW_HELP_PANEL) ||
+						op.equals(WebKeys.OPERATION_SHOW_BUSINESS_CARD) ||
+						op.equals(WebKeys.OPERATION_HIDE_BUSINESS_CARD) ||
+						op.equals(WebKeys.OPERATION_SHOW_SIDEBAR_PANEL) || 
+						op.equals(WebKeys.OPERATION_HIDE_SIDEBAR_PANEL)	) {
+				return new ModelAndView("forum/fetch_url_return", model);			
 			}
-			
 			response.setContentType("text/xml");			
 			if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
 				return new ModelAndView("forum/unseen_counts", model);
@@ -247,8 +235,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/favorites_return", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_FAVORITES_TREE)) {
 				return new ModelAndView("forum/favorites_tree", model);
-			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_PANEL)) {
-				return new ModelAndView("forum/ajax_return", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_ACCESS_CONTROL_TABLE)) {
 				return new ModelAndView("binder/access_control_table", model);
 			} else if (op.equals(WebKeys.OPERATION_START_MEETING)) {
@@ -308,15 +294,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_PANEL)) {
 			return ajaxShowHelpPanel(request, response);
 		
-		} else if (op.equals(WebKeys.OPERATION_ADD_TAB)) {
-			return ajaxAddTab(request, response);
-			
-		} else if (op.equals(WebKeys.OPERATION_DELETE_TAB)) {
-			return ajaxDeleteTab(request, response);
-			
-		} else if (op.equals(WebKeys.OPERATION_SET_CURRENT_TAB)) {
-			return ajaxSetCurrentTab(request, response);
-			
 		} else if (op.equals(WebKeys.OPERATION_GET_ACCESS_CONTROL_TABLE)) {
 			return ajaxGetAccessControlTable(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
@@ -337,8 +314,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxStartMeeting(request, response, ICBrokerModule.SCHEDULED_MEETING);
 		} else if (op.equals(WebKeys.OPERATION_GET_TEAM_MEMBERS)) {
 			return ajaxGetTeamMembers(request, response);
-		} else if (op.equals(WebKeys.OPERATION_GET_CLIPBOARD_USERS)) {
-			return ajaxGetClipboardUsers(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 			return ajaxGetBinderOwner(request, response);
 		} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
@@ -382,7 +357,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_OPERATIONS) || 
 				op.equals(WebKeys.OPERATION_GET_CONDITION_ENTRY_VALUE_LIST)) {
 			return ajaxGetConditionData(request, response);
-		}
+		} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
+					op.equals(WebKeys.OPERATION_HIDE_HELP_CPANEL) ||
+					op.equals(WebKeys.OPERATION_SHOW_BUSINESS_CARD) ||
+					op.equals(WebKeys.OPERATION_HIDE_BUSINESS_CARD) ||
+					op.equals(WebKeys.OPERATION_SHOW_SIDEBAR_PANEL) || 
+					op.equals(WebKeys.OPERATION_HIDE_SIDEBAR_PANEL)) {
+			return new ModelAndView("forum/fetch_url_return");			
+		} 
+
 		return ajaxReturn(request, response);
 	} 
 
@@ -1025,56 +1008,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("administration/get_change_log_entry_form", model);
 	}
 	
-	private void ajaxAddToClipboard(ActionRequest request, 
-			ActionResponse response) throws Exception {
-		String musterClass = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MUSTER_CLASS, "");
-		List musterIds = PortletRequestUtils.getLongListParameters(request, WebKeys.URL_MUSTER_IDS);
-		
-		Clipboard clipboard = new Clipboard(request);
-		clipboard.add(musterClass, musterIds);
-		
-		
-		Boolean addTeamMembers = PortletRequestUtils.getBooleanParameter(request, "add_team_members", false);
-		if (addTeamMembers) {
-			Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-			try {
-				Collection teamMemberIds = getBinderModule().getTeamMemberIds(binderId, true);
-				clipboard.add(Clipboard.USERS, new ArrayList(teamMemberIds));				
-			} catch (AccessControlException ac) {} //no access, just skip
-		}
-	}
-
-	private void ajaxRemoveFromClipboard(ActionRequest request, 
-			ActionResponse response) throws Exception {
-		String musterClass = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MUSTER_CLASS, "");
-		String[] musterIds = new String[0];
-		if (PortletRequestUtils.getStringParameters(request, WebKeys.URL_MUSTER_IDS) != null) {
-			musterIds = PortletRequestUtils.getStringParameters(request, WebKeys.URL_MUSTER_IDS);
-		}
-		Clipboard clipboard = new Clipboard(request);
-		Map clipboardMap = clipboard.getClipboard();
-		if (clipboardMap.containsKey(musterClass)) {
-			Set idList = (Set) clipboardMap.get(musterClass);
-			for (int i = 0; i < musterIds.length; i++) {
-				Long id = Long.valueOf(musterIds[i]);
-				if (idList.contains(id)) idList.remove(id);
-			}
-		}
-	}
-	
-	private void ajaxClearClipboard(ActionRequest request, 
-			ActionResponse response) throws Exception {
-		Clipboard clipboard = new Clipboard(request);
-		Map clipboardMap = clipboard.getClipboard();
-		String musterClass = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MUSTER_CLASS, "");
-		String[] musterClasses = musterClass.split(" ");
-		for (int i = 0; i < musterClasses.length; i++) {
-			if (!musterClasses[i].equals("")) {
-				if (clipboardMap.containsKey(musterClasses[i])) clipboardMap.remove(musterClasses[i]);
-			}
-		}
-	}
-	
 	private void ajaxSetBinderOwnerId(ActionRequest request, 
 			ActionResponse response) throws Exception {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
@@ -1229,7 +1162,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				jsp = "/WEB-INF/jsp/help/" + op2 + ".jsp";
 			}
 		}
-		response.setContentType("text/json");
 		model.put(WebKeys.HELP_PANEL_JSP, jsp);
 		model.put(WebKeys.HELP_PANEL_TAG, tagId);
 
@@ -1240,57 +1172,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 	}
 
 	
-	
-	private ModelAndView ajaxAddTab(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Tabs tabs = new Tabs(request);
-		Map model = new HashMap();
-		String type = PortletRequestUtils.getRequiredStringParameter(request, "type");
-		int tabId = 0;
-		if (type.equals(Tabs.BINDER)) {
-			Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");				
-			Binder binder = getBinderModule().getBinder(binderId);
-			tabId = tabs.findTab(binder);
-		} else if (type.equals(Tabs.ENTRY)) {
-			Long binderId = PortletRequestUtils.getLongParameter(request, "binderId");				
-			Long entryId = PortletRequestUtils.getLongParameter(request, "binderId");				
-			Entry entry = getFolderModule().getEntry(binderId, entryId);
-			tabId = tabs.findTab(entry);
-		} else if (type.equals(Tabs.QUERY)) {
-			SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
-			Document query = requestParser.getSearchQuery();
-			tabId = tabs.findTab(query);
-		}
-		tabs.setCurrentTab(tabId);
-		response.setContentType("text/xml");
-		model.put(WebKeys.TABS, tabs.getTabs());
-		model.put(WebKeys.TAB_ID, tabId);
-		return new ModelAndView("binder/show_tabs", model);
-	}
-
-	private ModelAndView ajaxDeleteTab(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Tabs tabs = new Tabs(request);
-		Map model = new HashMap();
-		Integer tabId = PortletRequestUtils.getIntParameter(request, "tabId");
-		if (tabId != null) tabs.deleteTab(tabId.intValue());
-		response.setContentType("text/xml");
-		model.put(WebKeys.TABS, tabs.getTabs());
-		model.put(WebKeys.TAB_ID, -1);
-		return new ModelAndView("binder/show_tabs", model);
-	}
-
-	private ModelAndView ajaxSetCurrentTab(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Tabs tabs = new Tabs(request);
-		Map model = new HashMap();
-		Integer tabId = PortletRequestUtils.getIntParameter(request, "tabId");
-		if (tabId != null) tabs.setCurrentTab(tabId.intValue());
-		response.setContentType("text/xml");
-		model.put(WebKeys.TABS, tabs.getTabs());
-		model.put(WebKeys.TAB_ID, -1);
-		return new ModelAndView("binder/show_tabs", model);
-	}
 	
 	private ModelAndView ajaxGetAccessControlTable(RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -1567,24 +1448,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("administration/modify_group", model);
 	}
 	
-	private ModelAndView ajaxGetClipboardUsers(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		
-		if (WebHelper.isUserLoggedIn(request)) {
-			Clipboard clipboard = new Clipboard(request);
-			Map clipboardMap = clipboard.getClipboard();
-			Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
-			model.put(WebKeys.CLIPBOARD_PRINCIPALS , getProfileModule().getUsersFromPrincipals(
-					clipboardUsers));
-		} else {
-			model.put(WebKeys.CLIPBOARD_PRINCIPALS , 0);			
-		}
-		
-		response.setContentType("text/json");
-		return new ModelAndView("forum/clipboard_users", model);
-	}
-
 	private ModelAndView ajaxFindCalendarEvents(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -1787,13 +1650,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private void ajaxSaveSearchQuery(ActionRequest request, 
 			ActionResponse response) throws PortletRequestBindingException {
 		String queryName = PortletRequestUtils.getStringParameter(request, "queryName", "");
-		
-		Tabs tabs = AdvancedSearchController.setupTabs(request);
-		int tabId = tabs.getCurrentTab();  
-		Map currentTab = tabs.getTab(tabId);
+		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, -1);
+		Tabs.TabEntry tab = Tabs.getTabs(request).findTab(Tabs.SEARCH, tabId);
+		if (tab == null) return;
 		
 		// get query and options from tab
-		Document query = AdvancedSearchController.getQueryFromTab(currentTab);
+		Document query = tab.getQueryDoc();
 
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
 		
@@ -1805,7 +1667,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			userQueries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
 		}
 		
-		userQueries.put(queryName, query);
+		userQueries.put(queryName, query.asXML());
 		userProperties.setProperty(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, userQueries);
 	}
 

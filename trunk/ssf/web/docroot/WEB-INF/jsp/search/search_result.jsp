@@ -89,7 +89,7 @@
 	</td>
 	<td class="ss_view_info" valign="top">
 
-	<div id="ss_tab_data_${ss_tabs.current_tab}">
+	<div>
 
 		<div id="ss_tabs_container">
 			<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />

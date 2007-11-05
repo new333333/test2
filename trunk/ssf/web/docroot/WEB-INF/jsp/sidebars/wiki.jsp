@@ -152,14 +152,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				name="action" value="${action}"/><portlet:param 
 				name="operation" value="save_folder_page_info"/><portlet:param 
 				name="binderId" value="${ssFolder.id}"/><portlet:param 
-				name="ssPageStartIndex" value="${ssPagePrevious.ssPageInternalValue}"/><portlet:param 
-				name="tabId" value="${tabId}"/><c:if test="${!empty cTag}"><portlet:param 
+				name="ssPageStartIndex" value="${ssPagePrevious.ssPageInternalValue}"/><c:if test="${!empty cTag}"><portlet:param 
 				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><portlet:param 
 				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><portlet:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty day}"><portlet:param 
-				name="day" value="${day}"/></c:if><c:if test="${!empty month}"><portlet:param 
-				name="month" value="${month}"/></c:if><c:if test="${!empty year}"><portlet:param 
-				name="year" value="${year}"/></c:if></portlet:actionURL>" 
+				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><portlet:param 
+				name="endDate" value="${endDate}"/></c:if></portlet:actionURL>" 
 				<ssf:title tag="title.goto.prev.page" /> >&lt;&lt;
 			</a>
 		  </c:otherwise>
@@ -175,14 +172,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				name="action" value="${action}"/><portlet:param 
 				name="operation" value="save_folder_page_info"/><portlet:param 
 				name="binderId" value="${ssFolder.id}"/><portlet:param 
-				name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/><portlet:param 
-				name="tabId" value="${tabId}"/><c:if test="${!empty cTag}"><portlet:param 
+				name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/><c:if test="${!empty cTag}"><portlet:param 
 				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><portlet:param 
 				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><portlet:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty day}"><portlet:param 
-				name="day" value="${day}"/></c:if><c:if test="${!empty month}"><portlet:param 
-				name="month" value="${month}"/></c:if><c:if test="${!empty year}"><portlet:param 
-				name="year" value="${year}"/></c:if></portlet:actionURL>" 
+				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><portlet:param 
+				name="endDate" value="${endDate}"/></c:if></portlet:actionURL>" 
 				<ssf:title tag="title.goto.next.page" />>&gt;&gt;
 			</a>
 		  </c:otherwise>

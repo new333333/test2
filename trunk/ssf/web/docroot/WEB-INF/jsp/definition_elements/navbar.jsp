@@ -152,14 +152,7 @@ var	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
 
 <!-- My Teams -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_myteams" onClick="ss_showMyTeamsPane('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="operation" value="show_my_teams" />
-		<ssf:param name="namespace" value="<%= renderResponse.getNamespace() %>" />
-    	</ssf:url>');return false;"
+	<div class="ss_global_toolbar_myteams" onClick="ss_showMyTeamsPane('${renderResponse.namespace}');return false;"
 	  title="<ssf:nlt tag="navigation.myTeams"/>"
       onMouseOver="this.style.cursor = 'pointer';"
     >
@@ -727,14 +720,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   title="<ssf:nlt tag="helpSpot.myTeams"/>"
   offsetX="-11" offsetY="2" xAlignment="center">
 <div style="padding-top:5px; padding-bottom: 5px;">
-<a class="ss_linkButton" href="javascript: ;" onClick="ss_showMyTeamsPane('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-		<ssf:param name="operation" value="show_my_teams" />
-		<ssf:param name="namespace" value="<%= renderResponse.getNamespace() %>" />
-    	</ssf:url>');return false;">
+<a class="ss_linkButton" href="javascript: ;" onClick="ss_showMyTeamsPane('${renderResponse.namespace}');return false;">
   <ssf:nlt tag="navigation.myTeams"/> <img src="<html:imagesPath/>pics/menudown.gif"/>
 </a>
 <div id="ss_navbar_myteams<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"

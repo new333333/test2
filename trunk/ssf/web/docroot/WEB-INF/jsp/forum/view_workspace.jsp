@@ -85,7 +85,7 @@
 
 		<div class="ss_tab_canvas">
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
-				<div class="ss_style_color" id="ss_tab_data_${ss_tabs.current_tab}">				
+				<div class="ss_style_color">				
 					<% // Workspace toolbar %>
 					<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 

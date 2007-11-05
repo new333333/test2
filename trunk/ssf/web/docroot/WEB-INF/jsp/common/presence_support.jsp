@@ -63,8 +63,6 @@ var ss_ostatus_online = ' <ssf:nlt tag="presence.isOnline" text="is online"/>';
 var ss_ostatus_offline = ' <ssf:nlt tag="presence.isOffline" text="is offline"/>';
 var ss_ostatus_at = '<ssf:nlt tag="presence.statusAt" text="status at"/>';
 var ss_ostatus_sendIm = '<ssf:nlt tag="presence.sendIM" text="Send instant message..."/>';
-var ss_ostatus_start_meeting_url = '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" ><ssf:param name="operation" value="start_meeting" /></ssf:url>';
-var ss_ostatus_schedule_meeting_url = '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" ><ssf:param name="operation" value="schedule_meeting" /></ssf:url>';
 var ss_ostatus_startIm = '<ssf:nlt tag="presence.startIM" text="Start instant meeting..."/>';
 var ss_ostatus_schedIm = '<ssf:nlt tag="presence.scheduleMeeting" text="Schedule a meeting..."/>';
 var ss_ostatus_call = '<ssf:nlt tag="presence.call" text="Call..."/>';

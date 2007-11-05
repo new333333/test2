@@ -66,6 +66,7 @@ public class ReloadOpenerController  extends SAbstractController {
 			model.put(WebKeys.ENTRY_ID, entryId);
 			model.put(WebKeys.NAMESPACE, namespace);
 			model.put(WebKeys.BLOG_REPLY_COUNT, blogReplyCount);
+			model.put(WebKeys.BINDER_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.BINDER_ID));
 			return new ModelAndView("forum/reload_blog_reply", model);
 		} else if (!inIFrameAddEntry.equals("")) {
 			String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.NAMESPACE, "");

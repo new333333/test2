@@ -32,23 +32,23 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
 var url = "";
-<c:forEach var="tab" items="${ss_tabs.tablist}">
-  <c:if test="${tab.tabId == ss_tabs.current_tab}">
+<c:forEach var="tab" items="${ss_tabs.tabList}">
+  <c:if test="${tab.tabId == ss_tabs.currentTabId}">
 	<c:if test="${tab.type == 'binder'}">
 		    url = "<ssf:url 
   				folderId="${tab.binderId}" 
   				action="view_folder_listing">
   				<ssf:param name="binderId" value="${tab.binderId}"/>
-  				<ssf:param name="tabId" value="${tab.tabId}"/>
-  				</ssf:url>" 
+   				<ssf:param name="newTab" value="0"/>
+ 				</ssf:url>" 
 	</c:if>
 	<c:if test="${tab.type == 'workspace'}">
 		    url = "<ssf:url 
   				folderId="${tab.binderId}" 
   				action="view_ws_listing">
   				<ssf:param name="binderId" value="${tab.binderId}"/>
-  				<ssf:param name="tabId" value="${tab.tabId}"/>
-  				</ssf:url>" 
+   				<ssf:param name="newTab" value="0"/>
+ 				</ssf:url>" 
 	</c:if>
 	<c:if test="${tab.type == 'entry'}">
 		    url = "<ssf:url 
@@ -57,7 +57,7 @@ var url = "";
   				action="view_folder_entry">
    				<ssf:param name="entryId" value="${tab.entryId}"/>
   				<ssf:param name="binderId" value="${tab.binderId}"/>
-  				<ssf:param name="tabId" value="${tab.tabId}"/>
+  				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 	</c:if>
 	<c:if test="${tab.type == 'user'}">
@@ -75,7 +75,7 @@ var url = "";
   				folderId="${tab.binderId}" 
   				action="view_profile_listing">
   				<ssf:param name="binderId" value="${tab.binderId}"/>
-  				<ssf:param name="tabId" value="${tab.tabId}"/>
+  				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 	</c:if>
 	<c:if test="${tab.type == 'query'}">

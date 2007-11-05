@@ -248,7 +248,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 		//Setup the tabs
 		Tabs tabs = initTabs(request, fe);
-		model.put(WebKeys.TABS, tabs.getTabs());
+		model.put(WebKeys.TABS, tabs);
 
 		if(fe == null) {
 			return new ModelAndView("entry/deleted_entry", model);		
@@ -259,50 +259,14 @@ public class ViewEntryController extends  SAbstractController {
 
 	protected Tabs initTabs(RenderRequest request, FolderEntry folderEntry) throws Exception {
 		//Set up the tabs
-		Tabs tabs = new Tabs(request);
-		
-		Integer tabId = null;
-		try {
-			tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID);
-		} catch(Exception e) {}
-		
-		if (folderEntry == null) {
-			if (tabId != null) tabs.setCurrentTab(tabId.intValue());
-			return tabs;
-		}
+		Tabs tabs = Tabs.getTabs(request);
+		if (folderEntry == null) return tabs;
 
-		String newTab = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
-		
-		//What do the newTab values mean?
-		/*
-		NEW FUNCTIONALITY: 04/12/2007: 
-		IF newTab == 1, means if the Tab already exists use it, if not create another one
-		ELSE IF newTab == 2, always create a new tab
-		ELSE IF newTab == 3, If the folder is opened up in another tab use it. If not use the current Tab irrespective of what type of tab it is.
-		ELSE IF a valid tabId is passed in, then we will open it in that specific tab 
-		ELSE IF a valid tab is not passed in, then we will check if the current tab is a search tab
-		IF current tab is a search tab, then we will NOT use the current tab, 
-			we will check to see if there is another tab with same entry/folder and 
-				if so, we will use it
-				if not, we will create a new tab
-		IF current tab is not a search tab,
-			we will check to see if there is another tab with same entry/folder and
-				if so, we will use it
-				if not, we will use the current tab
-		
-		//IGNORE: OLD FUNCTIONALITY: 04/12/2007 
-		//newTab == 1 means if the Tab already exists use it, if not create another one
-		//newTab == 2 means create a new Tab always
-		//newTab == 3 If the folder is opened up in another tab use it. If not use the current Tab irrespective of what type of tab it is.
-		*
-		*/
-
-		
 		
 		//Change the tab only if not using the adaptor url
 		//Indicates that the request is being served by the adapter framework.
 		if (!PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
-			tabs.setCurrentTab(tabs.findTab(folderEntry));
+			tabs.findTab(folderEntry, true);
 		}	
 		return tabs;
 	}	

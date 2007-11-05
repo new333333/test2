@@ -43,7 +43,7 @@
 <c:if test="${!empty ss_blog_reply_url}">
 <td valign="top" style="white-space: nowrap;">
 <a href="${ss_blog_reply_url}" 
-  onClick="ss_addBlogReply<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(this, '${ssDefinitionEntry.id}');return false;"
+  onClick="ss_addBlogReply(this, '${renderResponse.namespace}', '${ssBinder.id}', '${ssDefinitionEntry.id}');return false;"
   <ssf:title tag="title.add.comment" />
   >
 <div class="ss_iconed_label ss_add_comment"><ssf:nlt tag="blog.addComment"/></div>
@@ -51,7 +51,7 @@
 </c:if>
 </td>
 <td valign="top" style="white-space: nowrap;">
-<a href="javascript: ;" onClick="ss_showBlogReplies<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('${ssDefinitionEntry.id}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;"
+<a href="javascript: ;" onClick="ss_showBlogReplies('${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry.id}');return false;"
 <ssf:title tag="title.view.comments">
 	<ssf:param name="value" value="${ssDefinitionEntry.totalReplyCount}" />
 </ssf:title>
@@ -104,7 +104,7 @@ title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry
 <iframe <ssf:title tag="title.add.reply" />
   id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
   name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
-  onLoad="if (parent.ss_showBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>) parent.ss_showBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(this, '${ssDefinitionEntry.id}');" 
+  onLoad="if (parent.ss_showBlogReplyIframe) parent.ss_showBlogReplyIframe(this, '${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry.id}');" 
   width="100%" frameBorder="0">xxx</iframe>
 </div>
 </c:if>

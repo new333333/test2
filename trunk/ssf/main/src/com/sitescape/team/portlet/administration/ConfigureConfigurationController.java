@@ -319,9 +319,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					ListFolderController.getShowTemplate(request, response, config, model);
 				}
 				model.put(WebKeys.CONFIG_JSP_STYLE, "template");
-				Tabs tabs = new Tabs(null);
-				tabs.addTab(config);
-				model.put(WebKeys.TABS, tabs.getTabs());
+				Tabs tabs = Tabs.getTabs(null);
+				tabs.findTab(config, true);
+				model.put(WebKeys.TABS, tabs);
 					
 			} else  if (WebKeys.OPERATION_ADD_FOLDER.equals(operation)) {
 				List<TemplateBinder> configs = getAdminModule().getTemplates(Definition.FOLDER_VIEW);

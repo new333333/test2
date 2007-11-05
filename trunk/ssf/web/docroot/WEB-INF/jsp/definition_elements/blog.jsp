@@ -57,8 +57,8 @@ function ss_blog_sidebar_date_callback() {
 	url += "\&rn=" + rn++
 	self.location.href = url;
 }
-function ss_showBlogReplies<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id, blogNamespace) {
-	var targetDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_replies_' + id)
+function ss_showBlogReplies(blogNamespace, binderId, entryId) {
+	var targetDiv = document.getElementById(blogNamespace + 'ss_blog_replies_' + entryId);
 	if (targetDiv != null) {
 		if (targetDiv.style.visibility == 'visible') {
 			targetDiv.style.visibility = 'hidden'
@@ -67,32 +67,23 @@ function ss_showBlogReplies<ssf:ifadapter><portletadapter:namespace/></ssf:ifada
 			targetDiv.innerHTML = "<ssf:nlt tag="Loading"/><br/>";
 			targetDiv.style.visibility = 'visible';
 			targetDiv.style.display = 'block';
-			var urlParams = {binderId : "${ssBinder.id}", operation:"show_blog_replies", entryId:id};
-			
-			if (blogNamespace && blogNamespace != '') {
-				urlParams.namespace=blogNamespace
-			}
-			
-			urlParams.rn=rn++;
+			var urlParams = {binderId :binderId, operation:"show_blog_replies", entryId:entryId, namespace:blogNamespace};
+						
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
-			ss_fetch_url(url, ss_showBlogRepliesCallback<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>, id);
+			ss_fetch_div(url, blogNamespace + 'ss_blog_replies_' + entryId, "false");
 		}
 	}
 }
-function ss_showBlogRepliesCallback<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(s, id) {
-	var targetDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_replies_' + id)
-	if (targetDiv != null) targetDiv.innerHTML = s;
-}
 
-function ss_addBlogReply<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj, id) {
-	var showRepliesDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_replies_' + id)
+function ss_addBlogReply(obj, blogNamespace, binderId, entryId) {
+	var showRepliesDiv = document.getElementById(blogNamespace + 'ss_blog_replies_' + entryId)
 	if (showRepliesDiv != null) {
 		if (showRepliesDiv.style.visibility == 'visible') {
 			//Hide the list of replies
-			ss_showBlogReplies<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id)
+			ss_showBlogReplies(blogNamespace, binderId, entryId)
 		}
 	}
-	var targetDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_' + id)
+	var targetDiv = document.getElementById(blogNamespace + 'ss_blog_add_reply_' + entryId)
 	if (targetDiv != null) {
 		if (targetDiv.style.visibility == 'visible') {
 			targetDiv.style.visibility = 'hidden'
@@ -102,30 +93,30 @@ function ss_addBlogReply<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapte
 	}
 	targetDiv.style.visibility = 'visible';
 	targetDiv.style.display = 'block';
-	var iframeDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_' + id)
+	var iframeDiv = document.getElementById(blogNamespace + 'ss_blog_add_reply_iframe_' + entryId)
 	iframeDiv.src = obj.href;
 	iframeDiv.style.border = "1px solid #CCCCCC";
 }
 var ss_replyIframeOffset = 50;
-function ss_showBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj, id) {
-	var targetDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_' + id)
-	var iframeDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_' + id)
-	if (window.frames['<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_' + id] != null) {
-		eval("var iframeHeight = parseInt(window.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_" + id + ".document.body.scrollHeight);")
+function ss_showBlogReplyIframe(obj, blogNamespace, binderId, entryId) {
+	var targetDiv = document.getElementById(blogNamespace + 'ss_blog_add_reply_' + entryId);
+	var iframeDiv = document.getElementById(blogNamespace + 'ss_blog_add_reply_iframe_' + entryId);
+	if (window.frames[blogNamespace + 'ss_blog_add_reply_iframe_' + entryId] != null) {
+		eval("var iframeHeight = parseInt(window." + blogNamespace + "ss_blog_add_reply_iframe_" + entryId + ".document.body.scrollHeight);")
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = iframeHeight + ss_replyIframeOffset + "px"
 		}
 	}
 }
-function ss_hideBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id, count) {
-	var targetDiv = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_' + id)
+function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
+	var targetDiv = document.getElementById(blogNamespace + 'ss_blog_add_reply_' + entryId)
 	if (targetDiv != null) {
 		targetDiv.style.visibility = 'hidden'
 		targetDiv.style.display = 'none'
 	}
-	var replyCountObj = document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_reply_count_' + id)
+	var replyCountObj = document.getElementById(blogNamespace + 'ss_blog_reply_count_' + entryId)
 	if (replyCountObj != null) replyCountObj.innerHTML = count;
-	ss_showBlogReplies<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id);
+	ss_showBlogReplies(blogNamespace, binderId, entryId);
 }
 </script>
 
