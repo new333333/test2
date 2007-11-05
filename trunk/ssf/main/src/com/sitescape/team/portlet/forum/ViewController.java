@@ -62,6 +62,7 @@ public class ViewController  extends SAbstractController {
 	public static final String GALLERY_PORTLET="ss_gallery";
 	public static final String GUESTBOOK_SUMMARY_PORTLET="ss_guestbook";
 	public static final String TASK_SUMMARY_PORTLET="ss_task";
+	public static final String MOBILE_PORTLET="ss_mobile";
 	public static final String PRESENCE_PORTLET="ss_presence";
 	public static final String SEARCH_PORTLET="ss_search";
 	public static final String TOOLBAR_PORTLET="ss_toolbar";

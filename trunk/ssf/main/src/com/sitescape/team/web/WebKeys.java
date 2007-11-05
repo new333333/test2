@@ -296,6 +296,10 @@ public class WebKeys {
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
+    public static final String OPERATION_MOBILE_LOGIN="mobil_login"; 
+    public static final String OPERATION_MOBILE_SHOW_FOLDER="mobil_show_folder"; 
+    public static final String OPERATION_MOBILE_SHOW_ENTRY="mobil_show_entry"; 
+    public static final String OPERATION_MOBILE_SHOW_FRONT_PAGE="mobil_show_front_page"; 
 	public static final String OPERATION_OPEN_WEBDAV_FILE = "open_webdav_file";
 	public static final String OPERATION_OPEN_WEBDAV_FILE_BY_FILEID = "open_webdav_file_by_fileid";
 	public static final String OPERATION_RELOAD="reload";
@@ -626,6 +630,7 @@ public class WebKeys {
     public static final String MARKUP_FORM="form"; 
     public static final String MARKUP_FILE="file"; 
     public static final String MARKUP_VIEW="view"; 
+    public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
     public static final String MY_TEAMS="ss_myTeams"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
@@ -844,6 +849,8 @@ public class WebKeys {
     public static final String VIEW_GUESTBOOK_SUMMARY="guestbook_summary/view";
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
     public static final String VIEW_IMPORT_TEMPLATE="administration/importTemplate";
+    public static final String VIEW_MOBILE="mobile/view";
+    public static final String VIEW_MOBILE_EDIT="mobile/edit";
     public static final String VIEW_TASK_SUMMARY="task_summary/view";
     public static final String VIEW_TASK_EDIT="task_summary/edit";
     public static final String VIEW_LICENSE_REPORT="administration/license_report";

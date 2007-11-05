@@ -67,6 +67,7 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
@@ -77,6 +78,7 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -104,6 +106,7 @@ public class BinderHelper {
 	public static final String GALLERY_PORTLET="ss_gallery";
 	public static final String GUESTBOOK_SUMMARY_PORTLET="ss_guestbook";
 	public static final String TASK_SUMMARY_PORTLET="ss_task";
+	public static final String MOBILE_PORTLET="ss_mobile";
 	public static final String PRESENCE_PORTLET="ss_presence";
 	public static final String SEARCH_PORTLET="ss_search";
 	public static final String TOOLBAR_PORTLET="ss_toolbar";
@@ -214,6 +217,8 @@ public class BinderHelper {
 			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_SEARCH);		
 		} else if (GALLERY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_GALLERY);		
+		} else if (MOBILE_PORTLET.equals(displayType)) {
+			return setupMobilePortlet(bs, request, prefs, model, WebKeys.VIEW_MOBILE);		
 		}
 
 		return null;
@@ -236,6 +241,24 @@ public class BinderHelper {
 			} catch (NoObjectByTheIdException no) {}
 		}
 		return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);
+		
+	}
+
+	protected static ModelAndView setupMobilePortlet(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
+		//This is the portlet view; get the configured list of folders to show
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+		String[] mobileBinderIds = (String[])userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS);
+
+		//Build the jsp bean (sorted by folder title)
+		List<Long> binderIds = new ArrayList<Long>();
+		if (mobileBinderIds != null) {
+			for (int i = 0; i < mobileBinderIds.length; i++) {
+				binderIds.add(new Long(mobileBinderIds[i]));
+			}
+		}
+		model.put(WebKeys.MOBILE_BINDER_LIST, binderIds);
+		return new ModelAndView(view, model);
 		
 	}
 
@@ -264,6 +287,8 @@ public class BinderHelper {
 			return ViewController.TOOLBAR_PORTLET;
 		else if (pName.contains(ViewController.WIKI_PORTLET))
 			return ViewController.WIKI_PORTLET;
+		else if (pName.contains(ViewController.MOBILE_PORTLET))
+			return ViewController.MOBILE_PORTLET;
 		return null;
 
 	}
@@ -1472,5 +1497,61 @@ public class BinderHelper {
 			bs.getFolderModule().deleteSubscription(folderId, entryId);
 		}
 	}
+
+	public static HashMap getEntryAccessMap(AllModulesInjected bs, Map model, FolderEntry entry) {
+		Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
+		HashMap entryAccessMap = new HashMap();
+		if (accessControlMap.containsKey(entry.getId())) {
+			entryAccessMap = (HashMap) accessControlMap.get(entry.getId());
+		}
+		return entryAccessMap;
+	}
 	
+	public static void setAccessControlForAttachmentList(AllModulesInjected bs, 
+			Map model, FolderEntry entry, User user) {
+
+		Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, entry);
+
+		boolean reserveAccessCheck = false;
+		boolean isUserBinderAdministrator = false;
+		boolean isEntryReserved = false;
+		boolean isLockedByAndLoginUserSame = false;
+
+		if (bs.getFolderModule().testAccess(entry, FolderOperation.reserveEntry)) {
+			reserveAccessCheck = true;
+		}
+		if (bs.getFolderModule().testAccess(entry, FolderOperation.overrideReserveEntry)) {
+			isUserBinderAdministrator = true;
+		}
+		
+		HistoryStamp historyStamp = entry.getReservation();
+		if (historyStamp != null) isEntryReserved = true;
+
+		if (isEntryReserved) {
+			Principal lockedByUser = historyStamp.getPrincipal();
+			if (lockedByUser.getId().equals(user.getId())) {
+				isLockedByAndLoginUserSame = true;
+			}
+		}
+		
+		if (bs.getFolderModule().testAccess(entry, FolderOperation.addReply)) {
+			accessControlEntryMap.put("addReply", new Boolean(true));
+		}		
+		
+		if (bs.getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
+			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+			} else {
+				accessControlEntryMap.put("modifyEntry", new Boolean(true));
+			}
+		}
+		
+		if (bs.getFolderModule().testAccess(entry, FolderOperation.deleteEntry)) {
+			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
+			} else {
+				accessControlEntryMap.put("deleteEntry", new Boolean(true));
+			}
+		}		
+	}
+
+
 }
