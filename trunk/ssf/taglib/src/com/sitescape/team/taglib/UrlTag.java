@@ -142,15 +142,18 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				
 				String webUrl = getWebUrl(req) + "?";
 				Iterator it = params.entrySet().iterator();
+				String separator = "";
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
-					webUrl += me.getKey() + "=" + ((String[])me.getValue())[0] + "&amp;";
+					webUrl += separator + me.getKey() + "=" + ((String[])me.getValue())[0];
+					separator = "&amp;";
 				}
 				if (_params != null ) {
 					Iterator _it = _params.entrySet().iterator();
 					while (_it.hasNext()) {
 						Map.Entry me = (Map.Entry) _it.next();
-						webUrl += me.getKey() + "=" + ((String[])me.getValue())[0] + "&amp;";
+						webUrl += separator + me.getKey() + "=" + ((String[])me.getValue())[0];
+						separator = "&amp;";
 					}
 				}
 				pageContext.getOut().print(webUrl);
