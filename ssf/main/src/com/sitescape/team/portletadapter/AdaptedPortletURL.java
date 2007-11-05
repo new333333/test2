@@ -202,7 +202,6 @@ public class AdaptedPortletURL {
 		sb.append(KeyNames.PORTLET_URL_ACTION);
 		sb.append(Constants.EQUAL);
 		sb.append(action? Http.encodeURL(ACTION_TRUE) : Http.encodeURL(ACTION_FALSE));
-		sb.append(Constants.AMPERSAND);
 		
 		Iterator itr = params.entrySet().iterator();
 
@@ -213,13 +212,11 @@ public class AdaptedPortletURL {
 			String[] values = (String[])entry.getValue();
 
 			for (int i = 0; i < values.length; i++) {
+				sb.append(Constants.AMPERSAND);
 				sb.append(name);
 				sb.append(Constants.EQUAL);
 				sb.append(Http.encodeURL(values[i]));
 
-				if ((i + 1 < values.length) || itr.hasNext()) {
-					sb.append(Constants.AMPERSAND);
-				}
 			}
 		}
 		
