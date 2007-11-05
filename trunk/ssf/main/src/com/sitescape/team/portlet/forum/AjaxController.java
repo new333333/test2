@@ -208,6 +208,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 						op.equals(WebKeys.OPERATION_HIDE_SIDEBAR_PANEL)	) {
 				return new ModelAndView("forum/fetch_url_return", model);			
 			}
+			if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY) ||
+					op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
+				model.put(WebKeys.AJAX_ERROR_MESSAGE, "general.notLoggedIn");	
+				return new ModelAndView("common/json_ajax_return", model);
+			}
+			
 			response.setContentType("text/xml");			
 			if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
 				return new ModelAndView("forum/unseen_counts", model);
@@ -278,14 +284,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_MODIFY_TAGS)) {
 			return ajaxShowTags(request, response);
-
-
 		} else if (op.equals(WebKeys.OPERATION_WORKSPACE_TREE)) {
 			return ajaxGetWorkspaceTree(request, response);
-
 		} else if (op.equals(WebKeys.OPERATION_SHOW_MY_TEAMS)) {
 			return ajaxGetMyTeams(request, response);
-
 		} else if(op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 			return ajaxGetBlogReplies(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SAVE_RATING)) {
@@ -1655,7 +1657,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (tab == null) return;
 		
 		// get query and options from tab
-		Document query = tab.getQueryDoc();
+		String query = tab.getQuery();
 
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
 		
@@ -1667,8 +1669,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 			userQueries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
 		}
 		
-		userQueries.put(queryName, query.asXML());
-		userProperties.setProperty(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, userQueries);
+		userQueries.put(queryName, query);
+		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, userQueries);
+		Map tabOptions = tab.getData();
+		tabOptions.put(Tabs.TITLE, queryName);
+		tab.setData(tabOptions);
+		
 	}
 
 	private void ajaxRemoveSearchQuery(ActionRequest request, 
@@ -1684,6 +1690,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			Map userQueries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
 			if (userQueries.containsKey(queryName)) {
 				userQueries.remove(queryName);
+				getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, userQueries);
 			}
 		}
 	}

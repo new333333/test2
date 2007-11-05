@@ -161,6 +161,7 @@ if (!ss_onLoadRoutineLoaded) {
 	window.onload = ss_onLoadInit;
 }
 //Routines to support getting stuff from the server without reloading the page
+//used to replace fetch plain data an replace a div, pre ssAjaxRequest
 function ss_fetch_div(url, divId, signal) {
 	var bindArgs = {
 	    	url: url,
@@ -178,7 +179,7 @@ function ss_fetch_div(url, divId, signal) {
 	};   
 	dojo.io.bind(bindArgs);
 }
-
+//use results string - suggest moving towards ss_get_url so errors can be handled consistantly
 function ss_fetch_url(url, callbackRoutine, callbackData) {
 	ss_fetch_url_debug("Request to fetch url: " + url)
 	var bindArgs = {
@@ -219,6 +220,25 @@ function ss_post(url, formId, callBackRoutine, callbackData) {
 		preventCache: true,				
 		mimetype: "text/json",
 		method: "post"
+	};   
+	dojo.io.bind(bindArgs);
+}     
+//use json. When contains failure message display
+function ss_get_url(url, callBackRoutine, callbackData) {
+	var bindArgs = {
+    	url: url,
+		error: function(type, data, evt) {
+			alert(data.error);
+		},
+		load: function(type, data, evt) {
+			if (data.failure) {
+				alert(data.failure);
+			} else { 
+				if (callBackRoutine) callBackRoutine(data, callbackData);
+			}
+		},
+		preventCache: true,				
+		mimetype: "text/json",
 	};   
 	dojo.io.bind(bindArgs);
 }     

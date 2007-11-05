@@ -246,10 +246,6 @@ public class ViewEntryController extends  SAbstractController {
 		} catch(NoFolderEntryByTheIdException e) {
 		}
 		
-		//Setup the tabs
-		Tabs tabs = initTabs(request, fe);
-		model.put(WebKeys.TABS, tabs);
-
 		if(fe == null) {
 			return new ModelAndView("entry/deleted_entry", model);		
 		} else {
@@ -257,19 +253,6 @@ public class ViewEntryController extends  SAbstractController {
 		}
 	} 
 
-	protected Tabs initTabs(RenderRequest request, FolderEntry folderEntry) throws Exception {
-		//Set up the tabs
-		Tabs tabs = Tabs.getTabs(request);
-		if (folderEntry == null) return tabs;
-
-		
-		//Change the tab only if not using the adaptor url
-		//Indicates that the request is being served by the adapter framework.
-		if (!PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
-			tabs.findTab(folderEntry, true);
-		}	
-		return tabs;
-	}	
 
 	protected void setRepliesAccessControl(Map model, FolderEntry entry) {
 

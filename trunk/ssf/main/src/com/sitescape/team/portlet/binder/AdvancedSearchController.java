@@ -245,8 +245,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		options.put(Tabs.TITLE, queryName);
 		Map results =  getBinderModule().executeSearchQuery(searchQuery, options);
 		
-		Tabs.TabEntry tab = null;
-		tab = tabs.findTab(searchQuery, options, null);
+		Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
 		
 		prepareSearchResultPage(results, model, searchQuery, options, tab);
 		
@@ -261,9 +260,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Map options = prepareSearchOptions(request);
 		Map results =  getBinderModule().executeSearchQuery(searchQuery, options);
 		
-		Tabs.TabEntry tab = null;
-		//a new search
-		tab = tabs.findTab(searchQuery, options, null);
+		Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
 		
 		prepareSearchResultPage(results, model, searchQuery, options, tab);
 

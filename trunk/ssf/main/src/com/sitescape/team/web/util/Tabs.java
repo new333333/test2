@@ -41,7 +41,6 @@ import org.dom4j.DocumentHelper;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.web.WebKeys;
 /**
  * @author hurley
@@ -49,11 +48,12 @@ import com.sitescape.team.web.WebKeys;
  * A Tabbar object contains a list of tabs to be shown at the top of the page. 
  * 
  * Each Tabbar item is a map of data to be used to draw the tab.
+ * All public methods must be synchronzied to control access from mutiple browser windows.  Since we
+ * create the pop-ups in the first place, we need to control them.
  *
  */
 public class Tabs {
    	//Tab map keys
-   	public final static String QUERY_DOC = "query_doc";
    	
 	public static final String END_DATE="endDate";
 	public static final String YEAR_MONTH="yearMonth";
@@ -69,14 +69,11 @@ public class Tabs {
    	public final static String WORKSPACE = "workspace";
    	public final static String BINDER = "binder";
    	public final static String PROFILES = "profiles";
-   	public final static String ENTRY = "entry";
-   	public final static String USER = "user";
-   	public final static String SEARCH = "search";
+    	public final static String SEARCH = "search";
    	
    	private List<TabEntry> tabList = new ArrayList();
    	private int currentTabId=0;
    	private int nextTabId=0;
-   	private int nextRefId=0;
 	public static Tabs getTabs(PortletRequest request) {
 		PortletSession ps = null;
 		Tabs tabs = null;
@@ -93,7 +90,7 @@ public class Tabs {
 	private Tabs() {
 		
 	}
-	public TabEntry getTab(Long binderId) {
+	public synchronized TabEntry getTab(Long binderId) {
 		//Look for this tab
 		for (TabEntry tab:tabList) {
 			String type = tab.getType();
@@ -104,14 +101,11 @@ public class Tabs {
 		}
 		return null;		
 	}
-	public List getTabList() {
+	public synchronized List getTabList() {
 		return new ArrayList(tabList);
 	}
-	public int getCurrentTabId() {
+	public synchronized int getCurrentTabId() {
 		return currentTabId;
-	}
-	public int getNextTabId() {
-		return nextTabId;
 	}
 	//Binder (folder or workspace) tab, 1 per binder
 	public synchronized TabEntry findTab(Binder binder, boolean clearData) {
@@ -123,10 +117,12 @@ public class Tabs {
 			if ((BINDER.equals(type) || WORKSPACE.equals(type) || PROFILES.equals(type)) && 
 					binder.getId().equals(binderTab.getBinderId()))  {
 				if (clearData) {
-					binderTab.tabData.clear();
-					binderTab.tabData.put(ICON, binder.getIconName());
-					binderTab.tabData.put(TITLE, binder.getTitle());
-					binderTab.tabData.put(PAGE, Integer.valueOf(0));
+					Map tabData = binderTab.getData();
+					tabData.clear();
+					tabData.put(ICON, binder.getIconName());
+					tabData.put(TITLE, binder.getTitle());
+					tabData.put(PAGE, Integer.valueOf(0));
+					binderTab.setData(tabData);
 				}
 				tabList.remove(i);
 				tabList.add(0, binderTab);
@@ -134,6 +130,7 @@ public class Tabs {
 			}
 		}
 		binderTab = new TabEntry(this);
+	   	//okay to set tab values, not visible yet
 	   	if (binder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
 	   		binderTab.type = WORKSPACE;
     	} else if (binder.getEntityType().
@@ -143,8 +140,7 @@ public class Tabs {
     			equals(EntityIdentifier.EntityType.profiles)) {
     		binderTab.type = PROFILES;
     	}
-    	
-	   	binderTab.binderId = binder.getId();
+ 	   	binderTab.binderId = binder.getId();
 	   	binderTab.tabData.put(ICON, binder.getIconName());
 	   	binderTab.tabData.put(TITLE, binder.getTitle());
 	   	binderTab.tabData.put(PAGE, Integer.valueOf(0));
@@ -152,50 +148,13 @@ public class Tabs {
 		return binderTab;		
 	}	
 	
-	//Entry tab - 1 per entry
-	public synchronized TabEntry findTab(FolderEntry entry, boolean clearData) {
-		TabEntry entryTab = null;
-		//Look for this tab
-		for (int i=0; i<tabList.size(); ++i) {
-			entryTab = tabList.get(i);
-			if (ENTRY.equals(entryTab.getType()) && entry.getId().equals(entryTab.getEntryId()))  {
-				if (clearData) {
-					entryTab.tabData.clear();
-					entryTab.tabData.put(TITLE, entry.getTitle());
-				}
-				tabList.remove(i);
-				tabList.add(0, entryTab);
-				return entryTab;
-			}
-		}
-		entryTab = new TabEntry(this);
-		entryTab.type=ENTRY;
-		entryTab.binderId = entry.getParentBinder().getId();
-		entryTab.entryId = entry.getId();
-		addTab(entryTab);
-		return entryTab;
-	}
-	
-	public synchronized TabEntry findTab(Document query, Map options, Integer tabId) {
-		//may be reusing a tab
-		TabEntry tab = findTab(SEARCH, tabId);
-		if (tab != null) {
-			tab.tabData.clear();
-			tab.tabData.put(PAGE, Integer.valueOf(1));
-			tab.query = query.asXML();
-			tab.tabData.putAll(options);
-		} else {
-			tab = addTab(query, options);
-		}
-		return tab;
-	}
 	public synchronized TabEntry findTab(String type, Integer tabId) {
 		if (tabId == null) return null;
 		TabEntry tab = null;
 		//Look for this tab
 		for (int i=0; i<tabList.size(); ++i) {
 			tab=tabList.get(i);
-			if (type.equals(tab.getType()) && tabId == tab.getTabId()) {
+			if (type.equals(tab.type) && tabId == tab.tabId) {
 				tabList.remove(i);
 				tabList.add(0, tab);
 				return tab;
@@ -204,6 +163,7 @@ public class Tabs {
 		return null;
 	}
 	public synchronized TabEntry addTab(Document query, Map options) {
+	   	//okay to set tab values, not visible yet
 		TabEntry tab = new TabEntry(this);
 		tab.type = SEARCH;
 		tab.query= query.asXML();
@@ -226,17 +186,17 @@ public class Tabs {
 		}
 		
 	}
-
+	//The only field in a tabEntry that can change after the entry is created 
+	//is tabData, so acess to it must by synchronzied.
 	public class TabEntry {
-		protected Long binderId,entryId;
-		protected Map tabData = new HashMap();
-		protected Integer tabId=-1;
-		protected String type="";
-		protected String query=null;
-		protected Tabs tabs;
+		private Long binderId,entryId;
+		private Map tabData = new HashMap();
+		private Integer tabId=-1;
+		private String type="";
+		private String query=null;
+		private Tabs tabs;
 		public TabEntry(Tabs tabs) {
-			this.tabs = tabs;
-			
+			this.tabs = tabs;			
 		}
 		public Tabs getTabs() {
 			return tabs;
@@ -267,15 +227,9 @@ public class Tabs {
 		public synchronized void setData(Map data) {
 			tabData.putAll(data);
 		}
-		public Map getData() {
+		public synchronized Map getData() {
 			return new HashMap(tabData);
 		}
-		public void clear() {
-			binderId = null;
-			entryId = null;
-			tabData.clear();
-			type = "";
-			query = null;
-		}
+
 	}
 }
