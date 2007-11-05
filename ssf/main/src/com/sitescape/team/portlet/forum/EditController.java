@@ -48,9 +48,11 @@ import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.Dashboard;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.WebKeys;
@@ -89,7 +91,8 @@ public class EditController extends SAbstractController {
 				displayType = BinderHelper.getDisplayType(request);
 				prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
 			}
-			if (ViewController.FORUM_PORTLET.equals(displayType)) {
+			if (ViewController.FORUM_PORTLET.equals(displayType) || 
+					ViewController.MOBILE_PORTLET.equals(displayType)) {
 				List forumPrefIdList = new ArrayList();
 				List forumDelIdList = new ArrayList();
 				String[] currentForumPrefIdList = PortletPreferencesUtil.getValues(prefs, 
@@ -118,8 +121,16 @@ public class EditController extends SAbstractController {
 						if (!forumPrefIdList.contains(forumId) && !forumDelIdList.contains(forumId)) forumPrefIdList.add(forumId);
 					}
 				}
-				prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, 
-						(String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
+				if (ViewController.FORUM_PORTLET.equals(displayType)) {
+					prefs.setValues(WebKeys.FORUM_PREF_FORUM_ID_LIST, 
+							(String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
+				} else if (ViewController.MOBILE_PORTLET.equals(displayType)) {
+					User user = RequestContextHolder.getRequestContext().getUser();
+					Map values = new HashMap();
+					values.put(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS, 
+							(String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
+					getProfileModule().setUserProperties(user.getId(), values);
+				}
 
 			} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType) ||
 					ViewController.GUESTBOOK_SUMMARY_PORTLET.equals(displayType) ||
@@ -183,6 +194,24 @@ public class EditController extends SAbstractController {
 			model.put(WebKeys.FOLDER_LIST, folders);
 			model.put(WebKeys.BINDER_ID_LIST, folderIds);
 			return new ModelAndView(WebKeys.VIEW_FORUM_EDIT, model);
+		} else if (ViewController.MOBILE_PORTLET.equals(displayType)) {	
+	    	Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+					new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
+			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);	
+		
+			String[] forumPrefIdList = PortletPreferencesUtil.getValues(prefs, WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+		
+			//	Build the jsp bean (sorted by folder title)
+			List folderIds = new ArrayList();
+			for (int i = 0; i < forumPrefIdList.length; i++) {
+				folderIds.add(Long.valueOf(forumPrefIdList[i]));
+			}
+			Collection folders = getBinderModule().getBinders(folderIds);
+		
+			model.put(WebKeys.FOLDER_LIST, folders);
+			model.put(WebKeys.BINDER_ID_LIST, folderIds);
+			return new ModelAndView(WebKeys.VIEW_MOBILE_EDIT, model);
 		} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_BLOG_EDIT, "blog");
 		} else if (ViewController.GALLERY_PORTLET.equals(displayType)) {

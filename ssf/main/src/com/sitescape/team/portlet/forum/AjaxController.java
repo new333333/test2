@@ -1134,15 +1134,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 	}
 	
 
-	public HashMap getEntryAccessMap(Map model, FolderEntry entry) {
-		Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
-		HashMap entryAccessMap = new HashMap();
-		if (accessControlMap.containsKey(entry.getId())) {
-			entryAccessMap = (HashMap) accessControlMap.get(entry.getId());
-		}
-		return entryAccessMap;
-	}
-	
 	private ModelAndView ajaxGetBlogReplies(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -1158,9 +1149,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		folderEntries  = getFolderModule().getEntryTree(binderId, entryId);
 		if (folderEntries != null) {
 			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
-			setAccessControlForAttachmentList(model, entry, user);
+			BinderHelper.setAccessControlForAttachmentList(this, model, entry, user);
 			Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
-			HashMap entryAccessMap = getEntryAccessMap(model, entry);
+			HashMap entryAccessMap = BinderHelper.getEntryAccessMap(this, model, entry);
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
@@ -1383,57 +1374,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 
-		setAccessControlForAttachmentList(model, entry, user);
+		BinderHelper.setAccessControlForAttachmentList(this, model, entry, user);
 		
 		response.setContentType("text/xml");
 		return new ModelAndView("definition_elements/view_entry_attachments_ajax", model);
 	}
 	
-	private void setAccessControlForAttachmentList(Map model, FolderEntry entry, User user) {
-
-		Map accessControlEntryMap = BinderHelper.getAccessControlEntityMapBean(model, entry);
-
-		boolean reserveAccessCheck = false;
-		boolean isUserBinderAdministrator = false;
-		boolean isEntryReserved = false;
-		boolean isLockedByAndLoginUserSame = false;
-
-		if (getFolderModule().testAccess(entry, FolderOperation.reserveEntry)) {
-			reserveAccessCheck = true;
-		}
-		if (getFolderModule().testAccess(entry, FolderOperation.overrideReserveEntry)) {
-			isUserBinderAdministrator = true;
-		}
-		
-		HistoryStamp historyStamp = entry.getReservation();
-		if (historyStamp != null) isEntryReserved = true;
-
-		if (isEntryReserved) {
-			Principal lockedByUser = historyStamp.getPrincipal();
-			if (lockedByUser.getId().equals(user.getId())) {
-				isLockedByAndLoginUserSame = true;
-			}
-		}
-		
-		if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
-			accessControlEntryMap.put("addReply", new Boolean(true));
-		}		
-		
-		if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
-			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
-			} else {
-				accessControlEntryMap.put("modifyEntry", new Boolean(true));
-			}
-		}
-		
-		if (getFolderModule().testAccess(entry, FolderOperation.deleteEntry)) {
-			if (reserveAccessCheck && isEntryReserved && !(isUserBinderAdministrator || isLockedByAndLoginUserSame) ) {
-			} else {
-				accessControlEntryMap.put("deleteEntry", new Boolean(true));
-			}
-		}		
-	}
-
 	private ModelAndView openWebDAVFile(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");

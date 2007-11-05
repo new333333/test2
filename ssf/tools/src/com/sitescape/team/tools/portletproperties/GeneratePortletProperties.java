@@ -54,7 +54,7 @@ public class GeneratePortletProperties {
 		String outPath = pathname + "\\classes\\content";
 		
         String []propNames = {"administration", "blog", "exception", "forum", 
-        		"gallery", "guestbook", "presence", "search", "task", 
+        		"gallery", "guestbook", "mobile", "presence", "search", "task", 
         		"toolbar", "welcome", "widgettest",	"wiki",	"workspacetree"};
            	
         String []localeCodes = {"en", "da", "de", "es", "fr", "it", "ja",	
