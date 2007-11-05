@@ -44,46 +44,23 @@
 		<a id="ss_tabbar_td${tab.tabId}" 
 		  <c:if test="${tab.type == 'binder'}">
 		    href="<ssf:url 
-  				folderId="${tab.binderId}" 
+  				binderId="${tab.binderId}" 
   				action="view_folder_listing">
-  				<ssf:param name="binderId" value="${tab.binderId}"/>
   				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 		  </c:if>
 		  <c:if test="${tab.type == 'workspace'}">
 		    href="<ssf:url 
-  				folderId="${tab.binderId}" 
+  				binderId="${tab.binderId}" 
   				action="view_ws_listing">
-  				<ssf:param name="binderId" value="${tab.binderId}"/>
   				<ssf:param name="newTab" value="0"/>
-  				</ssf:url>" 
-		  </c:if>
-		  <c:if test="${tab.type == 'entry'}">
-		    href="<ssf:url 
-  				folderId="${tab.binderId}" 
-  				entryId="${tab.entryId}" 
-  				action="view_folder_entry">
-   				<ssf:param name="entryId" value="${tab.entryId}"/>
-  				<ssf:param name="binderId" value="${tab.binderId}"/>
-  				<ssf:param name="newTab" value="0"/>
-  				</ssf:url>" 
-		  </c:if>
-		  <c:if test="${tab.type == 'user'}">
-		    href="<ssf:url 
-  				folderId="${tab.binderId}" 
-  				entryId="${tab.entryId}" 
-  				action="view_profile_entry">
-   				<ssf:param name="entryId" value="${tab.entryId}"/>
-   				<ssf:param name="binderId" value="${tab.binderId}"/>
-  				<ssf:param name="tabId" value="${tab.tabId}"/>
   				</ssf:url>" 
 		  </c:if>
 		  <c:if test="${tab.type == 'profiles'}">
 		    href="<ssf:url 
-  				folderId="${tab.binderId}" 
+  				binderId="${tab.binderId}" 
   				action="view_profile_listing">
-  				<ssf:param name="binderId" value="${tab.binderId}"/>
-   				<ssf:param name="newTab" value="0"/>
+  				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 		  </c:if>
 		  <c:if test="${tab.type == 'search'}">

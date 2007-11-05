@@ -442,34 +442,15 @@ function ss_saveSearchQuery(inputId, errMsgBoxId) {
 	if (!ss_nameAlreadyInUse(queryName) || (ss_overwrite(queryName))) {
 		var urlParams = {operation:"save_search_query", queryName:queryName, tabId:ss_currentTabId};
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
-		
-		var bindArgs = {
-	    	url: url,
-			error: function(type, data, evt) {
-				alert(ss_not_logged_in);
-			},
-			load: function(type, data, evt) {
-				if (data.savedQueryName) {
-					ss_addSavedSearchToView(data);
-					inputObj.value = "";
-				} else {
-					alert(ss_not_logged_in);
-				}
-			},
-			preventCache: true,
-			mimetype: "text/json",
-			method: "post"
-		};   
-		dojo.io.bind(bindArgs);	
+		ss_get_url(url, ss_addSavedSearchToView);
 	}
-	
 }
 function ss_callRemoveSavedQuery(queryName, errMsg, objToRemove) { 
 	return function(evt) {ss_removeSavedSearchQuery(queryName, errMsg, objToRemove);};
 }
 
 function ss_addSavedSearchToView(data) {
-	if (!ss_nameAlreadyInUse(data.savedQueryName)) {
+	if (data.savedQueryName && !ss_nameAlreadyInUse(data.savedQueryName)) {
 		var savedQueriesList = document.getElementById("ss_savedQueriesList");	
 		
 		if (savedQueriesList && !hasListElements(savedQueriesList)) {
@@ -515,31 +496,16 @@ function ss_removeSavedSearchQuery(queryName, errMsgBoxId, objToRemove) {
 	if (!queryName) {
 		return;
 	}
-	var urlParams = {operation:"remove_search_query", queryName:queryName, tabId:ss_currentTabId};
+	var urlParams = {operation:"remove_search_query", queryName:queryName};
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
-	
-	var bindArgs = {
-    	url: url,
-		error: function(type, data, evt) {
-			alert(ss_not_logged_in);
-		},
-		load: function(type, data, evt) {
-			if (data.removedQueryName) {
-				ss_removeSavedSearchFromView(objToRemove, data.removedQueryName);
-			} else {
-				alert(ss_not_logged_in);
-			}
-		},
-		preventCache: true,
-		mimetype: "text/json",
-		method: "post"
-	};   
-	dojo.io.bind(bindArgs);	
+	ss_get_url(url, ss_removeSavedSearchFromView, objToRemove);
 }
 
-function ss_removeSavedSearchFromView(objToRemove, queryName) {
-	ss_removeFromSaved(queryName);
-	objToRemove.parentNode.removeChild(objToRemove);
+function ss_removeSavedSearchFromView(data, objToRemove) {
+	if (data.removedQueryName) {
+		ss_removeFromSaved(data.removedQueryName);
+		objToRemove.parentNode.removeChild(objToRemove);
+	}
 }
 
 var ss_savedQueries = "|";
