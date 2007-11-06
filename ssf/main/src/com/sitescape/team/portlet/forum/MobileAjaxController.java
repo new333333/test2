@@ -217,7 +217,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileFrontPage(request, response);
 		} 
 		model.put(WebKeys.BINDER, binder);
-		model.put(WebKeys.FOLDER, binder);
 		folderEntries = getFolderModule().getEntries(binderId, options);
 		model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 		if (folderEntries != null) {
@@ -232,6 +231,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Binder binder = getBinderModule().getBinder(binderId);
+		model.put(WebKeys.BINDER, binder);
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
 		User user = RequestContextHolder.getRequestContext().getUser();
 		

@@ -37,7 +37,7 @@
 <script type="text/javascript">
 function ss_resizeMobileIframe() {
 	if (typeof self.parent != 'undefined' && typeof parent.ss_setMobileIframeSize != 'undefined') {
-		parent.ss_setMobileIframeSize();
+		setTimeout("parent.ss_setMobileIframeSize();", 100);
 	}
 }
 </script>

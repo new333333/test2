@@ -47,6 +47,16 @@ function ss_setMobileIframeSize() {
 }
 </script>
 
+<c:if test="${!empty ss_mobileBinderList}">
+<div align="right">
+  <a class="ss_linkButton" 
+    href="<portlet:renderURL 
+      portletMode="edit" 
+      windowState="maximized" />"
+    ><ssf:nlt tag="button.configure"/></a>
+</div>
+</c:if>
+
 <c:set var="folderIdList" value=""/>
 <jsp:useBean id="folderIdList" type="java.lang.String" />
 
@@ -63,13 +73,14 @@ function ss_setMobileIframeSize() {
     href="<portlet:renderURL 
       portletMode="edit" 
       windowState="maximized" />"
-    ><ssf:nlt tag="portlet.forum.configure"/></a>
+    ><ssf:nlt tag="button.configure"/></a>
 </div>
 <div>
   <ssf:nlt tag="portlet.mobileNotConfigured"/>
 </div>
 </c:if>
 
+<c:if test="${!empty ss_mobileBinderList}">
 <div id="ss_mobileDiv">
   <iframe id="ss_mobileIframe" 
     name="ss_mobileIframe" 
@@ -85,15 +96,6 @@ function ss_setMobileIframeSize() {
 	height="50" width="100%" 
 	onLoad="ss_setMobileIframeSize();" 
 	frameBorder="0" >xxx</iframe>
-</div>
-
-<c:if test="${!empty ss_mobileBinderList}">
-<div align="right">
-  <a class="ss_linkButton" 
-    href="<portlet:renderURL 
-      portletMode="edit" 
-      windowState="maximized" />"
-    ><ssf:nlt tag="portlet.forum.configure"/></a>
 </div>
 </c:if>
 
