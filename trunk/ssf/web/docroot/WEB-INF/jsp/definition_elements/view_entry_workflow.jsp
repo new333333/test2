@@ -48,6 +48,7 @@
 <c:set var="lastWorkflowTitle" value=""/>
 <c:forEach var="workflow" items="${ssDefinitionEntry.workflowStates}">
   <c:if test="${!empty workflow.definition}">
+  <c:set var="workflowTitle" value="${workflow.definition.title}"/>
     <c:if test="${empty workflow.threadName}">
 	  <tr>
 	    <td valign="top" style="padding:0px 0px 4px 30px;">
@@ -181,7 +182,6 @@
       </c:forEach>
     </c:if>
 
-  <c:set var="workflowTitle" value="${workflow.definition.title}"/>
   </c:if>
 </c:forEach>
 </table>
