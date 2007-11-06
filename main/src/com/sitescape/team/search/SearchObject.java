@@ -44,6 +44,7 @@ import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.lucene.NullAnalyzer;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 
@@ -191,6 +192,7 @@ public class SearchObject {
 		PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new ChineseAnalyzer());
 		retAnalyzer.addAnalyzer(BasicIndexUtils.ACL_TAG_FIELD, new NullAnalyzer());
 		retAnalyzer.addAnalyzer(BasicIndexUtils.TAG_FIELD, new NullAnalyzer());
+		retAnalyzer.addAnalyzer(EntityIndexUtils.ENTITY_FIELD, new NullAnalyzer());
 		return retAnalyzer;
 	}
 }
