@@ -30,10 +30,11 @@
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <table cellspacing="0" cellpadding="0" border="0">
+<th colspan="2" align="left">${ssBinder.title}</th>
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 <jsp:useBean id="entry1" type="java.util.HashMap" />
-  <tr><td>
-	<a href="<ssf:url adapter="true" portletName="ss_forum" 
+  <tr><td align="right" valign="top" style="padding:0px 4px 2px 4px;">${entry1._docNum}.</td>
+	<td><a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}"  entryId="${entry1._docId}"
 	action="__ajax_mobile" operation="mobil_show_entry" actionUrl="false" />">
     <c:if test="${empty entry1.title}">
@@ -44,6 +45,11 @@
   </td></tr>
 </c:forEach>
 </table>
+<br/>
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	action="__ajax_mobile" operation="mobil_show_front_page" actionUrl="false" />">
+<span style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
+</a>
 
 </body>
 </html>

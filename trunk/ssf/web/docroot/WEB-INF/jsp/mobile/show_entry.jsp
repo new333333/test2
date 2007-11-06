@@ -31,28 +31,35 @@
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <c:if test="${!empty ssEntry}">
 <div>
-<span>
-  <a href="<ssf:url 
-    folderId="${ssEntry.parentFolder.id}" 
-    action="__ajax_mobile" operation="mobile_show_entry"
-    entryId="${ssEntry.id}">
-    </ssf:url>">
-<c:if test="${!empty wikiEntry.title}">
-<c:out value="${ssEntry.title}"/>
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.id}"
+	action="__ajax_mobile" operation="mobil_show_folder" actionUrl="false" />">
+<span style="color:blue;">${ssBinder.title}</span>
+</a>
+</div>
+<div style="padding:0px 0px 6px 8px;">
+<span>${ssEntry.docNumber}.&nbsp;
+<c:if test="${!empty ssEntry.title}">
+<b><c:out value="${ssEntry.title}"/></b>
 </c:if>
 <c:if test="${empty ssEntry.title}">
-  <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
+--<ssf:nlt tag="entry.noTitle"/>--
 </c:if>
-</a></span>
+</span>
 </div>
-
 <c:if test="${!empty ssEntry.description}">
-<div>
+<div style="padding:0px 0px 10px 8px;">
  <span><ssf:markup type="view" entity="${ssEntry}"><c:out 
    value="${ssEntry.description.text}" escapeXml="false"/></ssf:markup></span>
 </div>
 </c:if> 
 </c:if> 
+
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.id}"
+	action="__ajax_mobile" operation="mobil_show_folder" actionUrl="false" />">
+<span style="color:blue;"><ssf:nlt tag="mobile.returnToParentFolder"/></span>
+</a>
 
 </body>
 </html>
