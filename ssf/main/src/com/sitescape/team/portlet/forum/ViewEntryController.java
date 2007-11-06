@@ -397,7 +397,7 @@ public class ViewEntryController extends  SAbstractController {
 					Definition workflowDef = state.getDefinition();
 					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
-						String wfTitle1 = wfTitle.replaceAll("'", "\\'");
+						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
 						qualifiers = new HashMap();
 						qualifiers.put("onClick", "if (ss_confirm) {return ss_confirm('" + NLT.get("entry.confirmStopWorkflow") + "', '"+wfTitle1+"')} else {return false}");
 						url = response.createActionURL();
@@ -416,7 +416,7 @@ public class ViewEntryController extends  SAbstractController {
 					Definition workflowDef = (Definition) itWorkflows.next();
 					if (!runningWorkflowDefs.containsKey(workflowDef.getId())) {
 						String wfTitle = NLT.getDef(workflowDef.getTitle());
-						String wfTitle1 = wfTitle.replaceAll("'", "\\'");
+						String wfTitle1 = wfTitle.replaceAll("'", "\\\\'");
 						qualifiers = new HashMap();
 						qualifiers.put("onClick", "if (ss_confirm) {return ss_confirm('" + NLT.get("entry.confirmStartWorkflow") + "', '"+wfTitle1+"')} else {return false}");
 						url = response.createActionURL();
