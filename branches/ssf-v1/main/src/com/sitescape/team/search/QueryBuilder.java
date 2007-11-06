@@ -186,6 +186,11 @@ public class QueryBuilder {
 					}
 				}
 			}
+			// if the last element was the language element, then remove the boolean
+			// operator that remains. (the lang operator is not contained in the boolean)
+			if (qString.endsWith(operator + " ")) {
+				qString = qString.replaceFirst(operator + " $", "");
+			}
 			qString += " )";
 		} else if (operator.equalsIgnoreCase(NOT_ELEMENT)) {
 			List elements = element.elements();
