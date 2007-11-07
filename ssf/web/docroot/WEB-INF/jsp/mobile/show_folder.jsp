@@ -36,7 +36,7 @@
   <tr><td align="right" valign="top" style="padding:0px 4px 2px 4px;">${entry1._docNum}.</td>
 	<td><a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}"  entryId="${entry1._docId}"
-	action="__ajax_mobile" operation="mobil_show_entry" actionUrl="false" />">
+	action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
     <c:if test="${empty entry1.title}">
     	(<ssf:nlt tag="entry.noTitle"/>)
     </c:if>
@@ -47,7 +47,7 @@
 </table>
 <br/>
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobil_show_front_page" actionUrl="false" />">
+	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
 <span style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
 </a>
 

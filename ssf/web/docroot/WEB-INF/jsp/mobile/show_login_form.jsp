@@ -30,16 +30,18 @@
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <form action="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobil_login" actionUrl="true" />" method="post">
+	action="__ajax_mobile" operation="mobile_login" actionUrl="true" />" method="post">
 <ssf:nlt tag="mobile.loginName"/><br/>
-<input type="text" name="name" size="20" value="${ss_defaultLoginName}">
+<input type="text" name="name" size="20" value="${ss_defaultLoginName}" 
+style="font-size:10px; line-height:12px; margin:4px 0px 0px 2px; padding:4px 0px 0px 2px; border-width:1px 2px 2px 1px;">
 <br/>
 <br/>
 <ssf:nlt tag="mobile.password"/><br/>
 <input type="password" name="password" size="20">
 <br/>
 <br/>
-<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
+<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"
+style="font-size:10px;margin:4px 0px 0px 2px; padding:4px 0px 0px 2px; border-width:1px 2px 2px 1px;">
 </form>
 
 </body>

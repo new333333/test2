@@ -117,8 +117,15 @@ public class BinderHelper {
 			RenderResponse response) {
  		Map<String,Object> model = new HashMap<String,Object>();
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
- 		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
+ 		PortletPreferences prefs = null;
+ 		String ss_initialized = null;
+ 		try {
+ 			prefs = request.getPreferences();
+ 			ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
+ 		} catch(Exception e) {
+ 			ss_initialized = "true";
+ 		}
+ 		
 		if (Validator.isNull(ss_initialized)) {
 			//Signal that this is the initialization step
 			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
@@ -136,7 +143,8 @@ public class BinderHelper {
 		model.put(WebKeys.PRODUCT_EDITION, SPropsUtil.getString("product.edition", ObjectKeys.PRODUCT_EDITION_DEFAULT));
 		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 		
-		String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, null);
+		String displayType = getDisplayType(request);
+		if (prefs != null) displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, null);
 		if (Validator.isNull(displayType)) {
 			displayType = getDisplayType(request);
 		}
@@ -147,7 +155,8 @@ public class BinderHelper {
 		if (FORUM_PORTLET.equals(displayType)) {
 		
 			//This is the portlet view; get the configured list of folders to show
-			String[] preferredBinderIds = PortletPreferencesUtil.getValues(prefs, WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
+			String[] preferredBinderIds = new String[0];
+			if (prefs != null) preferredBinderIds = PortletPreferencesUtil.getValues(prefs, WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
 
 			//Build the jsp bean (sorted by folder title)
 			List<Long> binderIds = new ArrayList<Long>();
@@ -155,10 +164,13 @@ public class BinderHelper {
 				binderIds.add(new Long(preferredBinderIds[i]));
 			}
 			model.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(binderIds));
-			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
+			try {
+				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
+			} catch(Exception e) {}
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
 		} else if (WORKSPACE_PORTLET.equals(displayType)) {
-			String id = PortletPreferencesUtil.getValue(prefs, WebKeys.WORKSPACE_PREF_ID, null);
+			String id = null;
+			if (prefs != null) id = PortletPreferencesUtil.getValue(prefs, WebKeys.WORKSPACE_PREF_ID, null);
 			Workspace binder;
 			try {
 				binder = bs.getWorkspaceModule().getWorkspace(Long.valueOf(id));
@@ -179,8 +191,10 @@ public class BinderHelper {
 		    
 		} else if (PRESENCE_PORTLET.equals(displayType)) {
  			Set ids = new HashSet();		
- 			ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_USER_LIST, "")));
- 			ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+ 			if (prefs != null) {
+ 				ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_USER_LIST, "")));
+ 	 			ids.addAll(LongIdUtil.getIdsAsLongSet(PortletPreferencesUtil.getValue(prefs, WebKeys.PRESENCE_PREF_GROUP_LIST, "")));
+ 			}
  			if (ids.isEmpty()) {
  				//Initialize an empty presence list to have the current user as a buddy so there is always something to show
  				ids.add(user.getId());
@@ -191,7 +205,9 @@ public class BinderHelper {
  			//if we list groups, then we have issues when a user appears in multiple groups??
  			//how do we update the correct divs??
  			//so, explode the groups and just show members
-  			response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
+			try {
+				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
+			} catch(Exception e) {}
   			model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
   			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
 		} else if (TOOLBAR_PORTLET.equals(displayType)) {
@@ -225,7 +241,8 @@ public class BinderHelper {
 	}
 	
 	protected static ModelAndView setupSummaryPortlets(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
-		String gId = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
+		String gId = null;
+		if (prefs != null) gId = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
 		if (gId != null) {
 			try {
 				DashboardPortlet d = (DashboardPortlet)bs.getDashboardModule().getDashboard(gId);

@@ -33,7 +33,7 @@
 <div>
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}"
-	action="__ajax_mobile" operation="mobil_show_folder" actionUrl="false" />">
+	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
 <span style="color:blue;">${ssBinder.title}</span>
 </a>
 </div>
@@ -57,7 +57,7 @@
 
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}"
-	action="__ajax_mobile" operation="mobil_show_folder" actionUrl="false" />">
+	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
 <span style="color:blue;"><ssf:nlt tag="mobile.returnToParentFolder"/></span>
 </a>
 
