@@ -296,10 +296,10 @@ public class WebKeys {
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
-    public static final String OPERATION_MOBILE_LOGIN="mobil_login"; 
-    public static final String OPERATION_MOBILE_SHOW_FOLDER="mobil_show_folder"; 
-    public static final String OPERATION_MOBILE_SHOW_ENTRY="mobil_show_entry"; 
-    public static final String OPERATION_MOBILE_SHOW_FRONT_PAGE="mobil_show_front_page"; 
+    public static final String OPERATION_MOBILE_LOGIN="mobile_login"; 
+    public static final String OPERATION_MOBILE_SHOW_FOLDER="mobile_show_folder"; 
+    public static final String OPERATION_MOBILE_SHOW_ENTRY="mobile_show_entry"; 
+    public static final String OPERATION_MOBILE_SHOW_FRONT_PAGE="mobile_show_front_page"; 
 	public static final String OPERATION_OPEN_WEBDAV_FILE = "open_webdav_file";
 	public static final String OPERATION_OPEN_WEBDAV_FILE_BY_FILEID = "open_webdav_file_by_fileid";
 	public static final String OPERATION_RELOAD="reload";

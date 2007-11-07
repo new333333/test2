@@ -70,11 +70,17 @@ public class ViewController  extends SAbstractController {
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
 
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
- 		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
-		if (Validator.isNull(ss_initialized)) {
-			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
-			prefs.store();
+ 		PortletPreferences prefs = null;
+ 		String ss_initialized = null;
+ 		try {
+ 			prefs = request.getPreferences();
+ 		} catch(Exception e) {}
+		if (prefs != null) {
+			ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
+			if (Validator.isNull(ss_initialized)) {
+				prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
+				prefs.store();
+			}
 		}
         User user = RequestContextHolder.getRequestContext().getUser();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");

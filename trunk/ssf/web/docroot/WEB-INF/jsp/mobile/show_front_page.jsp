@@ -45,13 +45,13 @@
 	<c:if test="${binder.entityIdentifier.entityType == 'folder'}">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
 					action="__ajax_mobile" actionUrl="false" 
-					operation="mobil_show_folder" />"><span>${binder.title}</span></a>
+					operation="mobile_show_folder" />"><span>${binder.title}</span></a>
 	  <c:if test="${binder.parentBinder.entityIdentifier.entityType == 'folder'}">
 	    <a style="padding-left:20px;" 
 	    	href="<ssf:url adapter="true" portletName="ss_forum" 
 	    			folderId="${binder.parentBinder.id}" 
 					action="__ajax_mobile" actionUrl="false" 
-					operation="mobil_show_folder" />">
+					operation="mobile_show_folder" />">
 			<span class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
 	  </c:if>
 	  <c:if test="${binder.parentBinder.entityIdentifier.entityType != 'folder'}">
@@ -59,7 +59,7 @@
 	    	href="<ssf:url adapter="true" portletName="ss_forum" 
 	    			folderId="${binder.parentBinder.id}" 
 					action="__ajax_mobile" actionUrl="false" 
-					operation="mobil_show_workspace" />">
+					operation="mobile_show_workspace" />">
 			<span  class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
 	  </c:if>
 	</c:if>
@@ -67,13 +67,13 @@
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    			folderId="${binder.id}" 
 					action="__ajax_mobile" actionUrl="false" 
-					operation="mobil_show_workspace" />"><span>${binder.title}</span></a>
+					operation="mobile_show_workspace" />"><span>${binder.title}</span></a>
 	</c:if>
 	<c:if test="${binder.entityIdentifier.entityType == 'profiles'}">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    			folderId="${binder.id}" 
 					action="__ajax_mobile" actionUrl="false" 
-					operation="mobil_show_profiles" />"><span>${binder.title}</span></a>
+					operation="mobile_show_profiles" />"><span>${binder.title}</span></a>
 	</c:if>
   </td>
   </tr>
