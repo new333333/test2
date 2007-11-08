@@ -42,8 +42,7 @@
 			    	name="ssFolderSortBy" value="_sortTitle"/><c:choose><c:when 
 			    	test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}"><portlet:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-			    	name="tabId" value="${tabId}"/></portlet:actionURL>"
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
 			
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
@@ -80,8 +79,7 @@
 			    	name="ssFolderSortBy" value="responsible"/><c:choose><c:when 
 			    	test="${ ssFolderSortBy == 'responsible' && ssFolderSortDescend == 'false'}"><portlet:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-			    	name="tabId" value="${tabId}"/></portlet:actionURL>"
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
 			
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'responsible' && ssFolderSortDescend == 'false'}">
@@ -118,8 +116,7 @@
 			    	name="ssFolderSortBy" value="tasks"/><c:choose><c:when 
 			    	test="${ ssFolderSortBy == 'tasks' && ssFolderSortDescend == 'false'}"><portlet:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-			    	name="tabId" value="${tabId}"/></portlet:actionURL>"
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
 			
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'tasks' && ssFolderSortDescend == 'false'}">
@@ -155,8 +152,7 @@
 					name="ssFolderSortBy" value="status"/><c:choose><c:when 
 					test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}"><portlet:param 
 					name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-					name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-					name="tabId" value="${tabId}"/></portlet:actionURL>"
+					name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
 				
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}">
@@ -192,8 +188,7 @@
 			    	name="ssFolderSortBy" value="due_date"/><c:choose><c:when 
 			    	test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'false'}"><portlet:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-			    	name="tabId" value="${tabId}"/></portlet:actionURL>"
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
 				
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'due_date' && ssFolderSortDescend == 'false'}">
