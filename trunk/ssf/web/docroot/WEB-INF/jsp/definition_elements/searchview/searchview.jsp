@@ -33,14 +33,6 @@
 <%@ page import="java.util.Date" %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 
-<script type="text/javascript">
-var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="${action}"/><portlet:param 
-		name="binderId" value="${ssBinder.id}"/><portlet:param 
-		name="operation" value="subscribe"/></portlet:actionURL>";
-</script>
-
-
 <div class="ss_folder_border">
 	<% // Add the toolbar with the navigation widgets, commands and filter %>
 	<ssf:toolbar style="ss_actions_bar2 ss_actions_bar">

@@ -29,16 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
-
-<c:choose>
-<c:when test="${!empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-<span><ssf:nlt tag="general.notLoggedIn"/></span>
-</c:when>
-<c:otherwise>
-
-
 <div class="ss_style" align="left">
-<form method="post" onSubmit="ss_setActionUrl(this, ss_saveSubscriptionUrl);">
+<form method="post" id="${ss_namespace}subscription_form${ssBinder.id}">
 <c:if test="${ssScheduleInfo.enabled}">
 <span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.type"/></span>
 </c:if>
@@ -73,6 +65,14 @@
   /><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:inlineHelp tag="ihelp.email.disable_admin_notify"/><br/>
   
   <br/>
+    <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"
+    onClick="ss_post('<ssf:url adapter="true" action="__ajax_request" actionUrl="true" portletName="ss_forum" binderId="${ssBinder.id}" >
+    <ssf:param name="namespace" value="${ss_namespace}"/>
+    <ssf:param name="operation" value="subscribe"/>
+     <ssf:param name="okBtn" value="1"/>
+    </ssf:url>', '${ss_namespace}subscription_form${ssBinder.id}');ss_cancelPopupDiv('ss_subscription_menu');return false;">
+ &nbsp;&nbsp;&nbsp;
+  
   <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>">
   &nbsp;&nbsp;&nbsp;
   <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
@@ -81,5 +81,4 @@
 </div>
 </form>
 </div>
-</c:otherwise>
-</c:choose>
+

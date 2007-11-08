@@ -439,7 +439,7 @@ try {
 		}
 		
 		this.viewTask = function(entryId) {
-			var url = ss_getViewFolderEntryUrl(binderId, entryId);
+			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:entryId}, "view_folder_entry");
 			ss_loadEntryUrl(url, entryId);
 		}
 	

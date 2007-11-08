@@ -206,22 +206,6 @@ public static final String[] monthNamesShort = {
 				getProfileModule().setUserProperties(user.getId(), binderId, values);
 				response.setRenderParameter(WebKeys.URL_NEW_TAB, "1");
 			}
-		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
-			Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
-			String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-			if (entryId.equals("")) {
-				entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_SUBSCRIBE_ENTRY_ID, "");
-			}
-			if (style != null) {
-				if (entryId.equals("")) {
-					if (style.intValue() == -1) getBinderModule().deleteSubscription(binderId);
-					else getBinderModule().addSubscription(binderId, style.intValue());
-				} else {
-					if (style.intValue() == -1) getFolderModule().deleteSubscription(binderId, Long.valueOf(entryId));
-					else getFolderModule().addSubscription(binderId, Long.valueOf(entryId), style.intValue());
-				}
-			}
-			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO)) {
 			//Saves the folder sort information
 

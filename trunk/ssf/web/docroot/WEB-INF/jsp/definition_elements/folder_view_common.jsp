@@ -64,10 +64,6 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 		name="action" value="${action}"/><portlet:param 
 		name="binderId" value="${ssFolder.id}"/><portlet:param 
 		name="operation" value="save_folder_columns"/></portlet:actionURL>";
-var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="${action}"/><portlet:param 
-		name="binderId" value="${ssBinder.id}"/><portlet:param 
-		name="operation" value="subscribe"/></portlet:actionURL>";
 </script>
 
 <div id="ss_folder_table_parent" class="ss_folder">

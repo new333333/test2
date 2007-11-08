@@ -1638,7 +1638,7 @@ function ss_calendar(prefix) {
 	    var eHtml = "";
 	   	
 	   	if (event) {
-		   	var viewHref = ss_getViewFolderEntryUrl(event.binderId, event.entryId);
+			var viewHref = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:event.binderId, entryId:event.entryId}, "view_folder_entry");
 			eHtml += '<a href="'+viewHref+'" onClick="try {' + event.viewOnClick + ';} catch(e) {return true;} return false;">'+(event.title?event.title:'--no title--')+'</a>';
 	   	} else {
 	   		// new event creation
@@ -1719,7 +1719,7 @@ function ss_calendar(prefix) {
 	        ebox.style.height = ((eventHeight/heightFactor) * 100) + "%";
 	        var e = ss_cal_Events.eventData[eventList[i]];
 	        ebox.style.backgroundColor = ss_cal_CalData.box(e.binderId);
-			var viewHref = ss_getViewFolderEntryUrl(e.binderId, e.entryId);
+			var viewHref = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:e.binderId, entryId:e.entryId}, "view_folder_entry");
 			ebox.innerHTML = '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + ';} catch(e) {return true;} return false;">'+(e.title?e.title:'--no title--')+'</a>';
 	        container.appendChild(ebox);
 	        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 200).play();        

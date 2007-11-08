@@ -34,12 +34,6 @@
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 
 <script type="text/javascript" src="<html:rootPath/>js/common/guestbook.js"></script>
-<script type="text/javascript">
-var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="${action}"/><portlet:param 
-		name="binderId" value="${ssBinder.id}"/><portlet:param 
-		name="operation" value="subscribe"/></portlet:actionURL>";
-</script>
 
 <br>
 <div class="ss_folder_border">

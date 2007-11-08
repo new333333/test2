@@ -170,6 +170,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxVoteSurvey(request, response);
 			} else if (op.equals(WebKeys.OPERATION_ATTACHE_MEETING_RECORDS)) {
 				ajaxAttacheMeetingRecords(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
+				Map formData = request.getParameterMap();
+				if (formData.containsKey("okBtn")) ajaxDoSubscription(request, response);
 			}
 		}
 	}
@@ -190,8 +193,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			//Check for calls from "ss_fetch_url" (which return 
 			if (op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 				return new ModelAndView("forum/fetch_url_return", model);
-			} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS) ||
-					op.equals(WebKeys.OPERATION_SUBSCRIBE) || op.equals(WebKeys.OPERATION_ENTRY_SUBSCRIBE)) {
+			} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_IMAGE_FILE)) {
 				return new ModelAndView("forum/fetch_url_return", model);
@@ -210,7 +212,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			}
 			if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY) ||
 					op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY) ||
-					op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH)) {
+					op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH) ||
+					op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 				model.put(WebKeys.AJAX_ERROR_MESSAGE, "general.notLoggedIn");	
 				response.setContentType("text/json");
 				return new ModelAndView("common/json_ajax_return", model);
@@ -273,9 +276,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
 			return ajaxConfigureFolderColumns(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
-			return ajaxSubscribe(request, response);
-		} else if (op.equals(WebKeys.OPERATION_ENTRY_SUBSCRIBE)) {
-			return ajaxEntrySubscribe(request, response);
+			return ajaxSubscribe(request, response); 
 		} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH)) {
 			return ajaxSaveEntryWidth(request, response);
 			
@@ -646,37 +647,56 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/configure_folder_columns_return", model);
 	}
 	
-	private ModelAndView ajaxSubscribe(RenderRequest request, 
-			RenderResponse response) throws Exception {
+	private ModelAndView ajaxSubscribe(RenderRequest request, RenderResponse response) throws Exception {
+		Map formData = request.getParameterMap();
+		//if just finished a request, nothing to return
+		if (formData.containsKey("okBtn")) {
+			response.setContentType("text/json");
+			return new ModelAndView("common/json_ajax_return");
+		}
+		//request for forms is by fetch_url
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
-		Binder binder = getBinderModule().getBinder(binderId);
-		Subscription sub = getBinderModule().getSubscription(binderId);
-		model.put(WebKeys.SUBSCRIPTION, sub);
-		model.put(WebKeys.SCHEDULE_INFO, getBinderModule().getNotificationConfig(binderId));
-		model.put(WebKeys.BINDER, binder);
-		return new ModelAndView("forum/subscribe_return", model);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+		model.put(WebKeys.NAMESPACE, namespace);
+		if (entryId==null) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			Subscription sub = getBinderModule().getSubscription(binderId);
+			model.put(WebKeys.SUBSCRIPTION, sub);
+			model.put(WebKeys.SCHEDULE_INFO, getBinderModule().getNotificationConfig(binderId));
+			model.put(WebKeys.BINDER, binder);
+			return new ModelAndView("forum/subscribe_return", model);			
+		} else {
+			FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+			Subscription sub = getFolderModule().getSubscription(entry);			
+			model.put(WebKeys.SUBSCRIPTION, sub);
+			model.put(WebKeys.SCHEDULE_INFO, getBinderModule().getNotificationConfig(binderId));
+			model.put(WebKeys.ENTRY, entry);
+			return new ModelAndView("forum/subscribe_entry_return", model);
+			
+		}
 	}
 
-	private ModelAndView ajaxEntrySubscribe(RenderRequest request, 
-			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		
-		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
-		
-		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
-		Subscription sub = getFolderModule().getSubscription(entry);
-		
-		model.put(WebKeys.SUBSCRIPTION, sub);
-		model.put(WebKeys.SCHEDULE_INFO, getBinderModule().getNotificationConfig(binderId));
-		model.put(WebKeys.ENTRY, entry);
-		model.put(WebKeys.NAMESPACE, namespace);
-		
-		return new ModelAndView("forum/subscribe_entry_return", model);
-	}	
-	
+	private ModelAndView ajaxDoSubscription(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		//this call is the json ajax part of ajaxSubscription, made by ss_post
+		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
+		Long entryId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		if (style != null) {
+			if (entryId == null) {
+				if (style.intValue() == -1) getBinderModule().deleteSubscription(binderId);
+				else getBinderModule().addSubscription(binderId, style.intValue());
+			} else {
+				if (style.intValue() == -1) getFolderModule().deleteSubscription(binderId, entryId);
+				else getFolderModule().addSubscription(binderId, entryId, style.intValue());
+			}
+		}
+		return new ModelAndView("common/json_ajax_return");
+
+	}
+
 	private ModelAndView ajaxSaveEntryWidth(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		//Save the user's selected entry width, etc.
