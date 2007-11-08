@@ -33,14 +33,22 @@
 <c:set var="folderIdList" value=""/>
 <jsp:useBean id="folderIdList" type="java.lang.String" />
 <c:if test="${!empty ss_mobileBinderList}">
+	<c:set var="ss_showUnseenNote" value="0"/>
 <table cellspacing="0" cellpadding="0">
 <c:forEach var="binder" items="${ss_mobileBinderList}">
 <jsp:useBean id="binder" type="com.sitescape.team.domain.Binder" />
-  <tr>
-  <td>
-      <span style="color:silver;">-</span>
-  </td>
-  <td>&nbsp;&nbsp;&nbsp;</td>
+ <tr>
+  <td valign="top">
+   <span style="color:silver;">
+	  <c:set var="folderIdFound" value="0"/>
+	  <c:forEach var="entry" items="${ss_unseenCounts}">
+	    <c:if test="${entry.key.id == binder.id}"><%--
+	      --%>${entry.value}<%--
+	      --%><c:set var="folderIdFound" value="1"/><%--
+	    --%></c:if>
+	  </c:forEach>
+	  <c:if test="${folderIdFound == '0'}">*<c:set var="ss_showUnseenNote" value="1"/></c:if>
+   </span>&nbsp;&nbsp;</td>
   <td>
 	<c:if test="${binder.entityIdentifier.entityType == 'folder'}">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
@@ -53,14 +61,6 @@
 					action="__ajax_mobile" actionUrl="false" 
 					operation="mobile_show_folder" />">
 			<span class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
-	  </c:if>
-	  <c:if test="${binder.parentBinder.entityIdentifier.entityType != 'folder'}">
-	    <a style="padding-left:20px;" 
-	    	href="<ssf:url adapter="true" portletName="ss_forum" 
-	    			folderId="${binder.parentBinder.id}" 
-					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_workspace" />">
-			<span  class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
 	  </c:if>
 	</c:if>
 	<c:if test="${binder.entityIdentifier.entityType == 'workspace'}">
@@ -76,13 +76,19 @@
 					operation="mobile_show_profiles" />"><span>${binder.title}</span></a>
 	</c:if>
   </td>
-  </tr>
-  <%
+ </tr>
+ <%
   	if (!folderIdList.equals("")) folderIdList += " ";
   	folderIdList += binder.getId().toString();
-  %>
+ %>
 </c:forEach>
 </table>
 </c:if>
+
+<c:if test="${ss_showUnseenNote == '1'}">
+ <br/>
+ <span>* <ssf:nlt tag="unseen.foldersOnly"/></span>
+</c:if>
+
 </body>
 </html>
