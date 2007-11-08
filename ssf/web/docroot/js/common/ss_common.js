@@ -160,8 +160,10 @@ if (!ss_onLoadRoutineLoaded) {
 	ss_savedOnLoadRoutine = window.onload;
 	window.onload = ss_onLoadInit;
 }
-//Routines to support getting stuff from the server without reloading the page
-//used to replace fetch plain data an replace a div, pre ssAjaxRequest
+//Routines to support Ajax
+//suggest moving towards ss_get_url so errors can be handled consistantly
+//Updated to dojo, result is text/plain
+//used to fetch plain data and replace a div
 function ss_fetch_div(url, divId, signal) {
 	var bindArgs = {
 	    	url: url,
@@ -179,7 +181,9 @@ function ss_fetch_div(url, divId, signal) {
 	};   
 	dojo.io.bind(bindArgs);
 }
-//use results string - suggest moving towards ss_get_url so errors can be handled consistantly
+//suggest moving towards ss_get_url so errors can be handled consistantly
+//Updated to dojo, result is text/plain
+//used to fetch plain data
 function ss_fetch_url(url, callbackRoutine, callbackData) {
 	ss_fetch_url_debug("Request to fetch url: " + url)
 	var bindArgs = {
@@ -202,7 +206,8 @@ function ss_fetch_url(url, callbackRoutine, callbackData) {
 function ss_fetch_url_debug(str) {
     //ss_debug(str);
 }
-
+//Use dojo to post a form, results in text/json
+//When result contains failure, message display
 function ss_post(url, formId, callBackRoutine, callbackData) {
 	var bindArgs = {
     	url: url,
@@ -223,7 +228,8 @@ function ss_post(url, formId, callBackRoutine, callbackData) {
 	};   
 	dojo.io.bind(bindArgs);
 }     
-//use json. When contains failure message display
+//Yse dojo to get a url.  Results in text/json. 
+//When result contains failure, message display
 function ss_get_url(url, callBackRoutine, callbackData) {
 	var bindArgs = {
     	url: url,
@@ -256,12 +262,7 @@ function ss_buildAdapterUrl(base, paramMap, action) {
 	return url;
 }
 
-function ss_getViewFolderEntryUrl(binderId, entryId) {
-	var url = ss_AjaxBaseUrl + "\&action=view_folder_entry";
-	url += "\&binderId="+binderId;
-	url += "\&entryId="+entryId;
-	return url;
-}
+
 //Routine to go to a permalink without actually using the permalink
 function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, useParentOrOpener) {
 
@@ -333,9 +334,6 @@ function ss_openUrlInPortlet(url, popup, width, height) {
 	}
 }
 
-function ss_openUrlInNewTab(url) {
-	self.location.href = url + "&newTab=1";
-}
 
 //Routine to open a page by following a "title" markup link
 function ss_openTitleUrl(obj) {

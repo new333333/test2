@@ -529,9 +529,9 @@ public class ViewEntryController extends  SAbstractController {
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), adapterUrl.toString(), qualifiers);
 
-		AdaptedPortletURL adapterSubscriptionUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		AdaptedPortletURL adapterSubscriptionUrl = new AdaptedPortletURL(request, "ss_forum", false);
 		adapterSubscriptionUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-		adapterSubscriptionUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ENTRY_SUBSCRIBE);
+		adapterSubscriptionUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);
 		adapterSubscriptionUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		adapterSubscriptionUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 		adapterSubscriptionUrl.setParameter("rn", "ss_randomNumberPlaceholder");			

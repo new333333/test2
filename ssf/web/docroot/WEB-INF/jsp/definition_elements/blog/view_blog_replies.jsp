@@ -79,8 +79,8 @@ title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry
 			adapter="true" 
 			portletName="ss_forum" 
 			action="__ajax_request" 
-			actionUrl="true">
-				<ssf:param name="operation" value="entry_subscribe" />
+			actionUrl="false">
+				<ssf:param name="operation" value="subscribe" />
 				<ssf:param name="binderId" value="${ssDefinitionEntry.parentBinder.id}" />
 				<ssf:param name="entryId" value="${ssDefinitionEntry.id}" />
 				<ssf:param name="rn" value="ss_randomNumberPlaceholder" />

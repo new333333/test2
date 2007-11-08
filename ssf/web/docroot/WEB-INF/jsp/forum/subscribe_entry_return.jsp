@@ -30,23 +30,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 
-<c:choose>
-<c:when test="${!empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-<span><ssf:nlt tag="general.notLoggedIn"/></span>
-</c:when>
-<c:otherwise>
-
 <div class="ss_style" align="left">
 
-<c:choose>
-	<c:when test="${empty ss_namespace}">
-		<form method="post">
-	</c:when>
-	<c:otherwise>
-		<form method="post" onSubmit="ss_setActionUrl(this, ss_saveSubscriptionUrl);">
-	</c:otherwise>
-</c:choose>
-
+<form method="post" id="${ss_namespace}subscription_entry_form${ssEntry.id}">
   <span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/><br/>
   <input type="radio" name="notifyType" value="2" id="notifyType_${ssEntry.id}_2"
   <c:if test="${ssSubscription.style=='2'}"> checked="checked"</c:if>
@@ -58,12 +44,14 @@
   <input type="radio" name="notifyType" id="notifyType_${ssEntry.id}_delete" value="-1"/><label for="notifyType_${ssEntry.id}_delete"><ssf:nlt tag="subscribe.delete"/></label><br/>
 </c:if>
   <br/>
-  <input type="hidden" name="subscribeEntryId" value="${ssEntry.id}" />
-  <input type="submit" name="subscribeBtn" value="<ssf:nlt tag="button.ok"/>">
+  <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"
+    onClick="ss_post('<ssf:url adapter="true" action="__ajax_request" actionUrl="true" portletName="ss_forum" binderId="${ssEntry.parentBinder.id}" entryId="${ssEntry.id}">
+    <ssf:param name="namespace" value="${ss_namespace}"/>
+    <ssf:param name="operation" value="subscribe"/>
+     <ssf:param name="okBtn" value="1"/>
+    </ssf:url>', '${ss_namespace}subscription_entry_form${ssEntry.id}');ss_cancelPopupDiv('${ss_namespace}ss_subscription_entry${ssEntry.id}');return false;">
  &nbsp;&nbsp;&nbsp;
   <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
   onClick="ss_cancelPopupDiv('${ss_namespace}ss_subscription_entry${ssEntry.id}');return false;">
 </form>
 </div>
-</c:otherwise>
-</c:choose>

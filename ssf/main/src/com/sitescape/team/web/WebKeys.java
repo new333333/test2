@@ -118,7 +118,6 @@ public class WebKeys {
     public static final String URL_ENTITY_TYPE="entityType";
     public static final String URL_ENTITY_TYPE_PLACE_HOLDER="ss_entity_type_place_holder";
 	public static final String URL_ENTRY_ID = "entryId";
-	public static final String URL_SUBSCRIBE_ENTRY_ID = "subscribeEntryId";
     public static final String URL_ENTRY_ID_PLACE_HOLDER="ss_entry_id_place_holder";
     public static final String URL_ENTRY_TITLE_PLACE_HOLDER="ss_entry_title_place_holder";
     public static final String URL_ENTRY_PAGE_TITLE="page_title";
@@ -346,7 +345,6 @@ public class WebKeys {
 	public static final String OPERATION_USER_LIST_SEARCH = "user_list_search";
 	public static final String OPERATION_WORKSPACE_TREE = "workspace_tree";
 	public static final String OPERATION_SUBSCRIBE="subscribe";
-	public static final String OPERATION_ENTRY_SUBSCRIBE="entry_subscribe";
 	public static final String OPERATION_SAVE_FOLDER_SORT_INFO="save_folder_sort_info";
 	public static final String OPERATION_SAVE_FOLDER_PAGE_INFO="save_folder_page_info";
 	public static final String OPERATION_SAVE_FOLDER_GOTOPAGE_INFO="save_folder_goto_page_info";
