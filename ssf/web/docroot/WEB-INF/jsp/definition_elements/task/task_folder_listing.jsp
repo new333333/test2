@@ -49,7 +49,6 @@
 			    	test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}"><portlet:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-			    	name="tabId" value="${tabId}"/><portlet:param 
 			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 			
 				<c:choose>
@@ -87,7 +86,6 @@
 			    	test="${ ssFolderSortBy == 'priority' && ssFolderSortDescend == 'false'}"><portlet:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-			    	name="tabId" value="${tabId}"/><portlet:param 
 			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 				
 				<c:choose>
@@ -125,7 +123,6 @@
 			    	test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}"><portlet:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-			    	name="tabId" value="${tabId}"/><portlet:param 
 			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 				
 				<c:choose>
@@ -163,7 +160,6 @@
 					test="${ ssFolderSortBy == 'status' && ssFolderSortDescend == 'false'}"><portlet:param 
 					name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
 					name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-					name="tabId" value="${tabId}"/><portlet:param 
 					name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 				
 				<c:choose>
@@ -201,7 +197,6 @@
 			    	test="${ ssFolderSortBy == 'assignment' && ssFolderSortDescend == 'false'}"><portlet:param 
 			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
 			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-			    	name="tabId" value="${tabId}"/><portlet:param 
 			    	name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 				
 				<c:choose>
@@ -239,7 +234,6 @@
 					test="${ ssFolderSortBy == 'completed' && ssFolderSortDescend == 'false'}"><portlet:param 
 					name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
 					name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose><portlet:param 
-					name="tabId" value="${tabId}"/><portlet:param 
 					name="ssTaskFilterType" value="${ssTaskFilterType}"/></portlet:actionURL>"
 				
 				<c:choose>
