@@ -47,17 +47,10 @@ function ss_loadWikiEntryInParent(obj,id) {
 }
 
 //Routine called when "find wiki page" is clicked
-function ss_loadWikiEntryId<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id) {
-	var url = "<ssf:url     
-	    adapter="true" 
-	    portletName="ss_forum" 
-	    folderId="${ssBinder.id}" 
-	    action="view_folder_entry" 
-	    entryId="ss_entryIdPlaceholder" 
-	    actionUrl="true"><ssf:param name="namespace" value="${renderResponse.namespace}" /></ssf:url>";
-	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
+function ss_loadWikiEntryId${renderResponse.namespace}(id) {
+	var urlParams = {binderId:'${ssBinder.id}', entryId:id, namespace:'${renderResponse.namespace}'};
 	var iframeDiv = document.getElementById('ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	iframeDiv.src = url;
+	iframeDiv.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "view_folder_entry");
 }
 
 var ss_wikiIframeOffset = 60;
