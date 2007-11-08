@@ -136,7 +136,4 @@
 			<div class="ss_clear"></div>
 		</div>
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${ss_namespace}_${componentId}" 
-	linkMenuObjIdx="${ss_namespace}_${componentId}" 
-	namespace="${ss_namespace}" dashboardType="${ssDashboard.scope}">
-</ssf:menuLink>		
+	

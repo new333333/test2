@@ -90,6 +90,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 					<ssf:param name="binderId" value="${ssBinder.id}" />
 					<ssf:param name="binderIds" value="${ssBinder.id}" />
 					<ssf:param name="operation" value="find_calendar_events" />
+					<ssf:param name="namespace" value="${prefix}" />
 		    	</ssf:url>";
 
 </script>		    	

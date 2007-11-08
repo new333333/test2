@@ -65,18 +65,17 @@
 								%>
 						
 								<c:out value="${entry._docNum}" escapeXml="false"/>.
-								<ssf:menuLink 
-									displayDiv="false" action="view_folder_entry" 
-									adapter="true" entryId="${entry._docId}" binderId="${entry._binderId}" 
-									entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-							    	menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-									namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}">
+								<ssf:titleLink 
+									action="view_folder_entry" 
+									entryId="${entry._docId}" binderId="${entry._binderId}" 
+									entityType="${entry._entityType}"  
+									namespace="${renderResponse.namespace}">
 									<ssf:param name="url" useBody="true">
 										<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
 										action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
 									</ssf:param>
 									<c:out value="${entry.title}" escapeXml="false"/>
-								</ssf:menuLink>
+								</ssf:titleLink>
 							</h3>
 							<div class="ss_clear">&nbsp;</div>
 						</div>
@@ -115,7 +114,4 @@
 			</ul>
 			
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-	namespace="${renderResponse.namespace}">
-</ssf:menuLink>
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

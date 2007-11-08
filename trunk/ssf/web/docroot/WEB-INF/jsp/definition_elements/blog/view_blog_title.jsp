@@ -75,27 +75,16 @@
 <div class="ss_header_bar_title_text">
 <span class="ss_header_bar_title_text">
 	<%= docNumber %>
-	<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${ssDefinitionEntry.id}" 
+	<ssf:titleLink action="view_folder_entry" entryId="${ssDefinitionEntry.id}" 
 	binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
-	imageId='menuimg_${ssDefinitionEntry.id}_${ss_namespace}_${ssDefinitionEntry.id}' 
-    menuDivId="ss_emd_${ss_namespace}_${ssDefinitionEntry.id}"
-	linkMenuObjIdx="${ss_namespace}_${ssDefinitionEntry.id}" 
-	namespace="${ss_namespace}_${ssDefinitionEntry.id}"
-	entryCallbackRoutine="${showEntryCallbackRoutine}">
+	namespace="${ss_namespace}_${ssDefinitionEntry.id}">
 
 		<ssf:param name="url" useBody="true">
 			<ssf:url adapter="true" portletName="ss_forum" folderId="${ssDefinitionEntry.parentFolder.id}" 
 			action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" />
 		</ssf:param>
-
-		<c:if test="${empty ssDefinitionEntry.title}">
-		  <span class="ss_light">
-		    --<ssf:nlt tag="entry.noTitle"/>--
-		  </span>
-		</c:if>
-
 		<c:out value="${ssDefinitionEntry.title}"/>
-	</ssf:menuLink>
+	</ssf:titleLink>
 
 </span>
 </div>
@@ -113,7 +102,3 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 </c:if>
 
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${ss_namespace}_${ssDefinitionEntry.id}" 
-	linkMenuObjIdx="${ss_namespace}_${ssDefinitionEntry.id}" 
-	namespace="${ss_namespace}_${ssDefinitionEntry.id}">
-</ssf:menuLink>

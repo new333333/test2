@@ -76,23 +76,15 @@
 								<div class="ss_entryHeader">
 									<h3 class="ss_entryTitle">
 	
-										<ssf:menuLink 
-											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
-									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
-											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										<ssf:titleLink 
+											entryId="${entry._docId}" binderId="${entry._binderId}" 
+											entityType="${entry._entityType}"  
+											namespace="${ss_namespace}" 
 											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 											
 											<ssf:param name="url" useBody="true">
-												<c:if test="${isDashboard == 'yes'}">
-													<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-													action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-												</c:if>
-												
-												<c:if test="${empty isDashboard || isDashboard == 'no'}">
-													<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-						      						action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-												</c:if>
+												<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+												action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
 											</ssf:param>
 										
 										    <c:if test="${entry._entryType == 'reply' && !empty entry._docNum}">
@@ -102,7 +94,7 @@
 										    	(<ssf:nlt tag="entry.noTitle"/>)
 										    </c:if>
 									    	<c:out value="${entry.title}"/>
-										</ssf:menuLink>
+										</ssf:titleLink>
 	
 									</h3>
 									<div class="ss_clear">&nbsp;</div>
@@ -132,30 +124,17 @@
 								<c:if test="${entry._entryType == 'reply' && !empty entry._entryTopEntryId}">
 									<p>
 									<ssf:nlt tag="searchResult.label.entry" />: 
-										<ssf:menuLink 
-											displayDiv="false" entryId="${entry._entryTopEntryId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._entryTopEntryId}_${ss_namespace}' 
-									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
-											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
-											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
-											
+										<ssf:titleLink 
+											entryId="${entry._entryTopEntryId}" binderId="${entry._binderId}" 
+											entityType="${entry._entityType}"  hrefClass="ss_parentPointer"
+											namespace="${ss_namespace}" 
+											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">											
 											<ssf:param name="url" useBody="true">
-												<c:if test="${isDashboard == 'yes'}">
-													<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-													action="view_folder_entry" entryId="${entry._entryTopEntryId}" actionUrl="true" />
-												</c:if>
-												
-												<c:if test="${empty isDashboard || isDashboard == 'no'}">
-													<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+												<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
 						      						action="view_folder_entry" entryId="${entry._entryTopEntryId}" actionUrl="true" />
-												</c:if>
 											</ssf:param>
-										
-										    <span class="ss_parentPointer"><c:if test="${empty entry.title}">
-										    	(<ssf:nlt tag="entry.noTitle"/>)
-										    </c:if>
-									    	<c:out value="${entry._entryTopEntryTitle}"/></span>
-										</ssf:menuLink>
+									    	<c:out value="${entry._entryTopEntryTitle}"/>
+										</ssf:titleLink>
 									</p>
 								</c:if>
 								<c:if test="${!empty entryBinderTitle}">
@@ -166,9 +145,8 @@
 										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 									</c:if>
 									<c:if test="${empty isDashboard || isDashboard == 'no'}">
-								     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
-						    			<ssf:param name="binderId" value="${entry._binderId}"/>
-	    	  							<ssf:param name="newTab" value="1"/>
+								     href="<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
+						  					<ssf:param name="newTab" value="1"/>
 	    	  							</ssf:url>" 
 	    	  						</c:if>
 									class="ss_parentPointer">
@@ -184,11 +162,10 @@
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
 									<h3 class="ss_entryTitle">
-											<ssf:menuLink 
-												displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-												entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
-										    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
-												namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+											<ssf:titleLink 
+												entryId="${entry._docId}" binderId="${entry._binderId}" 
+												entityType="${entry._entityType}"  
+												namespace="${ss_namespace}" 
 												isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
 												
 												<ssf:param name="url" useBody="true">
@@ -201,7 +178,7 @@
 												</ssf:param>
 												
 										    	<c:out value="${entry._fileName}"/>
-											</ssf:menuLink>
+											</ssf:titleLink>
 											
 									</h3>
 									<div class="ss_clear">&nbsp;</div>
@@ -219,31 +196,19 @@
 									</c:if>
 								   </p>
 								<p><ssf:nlt tag="searchResult.label.entry" />:
-										<ssf:menuLink 
-											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
-									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
-											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										<ssf:titleLink 
+											entryId="${entry._docId}" binderId="${entry._binderId}" 
+											entityType="${entry._entityType}"  
+											namespace="${ss_namespace}" 
 											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" 
 											dashboardType="${ssDashboard.scope}" hrefClass="ss_parentPointer">
 											
 											<ssf:param name="url" useBody="true">
-												<c:if test="${isDashboard == 'yes'}">
-													<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-													action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-												</c:if>
-												
-												<c:if test="${empty isDashboard || isDashboard == 'no'}">
-													<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+												<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
 						      						action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-												</c:if>
 											</ssf:param>
-										
-										    <c:if test="${empty entry.title}">
-										    	(<ssf:nlt tag="entry.noTitle"/>)
-										    </c:if>
 									    	<c:out value="${entry.title}"/>
-										</ssf:menuLink>
+										</ssf:titleLink>
 								</p>
 								<c:if test="${!empty entryBinderTitle}">
 									<p><ssf:nlt tag="searchResult.label.binder" />: <a 
@@ -253,8 +218,7 @@
 										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 									</c:if>
 									<c:if test="${empty isDashboard || isDashboard == 'no'}">
-								     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
-						    			<ssf:param name="binderId" value="${entry._binderId}"/>
+								     href="<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
 	    	  							<ssf:param name="newTab" value="1"/>
 	    	  							</ssf:url>" 
 	    	  						</c:if>
@@ -283,11 +247,10 @@
 								<div class="ss_entryHeader">
 									<h3 class="ss_entryTitle">
 	
-										<ssf:menuLink 
-											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
-									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
-											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										<ssf:titleLink 
+											entryId="${entry._docId}" binderId="${entry._binderId}" 
+											entityType="${entry._entityType}"  
+											namespace="${ss_namespace}" 
 											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 											
 											<ssf:param name="url" useBody="true">
@@ -307,12 +270,8 @@
 												</c:if>
 												
 											</ssf:param>
-										
-										    <c:if test="${empty entry.title}">
-										    	(<ssf:nlt tag="entry.noTitle"/>)
-										    </c:if>
 									    	<c:out value="${entry.title}"/>
-										</ssf:menuLink>
+										</ssf:titleLink>
 	
 									</h3>
 									<div class="ss_clear">&nbsp;</div>
@@ -343,11 +302,10 @@
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
 									<h3 class="ss_entryTitle">
-										<ssf:menuLink 
-											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
-									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
-											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										<ssf:titleLink 
+											entryId="${entry._docId}" binderId="${entry._binderId}" 
+											entityType="${entry._entityType}"  
+											namespace="${ss_namespace}"  
 											isDashboard="no" useBinderFunction="no" isFile="yes">
 											
 											<ssf:param name="url" useBody="true">
@@ -360,7 +318,7 @@
 											</ssf:param>
 	
 									    	<c:out value="${entry._fileName}"/>
-										</ssf:menuLink>
+										</ssf:titleLink>
 									</h3>
 									<div class="ss_clear">&nbsp;</div>
 								</div>
@@ -441,11 +399,10 @@
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
 									<h3 class="ss_entryTitle">
-										<ssf:menuLink 
-											displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-											entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
-									    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
-											namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+										<ssf:titleLink 
+											entryId="${entry._docId}" binderId="${entry._binderId}" 
+											entityType="${entry._entityType}"  
+											namespace="${ss_namespace}"  
 											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 											
 											<ssf:param name="url" useBody="true">
@@ -467,12 +424,8 @@
 		  										</c:if>
 		  										
 											</ssf:param>
-										
-										    <c:if test="${empty entry.title}">
-										    	(<ssf:nlt tag="entry.noTitle"/>)
-										    </c:if>
 									    	<c:out value="${entry.title}"/>
-										</ssf:menuLink>
+										</ssf:titleLink>
 									</h3>
 									<div class="ss_clear">&nbsp;</div>
 								</div>
@@ -512,11 +465,10 @@
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
 									<h3 class="ss_entryTitle">
-											<ssf:menuLink 
-												displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-												entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
-										    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
-												namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
+											<ssf:titleLink 
+												entryId="${entry._docId}" binderId="${entry._binderId}" 
+												entityType="${entry._entityType}"  
+												namespace="${ss_namespace}" 
 												isDashboard="no" useBinderFunction="no" isFile="yes">
 												
 												<ssf:param name="url" useBody="true">
@@ -529,7 +481,7 @@
 												</ssf:param>
 												
 										    	<c:out value="${entry._fileName}"/>
-											</ssf:menuLink>
+											</ssf:titleLink>
 											
 									</h3>
 									<div class="ss_clear">&nbsp;</div>
@@ -570,9 +522,3 @@
 		</c:forEach>
 		</ul>
 		
-<c:if test="${isDashboard == 'no'}">
-	<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${ss_namespace}_${componentId}" 
-		linkMenuObjIdx="${ss_namespace}_${componentId}" 
-		namespace="${ss_namespace}" dashboardType="${ssDashboard.scope}">
-	</ssf:menuLink>		
-</c:if>

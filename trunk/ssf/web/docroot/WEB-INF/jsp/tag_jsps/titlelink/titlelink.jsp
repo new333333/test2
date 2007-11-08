@@ -43,24 +43,15 @@
 // General variables
 String title = ParamUtil.get(request, "title", "");
 String action = ParamUtil.get(request, "action", "");
-String adapter = ParamUtil.get(request, "adapter", "");
 String isAccessible = ParamUtil.get(request, "isAccessible", "");
 
-boolean blnAdapter = true;
-if ("false".equals(adapter)) {
-	blnAdapter = false;
-}
+
 String entryId = ParamUtil.get(request, "entryId", "");
 String binderId = ParamUtil.get(request, "binderId", "");
 String entityType = ParamUtil.get(request, "entityType", "");
 String seenStyle = ParamUtil.get(request, "seenStyle", "");
-String seenStyleFine = ParamUtil.get(request, "seenStyleFine", "");
-String imageId = ParamUtil.get(request, "imageId", "");
-String linkMenuIdx = ParamUtil.get(request, "linkMenuObjIdx", "");
-String linkMenuObj = "ss_linkMenu_arr['"+ linkMenuIdx +"']";
-String menuDivId = ParamUtil.get(request, "menuDivId", "");
+String seenStyleFine = ParamUtil.get(request, "seenStyleFine", "class=\"ss_light\"");
 String namespace = ParamUtil.get(request, "namespace", "");
-String entryCallbackRoutine = ParamUtil.get(request, "entryCallbackRoutine", "");
 String url = ParamUtil.get(request, "url", "");
 String isDashboard = ParamUtil.get(request, "isDashboard", "no");
 String useBinderFunction = ParamUtil.get(request, "useBinderFunction", "no");
@@ -86,20 +77,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
   title="<ssf:nlt tag="helpSpot.displayEntryControl"/>"></ssHelpSpot></c:if><c:set 
   var="ss_menuLinkHelpShown" value="1" scope="request"/><a class="<%= hrefClass %>" href="<%= url %>" 
 <% if ( useBinderFunction.equals("no") && !dashboardType.equals("portlet") ) {  %>
-	onClick="ss_loadEntryFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 
+	onClick="ss_loadEntryFromMenu(this,  '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= namespace %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 
 <% } else if ( useBinderFunction.equals("no") && dashboardType.equals("portlet") ) { %>
-	onClick="return ss_loadEntryFromMenuSearchPortlet(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= entryCallbackRoutine %>', '<%= isDashboard %>', '<%= namespace %>');" 
-<% } else if (useBinderFunction.equals("yes")) { %>
-	onClick="ss_loadBinderFromMenu(this, '<%= linkMenuIdx %>', '<%= entryId %>', '<%= entityType %>'); return false;" 
+	onClick="return ss_loadEntryFromMenuSearchPortlet(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= namespace %>', '<%= isDashboard %>');" 
 <% } else if (useBinderFunction.equals("permalink")) { %>
-	onClick="ss_loadPermaLinkFromMenu('<%= linkMenuIdx %>', '<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>'); return false;" 
-<% }%>
-onMouseOver="checkAndCreateMenuObject('<%= linkMenuIdx %>');<%= linkMenuObj %>.showButton(this, '<%= imageId %>'); ss_setMenuGeneratedURLs('<%= linkMenuIdx %>', '<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', '<%= url %>'); ss_setMenuLinkAparterURL('<%= url %>');"
-onMouseOut="<%= linkMenuObj %>.hideButton(this, '<%= imageId %>');"
-><img <ssf:alt tag="alt.showMenu"/> border="0" class="ss_title_menu" id="<%= imageId %>" name="<%= imageId %>" 
-onClick="setMenuGenericLinks('<%= linkMenuIdx %>', '<%= menuDivId %>', '<%= namespace %>', '<%= url %>', '<%= isDashboard %>', '<%= isFile %>');<%= linkMenuObj %>.showMenu(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= dashboardType %>');"
-src="<html:imagesPath/>pics/downarrow_off.gif"/><c:if test="<%= (title == null || title.equals("")) %>">
-<span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>
+	onClick="ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');" 
+<% //if useBinderFunction == yes, just use href
+ }%>
+><c:if test="<%= com.sitescape.util.Validator.isNull(title) %>">
+&nbsp;<span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>
 
 <% } else { %>
 <a class="<%= hrefClass %>" 

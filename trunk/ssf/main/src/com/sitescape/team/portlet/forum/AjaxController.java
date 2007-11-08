@@ -209,8 +209,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/fetch_url_return", model);			
 			}
 			if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY) ||
-					op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
+					op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY) ||
+					op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH)) {
 				model.put(WebKeys.AJAX_ERROR_MESSAGE, "general.notLoggedIn");	
+				response.setContentType("text/json");
 				return new ModelAndView("common/json_ajax_return", model);
 			}
 			
@@ -219,8 +221,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/unseen_counts", model);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_COLUMN_POSITIONS)) {
 				return new ModelAndView("forum/save_column_positions_return", model);
-			} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH)) {
-				return new ModelAndView("forum/save_entry_width_return", model);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_HEIGHT)) {
 				return new ModelAndView("forum/save_entry_height_return", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_FILTER_TYPE) || 
@@ -366,7 +366,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 					op.equals(WebKeys.OPERATION_SHOW_SIDEBAR_PANEL) || 
 					op.equals(WebKeys.OPERATION_HIDE_SIDEBAR_PANEL)) {
 			return new ModelAndView("forum/fetch_url_return");			
-		} 
+		}
 
 		return ajaxReturn(request, response);
 	} 
@@ -679,7 +679,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 	
 	private ModelAndView ajaxSaveEntryWidth(RenderRequest request, 
 				RenderResponse response) throws Exception {
-		Map model = new HashMap();
 		//Save the user's selected entry width, etc.
 		String entryWidth = PortletRequestUtils.getStringParameter(request, "entry_width");
 		String entryHeight = PortletRequestUtils.getStringParameter(request, "entry_height");
@@ -693,8 +692,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (Validator.isNotNull(entryLeft)) values.put(WebKeys.FOLDER_ENTRY_LEFT, entryLeft);
 		getProfileModule().setUserProperties(null, values);
 		
-		response.setContentType("text/xml");
-		return new ModelAndView("forum/save_entry_width_return", model);
+		response.setContentType("text/json");
+		return new ModelAndView("common/json_ajax_return");
 	}
 	
 	private ModelAndView ajaxSaveEntryHeight(RenderRequest request, 
@@ -1455,6 +1454,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		
 		if (WebHelper.isUserLoggedIn(request)) {
+			model.put(WebKeys.NAMESPACE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE));
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
 			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 			List binderIds = Arrays.asList(PortletRequestUtils.getStringParameters(request, WebKeys.URL_BINDER_IDS));

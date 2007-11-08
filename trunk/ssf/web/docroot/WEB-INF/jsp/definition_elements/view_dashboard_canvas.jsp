@@ -89,76 +89,15 @@ var ss_entryWindowWidth = "${ss_entryWindowWidth}";
 </c:if>
 var ss_entryBackgroundColor = "${ss_style_background_color}";
 
-function ss_loadEntry(obj, id, binderId, entityType, isDashboard) {
-	if (ss_userDisplayStyle == "accessible") {
-		self.location.href = obj.href;
-		return false;
-	}
-	if (ss_linkMenu.showingMenu && ss_linkMenu.showingMenu == 1) {
-		//The user wants to see the drop down options, don't show the entry
-		if (binderId != null && binderId != "") ss_linkMenu.binderId = binderId;
-		if (entityType != null && entityType != "") ss_linkMenu.entityType = entityType;
-		ss_linkMenu.showingMenu = 0;
-		return false;
-	}
-	ss_linkMenu.showingMenu = 0;
-	
-	if (id == "") return false;
-	var folderLine = 'folderLine_'+id;
-	ss_currentEntryId = id;
-	if (window.ss_highlightLineById) {
-		ss_highlightLineById(folderLine);
-		if (window.swapImages && window.restoreImages) {
-			restoreImages(id);
-		}
-	}
-	
-	ss_showForumEntry(obj.href, "<c:out value="${showEntryCallbackRoutine}"/>", isDashboard, entityType);
-	return false;
-}
 
-function ss_showForumEntry(url, callbackRoutine, isDashboard, entityType) {
-<%
-if (displayStyle == null || displayStyle.equals("") || 
-    displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
-	displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
-	displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-%>
-		if (isDashboard == "yes") {
-<%		
-	if (displayStyle == null || displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) 
-	    || displayStyle.equals("") 
-	  	|| displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL) ) {
-%>		
-			//Dashboard iframe or vertical; show as overlay
-			return ss_showForumEntryInIframe_Overlay(url);
-<%		
-	} else if ( displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
-%>		
-			//Dashboard popup; popup in new window
-			return ss_showForumEntryInIframe_Popup(entityType);			
-<%
-	}
-%>
-		} else {
-			//Not dashboard; show normal action
-			return ss_showForumEntryInIframe(url);
-		}
-<%
-}
-%>
-	//Not a normal view; probably accessible; show in same window
-	self.location.href=url;
-}
-
-function ss_showForumEntryInIframe_Overlay(url, entityType) {
+function ss_showForumEntryInIframe_Overlay(url) {
 	//ss_debug('show url in frame = '+url)
 //	ss_positionEntryDiv();
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
      
 	if (wObj1 == null){
-		ss_checkLinkAndCallPopup(url, entityType);
+		ss_showForumEntryInIframe_Popup(url);
 		return true;
 	}
 	
@@ -185,23 +124,10 @@ function ss_showForumEntryInIframe_Overlay(url, entityType) {
     return false;
 }
 
-function ss_checkLinkAndCallPopup(url, entityType) {
-	if (menuLinkAdapterURL && menuLinkAdapterURL == "") {
-		menuLinkAdapterURL = url;
-	} else {
-		menuLinkAdapterURL = url;
-	}
-	ss_showForumEntryInIframe_Popup(entityType);
-}
 
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
 var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
-function ss_showForumEntryInIframe_Popup(definitionType) {
-	var strAddWindowOpenParams = "";
-	if (definitionType != null && (definitionType == 'folder' || definitionType == 'profiles' || 
-		definitionType == 'user' || definitionType == 'group' || definitionType == 'workspace') ) {
-		strAddWindowOpenParams = ",toolbar,menubar";
-	}
+function ss_showForumEntryInIframe_Popup(url) {
 
     ss_debug('popup width = ' + ss_viewEntryPopupWidth)
     ss_debug('popup height = ' + ss_viewEntryPopupHeight)
@@ -221,12 +147,10 @@ function ss_showForumEntryInIframe_Popup(definitionType) {
 		if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
 	}
 	
-    self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars'+strAddWindowOpenParams);
+    self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
     return false;
 }
-function ss_showForumEntryInPopupWindow(definitionType) {
-	return ss_showForumEntryInIframe_Popup(definitionType);
-}
+
 </script>
   
   <!-- Start of dashboard "Add penlet" form -->

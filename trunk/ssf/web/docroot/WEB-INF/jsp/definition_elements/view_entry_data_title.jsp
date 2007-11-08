@@ -79,36 +79,21 @@ ${nextEntry.docNumber}.
 	<c:if test="${!empty ssDefinitionEntry.docNumber}">
 	  <c:out value="${ssDefinitionEntry.docNumber}"/>.
 	</c:if>
-		<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${ssDefinitionEntry.id}" 
+		<ssf:titleLink action="view_folder_entry" entryId="${ssDefinitionEntry.id}" 
 		binderId="${ssDefinitionEntry.parentFolder.id}" entityType="${ssDefinitionEntry.entityType}"
-		imageId='menuimg_${ssDefinitionEntry.id}_${renderResponse.namespace}_${ssDefinitionEntry.id}' 
-	    menuDivId="ss_emd_${renderResponse.namespace}_${ssDefinitionEntry.id}"
-		linkMenuObjIdx="${renderResponse.namespace}_${ssDefinitionEntry.id}" 
-		namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}"
-		entryCallbackRoutine="${showEntryCallbackRoutine}">
+		namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}">
 	
 			<ssf:param name="url" useBody="true">
 				<ssf:url adapter="true" portletName="ss_forum" folderId="${ssDefinitionEntry.parentFolder.id}" 
 				action="view_folder_entry" entryId="${ssDefinitionEntry.id}" actionUrl="true" ><ssf:param
 				name="namespace" value="${ss_title_namespace}"/></ssf:url>
 			</ssf:param>
-	
-			<c:if test="${empty ssDefinitionEntry.title}">
-			  <span class="ss_light">
-			    --<ssf:nlt tag="entry.noTitle"/>--
-			  </span>
-			</c:if>
-	
 			<c:out value="${ssDefinitionEntry.title}"/>
-		</ssf:menuLink>
+		</ssf:titleLink>
 
 </span>
 
 </div>
-
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}_${ssDefinitionEntry.id}" linkMenuObjIdx="${renderResponse.namespace}_${ssDefinitionEntry.id}" 
-	namespace="${renderResponse.namespace}_${ssDefinitionEntry.id}">
-</ssf:menuLink>
 
 <script type="text/javascript">
 if (!ss_baseEntryUrl || !ss_baseBinderUrl) {
@@ -116,62 +101,14 @@ if (!ss_baseEntryUrl || !ss_baseBinderUrl) {
 	var ss_baseBinderUrl = '';
 }
 
-//This function just reloads the current link
-function ss_showForumEntry(url, callbackRoutine, isDashboard, entityType, linkMenuObj) {
-	if (top == self) {
-		if (self.opener) {
-			self.location.href = linkMenuObj.menuLinkURL;
-		} else {
-			self.location.href = linkMenuObj.menuLinkNonAdapterURL;
-			//self.location.reload(true);
-		}
-	} else {
-		self.location.href = linkMenuObj.menuLinkURL;
-	}
+//This function just reloads the current link and overloads the ss_common definition
+function ss_showForumEntry(url, isDashboard) {
+	self.location.href = url;
+	return;
 }
 
-function ss_loadEntry(strLastButtonShown, currentId, strThree, strFour, strIsDashboardLink, linkMenuObj) {
-	if (top == self) {
-		if (self.opener) {
-			self.location.href = linkMenuObj.menuLinkURL;
-		} else {
-			self.location.href = linkMenuObj.menuLinkNonAdapterURL;
-			//self.location.reload(true);
-		}
-	} else {
-		self.location.href = linkMenuObj.menuLinkURL;
-	}
-}
 
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
 var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
 
-function ss_showForumEntryInPopupWindow(definitionType) {
-	var strAddWindowOpenParams = "";
-	if (definitionType != null && (definitionType == 'folder' || definitionType == 'profiles' || 
-		definitionType == 'user' || definitionType == 'group' || definitionType == 'workspace') ) {
-		strAddWindowOpenParams = ",toolbar,menubar";
-	}
-
-    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
-    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
-    var wObj = self.document.getElementById('ss_showfolder')
-
-	if (!wObj) {
-		if (self.parent) {
-			wObj = self.parent.document.getElementById('ss_showfolder')
-		}
-	}
-	
-	if (!wObj) {
-		ss_viewEntryPopupWidth = 700;
-		ss_viewEntryPopupHeight = 350;
-	} else {
-		if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
-		if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
-	}
-	
-    self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars'+strAddWindowOpenParams);
-    return false;
-}
 </script>

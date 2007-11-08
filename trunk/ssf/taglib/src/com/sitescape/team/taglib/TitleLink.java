@@ -50,21 +50,15 @@ import com.sitescape.util.servlet.StringServletResponse;
  * @author Hemanth Chokkanathan
  *
  */
-public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
+public class TitleLink extends BodyTagSupport implements ParamAncestorTag {
 	private String _bodyContent;
 	private String action = "";
-	private Boolean adapter = Boolean.TRUE;
 	private String entryId = "";
 	private String binderId = "";
 	private String entityType = "";
-	private String displayDiv = "false";
-	private String menuDivId = "";
 	private String seenStyle = ""; 
 	private String seenStyleFine = "";
-	private String imageId = "";
-	private String linkMenuObjIdx = "";
 	private String namespace = "";
-	private String entryCallbackRoutine = "";
 	private String isDashboard = "";
 	private String useBinderFunction = "";
 	private String dashboardType = "";
@@ -102,27 +96,18 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 			
 			RequestDispatcher rd;
 			
-			if ("false".equalsIgnoreCase(displayDiv)) {
 				//Output the start of the area
-				rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menulink/menulink.jsp");
+				rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/titlelink/titlelink.jsp");
 				
 				if (_bodyContent != null) _params.put("title", new String[] {_bodyContent});
 				_params.put("action", new String[] {this.action});
 				
-				String strAdapterValue = "true";
-				if (adapter != null && adapter.booleanValue() == false) strAdapterValue = "false";
-	
-				_params.put("adapter", new String[] {strAdapterValue});
 				_params.put("entryId", new String[] {this.entryId});
 				_params.put("binderId", new String[] {this.binderId});
 				_params.put("entityType", new String[] {this.entityType});
 				_params.put("seenStyle", new String[] {this.seenStyle});
 				_params.put("seenStyleFine", new String[] {this.seenStyleFine});
-				_params.put("imageId", new String[] {this.imageId});
-				_params.put("menuDivId", new String[] {this.menuDivId});
-				_params.put("linkMenuObjIdx", new String[] {this.linkMenuObjIdx});
 				_params.put("namespace", new String[] {this.namespace});
-				_params.put("entryCallbackRoutine", new String[] {this.entryCallbackRoutine});
 				_params.put("isDashboard", new String[] {this.isDashboard});
 				_params.put("useBinderFunction", new String[] {this.useBinderFunction});
 				_params.put("dashboardType", new String[] {this.dashboardType});
@@ -135,27 +120,7 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 				StringServletResponse res = new StringServletResponse(httpRes);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
-			} else {
-				//Output the start of the area
-				rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/tag_jsps/menulink/menulinkdiv.jsp");
-				
-				_params.put("menuDivId", new String[] {this.menuDivId});
-				_params.put("linkMenuObjIdx", new String[] {this.linkMenuObjIdx});
-				_params.put("namespace", new String[] {this.namespace});
-				_params.put("isDashboard", new String[] {this.isDashboard});
-				_params.put("useBinderFunction", new String[] {this.useBinderFunction});
-				_params.put("dashboardType", new String[] {this.dashboardType});
-				_params.put("isFile", new String[] {this.isFile});
-				_params.put("isAccessible", new String[] {isAccessible.toString()});
-				
-				ServletRequest req = null;
-				req = new DynamicServletRequest(httpReq, _params);
-				StringServletResponse res = new StringServletResponse(httpRes);
-				rd.include(req, res);
-				pageContext.getOut().print(res.getString());
-			}
-
-			return EVAL_PAGE;
+		return EVAL_PAGE;
 		}
 	    catch(Exception e) {
 	        throw new JspException(e);
@@ -163,18 +128,12 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 		finally {
 			_bodyContent = null;
 			action = "";
-			adapter= Boolean.TRUE;
 			entryId = "";
 			binderId = "";
 			entityType = "";
-			displayDiv = "false";
-			menuDivId = "";
 			seenStyle = "";
 			seenStyleFine = "";
-			imageId = "";
-			linkMenuObjIdx = "";
 			namespace = "";
-			entryCallbackRoutine = "";
 			isDashboard = "";
 			useBinderFunction = "";
 			dashboardType = "";
@@ -212,9 +171,6 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	    this.action = action;
 	}
 	
-	public void setAdapter(Boolean adapter) {
-	    this.adapter = adapter;
-	}
 	
 	public void setEntryId(String entryId) {
 	    this.entryId = entryId;
@@ -228,13 +184,6 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	    this.entityType = entityType;
 	}
 	
-	public void setDisplayDiv(String displayDiv) {
-	    this.displayDiv = displayDiv;
-	}
-	
-	public void setMenuDivId(String menuDivId) {
-	    this.menuDivId = menuDivId;
-	}
 	
 	public void setSeenStyle(String seenStyle) {
 	    this.seenStyle = seenStyle;
@@ -244,22 +193,11 @@ public class MenuLink extends BodyTagSupport implements ParamAncestorTag {
 	    this.seenStyleFine = seenStyleFine;
 	}
 	
-	public void setImageId(String imageId) {
-	    this.imageId = imageId;
-	}
-	
-	public void setLinkMenuObjIdx(String linkMenuObjIdx) {
-	    this.linkMenuObjIdx = linkMenuObjIdx;
-	}
 	
 	public void setNamespace(String namespace) {
 	    this.namespace = namespace;
 	}
 	
-	public void setEntryCallbackRoutine(String entryCallbackRoutine) {
-	    this.entryCallbackRoutine = entryCallbackRoutine;
-	}
-
 	public void setIsDashboard(String isDashboard) {
 	    this.isDashboard = isDashboard;
 	}

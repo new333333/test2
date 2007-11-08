@@ -170,7 +170,7 @@ public class ViewEntryController extends  SAbstractController {
  		//when you are following an email permalink link
  		//setup default value for reload case = viewType shouldn't matter
  		String viewPath=WebKeys.VIEW_LISTING_IFRAME;
-
+ 		model.put(WebKeys.TABS, Tabs.getTabs(request));
  		FolderEntry fe = null;
 		try {
 			if (Validator.isNull(entryId)) {

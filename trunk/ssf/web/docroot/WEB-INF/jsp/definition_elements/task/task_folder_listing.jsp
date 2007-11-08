@@ -296,12 +296,11 @@
 				<td class="ss_entryTitle ss_normalprint<c:if test="${entry.status == 's3' || entry.status == 's4'}"> ss_task_completed</c:if>" 
 					id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_title">
 					<c:set var="isDashboard" value="yes"/>
-						<ssf:menuLink 
-							displayDiv="false" action="view_folder_entry" 
-							adapter="true" entryId="${entry._docId}" binderId="${entry._binderId}" 
-							entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-							menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-							namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}">		
+						<ssf:titleLink 
+							action="view_folder_entry" 
+							entryId="${entry._docId}" binderId="${entry._binderId}" 
+							entityType="${entry._entityType}"  
+							namespace="${renderResponse.namespace}" >		
 						
 							<ssf:param name="url" useBody="true">
 								<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
@@ -309,7 +308,7 @@
 							</ssf:param>
 						
 							<c:out value="${entry.title}" escapeXml="false"/>
-						</ssf:menuLink>
+						</ssf:titleLink>
 				</td>
 				<td class="ss_iconsContainer" id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_priority">
 				<c:if test="${! empty entry.priority}">
@@ -369,10 +368,5 @@
 		</c:forEach>
 	</tbody>
 </table>
-
-
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-	namespace="${renderResponse.namespace}">
-</ssf:menuLink>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>
