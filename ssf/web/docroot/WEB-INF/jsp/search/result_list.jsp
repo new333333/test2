@@ -373,10 +373,6 @@
 								<p><span class="ss_label"><ssf:nlt tag="entry.createdBy" />:</span> <ssf:showUser user="${entry._principal}" />
 								   <span style="padding-left: 10px;" class="ss_label"><ssf:nlt tag="entry.modified" />:</span> 
 								   <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${entry._modificationDate}" type="both" timeStyle="short" dateStyle="medium" />
-									<c:if test="${!empty entry._totalReplyCount}">
-									    <span style="padding-left: 10px;" class="ss_label"><ssf:nlt 
-									      tag="popularity.Comments"/>: ${entry._totalReplyCount}</span>
-									</c:if>
 								</p>
 							</div>
 				</c:when>

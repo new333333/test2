@@ -51,7 +51,7 @@
     <div>
 	  <a href="<ssf:url 
 	    webPath="viewFile"
-	    folderId="${fileEntry._binderId}"
+	    binderId="${fileEntry._binderId}"
 	    entryId="${fileEntry._docId}" >
 	    <ssf:param name="entityType" value="${fileEntry._entityType}"/>
 	    <ssf:param name="fileId" value="${fileEntry._fileID}"/>
@@ -60,7 +60,7 @@
 		onClick="return ss_openUrlInWindow(this, '_blank');">
     <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:url 
     webPath="viewFile"
-    folderId="${fileEntry._binderId}"
+    binderId="${fileEntry._binderId}"
     entryId="${fileEntry._docId}" >
 	<ssf:param name="entityType" value="${fileEntry._entityType}" />
     <ssf:param name="fileId" value="${fileEntry._fileID}"/>
@@ -70,43 +70,51 @@
     <br\>
   	<c:choose>
   	<c:when test="${fileEntry._entityType == 'folderEntry'}">
-    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${fileEntry._binderId}"
-		    entryId="${fileEntry._docId}">
-		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>"
-		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${ss_namespace}', 'yes');">
+	<ssf:titleLink 
+			entryId="${fileEntry._docId}" binderId="${fileEntry._binderId}" 
+				entityType="folderEntry" namespace="${ss_namespace}" 
+				isDashboard="yes" dashboardType="${ssDashboard.scope}">				
+					<ssf:param name="url" useBody="true">
+						<ssf:url adapter="true" portletName="ss_forum" folderId="${fileEntry._binderId}" 
+						action="view_folder_entry" entryId="${fileEntry._docId}" actionUrl="true" />
+					</ssf:param>				
+					<c:out value="${fileEntry.title}" escapeXml="false"/>
+	</ssf:titleLink>
 
     </c:when>
     <c:when test="${fileEntry._entityType == 'user'}">
-    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-			action="view_permalink"
-			binderId="${fileEntry._principal.workspaceId}">
-			<ssf:param name="entityType" value="workspace" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>" 
-		onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${ss_namespace}', 'yes');">
-
-    </c:when>
-    <c:when test="${fileEntry._entityType == 'group'}">
-    <a target="_blank" href="<ssf:url action="view_profile_entry" 
-    		folderId="${fileEntry._binderId}"
-    		entryId="${fileEntry._docId}" />" >
+    
+			<ssf:titleLink 
+				entryId="${fileEntry._docId}" binderId="${fileEntry._binderId}" 
+				entityType="user" namespace="${ss_namespace}" 
+				useBinderFunction="permalink" isDashboard="yes" dashboardType="${ssDashboard.scope}">											
+						<ssf:param name="url" useBody="true">
+								<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
+									binderId="${fileEntry._binderId}" entryId="${fileEntry._docId}">
+									<ssf:param name="entityType" value="user}" />
+								</ssf:url>
+						</ssf:param>
+					<c:out value="${fileEntry.title}" escapeXml="false"/>
+			</ssf:titleLink>
     </c:when>
     <c:when test="${fileEntry._entityType == 'folder' || fileEntry._entityType == 'workspace' || fileEntry._entityType == 'profiles'}">
-    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${fileEntry._docId}">
-		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>" 
-		onClick="return ss_gotoPermalink('${fileEntry._docId}','${fileEntry._docId}', '${fileEntry._entityType}', '${ss_namespace}', 'yes');">
-
-    </c:when>
+			<ssf:titleLink 
+					entryId="${fileEntry._docId}" binderId="${fileEntry._docId}" 
+					entityType="${fileEntry._entityType}"  
+					namespace="${ss_namespace}"  
+					useBinderFunction="permalink" isDashboard="yes" dashboardType="${ssDashboard.scope}">
+											
+						<ssf:param name="url" useBody="true">
+								<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
+										binderId="${fileEntry._docId}">
+										<ssf:param name="entityType" value="${fileEntry._entityType}"/>
+								</ssf:url>	  										
+						</ssf:param>
+					<c:out value="${fileEntry.title}" escapeXml="false"/>
+			</ssf:titleLink>
+   </c:when>
  	</c:choose>
-    <c:out value="${fileEntry.title}"/></a></div>
+    </div>
  </c:if>
 
 </c:forEach>
