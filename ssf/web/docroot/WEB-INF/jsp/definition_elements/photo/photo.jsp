@@ -39,10 +39,6 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 		name="binderId" value="${ssBinder.id}"/><portlet:param 
 		name="operation" value="subscribe"/></portlet:actionURL>";
 var ss_columnCount = 0;
-function ss_loadEntry(obj,id) {
-	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
-	return false;
-}
 
 //Routine called when "find photo" is clicked
 function ss_loadPhotoEntryId<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id) {
@@ -54,7 +50,7 @@ function ss_loadPhotoEntryId<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 	    entryId="ss_entryIdPlaceholder" 
 	    actionUrl="true" />";
 	url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
-	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
+	ss_showForumEntry(url);
 	return false;
 }
 

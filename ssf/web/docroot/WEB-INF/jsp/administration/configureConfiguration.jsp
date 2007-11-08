@@ -212,7 +212,6 @@ function ss_confirmDeleteConfig() {
 	}
 }
 </script>
-<c:set var="showEntryCallbackRoutine" value="none" scope="request"/>
 
 <div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 

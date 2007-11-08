@@ -225,6 +225,7 @@ public class Tabs {
 			return DocumentHelper.createDocument();
 		}
 		public synchronized void setData(Map data) {
+			tabData.clear();
 			tabData.putAll(data);
 		}
 		public synchronized Map getData() {

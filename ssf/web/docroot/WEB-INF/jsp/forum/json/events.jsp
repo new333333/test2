@@ -141,6 +141,6 @@ events : [<%--
 		  	title: "<ssf:escapeJavaScript value="${evim.entry.title}"/>", 
 		  	calsrc: "cal1",
 		  	eventType: "<ssf:escapeJavaScript value="${evim.eventType}"/>",
-			viewOnClick: "<c:if test="${ssDashboardRequest}">ss_setMenuLinkAparterURL(this.href);</c:if> ss_loadEntry(this, '${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}'<c:if test="${ssDashboardRequest}">, 'yes'</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
+			viewOnClick: "ss_loadEntry(this, '${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}', '${ss_namespace}'<c:if test="${ssDashboardRequest}">, 'yes'</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
 	--%></c:forEach>]
 }

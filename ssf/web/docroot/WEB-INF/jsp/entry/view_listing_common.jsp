@@ -76,39 +76,11 @@ renderRequest.setAttribute("ss_entryWindowLeft", new Integer(entryWindowLeft));
 renderRequest.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 %>
 <c:if test="<%= !isViewEntry %>">
-<c:set var="showEntryCallbackRoutine" value="ss_dummyMethodCall" scope="request"/>
 
 <script type="text/javascript">
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
 var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
-function ss_showForumEntryInPopupWindow(definitionType) {
-	var strAddWindowOpenParams = "";
-	if (definitionType != null && (definitionType == 'folder' || definitionType == 'profiles' || 
-		definitionType == 'user' || definitionType == 'group' || definitionType == 'workspace') ) {
-		strAddWindowOpenParams = ",toolbar,menubar";
-	}
 
-    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
-    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
-    var wObj = self.document.getElementById('ss_showfolder')
-    
-	if (!wObj) {
-		if (self.parent) {
-			wObj = self.parent.document.getElementById('ss_showfolder')
-		}
-	}
-	
-	if (!wObj) {
-		ss_viewEntryPopupWidth = 700;
-		ss_viewEntryPopupHeight = 350;
-	} else {
-		if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
-		if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
-	}
-	
-    self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars'+strAddWindowOpenParams);
-    return false;
-}
 </script>
 
 <script type="text/javascript">
@@ -128,36 +100,6 @@ ss_createOnLoadObj('ss_showEntryOnLoad', ss_showEntryOnLoad);
 	}
 %>
 
-function ss_showForumEntry(url, callbackRoutine, isDashboard) {
-<%
-	if (displayStyle == null || displayStyle.equals("") || 
-	    displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) || 
-		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ||
-		displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-%>
-	if (isDashboard == "yes") {
-<%		
-		if (displayStyle == null || displayStyle.equals("") || 
-		    displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_IFRAME) ||
-			displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-%>		
-			return ss_showForumEntryInIframe_Overlay(url);
-<%		
-		} else if ( displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP) ) {
-%>		
-			return ss_showForumEntryInIframe_Popup(url);			
-<%
-		}
-%>
-	} else {
-		return ss_showForumEntryInIframe(url);
-	}
-<%
-	}
-%>
-	//This must be the accessible style. Just open the url where we are
-	self.location.href = url;
-}
 
 var ss_highlightBgColor = "${ss_folder_line_highlight_color}"
 var ss_highlightedLine = null;
@@ -170,48 +112,13 @@ var ss_savedHighlightColClassName = null;
 
 //Called when one of the "Add entry" toolbar menu options is selected
 function ss_addEntry(obj) {
-	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
+	ss_showForumEntry(obj.href);
 	return false;
 }
 
 var ss_currentEntryId = "";
-function ss_loadBinder(obj,id, entityType) {
-	if (ss_linkMenu.showingMenu && ss_linkMenu.showingMenu == 1) {
-		//The user wants to see the drop down options, don't show the binder
-		ss_linkMenu.showingMenu = 0;
-		return false;
-	} else {
-		return true;
-	}
-}
 
-function ss_loadEntry(obj, id, binderId, entityType, isDashboard) {
-	if (ss_userDisplayStyle == "accessible") {
-		self.location.href = obj.href;
-		return false;
-	}
-	if (ss_linkMenu.showingMenu && ss_linkMenu.showingMenu == 1) {
-		//The user wants to see the drop down options, don't show the entry
-		if (binderId != null && binderId != "") ss_linkMenu.binderId = binderId;
-		if (entityType != null && entityType != "") ss_linkMenu.entityType = entityType;
-		ss_linkMenu.showingMenu = 0;
-		return false;
-	}
-	ss_linkMenu.showingMenu = 0;
-	
-	if (id == "") return false;
-	var folderLine = 'folderLine_'+id;
-	ss_currentEntryId = id;
-	if (window.ss_highlightLineById) {
-		ss_highlightLineById(folderLine);
-		if (window.swapImages && window.restoreImages) {
-			restoreImages(id);
-		}
-	}
-	
-	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>, isDashboard);
-	return false;
-}
+
 
 function ss_loadEntryUrl(url,id) {
 	if (ss_userDisplayStyle == "accessible") {
@@ -225,7 +132,7 @@ function ss_loadEntryUrl(url,id) {
 		ss_highlightLineById(folderLine);
 	}
 	
-	ss_showForumEntry(url, <c:out value="${showEntryCallbackRoutine}"/>);
+	ss_showForumEntry(url);
 	return false;
 }
 </script>
@@ -244,13 +151,7 @@ function ss_loadEntryUrl(url,id) {
 <c:if test="<%= !reloadCaller %>">
   <c:if test="<%= isViewEntry %>">
 <script type="text/javascript">
-var ss_saveViewEntryWidthUrl = "<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="__ajax_request" 
-	actionUrl="true" >
-	<ssf:param name="operation" value="save_entry_width" />
-	</ssf:url>";
+
 if (self.parent && self.parent.ss_highlightLineById) {
 	self.parent.ss_highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
 	self.parent.ss_scrollOuter();
@@ -347,15 +248,8 @@ function ss_viewEntrySaveSize() {
 			self.opener.ss_viewEntryPopupHeight = ss_getWindowHeight()
 			self.opener.ss_viewEntryPopupWidth = ss_getWindowWidth()
 		}
-	 	var url = ss_saveViewEntryWidthUrl;
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-		ajaxRequest.addKeyValue("entry_height", ss_getWindowHeight())
-		ajaxRequest.addKeyValue("entry_width", ss_getWindowWidth())
-		//ajaxRequest.setEchoDebugInfo();
-		//ajaxRequest.setPreRequest(ss_preRequest);
-		//ajaxRequest.setPostRequest(ss_postRequestAlertError);
-		ajaxRequest.setUseGET();
-		ajaxRequest.sendRequest();  //Send the request
+		var urlParams = {operation:"save_entry_width", entry_height:ss_getWindowHeight(), entry_width:ss_getWindowWidth()};
+		ss_get_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
 	}
 }
 function ss_viewEntryUnload() {

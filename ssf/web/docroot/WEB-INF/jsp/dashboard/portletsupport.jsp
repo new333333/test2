@@ -61,7 +61,7 @@ request.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
     			
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
 var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
-function ss_showForumEntryInPopupWindowForPortlet(definitionType) {
+function ss_showPortletEntryInPopup(url, definitionType, namespace) {
 	var strAddWindowOpenParams = "";
 	if (definitionType != null && (definitionType == 'folder' || definitionType == 'profiles' || 
 		definitionType == 'user' || definitionType == 'group' || definitionType == 'workspace') ) {
@@ -86,13 +86,10 @@ function ss_showForumEntryInPopupWindowForPortlet(definitionType) {
 		if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
 	}
 	
-    self.window.open(menuLinkAdapterURL, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars'+strAddWindowOpenParams);
+    self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars'+strAddWindowOpenParams);
     return false;
 }
 
-function ss_loadEntry(obj, id, binderId, entityType, isDashboard, selMenuObj) {
-	ss_showPortletEntryInIframe(obj.href, entityType, selMenuObj.namespace);
-}
 </script>
 
 <!-- portlet iframe div -->

@@ -371,9 +371,10 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 </ssf:slidingTableRow>
 
 <c:forEach var="entry1" items="${ssFolderEntries}" >
+<c:set var="folderLineId" value="folderLine_${entry1._docId}"/>;
+
 <jsp:useBean id="entry1" type="java.util.HashMap" />
 <%
-	String folderLineId = "folderLine_" + (String) entry1.get("_docId");
 	String seenStyle = "";
 	String seenStyleAuthor = "";
 	String seenStyleFine = "class=\"ss_fineprint\"";
@@ -399,31 +400,27 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
     <a href="<ssf:url     
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
-    folderId="${ssFolder.id}" 
+    binderId="${ssFolder.id}" 
     action="view_folder_entry" 
-    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
-    onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
+    entryId="${entry1._docId}" actionUrl="true" />" 
+    onClick="ss_loadEntry(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
     ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;&nbsp;&nbsp;
   </ssf:slidingTableColumn>
  </c:if>
   
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
-	<ssf:menuLink 
-		displayDiv="false" entryId="${entry1._docId}" binderId="${ssBinder.id}" 
-		entityType="${entry1._entityType}" imageId='menuimg_${entry1._docId}_${renderResponse.namespace}' 
-		menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-		namespace="${renderResponse.namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" isDashboard="no"
+	<ssf:titleLink 
+		entryId="${entry1._docId}" binderId="${ssBinder.id}" 
+		entityType="${entry1._entityType}"  
+		namespace="${renderResponse.namespace}"
 		seenStyle="<%= seenStyle %>" seenStyleFine="<%= seenStyleFine %>">
 		<ssf:param name="url" useBody="true">
 			<ssf:url adapter="true" portletName="ss_forum" folderId="${ssFolder.id}" 
 			action="view_folder_entry" entryId="${entry1._docId}" actionUrl="true" />					
 		</ssf:param>
-		    <c:if test="${empty entry1.title}">
-		    	(<ssf:nlt tag="entry.noTitle"/>)
-		    </c:if>
 	    	<c:out value="${entry1.title}"/>
-	</ssf:menuLink> 
+	</ssf:titleLink> 
   </ssf:slidingTableColumn>
  </c:if>
   
@@ -494,10 +491,10 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
     <a href="<ssf:url     
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
-    folderId="${ssFolder.id}" 
+    binderId="${ssFolder.id}" 
     action="view_folder_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
-    onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>');return false;" 
+    onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
     ><span <%= seenStyle %>><c:out value="${entry1._workflowStateCaption}"/></span></a>
     </c:if>
   </ssf:slidingTableColumn>
@@ -604,10 +601,5 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 </ssf:slidingTable>
 </div>
 
-
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" 
-  linkMenuObjIdx="${renderResponse.namespace}" 
-  namespace="${renderResponse.namespace}">
-</ssf:menuLink>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

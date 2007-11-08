@@ -37,12 +37,7 @@
 var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
 		name="action" value="${action}"/><portlet:param 
 		name="binderId" value="${ssBinder.id}"/><portlet:param 
-		name="operation" value="subscribe"/></portlet:actionURL>";		
-function ss_loadEntry(obj,id) {
-	ss_highlightLineById(id);
-	ss_showForumEntry(obj.href, <c:out value="${showEntryCallbackRoutine}"/>);
-	return false;
-}
+		name="operation" value="subscribe"/></portlet:actionURL>";	
 
 var rn = Math.round(Math.random()*999999)
 function ss_blog_sidebar_date_callback() {

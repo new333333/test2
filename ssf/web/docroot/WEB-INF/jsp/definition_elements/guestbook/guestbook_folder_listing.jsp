@@ -40,13 +40,9 @@
 			</td>
 			<td class="ss_guestbookContainer">
 				<span class="ss_entryTitle ss_normalprint">
-					<ssf:menuLink displayDiv="false" action="view_folder_entry" adapter="true" entryId="${entry._docId}" 
+				<ssf:titleLink action="view_folder_entry" entryId="${entry._docId}" 
 					binderId="${entry._binderId}" entityType="${entry._entityType}" 
-					imageId='menuimg_${entry._docId}_${renderResponse.namespace}' 
-				    menuDivId="ss_emd_${renderResponse.namespace}"
-					linkMenuObjIdx="${renderResponse.namespace}" 
-					namespace="${renderResponse.namespace}"
-					entryCallbackRoutine="${showEntryCallbackRoutine}">
+					namespace="${renderResponse.namespace}">
 					
 						<ssf:param name="url" useBody="true">
 							<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
@@ -57,7 +53,7 @@
 					    	${entry._principal.title} <ssf:nlt tag="guestbook.author.wrote"/>: 
 					    </c:if>
 						<c:out value="${entry.title}" escapeXml="false"/>
-					</ssf:menuLink>
+					</ssf:titleLink>
 				</span>
 
 				<span class="ss_entrySignature"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
@@ -77,9 +73,5 @@
 </c:forEach>
 
 </table>
-
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${renderResponse.namespace}" linkMenuObjIdx="${renderResponse.namespace}" 
-	namespace="${renderResponse.namespace}">
-</ssf:menuLink>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

@@ -137,6 +137,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		model.put(WebKeys.SEARCH_TOP_FOLDER_ID, Collections.singletonList(top.getId().toString()));
         Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);
+		if (ObjectKeys.USER_DISPLAY_STYLE_VERTICAL.equals(RequestContextHolder.getRequestContext().getUser().getDisplayStyle())) {
+			model.put(WebKeys.FOLDER_ACTION_VERTICAL_OVERRIDE, "yes");
+		}
 
        if (op.equals(WebKeys.SEARCH_RESULTS)) {
         	model.putAll(prepareSearchResultData(request, tabs));

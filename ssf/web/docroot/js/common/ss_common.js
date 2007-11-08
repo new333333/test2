@@ -3222,46 +3222,11 @@ function ss_resetEditClicked(entryId, namespace) {
 	editClicked = "false";
 }
 
-var ss_linkMenu_arr = new Array();
-
-function checkAndCreateMenuObject(linkObj) {
-	var checkObj = ss_linkMenu_arr[linkObj];
-	
-	if (checkObj) {
-		//do nothing as object already exists
-	} else {
-		//create a new object
-		ss_linkMenu_arr[linkObj] = new ss_linkMenuObj();
-	}
-}
 
 //End: Add Attachment Related Functions
 
-//Link Menu Related Functions
-function ss_loadBinderFromMenu(obj, linkMenu, id, entityType) {
-	//var linkMenuObj = eval(linkMenu+"");
-	var linkMenuObj = ss_linkMenu_arr[linkMenu];
-	
-	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
-		//The user wants to see the drop down options, don't show the binder
-		linkMenuObj.showingMenu = 0;
-		return false;
-	}
-	self.location.href = obj.href;
-}
-
-function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard, namespace) {
-	var linkMenuObj = ss_linkMenu_arr[linkMenu];
-
-	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
-		//The user wants to see the drop down options, don't show the entry
-		if (binderId != null && binderId != "") linkMenuObj.binderId = binderId;
-		if (entityType != null && entityType != "") linkMenuObj.entityType = entityType;
-		linkMenuObj.showingMenu = 0;
-		return false;
-	}
-	
-	linkMenuObj.showingMenu = 0;
+//Title link Related Functions
+function ss_highlightLine(id, namespace) {
 	if (id == "") return false;
 	var folderLine = 'folderLine_'+id;
 	ss_currentEntryId = id;
@@ -3271,17 +3236,58 @@ function ss_loadEntryFromMenuSearchPortlet(obj, linkMenu, id, binderId, entityTy
 			restoreImages(id);
 		}
 	}
+}
+function ss_loadEntryFromMenu(obj, id, binderId, entityType, namespace, isDashboard, isFile) {
+	ss_highlightLine(id, namespace);
+	if (isFile == "yes") {
+		self.window.open(obj.href, '_blank');
+		return false;
+	}
+	
+	ss_showForumEntry(obj.href, isDashboard);
+	
+	return false;
+}
+
+function ss_loadEntryFromMenuSearchPortlet(obj, id, binderId, entityType, namespace, isDashboard) {
+	ss_highlightLine(id, namespace);
 	
 	if (ss_userDisplayStyle == "popup") {
-		ss_showForumEntryInPopupWindowForPortlet(entityType);
+		ss_showPortletEntryInPopup(obj.href, entityType, namespace);
 	} else {
 		ss_showPortletEntryInIframe(obj.href, entityType, namespace);	
 	}
 
-	//self.location.href = url;
 	return false;
 }
 
+function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
+	if (ss_userDisplayStyle == "accessible") {
+		self.location.href = obj.href;
+		return false;
+	}
+	
+	ss_highlightLine(id, namespace);
+
+	ss_showForumEntry(obj.href, isDashboard);
+	return false;
+}
+function ss_showForumEntry(url, isDashboard) {	
+	if (ss_userDisplayStyle == "accessible") {
+		self.location.href = obj.href;
+		return false;
+	}
+	if (isDashboard == "yes") {
+		if (ss_userDisplayStyle == 'popup') {
+			return ss_showForumEntryInIframe_Popup(url);	
+		} else {
+			return ss_showForumEntryInIframe_Overlay(url);
+		}
+	} else {
+		//redefined for displayType
+		return ss_showForumEntryInIframe(url);
+	}
+}
 function ss_showPortletEntryInIframe(url, entityType, namespace) {
 	//Close a pre-existing div, this may be some div that is showing up from someother portlet
 	if (typeof(ss_selectedDiv) != "undefined" && ss_selectedDiv != null) {
@@ -3305,7 +3311,7 @@ function ss_showPortletEntryInIframe(url, entityType, namespace) {
     var wObj1 = ss_selectedDiv;
      
 	if (wObj1 == null){
-		checkLinkAndCallPopup(url, entityType);
+		ss_showPortletEntryInPopup(obj.href, entityType, namespace);
 		return true;
 	}
 	
@@ -3330,142 +3336,11 @@ function ss_showPortletEntryInIframe(url, entityType, namespace) {
     return false;
 }
 
-function ss_loadEntryFromMenu(obj, linkMenu, id, binderId, entityType, entryCallBackRoutine, isDashboard, isFile) {
-	//var linkMenuObj = eval(linkMenu+"");
-	var linkMenuObj = ss_linkMenu_arr[linkMenu];
-
-	if (ss_userDisplayStyle == "accessible") {
-		self.location.href = obj.href;
-		return false;
-	}
-	
-	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
-		//The user wants to see the drop down options, don't show the entry
-		if (binderId != null && binderId != "") linkMenuObj.binderId = binderId;
-		if (entityType != null && entityType != "") linkMenuObj.entityType = entityType;
-		linkMenuObj.showingMenu = 0;
-		return false;
-	}
-	
-	linkMenuObj.showingMenu = 0;
-	if (id == "") return false;
-	var folderLine = 'folderLine_'+id;
-	ss_currentEntryId = id;
-	if (window.ss_highlightLineById) {
-		ss_highlightLineById(folderLine);
-		if (window.swapImages && window.restoreImages) {
-			restoreImages(id);
-		}
-	}
-	
-	if (isFile == "yes") {
-		self.window.open(obj.href, '_blank');
-		return false;
-	}
-	
-	ss_showForumEntry(obj.href, eval(entryCallBackRoutine+""), isDashboard, entityType, linkMenuObj);
-	
-	return false;
-}
 
 function ss_dummyMethodCall() {
 }
 
-function ss_setMenuGeneratedURLs(linkMenu, binderId, entryId, entityType, namespace, url) {
-	var nonAdapterUrl = ss_getGeneratedURL(binderId, entryId, entityType, namespace, "no");
-	
-	var linkMenuObj = ss_linkMenu_arr[linkMenu];
-	linkMenuObj.menuLinkNonAdapterURL = nonAdapterUrl;
-	linkMenuObj.namespace = namespace;
-	
-	if (url) linkMenuObj.menuLinkURL = url;
-}
 
-function ss_loadPermaLinkFromMenu(linkMenu, binderId, entryId, entityType, namespace) {
-	//var linkMenuObj = eval(linkMenu+"");
-	var linkMenuObj = ss_linkMenu_arr[linkMenu];
-	
-	if (linkMenuObj.showingMenu && linkMenuObj.showingMenu == 1) {
-		//The user wants to see the drop down options, don't show the binder
-		linkMenuObj.showingMenu = 0;
-		return false;
-	}
-	
-	ss_gotoPermalink(binderId, entryId, entityType, namespace, "yes");
-}
-
-var menuLinkAdapterURL = "";
-function ss_setMenuLinkAparterURL(adapterURL) {
-	if (adapterURL) menuLinkAdapterURL = adapterURL;
-}
-//Gets called when clicking on the menulink image
-function setMenuGenericLinks(linkMenu, menuDivId, namespace, adapterURL, isDashboard, isFile) {
-
-	if (adapterURL) menuLinkAdapterURL = adapterURL;
-	//var linkMenuObj = eval(linkMenu+"");
-	var linkMenuObj = ss_linkMenu_arr[linkMenu];
-	
-	var binderUrl = "";
-	var entryUrl = "";
-	//Try to find the base urls from this namespace or from the parent or the opener
-	try {
-		eval("binderUrl = ss_baseBinderUrl" + namespace)
-		eval("entryUrl = ss_baseEntryUrl" + namespace)
-	} catch(e) {}
-	
-	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
-		try {
-			eval("binderUrl = self.parent.ss_baseBinderUrl" + namespace)
-			eval("entryUrl = self.parent.ss_baseEntryUrl" + namespace)
-		} catch(e) {}
-	}
-	
-	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
-		try {
-			eval("binderUrl = self.opener.ss_baseBinderUrl" + namespace)
-			eval("entryUrl = self.opener.ss_baseEntryUrl" + namespace)
-		} catch(e) {}
-	}
-	
-	if (!binderUrl || !entryUrl || binderUrl == "" || entryUrl == "") {
-	
-		if (!ss_baseBinderUrl || !ss_baseEntryUrl) {
-		
-			if (!self.parent.ss_baseBinderUrl || !self.parent.ss_baseEntryUrl) {
-			
-				if (self.opener && self.opener.ss_baseBinderUrl && self.opener.ss_baseEntryUrl) {
-				
-					binderUrl = self.opener.ss_baseBinderUrl;
-					entryUrl = self.opener.ss_baseEntryUrl;
-				}
-			} else {
-				binderUrl = self.parent.ss_baseBinderUrl;
-				entryUrl = self.parent.ss_baseEntryUrl;
-			}
-		} else {
-			binderUrl = ss_baseBinderUrl;
-			entryUrl = ss_baseEntryUrl;
-		}
-	}
-
-	linkMenuObj.menuDiv = menuDivId;
-	linkMenuObj.binderUrl = binderUrl;
-	linkMenuObj.entryUrl = entryUrl;
-	
-	if (isFile == "yes") {
-		linkMenuObj.fileUrl = adapterURL;
-	} else {
-		linkMenuObj.fileUrl = "";
-	}
-
-	linkMenuObj.menuLinkShowFile = 'ss_folderMenuShowFileLink_' + linkMenu;
-	linkMenuObj.menuLinkShowEntry = 'ss_folderMenuShowEntryLink_' + linkMenu;
-	linkMenuObj.menuLinkShowCurrentTab = 'ss_folderMenuShowCurrentTab_' + linkMenu;
-	linkMenuObj.menuLinkShowNewTab = 'ss_folderMenuShowNewTab_' + linkMenu;
-	linkMenuObj.menuLinkShowNewWindow = 'ss_folderMenuShowNewWindow_' + linkMenu;
-
-	linkMenuObj.isDashboardLink = isDashboard;
-}
 
 function ss_getGeneratedURL(binderId, entryId, entityType, namespace, useNewTab) {
 	var binderUrl = "";
@@ -4197,322 +4072,6 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
 	        	}
 	        }
 	    }
-	}
-}
-
-//Routines that support the link dropdown menu concept
-var ss_linkMenu = new ss_linkMenuObj();
-
-function ss_linkMenuObj() {
-	this.menuDiv;	           //Div id of the menu div
-	this.binderId;             //Binder id of the current folder
-	this.definitionType;       //Definition type default of the current entry
-	this.binderDefinitionType; //DeifinitionTypeType of current folder (9 = file folder)
-	this.showingMenu;          //0 = not showing a menu; 1 = showing a menu
-	this.linkObj;              //The link object that is active
-	this.binderUrl;
-	this.entryUrl;
-	this.fileUrl;
-	this.currentId;
-	this.currentBinderId;
-	this.currentDefinitionType;
-	this.lastShownButton;       
-
-	this.menuLinkShowFile;
-	this.menuLinkShowEntry;
-	this.menuLinkShowNewWindow;
-	this.menuLinkShowCurrentTab;
-	this.menuLinkShowNewTab;
-
-	this.isDashboardLink;
-	this.menuLinkURL;
-	
-	this.menuLinkNonAdapterURL;
-	this.namespace;
-	
-	this.type_folderEntry = 'folderEntry';
-	this.type_folder = 'folder';
-	this.type_profileFolder = 'profiles';
-	this.type_profileEntry = 'user';
-	this.type_group = 'group';
-	this.type_workspace = 'workspace';
-	
-	this.showButton = function(obj, imgid) {
-	/*
-		if (imgid != null && imgid != "") {
-			var imgObj = document.getElementById(imgid);
-			if (imgObj != null) {
-				imgObj.src = ss_imagesPath + "pics/downarrow.gif";
-				this.lastShownButton = obj;
-				return;
-			}
-		} 
-	*/
-		if (this.lastShownButton && this.lastShownButton != obj) this.hideMenu(obj);
-		var imgElements = obj.parentNode.getElementsByTagName("img");
-		for(var imgCount=0; imgCount < imgElements.length; imgCount++) {
-			var imgSrc = imgElements[imgCount].src;
-			if (imgSrc.indexOf("pics/downarrow_off.gif") != -1) {
-				imgElements[imgCount].src = ss_imagesPath + "pics/downarrow.gif";
-			}
-		}
-		this.lastShownButton = obj;
-	}	
-	
-	this.hideButton = function(obj, imgid) {
-	/*
-		if (imgid != null && imgid != "") {
-			var imgObj = document.getElementById(imgid);
-			if (imgObj != null) {
-				imgObj.src = ss_imagesPath + "pics/downarrow_off.gif";
-				return;
-			}
-		} 
-	*/
-		var imgElements = obj.parentNode.getElementsByTagName("img");
-		for(var imgCount=0; imgCount < imgElements.length; imgCount++) {
-			var imgSrc = imgElements[imgCount].src;
-			if (imgSrc.indexOf("pics/downarrow.gif") != -1) {
-				imgElements[imgCount].src = ss_imagesPath + "pics/downarrow_off.gif";
-			}
-		}
-	}	
-	
-	this.showMenu = function(obj, id, binderId, definitionType, dashboardType) {
-		ss_debug('show menu: id = ' + id + ', binderId = '+binderId + ', definition = '+definitionType)
-		if (binderId != null) this.binderId = binderId;
-		
-		if (definitionType != null) this.definitionType = definitionType;
-		
-		
-		//alert("id: "+ id + ", binderId: " + binderId);
-		
-		if (this.showingMenu) {
-			ss_hideDiv(this.menuDiv)
-			this.showingMenu = 0;
-		}
-		this.showingMenu = 1;
-		this.currentId = id;
-		this.currentBinderId = this.binderId;
-		this.currentDefinitionType = this.definitionType;
-		
-		if (this.definitionType == this.type_folder || this.definitionType == this.type_workspace) {
-			this.currentBinderId = id;
-		}
-		
-		this.linkObj = obj;
-		if (this.menuDiv != "") {
-			var menuObj = document.getElementById(this.menuDiv);
-			ss_moveObjectToBody(menuObj)
-			
-	    	var x = dojo.html.getAbsolutePosition(obj, true).x + 1;
-	    	var y = dojo.html.getAbsolutePosition(obj, true).y	+ 16;
-			
-			menuObj.style.top = y + "px";
-			menuObj.style.left = x + "px";
-			menuObj.style.zIndex = ssMenuZ;
-			
-			//Show File
-			if (this.menuLinkShowFile != null) {
-				var menuLinkObj = document.getElementById(this.menuLinkShowFile);
-				
-				if (menuLinkObj != null) {
-					menuLinkObj.style.display = 'none';
-					if (this.fileUrl && this.fileUrl != "") 
-						menuLinkObj.style.display = 'block';
-				}
-			}
-
-			//Show Entry
-			if (this.menuLinkShowEntry != null) {
-				var menuLinkObj = document.getElementById(this.menuLinkShowEntry);
-				if (menuLinkObj != null) {
-					menuLinkObj.style.display = 'none';
-					if (this.currentDefinitionType == this.type_folderEntry || this.currentDefinitionType == this.type_profileFolder) {
-						//if ( (dashboardType && dashboardType == 'portlet') || this.fileUrl != "") {
-						if (this.fileUrl != "") {
-							//do nothing
-						} else {
-							menuLinkObj.style.display = 'block';
-						}
-					}
-				}
-			}
-
-			//Show Current Tab
-			if (this.menuLinkShowCurrentTab != null) {
-				var menuLinkObj = document.getElementById(this.menuLinkShowCurrentTab);
-				if (menuLinkObj != null) {
-					menuLinkObj.style.display = 'block';
-					if ( (dashboardType && dashboardType == 'portlet') ||  this.fileUrl != "") 
-						menuLinkObj.style.display = 'none';
-				}
-			}
-			
-			//Show New Tab
-			if (this.menuLinkShowNewTab != null) {
-				var menuLinkObj = document.getElementById(this.menuLinkShowNewTab);
-				if (menuLinkObj != null) {
-					menuLinkObj.style.display = 'block';
-					if ( this.fileUrl != "" ) menuLinkObj.style.display = 'none';
-				}
-			}			
-			
-			//Show New Window
-			if (this.menuLinkShowNewWindow != null) {
-				var menuLinkObj = document.getElementById(this.menuLinkShowNewWindow);
-				if (menuLinkObj != null) {
-					menuLinkObj.style.display = 'none';
-					
-					if (self.opener) {}
-					else {
-						if (this.currentDefinitionType == this.type_folderEntry && this.fileUrl == "") 
-							menuLinkObj.style.display = 'block';
-					}
-				}
-			}
-			
-			ss_ShowHideDivXY(this.menuDiv, x, y)
-			ss_HideDivOnSecondClick(this.menuDiv)
-		}
-	}
-
-	this.hideMenu = function(obj) {
-		if (this.linkObj == obj) return;
-		ss_hideDiv(this.menuDiv)
-		this.showingMenu = 0;
-		this.linkObj = null;
-		this.currentId = "";
-		this.currentBinderId = "";
-		this.currentDefinitionType = "";
-	}
-	
-	this.currentTab = function() {
-		ss_debug('current tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
-		var url = this.buildBaseUrl();
-		//url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "0");
-		//Hemanth: New Code 3 has been introduced for opening in the current tab.
-		//This is used for overcoming the search tab check
-		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "3");
-		
-		var currentWindow = self;
-		var parentWindow;
-		
-		while (true) {
-			if (currentWindow.opener) {
-				parentWindow = currentWindow.opener;
-			} else if (currentWindow.parent) {
-				parentWindow = currentWindow.parent;
-			}
-
-			//No Parent Window
-			if (!parentWindow) {
-				break;
-			} else {
-				if (parentWindow != currentWindow) {
-					currentWindow = parentWindow;
-				} else {
-					break;
-				}
-			}
-		}
-		currentWindow.location.href = url;
-		if (self.opener) setTimeout('self.window.close();', 200);
-	}
-	
-	this.newTab = function() {
-		ss_debug('new tab: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
-		
-		var url = this.buildBaseUrl();
-		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "1");
-		
-		var currentWindow = self;
-		var parentWindow;
-		
-		while (true) {
-			if (currentWindow.opener) {
-				parentWindow = currentWindow.opener;
-			} else if (currentWindow.parent) {
-				parentWindow = currentWindow.parent;
-			}
-
-			//No Parent Window
-			if (!parentWindow) {
-				break;
-			} else {
-				if (parentWindow != currentWindow) {
-					currentWindow = parentWindow;
-				} else {
-					break;
-				}
-			}
-		}
-		currentWindow.location.href = url;
-		if (self.opener) setTimeout('self.window.close();', 200);
-	}
-
-	this.newWindow = function() {
-		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
-		ss_showForumEntryInPopupWindow(this.currentDefinitionType);
-		return false;
-	}
-	
-	this.newWindowForPortlet = function() {
-		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
-		ss_showForumEntryInPopupWindowForPortlet(this.currentDefinitionType);
-		return false;
-	}	
-	
-	this.newWindowOld = function() {
-		ss_debug('new window: id = ' + this.currentId + ', binderId = '+this.currentBinderId + ', definition = '+this.currentDefinitionType)
-		var url = this.buildBaseUrl();
-		url = ss_replaceSubStr(url, "ssNewTabPlaceHolder", "0");
-		self.window.open(url, '_blank');
-		return false;
-	}
-	
-	this.showEntry = function() {
-		ss_loadEntry(this.lastShownButton, this.currentId, "", "", this.isDashboardLink, this);
-		return false;
-	}
-	
-	this.showFile = function() {
-		var url = this.fileUrl;
-		//url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
-		//url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
-		self.window.open(url, '_blank');
-		return false;
-	}
-	
-	this.buildBaseUrl = function() {
-		var url;
-		if (this.currentDefinitionType == this.type_folderEntry || this.currentDefinitionType == this.type_profileFolder) {
-			url = this.entryUrl;
-		} else if (this.currentDefinitionType == this.type_folder) {
-			url = this.binderUrl;
-		} else if (this.currentDefinitionType == this.type_workspace) {
-			url = this.binderUrl;
-		} else if (this.currentDefinitionType == this.type_profileEntry) {
-			url = this.entryUrl;
-		}
-		
-		if (!url && ss_AjaxBaseUrl) {
-			var	urlParams = {binderId:this.currentBinderId, entryId:this.currentId, entityType:this.currentDefinitionType};
-			url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "view_permalink");
-		}
-		else {
-			url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", this.currentBinderId);
-			url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", this.currentId);
-			
-			if (this.currentDefinitionType == this.type_profileEntry) {
-				url = ss_replaceSubStr(url, "ssActionPlaceHolder", 'view_ws_listing');
-			} else {
-				url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromDefinitionType(this.currentDefinitionType));
-			}
-		}
-		
-		ss_debug('buildBaseUrl - '+ url);
-		return url;
 	}
 }
 

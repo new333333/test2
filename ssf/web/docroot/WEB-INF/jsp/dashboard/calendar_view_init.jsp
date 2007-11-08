@@ -52,6 +52,7 @@
 		    	actionUrl="true" >
 					<ssf:param name="binderId" value="${ssBinder.id}" />
 					<ssf:param name="operation" value="find_calendar_events" />
+					<ssf:param name="namespace" value="${prefix}" />
 		    	</ssf:url><c:if test="${!empty ssDashboard}">&ssDashboardRequest=true</c:if>";
 		    	
 				

@@ -29,13 +29,19 @@
  */
 %>
 <% //View the listing part of a photo folder %>
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request"/>
 
 			<table width="99%"><tr><td>
 			<div class="ss_thumbnail_gallery ss_thumbnail_medium"> 
 			<c:forEach var="fileEntry" items="${ssFolderEntries}" >
 <jsp:useBean id="fileEntry" type="java.util.HashMap" />
+
 <%
-	String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
+boolean useAdaptor = true;
+if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle())) {
+	useAdaptor = false;
+}	
+String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 	String seenStyle = "";
 	String seenStyleFine = "class=\"ss_finePrint\"";
 	if (!ssSeenMap.checkIfSeen(fileEntry)) {
@@ -74,12 +80,12 @@
 			    </ssf:url>"></a><br\>
 			    <a 
 				    href="<ssf:url     
-				    adapter="true" 
+				    adapter="<%= useAdaptor %>" 
 				    portletName="ss_forum" 
-				    folderId="${ssFolder.id}" 
+				    binderId="${ssBinder.id}" 
 				    action="view_folder_entry" 
 				    entryId="${fileEntry._docId}" actionUrl="true" />" 
-				    onClick="ss_loadEntry(this, '${fileEntry._docId}');return false;" 
+				    onClick="ss_loadEntry(this, '${fileEntry._docId}', '${ssBinder.id}', '${fileEntry._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 				    ><c:if test="${empty fileEntry.title}"
 				    ><span id="folderLine_${fileEntry._docId}" <%= seenStyleFine %>
 				    >--<ssf:nlt tag="entry.noTitle"/>--</span
@@ -95,12 +101,12 @@
 			      src="<html:imagesPath/>thumbnails/NoImage.jpeg"/><br/>
 			    <a 
 				    href="<ssf:url     
-				    adapter="true" 
+  					adapter="<%= useAdaptor %>" 
 				    portletName="ss_forum" 
 				    folderId="${ssFolder.id}" 
 				    action="view_folder_entry" 
 				    entryId="${fileEntry._docId}" actionUrl="true" />" 
-				    onClick="ss_loadEntry(this, '${fileEntry._docId}');return false;" 
+				    onClick="ss_loadEntry(this, '${fileEntry._docId}', '${ssBinder.id}', '${fileEntry._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 				    ><c:if test="${empty fileEntry.title}"
 				    ><span id="folderLine_${fileEntry._docId}" <%= seenStyleFine %>
 				    >--<ssf:nlt tag="entry.noTitle"/>--</span

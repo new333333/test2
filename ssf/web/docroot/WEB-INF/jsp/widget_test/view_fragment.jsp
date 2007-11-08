@@ -50,7 +50,7 @@ function ss_showMessageInDiv(str) {
 	ss_showEntryInDiv(str)
 }
 
-function ss_showForumEntry(url, callbackRoutine) {
+function ss_showForumEntry(url) {
 	ss_fetch_url(url, callbackRoutine);
 }
 

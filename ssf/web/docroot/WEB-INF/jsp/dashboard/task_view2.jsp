@@ -90,12 +90,11 @@
 		<td class="ss_entryTitle ss_normalprint">
 			<c:set var="isDashboard" value="yes"/>
 				
-			<ssf:menuLink 
-				displayDiv="false" entryId="${entry._docId}" binderId="${entry._binderId}" 
-				entityType="${entry._entityType}" imageId='menuimg_${entry._docId}_${ss_namespace}' 
-		    	menuDivId="ss_emd_${ss_namespace}_${componentId}" linkMenuObjIdx="${ss_namespace}_${componentId}" 
-				namespace="${ss_namespace}" entryCallbackRoutine="${showEntryCallbackRoutine}" 
-				useBinderFunction="no" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+			<ssf:titleLink 
+				entryId="${entry._docId}" binderId="${entry._binderId}" 
+				entityType="${entry._entityType}" 
+				namespace="${ss_namespace}" 
+				isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 
 				
 					<ssf:param name="url" useBody="true">
@@ -104,7 +103,7 @@
 					</ssf:param>
 				
 					<c:out value="${entry.title}" escapeXml="false"/>
-				</ssf:menuLink>
+				</ssf:titleLink>
 		</td>
 		<td class="ss_iconsContainer" style="text-align: center;">
 		<c:if test="${! empty entry.priority}"><c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><c:if test="${entry.priority == prio.key}"><img src="<html:imagesPath/>icons/prio_${prio.key}.gif"	alt="${prio.value}" title="${prio.value}" class="ss_taskPriority" /></c:if></c:forEach></c:if></td>
@@ -187,7 +186,3 @@
 </table>
 </div>
 			
-<ssf:menuLink displayDiv="true" menuDivId="ss_emd_${ss_namespace}_${componentId}" 
-	linkMenuObjIdx="${ss_namespace}_${componentId}" 
-	namespace="${ss_namespace}" dashboardType="${ssDashboard.scope}">
-</ssf:menuLink>	

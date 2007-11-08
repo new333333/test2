@@ -97,11 +97,6 @@ function ss_clearUnseen(obj) {
 	}
 }
 
-function ss_showEntryInDiv(str) {
-	//If we ever get here, it was an error (pmh)
-	return
-}
-
 function ss_swapImages (id, img, alt) {
 	if (document.getElementById(id)) {
 		document.getElementById(id).src = img;
