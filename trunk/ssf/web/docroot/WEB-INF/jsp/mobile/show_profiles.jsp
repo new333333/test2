@@ -27,19 +27,23 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%><%--
---%><%@ include file="/WEB-INF/jsp/common/common.jsp" %><%--
---%><%@ page contentType="text/html; charset=UTF-8" %><%--
---%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html>
-<head>
-<%@ include file="/WEB-INF/jsp/mobile/mobile_css.jsp" %>
-<script type="text/javascript">
-function ss_resizeMobileIframe() {
-	if (typeof self.parent != 'undefined' && typeof parent.ss_setMobileIframeSize != 'undefined') {
-		setTimeout("parent.ss_setMobileIframeSize();", 100);
-	}
-}
-</script>
-</head>
-<body onLoad="ss_resizeMobileIframe();">
+%>
+<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+<table cellspacing="0" cellpadding="0" border="0">
+<th colspan="2" align="left">${ssBinder.title}</th>
+<c:forEach var="entry1" items="${ssFolderEntries}" >
+<jsp:useBean id="entry1" type="java.util.HashMap" />
+  <tr>
+    <td align="right" valign="top"><%= (User)entry1.get("_principal").getTitle() %></td>
+    <td align="right" valign="top">${entry1._email}&nbsp;</td>
+  </tr>
+</c:forEach>
+</table>
+<br/>
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
+<span style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
+</a>
+
+</body>
+</html>

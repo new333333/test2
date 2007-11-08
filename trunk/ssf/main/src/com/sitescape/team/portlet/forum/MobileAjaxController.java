@@ -129,6 +129,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			}
 		}
 		model.put(WebKeys.MOBILE_BINDER_LIST, getBinderModule().getBinders(binderIds));
+		
+		Map unseenCounts = new HashMap();
+		unseenCounts = getFolderModule().getUnseenCounts(binderIds);
+		model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
+		
 		return new ModelAndView("mobile/show_front_page", model);
 	}
 
