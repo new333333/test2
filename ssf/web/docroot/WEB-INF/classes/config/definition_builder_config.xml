@@ -2387,7 +2387,7 @@
 		</properties>
 	</item>
 	
-	<item name="waitForParallelThread" caption="__waitForParallelThread" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="waitForParallelThread" caption="__waitForParallelThread" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
 		<properties>
 			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" multipleAllowed="true" />
 			<property name="toState" caption="__toStateAfterWait" type="itemSelect" path="//item[@name='state']" />
