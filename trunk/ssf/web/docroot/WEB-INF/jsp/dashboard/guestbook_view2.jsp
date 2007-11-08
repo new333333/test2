@@ -53,21 +53,20 @@
 			</td>		 	
 			<td class="ss_guestbookContainer" valign="top">
 			
-    <a href="<ssf:url adapter="true" portletName="ss_forum" 
-		    action="view_permalink"
-		    binderId="${fileEntry._binderId}"
-		    entryId="${fileEntry._docId}">
-		    <ssf:param name="entityType" value="${fileEntry._entityType}" />
-    	    <ssf:param name="newTab" value="1"/>
-			</ssf:url>"
-			onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '${ss_namespace}', 'yes');">
-		
-				<span class="ss_entryTitle ss_normalprint">
+		<ssf:titleLink 
+			entryId="${fileEntry._docId}" binderId="${fileEntry._binderId}" 
+				entityType="folderEntry" namespace="${ss_namespace}" seenStyle="class=\"ss_entryTitle ss_normalprint\""
+				isDashboard="yes" dashboardType="${ssDashboard.scope}">				
+					<ssf:param name="url" useBody="true">
+						<ssf:url adapter="true" portletName="ss_forum" folderId="${fileEntry._binderId}" 
+						action="view_folder_entry" entryId="${fileEntry._docId}" actionUrl="true" />
+					</ssf:param>				
 					<c:if test="${empty fileEntry.title}">
 				    	${fileEntry._principal.title} <ssf:nlt tag="guestbook.author.wrote"/>: 
 				    </c:if>
 					<c:out value="${fileEntry.title}" escapeXml="false"/>
-				</span></a>
+		</ssf:titleLink>
+		
 				<span class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${fileEntry._modificationDate}" type="both" 
 					  timeStyle="short" dateStyle="short" /></span>

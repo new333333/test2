@@ -66,27 +66,20 @@
 
 <c:if test="${!empty wikiEntry}">
 <div>
-<span class="ss_entryTitle">
-  <a href="<ssf:url 
-    folderId="${wikiEntry.parentFolder.id}" 
-    action="view_folder_entry"
-    entryId="${wikiEntry.id}">
-	<ssf:param name="newTab" value="1"/>
-    </ssf:url>"
-   <c:if test="${ssConfigJspStyle != 'template'}">
-	onClick="return ss_gotoPermalink('${wikiEntry.parentFolder.id}','${wikiEntry.id}', '${wikiEntry.entityType}', '${ss_namespace}', 'yes'); ">
-	</c:if>
-	<c:if test="${ssConfigJspStyle == 'template'}"> 
-	onClick="return false;">
-	</c:if>
+	<ssf:titleLink 
+			entryId="${wikiEntry.id}" binderId="${wikiEntry.parentFolder.id}" 
+				entityType="${wikiEntry.entityType}" 
+				namespace="${ss_namespace}" seenStyle="class=\"ss_entryTitle ss_normalprint\""
+				isDashboard="yes" dashboardType="${ssDashboard.scope}">
+				
+					<ssf:param name="url" useBody="true">
+						<ssf:url adapter="true" portletName="ss_forum" folderId="${wikiEntry.parentFolder.id}" 
+						action="view_folder_entry" entryId="${wikiEntry.id}" actionUrl="true" />
+					</ssf:param>
+				
+					<c:out value="${wikiEntry.title}" escapeXml="false"/>
+	</ssf:titleLink>
 
-<c:if test="${!empty wikiEntry.title}">
-<c:out value="${wikiEntry.title}"/>
-</c:if>
-<c:if test="${empty wikiEntry.title}">
-  <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
-</c:if>
-</a></span>
 </div>
 
 <c:if test="${!empty wikiEntry.description}">
