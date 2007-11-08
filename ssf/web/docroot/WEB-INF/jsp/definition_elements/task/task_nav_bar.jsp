@@ -40,7 +40,6 @@
   				folderId="${ssBinder.id}" 
   				action="view_folder_listing">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="tabId" value="${tab.tabId}"/>
 	  				<ssf:param name="ssTaskFilterType" value="CLOSED"/>
   				</ssf:url>">
 				<input type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'CLOSED'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewClosed"/>
@@ -50,7 +49,6 @@
   				folderId="${ssBinder.id}" 
   				action="view_folder_listing">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="tabId" value="${tab.tabId}"/>
 	  				<ssf:param name="ssTaskFilterType" value="DAY"/>
   				</ssf:url>">
 				<input type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'DAY'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewToday"/>
@@ -60,7 +58,6 @@
   				folderId="${ssBinder.id}" 
   				action="view_folder_listing">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="tabId" value="${tab.tabId}"/>
 	  				<ssf:param name="ssTaskFilterType" value="WEEK"/>
   				</ssf:url>">
 				<input type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'WEEK'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewWeek"/>
@@ -70,7 +67,6 @@
   				folderId="${ssBinder.id}" 
   				action="view_folder_listing">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="tabId" value="${tab.tabId}"/>
 	  				<ssf:param name="ssTaskFilterType" value="MONTH"/>
   				</ssf:url>">
 				<input type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'MONTH'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewMonth"/>
@@ -80,7 +76,6 @@
   				folderId="${ssBinder.id}" 
   				action="view_folder_listing">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="tabId" value="${tab.tabId}"/>
 	  				<ssf:param name="ssTaskFilterType" value="ACTIVE"/>
   				</ssf:url>">
 				<input type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ACTIVE'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewAllActive"/>
@@ -90,7 +85,6 @@
   				folderId="${ssBinder.id}" 
   				action="view_folder_listing">
 	  				<ssf:param name="binderId" value="${ssBinder.id}"/>
-	  				<ssf:param name="tabId" value="${tab.tabId}"/>
 	  				<ssf:param name="ssTaskFilterType" value="ALL"/>
   				</ssf:url>">
 				<input type="radio" onclick="document.location.href=this.parentNode.href;" name="ss_task_current_filter_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${ssBinder.id}" <c:if test="${ssCurrentTaskFilterType == 'ALL'}">checked="true"</c:if>/> <ssf:nlt tag="alt.viewAll"/>
