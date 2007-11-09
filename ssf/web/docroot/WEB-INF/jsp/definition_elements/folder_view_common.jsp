@@ -383,7 +383,7 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 %>
 <c:set var="hasFile2" value="<%= hasFile %>"/>
 <c:set var="oneFile2" value="<%= oneFile %>"/>
-<ssf:slidingTableRow id="<%= folderLineId %>">
+<ssf:slidingTableRow id="${folderLineId}">
 
  <c:if test="${!empty ssFolderColumns['number']}">
   <ssf:slidingTableColumn>
