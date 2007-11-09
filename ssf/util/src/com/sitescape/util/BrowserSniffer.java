@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2000-2005 Liferay, LLC. All rights reserved.
+ * Copyright (c) 2000-2007 Liferay, Inc. All rights reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,26 +25,34 @@ package com.sitescape.util;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * See http://www.zytrax.com/tech/web/browser_ids.htm for examples.
- *
  * <a href="BrowserSniffer.java.html"><b><i>View Source</i></b></a>
  *
- * @author  Brian Wing Shun Chan
- * @version $Revision: 1.11 $
+ * See http://www.zytrax.com/tech/web/browser_ids.htm for examples.
+ *
+ * @author Brian Wing Shun Chan
  *
  */
 public class BrowserSniffer {
 
-	public static final String ACCEPT = "ACCEPT";
+	public static boolean acceptsGzip(HttpServletRequest req) {
+		String acceptEncoding = req.getHeader(HttpHeaders.ACCEPT_ENCODING);
 
-	public static final String USER_AGENT = "USER-AGENT";
+		if ((acceptEncoding != null) &&
+			(acceptEncoding.indexOf(_GZIP) != -1)) {
+
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
 
 	public static boolean is_ie(HttpServletRequest req) {
 		if (req == null) {
 			return false;
 		}
 
-		String agent = req.getHeader(USER_AGENT);
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
 
 		if (agent == null) {
 			return false;
@@ -65,7 +73,7 @@ public class BrowserSniffer {
 			return false;
 		}
 
-		String agent = req.getHeader(USER_AGENT);
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
 
 		if (agent == null) {
 			return false;
@@ -86,7 +94,7 @@ public class BrowserSniffer {
 			return false;
 		}
 
-		String agent = req.getHeader(USER_AGENT);
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
 
 		if (agent == null) {
 			return false;
@@ -107,7 +115,7 @@ public class BrowserSniffer {
 			return false;
 		}
 
-		String agent = req.getHeader(USER_AGENT);
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
 
 		if (agent == null) {
 			return false;
@@ -133,31 +141,60 @@ public class BrowserSniffer {
 	}
 
 	public static boolean is_ie_6(HttpServletRequest req) {
-		if (req == null) return false;
+		if (req == null) {
+			return false;
+		}
 
-		String agent = req.getHeader(USER_AGENT);
-		if (agent == null) return false;
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
 
 		agent = agent.toLowerCase();
 
-		if (is_ie(req) && (agent.indexOf("msie 6") != -1)) {
+		if (is_ie(req) && (agent.indexOf("msie 6.0") != -1)) {
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
 
 	public static boolean is_ie_7(HttpServletRequest req) {
-		if (req == null) return false;
+		if (req == null) {
+			return false;
+		}
 
-		String agent = req.getHeader(USER_AGENT);
-		if (agent == null) return false;
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
 
 		agent = agent.toLowerCase();
 
-		if (is_ie(req) && (agent.indexOf("msie 7") != -1)) {
+		if (is_ie(req) && (agent.indexOf("msie 7.0") != -1)) {
 			return true;
-		} else {
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static boolean is_linux(HttpServletRequest req) {
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
+
+		agent = agent.toLowerCase();
+
+		if (agent.matches(".*linux.*")) {
+			return true;
+		}
+		else {
 			return false;
 		}
 	}
@@ -165,7 +202,7 @@ public class BrowserSniffer {
 	public static boolean is_mozilla_5(HttpServletRequest req) {
 		if (req == null) return false;
 
-		String agent = req.getHeader(USER_AGENT);
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
 		if (agent == null) return false;
 
 		agent = agent.toLowerCase();
@@ -178,10 +215,15 @@ public class BrowserSniffer {
 	}
 
 	public static boolean is_mozilla(HttpServletRequest req) {
-		if (req == null) return false;
+		if (req == null) {
+			return false;
+		}
 
-		String agent = req.getHeader(USER_AGENT);
-		if (agent == null) return false;
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
 
 		agent = agent.toLowerCase();
 
@@ -204,7 +246,7 @@ public class BrowserSniffer {
 			return false;
 		}
 
-		String agent = req.getHeader(USER_AGENT);
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
 
 		if (agent == null) {
 			return false;
@@ -235,7 +277,7 @@ public class BrowserSniffer {
 			return false;
 		}
 
-		String agent = req.getHeader(USER_AGENT);
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
 
 		if (agent == null) {
 			return false;
@@ -260,12 +302,54 @@ public class BrowserSniffer {
 		}
 	}
 
+	public static boolean is_safari(HttpServletRequest req) {
+		if (req == null) {
+			return false;
+		}
+
+		String agent = req.getHeader(HttpHeaders.USER_AGENT);
+
+		if (agent == null) {
+			return false;
+		}
+
+		agent = agent.toLowerCase();
+
+		if (agent.indexOf("safari") != -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
+	public static boolean is_wap_xhtml(HttpServletRequest req) {
+		if (req == null) {
+			return false;
+		}
+
+		String accept = req.getHeader(HttpHeaders.ACCEPT);
+
+		if (accept == null) {
+			return false;
+		}
+
+		accept = accept.toLowerCase();
+
+		if (accept.indexOf("wap.xhtml") != -1) {
+			return true;
+		}
+		else {
+			return false;
+		}
+	}
+
 	public static boolean is_wml(HttpServletRequest req) {
 		if (req == null) {
 			return false;
 		}
 
-		String accept = req.getHeader(ACCEPT);
+		String accept = req.getHeader(HttpHeaders.ACCEPT);
 
 		if (accept == null) {
 			return false;
@@ -280,23 +364,7 @@ public class BrowserSniffer {
 			return false;
 		}
 	}
-	
-	public static String getOSInfo(HttpServletRequest req) {
-		if (req == null) {
-			return "";
-		}
 
-		String agent = req.getHeader(USER_AGENT);
+	private static final String _GZIP = "gzip";
 
-		if (agent == null) {
-			return "";
-		}
-
-		agent = agent.toLowerCase();
-
-		if ((agent.indexOf("windows") != -1)) return "windows";
-		else if ((agent.indexOf("linux") != -1)) return "linux";
-		else if ((agent.indexOf("mac") != -1)) return "mac";		
-		else return "";
-	}
 }
