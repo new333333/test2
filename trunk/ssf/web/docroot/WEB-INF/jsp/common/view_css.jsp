@@ -192,12 +192,19 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_findButtonClose = "<ssf:nlt tag="button.close"/>";
 	ss_validationErrorMessage = "<ssf:nlt tag="validation.errorMessage"/>";
 	
+}
+if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_loadJsFile(ss_rootPath, "js/common/ss_common.js");
+}
+</script>
+<script type="text/javascript">
+if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
 	ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
 	ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
 }
-
+</script>
+<script type="text/javascript">
 
 function ss_createStyleSheet(url, title, enabled) {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
@@ -254,8 +261,8 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 }
 </script>
 
-<c:if test="${!empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
-  <a href="${ss_accessibleUrl}"><img border="0"
+<c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
+  <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
     <ssf:alt tag="accessible.enableAccessibleMode"/> 
     src="<html:imagesPath/>pics/1pix.gif" /></a><%--
 		--%></c:if><%--
