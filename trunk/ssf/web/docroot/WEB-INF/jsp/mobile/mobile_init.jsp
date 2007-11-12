@@ -28,16 +28,30 @@
  * are trademarks of SiteScape, Inc.
  */
 %><%--
+--%><%@ page import="com.sitescape.util.BrowserSniffer" %><%--
+--%><%
+	boolean isWap = BrowserSniffer.is_wap_xhtml(request);
+%><%--
 --%><%@ include file="/WEB-INF/jsp/common/common.jsp" %><%--
 --%><%@ page contentType="text/html; charset=UTF-8" %><%--
 --%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<%@ include file="/WEB-INF/jsp/mobile/mobile_css.jsp" %>
+<%
+	if (isWap) {
+%>
+<link href="<html:rootPath/>css/ss_mobile_wap.css" rel="stylesheet" type="text/css" />
+<%
+	} else {
+%>
+<link href="<html:rootPath/>css/ss_mobile_browser.css" rel="stylesheet" type="text/css" />
+<%
+	}
+%>
 <script type="text/javascript">
 function ss_resizeMobileIframe() {
 	if (typeof self.parent != 'undefined' && typeof parent.ss_setMobileIframeSize != 'undefined') {
-		setTimeout("parent.ss_setMobileIframeSize();", 100);
+		parent.ss_setMobileIframeSize();
 	}
 }
 </script>
