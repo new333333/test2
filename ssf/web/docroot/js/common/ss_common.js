@@ -177,7 +177,7 @@ function ss_fetch_div(url, divId, signal) {
 				if (signal) ssf_onLayoutChange();
 		      } catch (e) {alert(e);}
 			},
-			preventCache: true,				
+			preventCache: true
 	};   
 	dojo.io.bind(bindArgs);
 }
@@ -197,7 +197,7 @@ function ss_fetch_url(url, callbackRoutine, callbackData) {
 					if (callbackRoutine) callbackRoutine(data, callbackData);
 				} catch (e) {alert(e);}
 			},
-			preventCache: true,				
+			preventCache: true
 	};   
 	dojo.io.bind(bindArgs);
 
@@ -244,7 +244,7 @@ function ss_get_url(url, callBackRoutine, callbackData) {
 			}
 		},
 		preventCache: true,				
-		mimetype: "text/json",
+		mimetype: "text/json"
 	};   
 	dojo.io.bind(bindArgs);
 }     
@@ -4437,7 +4437,7 @@ function ss_Clipboard () {
 				}
 			},
 			preventCache: true,				
-			mimetype: "text/json",
+			mimetype: "text/json"
 		};   
 		dojo.io.bind(bindArgs);	
 	}
