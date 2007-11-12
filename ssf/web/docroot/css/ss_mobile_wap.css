@@ -1,0 +1,11 @@
+BODY {
+  font-size:10px; 
+  font-family: Lucida Sans Unicode, Arial, sans-serif; 
+  background-color: #FFFFFF;
+}
+TD {
+  font-family: Arial, sans-serif;
+}
+.ss_mobile, .ss_mobile td, .ss_mobile th {
+	font-size:10px;
+}
