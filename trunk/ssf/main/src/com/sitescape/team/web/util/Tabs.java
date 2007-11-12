@@ -109,6 +109,7 @@ public class Tabs {
 	}
 	//Binder (folder or workspace) tab, 1 per binder
 	public synchronized TabEntry findTab(Binder binder, boolean clearData) {
+		if (binder == null) return new TabEntry(this); //return dummy
 		TabEntry binderTab=null;
 		//Look for this tab
 		for (int i=0; i<tabList.size(); ++i) {
