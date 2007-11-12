@@ -29,12 +29,33 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%
+	boolean isWap = BrowserSniffer.is_wap_xhtml(request);
+	if (isWap) {
+%>
+<c:set var="ss_noEnableAccessibleLink" value="1" scope="request"/>
+<%
+	}
+%>
 <c:if test="${empty ss_portletInitialization}">
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 </c:if>
-
+<%
+	if (isWap) {
+%>
+<style>
+.ss_mobile, .ss_mobile td, .ss_mobile th {
+  font-family: Lucida Sans Unicode, Arial, sans-serif;
+  font-size: 10px; 
+}
+</style>
+<%@ include file="/WEB-INF/jsp/mobile/show_front_page_data.jsp" %>
+<%
+	} else {
+%>
 <script type="text/javascript">
-var ss_mobileIframeOffset = 20;
+var ss_mobileIframeOffset = 30;
 function ss_setMobileIframeSize() {
 	var targetDiv = document.getElementById('ss_mobileDiv')
 	var iframeDiv = document.getElementById('ss_mobileIframe')
@@ -101,3 +122,6 @@ function ss_setMobileIframeSize() {
 
 </div>
 </div>
+<%
+	}
+%>

@@ -29,6 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
+<div class="ss_mobile">
 <c:if test="${!empty ssEntry}">
 <div>
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -60,6 +61,7 @@
 	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
 <span style="color:blue;"><ssf:nlt tag="mobile.returnToParentFolder"/></span>
 </a>
+</div>
 
 </body>
 </html>

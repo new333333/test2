@@ -29,7 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<table cellspacing="0" cellpadding="0" border="0">
+<div class="ss_mobile">
+<table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
 <th colspan="2" align="left">${ssBinder.title}</th>
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 <jsp:useBean id="entry1" type="java.util.HashMap" />
@@ -48,8 +49,9 @@
 <br/>
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
-<span style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
+<span class="ss_mobile" style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
 </a>
+</div>
 
 </body>
 </html>

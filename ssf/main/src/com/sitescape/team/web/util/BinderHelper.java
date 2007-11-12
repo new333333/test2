@@ -274,7 +274,10 @@ public class BinderHelper {
 				binderIds.add(new Long(mobileBinderIds[i]));
 			}
 		}
-		model.put(WebKeys.MOBILE_BINDER_LIST, binderIds);
+		model.put(WebKeys.MOBILE_BINDER_LIST, bs.getBinderModule().getBinders(binderIds));
+		Map unseenCounts = new HashMap();
+		unseenCounts = bs.getFolderModule().getUnseenCounts(binderIds);
+		model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
 		return new ModelAndView(view, model);
 		
 	}
