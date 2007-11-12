@@ -77,7 +77,7 @@ public class Group extends Principal  {
 			Principal p = (Principal)iter.next();
 			p.getMemberOf().add(this);
 		}
-		for (Iterator iter=newM.iterator(); iter.hasNext();) {
+		for (Iterator iter=remM.iterator(); iter.hasNext();) {
 			Principal p = (Principal)iter.next();
 			p.getMemberOf().remove(this);
 		}
