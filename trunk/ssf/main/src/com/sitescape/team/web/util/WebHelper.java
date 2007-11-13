@@ -667,6 +667,7 @@ public class WebHelper {
 		        	Matcher m4 = p4.matcher(urlParts);
 		        	if (m4.find() && m4.groupCount() >= 1) normalizedTitle = m4.group(1).trim();
 		        	normalizedTitle = getNormalizedTitle(Html.stripHtml(normalizedTitle));
+		        	if (normalizedTitle == null) normalizedTitle = "";
 		        	
 		        	String title = "";
 		        	Pattern p5 = Pattern.compile("text=(.*)$");
@@ -752,7 +753,7 @@ public class WebHelper {
 		    		String title = m3.group(2).trim();
 		    		title = Html.stripHtml(title);
 		    		String normalizedTitle = getNormalizedTitle(title);
-		    		if (!normalizedTitle.equals("")) {
+		    		if (normalizedTitle != null && !normalizedTitle.equals("")) {
 		    			//Build the url to that entry
 		    			String titleLink = "";
 		    			if (type.equals(WebKeys.MARKUP_VIEW)) {
