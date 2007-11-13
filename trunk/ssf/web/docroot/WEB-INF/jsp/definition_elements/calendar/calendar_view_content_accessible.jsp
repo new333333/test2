@@ -91,7 +91,7 @@
 							<h3 class="ss_entryTitle">
 							
 								<%
-									if (!ssSeenMap.checkAndSetSeen(entry, true)) {
+									if (!ssSeenMap.checkIfSeen(entry)) {
 										%><img <ssf:alt tag="alt.unseen"/> border="0" 
 										src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
 									}
