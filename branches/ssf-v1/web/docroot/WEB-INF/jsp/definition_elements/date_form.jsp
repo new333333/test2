@@ -71,7 +71,6 @@
 		name="${elementName}_fullDate" 
 		lang="${ssUser.locale.language}" 
 		value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"></div>
-	</div>
 	
 	<script type="text/javascript">
 		dojo.require("sitescape.widget.DropdownDatePickerActivateByInput");
