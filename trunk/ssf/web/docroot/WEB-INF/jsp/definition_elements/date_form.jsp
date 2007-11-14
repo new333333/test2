@@ -56,7 +56,9 @@
 <c:set var="elementName" value="<%= elementName %>" />
 <div class="ss_entryContent">
 <span class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></span>
-<div id="<%= elementName %>_error" style="visibility:hidden; display:none;"><span class="ss_formError">Please enter a valid date.</span></div>
+<div id="<%= elementName %>_error" style="visibility:hidden; display:none;">
+  <span class="ss_formError">Please enter a valid date.</span>
+</div>
 
 	
 	
@@ -70,8 +72,8 @@
 		id="date_${elementName}_${prefix}"
 		name="${elementName}_fullDate" 
 		lang="${ssUser.locale.language}" 
-		value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"></div>
-	</div>
+		value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" 
+		timeZone="${ssUser.timeZone.ID}"/>"></div>
 	
 	<script type="text/javascript">
 		dojo.require("sitescape.widget.DropdownDatePickerActivateByInput");
