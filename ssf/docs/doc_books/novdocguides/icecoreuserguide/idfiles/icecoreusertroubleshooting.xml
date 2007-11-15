@@ -16,8 +16,6 @@
 
  <target id="bbizgkh" pid="bbizgel" name="FormalPara" level="2"> <text>Problem:</text> </target>
 
- <target id="bbj2bgv" pid="bbizgel" name="FormalPara" level="2"> <text>Note:</text> </target>
-
  <target id="bbizllx" pid="bbizgel" name="FormalPara" level="3" number="w"> <text>Warning:</text> </target>
 
  <target id="bbizmd4" pid="bbizgel" name="FormalPara" level="3" number="w"> <text>Strong recommendation:</text> </target>
