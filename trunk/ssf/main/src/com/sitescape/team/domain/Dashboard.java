@@ -147,7 +147,7 @@ public abstract class Dashboard extends PersistentTimestampObject {
     	this.nextComponentId = nextComponentId;
     }
     /**
-     * @hiberate.property
+     * @hiberate.property - obsolete, stored as user/binder properties
      */
 	public boolean isShowComponents() {
 		return showComponents;

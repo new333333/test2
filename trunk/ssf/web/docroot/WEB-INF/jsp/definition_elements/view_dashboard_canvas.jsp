@@ -154,18 +154,23 @@ function ss_showForumEntryInIframe_Popup(url) {
 </script>
   
   <!-- Start of dashboard "Add penlet" form -->
-  <c:if test="${empty ssBinderConfig}">
+  <c:if test="${empty ssBinderConfig && (!ssUser.shared || ssDashboard.sharedModificationAllowed)}">
   <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
     <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
     	name="action" value="modify_dashboard"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
 	  <div class="ss_style" style="margin:10px;">
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentScope"/></span><br>
+ 		<c:if test="${!ssUser.shared}">
         <input type="radio" name="_scope" value="local" checked/><ssf:nlt tag="dashboard.componentScope.local"/><br>
         <input type="radio" name="_scope" value="global"/><ssf:nlt tag="dashboard.componentScope.global"/> <ssf:inlineHelp tag="ihelp.other.global_accessories"/><br>
         <c:if test="${ssDashboard.sharedModificationAllowed}">
           <input type="radio" name="_scope" value="binder"/><ssf:nlt tag="dashboard.componentScope.binder"/> <ssf:inlineHelp tag="ihelp.other.community_accessories"/><br>
         </c:if>
+		</c:if>
+ 		<c:if test="${ssUser.shared}">
+          <input type="radio" name="_scope" value="binder" checked/><ssf:nlt tag="dashboard.componentScope.binder"/> <ssf:inlineHelp tag="ihelp.other.community_accessories"/><br>
+		</c:if>
         <br/>
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
         <c:forEach var="component" items="${ssDashboard.components_list}">

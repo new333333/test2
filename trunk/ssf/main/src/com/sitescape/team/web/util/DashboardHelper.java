@@ -1589,12 +1589,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	return false;
 	}
 	
-	public static boolean checkIfShowingAllComponents(Dashboard dashboard) {
-		//See if the components are shown or hidden
-		Boolean showAllComponents = Boolean.valueOf(dashboard.isShowComponents());
-		if (showAllComponents == null) showAllComponents = Boolean.TRUE;
-		return showAllComponents;
-	}
 	
 	public static boolean checkIfShowingAllComponents(Binder binder) {
 		//See if the components are shown or hidden
