@@ -29,9 +29,28 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-
 <div class="ss_mobile">
-  <span><ssf:nlt tag="general.notLoggedIn"/></span>
+<table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
+<th colspan="2" align="left">${ssBinder.title}</th>
+<c:forEach var="entry1" items="${ssFolderEntries}" >
+<jsp:useBean id="entry1" type="java.util.HashMap" />
+  <tr><td align="right" valign="top" style="padding:0px 4px 2px 4px;">${entry1._docNum}.</td>
+	<td><a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.id}"  entryId="${entry1._docId}"
+	action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
+    <c:if test="${empty entry1.title}">
+    	(<ssf:nlt tag="entry.noTitle"/>)
+    </c:if>
+	<c:out value="${entry1.title}"/>
+	</a>
+  </td></tr>
+</c:forEach>
+</table>
+<br/>
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
+<span class="ss_mobile" style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
+</a>
 </div>
 
 </body>

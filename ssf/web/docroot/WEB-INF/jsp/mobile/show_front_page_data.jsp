@@ -85,3 +85,17 @@
 </c:if>
 </div>
 
+<br/>
+<br/>
+
+<div class="ss_mobile">
+<strong><ssf:nlt tag="searchResult.savedSearchTitle"/></strong>
+<br/>
+<c:forEach var="query" items="${ss_UserQueries}" varStatus="status">
+  <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
+					action="__ajax_mobile" actionUrl="false" 
+					operation="mobile_show_search_results"><ssf:param 
+					name="ss_queryName" value="${query.key}" /></ssf:url>">${query.key}</a>
+  <c:if test="${!status.last}"><br/></c:if>
+</c:forEach>
+</div>
