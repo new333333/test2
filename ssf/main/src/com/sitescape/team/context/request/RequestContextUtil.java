@@ -97,7 +97,7 @@ public class RequestContextUtil {
 		RequestContextHolder.clear();
 	}
 	
-	public static User loadUpUser() {
+	public static User resolveToUser() {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		
 		if(rc == null)

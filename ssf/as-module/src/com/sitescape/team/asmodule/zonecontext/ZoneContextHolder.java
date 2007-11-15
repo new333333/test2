@@ -1,6 +1,6 @@
-package com.sitescape.team.asmodule.requestcontext;
+package com.sitescape.team.asmodule.zonecontext;
 
-public class RequestContextInfo {
+public class ZoneContextHolder {
 	
     private static final ThreadLocal<String> context = new ThreadLocal<String>();
 

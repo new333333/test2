@@ -114,13 +114,13 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 		PortletSession ses = WebHelper.getRequiredPortletSession(request);
     	Long userId = (Long)ses.getAttribute(WebKeys.USER_ID, PortletSession.APPLICATION_SCOPE);
 		if (userId == null) { 
-			user = RequestContextUtil.loadUpUser();
+			user = RequestContextUtil.resolveToUser();
 			
 			ses.setAttribute(WebKeys.USER_ID, user.getId(), PortletSession.APPLICATION_SCOPE);
 		} 
 		else {
 			reqCxt.setUserId(userId);
-			user = RequestContextUtil.loadUpUser();
+			user = RequestContextUtil.resolveToUser();
 		}
 		
 		Boolean sync = (Boolean)ses.getAttribute(WebKeys.PORTLET_USER_SYNC, PortletSession.APPLICATION_SCOPE);

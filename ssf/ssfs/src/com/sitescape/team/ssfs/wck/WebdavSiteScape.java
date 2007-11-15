@@ -52,7 +52,7 @@ import org.apache.slide.simple.store.WebdavStoreMacroMoveExtension;
 import org.apache.slide.structure.ObjectAlreadyExistsException;
 import org.apache.slide.structure.ObjectNotFoundException;
 
-import com.sitescape.team.asmodule.requestcontext.RequestContextInfo;
+import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
 import com.sitescape.team.ssfs.AlreadyExistsException;
 import com.sitescape.team.ssfs.LockException;
 import com.sitescape.team.ssfs.NoAccessException;
@@ -90,7 +90,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		this.service = service;
 		this.logger = logger;
 		if(connection != null) {
-			this.serverName = RequestContextInfo.getServerName();
+			this.serverName = ZoneContextHolder.getServerName();
 			this.userName = (String) connection;
 		}
 		this.client = new CCClient(serverName, userName);

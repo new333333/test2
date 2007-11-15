@@ -56,7 +56,7 @@ public class DigestBasedUserPreloadInterceptor extends HandlerInterceptorAdapter
 			return true;
 		}
 		
-		RequestContextUtil.loadUpUser();
+		RequestContextUtil.resolveToUser();
 
 		return true;
 	}

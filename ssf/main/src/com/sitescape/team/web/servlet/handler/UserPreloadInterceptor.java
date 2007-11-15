@@ -78,13 +78,13 @@ public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
 		
 	   	Long userId = (Long)ses.getAttribute(WebKeys.USER_ID);
 		if (userId == null) { 
-			user = RequestContextUtil.loadUpUser();
+			user = RequestContextUtil.resolveToUser();
 			
 			ses.setAttribute(WebKeys.USER_ID, user.getId());
 		} else {
 			reqCxt.setUserId(userId);
 			
-			user = RequestContextUtil.loadUpUser();
+			user = RequestContextUtil.resolveToUser();
 		}
 	}
 
