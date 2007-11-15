@@ -15,6 +15,7 @@ import javax.portlet.RenderResponse;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.util.Clipboard;
@@ -72,7 +73,7 @@ public class ClipboardController extends SAbstractControllerRetry {
 			Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 			try {
 				Collection teamMemberIds = getBinderModule().getTeamMemberIds(binderId, true);
-				clipboard.add(Clipboard.USERS, new ArrayList(teamMemberIds));				
+				clipboard.add(Clipboard.USERS, teamMemberIds);				
 			} catch (AccessControlException ac) {} //no access, just skip
 		}
 	}
@@ -84,26 +85,18 @@ public class ClipboardController extends SAbstractControllerRetry {
 		if (PortletRequestUtils.getStringParameters(request, WebKeys.URL_MUSTER_IDS) != null) {
 			musterIds = PortletRequestUtils.getStringParameters(request, WebKeys.URL_MUSTER_IDS);
 		}
-		Clipboard clipboard = new Clipboard(request);
-		Map clipboardMap = clipboard.getClipboard();
-		if (clipboardMap.containsKey(musterClass)) {
-			Set idList = (Set) clipboardMap.get(musterClass);
-			for (int i = 0; i < musterIds.length; i++) {
-				Long id = Long.valueOf(musterIds[i]);
-				if (idList.contains(id)) idList.remove(id);
-			}
-		}
+		Clipboard clipboard = new Clipboard(request);		
+		clipboard.remove(musterClass, LongIdUtil.getIdsAsLongSet(musterIds));
 	}
 	
 	private void ajaxClearClipboard(ActionRequest request, 
 			ActionResponse response) throws Exception {
 		Clipboard clipboard = new Clipboard(request);
-		Map clipboardMap = clipboard.getClipboard();
 		String musterClass = PortletRequestUtils.getStringParameter(request, WebKeys.URL_MUSTER_CLASS, "");
 		String[] musterClasses = musterClass.split(" ");
 		for (int i = 0; i < musterClasses.length; i++) {
 			if (!musterClasses[i].equals("")) {
-				if (clipboardMap.containsKey(musterClasses[i])) clipboardMap.remove(musterClasses[i]);
+				clipboard.clear(musterClasses[i]);
 			}
 		}
 	}
@@ -113,8 +106,7 @@ public class ClipboardController extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		
 		Clipboard clipboard = new Clipboard(request);
-		Map clipboardMap = clipboard.getClipboard();
-		Set clipboardUsers = (Set) clipboardMap.get(Clipboard.USERS);
+		Set clipboardUsers = clipboard.get(Clipboard.USERS);
 		model.put(WebKeys.CLIPBOARD_PRINCIPALS , getProfileModule().getUsersFromPrincipals(
 					clipboardUsers));
 		

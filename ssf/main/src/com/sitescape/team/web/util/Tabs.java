@@ -39,9 +39,9 @@ import javax.portlet.PortletSession;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.web.WebKeys;
 /**
  * @author hurley
  *
@@ -79,11 +79,11 @@ public class Tabs {
 		Tabs tabs = null;
 		if (request != null) {
 			ps = WebHelper.getRequiredPortletSession(request);
-			tabs = (Tabs) ps.getAttribute(WebKeys.TABS, PortletSession.APPLICATION_SCOPE);			
+			tabs = (Tabs) ps.getAttribute(ObjectKeys.SESSION_TABS, PortletSession.APPLICATION_SCOPE);			
 		} 
 		if (tabs == null) {
 			tabs = new Tabs();
-			if (ps != null) ps.setAttribute(WebKeys.TABS, tabs, PortletSession.APPLICATION_SCOPE);
+			if (ps != null) ps.setAttribute(ObjectKeys.SESSION_TABS, tabs, PortletSession.APPLICATION_SCOPE);
 		}
 		return tabs;
 	}

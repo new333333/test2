@@ -88,6 +88,8 @@ public interface ObjectKeys {
 	public static final String SUPER_USER_INTERNALID="402883b90d0de1f3010d0df5582b000b";
 	//id to run background jobs under - also acts as a super user but cannot loggin as this person
 	public static final String JOB_PROCESSOR_INTERNALID="402883b90d0de1f3010d0df5582b0012";
+	//shared guest account
+	public static final String GUEST_USER_INTERNALID="402883b90d0de1f3010d0df5582b0013";
 	//reserved id put in acls/membership to indicate owner of object has access
 	//search engine stores the ownerId of the entity in place of this
 	public static final Long OWNER_USER_ID = Long.valueOf(-1);
@@ -98,6 +100,10 @@ public interface ObjectKeys {
     //custom property prefix from ssf.properties
 	public static final String CUSTOM_PROPERTY_PREFIX="custom.";
 
+	//keys for data stored in request session
+	public static final String SESSION_USERPROPERTIES="userProperties";
+	public static final String SESSION_TABS="userTabs";
+	public static final String SESSION_CLIPBOARD="userClipboard";
 	
     //map keys returned from modules
     public static final String BINDER="binder";
@@ -187,7 +193,6 @@ public interface ObjectKeys {
     public static final String SEARCH_LASTACTIVITY_DATE_END = "lastActivityDateEnd";
     public static final String SEARCH_CREATION_DATE_START = "creationDateStart";
     public static final String SEARCH_CREATION_DATE_END = "creationDateEnd";
-    
     
     //Search Result Identifier
     public static final String SEARCH_RESULTS_DISPLAY="ss_searchResultListing";
