@@ -461,10 +461,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		child.setText("all");
 		Set<Long> userAcls = getProfileDao().getPrincipalIds(user);
 		QueryBuilder qb = new QueryBuilder(userAcls);
-		if (user.isSuper())
-			so = qb.buildQuery(qTree, true);
-		else
-			so = qb.buildQuery(qTree, false);
+		so = qb.buildQuery(qTree);
 
 		return so.getQuery();
 
