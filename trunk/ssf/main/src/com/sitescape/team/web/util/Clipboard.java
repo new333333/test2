@@ -28,21 +28,21 @@
  */
 package com.sitescape.team.web.util;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
-
-import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.ObjectKeys;
 /**
  * @author hurley
  *
  * A Clipboard object contains a list of maps of user ids, folder ids or entry ids. 
+ * Since this is shared in the session, and multiple brower instances share a session, need
+ * to synchronize access
  * 
  */
 public class Clipboard {
@@ -55,29 +55,40 @@ public class Clipboard {
 	
 	public Clipboard(PortletRequest request) {
 		PortletSession ps = WebHelper.getRequiredPortletSession(request);
-		clipboard = (Map) ps.getAttribute(WebKeys.CLIPBOARD, PortletSession.APPLICATION_SCOPE);
+		clipboard = (Map) ps.getAttribute(ObjectKeys.SESSION_CLIPBOARD, PortletSession.APPLICATION_SCOPE);
 		if (clipboard == null) {
 			clipboard = new HashMap(3);
 			clipboard.put(BINDERS, new HashSet());
 			clipboard.put(ENTRIES, new HashSet());
 			clipboard.put(USERS, new HashSet());
-			ps.setAttribute(WebKeys.CLIPBOARD, clipboard, PortletSession.APPLICATION_SCOPE);
+			ps.setAttribute(ObjectKeys.SESSION_CLIPBOARD, clipboard, PortletSession.APPLICATION_SCOPE);
 		}
 	}
 	
-	public void add(String musterClass, List ids) {
-		if (clipboard.containsKey(musterClass)) {
-			Set idList = (Set) clipboard.get(musterClass);
-			Iterator it = ids.iterator();
-			while (it.hasNext()) {
-				Long id = (Long)it.next();
-				if (!idList.contains(id)) idList.add(id);
-			}
-		}
+	public synchronized void add(String musterClass, Collection ids) {
+		Set idList = (Set) clipboard.get(musterClass);
+		if (idList == null) set(musterClass, ids);
+		else idList.addAll(ids);
 	}
-	
-	public Map getClipboard() {
-		return clipboard;
+	public synchronized void remove(String musterClass, Collection ids) {
+		Set idList = (Set) clipboard.get(musterClass);
+		if (idList == null) return;
+		else idList.removeAll(ids);
 	}
+	//return copy
+	public synchronized Set get(String musterClass) {
+		Set result = (Set)clipboard.get(musterClass);
+		if (result != null) return new HashSet(result);
+		return new HashSet();
+	}
+	public synchronized void set(String musterClass, Collection ids) {
+		Set result = new HashSet(ids);
+		clipboard.put(musterClass, result);
+	}
+	public synchronized void clear(String musterClass) {
+		Set result = (Set)clipboard.get(musterClass);
+		result.clear();		
+	}
+
 	
 }

@@ -81,10 +81,9 @@ public class ClipboardTag extends BodyTagSupport {
 			
 			RenderRequest renderRequest = (RenderRequest) httpReq.getAttribute("javax.portlet.request");
 			Clipboard clipboard = new Clipboard(renderRequest);
-			Map clipboardMap = clipboard.getClipboard();
 			
 			httpReq.setAttribute("type", this.type);			
-			httpReq.setAttribute("clipboard_user_count", ((Set) clipboardMap.get(Clipboard.USERS)).size());
+			httpReq.setAttribute("clipboard_user_count", ((Set) clipboard.get(Clipboard.USERS)).size());
 			httpReq.setAttribute("instanceCount", this.instanceCount);
 			httpReq.setAttribute("formElement", this.formElement);
 			
