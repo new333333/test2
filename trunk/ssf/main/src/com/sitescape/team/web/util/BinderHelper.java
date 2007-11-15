@@ -28,9 +28,11 @@
  */
 package com.sitescape.team.web.util;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -54,6 +56,7 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.NoObjectByTheIdException;
@@ -76,6 +79,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
@@ -83,6 +87,9 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.search.filter.SearchFilterRequestParser;
+import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
@@ -1548,5 +1555,552 @@ public class BinderHelper {
 		}		
 	}
 
+	public static Map prepareSearchResultPage(AllModulesInjected bs, RenderRequest request, Tabs tabs) {
+		Map model = new HashMap();
+
+		Integer tabId = PortletRequestUtils.getIntParameter(request, WebKeys.URL_TAB_ID, -1);
+		//new search
+		Tabs.TabEntry tab = tabs.findTab(Tabs.SEARCH, tabId);
+		if (tab == null) return prepareSearchResultData(bs, request, tabs);
+		// get query and options from tab
+		Document searchQuery = tab.getQueryDoc();
+		Map options = getOptionsFromTab(tab);
+		Integer pageNo = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER, -1);
+		if (pageNo != -1) options.put(Tabs.PAGE, pageNo);				
+
+		// get page no and actualize options
+		// execute query
+		// actualize tabs info
+		actualizeOptions(options, request);
+		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
+		prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
+		
+		return model;
+	}
+
+	public static Map prepareSavedQueryResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs) throws PortletRequestBindingException {
+		Map model = new HashMap();
+
+		String queryName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_QUERY_NAME, "");
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		
+		// get query and options from tab		
+		Document searchQuery = getSavedQuery(bs, queryName, bs.getProfileModule().getUserProperties(currentUser.getId()));
+		
+		// get page no and actualize options
+		// execute query
+		// actualize tabs info
+		Map options = prepareSearchOptions(bs, request);
+		actualizeOptions(options, request);
+
+		options.put(Tabs.TITLE, queryName);
+		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
+		
+		Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
+		
+		prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
+		
+		return model;
+	}
+	
+	public static Map prepareSearchResultData(AllModulesInjected bs, RenderRequest request, Tabs tabs) {
+		Map model = new HashMap();
+
+		SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, bs.getDefinitionModule());
+		Document searchQuery = requestParser.getSearchQuery();
+		Map options = prepareSearchOptions(bs, request);
+		Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
+		
+		Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
+		
+		prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
+
+		return model;
+	}
+	
+	public static void prepareSearchResultPage (AllModulesInjected bs, Map results, Map model, Document query, Map options, Tabs.TabEntry tab) {
+		
+		model.put(WebKeys.URL_TAB_ID, tab.getTabId());
+		//save tab options
+		tab.setData(options);
+		SearchFilterToMapConverter searchFilterConverter = 
+			new SearchFilterToMapConverter(query, bs.getDefinitionModule(), bs.getProfileModule(), bs.getBinderModule());
+		model.putAll(searchFilterConverter.convertAndPrepareFormData());
+		
+		// SearchUtils.filterEntryAttachmentResults(results);
+		prepareRatingsAndFolders(bs, model, (List) results.get(ObjectKeys.SEARCH_ENTRIES));
+		model.putAll(prepareSavedQueries(bs));
+
+		// this function puts also proper part of entries list into a model
+		preparePagination(model, results, options, tab);
+		
+		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+		model.put("summaryWordCount", (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
+
+		model.put("quickSearch", options.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
+		
+	}
+	public static Map prepareSearchFormData(AllModulesInjected bs, RenderRequest request) throws PortletRequestBindingException {
+		Map options = prepareSearchOptions(bs, request);
+		Map model = new HashMap();
+		model.put("resultsCount", options.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+		model.put("quickSearch", false);
+		
+		model.putAll(prepareSavedQueries(bs));
+		
+		Workspace ws = bs.getWorkspaceModule().getWorkspace();
+		Document tree = bs.getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, bs),1);
+		model.put(WebKeys.DOM_TREE, tree);
+		
+		return model;
+	}
+	
+	private static Map prepareSearchOptions(AllModulesInjected bs, RenderRequest request) {
+		
+		Map options = new HashMap();
+		
+		//If the entries per page is not present in the user properties, then it means the
+		//number of records per page is obtained from the ssf properties file, so we do not have 
+		//to worry about checking the old and new number or records per page.
+		
+		//Getting the entries per page from the user properties
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userProp = bs.getProfileModule().getUserProperties(user.getId());
+		String entriesPerPage = (String) userProp.getProperty(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE);
+		if (entriesPerPage == null || "".equals(entriesPerPage)) {
+			entriesPerPage = SPropsUtil.getString("search.records.listed");
+		}
+		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
+		
+		Integer searchUserOffset = PortletRequestUtils.getIntParameter(request, ObjectKeys.SEARCH_USER_OFFSET, 0);
+			
+		// TODO - implement it better(?) this stuff is to get from lucene proper entries,  
+		// to get the ~ proper rankings we get from lucene MoreEntriesCounter more hits as max on page
+		Integer searchLuceneOffset = 0;
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
+		
+		Integer maxHits = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_MAX_HITS, new Integer(entriesPerPage));
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+		
+		Integer summaryWords = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS, new Integer(20));
+		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWords);
+		
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits + 200;
+		if (searchUserOffset > 200) {
+			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+		}
+		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+
+		Integer pageNo = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER, 1);
+		options.put(Tabs.PAGE, pageNo);				
+		
+		Boolean quickSearch = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_QUICKSEARCH, Boolean.FALSE);
+		options.put(WebKeys.SEARCH_FORM_QUICKSEARCH, quickSearch);
+
+		if (quickSearch) {
+			options.put(Tabs.TITLE, NLT.get("searchForm.quicksearch.Title") + " " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale()).format(new Date()));
+		} else {
+			options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title") + " " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale()).format(new Date()));
+		} 
+	
+		return options;
+	}
+
+	private static void actualizeOptions(Map options, RenderRequest request) {
+		Integer pageNo = (Integer)options.get(Tabs.PAGE);
+		if ((pageNo == null) || pageNo < 1) {
+			pageNo = 1;
+			
+		}
+		int defaultMaxOnPage = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
+		if (options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) defaultMaxOnPage = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);
+		int[] maxOnPageArr = PortletRequestUtils.getIntParameters(request, WebKeys.SEARCH_FORM_MAX_HITS);
+		int maxOnPage = defaultMaxOnPage;
+		if (maxOnPageArr.length >0) maxOnPage = maxOnPageArr[0];
+		int userOffset = (pageNo - 1) * maxOnPage;
+		int[] summaryWords = PortletRequestUtils.getIntParameters(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS);
+		int summaryWordsCount = 20;
+		if (options.containsKey(WebKeys.SEARCH_FORM_SUMMARY_WORDS)) { summaryWordsCount = (Integer)options.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS);}
+		if (summaryWords.length > 0) {summaryWordsCount = summaryWords[0];}
+		
+		Integer searchLuceneOffset = 0;
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, userOffset);
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxOnPage);
+		options.put(WebKeys.URL_PAGE_NUMBER, pageNo);
+		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWordsCount);
+		
+	}
+	private static Map getOptionsFromTab(Tabs.TabEntry tab) {
+		Map options = new HashMap();
+		Map tabData = tab.getData();
+		if (tabData.containsKey(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE)) options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, tabData.get(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE));
+		if (tabData.containsKey(ObjectKeys.SEARCH_OFFSET)) options.put(ObjectKeys.SEARCH_OFFSET, tabData.get(ObjectKeys.SEARCH_OFFSET));
+		if (tabData.containsKey(ObjectKeys.SEARCH_USER_OFFSET)) options.put(ObjectKeys.SEARCH_USER_OFFSET, tabData.get(ObjectKeys.SEARCH_USER_OFFSET));
+		if (tabData.containsKey(ObjectKeys.SEARCH_MAX_HITS)) options.put(ObjectKeys.SEARCH_MAX_HITS, tabData.get(ObjectKeys.SEARCH_MAX_HITS));
+		if (tabData.containsKey(ObjectKeys.SEARCH_USER_MAX_HITS)) options.put(ObjectKeys.SEARCH_USER_MAX_HITS, tabData.get(ObjectKeys.SEARCH_USER_MAX_HITS));
+		if (tabData.containsKey(Tabs.TITLE)) options.put(Tabs.TITLE, tabData.get(Tabs.TITLE));
+		if (tabData.containsKey(WebKeys.SEARCH_FORM_SUMMARY_WORDS)) options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, tabData.get(WebKeys.SEARCH_FORM_SUMMARY_WORDS));
+		if (tabData.containsKey(WebKeys.SEARCH_FORM_QUICKSEARCH)) options.put(WebKeys.SEARCH_FORM_QUICKSEARCH, tabData.get(WebKeys.SEARCH_FORM_QUICKSEARCH));
+		if (tabData.containsKey(Tabs.PAGE)) options.put(Tabs.PAGE, tabData.get(Tabs.PAGE));
+		return options;
+	}
+	
+	public static Document getSavedQuery(AllModulesInjected bs, String queryName, UserProperties userProperties) {
+		
+		Map properties = userProperties.getProperties();
+		if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			Map queries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+			Object q = queries.get(queryName);
+			if (q == null) return null;
+			if (q instanceof String) {
+				try {
+					return DocumentHelper.parseText((String)q);
+				} catch (Exception ex) {
+					queries.remove(queryName);
+					bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, queries);
+				};
+			}
+			//In v1 these are stored as documents; shouldn't be because the hibernate dirty check always fails causing updates
+			if (q instanceof Document) {
+				queries.put(queryName, ((Document)q).asXML());
+				bs.getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, queries);
+				return (Document)q;
+			}
+		
+		}
+		return null;
+	}
+
+
+	
+	private static Map prepareSavedQueries(AllModulesInjected bs) {
+		Map result = new HashMap();
+		
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		
+		UserProperties userProperties = bs.getProfileModule().getUserProperties(currentUser.getId());
+		if (userProperties != null) {
+			Map properties = userProperties.getProperties();
+			if (properties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+				Map queries = (Map)properties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+				result.put(WebKeys.SEARCH_SAVED_QUERIES, queries.keySet());
+			}
+		}
+		return result;
+	}
+	//This method rates the people
+	public static List ratePeople(List entries) {
+		//The same logic and naming has been followed for both people and placess
+		return ratePlaces(entries);
+	}
+
+	private static void prepareRatingsAndFolders(AllModulesInjected bs, Map model, List entries) {
+		List peoplesWithCounters = sortPeopleInEntriesSearchResults(entries);
+		List placesWithCounters = sortPlacesInEntriesSearchResults(bs.getBinderModule(), entries);
+		
+		List peoplesRating = ratePeople(peoplesWithCounters);
+		model.put(WebKeys.FOLDER_ENTRYPEOPLE + "_all", peoplesRating);
+		
+		List peoplesRatingToShow = new ArrayList();
+		if (peoplesRating.size() > 20) {
+			peoplesRatingToShow.addAll(peoplesRating.subList(0,20));
+		} else {
+			peoplesRatingToShow.addAll(peoplesRating);
+		}
+		List placesRating = ratePlaces(placesWithCounters);
+		if (placesRating.size() > 20) {
+			placesRating = placesRating.subList(0,20);
+		}
+		model.put(WebKeys.FOLDER_ENTRYPEOPLE, peoplesRatingToShow);
+		model.put(WebKeys.FOLDER_ENTRYPLACES, placesRating);
+
+		Map folders = prepareFolderList(placesWithCounters);
+		extendEntriesInfo(entries, folders);
+
+		// TODO check and make it better, copied from SearchController
+		List entryCommunityTags = BinderHelper.sortCommunityTags(entries);
+		List entryPersonalTags = BinderHelper.sortPersonalTags(entries);
+		int intMaxHitsForCommunityTags = BinderHelper.getMaxHitsPerTag(entryCommunityTags);
+		int intMaxHitsForPersonalTags = BinderHelper.getMaxHitsPerTag(entryPersonalTags);
+		int intMaxHits = intMaxHitsForCommunityTags;
+		if (intMaxHitsForPersonalTags > intMaxHitsForCommunityTags) intMaxHits = intMaxHitsForPersonalTags;
+		entryCommunityTags = BinderHelper.rateCommunityTags(entryCommunityTags, intMaxHits);
+		entryPersonalTags = BinderHelper.ratePersonalTags(entryPersonalTags, intMaxHits);
+
+		model.put(WebKeys.FOLDER_ENTRYTAGS, entryCommunityTags);
+		model.put(WebKeys.FOLDER_ENTRYPERSONALTAGS, entryPersonalTags);
+	}
+
+	protected static List sortPlacesInEntriesSearchResults(BinderModule binderModule, List entries) {
+		HashMap placeMap = new HashMap();
+		ArrayList placeList = new ArrayList();
+		// first go thru the original search results and 
+		// find all the unique places.  Keep a count to see
+		// if any are more active than others.
+		for (int i = 0; i < entries.size(); i++) {
+			Map entry = (Map)entries.get(i);
+			String id = (String)entry.get("_binderId");
+			if (id == null) continue;
+			Long bId = new Long(id);
+			if (placeMap.get(bId) == null) {
+				placeMap.put(bId, new Place(bId,1));
+			} else {
+				Place p = (Place)placeMap.remove(bId);
+				p = new Place(p.getId(),p.getCount()+1);
+				placeMap.put(bId,p);
+			}
+		}
+		//sort the hits
+		Collection collection = placeMap.values();
+		Object[] array = collection.toArray();
+		Arrays.sort(array);
+		
+		for (int j = 0; j < array.length; j++) {
+			Binder binder=null;
+			try {
+				binder = binderModule.getBinder(((Place)array[j]).getId());
+			} catch (Exception ex) {
+				//not access or doesn't exist?
+			}
+			int count = ((Place)array[j]).getCount();
+			Map place = new HashMap();
+			place.put(WebKeys.BINDER, binder);
+			place.put(WebKeys.SEARCH_RESULTS_COUNT, new Integer(count));
+			placeList.add(place);
+		}
+		return placeList;
+
+	}
+
+	//This method rates the places
+	public static List ratePlaces(List entries) {
+		List ratedList = new ArrayList();
+		int intMaxHitsPerFolder = 0;
+		for (int i = 0; i < entries.size(); i++) {
+			Map place = (Map) entries.get(i);
+			Integer resultCount = (Integer) place.get(WebKeys.SEARCH_RESULTS_COUNT);
+			if (i == 0) {
+				place.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(100));
+				place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_brightest");
+				intMaxHitsPerFolder = resultCount;
+			}
+			else {
+				int intResultCount = resultCount.intValue();
+				Double DblRatingForFolder = ((double)intResultCount/intMaxHitsPerFolder) * 100;
+				int intRatingForFolder = DblRatingForFolder.intValue();
+				place.put(WebKeys.SEARCH_RESULTS_RATING, new Integer(DblRatingForFolder.intValue()));
+				if (intRatingForFolder > 80 && intRatingForFolder <= 100) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_brightest");
+				}
+				else if (intRatingForFolder > 50 && intRatingForFolder <= 80) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_brighter");
+				}
+				else if (intRatingForFolder > 20 && intRatingForFolder <= 50) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_bright");
+				}
+				else if (intRatingForFolder > 10 && intRatingForFolder <= 20) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_dim");
+				}
+				else if (intRatingForFolder >= 0 && intRatingForFolder <= 10) {
+					place.put(WebKeys.SEARCH_RESULTS_RATING_CSS, "ss_very_dim");
+				}
+			}
+			ratedList.add(place);
+		}
+		return ratedList;
+	}
+	
+	private static Map prepareFolderList(List placesWithCounters) {
+		Map folderMap = new HashMap();
+		Iterator it = placesWithCounters.iterator();
+		while (it.hasNext()) {
+			Map place = (Map) it.next();
+			Binder binder = (Binder)place.get(WebKeys.BINDER);
+			if (binder == null) continue;
+			Binder parentBinder = binder.getParentBinder();
+			String parentBinderTitle = "";
+			if (parentBinder != null) parentBinderTitle = parentBinder.getTitle() + " // ";
+			folderMap.put(binder.getId(), parentBinderTitle + binder.getTitle());
+		}
+		return folderMap;
+	}
+	
+	private static void extendEntriesInfo(List entries, Map folders) {
+		Iterator it = entries.iterator();
+		while (it.hasNext()) {
+			Map entry = (Map) it.next();
+			if (entry.get(WebKeys.SEARCH_BINDER_ID) != null) {
+				entry.put(WebKeys.BINDER_TITLE, folders.get(Long.parseLong((String)entry.get(WebKeys.SEARCH_BINDER_ID))));
+			}
+		}
+	}
+	
+	private static void preparePagination(Map model, Map results, Map options, Tabs.TabEntry tab) {
+		int totalRecordsFound = (Integer) results.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+		int countReturned = (Integer) results.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
+		int pageInterval = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
+		if (options != null && options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) {
+			pageInterval = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);
+		}
+		
+		int pagesCount = (int)Math.ceil((double)totalRecordsFound / pageInterval);
+		
+		int firstOnCurrentPage = 0;
+		if (options != null && options.containsKey(ObjectKeys.SEARCH_USER_OFFSET)) {
+			firstOnCurrentPage = (Integer) options.get(ObjectKeys.SEARCH_USER_OFFSET);
+		}
+		
+		if (firstOnCurrentPage > totalRecordsFound || firstOnCurrentPage < 0) {
+			firstOnCurrentPage = 0;
+		}
+
+		int currentPageNo = firstOnCurrentPage / pageInterval + 1;
+		int lastOnCurrentPage = firstOnCurrentPage + pageInterval;
+		if ((countReturned - firstOnCurrentPage)<pageInterval) {
+			//If asking for more than search results returned, don't go beyond the ammount returned
+			//TODO Make the search request ask for the proper results (i.e., set the "starting count" properly on the search)
+			lastOnCurrentPage = firstOnCurrentPage + (countReturned-firstOnCurrentPage);
+			if (firstOnCurrentPage < 0) firstOnCurrentPage = 0;
+		}
+		
+		List shownOnPage = ((List) results.get(ObjectKeys.SEARCH_ENTRIES)).subList(firstOnCurrentPage, lastOnCurrentPage);
+		checkFileIds(shownOnPage);
+		model.put(WebKeys.FOLDER_ENTRIES, shownOnPage);
+		model.put(WebKeys.PAGE_NUMBER, currentPageNo);
+		
+		List pageNos = new ArrayList();
+		for (int i = currentPageNo - 2; i <= currentPageNo; i++) {
+			if (i > 0) {
+				pageNos.add(i);
+			}
+		}
+		
+		for (int i = currentPageNo+1; i <= currentPageNo+2; i++) {
+			if (i <= pagesCount) {
+				pageNos.add(i);
+			}
+		}
+		model.put(WebKeys.PAGE_NUMBERS, pageNos);
+		model.put(WebKeys.PAGE_TOTAL_RECORDS, totalRecordsFound);
+		model.put(WebKeys.PAGE_START_INDEX, firstOnCurrentPage+1);
+		model.put(WebKeys.PAGE_END_INDEX, lastOnCurrentPage);
+		
+	}
+	
+	public static void checkFileIds(List entries) {
+		Iterator it = entries.iterator();
+		while (it.hasNext()) {
+			Map entry = (Map)it.next();
+			if (entry.containsKey(ObjectKeys.FIELD_FILE_ID)) {
+				try{ 
+					Set files = ((SearchFieldResult)entry.get(ObjectKeys.FIELD_FILE_ID)).getValueSet();
+					if (!files.isEmpty()) {
+						entry.put(ObjectKeys.FIELD_FILE_ID, files.iterator().next());
+					}
+				} catch (Exception e) {
+					// do nothing, if not set - it is only one or no _fileID
+				}
+			}
+		}
+	}
+	
+	// This method reads thru the results from a search, finds the principals, 
+	// and places them into an array that is ordered by the number of times
+	// they show up in the results list.
+	public static List sortPeopleInEntriesSearchResults(List entries) {
+		HashMap userMap = new HashMap();
+		ArrayList userList = new ArrayList();
+		// first go thru the original search results and 
+		// find all the unique principals.  Keep a count to see
+		// if any are more active than others.
+		for (int i = 0; i < entries.size(); i++) {
+			Map entry = (Map)entries.get(i);
+			Principal user = (Principal)entry.get(WebKeys.PRINCIPAL);
+			if (userMap.get(user.getId()) == null) {
+				userMap.put(user.getId(), new Person(user.getId(),user,1));
+			} else {
+				Person p = (Person)userMap.remove(user.getId());
+				p.incrCount();
+				userMap.put(user.getId(),p);
+			}
+		}
+		//sort the hits
+		Collection collection = userMap.values();
+		Object[] array = collection.toArray();
+		Arrays.sort(array);
+		
+		for (int j = 0; j < array.length; j++) {
+			HashMap person = new HashMap();
+			Principal user = (Principal) ((Person)array[j]).getUser();
+			int intUserCount = ((Person)array[j]).getCount();
+			person.put(WebKeys.USER_PRINCIPAL, user);
+			person.put(WebKeys.SEARCH_RESULTS_COUNT, new Integer(intUserCount));
+			userList.add(person);
+		}
+		return userList;
+	}
+	
+	// This class is used by the following method as a way to sort
+	// the values in a hashmap
+	public static class Person implements Comparable {
+		long id;
+		int count;
+		Principal user;
+
+		public Person (long id, Principal p, int count) {
+			this.id = id;
+			this.user = p;
+			this.count = count;
+		}
+		
+		public int getCount() {
+			return this.count;
+		}
+
+		public void incrCount() {
+			this.count += 1;
+		}
+		
+		public Principal getUser() {
+			return this.user;
+		}
+		
+		public int compareTo(Object o) {
+			Person p = (Person) o;
+			int result = this.getCount() < p.getCount() ? 1 : 0;
+			return result;
+			}
+	}
+	// This class is used by the following method as a way to sort
+	// the values in a hashmap
+	public static class Place implements Comparable {
+		long id;
+		int count;
+
+		public Place (long id, int count) {
+			this.id = id;
+			this.count = count;
+		}
+		
+		public int getCount() {
+			return this.count;
+		}
+
+		public void incrCount() {
+			this.count += 1;
+		}
+		
+		public long getId() {
+			return this.id;
+		}
+		
+		public int compareTo(Object o) {
+			Place p = (Place) o;
+			int result = this.getCount() < p.getCount() ? 1 : 0;
+			return result;
+			}
+	}	
 
 }
