@@ -6,7 +6,7 @@
 
  <target id="bamol4i" pid="bamol4i" name="Sect1" level="1" number="1.1"> <text>ICEcore is Collaboration Software</text> </target>
 
- <target id="bamp261" pid="bamol4i" name="Sect2" level="2" number="1.1.1"> <text>ICEcore is Knowledge Management Software</text> </target>
+ <target id="bamp261" pid="bamol4i" name="Sect2" level="2" number="1.1.1"> <text>ICEcore is Enterprise Social Networking Sofware</text> </target>
 
  <target id="bamolyw" pid="bamolyw" name="Sect1" level="1" number="1.2"> <text>Navigating Workspaces and Folders</text> </target>
 
