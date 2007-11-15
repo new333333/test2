@@ -50,11 +50,7 @@ public class SiteScapeServlet extends GenericServlet {
 		
 		if(ssfContextPath != null && ssfContextPath.length() > 0)
 			Util.setSsfContextPath(ssfContextPath);
-		
-		String defaultZoneName = ssfsServletCfg.getInitParameter("defaultZoneName");
-		if(defaultZoneName != null && defaultZoneName.length() > 0)
-			Util.setDefaultZoneName(defaultZoneName);
-		
+				
 		// Initialize cross-context dispatch client for SSF web app.
 		// This must come after the common paramater initialization above.  
 		DispatchClient.init(ssfsServletCfg);

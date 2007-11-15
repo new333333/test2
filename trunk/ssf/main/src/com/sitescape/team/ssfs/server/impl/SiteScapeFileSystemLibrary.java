@@ -569,7 +569,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		try {
 			String libpath = getLibpath(uri);
 			
-			if(libpath == null) { // uri ends with zone name
+			if(libpath == null) { // uri ends with "library"
 				objMap.put(LAST_ELEM_NAME, null);
 				objMap.put(PARENT_BINDER_PATH, null);
 				return CrossContextConstants.OBJECT_INFO_DIRECTORY;
@@ -829,7 +829,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 		Binder binder = getLeafBinder(objMap);
 		
 		if(binder == null) {
-			// This means that the uri ends with zone name.
+			// This means that the uri ends with "library"
 			// Get the top-level workspace. 
 			try {
 				Workspace topWorkspace = bs.getWorkspaceModule().getWorkspace();

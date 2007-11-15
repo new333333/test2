@@ -534,10 +534,6 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 		return (String) uri.get(CrossContextConstants.URI_ORIGINAL);		
 	}
 	
-	private String getZoneName(Map uri) {
-		return (String) uri.get(CrossContextConstants.URI_ZONENAME);
-	}
-	
 	private Long getBinderId(Map uri) {
 		return (Long) uri.get(CrossContextConstants.URI_BINDER_ID);
 	}

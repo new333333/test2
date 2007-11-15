@@ -134,10 +134,6 @@ public class IndexSynchronizationManager {
         autoFlushTL.set(Boolean.valueOf(autoFlush));
     }
     
-    /**
-     * Warning: For use by framework only. Not to be called directly by application code.
-     *
-     */
     public static void begin() {
         // If same thread was never re-used for another request or transaction
         // in the system, this initialization wouldn't be necessary, since 
@@ -152,10 +148,7 @@ public class IndexSynchronizationManager {
     	List req = getRequests();
     	if (req.size() >= threshold) applyChanges();
     }
-    /**
-     * Warning: For use by framework only. Not to be called directly by application code.
-     *
-     */
+
     public static void applyChanges() {
         // Question - Should we send one document at a time to the indexer
         //            or batch them in a single request??

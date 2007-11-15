@@ -725,8 +725,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return tagList;
 	}
 	
-   	public Binder getBinderByPathName(String pathName) throws AccessControlException {
-	   	List<Binder> binders = getCoreDao().loadObjectsCacheable(Binder.class, new FilterControls("lower(pathName)", pathName.toLowerCase()));
+   	public Binder getBinderByPathName(String pathName) throws AccessControlException {   			
+	   	List<Binder> binders = getCoreDao().loadObjectsCacheable(Binder.class, 
+	   			new FilterControls(new String[] {"zoneId", "lower(pathName)"}, 
+	   					new Object[] {RequestContextHolder.getRequestContext().getZoneId(), pathName.toLowerCase()}));
 	    	
 	    // only maximum of one matching non-deleted binder
 	   	for(Binder binder : binders) {

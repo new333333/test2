@@ -49,12 +49,12 @@ public class CCClient {
 
 	private static final CCClientCallback defaultCallback = new DefaultCCClientCallback();
 	
-	private String zoneName;
+	private String serverName;
 	private String userName;
 	private Map<String,Object> cache;
 	
-	public CCClient(String zoneName, String userName) {
-		this.zoneName = zoneName;
+	public CCClient(String serverName, String userName) {
+		this.serverName = serverName;
 		this.userName = userName;
 		// This cache is kept only for the duration of the lifetime of
 		// this object instance, hence short-lived (relatively speaking).
@@ -82,7 +82,7 @@ public class CCClient {
 		cache.remove(folderUri);
 		
 		CCExecutionTemplate.execute(
-				zoneName, userName, uri,
+				serverName, userName, uri,
 				CrossContextConstants.OPERATION_CREATE_FOLDER,
 				defaultCallback);
 	}
@@ -92,7 +92,7 @@ public class CCClient {
 		cache.remove(resourceUri);
 		
 		CCExecutionTemplate.execute(
-				zoneName, userName, uri, 
+				serverName, userName, uri, 
 				CrossContextConstants.OPERATION_CREATE_RESOURCE, 
 				defaultCallback);
 	}
@@ -102,7 +102,7 @@ public class CCClient {
 		cache.remove(resourceUri);
 		
 		CCExecutionTemplate.execute(
-				zoneName, userName, uri, 
+				serverName, userName, uri, 
 				CrossContextConstants.OPERATION_CREATE_SET_RESOURCE, 
 				new CCClientCallback() {
 					public void additionalInput(HttpServletRequest req) {
@@ -116,7 +116,7 @@ public class CCClient {
 	throws CCClientException, NoAccessException, NoSuchObjectException, TypeMismatchException {	
 		cache.remove(resourceUri);
 		
-		CCExecutionTemplate.execute(zoneName, userName, uri, 
+		CCExecutionTemplate.execute(serverName, userName, uri, 
 				CrossContextConstants.OPERATION_SET_RESOURCE, 
 			new CCClientCallback() {
 				public void additionalInput(HttpServletRequest req) {
@@ -129,7 +129,7 @@ public class CCClient {
 	public InputStream getResource(String resourceUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException, TypeMismatchException {
 		InputStream returnObj = (InputStream) CCExecutionTemplate.execute(
-				zoneName, userName, uri, 
+				serverName, userName, uri, 
 				CrossContextConstants.OPERATION_GET_RESOURCE, 
 				defaultCallback);
 		return returnObj;
@@ -145,7 +145,7 @@ public class CCClient {
 		
 		/*
 		Long returnObj = (Long) CCExecutionTemplate.execute(
-				zoneName, userName, uri, 
+				serverName, userName, uri, 
 				CrossContextConstants.OPERATION_GET_RESOURCE_LENGTH, 
 				defaultCallback);
 		return returnObj.longValue();
@@ -157,7 +157,7 @@ public class CCClient {
 		cache.remove(objUri);
 		
 		CCExecutionTemplate.execute(
-				zoneName, userName, uri, CrossContextConstants.OPERATION_REMOVE_OBJECT, 
+				serverName, userName, uri, CrossContextConstants.OPERATION_REMOVE_OBJECT, 
 				defaultCallback);		
 	}
 	
@@ -169,7 +169,7 @@ public class CCClient {
 
 		/*
 		Date returnObj = (Date) CCExecutionTemplate.execute(
-				zoneName, userName, uri, 
+				serverName, userName, uri, 
 				CrossContextConstants.OPERATION_GET_LAST_MODIFIED, 
 				defaultCallback);
 		return returnObj;
@@ -184,7 +184,7 @@ public class CCClient {
 
 		/*
 		Date returnObj = (Date) CCExecutionTemplate.execute(
-				zoneName, userName, uri, 
+				serverName, userName, uri, 
 				CrossContextConstants.OPERATION_GET_CREATION_DATE, 
 				defaultCallback);
 		return returnObj;
@@ -208,7 +208,7 @@ public class CCClient {
 	public String[] getChildrenNames(String objUri, Map uri) throws CCClientException,
 	NoAccessException, NoSuchObjectException  {
 		String[] returnObj = (String[]) CCExecutionTemplate.execute(
-				zoneName, userName, uri, 
+				serverName, userName, uri, 
 				CrossContextConstants.OPERATION_GET_CHILDREN_NAMES, 
 				defaultCallback);
 		return returnObj;
@@ -260,7 +260,7 @@ public class CCClient {
 	LockException, TypeMismatchException {
 		cache.remove(resourceUri);
 		
-		CCExecutionTemplate.execute(zoneName, userName, uri, 
+		CCExecutionTemplate.execute(serverName, userName, uri, 
 				CrossContextConstants.OPERATION_LOCK_RESOURCE, 
 			new CCClientCallback() {
 				public void additionalInput(HttpServletRequest req) {
@@ -287,7 +287,7 @@ public class CCClient {
 	throws CCClientException, NoAccessException, NoSuchObjectException, TypeMismatchException {
 		cache.remove(resourceUri);
 		
-		CCExecutionTemplate.execute(zoneName, userName, uri, 
+		CCExecutionTemplate.execute(serverName, userName, uri, 
 				CrossContextConstants.OPERATION_UNLOCK_RESOURCE, 
 			new CCClientCallback() {
 				public void additionalInput(HttpServletRequest req) {
@@ -344,7 +344,7 @@ public class CCClient {
 		cache.remove(targetUri);
 		
 		CCExecutionTemplate.execute(
-				zoneName, userName, sourceMap, targetMap,
+				serverName, userName, sourceMap, targetMap,
 				CrossContextConstants.OPERATION_COPY_OBJECT,
 				new CCClientCallback() {
 					public void additionalInput(HttpServletRequest req) {
@@ -363,7 +363,7 @@ public class CCClient {
 		cache.remove(targetUri);
 		
 		CCExecutionTemplate.execute(
-				zoneName, userName, sourceMap, targetMap,
+				serverName, userName, sourceMap, targetMap,
 				CrossContextConstants.OPERATION_MOVE_OBJECT,
 				new CCClientCallback() {
 					public void additionalInput(HttpServletRequest req) {
@@ -381,7 +381,7 @@ public class CCClient {
 			// Request never made for the uri. 
 			try {
 				Map props = (Map) CCExecutionTemplate.execute(
-						zoneName, userName, uri, 
+						serverName, userName, uri, 
 						CrossContextConstants.OPERATION_GET_PROPERTIES, 
 						defaultCallback);
 				cache.put(objUri, props);

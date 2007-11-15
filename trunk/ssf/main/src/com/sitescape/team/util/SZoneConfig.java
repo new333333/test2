@@ -104,12 +104,11 @@ public class SZoneConfig {
 			return val;		
 	}
 	
-	//we don't have multiple zones, so just skip this step for now
 	private static String get(String zoneName, String key) {
 		Element root = getInstance().root;			
 		Element element;
-//		element = (Element)root.selectSingleNode("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
-//		if (element == null)
+		element = (Element)root.selectSingleNode("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
+		if (element == null)
 			element = (Element)root.selectSingleNode("/zoneConfiguration/" + key);
 		if (element == null) return null;
 		return element.getTextTrim();
@@ -123,24 +122,24 @@ public class SZoneConfig {
 	public static List<Element> getElements(String zoneName, String key) {
 		Element root = getInstance().root;			
 		List<Element> results;
-//		results = root.selectNodes("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
-//		if ((results == null) || results.isEmpty()) {
+		results = root.selectNodes("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
+		if ((results == null) || results.isEmpty()) {
 			results = root.selectNodes("/zoneConfiguration/" + key);	
-//		}
+		}
 		if (results == null) results = new ArrayList();
 		return results;
 	}
 	public static Element getElement(String zoneName, String key) {
 		Element root = getInstance().root;			
 		Element result;
-//		result = (Element)root.selectSingleNode("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
-//		if (result == null) {
+		result = (Element)root.selectSingleNode("/zoneConfiguration/zone[@name='" + zoneName + "']/" + key);
+		if (result == null) {
 			result = (Element)root.selectSingleNode("/zoneConfiguration/" + key);	
-//		}
+		}
 		return result;
 	}
 	public static String getDefaultZoneName() {
-		return getInstance().defaultZoneName;
+		return getInstance().defaultZoneName.toLowerCase();
 	}
 	private static String getRequired(String zoneName, String key) {
 		String val = get(zoneName, key);

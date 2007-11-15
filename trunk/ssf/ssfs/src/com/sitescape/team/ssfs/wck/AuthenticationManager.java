@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.slide.simple.authentication.SessionAuthenticationManager;
 
+import com.sitescape.team.asmodule.requestcontext.RequestContextInfo;
 import com.sitescape.team.ssfs.CrossContextConstants;
 import com.sitescape.team.ssfs.web.crosscontext.DispatchClient;
 import com.sitescape.team.web.util.AttributesAndParamsOnlyServletRequest;
@@ -40,13 +41,11 @@ import com.sitescape.team.web.util.NullServletResponse;
 
 public class AuthenticationManager implements SessionAuthenticationManager {
 
-	public Object getAuthenticationSession(String user, String password) throws Exception {
-		String[] id = Util.parseUserIdInput(user);
-		
+	public Object getAuthenticationSession(String userName, String password) throws Exception {
 		AttributesAndParamsOnlyServletRequest req = 
 			new AttributesAndParamsOnlyServletRequest(Util.getSsfContextPath());
 
-		setAttributes(req, id[0], id[1], password);
+		setAttributes(req, RequestContextInfo.getServerName(), userName, password);
 		
 		NullServletResponse res = new NullServletResponse();
 		
@@ -61,8 +60,8 @@ public class AuthenticationManager implements SessionAuthenticationManager {
 			throw new Exception(errorMessage);
 		}
 		else {
-			// We simply use the original user id as session object. 
-			return user;
+			// Use user name as session object.
+			return userName;
 		}
 	}
 
@@ -82,9 +81,10 @@ public class AuthenticationManager implements SessionAuthenticationManager {
 	}
 
 	protected void setAttributes(HttpServletRequest req, 
-			String zoneName, String userName, String password) {
+			String serverName, String userName, String password) {
 		req.setAttribute(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
-		req.setAttribute(CrossContextConstants.ZONE_NAME, zoneName);
+		if(serverName != null)
+			req.setAttribute(CrossContextConstants.SERVER_NAME, serverName);
 		req.setAttribute(CrossContextConstants.USER_NAME, userName);
 		req.setAttribute(CrossContextConstants.PASSWORD, password);
 	}

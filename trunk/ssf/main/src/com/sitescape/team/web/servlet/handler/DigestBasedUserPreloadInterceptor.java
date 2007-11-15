@@ -33,12 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.sitescape.team.InternalException;
-import com.sitescape.team.context.request.RequestContext;
-import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.ProfileDao;
-import com.sitescape.team.domain.User;
-import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 
 public class DigestBasedUserPreloadInterceptor extends HandlerInterceptorAdapter {
@@ -60,21 +56,8 @@ public class DigestBasedUserPreloadInterceptor extends HandlerInterceptorAdapter
 			return true;
 		}
 		
-		RequestContext requestContext = RequestContextHolder.getRequestContext();
-		
-		if(requestContext.getUser() == null) {
-			loadUser(request, requestContext);
-		}
+		RequestContextUtil.loadUpUser();
 
 		return true;
 	}
-	    
-	private void loadUser(HttpServletRequest request, RequestContext rc) {
-		if(rc.getUserId() == null)
-			throw new InternalException("User ID must be present in request context");
-		//if userId is there so is zoneId
-		User user = getProfileDao().loadUser(rc.getUserId(), rc.getZoneId());
-		rc.setUser(user);
-	}
-
 }

@@ -344,25 +344,30 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     //used for login
     public User findUserByName(final String userName, String zoneName) {
     	final Binder top = getCoreDao().findTopWorkspace(zoneName);
-        return (User)getHibernateTemplate().execute(
-           new HibernateCallback() {
-               public Object doInHibernate(Session session) throws HibernateException {
-            	   //only returns active users
-            	   User user = (User)session.getNamedQuery("find-User-Company")
-                        		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
-                        		.setLong(ParameterNames.ZONE_ID, top.getId())
-                        		.setCacheable(true)
-                        		.uniqueResult();
-                   //query ensures user is not deleted and not disabled
-            	   if (user == null) {
-                       throw new NoUserByTheNameException(userName); 
-                   }
-                   return user;
-               }
-           }
-        );
+    	return findUserByName(userName, top.getId());
     }
     
+ 	public User findUserByName(final String userName, final Long zoneId) 
+	throws NoUserByTheNameException {
+        return (User)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                 	   //only returns active users
+                 	   User user = (User)session.getNamedQuery("find-User-Company")
+                             		.setString(ParameterNames.USER_NAME, userName.toLowerCase())
+                             		.setLong(ParameterNames.ZONE_ID, zoneId)
+                             		.setCacheable(true)
+                             		.uniqueResult();
+                        //query ensures user is not deleted and not disabled
+                 	   if (user == null) {
+                            throw new NoUserByTheNameException(userName); 
+                        }
+                        return user;
+                    }
+                }
+             );		
+ 	}
+
     public ProfileBinder getProfileBinder(Long zoneId) {
     	return (ProfileBinder)getCoreDao().loadReservedBinder(ObjectKeys.PROFILE_ROOT_INTERNALID, zoneId);
     }

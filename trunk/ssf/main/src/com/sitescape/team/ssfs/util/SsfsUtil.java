@@ -99,16 +99,14 @@ public class SsfsUtil {
 	public static String getLibraryBinderUrl(HttpServletRequest req, Binder binder) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
-		return sb.append("files/library/"). // follow Slide's convention
-		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name
+		return sb.append("files/library"). // follow Slide's convention
 		append(binder.getPathName()).toString();
 	}
 	
 	public static String getLibraryBinderUrl(PortletRequest req, Binder binder) {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
-		return sb.append("files/library/"). // follow Slide's convention
-		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name
+		return sb.append("files/library"). // follow Slide's convention
 		append(binder.getPathName()).toString();
 	}
 	
@@ -117,8 +115,6 @@ public class SsfsUtil {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
 		return sb.append("files/internal/"). // follow Slide's convention
-		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name 
-		append("/").
 		append(binder.getId()).
 		append("/").
 		append(entity.getId()).
@@ -130,8 +126,6 @@ public class SsfsUtil {
 		StringBuffer sb = WebUrlUtil.getSSFSContextRootURL(req);
 		
 		return sb.append("files/internal/"). // follow Slide's convention
-		append(RequestContextHolder.getRequestContext().getZoneName()). // zone name 
-		append("/").
 		append(binder.getId()).
 		append("/").
 		append(entity.getId()).

@@ -45,6 +45,7 @@
 	    <value>com/sitescape/team/domain/Visits.hbm.xml</value>
 	    <value>com/sitescape/team/domain/WorkflowResponse.hbm.xml</value>
 	    <value>com/sitescape/team/domain/WorkflowState.hbm.xml</value>
+	    <value>com/sitescape/team/domain/ZoneInfo.hbm.xml</value>
 
 			</list>
 		</property>

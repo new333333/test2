@@ -35,12 +35,38 @@ import com.sitescape.team.domain.Workspace;
  *
  */
 public class RequestContext {
-    private String zoneName; // Always non-null
-    private String userName; // Always non-null
-    private Long userId; // Non-null if user is set. Otherwise may be null
-    private Long zoneId; //Non-null if user is set.
-    private User user;	 // May be null
+	/*
+	 * User object. May be null.
+	 */
+    private User user;
+    /*
+     * Zone ID. 
+     * If user object is null, at least one of zoneId and zoneName must be non-null.
+     * If user object is non-null, this is also non-null.
+     */
+    private Long zoneId; 
+    /*
+     * Zone name. 
+     * If user object is null, at least one of zoneId and zoneName must be non-null.
+     * If user object is non-null, this is also non-null.
+     */
+    private String zoneName; 
+    /*
+     * User ID. 
+     * If user object is null, at least one of userId and userName must be non-null.  
+     * If user object is non-null, this is also non-null.
+     */
+    private Long userId;
+    /*
+     * User name. 
+     * If user object is null, at least one of userId and userName must be non-null.  
+     * If user object is non-null, this is also non-null.
+     */
+    private String userName;
     
+    public RequestContext(User user) {
+    	setUser(user);
+    }
 
     public RequestContext(String zoneName, String userName) {
     	this.zoneName = zoneName;
@@ -51,6 +77,17 @@ public class RequestContext {
     	this.zoneId = zoneId;
     	this.userId = userId;
     }
+    
+    public RequestContext(String zoneName, Long userId) {
+    	this.zoneName = zoneName;
+    	this.userId = userId;
+    }
+    
+    public RequestContext(Long zoneId, String userName) {
+    	this.zoneId = zoneId;
+    	this.userName = userName;
+    }
+    
     public String getZoneName() {
     	return zoneName;
     }
@@ -59,27 +96,32 @@ public class RequestContext {
     	return userName;
     }
 
-    
     public Long getUserId() {
     	return userId;
+    }
+    
+    public void setUserId(Long userId) {
+    	this.userId = userId;
     }
     
     public Long getZoneId() {
     	return zoneId;
     }
+    
     public void setUser(User user) {
     	this.user = user;
     	if(user != null) {
-    		this.userId = user.getId(); // In case this wasn't already set.
+    		this.userId = user.getId();
+    		this.userName = user.getName();
     		this.zoneId = user.getZoneId();
-    		zoneName = user.getParentBinder().getParentBinder().getName();
-    		userName = user.getName();
+    		this.zoneName = user.getParentBinder().getParentBinder().getName();
     	}
     }
     
     public User getUser() {
     	return user;
     }
+    
     public Workspace getZone() {
     	if (user == null) return null;
     	return (Workspace)user.getParentBinder().getParentBinder();

@@ -46,14 +46,15 @@ import com.sitescape.team.web.util.NullServletResponse;
 
 public class CCExecutionTemplate {
 
-	public static Object execute(String zoneName, String userName, Map uri, 
+	public static Object execute(String serverName, String userName, Map uri, 
 			Integer operationName, CCClientCallback action) 
 	throws AlreadyExistsException, CCClientException, NoAccessException, 
 	NoSuchObjectException, LockException, TypeMismatchException {
 		AttributesAndParamsOnlyServletRequest req = 
 			new AttributesAndParamsOnlyServletRequest(Util.getSsfContextPath());
 
-		req.setAttribute(CrossContextConstants.ZONE_NAME, zoneName);
+		if(serverName != null)
+			req.setAttribute(CrossContextConstants.SERVER_NAME, serverName);
 		req.setAttribute(CrossContextConstants.USER_NAME, userName);
 		req.setAttribute(CrossContextConstants.URI, uri);
 		req.setAttribute(CrossContextConstants.OPERATION, operationName);
@@ -80,14 +81,15 @@ public class CCExecutionTemplate {
 		}		
 	}
 	
-	public static Object execute(String zoneName, String userName, Map sourceUri,
+	public static Object execute(String serverName, String userName, Map sourceUri,
 			Map targetUri, Integer operationName, CCClientCallback action) 
 	throws AlreadyExistsException, CCClientException, NoAccessException, 
 	NoSuchObjectException, LockException, TypeMismatchException {
 		AttributesAndParamsOnlyServletRequest req = 
 			new AttributesAndParamsOnlyServletRequest(Util.getSsfContextPath());
 
-		req.setAttribute(CrossContextConstants.ZONE_NAME, zoneName);
+		if(serverName != null)
+			req.setAttribute(CrossContextConstants.SERVER_NAME, serverName);
 		req.setAttribute(CrossContextConstants.USER_NAME, userName);
 		req.setAttribute(CrossContextConstants.SOURCE_URI, sourceUri);
 		req.setAttribute(CrossContextConstants.TARGET_URI, targetUri);
