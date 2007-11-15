@@ -1379,6 +1379,7 @@ public class BinderHelper {
 		//	The "Manage dashboard" menu
 		//See if the dashboard is being shown in the definition
 		PortletURL url;
+		boolean sharedUser = RequestContextHolder.getRequestContext().getUser().isShared();
 		if (DefinitionHelper.checkIfBinderShowingDashboard(binder)) {
 			Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
 			boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
@@ -1388,17 +1389,18 @@ public class BinderHelper {
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageDashboard");
 			qualifiers.put("linkclass", "ss_dashboard_config_control");
 			dashboardToolbar.addToolbarMenu("3_manageDashboard", NLT.get("__dashboard_canvas"), "", qualifiers);
-			qualifiers = new HashMap();
-			qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
-			dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
-
+			if (!sharedUser || bs.getBinderModule().testAccess(binder, BinderOperation.setProperty)) {
+				qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
+				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+			}
 			if (dashboardContentExists) {
 				qualifiers = new HashMap();
 				qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
 				qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
 				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
 	
-				if (!(binder instanceof TemplateBinder)) {
+				if (!(binder instanceof TemplateBinder) && !sharedUser) {
 					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
