@@ -48,7 +48,7 @@ import com.sitescape.util.Validator;
  */
 public class Group extends Principal  {
     private List members;  //initialized by hibernate access=field  
-      
+    
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.group;
 	}
@@ -77,7 +77,7 @@ public class Group extends Principal  {
 			Principal p = (Principal)iter.next();
 			p.getMemberOf().add(this);
 		}
-		for (Iterator iter=newM.iterator(); iter.hasNext();) {
+		for (Iterator iter=remM.iterator(); iter.hasNext();) {
 			Principal p = (Principal)iter.next();
 			p.getMemberOf().remove(this);
 		}
@@ -94,5 +94,5 @@ public class Group extends Principal  {
     	members.remove(member);
     	member.getMemberOf().remove(this);
     }
-    
+ 
 }
