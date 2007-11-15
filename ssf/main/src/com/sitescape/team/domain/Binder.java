@@ -126,6 +126,11 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public boolean isRoot() {
     	return getParentBinder() == null;
     }
+    public Binder getRoot() {
+    	if (getParentBinder() == null) return this;
+    	return getParentBinder().getRoot();
+    }
+
     public void setupRoot() {
     	if (isRoot()) setBinderKey(new HKey(HKey.generateRootKey(getId()) + "00001"));
     }
