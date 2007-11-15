@@ -187,6 +187,15 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//updates cache
 			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone.getId());
 		}
+		//make sure guest exists
+		try {
+			getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
+		} catch (NoUserByTheNameException nu) {
+			//need to add it
+			addGuest(superU.getParentBinder(), new HistoryStamp(superU));
+			//	updates cache
+			getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
+		}
 		//make sure allUsers exists
 		try {
 			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
@@ -267,6 +276,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	
     		addPosting(profiles, stamp);
     		addJobProcessor(profiles, stamp); 
+    		addGuest(profiles, stamp); 
     		Workspace globalRoot = addGlobalRoot(top, stamp);		
     		Workspace teamRoot = addTeamRoot(top, stamp);
     		teamRoot.setFunctionMembershipInherited(false);
@@ -377,6 +387,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 	private User addJobProcessor(Binder parent, HistoryStamp stamp) {
 		return addReservedUser(parent, stamp, "_jobProcessingAgent", NLT.get("administration.initial.jobProcessor.title"), ObjectKeys.JOB_PROCESSOR_INTERNALID);
+	}
+	private User addGuest(Binder parent, HistoryStamp stamp) {
+		String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", "guest");
+		return addReservedUser(parent, stamp, guestName, NLT.get("administration.initial.guestTitle"), ObjectKeys.GUEST_USER_INTERNALID);
 	}
 	private Workspace addTeamRoot(Workspace top, HistoryStamp stamp) {
 		Workspace team = new Workspace();

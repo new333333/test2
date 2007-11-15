@@ -63,31 +63,39 @@ public class RequestContext {
      * If user object is non-null, this is also non-null.
      */
     private String userName;
+    /*
+     * Session Context
+     */
+    private SessionContext sessionCtx; 
+    public RequestContext(String zoneName, String userName, SessionContext sessionCtx) {
+    	this.zoneName = zoneName;
+    	this.userName = userName;
+    	this.sessionCtx = sessionCtx;
+    }
     
-    public RequestContext(User user) {
+    public RequestContext(Long zoneId, Long userId, SessionContext sessionCtx) {
+    	this.zoneId = zoneId;
+    	this.userId = userId;
+    	this.sessionCtx = sessionCtx;
+    }
+    
+    public RequestContext(String zoneName, Long userId, SessionContext sessionCtx) {
+    	this.zoneName = zoneName;
+    	this.userId = userId;
+    	this.sessionCtx = sessionCtx;
+    }
+    
+    public RequestContext(Long zoneId, String userName, SessionContext sessionCtx) {
+    	this.zoneId = zoneId;
+    	this.userName = userName;
+    	this.sessionCtx = sessionCtx;
+    }
+    
+    public RequestContext(User user, SessionContext sessionCtx) {
+    	this.sessionCtx = sessionCtx;
     	setUser(user);
     }
 
-    public RequestContext(String zoneName, String userName) {
-    	this.zoneName = zoneName;
-    	this.userName = userName;
-    }
-    
-    public RequestContext(Long zoneId, Long userId) {
-    	this.zoneId = zoneId;
-    	this.userId = userId;
-    }
-    
-    public RequestContext(String zoneName, Long userId) {
-    	this.zoneName = zoneName;
-    	this.userId = userId;
-    }
-    
-    public RequestContext(Long zoneId, String userName) {
-    	this.zoneId = zoneId;
-    	this.userName = userName;
-    }
-    
     public String getZoneName() {
     	return zoneName;
     }
@@ -95,7 +103,7 @@ public class RequestContext {
     public String getUserName() {
     	return userName;
     }
-
+   
     public Long getUserId() {
     	return userId;
     }
@@ -107,23 +115,25 @@ public class RequestContext {
     public Long getZoneId() {
     	return zoneId;
     }
-    
     public void setUser(User user) {
     	this.user = user;
     	if(user != null) {
     		this.userId = user.getId();
     		this.userName = user.getName();
     		this.zoneId = user.getZoneId();
-    		this.zoneName = user.getParentBinder().getParentBinder().getName();
+    		this.zoneName = user.getParentBinder().getRoot().getName();
     	}
     }
     
     public User getUser() {
     	return user;
     }
-    
     public Workspace getZone() {
     	if (user == null) return null;
-    	return (Workspace)user.getParentBinder().getParentBinder();
+    	return (Workspace)user.getParentBinder().getRoot();
     }
+    public SessionContext getSessionContext() {
+    	return sessionCtx;
+    }
+
 }

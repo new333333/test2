@@ -333,7 +333,7 @@ public class User extends Principal {
         
         if(principalIds == null) {
     		Set ids = new HashSet();
-    		ids.add(reservedGroupId);
+    		if (reservedGroupId != null) ids.add(reservedGroupId);
     		addPrincipalIds(this, ids);
     		principalIds = ids;
     	}
@@ -352,7 +352,8 @@ public class User extends Principal {
             }
         }
     }
-    
+ 
+
     /**
      * Returns a sorted set of group names that the user is a member of
      * either directly or indirectly. 
@@ -364,7 +365,7 @@ public class User extends Principal {
         if(groupNames == null) {
     		SortedSet names = new TreeSet();
     		addGroupNames(this, names);
-    		names.add("allUsers");
+    		if (!isShared()) names.add("allUsers");
     		groupNames = names;
     	}
     	return groupNames;
@@ -380,4 +381,9 @@ public class User extends Principal {
     		}
     	}
     }
+    public boolean isShared() {
+    	if (ObjectKeys.GUEST_USER_INTERNALID.equals(internalId)) return true;
+    	return false;
+    }
+    
 }
