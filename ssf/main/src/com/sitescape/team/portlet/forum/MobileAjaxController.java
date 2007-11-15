@@ -37,7 +37,9 @@ import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.portlet.WindowState;
 
+import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
@@ -46,6 +48,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -93,6 +96,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FOLDER)) {
 			return ajaxMobileShowFolder(request, response);
 			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_WORKSPACE)) {
+			return ajaxMobileShowWorkspace(request, response);
+			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_ENTRY)) {
 			return ajaxMobileShowEntry(request, response);
 			
@@ -101,6 +107,9 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_FRONT_PAGE)) {
 			return ajaxMobileFrontPage(request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_SEARCH_RESULTS)) {
+			return ajaxMobileSearchResults(request, response);
 		}
 		return ajaxMobileFrontPage(request, response);
 	} 
@@ -134,7 +143,29 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		unseenCounts = getFolderModule().getUnseenCounts(binderIds);
 		model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
 		
+		Map userQueries = new HashMap();
+		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+		}
+
+		model.put("ss_UserQueries", userQueries);
 		return new ModelAndView("mobile/show_front_page", model);
+	}
+
+	private ModelAndView ajaxMobileSearchResults(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		Map model = new HashMap();
+
+	    Tabs tabs = Tabs.getTabs(request);
+    	model.putAll(BinderHelper.prepareSavedQueryResultData(this, request, tabs));
+		Map userQueries = new HashMap();
+		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+		}
+
+		return new ModelAndView("mobile/show_search_results", model);
 	}
 
 	private ModelAndView ajaxMobileShowFolder(RenderRequest request, 
@@ -159,6 +190,24 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		return new ModelAndView("mobile/show_folder", model);
+	}
+
+	private ModelAndView ajaxMobileShowWorkspace(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Workspace binder;
+		try {
+			binder = getWorkspaceModule().getWorkspace(Long.valueOf(binderId));
+		} catch (Exception ex) {
+			binder = getWorkspaceModule().getWorkspace();				
+		}
+		Document wsTree;
+		wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, this), 1);									
+
+		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
+		return new ModelAndView("mobile/show_workspace", model);
 	}
 
 	private ModelAndView ajaxMobileShowEntry(RenderRequest request, 

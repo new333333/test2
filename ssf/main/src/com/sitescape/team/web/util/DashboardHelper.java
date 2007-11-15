@@ -939,7 +939,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			Map retMap = getInstance().getBinderModule().executeSearchQuery(searchQuery, options);
 			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 			// 	entries = BinderHelper.filterEntryAttachmentResults(entries);
-			AdvancedSearchController.checkFileIds(entries);
+			BinderHelper.checkFileIds(entries);
 			searchSearchFormData.put(WebKeys.SEARCH_FORM_RESULTS, entries);
 			Integer searchCount = (Integer)retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL);
 			searchSearchFormData.put(WebKeys.ENTRY_SEARCH_COUNT, searchCount);
