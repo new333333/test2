@@ -47,7 +47,7 @@ public class UserPreloadInterceptor implements MethodInterceptor {
 	}
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		RequestContextUtil.loadUpUser();
+		RequestContextUtil.resolveToUser();
 		
 		return invocation.proceed();
 	}

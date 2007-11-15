@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.slide.simple.authentication.SessionAuthenticationManager;
 
-import com.sitescape.team.asmodule.requestcontext.RequestContextInfo;
+import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
 import com.sitescape.team.ssfs.CrossContextConstants;
 import com.sitescape.team.ssfs.web.crosscontext.DispatchClient;
 import com.sitescape.team.web.util.AttributesAndParamsOnlyServletRequest;
@@ -45,7 +45,7 @@ public class AuthenticationManager implements SessionAuthenticationManager {
 		AttributesAndParamsOnlyServletRequest req = 
 			new AttributesAndParamsOnlyServletRequest(Util.getSsfContextPath());
 
-		setAttributes(req, RequestContextInfo.getServerName(), userName, password);
+		setAttributes(req, ZoneContextHolder.getServerName(), userName, password);
 		
 		NullServletResponse res = new NullServletResponse();
 		
