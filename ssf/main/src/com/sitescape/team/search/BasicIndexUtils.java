@@ -32,22 +32,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.module.binder.AccessUtils;
-import com.sitescape.team.security.acl.AccessType;
-import com.sitescape.team.security.acl.AclContainer;
-import com.sitescape.team.security.acl.AclControlled;
-import com.sitescape.team.security.acl.AclManager;
 import com.sitescape.team.web.WebKeys;
 /**
  *
@@ -66,12 +58,10 @@ public class BasicIndexUtils {
     public static final String THIS_CLASS_FIELD = "_class";
     public static final String ALL_TEXT_FIELD = "_allText";
     public static final String TEMP_FILE_CONTENTS_FIELD = "_fileContents";
-    public static final String READ_ACL_FIELD = "_readAcl";
-    public static final String ENTRY_ACL_FIELD = "_entryAcl";
+   public static final String ENTRY_ACL_FIELD = "_entryAcl";
     public static final String FOLDER_ACL_FIELD = "_folderAcl";
     public static final String BINDER_OWNER_ACL_FIELD = "_bOwnerAcl";
     public static final String TEAM_ACL_FIELD = "_teamAcl";  //team members used with folder and entry acl
-    public static final String READ_DEF_ACL_FIELD = "_readDefAcl";
 //    public static final String GROUP_VISIBILITY_FIELD = "_groupVis";
     public static final String TAG_FIELD = "_tagField";
     public static final String ACL_TAG_FIELD = "_aclTagField";
