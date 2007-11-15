@@ -663,8 +663,9 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	}
     	return loadUser(id, zoneId);
    }
-    public Set<Long> getPrincipalIds(User user) {
-    	return new HashSet(user.computePrincipalIds(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
+   public Set<Long> getPrincipalIds(User user) {
+    	if (!user.isShared()) return new HashSet(user.computePrincipalIds(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
+    	else return new HashSet(user.computePrincipalIds(null));
     }
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 
@@ -684,6 +685,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			users = new HashSet(result);
 			//remove postingAgent
 			users.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
+			users.remove(getReservedId(ObjectKeys.GUEST_USER_INTERNALID, zoneId));
 			users.remove(getReservedId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
 		} else {
 			users = (Set)getHibernateTemplate().execute(

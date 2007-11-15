@@ -30,7 +30,7 @@
 %>
 <% // Subscribe to entry on submit %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${ssConfigJspStyle != 'mail'}">
+<c:if test="${ssConfigJspStyle != 'mail' && !ssUser.shared}">
 <div class="ss_entryContent">
 <div style="padding:15px 0px 4px 0px;">
 <ssf:expandableArea title="${property_caption}">

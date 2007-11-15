@@ -40,28 +40,32 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.SortedSet;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.ObjectExistsException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.PrincipalComparator;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
-import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
@@ -69,6 +73,7 @@ import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
+import com.sitescape.team.domain.UserPropertiesPK;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.AccessUtils;
@@ -79,7 +84,6 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.profile.ProfileCoreProcessor;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.search.IndexSynchronizationManager;
@@ -89,12 +93,6 @@ import com.sitescape.team.survey.Survey;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
 import com.sitescape.util.Validator;
-import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.TransactionCallback;
-import org.springframework.transaction.support.TransactionTemplate;
-
-import com.sitescape.team.ObjectExistsException;
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
@@ -207,7 +205,46 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private ProfileBinder loadBinder() {
 	   return (ProfileBinder)getProfileDao().getProfileBinder(RequestContextHolder.getRequestContext().getZoneId());
 	}
-
+	private User getUser(Long userId, boolean modify) {
+  		User currentUser = RequestContextHolder.getRequestContext().getUser();
+   		User user;
+		if (userId == null) user = currentUser;
+		else if (userId.equals(currentUser.getId())) user = currentUser;
+		else {
+			user = getProfileDao().loadUser(userId, currentUser.getZoneId());
+			if (modify) AccessUtils.modifyCheck(user);
+			else AccessUtils.readCheck(user);
+		}
+		return user;		
+	}
+	private UserProperties getProperties(User user, Long binderId) {
+		UserProperties uProps=null;
+		if (user.isShared()) { //better be the current user
+			UserPropertiesPK key = new UserPropertiesPK(user.getId(), binderId);
+			uProps = (UserProperties)RequestContextHolder.getRequestContext().getSessionContext().getProperty(key);
+			if (uProps == null) {
+				uProps = new UserProperties(key);
+				RequestContextHolder.getRequestContext().getSessionContext().setProperty(key, uProps);					
+			}
+		} else {
+			uProps = getProfileDao().loadUserProperties(user.getId(), binderId);
+		}
+		return uProps;
+	}
+	private UserProperties getProperties(User user) {
+		UserProperties uProps=null;
+		if (user.isShared()) { //better be the current user
+			UserPropertiesPK key = new UserPropertiesPK(user.getId());
+			uProps = (UserProperties)RequestContextHolder.getRequestContext().getSessionContext().getProperty(key);
+			if (uProps == null) {
+				uProps = new UserProperties(key);
+				RequestContextHolder.getRequestContext().getSessionContext().setProperty(key, uProps);				
+			}
+		} else {
+			uProps = getProfileDao().loadUserProperties(user.getId());
+		}
+		return uProps;
+	}
 	//RO transaction
 	public ProfileBinder getProfileBinder() {
 	   ProfileBinder binder = loadBinder();
@@ -225,60 +262,39 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
     //RW transaction
 	public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value) {
-   		User currentUser = RequestContextHolder.getRequestContext().getUser();
-   		User user;
-		if (userId == null) user = currentUser;
-		else user = getProfileDao().loadUser(userId, currentUser.getZoneId());
-		if (!RequestContextHolder.getRequestContext().getUser().equals(user)) AccessUtils.modifyCheck(user);   		
- 		UserProperties uProps = getProfileDao().loadUserProperties(user.getId(), binderId);
-		uProps.setProperty(property, value); 	
+   		User user = getUser(userId, true);
+		UserProperties uProps=getProperties(user, binderId);
+		uProps.setProperty(property, value); 
   		return uProps;
    }
     //RW transaction
 	public UserProperties setUserProperties(Long userId, Long binderId, Map<String, Object> values) {
-   		User currentUser = RequestContextHolder.getRequestContext().getUser();
-   		User user;
-		if (userId == null) user = currentUser;
-		else user = getProfileDao().loadUser(userId, currentUser.getZoneId());
-		if (!RequestContextHolder.getRequestContext().getUser().equals(user)) AccessUtils.modifyCheck(user);   		
- 		UserProperties uProps = getProfileDao().loadUserProperties(user.getId(), binderId);
- 		for (Map.Entry<String, Object> me: values.entrySet()) {
- 			uProps.setProperty(me.getKey(), me.getValue()); 
+   		User user = getUser(userId, true);
+		UserProperties uProps=getProperties(user, binderId);
+		for (Map.Entry<String, Object> me: values.entrySet()) {
+ 			uProps.setProperty(me.getKey(), me.getValue()); //saved in requestContext
  		}
   		return uProps;		   
 	}
 	   
 	//RO transaction
    public UserProperties getUserProperties(Long userId, Long binderId) {
-   		UserProperties uProps=null;
-   		User user = RequestContextHolder.getRequestContext().getUser();
-  		if (userId == null) userId = user.getId();
- 		if (user.getId().equals(userId)) {
-			uProps = getProfileDao().loadUserProperties(userId, binderId);
-  		} else throw new NotSupportedException("getUserProperties", "user");
-		return uProps;
-}
+  		User user = getUser(userId, false);
+		return getProperties(user, binderId);
+   }
 
    //RW transaction
    public UserProperties setUserProperty(Long userId, String property, Object value) {
-  		User currentUser = RequestContextHolder.getRequestContext().getUser();
-   		User user;
-		if (userId == null) user = currentUser;
-		else user = getProfileDao().loadUser(userId, currentUser.getZoneId());
-		if (!RequestContextHolder.getRequestContext().getUser().equals(user)) AccessUtils.modifyCheck(user);   		
- 		UserProperties uProps = getProfileDao().loadUserProperties(user.getId());
+ 		User user = getUser(userId, true);
+		UserProperties uProps = getProperties(user);
 		uProps.setProperty(property, value); 	
 		return uProps;
     }
    //RW transaction
    public UserProperties setUserProperties(Long userId, Map<String, Object> values) {
-		User currentUser = RequestContextHolder.getRequestContext().getUser();
-   		User user;
-		if (userId == null) user = currentUser;
-		else user = getProfileDao().loadUser(userId, currentUser.getZoneId());
-		if (!RequestContextHolder.getRequestContext().getUser().equals(user)) AccessUtils.modifyCheck(user);   		
- 		UserProperties uProps = getProfileDao().loadUserProperties(user.getId());
- 		for (Map.Entry<String, Object> me: values.entrySet()) {
+		User user = getUser(userId, true);
+		UserProperties uProps = getProperties(user);
+  		for (Map.Entry<String, Object> me: values.entrySet()) {
  			uProps.setProperty(me.getKey(), me.getValue()); 
  		}
 		return uProps;
@@ -286,47 +302,32 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }
 	//RO transaction
    public UserProperties getUserProperties(Long userId) {
-   		UserProperties uProps=null;
-   		User user = RequestContextHolder.getRequestContext().getUser();
- 		if (userId == null) userId = user.getId();
-  		if (user.getId().equals(userId)) {
-    		uProps = getProfileDao().loadUserProperties(userId);
-  		} else throw new NotSupportedException("getUserProperties", "user");
-  		return uProps;
+		User user = getUser(userId, false);
+		return getProperties(user);
    }
-	//RO transaction
+ 	//RO transaction
    public SeenMap getUserSeenMap(Long userId) {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		SeenMap seen = null;
-		if (userId == null) userId = user.getId();
-  		if (user.getId().equals(userId)) {
- 			 seen = getProfileDao().loadSeenMap(user.getId());
-  		} else throw new NotSupportedException("getUserSeenMap", "user");
-   		return seen;
+		User user = getUser(userId, false);
+		if (user.isShared()) return new SharedSeenMap(user.getId());
+ 		return getProfileDao().loadSeenMap(user.getId());
    }
    //RW transaction
    public void setSeen(Long userId, Entry entry) {
-   		User user = RequestContextHolder.getRequestContext().getUser();
-   		SeenMap seen;
-   		if (userId == null) userId = user.getId();
-  		if (user.getId().equals(userId)) {
-			 seen = getProfileDao().loadSeenMap(user.getId());
-			 seen.setSeen(entry);
-  		} else throw new NotSupportedException("setSeen", "user");
+		User user = getUser(userId, true);
+		if (user.isShared()) return;
+		SeenMap seen = getProfileDao().loadSeenMap(user.getId());
+		seen.setSeen(entry);
   }
    //RW transaction
    public void setSeen(Long userId, Collection<Entry> entries) {
-   		User user = RequestContextHolder.getRequestContext().getUser();
-   		SeenMap seen;
-   		if (userId == null) userId = user.getId();
-  		if (user.getId().equals(userId)) {
-			seen = getProfileDao().loadSeenMap(user.getId());
-   			for (Entry reply:entries) {
-   				seen.setSeen(reply);
-   			}
-  		} else throw new NotSupportedException("setSeen", "user");
+		User user = getUser(userId, true);
+		if (user.isShared()) return;
+		SeenMap	seen = getProfileDao().loadSeenMap(user.getId());
+		for (Entry reply:entries) {
+			seen.setSeen(reply);
+		}
    }  	
-  
+
 	//RO transaction
    public Map getGroups(Long binderId) {
 	   Map options = new HashMap();
@@ -351,6 +352,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return result;
 	}
 	public SortedSet<Principal> getPrincipals(Collection<Long> ids, Long zoneId) {
+		//does read access check
 		ProfileBinder binder = getProfileBinder();
  	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
@@ -840,6 +842,30 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			RequestContextHolder.setRequestContext(oldCtx);				
 		};
 	}
-
+	protected class SharedSeenMap extends SeenMap {
+		public SharedSeenMap(Long principalId) {
+			super(principalId);
+		}
+	    public void setSeen(Entry entry) {	    	
+	    }
+	    public void setSeen(FolderEntry entry) {
+	    }
+	    public boolean checkIfSeen(FolderEntry entry) {
+	    	return true;
+	    }
+		protected boolean checkAndSetSeen(FolderEntry entry, boolean setIt) {
+			return true;
+		}
+		public boolean checkAndSetSeen(Map entry, boolean setIt) {
+			return true;
+		}	
+	    public boolean checkIfSeen(Map entry) {
+	    	return true;
+	    }   
+	    
+		public boolean checkAndSetSeen(Long id, Date modDate, boolean setIt) {
+			return true;
+		}
+    }
 }
 

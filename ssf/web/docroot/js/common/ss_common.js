@@ -2730,6 +2730,8 @@ var ss_helpSystem = {
 
 function ss_addDashboardComponents(divId) {
 	var panel = document.getElementById(divId);
+	//undefined for some shared access
+	if (panel == null) return;
 	ss_moveObjectToBody(panel);
 	panel.style.zIndex = parseInt(ssLightboxZ + 1);
 	ss_activateMenuLayer(divId, null, null, null, "popup")

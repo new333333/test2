@@ -1430,27 +1430,32 @@ public static final String[] monthNamesShort = {
 		}
 
 		//The "Subsrciptions" menu
-		if (folder.isTop()) {
-			qualifiers = new HashMap();
-			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
-			folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
-		
-			Subscription sub = getBinderModule().getSubscription(folder.getId());
-			qualifiers = new HashMap();
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);			
-			adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
-			qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
-			if (sub == null) {
-				folderToolbar.addToolbarMenuItem("3_administration", "", 
-						NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
+		if (folder.isTop() ) {
+			if (!user.isShared()) {
+				qualifiers = new HashMap();
+				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageSubscriptionsMenu");
+				folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
+			
+				Subscription sub = getBinderModule().getSubscription(folder.getId());
+				qualifiers = new HashMap();
+				adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);			
+				adapterUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
+				qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_menu');return false;");
+				if (sub == null) {
+					folderToolbar.addToolbarMenuItem("3_administration", "", 
+							NLT.get("toolbar.menu.subscribeToFolder"), adapterUrl.toString(), qualifiers);	
+				} else {
+					folderToolbar.addToolbarMenuItem("3_administration", "", 
+							NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);			
+				}
 			} else {
-				folderToolbar.addToolbarMenuItem("3_administration", "", 
-						NLT.get("toolbar.menu.subscriptionToFolder"), adapterUrl.toString(), qualifiers);			
-			}
+				qualifiers = new HashMap();
+				folderToolbar.addToolbarMenu("3_administration", NLT.get("toolbar.manageFolderSubscriptions"), "", qualifiers);
 
+			}
 			//RSS link 
 			qualifiers = new HashMap();
 			String rssUrl = UrlUtil.getFeedURL(request, forumId);

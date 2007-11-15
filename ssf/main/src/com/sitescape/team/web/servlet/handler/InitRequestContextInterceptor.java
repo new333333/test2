@@ -34,8 +34,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.team.context.request.RequestContextUtil;
+import com.sitescape.team.context.request.HttpSessionContext;
 import com.sitescape.team.web.UnauthenticatedAccessException;
-import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 
 public class InitRequestContextInterceptor extends HandlerInterceptorAdapter {
@@ -49,7 +49,7 @@ public class InitRequestContextInterceptor extends HandlerInterceptorAdapter {
 		String userName = WebHelper.getRequiredUserName(request);
 		String zoneName = WebHelper.getRequiredZoneName(request);
 		
-		RequestContextUtil.setThreadContext(zoneName, userName);
+		RequestContextUtil.setThreadContext(zoneName, userName, new HttpSessionContext(request.getSession(false)));
 		
 	    return true;
 	}

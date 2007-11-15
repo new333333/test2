@@ -32,6 +32,7 @@ import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.SpringContextUtil;
 
+
 /**
  *
  * @author Jong Kim
@@ -39,45 +40,57 @@ import com.sitescape.team.util.SpringContextUtil;
 public class RequestContextUtil {
 
 	public static RequestContext setThreadContext(String zoneName, String userName) {
+		return setThreadContext(zoneName, userName, new BaseSessionContext());
+	}
+	public static RequestContext setThreadContext(String zoneName, String userName, SessionContext ctx) {
 		if(zoneName == null)
 			throw new IllegalArgumentException("Zone name must be specified");
 		if(userName == null)
 			throw new IllegalArgumentException("User name must be specified");
 		
-		RequestContext rc = new RequestContext(zoneName, userName);
+		RequestContext rc = new RequestContext(zoneName, userName, ctx);
 		RequestContextHolder.setRequestContext(rc);
 		
 		return rc;
 	}
 	public static RequestContext setThreadContext(String zoneName, Long userId) {
+		return setThreadContext(zoneName, userId, new BaseSessionContext());
+	}
+	public static RequestContext setThreadContext(String zoneName, Long userId, SessionContext ctx) {
 		if(zoneName == null)
 			throw new IllegalArgumentException("Zone name must be specified");
 		if(userId == null)
 			throw new IllegalArgumentException("User ID must be specified");
 		
-		RequestContext rc = new RequestContext(zoneName, userId);
+		RequestContext rc = new RequestContext(zoneName, userId, ctx);
 		RequestContextHolder.setRequestContext(rc);
 		
 		return rc;
 	}
 	public static RequestContext setThreadContext(Long zoneId, Long userId) {
+		return setThreadContext(zoneId, userId, new BaseSessionContext());
+	}
+	public static RequestContext setThreadContext(Long zoneId, Long userId, SessionContext ctx) {
 		if(zoneId == null)
 			throw new IllegalArgumentException("Zone id must be specified");
 		if(userId == null)
 			throw new IllegalArgumentException("User id must be specified");
 		
-		RequestContext rc = new RequestContext(zoneId, userId);
+		RequestContext rc = new RequestContext(zoneId, userId, ctx);
 		RequestContextHolder.setRequestContext(rc);
 		
 		return rc;
 	}	
 	public static RequestContext setThreadContext(Long zoneId, String userName) {
+		return setThreadContext(zoneId, userName, new BaseSessionContext());
+	}
+	public static RequestContext setThreadContext(Long zoneId, String userName, SessionContext ctx) {
 		if(zoneId == null)
 			throw new IllegalArgumentException("Zone id must be specified");
 		if(userName == null)
 			throw new IllegalArgumentException("User name must be specified");
 		
-		RequestContext rc = new RequestContext(zoneId, userName);
+		RequestContext rc = new RequestContext(zoneId, userName, ctx);
 		RequestContextHolder.setRequestContext(rc);
 		
 		return rc;
@@ -87,7 +100,7 @@ public class RequestContextUtil {
 		if(user == null)
 			throw new IllegalArgumentException("User must be specified");
 		
-		RequestContext rc = new RequestContext(user);
+		RequestContext rc = new RequestContext(user, new BaseSessionContext());
 		RequestContextHolder.setRequestContext(rc);
 
 		return rc;		

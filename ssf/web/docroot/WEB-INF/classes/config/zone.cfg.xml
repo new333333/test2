@@ -5,6 +5,7 @@
 	     apply to individual zone instances. This element is required. -->
 	<defaultZone name="liferay.com"/>
 	<property name="adminUser">admin</property>
+	<property name="guestUser">default</property>
 	<property name="startupConfig">config/startup.xml</property>
 	<mailConfiguration>	
 		<notify session="java:comp/env/mail/SiteScape"/>

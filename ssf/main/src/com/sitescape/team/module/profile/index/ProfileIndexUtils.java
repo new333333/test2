@@ -28,14 +28,17 @@
  */
 package com.sitescape.team.module.profile.index;
 
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.util.Validator;
 /**
  *
@@ -51,9 +54,7 @@ public class ProfileIndexUtils  {
     public static final String EMAIL_FIELD="_email";
     public static final String ORGANIZATION_FIELD="_org";
     public static final String ZONNAME_FIELD="_zonName";
-    public static final String RESERVEDID_FIELD="_reservedId";
-//    public static final String MEMBEROF_FIELD="_memberOf";
-    
+    public static final String RESERVEDID_FIELD="_reservedId";    
     
     public static void addName(Document doc, User user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
@@ -91,17 +92,6 @@ public class ProfileIndexUtils  {
     		doc.add(docNumField);
     	}
     } 
-/*    public static void addMemberOf(Document doc, User user) {
-        Field racField;
-        // I'm not sure if putting together a long string value is more
-        // efficient than processing multiple short strings... We will see.
-        StringBuffer pIds = new StringBuffer();
-   		for (Iterator i = user.getMemberOf().iterator(); i.hasNext();) {
-   			Group g = (Group)i.next();
-    		pIds.append(g.getId().toString()).append(" ");
-    	}
-        racField = new Field(MEMBEROF_FIELD, pIds.toString(), Field.Store.YES, Field.Index.TOKENIZED);      
-        doc.add(racField);    	
-    }
- */
+
+
 }
