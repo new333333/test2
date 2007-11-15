@@ -29,6 +29,7 @@
 package com.sitescape.team.module.profile.impl;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -75,6 +76,7 @@ import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.XmlUtils;
+import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
@@ -163,6 +165,13 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     }
        
     //***********************************************************************************************************	
+    protected Map modifyEntry_setCtx(Entry entry, Map ctx) {
+    	if (entry instanceof Group) {
+        	if (ctx == null) ctx = new HashMap();
+    		ctx.put(ObjectKeys.FIELD_GROUP_MEMBERS, new HashSet(((Group)entry).getMembers()));
+    	}
+    	return super.modifyEntry_setCtx(entry, ctx);
+    }
     //inside write transaction
    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
     	//see if we have updates to fields not covered by definition build
@@ -178,6 +187,28 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		   checkUserTitle((User)entry, ctx);
 	   }
 		   
+   }
+   protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
+   		InputDataAccessor inputData, List fileUploadItems, 
+   		Collection<FileAttachment> filesToIndex, Map ctx) {
+	   //index self
+	   super.modifyEntry_indexAdd(binder, entry, 
+		   		inputData, fileUploadItems, filesToIndex, ctx);
+/* Only needed if index group membership
+ * 	   if ((entry instanceof Group) && ctx.containsKey(ObjectKeys.FIELD_GROUP_MEMBERS)) {
+		   Group g = (Group)entry;
+		   Collection<Principal> newMembers = g.getMembers();
+		   Collection<Principal> oldMembers = (Collection<Principal>)ctx.get(ObjectKeys.FIELD_GROUP_MEMBERS);
+		   Set<Principal> remM = CollectionUtil.differences(oldMembers, newMembers);
+		   Set<Principal> newM = CollectionUtil.differences(newMembers, oldMembers);
+		   Set<Long> entryIds = new HashSet();
+		   for (Principal p:remM) entryIds.add(p.getId());
+		   for (Principal p:newM) entryIds.add(p.getId());
+		   //need to reindex		   
+		   List<User> users = getProfileDao().loadUsers(entryIds, binder.getZoneId());
+		   indexEntries(users);		   
+	   }
+*/
    }
    protected void checkUserTitle(User user, Map ctx) {
 	   String originalTitle = (String)ctx.get(ObjectKeys.FIELD_ENTITY_TITLE);
@@ -380,7 +411,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			ProfileIndexUtils.addName(indexDoc, user, false);
 			ProfileIndexUtils.addEmail(indexDoc, user, false);
 			ProfileIndexUtils.addZonName(indexDoc, user, false);
-//			ProfileIndexUtils.addMemberOf(indexDoc, user);
 		} else {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
 		}
