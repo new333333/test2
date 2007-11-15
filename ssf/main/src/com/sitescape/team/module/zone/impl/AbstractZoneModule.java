@@ -34,11 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.io.SAXReader;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
@@ -73,7 +69,7 @@ import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SessionUtil;
 
-public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneModule,InitializingBean {
+public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected DefinitionModule definitionModule;
 	/**
 	 * Setup by spring
@@ -132,56 +128,14 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 			//only execting one
 			if (companies.size() == 0) {
 				String zoneName = SZoneConfig.getDefaultZoneName();
-				addZone(zoneName);
+				addZone(zoneName, null);
 			} else {
 				//make sure zone is setup correctly
 				getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		for (int i=0; i<companies.size(); ++i) {
 	        			Workspace zone = (Workspace)companies.get(i);
-	        			String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
-	        			//	get super user from config file - must exist or throws and error
-	        			User superU = getProfileDao().findUserByName(superName, zone.getName());
-	        			if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
-	        				superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
-	        				//force update
-	        				getCoreDao().merge(superU);				   
-	        			}
-	        			//make sure only one
-	        			getCoreDao().executeUpdate(
-	        					"update com.sitescape.team.domain.User set internalId=null where " +
-	        					"internalId='" + ObjectKeys.SUPER_USER_INTERNALID + "' and not id=" + superU.getId());
-	        			RequestContextUtil.setThreadContext(superU);
-	        			//adds user to profileDao cache
-	        			superU = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zone.getId());
-	        			//make sure posting agent and background user exist
-	        			try {
-	        				getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone.getId());
-	        			} catch (NoUserByTheNameException nu) {
-	        				//need to add it
-	        				addJobProcessor(superU.getParentBinder(), new HistoryStamp(superU));
-	        				//updates cache
-	        				getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone.getId());
-	        			}
-	        			//make sure posting agent and background user exist
-	        			try {
-	        				getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone.getId());
-	        			} catch (NoUserByTheNameException nu) {
-	        				//need to add it
-	        				addPosting(superU.getParentBinder(), new HistoryStamp(superU));
-	        				//updates cache
-	        				getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone.getId());
-	        			}
-	        			//make sure allUsers exists
-	        			try {
-	        				getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
-	        			} catch (NoGroupByTheNameException nu) {
-	        				//need to add it
-	        				addAllUserGroup(superU.getParentBinder(), new HistoryStamp(superU));
-	        				//	updates cache
-	        				getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
-	        			}
-
+	        			validateZoneTx(zone);
 	    	        }
 		        	return null;
 	        	}
@@ -195,8 +149,170 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
  		RequestContextHolder.clear();
  		
  	}
+ 	
+ 	// Must be running inside a transaction set up by the caller 
+ 	protected void validateZoneTx(Workspace zone) {
+		String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
+		//	get super user from config file - must exist or throws and error
+		User superU = getProfileDao().findUserByName(superName, zone.getName());
+		if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
+			superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
+			//force update
+			getCoreDao().merge(superU);				   
+		}
+		//make sure only one
+		getCoreDao().executeUpdate(
+				"update com.sitescape.team.domain.User set internalId=null where " +
+				"internalId='" + ObjectKeys.SUPER_USER_INTERNALID + 
+				"' and zoneId=" + zone.getId() + 
+				" and not id=" + superU.getId());
+		RequestContextUtil.setThreadContext(superU);
+		//adds user to profileDao cache
+		superU = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zone.getId());
+		//make sure posting agent and background user exist
+		try {
+			getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone.getId());
+		} catch (NoUserByTheNameException nu) {
+			//need to add it
+			addJobProcessor(superU.getParentBinder(), new HistoryStamp(superU));
+			//updates cache
+			getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone.getId());
+		}
+		//make sure posting agent and background user exist
+		try {
+			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone.getId());
+		} catch (NoUserByTheNameException nu) {
+			//need to add it
+			addPosting(superU.getParentBinder(), new HistoryStamp(superU));
+			//updates cache
+			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone.getId());
+		}
+		//make sure allUsers exists
+		try {
+			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
+		} catch (NoGroupByTheNameException nu) {
+			//need to add it
+			addAllUserGroup(superU.getParentBinder(), new HistoryStamp(superU));
+			//	updates cache
+			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
+		}
+ 	}
 
-	public void addZone(final String name) {
+ 	// Must be running inside a transaction set up by the caller
+ 	protected Workspace addZoneTx(String zoneName, String zoneAdminName, String virtualHost) {
+       		Workspace top = new Workspace();
+    		top.setName(zoneName);
+    		//temporary until have read id
+    		top.setZoneId(new Long(-1));
+    		top.setTitle(NLT.get("administration.initial.workspace.title", new Object[] {zoneName}, zoneName));
+    		top.setPathName("/"+top.getTitle());
+    		top.setInternalId(ObjectKeys.TOP_WORKSPACE_INTERNALID);
+    		top.setTeamMembershipInherited(false);
+    		top.setFunctionMembershipInherited(false);
+    		top.setDefinitionsInherited(false);
+    		//generate id for top and profiles
+    		getCoreDao().save(top);
+    		top.setZoneId(top.getId());
+    		top.setupRoot();
+	
+    		ProfileBinder profiles = addPersonalRoot(top);
+
+    		//build user
+    		User user = new User();
+    		user.setName(zoneAdminName);
+    		user.setLastName(zoneAdminName);
+    		user.setForeignName(zoneAdminName);
+    		user.setZoneId(top.getId());
+    		user.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
+    		user.setParentBinder(profiles);
+    		getCoreDao().save(user);
+    		//indexing and other modules needs the user
+    		RequestContextHolder.getRequestContext().setUser(user);
+    		HistoryStamp stamp = new HistoryStamp(user);
+    		//add reserved group for use in import templates
+    		Group group = addAllUserGroup(profiles, stamp);
+	
+    		Function visitorsRole = addVisitorsRole(top);
+    		Function participantsRole = addParticipantsRole(top);
+    		Function teamMemberRole = addTeamMemberRole(top);
+    		Function binderRole = 	addBinderRole(top);
+    		Function adminRole = addAdminRole(top);
+    		Function teamWsRole = addTeamWorkspaceRole(top);
+    		//make sure allusers group and roles are defined, may be referenced by templates
+    		getAdminModule().updateDefaultDefinitions(top.getId());
+    		getAdminModule().updateDefaultTemplates(top.getId());
+
+    		//Update after import of definitions
+    		getDefinitionModule().setDefaultBinderDefinition(top);
+    		getDefinitionModule().setDefaultBinderDefinition(profiles);
+    		getDefinitionModule().setDefaultEntryDefinition(user);
+
+    		//fill in config for profiles
+    		List defs = profiles.getDefinitions();
+    		defs.add(profiles.getEntryDef());
+    		defs.add(user.getEntryDef());
+    		
+    		defs = top.getDefinitions();
+    		defs.add(top.getEntryDef());
+    			        		
+    		//fill in timestampes
+    		top.setCreation(stamp);
+    		top.setModification(stamp);
+    		profiles.setCreation(stamp);
+    		profiles.setModification(stamp);
+    		user.setCreation(stamp);
+    		user.setModification(stamp);
+    		//flush these changes, other reads may re-load
+    		getCoreDao().flush();
+	
+    		addPosting(profiles, stamp);
+    		addJobProcessor(profiles, stamp); 
+    		Workspace globalRoot = addGlobalRoot(top, stamp);		
+    		Workspace teamRoot = addTeamRoot(top, stamp);
+    		teamRoot.setFunctionMembershipInherited(false);
+    		
+    		
+    		//setup allUsers access
+    		List members = new ArrayList();
+    		members.add(group.getId());
+    		//all users visitors at top
+    		addMembership(top, visitorsRole, top, members);
+    		// all users participants at top
+    		addMembership(top, participantsRole, top, members);
+    		// all users participants at teamroot
+    		addMembership(top, participantsRole, teamRoot, members);
+    		// all users createWs  at teamroot
+    		addMembership(top, teamWsRole, teamRoot, members);
+    		//add members to participants
+    		members.clear();
+    		members.add(ObjectKeys.TEAM_MEMBER_ID);
+    		// all team members have team member role at top
+    		addMembership(top, teamMemberRole, top, members);
+    		// all team members have team member role at teamroot
+    		addMembership(top, teamMemberRole, teamRoot, members);
+    		
+    		members.clear();
+    		members.add(ObjectKeys.OWNER_USER_ID);
+    		addMembership(top, binderRole, top, members);
+    		addMembership(top, binderRole, teamRoot, members);
+	
+    		members.clear();
+    		members.add(user.getId());
+    		addMembership(top, adminRole, top, members);
+    		//use module instead of processor directly so index synchronziation works correctly
+    		//index flushes entries from session - don't make changes without reload
+    		getBinderModule().indexTree(top.getId());
+    		//this will force the Ids to be cached 
+    		getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, top.getId());
+    		getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, top.getId());
+    		//reload user as side effect after index flush
+    		user = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
+    		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
+
+    		return top;
+ 	}
+ 	
+	protected void addZone(final String name, final String virtualHost) {
 		final String adminName = SZoneConfig.getString(name, "property[@name='adminUser']", "admin");
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(name, adminName);
@@ -207,121 +323,15 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
     		luceneSession.close();
     	}
 		try {
-  			IndexSynchronizationManager.begin();
-
- 	        getTransactionTemplate().execute(new TransactionCallback() {
+  	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
-	           		Workspace top = new Workspace();
-	        		top.setName(name);
-	        		//temporary until have read id
-	        		top.setZoneId(new Long(-1));
-	        		top.setTitle(NLT.get("administration.initial.workspace.title", new Object[] {name}, name));
-	        		top.setPathName("/"+top.getTitle());
-	        		top.setInternalId(ObjectKeys.TOP_WORKSPACE_INTERNALID);
-	        		top.setTeamMembershipInherited(false);
-	        		top.setFunctionMembershipInherited(false);
-	        		top.setDefinitionsInherited(false);
-	        		//generate id for top and profiles
-	        		getCoreDao().save(top);
-	        		top.setZoneId(top.getId());
-	        		top.setupRoot();
-			
-	        		ProfileBinder profiles = addPersonalRoot(top);
-		
-	        		//build user
-	        		User user = new User();
-	        		user.setName(adminName);
-	        		user.setLastName(adminName);
-	        		user.setForeignName(adminName);
-	        		user.setZoneId(top.getId());
-	        		user.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
-	        		user.setParentBinder(profiles);
-	        		getCoreDao().save(user);
-	        		//indexing and other modules needs the user
-	        		RequestContextHolder.getRequestContext().setUser(user);
-	        		HistoryStamp stamp = new HistoryStamp(user);
-	        		//add reserved group for use in import templates
-	        		Group group = addAllUserGroup(profiles, stamp);
-			
-	        		Function visitorsRole = addVisitorsRole(top);
-	        		Function participantsRole = addParticipantsRole(top);
-	        		Function teamMemberRole = addTeamMemberRole(top);
-	        		Function binderRole = 	addBinderRole(top);
-	        		Function adminRole = addAdminRole(top);
-	        		Function teamWsRole = addTeamWorkspaceRole(top);
-	        		//make sure allusers group and roles are defined, may be referenced by templates
-	        		getAdminModule().updateDefaultDefinitions(top.getId());
-	        		getAdminModule().updateDefaultTemplates(top.getId());
- 
-	        		//Update after import of definitions
-	        		getDefinitionModule().setDefaultBinderDefinition(top);
-	        		getDefinitionModule().setDefaultBinderDefinition(profiles);
-	        		getDefinitionModule().setDefaultEntryDefinition(user);
+	    			IndexSynchronizationManager.begin();
 
-	        		//fill in config for profiles
-	        		List defs = profiles.getDefinitions();
-	        		defs.add(profiles.getEntryDef());
-	        		defs.add(user.getEntryDef());
+	        		addZoneTx(name, adminName, virtualHost);
 	        		
-	        		defs = top.getDefinitions();
-	        		defs.add(top.getEntryDef());
-	        			        		
-	        		//fill in timestampes
-	        		top.setCreation(stamp);
-	        		top.setModification(stamp);
-	        		profiles.setCreation(stamp);
-	        		profiles.setModification(stamp);
-	        		user.setCreation(stamp);
-	        		user.setModification(stamp);
-	        		//flush these changes, other reads may re-load
-	        		getCoreDao().flush();
-			
-	        		addPosting(profiles, stamp);
-	        		addJobProcessor(profiles, stamp); 
-	        		Workspace globalRoot = addGlobalRoot(top, stamp);		
-	        		Workspace teamRoot = addTeamRoot(top, stamp);
-	        		teamRoot.setFunctionMembershipInherited(false);
-	        		
-	        		
-	        		//setup allUsers access
-	        		List members = new ArrayList();
-	        		members.add(group.getId());
-	        		//all users visitors at top
-	        		addMembership(top, visitorsRole, top, members);
-	        		// all users participants at top
-	        		addMembership(top, participantsRole, top, members);
-	        		// all users participants at teamroot
-	        		addMembership(top, participantsRole, teamRoot, members);
-	        		// all users createWs  at teamroot
-	        		addMembership(top, teamWsRole, teamRoot, members);
-	        		//add members to participants
-	        		members.clear();
-	        		members.add(ObjectKeys.TEAM_MEMBER_ID);
-	        		// all team members have team member role at top
-	        		addMembership(top, teamMemberRole, top, members);
-	        		// all team members have team member role at teamroot
-	        		addMembership(top, teamMemberRole, teamRoot, members);
-	        		
-	        		members.clear();
-	        		members.add(ObjectKeys.OWNER_USER_ID);
-	        		addMembership(top, binderRole, top, members);
-	        		addMembership(top, binderRole, teamRoot, members);
-			
-	        		members.clear();
-	        		members.add(user.getId());
-	        		addMembership(top, adminRole, top, members);
-	        		//use module instead of processor directly so index synchronziation works correctly
-	        		//index flushes entries from session - don't make changes without reload
-	        		getBinderModule().indexTree(top.getId());
-	        		//this will force the Ids to be cached 
-	        		getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, top.getId());
-	        		getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, top.getId());
-	        		//reload user as side effect after index flush
-	        		user = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
-	        		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
-
 	        		//do now, with request context set - won't have one if here on zone startup
 	        		IndexSynchronizationManager.applyChanges();
+	    		
 	        		return null;
 	        	}
 	        });
@@ -331,6 +341,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		}
 
 	}
+	
     private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {
 		//build allUsers group
 		Group group = new Group();
@@ -531,6 +542,5 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 		getCoreDao().save(ms);
 		
 	}
-
 
 }

@@ -76,8 +76,9 @@ public abstract class CrossContextConstants {
 
 	// User credential or authentication related key names.
 	public static final String USER_NAME = "username";
+	public static final String USER_ID = "userid";
 	public static final String PASSWORD = "password";
-	public static final String ZONE_NAME = "zonename";
+	public static final String SERVER_NAME = "serverName";
 	public static final String IGNORE_PASSWORD = "ignorePassword";
 	
 	// Argument key for OPERATION_SET_RESOURCE operation.

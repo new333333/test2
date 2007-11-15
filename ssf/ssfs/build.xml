@@ -46,6 +46,7 @@
 				<include name="com/sitescape/team/ssfs/NoSuchObjectException.class"/>
 				<include name="com/sitescape/team/ssfs/LockException.class"/>
 				<include name="com/sitescape/team/ssfs/TypeMismatchException.class"/>
+				<include name="com/sitescape/team/ssfs/ZoneMismatchException.class"/>
 	        	<include name="com/sitescape/team/web/util/AttributesAndParamsOnlyServletRequest.class"/>
 	        	<include name="com/sitescape/team/web/util/NullServletResponse.class"/>
 	        	<include name="com/sitescape/team/web/util/Log4jConfigListener.class"/>

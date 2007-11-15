@@ -29,5 +29,33 @@
 package com.sitescape.team.module.zone;
 
 public interface ZoneModule {
-	public void addZone(String zoneName);
+	/**
+	 * Creates or updates zone info.
+	 * 
+	 * @param zoneName zone name
+	 * @param virtualHost virtual host
+	 */
+	public void writeZone(String zoneName, String virtualHost);
+	
+	/**
+	 * Returns the name of the zone corresponding to the specified virtual host.
+	 * It returns the default zone name if <code>virtualHost</code> is 
+	 * <code>null</code>, or no match is found, or the system does not support
+	 * multiple zones.
+	 * 
+	 * @param virtualHost virtual host name or <code>null</code>
+	 * @return zone name
+	 */
+	public String getZoneNameByVirtualHost(String virtualHost);
+	
+	/**
+	 * Returns the ID of the zone corresponding to the specified virtual host.
+	 * It returns the default zone ID if <code>virtualHost</code> is 
+	 * <code>null</code>, or no match is found, or the system does not support
+	 * multiple zones.
+	 * 
+	 * @param virtualHost
+	 * @return
+	 */
+	public Long getZoneIdByVirtualHost(String virtualHost);
 }

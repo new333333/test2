@@ -52,6 +52,7 @@ import org.apache.slide.simple.store.WebdavStoreMacroMoveExtension;
 import org.apache.slide.structure.ObjectAlreadyExistsException;
 import org.apache.slide.structure.ObjectNotFoundException;
 
+import com.sitescape.team.asmodule.requestcontext.RequestContextInfo;
 import com.sitescape.team.ssfs.AlreadyExistsException;
 import com.sitescape.team.ssfs.LockException;
 import com.sitescape.team.ssfs.NoAccessException;
@@ -78,7 +79,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 	
 	private Service service;
 	private LoggerFacade logger;
-	private String zoneName;
+	private String serverName;
 	private String userName;
 	private CCClient client;
 	
@@ -89,11 +90,10 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		this.service = service;
 		this.logger = logger;
 		if(connection != null) {
-			String[] id = Util.parseUserIdInput((String) connection);			
-			this.zoneName = id[0];
-			this.userName = id[1];
+			this.serverName = RequestContextInfo.getServerName();
+			this.userName = (String) connection;
 		}
-		this.client = new CCClient(zoneName, userName);
+		this.client = new CCClient(serverName, userName);
 	}
 
 	public void checkAuthentication() throws UnauthenticatedException {		
@@ -340,12 +340,6 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			if(filesOnly(m)) { // /files
 				return new String[] {URI_TYPE_INTERNAL, URI_TYPE_LIBRARY};				
 			}
-			else if(uptoUriTypeOnly(m)) { // /files/{internal or library}
-				if(zoneName != null)
-					return new String[] {zoneName};
-				else
-					return new String[0];				
-			}
 			else if(getUriSyntacticType(m) == URI_SYNTACTIC_TYPE_FILE ) {
 				return null; 
 				// Not very consistent with the way we handled this condition. 
@@ -524,18 +518,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		
 		if(inheritable)
 			throw new AccessDeniedException(uri, "Recursive locking is not supported", "lock");
-		
-		// Make sure that the subject passed in matches the credential of
-		// the currently executing user. We do NOT allow users to obtain locks
-		// on behalf of another user (Although WCK doesn't appear to allow
-		// the described situation to occur, I'm doing additional check here - 
-		// just to make sure). Essentially we use subject only for validation
-		// purpose and do not actually store the string along with the lock. 
-		String[] id = Util.parseSubject(subject);
-
-		if(!id[0].equals(this.zoneName) || !id[1].equals(this.userName))
-			throw new AccessDeniedException(uri, "Cannot obtain lock on behalf of another user", "lock");
-		
+				
 		try {
 			Map m = parseUri(uri);
 		
@@ -783,34 +766,24 @@ public class WebdavSiteScape implements BasicWebdavStore,
 
 		if(u.length == 2)
 			return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
-		
-		String zname = u[2];
-		
-		if(!zname.equals(this.zoneName))
-			throw new ZoneMismatchException("No access to the specified zone");
-		
-		map.put(URI_ZONENAME, zname);
-		
-		if(u.length == 3)
-			return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
-		
+				
 		if(type.equals(URI_TYPE_INTERNAL)) { // internal
 			try {
-				map.put(URI_BINDER_ID, Long.valueOf(u[3]));
+				map.put(URI_BINDER_ID, Long.valueOf(u[2]));
 			}
 			catch(NumberFormatException e) {
 				return null;
 			}
 			
+			if(u.length == 3)
+				return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
+			
+			map.put(URI_ENTRY_ID, Long.valueOf(u[3]));
+			
 			if(u.length == 4)
 				return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 			
-			map.put(URI_ENTRY_ID, Long.valueOf(u[4]));
-			
-			if(u.length == 5)
-				return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
-			
-			String itemType = u[5];
+			String itemType = u[4];
 			
 			if(!itemType.equals(URI_ITEM_TYPE_LIBRARY) &&
 					!itemType.equals(URI_ITEM_TYPE_FILE) &&
@@ -820,37 +793,37 @@ public class WebdavSiteScape implements BasicWebdavStore,
 			
 			map.put(URI_ITEM_TYPE, itemType);
 			
-			if(u.length == 6)
+			if(u.length == 5)
 				return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 			
 			if(itemType.equals(URI_ITEM_TYPE_LIBRARY)) {
-				map.put(URI_FILEPATH, makeFilepath(u, 6));
+				map.put(URI_FILEPATH, makeFilepath(u, 5));
 				
 				return returnMap(map, URI_SYNTACTIC_TYPE_FILE);
 			}
 			else if(itemType.equals(URI_ITEM_TYPE_ATTACH)) {
-				map.put(URI_REPOS_NAME, u[6]);
+				map.put(URI_REPOS_NAME, u[5]);
 				
-				if(u.length == 7)
+				if(u.length == 6)
 					return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 				
-				map.put(URI_FILEPATH, makeFilepath(u, 7));
+				map.put(URI_FILEPATH, makeFilepath(u, 6));
 				
 				return returnMap(map, URI_SYNTACTIC_TYPE_FILE);			
 			}
 			else { // file or graphic
-				map.put(URI_ELEMNAME, u[6]);
+				map.put(URI_ELEMNAME, u[5]);
 				
-				if(u.length == 7)
+				if(u.length == 6)
 					return returnMap(map, URI_SYNTACTIC_TYPE_FOLDER);
 				
-				map.put(URI_FILEPATH, makeFilepath(u, 7));
+				map.put(URI_FILEPATH, makeFilepath(u, 6));
 				
 				return returnMap(map, URI_SYNTACTIC_TYPE_FILE);
 			}
 		}
 		else { // library
-			String libpath = makeLibpath(u, 3);
+			String libpath = makeLibpath(u, 2);
 			
 			map.put(URI_LIBPATH, libpath);
 			
@@ -886,9 +859,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 	 * <p>
 	 *	/files
 	 *  /files/internal
-	 *  /files/internal/<zonename>
 	 *  /files/library
-	 *  /files/library/<zonename> 
 	 * 
 	 * @param m
 	 * @return
@@ -897,7 +868,7 @@ public class WebdavSiteScape implements BasicWebdavStore,
 		// Map does not contain 'files'. So including RESOURCE_TYPE and
 		// URI_ORIGINAL entries, maximum of four entries indicates an 
 		// abstract folder.
-		return (m.size() <= 4);
+		return (m.size() <= 3);
 	}
 	
 	private boolean filesOnly(Map m) {

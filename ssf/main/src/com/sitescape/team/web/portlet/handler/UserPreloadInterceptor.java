@@ -44,6 +44,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.InternalException;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
@@ -111,67 +112,15 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 	private void loadUser(PortletRequest request, RequestContext reqCxt) {
     	User user;
 		PortletSession ses = WebHelper.getRequiredPortletSession(request);
-		boolean isRunByAdapter = PortletAdapterUtil.isRunByAdapter(request);
     	Long userId = (Long)ses.getAttribute(WebKeys.USER_ID, PortletSession.APPLICATION_SCOPE);
 		if (userId == null) { 
-			String zoneName = reqCxt.getZoneName();
-			String userName = reqCxt.getUserName();
-			try {
-				user = getProfileDao().findUserByName(userName, zoneName);
-			}
-			catch(NoUserByTheNameException e) {
-				/*
-				// The user doesn't exist in the Aspen user database. Since this
-				// interceptor is never called unless the user is first authenticated,
-				// this means that the user was authenticated against the portal
-				// database, and yet the Aspen user database doesn't know about
-				// the user. In this case, we create the user account in Aspen
-				// if the system is configured to allow such.
-				boolean userCreate = 
-					SPropsUtil.getBoolean("portal.user.auto.create", false);
-	 			if (userCreate) {
-	 				Map updates = new HashMap();
-					Map userAttrs = (Map)request.getAttribute(javax.portlet.PortletRequest.USER_INFO);
-					if(userAttrs == null) {
-						// According to JSR-168 spec, this means that the user is un-authenticatecd.
-						// However, this interceptor is designed to be invoked only if the user
-						// is authenticated. This indicates some internal problem (which tends 
-						// to occur under Liferay when it's automatic login facility is enabled).
-						// We can not allow the user to proceed in this case.
-						throw new InternalException("User must log off and log in again");
-					}
-					// The userAttrs map should be always non-null (althouth it may
-					// be empty), since this code is always executed in the context of
-					// an authenticated user.
-					if(userAttrs.containsKey("user.name.given"))
-						updates.put("firstName", userAttrs.get("user.name.given"));
-					if(userAttrs.containsKey("user.name.family"))
-						updates.put("lastName", userAttrs.get("user.name.family"));
-					if(userAttrs.containsKey("user.name.middle"))
-						updates.put("middleName", userAttrs.get("user.name.middle"));
-					if(userAttrs.containsKey("user.business-info.online.email"))
-						updates.put("emailAddress", userAttrs.get("user.business-info.online.email"));
-					if(userAttrs.containsKey("user.business-info.postal.organization"))
-						updates.put("organization", userAttrs.get("user.business-info.postal.organization"));
-					updates.put("locale", request.getLocale());
-
-	 				user = getProfileModule().addUserFromPortal(zoneName, userName, null, updates);
-	 				
-	 				if(!isRunByAdapter) {
-	 					// This request is served by the regular portlet container.
-	 					// In this case, no additional synch is needed during the
-	 					// current user session.
-	 					ses.setAttribute(WebKeys.PORTLET_USER_SYNC, Boolean.TRUE, PortletSession.APPLICATION_SCOPE);
-	 				}
-	 			} 		
-	 			else */
-	 				throw e;
-			}
+			user = RequestContextUtil.loadUpUser();
 			
 			ses.setAttribute(WebKeys.USER_ID, user.getId(), PortletSession.APPLICATION_SCOPE);
 		} 
 		else {
-			user = getProfileDao().loadUser(userId, reqCxt.getZoneName());
+			reqCxt.setUserId(userId);
+			user = RequestContextUtil.loadUpUser();
 		}
 		
 		Boolean sync = (Boolean)ses.getAttribute(WebKeys.PORTLET_USER_SYNC, PortletSession.APPLICATION_SCOPE);
@@ -184,6 +133,9 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 		// 3. The information hasn't already been synchronized during current 
 		// session - there is no point in trying to synchronize the info more
 		// than once per login. especially important for efficiency reason.
+		
+		boolean isRunByAdapter = PortletAdapterUtil.isRunByAdapter(request);
+
 		if (!isRunByAdapter && !Boolean.TRUE.equals(sync)) { 
 			Map updates = getStandardUserInfoFromPortal(request, user);
 			
@@ -195,8 +147,6 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 			
 			ses.setAttribute(WebKeys.PORTLET_USER_SYNC, Boolean.TRUE, PortletSession.APPLICATION_SCOPE);
 		}
-		
-		reqCxt.setUser(user);
 	}
 	
 	private Map filterUpdates(Map updates) {

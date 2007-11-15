@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.context.request;
 
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.util.SpringContextUtil;
 
 /**
  *
@@ -37,35 +39,106 @@ import com.sitescape.team.domain.User;
 public class RequestContextUtil {
 
 	public static RequestContext setThreadContext(String zoneName, String userName) {
-		if(userName == null)
-			throw new IllegalArgumentException("User name must be specified");
 		if(zoneName == null)
 			throw new IllegalArgumentException("Zone name must be specified");
+		if(userName == null)
+			throw new IllegalArgumentException("User name must be specified");
 		
 		RequestContext rc = new RequestContext(zoneName, userName);
 		RequestContextHolder.setRequestContext(rc);
 		
 		return rc;
 	}
+	public static RequestContext setThreadContext(String zoneName, Long userId) {
+		if(zoneName == null)
+			throw new IllegalArgumentException("Zone name must be specified");
+		if(userId == null)
+			throw new IllegalArgumentException("User ID must be specified");
+		
+		RequestContext rc = new RequestContext(zoneName, userId);
+		RequestContextHolder.setRequestContext(rc);
+		
+		return rc;
+	}
 	public static RequestContext setThreadContext(Long zoneId, Long userId) {
 		if(zoneId == null)
-			throw new IllegalArgumentException("User id must be specified");
-		if(userId == null)
 			throw new IllegalArgumentException("Zone id must be specified");
+		if(userId == null)
+			throw new IllegalArgumentException("User id must be specified");
 		
 		RequestContext rc = new RequestContext(zoneId, userId);
 		RequestContextHolder.setRequestContext(rc);
 		
 		return rc;
 	}	
+	public static RequestContext setThreadContext(Long zoneId, String userName) {
+		if(zoneId == null)
+			throw new IllegalArgumentException("Zone id must be specified");
+		if(userName == null)
+			throw new IllegalArgumentException("User name must be specified");
+		
+		RequestContext rc = new RequestContext(zoneId, userName);
+		RequestContextHolder.setRequestContext(rc);
+		
+		return rc;
+	}	
 	
 	public static RequestContext setThreadContext(User user) {
-		RequestContext rc = setThreadContext(user.getParentBinder().getParentBinder().getName(), user.getName());
-		rc.setUser(user);
+		if(user == null)
+			throw new IllegalArgumentException("User must be specified");
+		
+		RequestContext rc = new RequestContext(user);
+		RequestContextHolder.setRequestContext(rc);
+
 		return rc;		
 	}
 	
 	public static void clearThreadContext() {
 		RequestContextHolder.clear();
 	}
+	
+	public static User loadUpUser() {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		
+		if(rc == null)
+			throw new IllegalStateException("Request context must be created first");
+		
+		User user = rc.getUser();
+		
+		if(user == null) {
+			if(rc.getUserId() != null) {
+				if(rc.getZoneId() != null) {
+					user = getProfileDao().loadUser(rc.getUserId(), rc.getZoneId());
+				}
+				else if(rc.getZoneName() != null) {
+					user = getProfileDao().loadUser(rc.getUserId(), rc.getZoneName());					
+				}
+				else {
+					throw new IllegalStateException("Either zone id or zone name must be specified first");
+				}
+			}
+			else if(rc.getUserName() != null) {
+				if(rc.getZoneId() != null) {
+					user = getProfileDao().findUserByName(rc.getUserName(), rc.getZoneId());
+				}
+				else if(rc.getZoneName() != null) {
+					user = getProfileDao().findUserByName(rc.getUserName(), rc.getZoneName());					
+				}
+				else {
+					throw new IllegalStateException("Either zone id or zone name must be specified first");
+				}				
+			}
+			else {
+				throw new IllegalStateException("Either user id or user name must be specified first");				
+			}
+			rc.setUser(user);
+		}
+		
+		return user;
+	}
+	
+	private static ProfileDao getProfileDao() {
+		return (ProfileDao) SpringContextUtil.getBean("profileDao");
+	}
+
 }

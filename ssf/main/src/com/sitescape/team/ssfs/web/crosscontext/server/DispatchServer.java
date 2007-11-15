@@ -43,6 +43,8 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.domain.LoginInfo;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.ssfs.AlreadyExistsException;
 import com.sitescape.team.ssfs.CrossContextConstants;
@@ -66,8 +68,8 @@ public class DispatchServer extends GenericServlet {
 		Integer operation = (Integer) req.getAttribute(CrossContextConstants.OPERATION);
 		
 		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) { 
-			// Authentication request: This is treated as a special case.
-			String zoneName = (String) req.getAttribute(CrossContextConstants.ZONE_NAME);
+			// Authentication request: This is treated differently than regular SSFS requests.
+			String serverName = (String) req.getAttribute(CrossContextConstants.SERVER_NAME);
 			String userName = (String) req.getAttribute(CrossContextConstants.USER_NAME);
 			String password = (String) req.getAttribute(CrossContextConstants.PASSWORD);
 			Boolean ignorePassword = (Boolean) req.getAttribute(CrossContextConstants.IGNORE_PASSWORD);
@@ -75,9 +77,13 @@ public class DispatchServer extends GenericServlet {
 				ignorePassword = SPropsUtil.getBoolean("ssfs.ignore.password.enabled", false);
 			}
 
+			String zoneName = getZoneModule().getZoneNameByVirtualHost(serverName);
+			
 			// Authenticate the user against SSF user database.
 			try {
-				AuthenticationManagerUtil.authenticate(zoneName, userName, password, false, ignorePassword, LoginInfo.AUTHENTICATOR_WEBDAV);
+				User user = AuthenticationManagerUtil.authenticate
+					(zoneName, userName, password, false, ignorePassword, LoginInfo.AUTHENTICATOR_WEBDAV);
+				req.setAttribute(CrossContextConstants.USER_ID, user.getId());
 			}
 			catch(Exception e) {
 				// Instead of throwing ServletException to indicate an error, we pass
@@ -103,11 +109,14 @@ public class DispatchServer extends GenericServlet {
 			// set up. This branch takes care of request-context setup as well
 			// as logging of error. 
 			
-			String zoneName = (String) req.getAttribute(CrossContextConstants.ZONE_NAME);
+			String serverName = (String) req.getAttribute(CrossContextConstants.SERVER_NAME);
 			String userName = (String) req.getAttribute(CrossContextConstants.USER_NAME);
+
+			// Retrieve zone info corresponding to the specified server name.
+			Long zoneId = getZoneModule().getZoneIdByVirtualHost(serverName);
 			
 			// Setup request context.
-			RequestContextUtil.setThreadContext(zoneName, userName);
+			RequestContextUtil.setThreadContext(zoneId, userName);
 			
 			try {
 				doSsfsRequest(operation, req, res);
@@ -268,5 +277,9 @@ public class DispatchServer extends GenericServlet {
 	
 	private SiteScapeFileSystem getSiteScapeFileSystem() {
 		return (SiteScapeFileSystem) SpringContextUtil.getBean("ssfs");
+	}
+	
+	private ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
 	}
 }
