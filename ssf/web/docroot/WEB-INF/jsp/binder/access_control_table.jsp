@@ -40,13 +40,13 @@
 </c:if>
 <c:if test="${!ssBinder.functionMembershipInherited}">
   <ssf:ifnotaccessible>
-  <a href="javascript:;" onClick="ss_showAddRolesMenu${ss_namespace}(this);return false;"
+  <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addRolesMenu${ss_namespace}',40, 40);return false;"
   ><ssf:nlt tag="access.addRole"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
   src="<html:imagesPath/>pics/menudown.gif"/></a>
   </ssf:ifnotaccessible>
   
   <ssf:ifaccessible>
-  <select name="roleIds" onChange="ss_selectRole${ss_namespace}();">
+  <select name="roleIds" onChange="${ss_namespace}accessObj.selectRole();">
     <option value=""><ssf:nlt tag="binder.configure.access_control.selectRole" /></option>
     <c:forEach var="function" items="${ssFunctions}">
       <c:set var="includeRole" value="1"/>
@@ -163,7 +163,7 @@
 	</c:if>
 	<c:if test="${!ssBinder.functionMembershipInherited}">
 	  <ssf:ifnotaccessible>
-	    <a href="javascript:;" onClick="ss_showAddGroupsMenu${ss_namespace}(this);return false;">
+	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addGroupsMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	        src="<html:imagesPath/>pics/menudown.gif"/>
 	    </a>
@@ -241,7 +241,7 @@
 	</c:if>
 	<c:if test="${!ssBinder.functionMembershipInherited}">
 	  <ssf:ifnotaccessible>
-	    <a href="javascript:;" onClick="ss_showAddUsersMenu${ss_namespace}(this);return false;">
+	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addUsersMenu${ss_namespace}', 40, 40);return false;">
 	      <ssf:nlt tag="access.addUser"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
 	      src="<html:imagesPath/>pics/menudown.gif"/></a>
 	  </ssf:ifnotaccessible>

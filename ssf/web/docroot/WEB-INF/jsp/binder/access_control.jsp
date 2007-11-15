@@ -30,112 +30,9 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<script type="text/javascript" src="<html:rootPath />js/binder/ss_access.js"></script>
 <script type="text/javascript">
-function ss_selectPrincipal<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id) {
-	ss_selectPrincipals<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>([id]);
-}
-
-function ss_selectPrincipals<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(ids) {
-	var formObj = document.getElementById('${renderResponse.namespace}rolesForm');
-
-	for (var i = 0; i < ids.length; i++) {
-		var inputObj = document.createElement("input");
-		inputObj.setAttribute("type", "hidden");
-		inputObj.setAttribute("name", "principalId");
-		inputObj.setAttribute("value", ids[i]);
-	
-		formObj.appendChild(inputObj);
-	}
-
-	formObj.btnClicked.value = "addPrincipal";
-<ssf:ifaccessible>
-	ss_selectPrincipalAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
-</ssf:ifaccessible>
-<ssf:ifnotaccessible>
-	if (ss_isIE) {
-		//IE does not display the table right, so repaint the screen
-		ss_selectPrincipalAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
-	} else {
-		ss_selectPrincipalAjax<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
-	}
-</ssf:ifnotaccessible>
-}
-
-function ss_selectPrincipalAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
-	setTimeout("document.forms['${renderResponse.namespace}rolesForm'].submit();", 100)
-}
-function ss_addAccessControlRole<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id) {
-	var formObj = document.getElementById('${renderResponse.namespace}rolesForm');
-	formObj.btnClicked.value = "addRole";
-	formObj.roleIdToAdd.value = id;
-<ssf:ifaccessible>
-	ss_selectPrincipalAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
-</ssf:ifaccessible>
-<ssf:ifnotaccessible>
-	if (ss_isIE) {
-		//IE does not display the table right, so repaint the screen
-		ss_selectPrincipalAccessible<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
-	} else {
-		ss_selectPrincipalAjax<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
-	}
-</ssf:ifnotaccessible>
-	ss_hideDiv('ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
-}
-
-function ss_selectOwnerAjax<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(ownerId) {
-	ss_setupStatusMessageDiv()
- 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_binder_owner_id"});
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("namespace", "${renderResponse.namespace}");
-	ajaxRequest.addKeyValue("ownerId", ownerId);
-	ajaxRequest.addKeyValue("binderId", "${ssBinder.id}");
-	//ajaxRequest.addKeyValue("random", ss_random++);
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setPostRequest(ss_postSelectOwner<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
-}
-
-function ss_postSelectOwner<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
-	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert(ss_not_logged_in);
-	}
-	ss_hideDiv('ss_changeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-}
-
-function ss_selectPrincipalAjax<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
-	ss_setupStatusMessageDiv()
- 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_access_control_table"});
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("namespace", "${renderResponse.namespace}");
-	ajaxRequest.addKeyValue("binderId", "${ssBinder.id}");
-	//ajaxRequest.addKeyValue("random", ss_random++);
-	ajaxRequest.addFormElements("${renderResponse.namespace}rolesForm");
-	//ajaxRequest.setEchoDebugInfo();
-	ajaxRequest.setPostRequest(ss_postSelectPrincipal<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
-	ajaxRequest.setUsePOST();
-	ajaxRequest.sendRequest();  //Send the request
-	
-	ss_hideDiv('ss_addGroupsMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
-	ss_hideDiv('ss_addUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');	
-}
-
-function ss_postSelectPrincipal<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
-	//See if there was an error
-	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
-		alert(ss_not_logged_in);
-	}
-	var divObj = document.getElementById('ss_accessControlDiv${renderResponse.namespace}');
-}
-
-function ss_selectRole<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
-	var formObj = document.getElementById('${renderResponse.namespace}rolesForm');
-	formObj.btnClicked.value = "addRole";
-	ss_selectPrincipalAjax<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();
-}
-
-function ss_treeShowIdAccessControl<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id, obj, action) {
+function ss_treeShowIdAccessControl${renderResponse.namespace}(id, obj, action) {
 	var binderId = id;
 	//See if the id is formatted (e.g., "ss_favorites_xxx")
 	if (binderId.indexOf("_") >= 0) {
@@ -151,84 +48,14 @@ function ss_treeShowIdAccessControl<ssf:ifadapter><portletadapter:namespace/></s
 	self.location.href = url;
 	return false;
 }
-
-function ss_showChangeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
-	var divObj = document.getElementById('ss_changeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
-	ss_moveObjectToBody(divObj)
-	var objTopOffset = 10;
-	var objLeftOffset = -10;
-	ss_setObjectTop(divObj, parseInt(ss_getClickPositionY() + objTopOffset))
-	ss_setObjectLeft(divObj, parseInt(ss_getClickPositionX(obj) + objLeftOffset))
-	if (divObj.style.display == 'block' && divObj.style.visibility == 'visible') {
-		ss_hideDiv('ss_changeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	} else {
-		ss_showDiv('ss_changeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	}
+function ss_accessSelectPrincipal${renderResponse.namespace}(id) {
+	${renderResponse.namespace}accessObj.selectPrincipals([id]);
 }
-
-function ss_showAddRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
-	var divObj = document.getElementById('ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
-	ss_moveObjectToBody(divObj)
-	var objTopOffset = 40
-	var objLeftOffset = 40
-	ss_setObjectTop(divObj, parseInt(ss_getObjectTopAbs(obj) + objTopOffset))
-	ss_setObjectLeft(divObj, parseInt(ss_getObjectLeftAbs(obj) + objLeftOffset))
-	if (divObj.style.display == 'block' && divObj.style.visibility == 'visible') {
-		ss_hideDiv('ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	} else {
-		ss_showDiv('ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	}
+//doens't work with direct call in accessObj
+function ss_accessSelectOwner${renderResponse.namespace}(ownerId, obj) {
+	${renderResponse.namespace}accessObj.selectOwnerAjax(ownerId, obj);
 }
-
-function ss_showAddGroupsMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
-	var divObj = document.getElementById('ss_addGroupsMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
-	ss_moveObjectToBody(divObj)
-	var objTopOffset = 40
-	var objLeftOffset = 40
-	ss_setObjectTop(divObj, parseInt(ss_getObjectTopAbs(obj) + objTopOffset))
-	ss_setObjectLeft(divObj, parseInt(ss_getObjectLeftAbs(obj) + objLeftOffset))
-	if (divObj.style.display == 'block' && divObj.style.visibility == 'visible') {
-		ss_hideDiv('ss_addGroupsMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	} else {
-		ss_showDiv('ss_addGroupsMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	}
-}
-
-function ss_showAddUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(obj) {
-	var divObj = document.getElementById('ss_addUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');
-	ss_moveObjectToBody(divObj)
-	var objTopOffset = 40
-	var objLeftOffset = 40
-	ss_setObjectTop(divObj, parseInt(ss_getObjectTopAbs(obj) + objTopOffset))
-	ss_setObjectLeft(divObj, parseInt(ss_getObjectLeftAbs(obj) + objLeftOffset))
-	if (divObj.style.display == 'block' && divObj.style.visibility == 'visible') {
-		ss_hideDiv('ss_addUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	} else {
-		ss_showDiv('ss_addUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
-	}
-}
-
-function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users"});
-	url += "\&randomNumber="+ss_random++;
-	var bindArgs = {
-    	url: url,
-		error: function(type, data, evt) {
-			
-		},
-		load: function(type, data, evt) {
-			var userIds = new Array();
-			for (var i = 0; i < data.length; i++) {
-				userIds.push(data[i][0]);
-			}
-			ss_selectPrincipals<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(userIds);		
-		},
-		mimetype: "text/json",
-		method: "get"
-	};
-   
-	dojo.io.bind(bindArgs);
-}
+var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse.namespace}', '${ssBinder.id}');
 
 </script>
 
@@ -255,7 +82,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 <% //need to check tags for templates %>
 <span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
 <br/>
-<form name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>changeOwnerForm" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>changeOwnerForm" 
+<form name="${renderResponse.namespace}changeOwnerForm" id="${renderResponse.namespace}changeOwnerForm" 
   class="ss_form" method="post" style="display:inline;" action="" >
 <c:if test="${ssBinder.entityType == 'folder'}">
   <span><ssf:nlt tag="access.folderOwner"/></span>
@@ -263,11 +90,11 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 <c:if test="${ssBinder.entityType != 'folder'}">
   <span><ssf:nlt tag="access.workspaceOwner"/></span>
 </c:if>
-<span id="ss_accessControlOwner<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+<span id="ss_accessControlOwner${renderResponse.namespace}"
   class="ss_bold">${ssBinder.owner.title} 
   <span class="ss_normal ss_smallprint ss_italic">(${ssBinder.owner.name})</span></span>&nbsp;&nbsp;
 <span class="ss_fineprint"><a href="javascript: ;" 
-  onClick="ss_showChangeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(this);return false;">[<ssf:nlt tag="edit"/>]</a></span>
+  onClick="${renderResponse.namespace}accessObj.showChangeOwnerMenu(this, 'ss_changeOwnerMenu${renderResponse.namespace}');return false;">[<ssf:nlt tag="edit"/>]</a></span>
 </form>
 </td>
 <td align="right" valign="top">
@@ -342,7 +169,6 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 
 <input type="hidden" name="btnClicked"/>
 <input type="hidden" name="roleIdToAdd"/>
-
 <c:if test="${!ssBinder.functionMembershipInherited && !empty ss_accessParent.ssBinder}">
 <div>
 <img src="<html:imagesPath/>pics/sym_s_checkmark.gif" <ssf:alt tag="alt.checkmark"/>/>&nbsp;
@@ -361,10 +187,10 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
 
-<div id="ss_changeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+<div id="ss_changeOwnerMenu${renderResponse.namespace}" 
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
   <div align="right">
-    <a href="javascript:;" onClick="ss_hideDiv('ss_changeOwnerMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
+    <a href="javascript:;" onClick="ss_hideDiv('ss_changeOwnerMenu${renderResponse.namespace}');return false;">
       <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
@@ -380,17 +206,17 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
     formElement="changeOwnerText${renderResponse.namespace}" 
     type="user"
     leaveResultsVisible="false"
-    clickRoutine="ss_selectOwnerAjax${renderResponse.namespace}"
+    clickRoutine="ss_accessSelectOwner${renderResponse.namespace}"
     width="100px" singleItem="true"/> 
   </div>
 </div>
 
 <c:if test="${!ssBinder.functionMembershipInherited}">
 
-<div id="ss_addGroupsMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+<div id="ss_addGroupsMenu${renderResponse.namespace}" 
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
   <div align="right">
-    <a href="javascript:;" onClick="ss_hideDiv('ss_addGroupsMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
+    <a href="javascript:;" onClick="ss_hideDiv('ss_addGroupsMenu${renderResponse.namespace}');return false;">
       <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
@@ -400,15 +226,15 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
     formElement="addPrincipalText${renderResponse.namespace}" 
     type="group"
     leaveResultsVisible="false"
-    clickRoutine="ss_selectPrincipal${renderResponse.namespace}"
+    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
     width="100px" singleItem="true"/> 
   </div>
 </div>
 
-<div id="ss_addUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+<div id="ss_addUsersMenu${renderResponse.namespace}" 
   style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
   <div align="right">
-    <a href="javascript:;" onClick="ss_hideDiv('ss_addUsersMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
+    <a href="javascript:;" onClick="ss_hideDiv('ss_addUsersMenu${renderResponse.namespace}');return false;">
       <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
@@ -418,19 +244,19 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
     formElement="addPrincipalText${renderResponse.namespace}" 
     type="user"
     leaveResultsVisible="false"
-    clickRoutine="ss_selectPrincipal${renderResponse.namespace}"
+    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
     width="100px" singleItem="true"/> 
   </div>
 </div>
 
-<span class="ss_bold"><a href="javascript: ss_addClipboardUsersToAccessControlList${ss_namespace}();"><ssf:nlt tag="access.addClipboardUsers"/></a></span><br/>
+<span class="ss_bold"><a href="javascript: ${renderResponse.namespace}accessObj.addClipboardUsers();"><ssf:nlt tag="access.addClipboardUsers"/></a></span><br/>
 
   <ssf:ifnotaccessible>
   
-	<div id="ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_actions_bar2 ss_actions_bar_submenu" >
+	<div id="ss_addRolesMenu${renderResponse.namespace}" class="ss_actions_bar2 ss_actions_bar_submenu" >
 		<ul class="ss_actions_bar2 ss_actions_bar_submenu" style="width:250px;">
 		  <div align="right">
-		    <a href="javascript:;" onClick="ss_hideDiv('ss_addRolesMenu<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');return false;">
+		    <a href="javascript:;" onClick="ss_hideDiv('ss_addRolesMenu${renderResponse.namespace}');return false;">
 		      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
 		    </a>
 		  </div>
@@ -445,7 +271,7 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 	      <c:if test="${includeRole == '1'}">
 	        <li>
 	          <a href="javascript: ;" 
-	          onClick="ss_addAccessControlRole${ss_namespace}('${function.id}');"
+	          onClick="${renderResponse.namespace}accessObj.addAccessControlRole('${function.id}');"
 	          ><ssf:nlt tag="${function.name}" checkIfTag="true"/></a>
 	        </li>
 	      </c:if>
@@ -498,11 +324,11 @@ function ss_addClipboardUsersToAccessControlList<ssf:ifadapter><portletadapter:n
 
 <c:forEach var="function" items="${ssFunctions}">
 <jsp:useBean id="function" type="com.sitescape.team.security.function.Function" />
-<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_operations${function.id}" class="ss_style ss_portlet"
+<div id="${renderResponse.namespace}ss_operations${function.id}" class="ss_style ss_portlet"
   style="position:absolute; display:none; width:300px; border:1px solid #000000; 
   margin-bottom:10px; padding:4px; background-color:#ffffff;">
   <div align="right">
-    <a href="javascript:;" onClick="ss_hideDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_operations${function.id}');return false;">
+    <a href="javascript:;" onClick="ss_hideDiv('${renderResponse.namespace}ss_operations${function.id}');return false;">
       <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
     </a>
   </div>
