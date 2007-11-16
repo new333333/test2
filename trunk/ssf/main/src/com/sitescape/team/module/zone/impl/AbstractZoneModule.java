@@ -152,7 +152,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  	
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {
-		String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
+ 		String superName = SZoneConfig.getAdminUserName(zone.getName());
 		//	get super user from config file - must exist or throws and error
 		User superU = getProfileDao().findUserByName(superName, zone.getName());
 		if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
@@ -189,7 +189,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 		//make sure guest exists
 		try {
-			getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
+			User guest = getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
+			// Make sure guest has password.
+			if(guest.getPassword() == null) {
+				guest.setPassword(guest.getName());
+				getCoreDao().merge(guest);
+			}
 		} catch (NoUserByTheNameException nu) {
 			//need to add it
 			addGuest(superU.getParentBinder(), new HistoryStamp(superU));
@@ -323,7 +328,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  	}
  	
 	protected void addZone(final String name, final String virtualHost) {
-		final String adminName = SZoneConfig.getString(name, "property[@name='adminUser']", "admin");
+		final String adminName = SZoneConfig.getAdminUserName(name);
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(name, adminName);
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
@@ -367,10 +372,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		group.setModification(stamp);
 		return group;
 	}
-	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String title, String id) {
+	private User addReservedUser(Binder parent, HistoryStamp stamp, String name, String password, String title, String id) {
 		
 		User user = new User();
 		user.setName(name);
+		if(password != null) // optional field
+			user.setPassword(password);
 		user.setForeignName(name);
 		user.setLastName(title);
 		user.setZoneId(parent.getZoneId());
@@ -383,14 +390,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return user;
 	}
 	private User addPosting(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_postingAgent", NLT.get("administration.initial.postingAgent.title"), ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID);
+		return addReservedUser(parent, stamp, "_postingAgent", null, NLT.get("administration.initial.postingAgent.title"), ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID);
 	}
 	private User addJobProcessor(Binder parent, HistoryStamp stamp) {
-		return addReservedUser(parent, stamp, "_jobProcessingAgent", NLT.get("administration.initial.jobProcessor.title"), ObjectKeys.JOB_PROCESSOR_INTERNALID);
+		return addReservedUser(parent, stamp, "_jobProcessingAgent", null, NLT.get("administration.initial.jobProcessor.title"), ObjectKeys.JOB_PROCESSOR_INTERNALID);
 	}
 	private User addGuest(Binder parent, HistoryStamp stamp) {
 		String guestName= SZoneConfig.getString(parent.getRoot().getName(), "property[@name='guestUser']", "guest");
-		return addReservedUser(parent, stamp, guestName, NLT.get("administration.initial.guestTitle"), ObjectKeys.GUEST_USER_INTERNALID);
+		return addReservedUser(parent, stamp, guestName, guestName, NLT.get("administration.initial.guestTitle"), ObjectKeys.GUEST_USER_INTERNALID);
 	}
 	private Workspace addTeamRoot(Workspace top, HistoryStamp stamp) {
 		Workspace team = new Workspace();

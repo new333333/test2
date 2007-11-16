@@ -51,6 +51,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 
@@ -171,10 +172,15 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 		if(userAttrs == null) {
 			// According to JSR-168 spec, this means that the user is un-authenticatecd.
 			// However, this interceptor is designed to be invoked only if the user
-			// is authenticated. This indicates some internal problem (which tends 
-			// to occur under order version of Liferay when it's automatic login facility 
-			// is enabled). We can not allow the user to proceed in this case.
-			throw new InternalException("User must log off and log in again");
+			// is already authenticated by the portal. For any user other than the
+			// default user, this indicates some internal problem (which tended to 
+			// occur under older version of Liferay when it's automatic login facility 
+			// is enabled). We can not allow the user to proceed in that case.
+			String zoneName = user.getParentBinder().getParentBinder().getName();
+			if(user.getName().equals(SZoneConfig.getGuestUserName(zoneName)))
+				return updates;
+			else
+				throw new InternalException("User must log off and log in again");
 		}
 		String val = null;
 		if(userAttrs.containsKey("user.name.given")) {

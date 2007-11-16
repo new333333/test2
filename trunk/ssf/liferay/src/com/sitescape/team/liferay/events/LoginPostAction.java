@@ -98,7 +98,7 @@ public class LoginPostAction extends AbstractAction {
 			
 			// If you're still here, the authentication was successful. 
 			// Create a SSF session for the user. 
-			SessionManager.createSession(req, ses.getId(), company.getWebId(), user.getScreenName());
+			SessionManager.setupSession(req, ses.getId(), company.getWebId(), user.getScreenName());
 		} catch (Exception e) {
 			throw new ActionException(e);
 		}

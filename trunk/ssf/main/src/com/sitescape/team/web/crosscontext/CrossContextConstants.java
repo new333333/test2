@@ -50,6 +50,6 @@ public abstract class CrossContextConstants {
 	public static final String VIRTUAL_HOST = "com.sitescape.crosscontext.portal.virtualhost";
 	// Operation names
 	public static final String OPERATION_AUTHENTICATE = "authenticate";
-	public static final String OPERATION_CREATE_SESSION = "createSession";
+	public static final String OPERATION_SETUP_SESSION = "setupSession";
 	public static final String OPERATION_WRITE_ZONE = "writeZone";
 }
