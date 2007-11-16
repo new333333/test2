@@ -30,6 +30,7 @@ package com.sitescape.team.util;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -59,6 +60,11 @@ public class SZoneConfig {
 	private Document doc;
 	private Element root;
 	private String defaultZoneName;
+	
+	// Caches super user names for each zone for faster access
+	private static ConcurrentHashMap<String,String> adminUsers = new ConcurrentHashMap<String,String>();
+	// Caches default user names for each zone for faster access
+	private static ConcurrentHashMap<String,String> guestUsers = new ConcurrentHashMap<String,String>();
 	
 	public SZoneConfig() {
 		if(instance != null)
@@ -154,4 +160,21 @@ public class SZoneConfig {
     	return instance;
     }
     
+    public static String getAdminUserName(String zoneName) {
+    	String adminUser = adminUsers.get(zoneName);
+    	if(adminUser == null) {
+    		adminUser = SZoneConfig.getString(zoneName, "property[@name='adminUser']", "admin");
+    		adminUsers.put(zoneName, adminUser);
+    	}
+    	return adminUser;
+    }
+    
+    public static String getGuestUserName(String zoneName) {
+    	String guestUser = guestUsers.get(zoneName);
+    	if(guestUser == null) {
+    		guestUser = SZoneConfig.getString(zoneName, "property[@name='guestUser']", "guest");
+    		guestUsers.put(zoneName, guestUser);
+    	}
+    	return guestUser;
+    }
 }

@@ -57,7 +57,7 @@ import com.sitescape.util.servlet.DynamicServletRequest;
  */
 public class SessionManager {
 	
-	public static void createSession(HttpServletRequest request, 
+	public static void setupSession(HttpServletRequest request, 
 			String portalSessionId, String zoneName, String userName) 
 		throws ServletException, IOException {
 		//System.out.println("### SessionManager [createSession]: ");
@@ -67,9 +67,10 @@ public class SessionManager {
 		
 		DynamicServletRequest req = new DynamicServletRequest(request);
 
-		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_CREATE_SESSION);
+		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_SETUP_SESSION);
 		req.setParameter(CrossContextConstants.ZONE_NAME, zoneName);
-		req.setParameter(CrossContextConstants.USER_NAME, userName);
+		if(userName != null)
+			req.setParameter(CrossContextConstants.USER_NAME, userName);
 		
 		NullServletResponse res = new NullServletResponse();
 		

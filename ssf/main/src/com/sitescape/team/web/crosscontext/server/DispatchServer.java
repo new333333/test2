@@ -116,26 +116,28 @@ public class DispatchServer extends GenericServlet {
 					throw new ServletException(e.getLocalizedMessage());
 			}
 		}
-		else if(operation.equals(CrossContextConstants.OPERATION_CREATE_SESSION)) {
-			HttpServletRequest request = (HttpServletRequest) req;
-			
-			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
-			if(zoneName == null)
-				zoneName = SZoneConfig.getDefaultZoneName();
-			String userName = req.getParameter(CrossContextConstants.USER_NAME);
-			
+		else if(operation.equals(CrossContextConstants.OPERATION_SETUP_SESSION)) {
+			HttpServletRequest request = (HttpServletRequest) req;			
 			HttpSession ses = request.getSession();
 			
-			ses.setAttribute(WebKeys.ZONE_NAME, zoneName);
-			ses.setAttribute(WebKeys.USER_NAME, userName);
-			ses.setAttribute(WebKeys.SERVER_NAME, req.getServerName());
-			ses.setAttribute(WebKeys.SERVER_PORT, Integer.valueOf(req.getServerPort()));
-			if(logger.isDebugEnabled())
-				logger.debug("Server name:port is " + req.getServerName() + ":" + req.getServerPort() + " for user " + userName + " at the time of login");
+			if(ses.getAttribute(WebKeys.ZONE_NAME) == null) {		
+				String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
+				if(zoneName == null)
+					zoneName = SZoneConfig.getDefaultZoneName();
+				String userName = req.getParameter(CrossContextConstants.USER_NAME);
+				if(userName == null)
+					userName = SZoneConfig.getGuestUserName(zoneName);
+				
+				ses.setAttribute(WebKeys.ZONE_NAME, zoneName);
+				ses.setAttribute(WebKeys.USER_NAME, userName);
+				ses.setAttribute(WebKeys.SERVER_NAME, req.getServerName());
+				ses.setAttribute(WebKeys.SERVER_PORT, Integer.valueOf(req.getServerPort()));
+				if(logger.isDebugEnabled())
+					logger.debug("Server name:port is " + req.getServerName() + ":" + req.getServerPort() + " for user " + userName + " at the time of login");
+			}
 		}
 		else {
 			logger.error("Unrecognized operation [" + operation + "]");
 		}
 	}
-
 }

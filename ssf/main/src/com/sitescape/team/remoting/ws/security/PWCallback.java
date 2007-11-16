@@ -37,12 +37,13 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSPasswordCallback;
 
+import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.security.authentication.AuthenticationException;
-import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.util.PasswordEncryptor;
 
@@ -64,10 +65,10 @@ public class PWCallback implements CallbackHandler {
                 
                 // set the password given a username
                 String userName = pc.getIdentifer();
-                String zoneName = SZoneConfig.getDefaultZoneName();
+                Long zoneId = getZoneModule().getZoneIdByVirtualHost(ZoneContextHolder.getServerName());
                 
         		try {
-        			User user = getProfileDao().findUserByName(userName, zoneName);
+        			User user = getProfileDao().findUserByName(userName, zoneId);
     				// If we're still here, the user exists.
     				String userEncryptedPassword = user.getPassword();
 
@@ -100,10 +101,14 @@ public class PWCallback implements CallbackHandler {
         				pc.setPassword(userEncryptedPassword);
         			}
         			
-        			// While we are here, let's set up our thread context using
-        			// the user information, since this is our only change to 
-        			// get at that piece of info when invoked by WS runtime
-        			// (as opposed to web framework).
+        			// While we are here, let's set up our thread context to the
+        			// "potentially" matching user object (because authentication is 
+        			// still in progress we may not yet know for sure if the client-supplied
+        			// user credential is actually valid). If authentication ultimately
+        			// fails, this request thread will return without executing further,
+        			// meaning the false user object will not be utilized errorneously.
+        			// This is our only chance to get at that piece of info (ie, user 
+        			// identify) when invoked by WS runtime (as opposed to web framework).
         			RequestContextUtil.setThreadContext(user);
         		}
             	catch(NoUserByTheNameException e) {
@@ -125,4 +130,7 @@ public class PWCallback implements CallbackHandler {
 		return (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}
 
+	private ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	}
 }
