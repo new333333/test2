@@ -30,36 +30,31 @@
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
+//<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.id}" 
+	action="__ajax_mobile" operation="mobile_show_folder" 
+	actionUrl="false" />"><strong>${ssBinder.title}</strong></a>
+<br/>
+<br/>
 <c:if test="${!empty ssEntry}">
-<div>
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.id}"
-	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
-<span style="color:blue;">${ssBinder.title}</span>
-</a>
-</div>
 <div style="padding:0px 0px 6px 8px;">
-<span>${ssEntry.docNumber}.&nbsp;
-<c:if test="${!empty ssEntry.title}">
-<b><c:out value="${ssEntry.title}"/></b>
-</c:if>
-<c:if test="${empty ssEntry.title}">
---<ssf:nlt tag="entry.noTitle"/>--
-</c:if>
-</span>
-</div>
-<c:if test="${!empty ssEntry.description}">
-<div style="padding:0px 0px 10px 8px;">
- <span><ssf:markup type="view" entity="${ssEntry}"><c:out 
-   value="${ssEntry.description.text}" escapeXml="false"/></ssf:markup></span>
-</div>
-</c:if> 
-</c:if> 
 
+<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	configElement="${ssConfigElement}" 
+	configJspStyle="${ssConfigJspStyle}" />
+
+</c:if> 
+<br/>
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}"
 	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
 <span style="color:blue;"><ssf:nlt tag="mobile.returnToParentFolder"/></span>
+</a>
+<br/>
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
+<span class="ss_mobile" style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
 </a>
 </div>
 

@@ -30,8 +30,25 @@
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
+<c:if test="${empty ssBinder.parentFolder && !empty ssBinder.parentBinder}">
+//<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.parentBinder.id}" 
+	action="__ajax_mobile" operation="mobile_show_workspace" 
+	actionUrl="false" />"><strong>${ssBinder.parentBinder.title}</strong></a>
+<br/>&nbsp;&nbsp;</c:if>
+<c:if test="${!empty ssBinder.parentFolder}">
+//<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinderparentFolder.id}" 
+	action="__ajax_mobile" operation="mobile_show_folder" 
+	actionUrl="false" />"><strong>${ssBinder.parentFolder.title}</strong></a>
+<br/>&nbsp;&nbsp;</c:if>
+//<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.id}" 
+	action="__ajax_mobile" operation="mobile_show_folder" 
+	actionUrl="false" />"><strong>${ssBinder.title}</strong></a>
+<br/>
+<br/>
 <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
-<th colspan="2" align="left">${ssBinder.title}</th>
 <c:forEach var="entry1" items="${ssFolderEntries}" >
 <jsp:useBean id="entry1" type="java.util.HashMap" />
   <tr><td align="right" valign="top" style="padding:0px 4px 2px 4px;">${entry1._docNum}.</td>
@@ -47,6 +64,20 @@
 </c:forEach>
 </table>
 <br/>
+<c:if test="${empty ssBinder.parentFolder && !empty ssBinder.parentBinder}">
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.parentBinder.id}" 
+	action="__ajax_mobile" operation="mobile_show_workspace" 
+	actionUrl="false" />"><ssf:nlt tag="mobile.returnToParentWorkspace"/></a>
+<br/>
+</c:if>
+<c:if test="${!empty ssBinder.parentFolder}">
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinderparentFolder.id}" 
+	action="__ajax_mobile" operation="mobile_show_folder" 
+	actionUrl="false" />"><ssf:nlt tag="mobile.returnToParentFolder"/></a>
+<br/>
+</c:if>
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
 <span class="ss_mobile" style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
