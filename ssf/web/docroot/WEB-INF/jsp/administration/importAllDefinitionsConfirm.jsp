@@ -53,4 +53,3 @@ onClick="self.location.href='<portlet:renderURL windowState="normal" portletMode
 
 </form>
 </div>
-</div>
