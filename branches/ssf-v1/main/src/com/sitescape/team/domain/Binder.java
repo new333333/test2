@@ -278,6 +278,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 
     /**
      * @hibernate.many-to-one
+     * owner is value used in access control settings
      */
  	public Principal getOwner() {
 		if (owner != null) return owner;
