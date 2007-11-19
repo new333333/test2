@@ -279,6 +279,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 
     /**
      * @hibernate.many-to-one
+     * This is for acl management.
      */
  	public Principal getOwner() {
 		if (owner != null) return owner;

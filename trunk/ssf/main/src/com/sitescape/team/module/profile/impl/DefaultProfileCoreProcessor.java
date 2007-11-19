@@ -120,7 +120,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	super.addBinder_fillIn(parent,binder, inputData, entryData, ctx);
     	Integer type = binder.getDefinitionType();
     	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
-    		Principal u = binder.getOwner();
+    		Principal u = binder.getCreation().getPrincipal(); //creator is user
     		if (!(u instanceof User)) {
     			u = getProfileDao().loadPrincipal(u.getId(), u.getZoneId(), false);
     		}
@@ -134,7 +134,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected void addBinder_postSave(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	Integer type = binder.getDefinitionType();
     	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
-    		Principal u = binder.getOwner();
+    		Principal u = binder.getCreation().getPrincipal(); //creator is user
     		if (!(u instanceof User)) {
     			u = getProfileDao().loadPrincipal(u.getId(), u.getZoneId(), false);
     		}
@@ -286,6 +286,12 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL)) {
     			entryData.put(ObjectKeys.FIELD_USER_EMAIL, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL));
+    		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL_MOBILE) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL_MOBILE)) {
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_MOBILE, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_MOBILE));
+    		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_EMAIL_TEXT) && !entryData.containsKey(ObjectKeys.FIELD_USER_EMAIL_TEXT)) {
+    			entryData.put(ObjectKeys.FIELD_USER_EMAIL_TEXT, inputData.getSingleValue(ObjectKeys.FIELD_USER_EMAIL_TEXT));
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_TIMEZONE) && !entryData.containsKey(ObjectKeys.FIELD_USER_TIMEZONE)) {
     			entryData.put(ObjectKeys.FIELD_USER_TIMEZONE, TimeZoneHelper.fixTimeZone((TimeZone)inputData.getSingleObject(ObjectKeys.FIELD_USER_TIMEZONE)));
@@ -616,6 +622,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_ZONNAME, ObjectKeys.XTAG_TYPE_STRING, user.getZonName());
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_TIMEZONE, ObjectKeys.XTAG_TYPE_STRING, user.getTimeZone().getID());
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL_TEXT, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL_MOBILE, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_ORGANIZATION, ObjectKeys.XTAG_TYPE_STRING, user.getOrganization());
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_PHONE, ObjectKeys.XTAG_TYPE_STRING, user.getPhone());
 
