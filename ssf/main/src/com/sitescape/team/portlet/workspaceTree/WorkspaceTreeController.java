@@ -188,7 +188,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			//See if this is a user workspace
 			if ((binder.getDefinitionType() != null) && 
 					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
-				Principal owner = binder.getOwner();
+				Principal owner = binder.getCreation().getPrincipal(); //creator is user
 				if (owner != null) {
 					//	turn owner into real object = not hibernate proxy
 					try {
@@ -419,9 +419,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 
 		//If this is a user workspace, add the "Manage this profile" menu
 		if ((workspace.getDefinitionType() != null) && 
-				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
-				workspace.getOwner() != null) {
-			Principal owner = workspace.getOwner();
+				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
+			Principal owner = workspace.getCreation().getPrincipal(); //creator is user
 		
 			boolean showModifyProfileMenu = false;
 			boolean showDeleteProfileMenu = false;
