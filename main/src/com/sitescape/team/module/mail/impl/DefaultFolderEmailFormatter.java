@@ -412,6 +412,10 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 
 	protected void doEntry(final Element element, final FolderEntry entry, final Notify notifyDef, boolean hasChanges) {
 		HistoryStamp stamp;
+		String title = null;
+		if (entry.getCreation() != null && entry.getCreation().getPrincipal() != null) title = entry.getCreation().getPrincipal().getTitle();
+		if (Validator.isNull(title)) element.addAttribute("notifyFrom",NLT.get("entry.noTitle", notifyDef.getLocale()));
+		else element.addAttribute("notifyFrom", title);
 		if (hasChanges) {
 			//style sheet will translate these tags
 			element.addAttribute("hasChanges", "true");
@@ -431,7 +435,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		}
 		if (stamp == null) stamp = new HistoryStamp();
 		Principal p = stamp.getPrincipal();
-		String title = null;
+		title = null;
 		if (p != null) title = p.getTitle();
 		if (Validator.isNull(title)) element.addAttribute("notifyBy",NLT.get("entry.noTitle", notifyDef.getLocale()));
 		else element.addAttribute("notifyBy", title);
