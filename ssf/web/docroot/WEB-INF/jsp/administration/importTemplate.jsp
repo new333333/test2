@@ -53,7 +53,6 @@
 			portletName="ss_administration" 
 			action="configure_configuration" 
 			actionUrl="true" ><ssf:param name="operation" value="add"/></ssf:url>">
-<div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.configure_cfg.import" /></span>
 <br>
 <input type="hidden" name="cfgType" value="-2"/>
