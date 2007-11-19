@@ -32,13 +32,13 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
+<div class="ss_style ss_portlet">
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
 		  action="<ssf:url adapter="true" 
 			portletName="ss_administration" 
 			action="import_profiles" 
 			actionUrl="true" ><ssf:param 
 		    name="binderId" value="${ssBinder.id}"/></ssf:url>" >
-<div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.import.profiles" /></span>
 <br>
 
@@ -65,6 +65,7 @@ onClick="window.close();return false;"/>
 </div>
 </div>
 </form>
+</div>
 <ssf:ifadapter>
 </body>
 </html>
