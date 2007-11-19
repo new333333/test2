@@ -53,7 +53,7 @@ function ss_accessSelectPrincipal${renderResponse.namespace}(id) {
 }
 //doens't work with direct call in accessObj
 function ss_accessSelectOwner${renderResponse.namespace}(ownerId, obj) {
-	${renderResponse.namespace}accessObj.selectOwnerAjax(ownerId, obj);
+	${renderResponse.namespace}accessObj.selectOwner(ownerId, obj);
 }
 var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse.namespace}', '${ssBinder.id}');
 

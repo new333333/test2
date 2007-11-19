@@ -4435,7 +4435,7 @@ function ss_Clipboard () {
 				if (data.failure) {
 					alert(data.failure);
 				} else { 
-					afterPostRoutine(args);
+					if (afterPostRoutine) afterPostRoutine(args);
 				}
 			},
 			preventCache: true,				
