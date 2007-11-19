@@ -48,6 +48,7 @@ import com.sitescape.team.portletadapter.support.KeyNames;
 import com.sitescape.team.portletadapter.support.PortletInfo;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
+import com.sitescape.util.Validator;
 
 /**
  * This controller invokes portlet.
@@ -92,6 +93,12 @@ public class PortletAdapterController extends SAbstractController {
 				actionReq.defineObjects(portletInfo.getPortletConfig(), actionRes);
 
 				portlet.processAction(actionReq, actionRes);
+				
+				String redirectLocation = actionRes.getRedirectLocation();
+				if(Validator.isNotNull(redirectLocation)) {
+					res.sendRedirect(redirectLocation);
+					return null;
+				}
 				
 				params = actionRes.getRenderParameters();
 				
