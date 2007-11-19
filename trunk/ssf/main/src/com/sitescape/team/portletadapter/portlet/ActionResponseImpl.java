@@ -44,7 +44,9 @@ import javax.servlet.http.HttpServletResponse;
 public class ActionResponseImpl extends PortletResponseImpl implements ActionResponse {
 
 	private ActionRequestImpl req;
-	private boolean calledSetRenderParameter;
+	// Suppress the use of following flag to check JSR-168 adherence. 
+	// Spring portlet MVC does not honor that part of the spec.
+	//private boolean calledSetRenderParameter;
 	private String redirectLocation;
 	private Map params;
 	
@@ -53,7 +55,7 @@ public class ActionResponseImpl extends PortletResponseImpl implements ActionRes
 	throws PortletModeException, WindowStateException {
 		super(res, portletName);
 		this.req = req;
-		this.calledSetRenderParameter = false;
+		//this.calledSetRenderParameter = false;
 		this.params = new HashMap();
 	}
 
@@ -72,9 +74,9 @@ public class ActionResponseImpl extends PortletResponseImpl implements ActionRes
 			throw new IllegalArgumentException(location);
 		}
 
-		if (calledSetRenderParameter) {
-			throw new IllegalStateException();
-		}
+		//if (calledSetRenderParameter) {
+		//	throw new IllegalStateException();
+		//}
 
 		redirectLocation = location;
 	}
@@ -116,7 +118,7 @@ public class ActionResponseImpl extends PortletResponseImpl implements ActionRes
 			this.params = newParams;
 		}
 
-		calledSetRenderParameter = true;
+		//calledSetRenderParameter = true;
 	}
 
 	public void setRenderParameter(String key, String value) {
@@ -148,11 +150,15 @@ public class ActionResponseImpl extends PortletResponseImpl implements ActionRes
 
 		params.put(key, values);
 
-		calledSetRenderParameter = true;
+		//calledSetRenderParameter = true;
 	}
 
 	// This method is specific to ActionResponseImpl.
 	public Map getRenderParameters() {
 		return params;
+	}
+	
+	public String getRedirectLocation() {
+		return redirectLocation;
 	}
 }
