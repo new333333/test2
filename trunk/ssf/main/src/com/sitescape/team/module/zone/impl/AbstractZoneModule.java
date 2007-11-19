@@ -43,6 +43,8 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
+import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
@@ -155,10 +157,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		String superName = SZoneConfig.getAdminUserName(zone.getName());
 		//	get super user from config file - must exist or throws and error
 		User superU = getProfileDao().findUserByName(superName, zone.getName());
+		RequestContextUtil.setThreadContext(superU);
 		if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
 			superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
 			//force update
-			getCoreDao().merge(superU);				   
+			getCoreDao().merge(superU);	
+			getProfileModule().indexEntry(superU);
 		}
 		//make sure only one
 		getCoreDao().executeUpdate(
@@ -166,26 +170,27 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 				"internalId='" + ObjectKeys.SUPER_USER_INTERNALID + 
 				"' and zoneId=" + zone.getId() + 
 				" and not id=" + superU.getId());
-		RequestContextUtil.setThreadContext(superU);
 		//adds user to profileDao cache
 		superU = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zone.getId());
-		//make sure posting agent and background user exist
+		//make sure background user exists
 		try {
 			getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone.getId());
 		} catch (NoUserByTheNameException nu) {
 			//need to add it
-			addJobProcessor(superU.getParentBinder(), new HistoryStamp(superU));
+			User u = addJobProcessor(superU.getParentBinder(), new HistoryStamp(superU));
 			//updates cache
 			getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zone.getId());
+			getProfileModule().indexEntry(u);
 		}
-		//make sure posting agent and background user exist
+		//make sure posting agent exists
 		try {
 			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone.getId());
 		} catch (NoUserByTheNameException nu) {
 			//need to add it
-			addPosting(superU.getParentBinder(), new HistoryStamp(superU));
+			User u = addPosting(superU.getParentBinder(), new HistoryStamp(superU));
 			//updates cache
 			getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zone.getId());
+			getProfileModule().indexEntry(u);
 		}
 		//make sure guest exists
 		try {
@@ -197,20 +202,23 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			}
 		} catch (NoUserByTheNameException nu) {
 			//need to add it
-			addGuest(superU.getParentBinder(), new HistoryStamp(superU));
+			User u = addGuest(superU.getParentBinder(), new HistoryStamp(superU));
 			//	updates cache
 			getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zone.getId());
+			getProfileModule().indexEntry(u);
 		}
 		//make sure allUsers exists
 		try {
 			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
 		} catch (NoGroupByTheNameException nu) {
 			//need to add it
-			addAllUserGroup(superU.getParentBinder(), new HistoryStamp(superU));
+			Group g = addAllUserGroup(superU.getParentBinder(), new HistoryStamp(superU));
 			//	updates cache
 			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
+			getProfileModule().indexEntry(g);
 		}
- 	}
+
+	}
 
  	// Must be running inside a transaction set up by the caller
  	protected Workspace addZoneTx(String zoneName, String zoneAdminName, String virtualHost) {

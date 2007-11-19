@@ -362,7 +362,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
     
     //***********************************************************************************************************	
-    //NO transaction
+	public void indexEntry(Principal entry) {
+        ProfileCoreProcessor processor=loadProcessor((ProfileBinder)entry.getParentBinder());
+        processor.indexEntry(entry);
+
+	}
+
+	//NO transaction
     public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
