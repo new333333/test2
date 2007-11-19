@@ -75,7 +75,7 @@ function ssAccessControl(namespace, binderId) {
 		ss_hideDiv('ss_addRolesMenu' + namespace);
 	}
 	
-	this.selectOwnerAjax = function (ownerId, obj) {
+	this.selectOwner = function (ownerId, obj) {
 		ss_setupStatusMessageDiv()
 	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_binder_owner_id", namespace:namespace, ownerId:ownerId, binderId:binderId});
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
@@ -133,13 +133,13 @@ function ssAccessControl(namespace, binderId) {
 	}
 	this.addClipboardUsers = function () {
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users"}, "clipboard");
-		ss_get_url(url, this.addClipboardUsersCallback)
+		ss_get_url(url, this.addClipboardUsersCallback, this)
 	}
-	this.addClipboardUsersCallback = function (data) {
+	this.addClipboardUsersCallback = function (data, owner) {
 		var userIds = new Array();
 		for (var i = 0; i < data.length; i++) {
 			userIds.push(data[i][0]);
 		}
-		this.selectPrincipals(userIds);		
+		owner.selectPrincipals(userIds);		
 	}	
 }
