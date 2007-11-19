@@ -37,6 +37,6 @@ self.location.replace('${ssPermalink}');
 </c:if>
 <c:if test="${empty ssPermalink}">
 <script type="text/javascript">
-self.location.replace('/c');
+alert("<ssf:nlt tag="permalink.unknown.portal.url" />");
 </script>
 </c:if>

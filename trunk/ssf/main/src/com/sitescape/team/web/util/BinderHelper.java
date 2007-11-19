@@ -414,7 +414,7 @@ public class BinderHelper {
 			RenderRequest request, RenderResponse response) {
 		if (request.getWindowState().equals(WindowState.MAXIMIZED) || getBinderPermaLink(bs).equals("")) {
 			User user = RequestContextHolder.getRequestContext().getUser();
-			PortletURL url = response.createRenderURL();
+			PortletURL url = response.createActionURL();
 			try {url.setWindowState(WindowState.MAXIMIZED);} catch(Exception e) {};
 			url.setParameter(WebKeys.ACTION, WebKeys.URL_ACTION_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);

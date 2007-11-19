@@ -43,6 +43,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
@@ -57,7 +58,63 @@ import com.sitescape.team.web.util.WebUrlUtil;
  */
 public class ViewPermalinkController  extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
-		response.setRenderParameters(request.getParameterMap());
+ 		Map<String,Object> model = new HashMap<String,Object>();
+        User user = RequestContextHolder.getRequestContext().getUser();
+ 		
+ 		//See if there is a portlet url to use for this request
+        String url = BinderHelper.getBinderPermaLink(this);
+ 		if (url.equals("")) {
+ 			response.setRenderParameters(request.getParameterMap());
+ 			return;
+ 		}
+ 		
+		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
+		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
+		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+		
+		if (!binderId.equals("")) url = url.replaceAll(WebKeys.URL_BINDER_ID_PLACE_HOLDER, binderId);
+		if (!entryId.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_ID_PLACE_HOLDER, entryId);
+		if (!entryTitle.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER, entryTitle);
+		if (!entityType.equals("")) url = url.replaceAll(WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER, entityType);
+		if (!newTab.equals("")) url = url.replaceAll(WebKeys.URL_NEW_TAB_PLACE_HOLDER, newTab);
+		
+		if (entityType.equals("") && entryId.equals("") && !binderId.equals("")) {
+			Binder binder = getBinderModule().getBinder(new Long(binderId));
+			entityType = binder.getEntityType().name();
+		}
+		if (entityType.equals(EntityIdentifier.EntityType.workspace.toString()) || entityType.equals(EntityIdentifier.EntityType.user.toString())) {
+			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_ws_listing");
+		} else if (entityType.equals(EntityIdentifier.EntityType.folder.toString())) {
+			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
+		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
+			String displayStyle = user.getDisplayStyle();
+			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");
+			} else {
+				try {
+					getBinderModule().getBinder(new Long(binderId));
+					url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
+				} catch (AccessControlException ac) {
+					url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");					
+				}
+			}
+		}
+		if (!fileId.equals("") && !binderId.equals("") && !entityType.equals("")) {
+			url = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?" +
+				"&" + WebKeys.URL_BINDER_ID + "=" + binderId +
+				"&" + WebKeys.URL_ENTITY_TYPE + "=" + entityType;
+			if (!entryId.equals("")) url += "&" + WebKeys.URL_ENTRY_ID + "=" + entryId;
+			url += "&" + WebKeys.URL_FILE_ID + "=" + fileId;
+		}
+ 		
+    	if(logger.isDebugEnabled()) {
+    		logger.debug("Permalink followed: " + url);
+    	}
+    	response.sendRedirect(url);
+
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -66,6 +123,7 @@ public class ViewPermalinkController  extends SAbstractController {
  		
  		String url = BinderHelper.getBinderPermaLink(this);
  		if (url.equals("")) {
+ 			url = SPropsUtil.getString("permalink.fallback.url", "");
  			model.put(WebKeys.PERMALINK, url);
  	    	return new ModelAndView("binder/view_permalink", model);
  		}
