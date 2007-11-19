@@ -65,6 +65,8 @@ public abstract class Principal extends Entry  {
     protected String internalId;
     protected String type;
     protected String emailAddress="";
+    protected String mobileEmailAddress="";
+    protected String txtEmailAddress="";
     protected String theme="";
     
      public EntityIdentifier.EntityType getEntityType() {
@@ -157,6 +159,32 @@ public abstract class Principal extends Entry  {
      */
     public void setEmailAddress(String emailAddress) {
         this.emailAddress = emailAddress;
+    }
+    /**
+     * @hibernate.property length="256"
+     * @return Returns the mobileEmailAddress.
+     */
+    public String getMobileEmailAddress() {
+        return mobileEmailAddress;
+    }
+    /**
+     * @param mobileEmailAddress The mobileEmailAddress to set.
+     */
+    public void setMobileEmailAddress(String mobileEmailAddress) {
+        this.mobileEmailAddress = mobileEmailAddress;
+    }
+    /**
+     * @hibernate.property length="256"
+     * @return Returns the txtEmailAddress.
+     */
+    public String getTxtEmailAddress() {
+        return txtEmailAddress;
+    }
+    /**
+     * @param txtEmailAddress The txtEmailAddress to set.
+     */
+    public void setTxtEmailAddress(String txtEmailAddress) {
+        this.txtEmailAddress = txtEmailAddress;
     }
     /**
      * @hibernate.property length="128"

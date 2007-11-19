@@ -285,6 +285,12 @@ public class BinderHelper {
 		Map unseenCounts = new HashMap();
 		unseenCounts = bs.getFolderModule().getUnseenCounts(binderIds);
 		model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
+
+		Map userQueries = new HashMap();
+		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
+			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+		}
+		model.put("ss_UserQueries", userQueries);
 		return new ModelAndView(view, model);
 		
 	}

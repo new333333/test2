@@ -131,11 +131,11 @@
   <td valign="top" align="left">
    <c:if test="${!empty ssDefinitionEntry[element]}">
     <span class="ss_bold">
-    <c:if test="${element == 'emailAddress'}">
+    <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}">
         <a href="mailto:${ssDefinitionEntry[element]}">
     </c:if>    
     <c:out value="${ssDefinitionEntry[element]}"/>
-    <c:if test="${element == 'emailAddress'}"></a></c:if>
+    <c:if test="${element == 'emailAddress' || element == 'mobileEmailAddress' || element == 'txtEmailAddress'}"></a></c:if>
     </span>
    </c:if>
    <c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">

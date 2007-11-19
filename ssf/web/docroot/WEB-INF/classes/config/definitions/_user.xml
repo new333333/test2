@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_user" caption="__definition_default_user" type="7" nextId="29" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007">
+<definition name="_user" caption="__definition_default_user" type="7" nextId="33" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007">
   <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1">
     <properties/>
     <item name="profileEntryFormForm" caption="__form" id="2">
@@ -45,16 +45,6 @@
             <property name="required" value=""/>
           </properties>
         </item>
-        <item name="profilePhone" caption="__phone" type="data" category="profileEntryData" id="23">
-          <properties>
-            <property name="name" value="phone"/>
-            <property name="caption" value="__phone"/>
-            <property name="width" value=""/>
-            <property name="required" caption="__required" type="boolean" default="false" value="false">
-              <help>ihelp.designers.required</help>
-            </property>
-          </properties>
-        </item>
         <item name="profileEmailAddress" caption="__emailAddress" type="data" id="8">
           <properties>
             <property name="name" value="emailAddress"/>
@@ -63,12 +53,38 @@
             <property name="required" value=""/>
           </properties>
         </item>
+        <item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" category="profileEntryData" id="29">
+          <properties>
+            <property name="caption" value="__mobileEmailAddress"/>
+            <property name="name" value="mobileEmailAddress"/>
+            <property name="width" value=""/>
+            <property name="required" value="false"/>
+          </properties>
+        </item>
+        <item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" category="profileEntryData" id="30">
+          <properties>
+            <property name="caption" value="__txtEmailAddress"/>
+            <property name="name" value="txtEmailAddress"/>
+            <property name="width" value=""/>
+            <property name="required" value="false"/>
+          </properties>
+        </item>
         <item name="profileZonName" caption="__zonName" type="data" id="9">
           <properties>
             <property name="name" value="zonName"/>
             <property name="caption" value="__zonName"/>
             <property name="width" value=""/>
             <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profilePhone" caption="__phone" type="data" category="profileEntryData" id="23">
+          <properties>
+            <property name="name" value="phone"/>
+            <property name="caption" value="__phone"/>
+            <property name="width" value=""/>
+            <property name="required" caption="__required" type="boolean" default="false" value="false">
+              <help>ihelp.designers.required</help>
+            </property>
           </properties>
         </item>
       </item>
@@ -120,22 +136,34 @@
           <help>ihelp.designers.required</help>
         </property>
       </properties>
-      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="26" formItem="profilePhone">
-        <properties>
-          <property name="name" value="phone"/>
-          <property name="caption" value="__phone"/>
-        </properties>
-      </item>
       <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="27" formItem="profileEmailAddress">
         <properties>
           <property name="name" value="emailAddress"/>
           <property name="caption" value="__emailAddress"/>
         </properties>
       </item>
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="31" formItem="profileMobileEmailAddress">
+        <properties>
+          <property name="caption" value="__mobileEmailAddress"/>
+          <property name="name" value="mobileEmailAddress"/>
+        </properties>
+      </item>
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="32" formItem="profileTxtEmailAddress">
+        <properties>
+          <property name="caption" value="__txtEmailAddress"/>
+          <property name="name" value="txtEmailAddress"/>
+        </properties>
+      </item>
       <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="28" formItem="profileZonName">
         <properties>
           <property name="name" value="zonName"/>
           <property name="caption" value="__zonName"/>
+        </properties>
+      </item>
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="26" formItem="profilePhone">
+        <properties>
+          <property name="name" value="phone"/>
+          <property name="caption" value="__phone"/>
         </properties>
       </item>
     </item>
@@ -154,6 +182,8 @@
         <property name="_elements" value="title"/>
         <property name="_elements" value="phone"/>
         <property name="_elements" value="emailAddress"/>
+        <property name="_elements" value="mobileEmailAddress"/>
+        <property name="_elements" value="txtEmailAddress"/>
         <property name="_elements" value="zonName"/>
         <property name="maxWidth" value=""/>
         <property name="maxHeight" value=""/>
@@ -167,12 +197,14 @@
         <property name="_elements" value="title"/>
         <property name="_elements" value="phone"/>
         <property name="_elements" value="emailAddress"/>
+        <property name="_elements" value="mobileEmailAddress"/>
+        <property name="_elements" value="txtEmailAddress"/>
         <property name="_elements" value="zonName"/>
       </properties>
     </item>
   </item>
   <properties>
-    <property name="name" value="_user"/>
     <property name="caption" value="__definition_default_user"/>
+    <property name="name" value="_user"/>
   </properties>
 </definition>
