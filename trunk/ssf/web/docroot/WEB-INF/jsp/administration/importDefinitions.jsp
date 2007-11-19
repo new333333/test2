@@ -32,6 +32,7 @@
 <ssf:ifadapter>
 <body>
 </ssf:ifadapter>
+<div class="ss_style ss_portlet">
 <c:if test="${!empty ssErrorList}">
 <span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
 <br/>
@@ -47,7 +48,6 @@
 			portletName="ss_administration" 
 			action="import_definition" 
 			actionUrl="true" />">
-<div class="ss_style ss_portlet">
 <span class="ss_titlebold"><ssf:nlt tag="administration.import.definitions" /></span>
 <br>
 
@@ -78,6 +78,7 @@
 </div>
 </div>
 </form>
+</div>
 <ssf:ifadapter>
 </body>
 </html>
