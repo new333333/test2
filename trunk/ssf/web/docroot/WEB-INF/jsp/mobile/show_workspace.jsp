@@ -30,23 +30,63 @@
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
+<c:if test="${!empty ssBinder.parentBinder}">
+//<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.parentBinder.id}" 
+	action="__ajax_mobile" operation="mobile_show_workspace" 
+	actionUrl="false" />"><strong>${ssBinder.parentBinder.title}</strong></a>
+<br/>&nbsp;&nbsp;</c:if>
+//<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.id}" 
+	action="__ajax_mobile" operation="mobile_show_workspace" 
+	actionUrl="false" />"><strong>${ssBinder.title}</strong></a>
+<br/>
+<br/>
+<div style="padding-left:6px;">
+<c:if test="${!empty ssWorkspaces}">
 <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
-<th colspan="2" align="left">${ssBinder.title}</th>
-<c:forEach var="entry1" items="${ssFolderEntries}" >
-<jsp:useBean id="entry1" type="java.util.HashMap" />
-  <tr><td align="right" valign="top" style="padding:0px 4px 2px 4px;">${entry1._docNum}.</td>
-	<td><a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.id}"  entryId="${entry1._docId}"
-	action="__ajax_mobile" operation="mobile_show_entry" actionUrl="false" />">
-    <c:if test="${empty entry1.title}">
-    	(<ssf:nlt tag="entry.noTitle"/>)
+<th colspan="2" align="left"><ssf:nlt tag="administration.initial.workspace.title"/></th>
+<c:forEach var="workspace" items="${ssWorkspaces}" >
+	<tr><td><a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${workspace.id}" 
+	action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
+    <c:if test="${empty workspace.title}">
+    	(<ssf:nlt tag="workspace.noTitle"/>)
     </c:if>
-	<c:out value="${entry1.title}"/>
+	<c:out value="${workspace.title}"/>
 	</a>
   </td></tr>
 </c:forEach>
 </table>
 <br/>
+</c:if>
+
+<c:if test="${!empty ssFolders}">
+<table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
+<th colspan="2" align="left"><ssf:nlt tag="search.Folders"/></th>
+<c:forEach var="folder" items="${ssFolders}" >
+	<tr><td><a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${folder.id}" 
+	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />">
+    <c:if test="${empty folder.title}">
+    	(<ssf:nlt tag="workspace.noTitle"/>)
+    </c:if>
+	<c:out value="${folder.title}"/>
+	</a>
+  </td></tr>
+</c:forEach>
+</table>
+</c:if>
+</div>
+
+<br/>
+<c:if test="${!empty ssBinder.parentBinder}">
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.parentBinder.id}" 
+	action="__ajax_mobile" operation="mobile_show_workspace" 
+	actionUrl="false" />"><ssf:nlt tag="mobile.returnToParentWorkspace"/></a>
+<br/>
+</c:if>
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
 <span class="ss_mobile" style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>

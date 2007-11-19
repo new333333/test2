@@ -29,9 +29,12 @@
 package com.sitescape.team.portlet.forum;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -43,12 +46,16 @@ import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -194,19 +201,33 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 	private ModelAndView ajaxMobileShowWorkspace(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Workspace binder;
+		List workspaces = new ArrayList();
+		List folders = new ArrayList();
 		try {
 			binder = getWorkspaceModule().getWorkspace(Long.valueOf(binderId));
 		} catch (Exception ex) {
 			binder = getWorkspaceModule().getWorkspace();				
 		}
-		Document wsTree;
-		wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, this), 1);									
-
-		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
-		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
+		model.put(WebKeys.BINDER, binder);
+        Comparator c = new BinderComparator(user.getLocale(),BinderComparator.SortByField.searchTitle);
+		TreeSet ws = new TreeSet(c);
+		ws.addAll(binder.getWorkspaces());
+      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
+     		Workspace w = (Workspace)iter.next();
+      		if (!w.isDeleted()) workspaces.add(w);
+		}
+		model.put(WebKeys.WORKSPACES, workspaces);
+		ws.clear();
+		ws.addAll(binder.getFolders());
+      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
+     		Binder f = (Binder)iter.next();
+      		if (!f.isDeleted()) folders.add(f);
+		}
+		model.put(WebKeys.FOLDERS, folders);
 		return new ModelAndView("mobile/show_workspace", model);
 	}
 
@@ -224,10 +245,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		folderEntries  = getFolderModule().getEntryTree(binderId, entryId);
 		if (folderEntries != null) {
 			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+			model.put(WebKeys.CONFIG_JSP_STYLE, "view");
+			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
+				DefinitionHelper.getDefaultEntryView(entry, model);
+			}
 			BinderHelper.setAccessControlForAttachmentList(this, model, entry, user);
 			Map accessControlMap = (Map) model.get(WebKeys.ACCESS_CONTROL_MAP);
 			HashMap entryAccessMap = BinderHelper.getEntryAccessMap(this, model, entry);
 			model.put(WebKeys.ENTRY, entry);
+			model.put(WebKeys.DEFINITION_ENTRY, entry);
 			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
 			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryBlogView']") == false) {

@@ -31,7 +31,9 @@
 
 <div class="ss_mobile">
 <c:if test="${!empty ss_mobileBinderList}">
-	<c:set var="ss_showUnseenNote" value="0"/>
+<div>
+  <strong><ssf:nlt tag="portlet.title.bookmarks"/></strong>
+</div>
 <table class="ss_mobile" cellspacing="0" cellpadding="0">
 <c:forEach var="binder" items="${ss_mobileBinderList}">
 <jsp:useBean id="binder" type="com.sitescape.team.domain.Binder" />
@@ -45,7 +47,6 @@
 	      --%><c:set var="folderIdFound" value="1"/><%--
 	    --%></c:if>
 	  </c:forEach>
-	  <c:if test="${folderIdFound == '0'}">*<c:set var="ss_showUnseenNote" value="1"/></c:if>
    </span>&nbsp;&nbsp;</td>
   <td>
 	<c:if test="${binder.entityIdentifier.entityType == 'folder'}">
@@ -79,15 +80,11 @@
 </table>
 </c:if>
 
-<c:if test="${ss_showUnseenNote == '1'}">
- <br/>
- <span>* <ssf:nlt tag="unseen.foldersOnly"/></span>
-</c:if>
 </div>
 
 <br/>
-<br/>
 
+<c:if test="${!empty ss_UserQueries}">
 <div class="ss_mobile">
 <strong><ssf:nlt tag="searchResult.savedSearchTitle"/></strong>
 <br/>
@@ -99,3 +96,4 @@
   <c:if test="${!status.last}"><br/></c:if>
 </c:forEach>
 </div>
+</c:if>

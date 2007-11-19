@@ -96,12 +96,9 @@ function ss_setMobileIframeSize() {
       windowState="maximized" />"
     ><ssf:nlt tag="button.configure"/></a>
 </div>
-<div>
-  <ssf:nlt tag="portlet.mobileNotConfigured"/>
-</div>
 </c:if>
 
-<c:if test="${!empty ss_mobileBinderList}">
+<c:if test="${!empty ss_mobileBinderList || !empty ss_UserQueries}">
 <div id="ss_mobileDiv">
   <iframe id="ss_mobileIframe" 
     name="ss_mobileIframe" 
@@ -118,6 +115,10 @@ function ss_setMobileIframeSize() {
 	onLoad="ss_setMobileIframeSize();" 
 	frameBorder="0" >xxx</iframe>
 </div>
+<script type="text/javascript">
+ss_createOnLoadObj("ss_setMobileIframeSize", ss_setMobileIframeSize);
+</script>
+
 </c:if>
 
 </div>
