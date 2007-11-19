@@ -811,11 +811,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if ((binder.getDefinitionType() != null) &&
     			binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
     		//remove connection
-    		if (binder.getOwner() != null) {
-    			Principal owner = binder.getOwner();
-    			if (binder.getId().equals(owner.getWorkspaceId()))
-    				owner.setWorkspaceId(null);
-    		}
+   			Principal owner = binder.getCreation().getPrincipal();  //get the user whose workspace this is
+   			if (binder.getId().equals(owner.getWorkspaceId()))
+   				owner.setWorkspaceId(null);
     	}
      	//remove postings to this binder handled in coreDao
     	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
