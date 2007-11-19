@@ -84,11 +84,29 @@
 	<input type="text" class="ss_text" name="emailAddress" value="${ssDefinitionEntry.emailAddress}">
 	</div>
   </td>
+  <td style="padding-right:6px;">
+	<div >
+	<span class="ss_labelAbove"><ssf:nlt tag="__mobileEmailAddress"/></span>
+	<input type="text" class="ss_text" name="mobileEmailAddress" 
+	  value="${ssDefinitionEntry.mobileEmailAddress}">
+	</div>
+  </td>
   <td>
+	<div >
+	<span class="ss_labelAbove"><ssf:nlt tag="__txtEmailAddress"/></span>
+	<input type="text" class="ss_text" name="txtEmailAddress" 
+	  value="${ssDefinitionEntry.txtEmailAddress}">
+	</div>
+  </td>
+</tr>
+<tr>
+  <td style="padding-right:6px;">
 	<div >
 	<span class="ss_labelAbove"><ssf:nlt tag="__zonName"/></span>
 	<input type="text" class="ss_text" name="zonName" value="${ssDefinitionEntry.zonName}">
 	</div>
+  </td>
+  <td>
   </td>
   <td>
   </td>

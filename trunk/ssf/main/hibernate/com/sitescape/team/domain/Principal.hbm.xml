@@ -55,6 +55,8 @@
     </component>
     <property name="title" access="field" length="255"/>
     <property name="normalTitle" length="255"/>
+    <property name="mobileEmailAddress" length="256"/>
+    <property name="txtEmailAddress" length="256"/>
     <property name="iconName" length="64"/>    
     <property name="definitionType"/>
     <many-to-one access="field" class="com.sitescape.team.domain.Definition" name="entryDef">

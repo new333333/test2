@@ -40,6 +40,8 @@
                 property_name == 'middleName' || 
                 property_name == 'lastName' || 
                 property_name == 'emailAddress' || 
+                property_name == 'mobileEmailAddress' || 
+                property_name == 'txtEmailAddress' || 
                 property_name == 'zonName'}">
     <c:set var="showElement" value="0"/>
   </c:if>

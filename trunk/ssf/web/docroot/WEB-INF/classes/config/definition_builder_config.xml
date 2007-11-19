@@ -746,6 +746,8 @@
 			<option name="profileMiddleName" initial="true" />
 			<option name="profileLastName" initial="true" />
 			<option name="profileEmailAddress" initial="true" />
+			<option name="profileMobileEmailAddress" initial="true" />
+			<option name="profileTxtEmailAddress" initial="true" />
 			<option name="profileZonName" initial="true" />
 			<option name="entryFormButtons" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
@@ -850,6 +852,40 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__emailAddress"/>
 			<property name="name" caption="__data_name" type="text" value="emailAddress" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+	</item>
+	<item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__mobileEmailAddress"/>
+			<property name="name" caption="__data_name" type="text" value="mobileEmailAddress" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+	</item>
+	<item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__txtEmailAddress"/>
+			<property name="name" caption="__data_name" type="text" value="txtEmailAddress" 
 			  readonly="true" unique="//item[@type='data']"/>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 			<property name="required" caption="__required" type="boolean" default="false">
@@ -1009,6 +1045,8 @@
 				<option name="organization" caption="__organization" />
 				<option name="phone" caption="__phone" />
 				<option name="emailAddress" caption="__emailAddress" />
+				<option name="mobileEmailAddress" caption="__mobileEmailAddress" />
+				<option name="txtEmailAddress" caption="__txtEmailAddress" />
 				<option name="zonName" caption="__zonName" />
 		    </property>
 			<property name="maxWidth" caption="__max_profile_picture_width" type="text"
@@ -1040,6 +1078,8 @@
 				<option name="organization" caption="__organization" initial="true"/>
 				<option name="phone" caption="__phone"/>
 				<option name="emailAddress" caption="__emailAddress" initial="true"/>
+				<option name="mobileEmailAddress" caption="__mobileEmailAddress" initial="true"/>
+				<option name="txtEmailAddress" caption="__txtEmailAddress" initial="true"/>
 				<option name="zonName" caption="__zonName" initial="true"/>
 		    </property>
 		</properties>
