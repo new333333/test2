@@ -102,7 +102,7 @@ public interface ProfileModule {
 	 */
 	public SortedSet<User> getUsersFromPrincipals(Collection<Long> principalIds);
     public SeenMap getUserSeenMap(Long userId);
-	
+	public void indexEntry(Principal entry);
 	public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData, 
 			   Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
 			throws AccessControlException, WriteFilesException;

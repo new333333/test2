@@ -39,7 +39,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Iterator;
 import java.util.Set;
-
+import java.util.Map;
+import java.util.HashMap;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
@@ -55,6 +56,10 @@ import com.sitescape.team.NotSupportedException;
 *
 */
 public abstract class Principal extends Entry  {
+	//use _ to reserve names, perhaps allow customized additions later
+	protected static final String PRIMARY="_primary";
+	protected static final String TEXT="_text";
+	protected static final String MOBILE="_mobile";
 	protected boolean disabled=false;
     protected String name;
     protected String foreignName="";
@@ -64,11 +69,9 @@ public abstract class Principal extends Entry  {
     protected List iMemberOf;
     protected String internalId;
     protected String type;
-    protected String emailAddress="";
-    protected String mobileEmailAddress="";
-    protected String txtEmailAddress="";
     protected String theme="";
-    
+    protected String emailAddress="";
+    protected Map<String,String> emails;
      public EntityIdentifier.EntityType getEntityType() {
     	return EntityIdentifier.EntityType.valueOf(getType());
     }
@@ -154,37 +157,44 @@ public abstract class Principal extends Entry  {
     public String getEmailAddress() {
         return emailAddress;
     }
-    /**
-     * @param emailAddress The emailAddress to set.
-     */
-    public void setEmailAddress(String emailAddress) {
-        this.emailAddress = emailAddress;
+    public void setEmailAddress(String address) {
+        emailAddress = address;
     }
     /**
-     * @hibernate.property length="256"
+     * @hibernate.element map for alternative address, primary kept in principal row
+     * @return
+     */
+    protected Map getAlternateEmails() {
+    	return emails;
+    }
+    protected void setAlternateEmails(Map emailAddresses) {
+    	emails = emailAddresses;
+    }
+    private String getEmailAddress(String type) {
+       	if (emails == null) emails = new HashMap();
+       	return emails.get(type);
+    }
+    private void setEmailAddress(String type, String address) {
+    	if (emails == null) emails = new HashMap();
+    	emails.put(type, address);
+    }
+     /**
      * @return Returns the mobileEmailAddress.
      */
     public String getMobileEmailAddress() {
-        return mobileEmailAddress;
+        return getEmailAddress(MOBILE);
     }
-    /**
-     * @param mobileEmailAddress The mobileEmailAddress to set.
-     */
-    public void setMobileEmailAddress(String mobileEmailAddress) {
-        this.mobileEmailAddress = mobileEmailAddress;
+    public void setMobileEmailAddress(String address) {
+        setEmailAddress(MOBILE, address);
     }
-    /**
-     * @hibernate.property length="256"
+   /**
      * @return Returns the txtEmailAddress.
      */
     public String getTxtEmailAddress() {
-        return txtEmailAddress;
+        return getEmailAddress(TEXT);
     }
-    /**
-     * @param txtEmailAddress The txtEmailAddress to set.
-     */
-    public void setTxtEmailAddress(String txtEmailAddress) {
-        this.txtEmailAddress = txtEmailAddress;
+    public void setTxtEmailAddress(String address) {
+        setEmailAddress(TEXT, address);
     }
     /**
      * @hibernate.property length="128"

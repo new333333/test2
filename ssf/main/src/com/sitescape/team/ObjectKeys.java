@@ -271,6 +271,8 @@ public interface ObjectKeys {
     public static final String FIELD_USER_LASTNAME="lastName";
     public static final String FIELD_USER_DISPLAYSTYLE="displayStyle";
     public static final String FIELD_USER_EMAIL="emailAddress";
+    public static final String FIELD_USER_EMAIL_TEXT="txtEmailAddress";
+    public static final String FIELD_USER_EMAIL_MOBILE="mobileEmailAddress";
     public static final String FIELD_USER_LOCALE="locale";
     public static final String FIELD_USER_TIMEZONE="timeZone";
     public static final String FIELD_USER_PASSWORD="password";
@@ -344,6 +346,8 @@ public interface ObjectKeys {
     public static final String XTAG_USER_LASTNAME="lastName";
     public static final String XTAG_USER_DISPLAYSTYLE="displayStyle";
     public static final String XTAG_USER_EMAIL="emailAddress";
+    public static final String XTAG_USER_EMAIL_TEXT="emailAddress";
+    public static final String XTAG_USER_EMAIL_MOBILE="emailAddress";
     public static final String XTAG_USER_LOCALE="locale";
     public static final String XTAG_USER_TIMEZONE="timeZone";
     public static final String XTAG_USER_PASSWORD="password";
