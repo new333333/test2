@@ -49,9 +49,15 @@
 	}
 %>
 <script type="text/javascript">
+var ss_tryToResizeLater = 1;
 function ss_resizeMobileIframe() {
 	if (typeof self.parent != 'undefined' && typeof parent.ss_setMobileIframeSize != 'undefined') {
-		parent.ss_setMobileIframeSize();
+		setTimeout=("self.parent.ss_resizeMobileIframe();", 200)
+	} else {
+		if (ss_tryToResizeLater == 1) {
+			ss_tryToResizeLater = 0
+			setTimeout=("self.parent.ss_resizeMobileIframe();", 500)
+		}
 	}
 }
 </script>
