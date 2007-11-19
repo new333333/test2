@@ -33,6 +33,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 <!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script> -->
+<script type="text/javascript">
+var	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
+</script>
 <c:if test="${ssUserProperties.debugMode}">
 <!-- Start of debug window -->
   <div style="border:1px solid black;">
@@ -50,7 +53,6 @@ function ss_turnOffDebugMode() {
 	self.location.href = url;
 }
 var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
-var	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
 
 </script>
     </td>
