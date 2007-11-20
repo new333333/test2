@@ -171,7 +171,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
   			
 	private Binder loadBinder(Long binderId) {
-		Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+		return loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+	}
+	private Binder loadBinder(Long binderId, Long zoneId) {
+		Binder binder = getCoreDao().loadBinder(binderId, zoneId);
 		if (binder.isDeleted()) throw new NoBinderByTheIdException(binderId);
 		return binder;
 	}
@@ -194,6 +197,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		
 		return binder;        
 	}
+
+	public boolean checkBinderAccess(Long binderId, User user) {
+		boolean value = false;
+		Binder binder = null;
+		try {
+			binder = loadBinder(binderId, user.getZoneId());
+		} catch(NoBinderByTheIdException e) {return false;}
+		
+		// Check if the user has "read" access to the binder.
+		if (binder != null && !(binder instanceof TemplateBinder))
+			value = getAccessControlManager().testOperation(user, binder, WorkAreaOperation.READ_ENTRIES);
+		
+		return value;        
+	}
+	
 	public SortedSet<Binder> getBinders(Collection<Long> binderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);

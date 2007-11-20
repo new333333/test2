@@ -162,6 +162,7 @@ public class WebKeys {
 	public static final String URL_WORKFLOW_TYPE = "workflowType";
 	public static final String URL_OBJECT_ID="objectId";
 	public static final String URL_YEAR_MONTH="yearMonth";
+	public static final String URL_ZONE_ID="zoneId";
 	public static final String SELECTED_YEAR_MONTH="selectedYearMonth";
 	public static final String URL_TEAM_MEMBERS="teamMembers";
 	public static final String URL_OS_INFO="ssOSInfo";
@@ -169,6 +170,7 @@ public class WebKeys {
 	public static final String URL_TASK_STATUS="ssTaskStatus";
 	public static final String URL_TASK_COMPLETED="ssTaskCompleted";
 	public static final String URL_DASHBOARD_REQUEST="ssDashboardRequest";
+    public static final String URL_ZONE_ID_PLACE_HOLDER="ss_zone_id_place_holder";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
@@ -719,6 +721,7 @@ public class WebKeys {
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";
+    public static final String SHOW_MOBILE_VIEW="ss_showMobileView";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
@@ -871,6 +874,7 @@ public class WebKeys {
     public static final String VIEW_MULTIPLE_TITLE_ENTRIES="entry/view_multiple_title_entries";
     public static final String VIEW_NO_DEFINITION="forum/view_default";
     public static final String VIEW_NO_TITLE_ENTRY="entry/view_no_title_entry";
+    public static final String VIEW_NO_USER_WORKSPACE="entry/view_no_user_workspace";
     public static final String VIEW_NOT_CONFIGURED="common/notconfigured"; 
     public static final String VIEW_PRESENCE="presence/view";
     public static final String VIEW_PRESENCE_AJAX="presence/view_ajax";

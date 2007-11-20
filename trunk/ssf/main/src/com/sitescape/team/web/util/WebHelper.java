@@ -61,6 +61,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -685,6 +686,8 @@ public class WebHelper {
 	    				action = WebKeys.ACTION_VIEW_PERMALINK;
 	    				params.put(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
 	    				params.put(WebKeys.URL_ENTITY_TYPE, ObjectKeys.FOLDER_ENTRY);
+	    				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+	    				params.put(WebKeys.URL_ZONE_ID, zoneId.toString());
 	    			}
 	    			String webUrl = getPortletUrl(req, res, httpReq, httpRes, action, true, params);
 	    			titleLink = "<a href=\"" + webUrl + "\" ";
@@ -764,6 +767,8 @@ public class WebHelper {
 			    				action = WebKeys.ACTION_VIEW_PERMALINK;
 			    				params.put(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
 			    				params.put(WebKeys.URL_ENTITY_TYPE, ObjectKeys.FOLDER_ENTRY);
+			    				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			    				params.put(WebKeys.URL_ZONE_ID, zoneId.toString());
 			    			}
 			    			String webUrl = getPortletUrl(req, res, httpReq, httpRes, action, true, params);
 			    			titleLink = "<a href=\"" + webUrl + "\" ";

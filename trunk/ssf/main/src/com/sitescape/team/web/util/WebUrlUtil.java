@@ -36,6 +36,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.Constants;
@@ -234,6 +235,8 @@ public class WebUrlUtil {
 			url.setParameter(WebKeys.URL_BINDER_ID, parentBinderId);
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			url.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 			entryUrl = url.toString();
 		}
 		catch(Exception e) {}

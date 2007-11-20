@@ -77,6 +77,7 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.util.Validator;
+import com.sitescape.team.security.AccessControlException;
 
 /**
  * @author Peter Hurley
@@ -135,29 +136,42 @@ public class WorkspaceTreeController extends SAbstractController  {
 		//see if it is a user workspace - can also get directly to user ws by a binderId
 		//so don't assume anything here.  This just allows us to handle users without a workspace.
 		if (entryId != null) {
-			User entry = (User)getProfileModule().getEntry(binderId, entryId);
-			if (entry.getWorkspaceId() == null) {
-				binder = getProfileModule().addUserWorkspace(entry);
-				if (binder == null) {
-					// Redirect to profile list
-					PortletURL reloadUrl = response.createRenderURL();
-					reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-					reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
-					reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
-					reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryIdString);
-					model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
-					return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
+			Long workspaceId = getProfileModule().getEntryWorkspaceId(binderId, entryId);
+			if (workspaceId == null && user.getId().equals(entryId)) {
+				//This is the user trying to access his or her own workspace; try to create it
+				User entry = null;
+				entry = (User)getProfileModule().getEntry(binderId, entryId, false);
+				if (entry != null) {
+					binder = getProfileModule().addUserWorkspace(entry);
+					if (binder == null) {
+						// Redirect to profile list
+						PortletURL reloadUrl = response.createRenderURL();
+						reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+						reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
+						reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
+						reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryIdString);
+						model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
+						return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
+					}
+					workspaceId = binder.getId();
+				}
+			} else if (workspaceId != null) {
+				try {
+					binder = getBinderModule().getBinder(workspaceId);
+				} catch (NoBinderByTheIdException nb) {
+					//User workspace does not yet exist
+					User entry = null;
+					entry = (User)getProfileModule().getEntry(binderId, entryId, false);
+					model.put(WebKeys.USER_PRINCIPAL, entry);
+					return new ModelAndView(WebKeys.VIEW_NO_USER_WORKSPACE, model);
 				}
 			} else {
-				try {
-					binder = getBinderModule().getBinder(entry.getWorkspaceId());
-				} catch (NoBinderByTheIdException nb) {
-					//reload entry
-					entry = (User)getProfileModule().getEntry(binderId, entryId);
-					binder = getProfileModule().addUserWorkspace(entry);	
-				}
+				User entry = null;
+				entry = (User)getProfileModule().getEntry(binderId, entryId, false);
+				model.put(WebKeys.USER_PRINCIPAL, entry);
+				return new ModelAndView(WebKeys.VIEW_NO_USER_WORKSPACE, model);
 			}
-			binderId = binder.getId();
+			binderId = workspaceId;
 			entryId = null;
 		}
 
@@ -538,6 +552,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, workspace.getEntityType().toString());
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 		qualifiers = new HashMap();
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), 
