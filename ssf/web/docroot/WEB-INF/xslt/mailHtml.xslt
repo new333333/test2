@@ -125,7 +125,7 @@ xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
          <xsl:if test="@hasChanges = 'true'">&nbsp;(
 		<xsl:call-template name="getString">
 		  <xsl:with-param name="stringName" select="@notifyType"/>
-		</xsl:call-template>
+		</xsl:call-template>,&nbsp;<xsl:value-of select="@notifyBy"/>
 	    )</xsl:if>
 </td>
 <td nowrap="nowrap" valign="top" align="right">
@@ -159,7 +159,7 @@ line-height: 200%; text-decoration:
 		<b><xsl:call-template name="getString">
   			<xsl:with-param name="stringName" select="'fromLabel'"/>
 		</xsl:call-template></b>
-		&nbsp;<xsl:value-of select="@notifyBy"/><br/>
+		&nbsp;<xsl:value-of select="@notifyFrom"/><br/>
 		<b><xsl:call-template name="getString">
   			<xsl:with-param name="stringName" select="'dateLabel'"/>
 		</xsl:call-template></b>
