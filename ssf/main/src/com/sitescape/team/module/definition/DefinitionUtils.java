@@ -37,6 +37,7 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -119,6 +120,8 @@ public class DefinitionUtils {
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, fEntry.getId().toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, fEntry.getEntityType().toString());
 		adapterUrl.setParameter(WebKeys.URL_FILE_ID, att.getId().toString());
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 		return adapterUrl.toString();
    }
 }

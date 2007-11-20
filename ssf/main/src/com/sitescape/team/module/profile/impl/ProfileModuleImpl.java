@@ -254,12 +254,23 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     }
 
 	//RO transaction
-	public Principal getEntry(Long binderId, Long principaId) {
+	public Principal getEntry(Long binderId, Long principalId) {
+        return getEntry(binderId, principalId, true);
+    }
+	public Principal getEntry(Long binderId, Long principalId, boolean checkAccess) {
         ProfileBinder binder = loadBinder(binderId);
-        Principal p = (Principal)loadProcessor(binder).getEntry(binder, principaId);        
-    	checkReadAccess(p);			
+        Principal p = (Principal)loadProcessor(binder).getEntry(binder, principalId);        
+    	if (checkAccess) checkReadAccess(p);			
         return p;
     }
+    public Long getEntryWorkspaceId(Long binderId, Long principalId) {
+        Long workspaceId = null;
+        ProfileBinder binder = loadBinder(binderId);
+        Principal p = (Principal)loadProcessor(binder).getEntry(binder, principalId);
+        if (p != null) workspaceId = p.getWorkspaceId();
+        return workspaceId;
+    }
+
     //RW transaction
 	public UserProperties setUserProperty(Long userId, Long binderId, String property, Object value) {
    		User user = getUser(userId, true);

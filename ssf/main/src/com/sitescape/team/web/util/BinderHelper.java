@@ -431,7 +431,13 @@ public class BinderHelper {
 	//Routine to get a portal url that points to a binder or entry 
 	//  This routine is callable from an adaptor controller
 	static public String getBinderPermaLink(AllModulesInjected bs) {
-		User user = RequestContextHolder.getRequestContext().getUser();
+		User user = null;
+		try {
+			user = RequestContextHolder.getRequestContext().getUser();
+		} catch(Exception e) {
+			//TODO If there is no user, then get the permalink of the guest account
+			return "";
+		}
 		UserProperties userProperties = (UserProperties) bs.getProfileModule().getUserProperties(user.getId());
 		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PERMALINK_URL);
 		if (url == null) url = "";
@@ -1471,6 +1477,8 @@ public class BinderHelper {
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 			messageBody += adapterUrl.toString();
 			messageBody += "\">" + entry.getTitle() + "</a><br/><br/>";
 			messageBody += body;

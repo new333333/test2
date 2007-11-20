@@ -82,6 +82,13 @@ public interface ProfileModule {
      * @return
      */
     public Principal getEntry(Long binderId, Long userId) throws AccessControlException;
+    public Principal getEntry(Long binderId, Long userId, boolean checkAccess) throws AccessControlException;
+
+    /**
+     * @param userId
+     * @return
+     */
+    public Long getEntryWorkspaceId(Long binderId, Long principaId);
 
     public Map getGroups(Long binderId) throws AccessControlException;
     public Map getGroups(Long binderId, Map options) throws AccessControlException;

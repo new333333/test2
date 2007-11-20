@@ -28,13 +28,17 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
+import javax.servlet.RequestDispatcher;
 
 import org.springframework.web.servlet.ModelAndView;
 
@@ -42,12 +46,16 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.web.util.WebUrlUtil;
 
@@ -58,8 +66,35 @@ import com.sitescape.team.web.util.WebUrlUtil;
  */
 public class ViewPermalinkController  extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
- 		Map<String,Object> model = new HashMap<String,Object>();
-        User user = RequestContextHolder.getRequestContext().getUser();
+		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
+		String zoneId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_ID, ObjectKeys.DEFAULT_ZONE_ID_FOR_V1);
+		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
+		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+		
+		User user = null;
+		if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
+			if (!zoneId.equals("")) user = AccessUtils.getZoneGuestUser(new Long(zoneId));
+			if (user == null || binderId.equals("") || 
+					!getBinderModule().checkBinderAccess(new Long(binderId), user)) {
+				//User must log in to see this
+	 			response.setRenderParameters(request.getParameterMap());
+	 			return;
+			}
+		} else {
+	        user = RequestContextHolder.getRequestContext().getUser();
+			if (user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+	 			response.setRenderParameters(request.getParameterMap());
+	 			return;
+			} else if (binderId.equals("") || 
+					!getBinderModule().checkBinderAccess(new Long(binderId), user)) {
+				//User must log in to see this
+	 			response.setRenderParameters(request.getParameterMap());
+	 			return;
+			}
+		}
  		
  		//See if there is a portlet url to use for this request
         String url = BinderHelper.getBinderPermaLink(this);
@@ -68,17 +103,11 @@ public class ViewPermalinkController  extends SAbstractController {
  			return;
  		}
  		
-		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
-		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
-		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
-		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
-		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
-		
 		if (!binderId.equals("")) url = url.replaceAll(WebKeys.URL_BINDER_ID_PLACE_HOLDER, binderId);
 		if (!entryId.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_ID_PLACE_HOLDER, entryId);
 		if (!entryTitle.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER, entryTitle);
 		if (!entityType.equals("")) url = url.replaceAll(WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER, entityType);
+		if (!zoneId.equals("")) url = url.replaceAll(WebKeys.URL_ZONE_ID_PLACE_HOLDER, zoneId);
 		if (!newTab.equals("")) url = url.replaceAll(WebKeys.URL_NEW_TAB_PLACE_HOLDER, newTab);
 		
 		if (entityType.equals("") && entryId.equals("") && !binderId.equals("")) {
@@ -118,26 +147,61 @@ public class ViewPermalinkController  extends SAbstractController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
- 		Map<String,Object> model = new HashMap<String,Object>();
-        User user = RequestContextHolder.getRequestContext().getUser();
- 		
+		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
+		String zoneId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_ID, ObjectKeys.DEFAULT_ZONE_ID_FOR_V1);
+		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
+		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
+		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
+
+		Map<String,Object> model = new HashMap<String,Object>();
+		User user = null;
+		if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
+			if (!zoneId.equals("")) user = AccessUtils.getZoneGuestUser(new Long(zoneId));
+			if (user == null || binderId.equals("") || 
+					!getBinderModule().checkBinderAccess(new Long(binderId), user)) {
+				//User must log in to see this
+				model.put("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
+				model.put("ss_screens_to_login_screen", 
+						SPropsUtil.getString("permalink.login.screensToLoginScreen"));
+				model.put("ss_screens_after_login_screen_to_logged_in", 
+						SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
+	 	    	return new ModelAndView("forum/portal_login.jsp", model);
+			}
+		} else {
+	        user = RequestContextHolder.getRequestContext().getUser();
+	 		
+			if (user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+				//See if the user has access to the item being requested
+				if (!binderId.equals("")) {
+					try {
+						//See if this user can access the binder
+						getBinderModule().getBinder(new Long(binderId));
+					} catch(AccessControlException ac) {
+						model.put("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
+						model.put("ss_screens_to_login_screen", 
+								SPropsUtil.getString("permalink.login.screensToLoginScreen"));
+						model.put("ss_screens_after_login_screen_to_logged_in", 
+								SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
+			 	    	return new ModelAndView("forum/portal_login.jsp", model);
+					}
+				}
+			}
+		}
+		
  		String url = BinderHelper.getBinderPermaLink(this);
  		if (url.equals("")) {
  			url = SPropsUtil.getString("permalink.fallback.url", "");
  			model.put(WebKeys.PERMALINK, url);
  	    	return new ModelAndView("binder/view_permalink", model);
  		}
-		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
-		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
-		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
-		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
-		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 		
 		if (!binderId.equals("")) url = url.replaceAll(WebKeys.URL_BINDER_ID_PLACE_HOLDER, binderId);
 		if (!entryId.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_ID_PLACE_HOLDER, entryId);
 		if (!entryTitle.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER, entryTitle);
 		if (!entityType.equals("")) url = url.replaceAll(WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER, entityType);
+		if (!zoneId.equals("")) url = url.replaceAll(WebKeys.URL_ZONE_ID_PLACE_HOLDER, zoneId);
 		if (!newTab.equals("")) url = url.replaceAll(WebKeys.URL_NEW_TAB_PLACE_HOLDER, newTab);
 		
 		if (entityType.equals("") && entryId.equals("") && !binderId.equals("")) {

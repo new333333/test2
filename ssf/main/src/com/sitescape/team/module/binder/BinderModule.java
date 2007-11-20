@@ -42,6 +42,7 @@ import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
@@ -138,6 +139,15 @@ public interface BinderModule {
      */
     public Binder getBinder(Long binderId)
 		throws NoBinderByTheIdException, AccessControlException;
+    /**
+     * Check binder access by a user
+     * @param binderId
+     * @param user
+     * @return
+     * @throws NoBinderByTheIdException
+     * @throws AccessControlException
+     */
+    public boolean checkBinderAccess(Long binderId, User user);
     /**
      * Load binders,
      * @param binderIds
