@@ -27,8 +27,6 @@
  * are trademarks of SiteScape, Inc.
  */
 function ssAccessControl(namespace, binderId) {
-	var namespace = namespace;
-	var binderId = binderId;
 	var rolesFormName = namespace + 'rolesForm';
 	
 	this.selectPrincipals = function (ids) {
@@ -42,34 +40,47 @@ function ssAccessControl(namespace, binderId) {
 		
 			formObj.appendChild(inputObj);
 		}
-	
 		formObj.btnClicked.value = "addPrincipal";
 		if (ss_userDisplayStyle == 'accessible') {
-			this.selectPrincipalAccessible();
+			selectPrincipalAccessible();
 		} else {
 			if (ss_isIE) {
 				//IE does not display the table right, so repaint the screen
-				this.selectPrincipalAccessible();
+				selectPrincipalAccessible();
 			} else {
-				this.selectPrincipalAjax();
+				selectPrincipalAjax();
 			}
 		}
 	}
-	this.selectPrincipalAccessible = function () {
-		setTimeout("document.forms[rolesFormName].submit();", 100)
+	function selectPrincipalAccessible() {
+		setTimeout("document.forms['"+rolesFormName+"'].submit();", 100)
 	}
+	function selectPrincipalAjax() {
+		ss_setupStatusMessageDiv()
+	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_access_control_table", namespace:namespace, binderId:binderId});
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+		ajaxRequest.addFormElements(rolesFormName);
+		//ajaxRequest.setEchoDebugInfo();
+		ajaxRequest.setPostRequest(ss_postRequestAlertError);
+		ajaxRequest.setUsePOST();
+		ajaxRequest.sendRequest();  //Send the request
+		
+		ss_hideDiv('ss_addGroupsMenu' + namespace);
+		ss_hideDiv('ss_addUsersMenu' + namespace);	
+	}
+
 	this.addAccessControlRole = function (id) {
 		var formObj = document.getElementById(rolesFormName);
 		formObj.btnClicked.value = "addRole";
 		formObj.roleIdToAdd.value = id;
 		if (ss_userDisplayStyle == 'accessible') {
-			this.selectPrincipalAccessible();
+			selectPrincipalAccessible();
 		} else {
 			if (ss_isIE) {
 				//IE does not display the table right, so repaint the screen
-				this.selectPrincipalAccessible();
+				selectPrincipalAccessible();
 			} else {
-				this.selectPrincipalAjax();
+				selectPrincipalAjax();
 			}
 		}
 		ss_hideDiv('ss_addRolesMenu' + namespace);
@@ -84,26 +95,10 @@ function ssAccessControl(namespace, binderId) {
 		ss_hideDiv('ss_changeOwnerMenu' + namespace)
 	}
 	
-	
-	this.selectPrincipalAjax = function () {
-		ss_setupStatusMessageDiv()
-	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_access_control_table", namespace:namespace, binderId:binderId});
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-		ajaxRequest.addFormElements(rolesFormName);
-		//ajaxRequest.setEchoDebugInfo();
-		ajaxRequest.setPostRequest(ss_postRequestAlertError);
-		ajaxRequest.setUsePOST();
-		ajaxRequest.sendRequest();  //Send the request
-		
-		ss_hideDiv('ss_addGroupsMenu' + namespace);
-		ss_hideDiv('ss_addUsersMenu' + namespace);	
-	}
-	
-	
 	this.selectRole = function () {
 		var formObj = document.getElementById(rolesFormName);
 		formObj.btnClicked.value = "addRole";
-		this.selectPrincipalAjax();
+		selectPrincipalAjax();
 	}
 	
 	this.showChangeOwnerMenu = function (obj, divName) {
@@ -133,9 +128,9 @@ function ssAccessControl(namespace, binderId) {
 	}
 	this.addClipboardUsers = function () {
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users"}, "clipboard");
-		ss_get_url(url, this.addClipboardUsersCallback, this)
+		ss_get_url(url, addClipboardUsersCallback, this)
 	}
-	this.addClipboardUsersCallback = function (data, owner) {
+	function addClipboardUsersCallback(data, owner) {
 		var userIds = new Array();
 		for (var i = 0; i < data.length; i++) {
 			userIds.push(data[i][0]);
