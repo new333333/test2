@@ -52,11 +52,11 @@
 var ss_tryToResizeLater = 1;
 function ss_resizeMobileIframe() {
 	if (typeof self.parent != 'undefined' && typeof parent.ss_setMobileIframeSize != 'undefined') {
-		setTimeout=("self.parent.ss_resizeMobileIframe();", 200)
+		setTimeout("self.parent.ss_setMobileIframeSize();", 200)
 	} else {
 		if (ss_tryToResizeLater == 1) {
 			ss_tryToResizeLater = 0
-			setTimeout=("self.parent.ss_resizeMobileIframe();", 500)
+			setTimeout("self.ss_resizeMobileIframe();", 500)
 		}
 	}
 }
