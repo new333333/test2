@@ -170,7 +170,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 		Map updates = new HashMap();
 		
 		String zoneName = user.getParentBinder().getParentBinder().getName();
-		if(user.getName().equals(SZoneConfig.getGuestUserName(zoneName))) {
+		if(user.getName().equals(SZoneConfig.getGuestUserName(zoneName)))
 			return updates; // guest access - don't update account	
 			
 		Map userAttrs = (Map)request.getAttribute(javax.portlet.PortletRequest.USER_INFO);
