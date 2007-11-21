@@ -168,6 +168,11 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 	
 	private Map getStandardUserInfoFromPortal(PortletRequest request, User user) {
 		Map updates = new HashMap();
+		
+		String zoneName = user.getParentBinder().getParentBinder().getName();
+		if(user.getName().equals(SZoneConfig.getGuestUserName(zoneName))) {
+			return updates; // guest access - don't update account	
+			
 		Map userAttrs = (Map)request.getAttribute(javax.portlet.PortletRequest.USER_INFO);
 		if(userAttrs == null) {
 			// According to JSR-168 spec, this means that the user is un-authenticatecd.
@@ -176,12 +181,9 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 			// default user, this indicates some internal problem (which tended to 
 			// occur under older version of Liferay when it's automatic login facility 
 			// is enabled). We can not allow the user to proceed in that case.
-			String zoneName = user.getParentBinder().getParentBinder().getName();
-			if(user.getName().equals(SZoneConfig.getGuestUserName(zoneName)))
-				return updates;
-			else
-				throw new InternalException("User must log off and log in again");
+			throw new InternalException("User must log off and log in again");
 		}
+		
 		String val = null;
 		if(userAttrs.containsKey("user.name.given")) {
 			val = (String) userAttrs.get("user.name.given");
