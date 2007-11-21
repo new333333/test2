@@ -81,14 +81,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
-		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-		if (!WebHelper.isUserLoggedIn(request)) {
-			if (op.equals(WebKeys.OPERATION_MOBILE_LOGIN)) {
-				//Get the name and password and then login
-				String name = PortletRequestUtils.getStringParameter(request, "name", "");
-				String password = PortletRequestUtils.getStringParameter(request, "password", "");
-			}
-		}
 	}
 	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -234,6 +226,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileShowEntry(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
+		model.put(WebKeys.SHOW_MOBILE_VIEW, true);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);

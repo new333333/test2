@@ -31,6 +31,9 @@
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <% //Blog title view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${!empty ss_showMobileView}">
+<jsp:forward page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_title.jsp" />
+</c:if>
 <c:set var="title_entry" value="${ssDefinitionEntry}"/>
 
 <c:if test="${empty ss_namespace}">

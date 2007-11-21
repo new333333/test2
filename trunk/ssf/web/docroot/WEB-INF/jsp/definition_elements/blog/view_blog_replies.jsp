@@ -30,6 +30,9 @@
 %>
 <% // View blog reply count %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${!empty ss_showMobileView}">
+<jsp:forward page="/WEB-INF/jsp/definition_elements/mobile/view_entry_replies.jsp" />
+</c:if>
 
 <% // Only show the replies if this is the top entry %>
 <c:if test="${empty ssDefinitionEntry.topEntry}" >
