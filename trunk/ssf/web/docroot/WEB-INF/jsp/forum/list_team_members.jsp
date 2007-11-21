@@ -70,6 +70,7 @@
 		    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
 		    	><ssf:nlt tag="toolbar.teams.addMember"/></a></li>
 		</ssf:ifAccessAllowed>
+		<c:if test="${!empty ssUser.emailAddress}">
 	    <li><a class="ss_linkButton" href="<ssf:url 
 	    		adapter="true" 
 	    		portletName="ss_forum" 
@@ -79,6 +80,7 @@
 	    		name="appendTeamMembers" value="true"/></ssf:url>"
 	    	  onClick="ss_openUrlInPortlet(this.href, true, 600, 600);return false"
 	    	><ssf:nlt tag="toolbar.teams.sendmail"/></a></li>
+	    </c:if>
 	    <li><a class="ss_linkButton" href="<ssf:url 
 	    		adapter="true" 
 	    		portletName="ss_forum" 

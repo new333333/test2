@@ -531,28 +531,35 @@ public class ViewEntryController extends  SAbstractController {
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), adapterUrl.toString(), qualifiers);
 
-		AdaptedPortletURL adapterSubscriptionUrl = new AdaptedPortletURL(request, "ss_forum", false);
-		adapterSubscriptionUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-		adapterSubscriptionUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);
-		adapterSubscriptionUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		adapterSubscriptionUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		adapterSubscriptionUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
-		
-		qualifiers = new HashMap();		
-		qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_entry"+entryId+"'); return false;");
-		footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
+		if (!user.getEmailAddress().equals("") && 
+				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			AdaptedPortletURL adapterSubscriptionUrl = new AdaptedPortletURL(request, "ss_forum", false);
+			adapterSubscriptionUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+			adapterSubscriptionUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SUBSCRIBE);
+			adapterSubscriptionUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			adapterSubscriptionUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			adapterSubscriptionUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
+			
+			qualifiers = new HashMap();		
+			qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_entry"+entryId+"'); return false;");
+			footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
+		}
 		
 		String[] contributorIds = collectContributorIds(entry);
 		
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_ENTRY_EMAIL);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+		if (!user.getEmailAddress().equals("") && 
+				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_ENTRY_EMAIL);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);
+			footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+		}
 
-		if (getIcBrokerModule().isEnabled()) {
+		if (getIcBrokerModule().isEnabled() && 
+				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
