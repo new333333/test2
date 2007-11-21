@@ -85,7 +85,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			}
 		} else {
 	        user = RequestContextHolder.getRequestContext().getUser();
-			if (user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 	 			response.setRenderParameters(request.getParameterMap());
 	 			return;
 			} else if (binderId.equals("") || 
@@ -172,7 +172,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		} else {
 	        user = RequestContextHolder.getRequestContext().getUser();
 	 		
-			if (user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				//See if the user has access to the item being requested
 				if (!binderId.equals("")) {
 					try {

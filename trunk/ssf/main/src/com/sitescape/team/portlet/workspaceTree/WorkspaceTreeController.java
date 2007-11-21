@@ -519,7 +519,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
 			
 		// Sendmail
-		if (!user.getEmailAddress().equals("") && !user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+		if (!user.getEmailAddress().equals("") && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -530,7 +530,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 		
 		// Meet
-		if (getIcBrokerModule().isEnabled() && !user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+		if (getIcBrokerModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -562,7 +562,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 				adapterUrl.toString(), qualifiers);
 
 		// clipboard
-		if (!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
 			String contributorIdsAsJSString = "";
 			for (int i = 0; i < contributorIds.length; i++) {
@@ -576,7 +576,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 		
 		// send mail
-		if (!user.getEmailAddress().equals("") && !user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+		if (!user.getEmailAddress().equals("") && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -587,7 +587,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 
 		// start meeting
-		if (getIcBrokerModule().isEnabled() && !user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+		if (getIcBrokerModule().isEnabled() && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -598,7 +598,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		}
 		
 		//Theme
-		if (!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
 					NLT.get("ui.availableThemeIds") + "', '" +
