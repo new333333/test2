@@ -80,6 +80,7 @@ dojo.widget.defineWidget(
 		entryTypeId:'',
 		nodeObj : null,
 		searchFieldIndex: "",
+		weekStartsOn: null,
 		nextNodeRef: null,
 		widgetContainer: null,
 		dataProviderClass: "sitescape.widget.FieldSelectDataProvider",		
@@ -162,6 +163,9 @@ dojo.widget.defineWidget(
 			var prop = {value: value, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
 						name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
 						autoComplete: false, nodeObj: this.widgetContainer};
+			if (typeof this.weekStartsOn !== "undefined") {
+				prop.weekStartsOn = this.weekStartsOn;
+			}
 			this.nextNodeRef = dojo.widget.createWidget("DropdownDatePickerActivateByInput", prop, this.widgetContainer, "last");
 		},
 		
@@ -169,6 +173,9 @@ dojo.widget.defineWidget(
 			var prop = {value: value, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
 						name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
 						autoComplete: false, nodeObj: this.widgetContainer};
+			if (typeof this.weekStartsOn !== "undefined") {
+				prop.weekStartsOn = this.weekStartsOn;
+			}
 			this.nextNodeRef = dojo.widget.createWidget("DropdownDatePickerActivateByInput", prop, this.widgetContainer, "last");
 		},
 		
@@ -218,6 +225,7 @@ dojo.widget.defineWidget(
 		
 		addSimpleInputField: function(value) {
 			this.nextNodeRef = document.createElement('input');
+			this.nextNodeRef.type = "text";
 			this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
 			this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
 			if (value) {

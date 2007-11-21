@@ -69,7 +69,7 @@ public class CalendarViewRangeDates {
 	/* ends on the last day of the week */
 	private Calendar endViewExtWindow;
 
-	public CalendarViewRangeDates(Date currentDate) {
+	public CalendarViewRangeDates(Date currentDate, int firstDayOfWeek) {
 		super();
 
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -97,15 +97,22 @@ public class CalendarViewRangeDates {
 		this.startViewCal.set(Calendar.DAY_OF_MONTH, 1);
 		this.startViewExtWindow.setTime(startViewCal.getTime());
 		this.startViewExtWindow.set(Calendar.DAY_OF_WEEK,
-				this.startViewExtWindow.getFirstDayOfWeek());
+				firstDayOfWeek);
+		// fix for Saturday
+		if (this.startViewExtWindow.get(Calendar.MONTH) == this.startViewCal.get(Calendar.MONTH) &&
+				this.startViewExtWindow.get(Calendar.DAY_OF_MONTH) > 1) {
+			this.startViewExtWindow.add(Calendar.DATE, -7);
+		}
 		this.endViewCal.setTime(this.startViewCal.getTime());
 		this.endViewCal.add(Calendar.MONTH, 1);
 		this.endViewExtWindow.setTime(endViewCal.getTime());
-		if (this.endViewExtWindow.get(Calendar.DAY_OF_WEEK) != this.endViewExtWindow
-				.getFirstDayOfWeek()) {
+		if (this.endViewExtWindow.get(Calendar.DAY_OF_WEEK) != firstDayOfWeek) {
 			this.endViewExtWindow.set(Calendar.DAY_OF_WEEK,
-					this.endViewExtWindow.getFirstDayOfWeek());
-			this.endViewExtWindow.add(Calendar.DATE, 7);
+					firstDayOfWeek);
+			// fix for Saturday
+			if (this.endViewExtWindow.get(Calendar.MONTH) != this.endViewCal.get(Calendar.MONTH)) {
+				this.endViewExtWindow.add(Calendar.DATE, 7);
+			}
 		}
 
 		setMidnight(startViewCal);
@@ -195,21 +202,11 @@ public class CalendarViewRangeDates {
 
 		Calendar startViewExtWindowTemp = CalendarHelper.convertToTimeZone(
 				startViewExtWindow, timeZone);
-		Map beginView = new HashMap();
-		beginView.put("year", startViewExtWindowTemp.get(Calendar.YEAR));
-		beginView.put("month", startViewExtWindowTemp.get(Calendar.MONTH));
-		beginView.put("dayOfMonth", startViewExtWindowTemp
-				.get(Calendar.DAY_OF_MONTH));
-		result.put("beginView", beginView);
+		result.put("beginView", startViewExtWindowTemp.getTime());
 
 		Calendar endViewExtWindowTemp = CalendarHelper.convertToTimeZone(
 				endViewExtWindow, timeZone);
-		Map endView = new HashMap();
-		endView.put("year", endViewExtWindowTemp.get(Calendar.YEAR));
-		endView.put("month", endViewExtWindowTemp.get(Calendar.MONTH));
-		endView.put("dayOfMonth", endViewExtWindowTemp
-				.get(Calendar.DAY_OF_MONTH));
-		result.put("endView", endView);
+		result.put("endView", endViewExtWindowTemp.getTime());
 		
 		int daysInMonthView = calculateDifference(
 				endViewExtWindow.getTime(), startViewExtWindow

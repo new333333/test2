@@ -131,39 +131,43 @@ function ss_restoreImages (imageId, currentEntry) {
 }
 
 function ss_getNextEntryId(imageId) {
-	var nextEntry = "";
+	var nextEntryIndex = "";
+	var nextEntryId = "";
 	var nextBinderId = "";
 	var entityType = "";
 	if (typeof ss_currentEntryId == "undefined" || ss_currentEntryId == "") {
 		if (ss_entryCount > 0) {
-			nextEntry = ss_entryList[0];
-			nextBinderId = ss_entryList2[0];
-			entityType = ss_entryList3[0];
+			nextEntryIndex = ss_entryList[0].index;
+			nextEntryId = ss_entryList[0].entryId;
+			nextBinderId = ss_entryList[0].binderId;
+			entityType = ss_entryList[0].entityType;
 		}
 	} else {
 		for (var i = 0; i < ss_entryCount; i++) {
-			if (ss_entryList[i] == ss_currentEntryId) {
+			if (ss_entryList[i].index == ss_currentEntryId) {
 				i++;
 				if (i < ss_entryCount) {
-					nextEntry = ss_entryList[i];
-					nextBinderId = ss_entryList2[i];
-					entityType = ss_entryList3[i];
+					nextEntryIndex = ss_entryList[i].index;
+					nextEntryId = ss_entryList[i].entryId;
+					nextBinderId = ss_entryList[i].binderId;
+					entityType = ss_entryList[i].entityType;
 				}
 				break;
 			}
 		}
 	}
 	ss_restoreImages(imageId);
-	if (nextEntry != "" && (entityType == 'folder' || entityType == 'workspace' || entityType == 'group')) {
-		ss_currentEntryId = nextEntry;
+	if (nextEntryId != "" && (entityType == 'folder' || entityType == 'workspace' || entityType == 'group')) {
+		ss_currentEntryId = nextEntryIndex;
 		ss_getNextEntryId(imageId);
-	} else if (nextEntry != "") {
+	} else if (nextEntryId != "") {
 		var url = ss_baseHistoryUrl;
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", nextBinderId);
-		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", nextEntry);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", nextEntryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromEntity(entityType));
-		ss_loadEntryUrl(url, nextEntry);
-		if (nextEntry == ss_entryList[ss_entryCount - 1]) {
+		ss_loadEntryUrl(url, nextEntryId);
+		ss_currentEntryId = nextEntryIndex;
+		if (nextEntryId == ss_entryList[ss_entryCount - 1].entryId) {
 			ss_swapPrevFirst(imageId);
 		} 
 	} else {
@@ -174,40 +178,44 @@ function ss_getNextEntryId(imageId) {
 }
 
 function ss_getPreviousEntryId(imageId) {
-	var nextEntry = "";
+	var nextEntryIndex = "";
+	var nextEntryId = "";
 	var nextBinderId = "";
 	var entityType = "";
     if (!ss_currentEntryId || ss_currentEntryId == "") {
 		if (ss_entryCount > 0) {
-			nextEntry = ss_entryList[0];
-			nextBinderId = ss_entryList2[0];
-			entityType = ss_entryList3[0];
+			nextEntryIndex = ss_entryList[i].index;
+			nextEntryId = ss_entryList[i].entryId;
+			nextBinderId = ss_entryList[i].binderId;
+			entityType = ss_entryList[i].entityType;
 		}
 	} else {
 		for (var i = 0; i < ss_entryCount; i++) {
 			ss_debug('i = '+i+', entry = '+ss_entryList[i])
-			if (ss_entryList[i] == ss_currentEntryId) {
+			if (ss_entryList[i].index == ss_currentEntryId) {
 				i--;
 				if (i >= 0) {
-					nextEntry = ss_entryList[i];
-					nextBinderId = ss_entryList2[i];
-					entityType = ss_entryList3[i];
+					nextEntryIndex = ss_entryList[i].index;
+					nextEntryId = ss_entryList[i].entryId;
+					nextBinderId = ss_entryList[i].binderId;
+					entityType = ss_entryList[i].entityType;
 				}
 				break;
 			}
 		}
 	}
 	ss_restoreImages(imageId);
-	if (nextEntry != "" && (entityType == 'folder' || entityType == 'workspace' || entityType == 'group')) {
-		ss_currentEntryId = nextEntry;
+	if (nextEntryId != "" && (entityType == 'folder' || entityType == 'workspace' || entityType == 'group')) {
+		ss_currentEntryId = nextEntryIndex;
 		ss_getPreviousEntryId(imageId);
-	} else if (nextEntry != "") {
-		var url = ss_baseHistoryUrl + '&entryId=' + nextEntry;
+	} else if (nextEntryId != "") {
+		var url = ss_baseHistoryUrl;
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", nextBinderId);
-		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", nextEntry);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", nextEntryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromEntity(entityType));
-		ss_loadEntryUrl(url, nextEntry);
-		if (nextEntry == ss_entryList[0]) {
+		ss_loadEntryUrl(url, nextEntryId);
+		ss_currentEntryId = nextEntryIndex;
+		if (nextEntryId == ss_entryList[0].entryId) {
 			ss_swapNextLast(imageId);
 		}
 	} else {
@@ -218,54 +226,60 @@ function ss_getPreviousEntryId(imageId) {
 }
 
 function ss_getFirstEntryId(imageId) {
-	var firstEntry = "";
+	var firstEntryIndex = "";
+	var firstEntryId = "";
 	var firstBinderId = "";
 	var entityType = "";
     if (ss_entryCount > 0) {
-    	firstEntry = ss_entryList[0];
-    	firstBinderId = ss_entryList2[0];
-		entityType = ss_entryList3[0];
+    	firstEntryIndex = ss_entryList[0].index;
+    	firstEntryId = ss_entryList[0].entryId;
+    	firstBinderId = ss_entryList[0].binderId;
+		entityType = ss_entryList[0].entityType;
     }
     ss_restoreImages(imageId);
 	if (entityType == 'folder' || entityType == 'workspace' || entityType == 'group') {
 		//Can't show this, so do nothing
     	ss_swapNextLast(imageId)
-    } else if (firstEntry == "" || ss_currentEntryId == firstEntry) {
+    } else if (firstEntryIndex == "" || ss_currentEntryId == firstEntryIndex) {
     	//alert("You are already viewing the last entry.")
     	ss_swapNextLast(imageId)
     } else {
         var url = ss_baseHistoryUrl;
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", firstBinderId);
-		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", firstEntry);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", firstEntryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromEntity(entityType));
-		ss_loadEntryUrl(url, firstEntry);
+		ss_loadEntryUrl(url, firstEntryId);
+		ss_currentEntryId = firstEntryIndex;
 		ss_swapNextLast(imageId)
     }
 	return false;
 }
 
 function ss_getLastEntryId(imageId) {
-	var lastEntry = "";
+	var lastEntryIndex = "";
+	var lastEntryId = "";
 	var lastBinderId = "";
 	var entityType = "";
     if (ss_entryCount > 0) {
-    	lastEntry = ss_entryList[ss_entryCount - 1];
-    	lastBinderId = ss_entryList2[ss_entryCount - 1];
-		entityType = ss_entryList3[ss_entryCount - 1];
+    	lastEntryIndex = ss_entryList[ss_entryCount - 1].index;
+    	lastEntryId = ss_entryList[ss_entryCount - 1].entryId;
+    	lastBinderId = ss_entryList[ss_entryCount - 1].binderId;
+		entityType = ss_entryList[ss_entryCount - 1].entityType;
     }
     ss_restoreImages(imageId);
 	if (entityType == 'folder' || entityType == 'workspace' || entityType == 'group') {
 		//Can't show this, so do nothing
     	ss_swapPrevFirst(imageId)
-    } else if (lastEntry == "" || ss_currentEntryId == lastEntry) {
+    } else if (lastEntryIndex == "" || ss_currentEntryId == lastEntryIndex) {
     	//alert("You are already viewing the first entry.")
     	ss_swapPrevFirst(imageId)
     } else {
         var url = ss_baseHistoryUrl;
 		url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", lastBinderId);
-		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", lastEntry);
+		url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", lastEntryId);
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", ss_getActionFromEntity(entityType));
-		ss_loadEntryUrl(url, lastEntry);
+		ss_loadEntryUrl(url, lastEntryId);
+		ss_currentEntryId = lastEntryIndex;
 		ss_swapPrevFirst(imageId)
     }
 	return false;

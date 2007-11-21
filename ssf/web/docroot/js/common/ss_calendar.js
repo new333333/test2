@@ -31,175 +31,457 @@ dojo.require("dojo.html.*");
 dojo.require("dojo.html.util");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.event");
+dojo.require("dojo.date.common");
 dojo.require("dojo.lfx");
 dojo.require("dojo.io.IframeIO");
 
-function ss_fadeAndDestroy(e, t) {
-    dojo.lfx.fadeHide(e, t, dojo.lfx.easeIn, function(nodes) {
-        dojo.lang.forEach(nodes, dojo.dom.removeNode);
-    }).play();
-}
-
-
-Date.hourTickList = ["12am","1am","2am","3am","4am","5am","6am","7am","8am","9am","10am","11am",
-                   			"12pm","1pm","2pm","3pm","4pm","5pm","6pm","7pm","8pm","9pm","10pm","11pm"];
-Date.dayNamesShort = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
-Date.monthNamesShort = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-Date.monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-Date.shortMeridianA = 'a';
-Date.shortMeridianP = 'p';
-Date.meridianTime = 12;
-Date.userTimeZoneOffset = 0;
-
-Date.prototype.getMonthName = function() {
-	return Date.monthNames[this.getMonth()];
-}
-
-Date.prototype.getMonthNameShort = function() {
-	return Date.monthNamesShort[this.getMonth()];
-}
-
-Date.prototype.getDaysInMonth = function() {
-	return 32 - new Date(this.getFullYear(), this.getMonth(), 32).getDate();
-}
-
-Date.prototype.getMinutesOfTheDay = function() {
-	return (60 * this.getHours()) + this.getMinutes();
-}
-
-Date.shortTime = function(t) {
-    var hour = Math.floor(t);
-    var min = Math.round((t - hour) * 60);
-    if (min == 0) {
-        min = '';
-    } else {
-        min = ":" + ((min < 10) ? "0" : "")+ min;
-    }
-    if (hour < 12) {
-        return '<span class="ss_cal_eventTime">' + hour + min + this.shortMeridianA + '</span>';
-    } else if (hour == 12) {
-        return '<span class="ss_cal_eventTime">' + hour + min + this.shortMeridianP + '</span>';
-    } else if (hour > 12) {
-        return  '<span class="ss_cal_eventTime">' + (hour - this.meridianTime) + min + this.shortMeridianP + '</span>';
-    }
-}
-
-Date.getDayHeader = function(date) {
-	return Date.dayNamesShort[date.getDay()] + " " + date.getDate() + "/" + (date.getMonth() + 1);
-}
-
-/* Ignores times.
- 	returns:
- 		-1 given date is before
- 		0 dates are equals
- 		1 given date is after
-
- */
-Date.prototype.compareByDate = function(date) {
-    var difference = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0) -
-    					Date.UTC(this.getFullYear(), this.getMonth(), this.getDate(), 0, 0, 0);
-   return difference;
-}
-
-Date.prototype.daysTillDate = function(date) {
-    var difference = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate(), 0, 0, 0) -
-    					Date.UTC(this.getFullYear(), this.getMonth(), this.getDate(), 0, 0, 0);
-    
-    return difference/(1000*60*60*24);
-}
-
-
-/*
-	Result: date + offset days.
-	offset - int (days) or string "month" or "-month"
-*/
-Date.prototype.addDays = function (days) {
-	if (days == "month") {
-		return new Date(this.getFullYear(), this.getMonth() + 1, this.getDate());	
-	} else if (days == "-month") {
-		return new Date(this.getFullYear(), this.getMonth() - 1, this.getDate());
+function ss_calendar_data_provider(binderId, calendarIds, isDashboard) {
+	
+	var binderId = binderId;
+	
+	var calendarIds = calendarIds;
+	
+	var isDashboard = (typeof isDashboard != "undefined")?isDashboard:false;
+	
+	function mergeObj(dest, src) {
+		if (typeof dest == "undefined" || typeof src == "undefined") {
+			return dest;
+		}
+		
+		for (var i in src) {
+			dest[i] = src[i];
+		}
+		return dest;
 	}
-	return new Date(this.getTime() + days*24*60*60*1000);
+	
+	this.loadEventsByDate = function(reqParams, date, calendarObj) {
+		dojo.io.bind({
+	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
+										binderId: binderId, 
+										binderIds: calendarIds,
+										ssDashboardRequest: isDashboard}, reqParams)),
+			error: function(type, data, evt) {
+				alert(ss_not_logged_in);
+			},
+			load: function(type, data, evt) {
+try { // TODO: remove try/catch
+				calendarObj.addEvents(data, date);
+} catch(e) {alert(e)}
+			},
+						
+			mimetype: "text/json",
+			preventCache: true,
+			method: "get"
+		});
+	}
+	
+	this.loadEntryEvents = function(reqParams, calendarObj) {
+		dojo.io.bind({
+	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
+											binderId: binderId, 
+											binderIds: calendarIds,
+											ssDashboardRequest: isDashboard}, reqParams)),
+			error: function(type, data, evt) {
+				alert(ss_not_logged_in);
+			},
+			load: function(type, data, evt) {
+try { // TODO: remove try/catch
+				calendarObj.addEvents(data);
+} catch(e) {alert(e)}
+			},
+			mimetype: "text/json",
+			preventCache: true,
+			method: "get"
+		});	 
+	}
+	
+	this.stickyCalendarDisplaySettings = function(options) {
+	 	if (!options) {
+	 		return;
+	 	}
+		
+	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "sticky_calendar_display_settings",
+								binderId: binderId}, options));
+		
+		dojo.io.bind({
+	    	url: url,
+			error: function(type, data, evt) {},
+			load: function(type, data, evt) {},
+			mimetype: "text/json",
+			preventCache: true,
+			method: "get"
+		});
+	}
+
 }
 
 
-function ss_calendar(prefix) {
+function ss_calendarControl() {
+	var instanceCounterId = 0;
 	
-	var prefix = prefix;
+	this.createCalendar = function(props) {
+		var instanceId = instanceCounterId++;
+		var props = props || {};
+		return new ss_calendarEngine(instanceId, 
+					(typeof props.containerId!="undefined")?props.containerId:null, 
+					(typeof props.readOnly!="undefined")?props.readOnly:false, 
+					(typeof props.calendarDataProvider!="undefined")?props.calendarDataProvider:null, 
+					(typeof props.weekFirstDay!="undefined")?props.weekFirstDay:1,
+					(typeof props.workDayStart!="undefined")?props.workDayStart:6,
+					(typeof props.defaultCalendarId!="undefined")?props.defaultCalendarId:null,
+					(typeof props.viewDatesDescriptionsFieldId!="undefined")?props.viewDatesDescriptionsFieldId:null,
+					(typeof props.viewSelectorHrefIds!="undefined")?props.viewSelectorHrefIds:null,
+					(typeof props.calendarHoursSelectorId!="undefined")?props.calendarHoursSelectorId:null,
+					(typeof props.eventsTypeChooseId!="undefined")?props.eventsTypeChooseId:null,
+					(typeof props.eventsTypeSelectId!="undefined")?props.eventsTypeSelectId:null,
+					(typeof props.onCalendarStyleChoose!="undefined")?props.onCalendarStyleChoose:null,
+					(typeof props.addEntryURL!="undefined")?props.addEntryURL:null);
+	}
+}
 
-	// Records data about calendars (e.g., display colors, tick formats, layout data)
-	var ss_cal_CalData = {
+function ss_calendarEngine(
+					instanceId,
+					containerId,
+					readOnly, 
+					calendarDataProvider, 
+					weekFirstDay,
+					workDayStart,
+					defaultCalendarId, 
+					viewDatesDescriptionsFieldId, 
+					viewSelectorHrefIds,
+					calendarHoursSelectorId,
+					eventsTypeChooseId,
+					eventsTypeSelectId,
+					onCalendarStyleChoose,
+					addEntryURL) {
+		
+	this.locale = {
+		dayNamesShort: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
+		monthNamesShort: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+		monthNames: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+		allDay: "All day",
+		noTitle: "--no title--",
+		workDayGridTitle: "Work day",
+		fullDayGridTitle: "Full day",
+		entriesLabel: "entries",
+		timeFormat: "12:00 AM"
+	};
 	
-		/* Presentation data */
-	    map: new Object(),
-	    setMap: function(pMap) { 
-	    	for (var i = 0; i < pMap.length; i++) {
-				this.map[pMap[i].calsrc] = pMap[i];
+	this.NUMBER_OF_DEFINED_CALENDAR_STYLES = 5;
+	
+	this.template = "<div id=\"ss_cal_DayGridMaster" + instanceId + "\" style=\"display:none;\">" +
+					"  <table class=\"ss_cal_gridTable\">" +
+					"    <tbody>" +
+					"      <tr>" +
+					"        <td class=\"ss_cal_dayGridHourTicksColumn\" style=\"padding-right: 0px;\"><div class=\"ss_cal_gridHeader\"></td>" +
+					"        <td><div width=\"100%\" id=\"ss_cal_dayGridHeader" + instanceId + "\" class=\"ss_cal_gridHeader ss_cal_reserveWidth\"></div></td>" + 
+					"      </tr>" +
+					"      <tr>" +
+					"        <td class=\"ss_cal_dayGridHourTicksColumn\">" + this.locale.allDay + "</td>" +
+					"        <td><div id=\"ss_cal_dayGridAllDay" + instanceId + "\" class=\"ss_cal_dayGridHour ss_cal_dayGridAllDay ss_cal_reserveWidth\"></div></td>" +
+					"      </tr>" +
+					"    </tbody>" +
+					"  </table>" +
+					"  <div class=\"ss_cal_dayGridDivider\"></div>" +
+					"  <div id=\"ss_cal_dayGridWindowOuter" + instanceId + "\" class=\"ss_cal_dayGridWindowOuter\">" +
+					"    <div id=\"ss_cal_dayGridWindowInner" + instanceId + "\" class=\"ss_cal_dayGridWindowInner\" style=\"top: " + (-3 - (workDayStart* 42)) + "px; \">" +
+					"      <table class=\"ss_cal_gridTable\">" +
+					"        <tbody>" +
+					"          <tr>" +
+					"            <td class=\"ss_cal_dayGridHourTicksColumn\"><div id=\"ss_cal_hourHeader" + instanceId + "\" class=\"ss_cal_dayGridHour\"></div></td>" +
+					"            <td><div id=\"ss_cal_dayGridHour" + instanceId + "\" class=\"ss_cal_dayGridHour ss_cal_reserveWidth\"></div></td>" +
+					"          </tr>" +
+					"        </tbody>" +
+					"      </table>" +
+					"    </div>" +
+					"  </div>" +
+					"</div>" +
+					"<div id=\"ss_cal_MonthGridMaster" + instanceId + "\" style=\"position: relative; display: none;\">" +
+					"  <table style=\"width: 100%\" cellpadding=0 cellspacing=0 border=0>" +
+					"    <tbody>" +
+					"      <tr>" +
+					"        <td id=\"ss_cal_monthGridHeader" + instanceId + "\" class=\"ss_cal_gridHeader ss_cal_reserveWidth\"></td>" +
+					"      </tr>" +
+					"      <tr>" +
+					"        <td><div id=\"ss_cal_monthGrid" + instanceId + "\" class=\"ss_cal_monthGrid ss_cal_reserveWidth\"></div></td>" +
+					"      </tr>" +
+					"    </tbody>" +
+					"  </table>" +
+					"</div>";
+					
+	var instanceId = instanceId;
+	
+	var containerId = containerId;
+	
+	var calendarDataProvider = calendarDataProvider;
+	
+	var defaultCalendarId = defaultCalendarId;
+	
+	var weekFirstDay = typeof weekFirstDay!=="undefined"?(weekFirstDay - 1):0;
+	
+	var workDayStart = workDayStart;
+	
+	var viewDatesDescriptionsFieldId = viewDatesDescriptionsFieldId;
+	
+	var calendarHoursSelectorId = calendarHoursSelectorId;
+	
+	var eventsTypeChooseId = eventsTypeChooseId;
+	
+	var	eventsTypeSelectId = eventsTypeSelectId;
+	
+	var onCalendarStyleChoose = onCalendarStyleChoose;
+	
+	var addEntryURL = addEntryURL;
+	
+	var viewSelectorHrefIds = viewSelectorHrefIds;
+	
+	var templateInitialized = false;
+	
+	var hoverBox;	
+	
+	var that = this;
+	
+	var viewSelectorHrefClasses = {
+		days1: "ss_calDaySelectButton", 
+		days3: "ss_cal3DaysSelectButton", 
+		days5: "ss_cal5DaysSelectButton", 
+    	days7: "ss_cal7DaysSelectButton", 
+		days14: "ss_cal14DaysSelectButton", 
+		month: "ss_calMonthSelectButton"
+	};
+	
+	dojo.addOnLoad(function() {
+		hoverBox = document.createElement("div");
+		hoverBox.className= "ss_cal_eventBody";
+		hoverBox.style.display = "none"; 
+		hoverBox.style.visibility = "hidden"; 
+		hoverBox.style.position = "absolute"; 
+		hoverBox.style.zIndex = "2003"; 
+		hoverBox.style.border = "0"; 
+
+		document.getElementsByTagName("body").item(0).appendChild(hoverBox);
+	});
+	
+	this.ss_initializeCalendar = function() {
+		that.loadEventsByDate();
+	}
+	
+	this.createTemplate = function() {
+		var container = dojo.byId(containerId) || document.body;
+		container.innerHTML = that.template;
+		templateInitialized = true;
+	}
+	
+	this.removeEntryEvents = function(entryId) {
+		ss_cal_Events.removeEntryEvents(entryId);		
+	}
+	
+	this.refreshEntryEvents = function(entryId) {
+		setTimeout(function(){
+				ss_cal_Events.removeEntryEvents(entryId);
+				that.loadEntryEvents(entryId);
+			}, 2000);
+	}
+	
+	this.switchView =  function(/* String: "daydelta", "3daydelta", "week", "fortnight", "workweek", "month", "daydirect", "monthdirect", "datedirect", "prev", "next" */ 
+	    							mode, 
+	    							year, month, dayOfMonth) {
+		ss_cal_Events.switchView(mode, year, month, dayOfMonth);
+	}
+	
+	this.changeEventType = function() {
+		ss_cal_Events.changeEventType();
+	}
+
+	this.fullDayGrid =  function() {
+    	ss_cal_Grid.fullDayGrid();
+    }
+	
+	this.workDayGrid = function() {
+		ss_cal_Grid.workDayGrid();
+	}
+
+	function fadeAndDestroy(e, t) {
+	    dojo.lfx.fadeHide(e, t, dojo.lfx.easeIn, function(nodes) {
+	        dojo.lang.forEach(nodes, dojo.dom.removeNode);
+	    }).play();
+	}
+
+	function getMonthName(date) {
+		return that.locale.monthNames[date.getMonth()];
+	}
+	
+	function getMonthNameShort(date) {
+		return that.locale.monthNamesShort[date.getMonth()];
+	}
+	
+	function getDayHeader(date) {
+		return that.locale.dayNamesShort[date.getDay()] + " " + date.getDate() + "/" + (date.getMonth() + 1);
+	}
+	
+	function getMinutesOfTheDay(date) {
+		return (60 * date.getHours()) + date.getMinutes();
+	}
+	
+	function daysDiff(date1, date2) {
+		var utc1 = +date1/10000 - (date1.getTimezoneOffset() * 6);
+		var utc2 = +date2/10000 - (date2.getTimezoneOffset() * 6);
+
+		utc1 = utc1 - (utc1 % 8640);
+		utc2 = utc2 - (utc2 % 8640);
+		return (utc2 - utc1) / 8640;
+	}
+	
+	function getCalendarEventStyle(calendarId) {
+		var calendarStyle = "";
+		if (calendarId == defaultCalendarId) {
+			calendarStyle = "ss_calendar_defaultCalendar";
+		} else {
+			calendarStyle = "ss_calendar_calendar" + (calendarId % that.NUMBER_OF_DEFINED_CALENDAR_STYLES);
+		}
+		if (onCalendarStyleChoose) {
+			onCalendarStyleChoose(calendarId, calendarStyle);
+		}
+		return calendarStyle;
+	}
+	
+	function fullWithZeros(c) {
+    	if (c < 10) {
+    		return "0" + c;
+    	}
+    	return c;
+    }
+	
+	function addTopCorners(ebox, calStyle) {
+	    var cornerBox = document.createElement("div");
+	    cornerBox.className = "ss_cal_smallRBoxTop2 " + calStyle;
+	    ebox.appendChild(cornerBox);
+	
+	    cornerBox = document.createElement("div");
+	    cornerBox.className = "ss_cal_smallRBoxTop1 " + calStyle;
+	    ebox.appendChild(cornerBox);
+	}
+	
+	function addBottomCorners(ebox, calStyle) {
+	
+		var cornerBox = document.createElement("div");
+	    cornerBox.className = "ss_cal_smallRBoxBtm1 " + calStyle;
+	    ebox.appendChild(cornerBox);
+	
+	    cornerBox = document.createElement("div");
+	    cornerBox.className ="ss_cal_smallRBoxBtm2 " + calStyle;
+	    ebox.appendChild(cornerBox);
+	}
+	
+	this.addEvents = function(eventsData, date) {
+		if (!templateInitialized) {
+			that.createTemplate();
+		}
+		var today = new Date();
+		if (eventsData.today) {
+			today = new Date(eventsData.today.substr(0, 4) * 1, eventsData.today.substr(4, 2) * 1 - 1, eventsData.today.substr(6, 2) * 1);			
+		}
+		ss_cal_CalData.setToday(today);
+		if (eventsData.monthViewInfo) {
+			ss_cal_CalData.setMonthViewInfo(eventsData.monthViewInfo);
+		}
+		if (eventsData.events) {
+			ss_cal_Events.addEvents(eventsData.events);
+		}
+		if (eventsData.gridSize) {
+			ss_cal_Grid.setGridSize(eventsData.gridSize);
+		}
+		if (eventsData.currentDate) {
+			ss_cal_Grid.setCurrentDate(new Date(eventsData.currentDate.substr(0, 4) * 1, eventsData.currentDate.substr(4, 2) * 1 - 1, eventsData.currentDate.substr(6, 2) * 1));
+		}
+		if (date) {
+			ss_cal_Grid.setFirstDayToShow(date);
+		}
+		if (eventsData.gridType) {
+			ss_cal_Grid.activateGrid(eventsData.gridType);
+		}
+		ss_cal_Grid.highlightDaySelectorMenuIcon();
+		if (eventsData.eventType) {
+			ss_cal_Events.setEventTypeByName(eventsData.eventType);
+		}
+		if (eventsData.dayViewType && eventsData.dayViewType == "fullday") {
+			ss_cal_Grid.fullDayRedraw();
+		}
+		
+        ss_cal_Events.redrawAll();
+	}
+	
+	  
+	this.loadEntryEvents = function (entryId) {
+		calendarDataProvider.loadEntryEvents({
+			ssEntryEvents : true,
+			entryId : entryId
+		}, that);   	
+	}
+	    
+	this.loadEventsByDate = function (grid, date, requiredDay) {
+	   	if (date && ss_cal_CalData.getMonthViewInfo(date) &&
+	   		(!requiredDay || ss_cal_CalData.getMonthViewInfo(requiredDay))) {
+   			ss_cal_Grid.setCurrentDate(date);
+   			ss_cal_Grid.setFirstDayToShow(date);
+    		ss_cal_Grid.activateGrid(grid);
+    		ss_cal_Grid.highlightDaySelectorMenuIcon();
+    		ss_cal_Events.redrawAll();
+    			   
+    		var stickyCalendarParams = {};
+    		if (grid) {
+    			stickyCalendarParams.ssGridSize = ss_cal_Grid.gridSize;
+    			stickyCalendarParams.ssGridType = grid;
+    		}
+			if (date) {
+				stickyCalendarParams.year = date.getFullYear();
+				stickyCalendarParams.month = (date.getMonth() + 1);
+				stickyCalendarParams.dayOfMonth = date.getDate();
 			}
-	    },
-	    binderCalendarMapping: new Object(),
-	    getCalendar: function(binderId) {
-	    	if (this.binderCalendarMapping[binderId]) {
-	    		return this.binderCalendarMapping[binderId];
-	    	} else {
-	    		// find first free calendar definition
-	    		for (var i in this.map) {
-	    			var inUse = false;
-	    			for (var j in this.binderCalendarMapping) {
-	    				if (this.binderCalendarMapping[j] == i) {
-	    					inUse = true;
-	    				}
-	    			}
-	    			if (!inUse) {
-	    				this.binderCalendarMapping[binderId] = i;
-	    				return this.binderCalendarMapping[binderId];
-	    			}		
-	    		}
-	    		
-	    		// no more free calendars
-	    		return null;
-	    	}
-	    },
-	    box: function(binderId) {
-	    	var color;
-	    	var calsrc = this.getCalendar(binderId);
-	    	if (calsrc) {
-	    		color = this.map[this.getCalendar(binderId)].box;
-	    	} else {
-	    		// no more free calendars colors, generate one from binderid
-	    		color = dojo.gfx.color.rgb2hex(204, 204, binderId);
-	    	}
-	    	this.markCalendarLink(binderId, color);
-	    	return color;
-	    },
-	    border: function(binderId) { 
-	    	var calsrc = this.getCalendar(binderId);
-	    	if (calsrc) {
-	    		return this.map[this.getCalendar(binderId)].border;
-	    	}
-	    	// no more free calendars colors, generate one from binderid
-	    	return dojo.gfx.color.rgb2hex(170, 170, binderId);
-	    },
+    		calendarDataProvider.stickyCalendarDisplaySettings(stickyCalendarParams);
+    		return;
+    	}
+    	
+    	var dateToLoad = date;
+    	if (requiredDay && !ss_cal_CalData.getMonthViewInfo(requiredDay)) {
+    		dateToLoad = requiredDay;
+    	}
+		
+		var requestParams = {};
+		
+    	if (dateToLoad) {
+			requestParams.year = dateToLoad.getFullYear();
+			requestParams.month = dateToLoad.getMonth() + 1;
+			requestParams.dayOfMonth = dateToLoad.getDate();
+		}
+		if (grid) {
+			requestParams.ssGridSize = ss_cal_Grid.gridSize;
+			requestParams.ssGridType = grid;
+		}
+		
+		calendarDataProvider.loadEventsByDate(requestParams, date, that);
+    }
+	
+	// keeps today and month info data
+	var ss_cal_CalData = {
 	    
 	    today : null,
 	
-		monthViewInfo : new Object(),
-		
-		// used on dashboard to color calendar links with the same color like calendar events
-		markCalendarLink : function(binderId, color) {
-			var link = document.getElementById("ssDashboardFolderLink" + prefix + binderId);
-			if (link) {
-				link.style.backgroundColor = color;
-			}
-		},
+		monthViewInfo : {},
 	
-	    setMonthViewInfo : function (year, month, daysInMonth, startViewDate, endViewDate) {
+	    setMonthViewInfo : function (monthViewInfo) {
+			var year = monthViewInfo.year;
+			var month = monthViewInfo.month;
+			var daysInMonth = monthViewInfo.numberOfDaysInView;
+			var startViewDate = monthViewInfo.startViewDate;
+			var endViewDate = monthViewInfo.endViewDate;
+				
 	    	this.monthViewInfo[year + "/" + month] = {
 	    		year : year,
 	    		month : month,
 				daysInMonth : daysInMonth,
-				startViewDate : new Date(startViewDate.year, startViewDate.month, startViewDate.dayOfMonth),
-				endViewDate : new Date(endViewDate.year, endViewDate.month, endViewDate.dayOfMonth)};
+				startViewDate : new Date(startViewDate.substr(0, 4) * 1, startViewDate.substr(4, 2) * 1 - 1, startViewDate.substr(6, 2) * 1),
+				endViewDate : new Date(endViewDate.substr(0, 4) * 1, endViewDate.substr(4, 2) * 1 - 1, endViewDate.substr(6, 2) * 1)};
 	    },
 	    
 		getMonthViewInfo : function (date) {
@@ -211,172 +493,49 @@ function ss_calendar(prefix) {
 	    },
 		    
 	    setToday : function (date) {
-	    	this.today = new Date(date.year, date.month - 1, date.dayOfMonth);
+	    	this.today = new Date(date);
 	    },
 	    
 	    isToday : function (date) {
-			return (this.today.getFullYear() == date.getFullYear() &&
-					this.today.getMonth() == date.getMonth() &&
-					this.today.getDate() == date.getDate());
-	    },
-	    
-	    loadInitial : function() {
-	    	this.setMap([
-			  {calsrc: "cal1", box: "#E8EFF7", border: "#CCCCCC"},
-			  {calsrc: "cal2", box: "#88CC88", border: "#66AA66"},
-			  {calsrc: "cal3", box: "#CC88CC", border: "#AA66AA"},
-			  {calsrc: "cal4", box: "#88CCCC", border: "#66AAAA"},
-			  {calsrc: "cal5", box: "#CCCC88", border: "#AAAA66"}]);
-	    	
-			this.loadEventsByDate();
-	    },
-	    
-	    loadEntryEvents : function (entryId) {
-	    	var url = window["ss_findEventsUrl" + prefix];
-
-			url += "\&ssEntryEvents=true";
-			url += "\&entryId=" + entryId;
-			var bindArgs = {
-		    	url: url,
-				error: function(type, data, evt) {
-					alert(ss_not_logged_in);
-				},
-				load: function(type, data, evt) {
-					ss_cal_Events.set(data.events);
-			        ss_cal_Events.redrawAll();
-				},
-				mimetype: "text/json",
-				preventCache: true,
-				method: "get"
-			};
-			dojo.io.bind(bindArgs);	    	
-	    },
-	    
-	    loadEventsByDate : function (grid, date, requiredDay) {
-		   	if (date && ss_cal_CalData.getMonthViewInfo(date) &&
-		   		(!requiredDay || ss_cal_CalData.getMonthViewInfo(requiredDay))) {
-	   			ss_cal_Grid.setCurrentDate({year : date.getFullYear(), month : (date.getMonth() + 1), dayOfMonth : date.getDate()});
-	   			ss_cal_Grid.setFirstDayToShow(date);
-	    		ss_cal_Grid.activateGrid(grid);
-	    		ss_cal_Grid.showViewIcon();
-	    		ss_cal_Events.redrawAll();
-	    			   
-	    		var stickyCalendarParams = {};
-	    		if (grid) {
-	    			stickyCalendarParams.gridSize = ss_cal_Grid.gridSize;
-	    			stickyCalendarParams.grid = grid;
-	    		}
-				if (date) {
-					stickyCalendarParams.date = date;
-				}
-	    		stickyCalendarOptions(stickyCalendarParams);
-	    		return;
-	    	}
-	
-	    	var url = window["ss_findEventsUrl" + prefix];
-	    	if (url.indexOf("binderIds=") == -1) {
-	    		// it's dashboard, try to retrive binderIds from hidden field
-	    		var folderIdsObj = document.getElementById("ssDashboardFolderIds" + prefix);
-	    		if (folderIdsObj) {
-	    			url += "&" + folderIdsObj.value;
-	    		}
-	    	}
-	    	
-	    	var dateToLoad = date;
-	    	if (requiredDay && !ss_cal_CalData.getMonthViewInfo(requiredDay)) {
-	    		dateToLoad = requiredDay;
-	    	}
-	    	if (dateToLoad) {
-		    	var m = dateToLoad.getMonth() + 1
-				url += "\&year=" + dateToLoad.getFullYear();
-				url += "\&month=" + m;
-				url += "\&dayOfMonth=" + dateToLoad.getDate();
-			}
-			if (grid) {
-				url += "\&ssGridSize=" + ss_cal_Grid.gridSize;
-				url += "\&ssGridType=" + grid;
-			}
-			var bindArgs = {
-		    	url: url,
-				error: function(type, data, evt) {
-					alert(ss_not_logged_in);
-				},
-				load: function(type, data, evt) {
-				    var loading = document.getElementById("ss_loading" + prefix);
-			    	if (loading) {
-			    		loading.parentNode.removeChild(loading);
-			    	}
-			    	
-					Date.dayNamesShort = data.dayNamesShort;
-					Date.monthNamesShort = data.monthNamesShort;
-					Date.monthNames = data.monthNames;
-					
-					ss_cal_Grid.gridSize = data.gridSize; 
-					// TODO: move this to new method (e.g. setGridSize)
-					if (data.gridSize == 1) {
-						ss_cal_Grid.gridIncr = 1;
-					} else if (data.gridSize == 3) {
-						ss_cal_Grid.gridIncr = 3;
-					} else if (data.gridSize == 7) {
-						ss_cal_Grid.gridIncr = 7;
-					} else if (data.gridSize == 14) {
-						ss_cal_Grid.gridIncr = 14;
-					} else if (data.gridSize == 5) {
-						ss_cal_Grid.gridIncr = 7;
-					}
-	
-					ss_cal_CalData.setToday(data.today);
-					ss_cal_Grid.setCurrentDate(data.currentDate);
-					ss_cal_CalData.setMonthViewInfo(data.monthViewInfo.year, data.monthViewInfo.month, data.monthViewInfo.numberOfDaysInView,
-						data.monthViewInfo.startViewDate, data.monthViewInfo.endViewDate);
-					ss_cal_Events.set(data.events);
-					if (date) {
-						ss_cal_Grid.setFirstDayToShow(date);
-					}
-					ss_cal_Grid.activateGrid(data.gridType);
-					ss_cal_Grid.showViewIcon();
-					
-					ss_cal_Events.setEventTypeByName(data.eventType);
-					
-					
-					if (data.dayViewType == "fullday") {
-						ss_cal_Grid.fullDayRedraw();
-					}
-					
-			        ss_cal_Events.redrawAll();
-				},
-							
-				mimetype: "text/json",
-				preventCache: true,
-				method: "get"
-			};
-			dojo.io.bind(bindArgs);
-			
-	
+			return daysDiff(this.today, date) == 0;
 	    }
-	}
+	}// end ss_cal_CalData
 	
-	//////////////////////////////////////////////////////////////////////////////////////////
 	
 	var ss_cal_Grid = {
-	
+
 	    // Some defaults
 	    gridSize: 7,
 	    gridIncr: 7,
 	    firstDayToShow: null,
 	    readOnly: false,
-	    monthGridWeeks: 5,
-	    currentType: 'day',
+	    monthGridWeeks: 5, // allowed (and only possible) values are: 4, 5 and 6
+	    currentType: 'day', // allowed are: day or month
 	    dayGridCreated : false,
-	    
 	    currentDate: null,
 	    
 		setCurrentDate : function (date) {
-			this.currentDate = new Date(date.year, date.month - 1, date.dayOfMonth);
+			this.currentDate = date;
 		},
 		
 		setFirstDayToShow : function (date) {
 			this.firstDayToShow = date;
+		},
+		
+		setGrid : function (grid) {
+			this.gridSize = grid.size;
+			this.gridIncr = grid.incr;			
+		},
+		
+		// sets grid incr to default value depends on size
+		// for full control use setGrid
+		setGridSize : function (size) {
+			if (size == 5) {
+				// work week
+				this.setGrid({size: size, incr: 7});
+			} else {
+				this.setGrid({size: size, incr: size});
+			}
 		},
 	
 	    activateGrid: function(gridType) {
@@ -387,25 +546,26 @@ function ss_calendar(prefix) {
 		    		this.firstDayToShow = this.currentDate;
 		    	}
 		    	
-	            dojo.html.hide(dojo.byId("ss_cal_MonthGridMaster" + prefix));
-	            dojo.html.show(dojo.byId("ss_cal_DayGridMaster" + prefix));
+	            dojo.html.hide(dojo.byId("ss_cal_MonthGridMaster" + instanceId));
+	            dojo.html.show(dojo.byId("ss_cal_DayGridMaster" + instanceId));
 	
-	            this.drawDayHeader("ss_cal_dayGridHeader" + prefix, this.gridSize, this.firstDayToShow);
-	            this.drawDayGrid("ss_cal_dayGridAllDay" + prefix, ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_allDay", 1); 
-	            this.drawDayGrid("ss_cal_dayGridHour" + prefix, ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_hourGrid", 0); 
-	            this.drawHourMarkers("hourHeader" + prefix, Date.hourTickList);
+	            this.drawDayHeader("ss_cal_dayGridHeader" + instanceId, this.gridSize, this.firstDayToShow);
+	            this.drawDayGrid("ss_cal_dayGridAllDay" + instanceId, ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_allDay", 1); 
+	            this.drawDayGrid("ss_cal_dayGridHour" + instanceId, ss_cal_CalData.today, this.gridSize, this.firstDayToShow, "ss_cal_hourGrid", 0); 
+	            this.drawHourMarkers("ss_cal_hourHeader" + instanceId);
 	            if (!this.dayGridCreated && !this.readOnly) {
-	                dojo.event.connect(dojo.byId("ss_cal_dayGridHour" + prefix),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour" + prefix))});
-	                dojo.event.connect(dojo.byId("ss_cal_dayGridAllDay" + prefix), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay" + prefix))});
+	                // dojo.event.connect(dojo.byId("ss_cal_dayGridHour" + instanceId),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour" + instanceId))});
+					dojo.event.browser.addListener(dojo.byId("ss_cal_dayGridHour" + instanceId),  "onmousedown", function(evt) { ss_cal_CalEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridHour" + instanceId))});
+	                // dojo.event.connect(dojo.byId("ss_cal_dayGridAllDay" + instanceId), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay" + instanceId))});
+					dojo.event.browser.addListener(dojo.byId("ss_cal_dayGridAllDay" + instanceId), "onmousedown", function(evt) { ss_cal_CalAllDayEvent.mouseIsDown(evt, dojo.byId("ss_cal_dayGridAllDay" + instanceId))});
 	                this.dayGridCreated = true;
 	            }
 				this.showCalendarDaysDescription(this.firstDayToShow);
 	        } else if (this.currentType == "month") {
 	        	var monthViewInfo = ss_cal_CalData.getMonthViewInfo(this.currentDate);
 	    		this.firstDayToShow = monthViewInfo.beginView;
-	    		var aaa = dojo.byId("ss_cal_DayGridMaster" + prefix);
-	            dojo.html.hide(aaa);
-	            dojo.html.show(dojo.byId("ss_cal_MonthGridMaster" + prefix));
+	            dojo.html.hide(dojo.byId("ss_cal_DayGridMaster" + instanceId));
+	            dojo.html.show(dojo.byId("ss_cal_MonthGridMaster" + instanceId));
 	            
 				this.drawMonthGrid(ss_cal_CalData.today, this.currentDate, monthViewInfo);
 				this.showCalendarMonthDescription();
@@ -413,34 +573,49 @@ function ss_calendar(prefix) {
 	    },
 	    
 	    showCalendarMonthDescription: function(currentDate) {
-	    	this.showCalendarDescription(this.currentDate.getMonthName() + ", " + this.currentDate.getFullYear());
+	    	this.showCalendarDescription(getMonthName(this.currentDate) + ", " + this.currentDate.getFullYear());
 	    },
 	    
 	    showCalendarDaysDescription: function(firstDayToShow) {
-	    	var descr = firstDayToShow.getDate() + " " + firstDayToShow.getMonthNameShort() + " " + firstDayToShow.getFullYear();
+	    	var descr = firstDayToShow.getDate() + " " + getMonthNameShort(firstDayToShow) + " " + firstDayToShow.getFullYear();
 	
-	    	var lastDayToShow = firstDayToShow.addDays(this.gridSize - 1);
-	    	if (firstDayToShow.compareByDate(lastDayToShow) != 0) {
+	    	var lastDayToShow = dojo.date.add(firstDayToShow, dojo.date.dateParts.DAY, this.gridSize - 1);
+	    	if (daysDiff(firstDayToShow, lastDayToShow) != 0) {
 	    		descr += " - ";
-	    		descr += lastDayToShow.getDate() + " " + lastDayToShow.getMonthNameShort() + " " + lastDayToShow.getFullYear();	
+	    		descr += lastDayToShow.getDate() + " " + getMonthNameShort(lastDayToShow) + " " + lastDayToShow.getFullYear();	
 	    	}
 	    	
 	    	this.showCalendarDescription(descr);
 	    },
 	
 	    showCalendarDescription: function(descr) {
-	        var calViewDescription = document.getElementById("ss_calViewDatesDescriptions" + prefix);
+	        var calViewDescription = dojo.byId(viewDatesDescriptionsFieldId);
 	    	if (calViewDescription) {
 	    		calViewDescription.innerHTML = descr;
 	    	}
 	    },
+		
+		dayOffsetSizes: {
+			1: 100,
+			3: 33.3333,
+			5: 20,
+			7: 14.2857,
+			14: 7.1428
+		},
+		
+		dayGridPositions: {
+			1: [0],
+			3: [0, 33.3333, 66.6666],
+			5: [0, 20, 40, 60, 80],
+			7: [0, 14.2857, 28.5714, 42.8571, 57.1428, 71.4285, 85.7142],
+			14: [0, 7.1428, 14.2857, 21.42857, 28.5714, 35.7142, 42.8571, 49.9999, 57.1428, 64.2857, 71.4285, 78.5714, 85.7142, 92.8571]
+		},
 	
 	    drawDayGrid: function(containerId, today, howManyDays, firstDayToShow, ruleId, justVertical) {
 	        var container = dojo.byId(containerId);
-	        var dayOffset = 0;
 	        var hourOffset = 0;
-	        var dayOffsetSize = (1.0 / howManyDays) * 100.0;
-	        var toDestroy = new Array();
+	        var dayOffsetSize = this.dayOffsetSizes[howManyDays];
+	        var toDestroy = [];
 	        
 	        
 	        var todayMarker = dojo.byId(containerId + "_Today");
@@ -475,10 +650,9 @@ function ss_calendar(prefix) {
 	            var vrule = document.createElement("div");
 	            vrule.setAttribute("id", ruleId + x);
 	            vrule.className = "ss_cal_dayRule";
-	            vrule.style.left = dayOffset + "%";
+	            vrule.style.left = this.dayGridPositions[howManyDays][x] + "%";
 	            container.appendChild(vrule);
-	            dayOffset += dayOffsetSize;
-	            currentDayToShow = currentDayToShow.addDays(1);
+	            currentDayToShow = dojo.date.add(currentDayToShow, dojo.date.dateParts.DAY, 1);
 	        }
 	        
 	        if (todayVisible) {
@@ -488,7 +662,6 @@ function ss_calendar(prefix) {
 	        } else {
 	        	dojo.html.hide(todayMarker);
 	        }
-	        
 	
 	        if (!justVertical) {
 	            while (hourOffset < 1000) {
@@ -509,11 +682,10 @@ function ss_calendar(prefix) {
 	
 	    drawDayHeader: function(containerId, howManyDays, firstDayToShow) {
 	        var container = dojo.byId(containerId);
-	        var dayOffset = 0;
 	        var hourOffset = 0;
-	        var dayOffsetSize = (1.0 / howManyDays) * 100.0;
+	        var dayOffsetSize = this.dayOffsetSizes[howManyDays];
 	
-	        var toDestroy = new Array();
+	        var toDestroy = [];
 	        var v = dojo.dom.getFirstChildElement(container);
 	        while (v) {
 	            if (dojo.html.hasClass(v, "ss_cal_gridHeaderText")) { toDestroy.push(v); };
@@ -529,17 +701,18 @@ function ss_calendar(prefix) {
 	            if (ss_cal_CalData.isToday(currentDayToShow)) {
 	                badge.className += " ss_cal_gridHeaderTextToday";
 	            }
-	            badge.style.left = dayOffset + "%";
+	            badge.style.left = this.dayGridPositions[howManyDays][x] + "%";
 	            badge.style.width = dayOffsetSize + "%";
 	               
 	            var changeViewLink = document.createElement("a");
 	            changeViewLink.href = "javascript: // ;";
-	            changeViewLink.innerHTML = Date.getDayHeader(new Date(currentDayToShow.getFullYear(), currentDayToShow.getMonth() , currentDayToShow.getDate()));
+	            changeViewLink.innerHTML = getDayHeader(new Date(currentDayToShow.getFullYear(), currentDayToShow.getMonth() , currentDayToShow.getDate()));
 	        	var yyyy = currentDayToShow.getFullYear();
 	        	var mm = currentDayToShow.getMonth();
 	        	var dd = currentDayToShow.getDate();
 	        	(function(yyyy, mm, dd) {
-		        	dojo.event.connect(changeViewLink, "onclick", function(evt) {
+		        	// dojo.event.connect(changeViewLink, "onclick", function(evt) {
+					dojo.event.browser.addListener(changeViewLink, "onclick", function(evt) {
 							ss_cal_Events.switchView('daydirect', yyyy, mm, dd);
 	        			});
 	        	})(yyyy, mm, dd);
@@ -547,39 +720,54 @@ function ss_calendar(prefix) {
 	            
 	                                    
 	            container.appendChild(badge);
-	            dayOffset += dayOffsetSize;
 	            
-	            currentDayToShow = currentDayToShow.addDays(1);
+	            currentDayToShow = dojo.date.add(currentDayToShow, dojo.date.dateParts.DAY, 1);
 	        }
 	    },
+		
+		monthGridDayBadgeVOffsets: [0, 14.285714285714285, 28.57142857142857, 42.857142857142854, 57.14285714285714, 71.42857142857142, 85.7142857142857],
+		
+		monthGridDayBadgeHOffsets: {
+							4: [0, 25, 50, 75],
+							5: [0, 20, 40, 60, 80],
+							6: [0, 16.666666666666664, 33.33333333333333, 49.99999999999999, 66.66666666666666, 83.33333333333331]
+						},		
+						
+		monthVOffsets: [14.285714285714285, 28.57142857142857, 42.857142857142854, 57.14285714285714, 71.42857142857142, 85.7142857142857, 99.99999999999997],
+		
+		monthHOffsets: {
+							4: [25, 50, 75],
+							5: [20, 40, 60, 80],
+							6: [16.666666666666664, 33.33333333333333, 49.99999999999999, 66.66666666666666, 83.33333333333331]
+						},// hOffsetSize*i
 	
 	    drawMonthGrid: function(today, currentDate, monthViewInfo) {
-	        var container = dojo.byId("ss_cal_monthGrid" + prefix);
-	        var vOffset = 0;
-	        var hOffset = 0;
+	        var container = dojo.byId("ss_cal_monthGrid" + instanceId);
 	        this.monthGridWeeks = 5;
+	        var hOffsetSize = 20;   // (1.0 / this.monthGridWeeks) * 100.0;
 	        if (monthViewInfo.daysInMonth > 35) {
 	        	this.monthGridWeeks = 6;
+				hOffsetSize = 16.666666666666664; // (1.0 / this.monthGridWeeks) * 100.0;
 	        } else if (monthViewInfo.daysInMonth < 35) {
 	        	this.monthGridWeeks = 4;
+				hOffsetSize = 25; // (1.0 / this.monthGridWeeks) * 100.0;
 	        }
-	        var vOffsetSize = (1.0 / 7) * 100.0;
-	        var hOffsetSize = (1.0 / this.monthGridWeeks) * 100.0;
-	        var header = dojo.byId("ss_cal_monthGridHeader" + prefix);
+	        var vOffsetSize = 14.285714285714285; // (1.0 / 7) * 100.0;
+	        var header = dojo.byId("ss_cal_monthGridHeader" + instanceId);
 	
 	
-			var todayMarker = dojo.byId("ss_cal_monthGridToday" + prefix);
+			var todayMarker = dojo.byId("ss_cal_monthGridToday" + instanceId);
 			if (!todayMarker) {
 				todayMarker = document.createElement("div");
 				todayMarker.className = "ss_cal_todayMarker";
-				todayMarker.setAttribute("id", "ss_cal_monthGridToday" + prefix);
+				todayMarker.setAttribute("id", "ss_cal_monthGridToday" + instanceId);
 				container.appendChild(todayMarker);
 			}
 	        todayMarker.style.width = vOffsetSize + "%";
 	        todayMarker.style.height = hOffsetSize + "%";
 	        todayMarker.style.display = "none";
 	        
-	        var toDestroy = new Array();
+	        var toDestroy = [];
 	        var v = dojo.dom.getFirstChildElement(container);
 	        while (v) {
 	            if (v.className != "ss_cal_todayMarker") { toDestroy.push(v); };
@@ -587,7 +775,7 @@ function ss_calendar(prefix) {
 	        }
 	        while (toDestroy.length) { dojo.dom.removeNode(toDestroy.pop()); }
 	
-	        var v = dojo.dom.getFirstChildElement(dojo.byId("ss_cal_monthGridHeader" + prefix));
+	        var v = dojo.dom.getFirstChildElement(dojo.byId("ss_cal_monthGridHeader" + instanceId));
 	        while (v) {
 	            if (dojo.html.hasClass(v, "ss_cal_gridHeaderText")) { toDestroy.push(v); };
 	            v = dojo.dom.getNextSiblingElement(v);
@@ -595,94 +783,100 @@ function ss_calendar(prefix) {
 	        while (toDestroy.length) { dojo.dom.removeNode(toDestroy.pop()); }
 	
 	        for (var x = 0; x < 7; x++) {
-	            vOffset += vOffsetSize;
 	            var vrule = document.createElement("div");
 	            vrule.className = "ss_cal_monthVRule";
-	            vrule.style.left = vOffset + "%";
+	            vrule.style.left = this.monthVOffsets[x] + "%";
 	            container.appendChild(vrule);
 	        }
-	        vOffset = 0;
-	        
-	        for (var x = 0; x < 7; x++) {
+			
+			for (var x = 0; x < 7; x++) {
 	            var badge = document.createElement("div");
 	            badge.className = "ss_cal_gridHeaderText";
-	            badge.style.left = vOffset + "%";
+	            badge.style.left = this.monthGridDayBadgeVOffsets[x] + "%";
 	            badge.style.width = vOffsetSize + "%";
 	            badge.style.top = "0%";
-	            var badgeText = document.createTextNode(Date.dayNamesShort[x]);
+	            var badgeText = document.createTextNode(that.locale.dayNamesShort[(x + weekFirstDay) % 7]);
 	            badge.appendChild(badgeText);
 	            header.appendChild(badge);
-	            vOffset += vOffsetSize;
 	        }
-	
-	        while (hOffset < 99) {
-	            hOffset += hOffsetSize;
+	        
+			for (var i = 0; i < this.monthHOffsets[this.monthGridWeeks].length; i++) {
 	            var hrule = document.createElement("div");
 	            hrule.className = "ss_cal_monthHRule";
-	            hrule.style.top = hOffset + "%";
+	            hrule.style.top = this.monthHOffsets[this.monthGridWeeks][i] + "%";
 	            container.appendChild(hrule);
-	        }            
-	
+			}
+
 			var counter = 0;
 			if (monthViewInfo.startViewDate.getMonth() != currentDate.getMonth()) {
-				var nextDate = monthViewInfo.startViewDate;
-				var daysInMonth = nextDate.getDaysInMonth();
-				for (var x = nextDate.getDate(); x <= daysInMonth; x++) {
-					this.drawMonthGridDayBadge(new Date(nextDate.getFullYear(), nextDate.getMonth(), x), counter++, container, vOffsetSize, hOffsetSize);
+				var nextDateY = monthViewInfo.startViewDate.getFullYear();
+				var nextDateM = monthViewInfo.startViewDate.getMonth();
+				var nextDateD = monthViewInfo.startViewDate.getDate();
+				var daysInMonth = dojo.date.getDaysInMonth(monthViewInfo.startViewDate);
+				for (var x = nextDateD; x <= daysInMonth; x++) {
+					this.drawMonthGridDayBadge(new Date(nextDateY, nextDateM, x), counter++, container, vOffsetSize, hOffsetSize, "ss_cal_monthGridDayBadge");
 				}
 			}
 			
-			var daysInMonth = currentDate.getDaysInMonth();
+			var daysInMonth = dojo.date.getDaysInMonth(currentDate);
 			for (var x = 1; x <= daysInMonth; x++) {
-				this.drawMonthGridDayBadge(new Date(currentDate.getFullYear(), currentDate.getMonth(), x), counter++, container, vOffsetSize, hOffsetSize);
+				this.drawMonthGridDayBadge(new Date(currentDate.getFullYear(), currentDate.getMonth(), x), counter++, container, vOffsetSize, hOffsetSize, "ss_cal_monthGridDayBadgeCurrent");
 			}
 			
 			if (monthViewInfo.endViewDate.getMonth() != currentDate.getMonth()) {
-				var nextDate = monthViewInfo.endViewDate;
-				for (var x = 1; x <= nextDate.getDate(); x++) {
-					this.drawMonthGridDayBadge(new Date(nextDate.getFullYear(), nextDate.getMonth(), x), counter++, container, vOffsetSize, hOffsetSize);
+				var nextDateY = monthViewInfo.endViewDate.getFullYear();
+				var nextDateM = monthViewInfo.endViewDate.getMonth();
+				var nextDateD = monthViewInfo.endViewDate.getDate();
+				for (var x = 1; x <= nextDateD; x++) {
+					this.drawMonthGridDayBadge(new Date(nextDateY, nextDateM, x), counter++, container, vOffsetSize, hOffsetSize, "ss_cal_monthGridDayBadge");
 				}
 			}
 	    },
 	    
-	    drawMonthGridDayBadge : function(date, counter, container, vOffsetSize, hOffsetSize) {
-	    	var isToday = ss_cal_CalData.isToday(date);
-	    	if (isToday) {
-	    		var today = dojo.byId("ss_cal_monthGridToday" + prefix);
-				today.style.left = (vOffsetSize * (counter % 7)) + "%";
-	            today.style.top = (hOffsetSize * Math.floor(counter / 7)) + "%";
-	            dojo.html.show(today);
-	    	}    
-	    
+	    drawMonthGridDayBadge : function(date, counter, container, vOffsetSize, hOffsetSize, className) {
 	     	var d = (counter % 7);
 	        var w = Math.floor(counter / 7);
+			
+	    	var isToday = ss_cal_CalData.isToday(date);
+	    	if (isToday) {
+	    		var today = dojo.byId("ss_cal_monthGridToday" + instanceId);
+				today.style.left = this.monthGridDayBadgeVOffsets[d] + "%";
+	            today.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
+	            dojo.html.show(today);
+	    	}
+
 	        var badge = document.createElement("div");
-	        badge.className = "ss_cal_monthGridDayBadge";
+	        badge.className = className;
 	        if (isToday) {
 	            badge.className += " ss_cal_monthGridDayBadgeToday";
 	        }
-	        badge.style.left = (d * vOffsetSize) + "%";
-	        badge.style.top = (w * hOffsetSize) + "%";
+
+	        badge.style.left = this.monthGridDayBadgeVOffsets[d] + "%";
+	        badge.style.top = this.monthGridDayBadgeHOffsets[this.monthGridWeeks][w] + "%";
 	               
             var changeViewLink = document.createElement("a");
             changeViewLink.href = "javascript: // ;";
             changeViewLink.innerHTML = date.getDate();
-            var yyyy = date.getFullYear();
-            var mm = date.getMonth();
-            var dd = date.getDate();
-            (function(yyyy, mm, dd) {
-	        	dojo.event.connect(changeViewLink, "onclick", function(evt) {
-							ss_cal_Events.switchView('daydirect', yyyy, mm, dd);
+            (function(date) {
+	        	// dojo.event.connect(changeViewLink, "onclick", function(evt) {
+				dojo.event.browser.addListener(changeViewLink, "onclick", function(evt) {
+							ss_cal_Events.switchView('daydirect', date.getFullYear(), date.getMonth(), date.getDate());
 	        			});
-            })(yyyy, mm, dd);
+            })(date);
 		    badge.appendChild(changeViewLink);	               
 	               
 	        container.appendChild(badge);
 	    },    
 	
-	    drawHourMarkers: function(containerId, ticks) {
-	    	// TODO: creates always new divs, memory leak?
+	    drawHourMarkers: function(containerId) {
+			var time12h = !that.locale.timeFormat||(that.locale.timeFormat.toLowerCase().indexOf("am")>-1||that.locale.timeFormat.toLowerCase().indexOf("pm")>-1);
 	        var container = dojo.byId(containerId);
+			
+			if (container.childNodes.length > 0) {
+				// draw only once
+				return;
+			}
+			
 	        var hour = 0;
 	        while (hour < 24) {
 	            var hmark = document.createElement("div");
@@ -694,7 +888,7 @@ function ss_calendar(prefix) {
 	            hmark.style.top = (hour * 42) + "px";
 	            var tick = document.createElement("div");
 	            tick.className = "ss_cal_timeHead";
-	            var tickText = document.createTextNode(ticks[hour]);
+	            var tickText = document.createTextNode(!time12h?(hour+":00"):((hour==0?"12":hour)+(hour<12?"am":"pm")));
 	            tick.appendChild(tickText);
 	            hmark.appendChild(tick);
 	            container.appendChild(hmark);
@@ -714,22 +908,19 @@ function ss_calendar(prefix) {
 	    },
 	    
 	    fullDayRedraw: function() {
-	        outer = dojo.byId("ss_cal_dayGridWindowOuter" + prefix);
-	        inner = dojo.byId("ss_cal_dayGridWindowInner" + prefix);
-	        //outer.style.height = "1008px";
-	        //inner.style.top = "-3px";
-	        
+	        outer = dojo.byId("ss_cal_dayGridWindowOuter" + instanceId);
+	        inner = dojo.byId("ss_cal_dayGridWindowInner" + instanceId);
 	
 	        dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 500, end: 1008 }], 200).play();
-	   	    dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -255, end: -3 }], 200).play();
+	   	    dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3 - (workDayStart * 42), end: -3 }], 200).play();
 	        
-	        var celendarHoursSelector = dojo.byId("ss_selectCalendarHours" + prefix);
+	        var celendarHoursSelector = dojo.byId(calendarHoursSelectorId);
 	        var children = celendarHoursSelector.childNodes;
 	        var arrow;
 	        for (var i = 0; i < children.length; i++) {
 	        	var a = children[i].nodeValue;
-	        	if (children[i].nodeValue && children[i].nodeValue.indexOf(ss_calendarWorkDayGridTitle) > -1) {
-	        		children[i].nodeValue = ss_calendarFullDayGridTitle;
+	        	if (children[i].nodeValue && children[i].nodeValue.indexOf(that.locale.workDayGridTitle) > -1) {
+	        		children[i].nodeValue = that.locale.fullDayGridTitle;
 	        		break;
 	        	}
 	        }
@@ -741,51 +932,43 @@ function ss_calendar(prefix) {
 			ss_cal_Grid.activateGrid(ss_cal_Grid.currentType);
 	    	ss_cal_Events.redrawAll();
 	    	
-    		stickyCalendarOptions({dayViewType : "fullday"});
+    		calendarDataProvider.stickyCalendarDisplaySettings({dayViewType : "fullday"});
 	    },
 	
 	    workDayGrid: function() {
-	        var outer = dojo.byId("ss_cal_dayGridWindowOuter" + prefix);
-	        var inner = dojo.byId("ss_cal_dayGridWindowInner" + prefix);
-	        //outer.style.height = "500px";
-	        //inner.style.top = "-255px";
-	        
+	        var outer = dojo.byId("ss_cal_dayGridWindowOuter" + instanceId);
+	        var inner = dojo.byId("ss_cal_dayGridWindowInner" + instanceId);
+			
 	       	dojo.lfx.propertyAnimation(outer, [{ property: "height", start: 1008, end: 500 }], 200).play();
-	       	dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3, end: -255 }], 200).play();
+	       	dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3, end: -3 - (workDayStart* 42) }], 200).play();
 	        
-	        var celendarHoursSelector = dojo.byId("ss_selectCalendarHours" + prefix);
+	        var celendarHoursSelector = dojo.byId(calendarHoursSelectorId);
 	        var children = celendarHoursSelector.childNodes;
 	        var arrow;
 	        for (var i = 0; i < children.length; i++) {
-	        	if (children[i].nodeValue && children[i].nodeValue.indexOf(ss_calendarFullDayGridTitle) > -1) {
-	        		children[i].nodeValue = ss_calendarWorkDayGridTitle;
+	        	if (children[i].nodeValue && children[i].nodeValue.indexOf(that.locale.fullDayGridTitle) > -1) {
+	        		children[i].nodeValue = that.locale.workDayGridTitle;
 	        		break;
 	        	}
 	        }
 			ss_cal_Grid.activateGrid(ss_cal_Grid.currentType); // couse of IE... 
 	    	ss_cal_Events.redrawAll();
 	    	
-	    	stickyCalendarOptions({dayViewType : "workday"});
+	    	calendarDataProvider.stickyCalendarDisplaySettings({dayViewType : "workday"});
 	    },
 	    
-	    showViewIcon: function() {
-	    	// all to inactive
-	    	var allHrefIds = ["ss_calDaySelectButton", "ss_cal3DaysSelectButton", "ss_cal5DaysSelectButton", 
-	    				"ss_cal7DaysSelectButton", "ss_cal14DaysSelectButton", "ss_calMonthSelectButton"];
-	    	for (var i = 0; i < allHrefIds.length; i++) {
-	    		dojo.html.setClass(document.getElementById(allHrefIds[i] + prefix), allHrefIds[i]);
+	    highlightDaySelectorMenuIcon: function() {
+	    	// all to inactive							
+	    	for (var i in viewSelectorHrefIds) {
+	    		dojo.html.setClass(document.getElementById(viewSelectorHrefIds[i]), viewSelectorHrefClasses[i]);
 	    	}
 	    	
-	    	// current to active
-	    	var hrefId = "ss_calMonthSelectButton";
+	    	// set current to active state
+	    	var hrefIndex = "month";
 	    	if (ss_cal_Grid.currentType == "day") {
-	    		hrefId = "ss_cal" + ss_cal_Grid.gridSize + "DaysSelectButton";
-	    		if (ss_cal_Grid.gridSize == 1) {
-	    			hrefId = "ss_calDaySelectButton";
-	    		}
+	    		hrefIndex = "days" + ss_cal_Grid.gridSize;
 	    	}
-	     	var hrefObj = document.getElementById(hrefId + prefix);
-	     	dojo.html.setClass(hrefObj, hrefId + "Active");
+	     	dojo.html.setClass(dojo.byId(viewSelectorHrefIds[hrefIndex]), viewSelectorHrefClasses[hrefIndex] + "Active");
 	    }
 	}
 	
@@ -796,8 +979,8 @@ function ss_calendar(prefix) {
 	    currDispId: null,
 	    currDay: null,
 	
-	    allDayCount:  new Object(),
-	    currEventData: new Object(),
+	    allDayCount:  {},
+	    currEventData: {},
 	
 	    mouseIsDown: function(evt, grid) {
 	        ss_cal_Events.cancelHover(false);
@@ -807,13 +990,13 @@ function ss_calendar(prefix) {
 	        // Calculate day offsets.
 	        dayOffset = Math.floor((gridX / gridWidth)  / (1.0 / ss_cal_Grid.gridSize));
 	        var firstDayOnGrid = ss_cal_Grid.firstDayToShow;
-			this.currDay = firstDayOnGrid.addDays(dayOffset);
+			this.currDay = dojo.date.add(firstDayOnGrid, dojo.date.dateParts.DAY, dayOffset);
 	        
 	        hourOffset = this.recordHourOffset(this.currDay.getFullYear(), this.currDay.getMonth(), this.currDay.getDate());
-	        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, -1, "All day", "", "#CCCCCC", "#CCCCCC", "");
+	        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, -1, "All day", "", "", false, {calendarId: defaultCalendarId});
 	        this.resetGridHeight();
 	        dojo.event.connect(dojo.body(), "onmouseup", this, "mouseIsUp");       
-	        this.currEventData = new Object();
+	        this.currEventData = {};
 	        this.currEventData.startDate = this.currDay;
 	        this.currEventData.start = -1;
 	        this.currEventData.dur = 0;
@@ -835,12 +1018,12 @@ function ss_calendar(prefix) {
 	            if (this.allDayCount[i] > maxEvents) { maxEvents = this.allDayCount[i]; }
 	        }
 	        if (isIE) {
-	            dojo.byId("ss_cal_dayGridAllDay" + prefix).style.height = ((maxEvents + 1) * 21) + "px";
+	            dojo.byId("ss_cal_dayGridAllDay" + instanceId).style.height = ((maxEvents + 1) * 21) + "px";
 	            // Force IE to recalculate the offset of the next blocks
-	            dojo.byId("ss_cal_dayGridWindowOuter" + prefix).style.top = "1px";
-	            dojo.byId("ss_cal_dayGridWindowOuter" + prefix).style.top = "0px";
+	            dojo.byId("ss_cal_dayGridWindowOuter" + instanceId).style.top = "1px";
+	            dojo.byId("ss_cal_dayGridWindowOuter" + instanceId).style.top = "0px";
 	        } else {
-	            dojo.lfx.propertyAnimation("ss_cal_dayGridAllDay" + prefix, [{ property: "height", end: ((maxEvents + 1) * 21) }], 100).play();
+	            dojo.lfx.propertyAnimation("ss_cal_dayGridAllDay" + instanceId, [{ property: "height", end: ((maxEvents + 1) * 21) }], 100).play();
 	        }
 	    },
 	
@@ -852,27 +1035,14 @@ function ss_calendar(prefix) {
 	    },
 	
 	    deleteEvent: function(id) {
-	        ss_fadeAndDestroy(dojo.byId("calevt" + prefix + id).parentNode, 200);
+	        fadeAndDestroy(dojo.byId("calevt" + instanceId + id).parentNode, 200);
 	    },
 	
 	    deleteCurrentEvent: function() {
 	        this.deleteEvent(this.currDispId);
 	        this.recordEvent(this.currDay.getFullYear(), this.currDay.getMonth() , this.currDay.getDate(), -1);
 	        this.resetGridHeight()
-	    },
-	
-	
-	    saveCurrentEvent: function() {
-	        this.deleteEvent(this.currDispId);
-	        this.currEventData.title = "New" + this.currDispId;
-	        this.currEventData.text = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aliquam viverra pretium nunc. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Vivamus lorem tortor, commodo vel, malesuada nec, sodales ut, ante. Duis ut leo non nisi ultricies ultrices. Vivamus vitae turpis sed justo dignissim porttitor.";
-	        this.currEventData.calsrc = "cal1";
-	        this.currEventData.eventId = "GAD" + this.currDispId;
-	        this.currEventData.day += ss_cal_Grid.gridOffset;// TODO: fix it! add month, year and dayOfMonth 
-	        ss_cal_Events.set([this.currEventData]);
-	        ss_cal_Events.redrawAll();
-	    },
-	
+	    },	
 	
 	    reset: function() {    
 	        for (var i in this.allDayCount) {
@@ -888,7 +1058,7 @@ function ss_calendar(prefix) {
 	
 	    currGrid: null,
 	    currDispId: null,
-	    currEventData: new Object(),
+	    currEventData: {},
 	
 	
 	    mouseIsDown: function(evt, grid) {
@@ -912,15 +1082,15 @@ function ss_calendar(prefix) {
 	        
 			var firstDayOnGrid = ss_cal_Grid.firstDayToShow;
 	
-			var currDay = firstDayOnGrid.addDays(dayOffset);
+			var currDay = dojo.date.add(firstDayOnGrid, dojo.date.dateParts.DAY, dayOffset);
 			currDay.setHours(Math.floor(hourOffset));
 			currDay.setMinutes(0);
 			if ((gridY % 42) > 21) {
 				currDay.setMinutes(30);
 			}
-	        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, 30, "", "", "#CCCCCC", "#CCCCCC", "");
+	        this.currDispId = ss_cal_drawCalendarEvent(grid.id, ss_cal_Grid.gridSize, 1, 0, dayOffset, hourOffset, 30, "", "", "", false, {calendarId: defaultCalendarId});
 	        evt.cancelBubble = true;
-	        this.currEventData = new Object();
+	        this.currEventData = {};
 	        this.currEventData.startDate = currDay;
 	        this.currEventData.start = hourOffset;
 	        this.currEventData.dur = 30;
@@ -929,12 +1099,15 @@ function ss_calendar(prefix) {
 	    whataDrag: function(evt) {
 	        //evt = (evt) ? evt : ((event) ? event : null);
 	        var gridQuantum = 3.5 * 6;  // 30 minutes
-	        var currBox = dojo.byId("calevt" + prefix + this.currDispId);
+	        var currBox = dojo.byId("calevt" + instanceId + this.currDispId);
+			var currBoxOut = dojo.byId("calevt_out" + instanceId + this.currDispId);
+			
 	        gridX = (evt.clientX + document.body.scrollLeft);
 	        gridY = (evt.clientY + document.body.scrollTop + document.documentElement.scrollTop)  -  dojo.html.getTotalOffset(currGrid, "top", 0) - currBox.parentNode.offsetTop;
 	        if (gridY > 12) {
 	            gridY = gridQuantum + Math.floor(gridY / gridQuantum) * gridQuantum;
 	            currBox.style.height = (gridY - 4) + "px";
+				currBoxOut.style.height = gridY + "px";
 	        }
 	        var duration = Math.floor((((parseInt(currBox.style.height) + 4) / 42) * 60));
 	        currBox.innerHTML = duration + ' min';
@@ -954,22 +1127,12 @@ function ss_calendar(prefix) {
 	    },
 	
 	    deleteEvent: function(id) {
-	        ss_fadeAndDestroy(dojo.byId("calevt" + prefix + id).parentNode, 200);
+	        fadeAndDestroy(dojo.byId("calevt" + instanceId + id).parentNode, 200);
 	    },
 	
-	    deleteCurrentEvent: function() { this.deleteEvent(this.currDispId); },
-	
-	
-	    saveCurrentEvent: function() {
-	        this.deleteEvent(this.currDispId);
-	        this.currEventData.title = "New" + this.currDispId;
-	        this.currEventData.text = " Pellentesque urna elit, lacinia sit amet, tempor a, consectetuer et, lacus. Nunc massa.";
-	        this.currEventData.calsrc = "cal1";
-	        this.currEventData.eventId = "GXX" + this.currDispId;
-	        this.currEventData.day += ss_cal_Grid.gridOffset;
-	        ss_cal_Events.set([this.currEventData]);
-	        ss_cal_Events.redrawAll();
-	    }
+	    deleteCurrentEvent: function() { 
+			this.deleteEvent(this.currDispId); 
+		}
 	
 	
 	}
@@ -984,37 +1147,49 @@ function ss_calendar(prefix) {
 		
 	    displayId: 0,
 	    
-	    eventData: new Object(),
-	    eventIdsByEntryId: new Object(),
+	    eventData: {},
+	    eventIdsByEntryId: {},
 	    
-	    collisions: new Object(),
-	    collisionI: new Object(),
-	    collisionM: new Object(),
-	    order: new Object(),// eventType -> date(YYYY/MM/DD) -> events key
+	    collisions: {"event": {}, "creation": {}, "activity": {}},
+	    collisionI: {},
+	    collisionM: {"event": {}, "creation": {}, "activity": {}},
+	    order: {"event": {}, "creation": {}, "activity": {}},// eventType -> date(YYYY/MM/DD) -> events key
 	    
-	    monthGridEvents: new Array(),
-	    dayGridEvents: new Object(),
-	            
-	    set: function(newEvents) {
+	    monthGridEvents: [],
+		monthEventIds: [],
+	    dayGridEvents: {},
+		
+	    addEvents: function(newEvents) {
+			var year, month, day, hours, minutes; 
 	        for (var i = 0; i < newEvents.length; i++) {	        
 	            var nei = newEvents[i];
 	            // already loaded?
 	            if (this.eventData[nei.eventId]) {
 	            	continue;
 	            }
-	            nei.start = nei.startDate.hour + (nei.startDate.minutes/60);
-	            nei.startDate = new Date(nei.startDate.year, nei.startDate.month - 1, nei.startDate.dayOfMonth, nei.startDate.hour, nei.startDate.minutes);
-	            nei.endDate = new Date(nei.endDate.year, nei.endDate.month - 1, nei.endDate.dayOfMonth, nei.endDate.hour, nei.endDate.minutes);
+				
+				year =  nei.startDate.substr(0, 4) * 1;
+				month =  nei.startDate.substr(4, 2) * 1;
+				day =  nei.startDate.substr(6, 2) * 1;
+				hours =  nei.startDate.substr(9, 2) * 1;
+				minutes =  nei.startDate.substr(11, 2) * 1;
+	            nei.start = hours + (minutes/60);
+	            nei.startDate = new Date(year, month - 1, day, hours, minutes);
+
+				year =  nei.endDate.substr(0, 4) * 1;
+				month =  nei.endDate.substr(4, 2) * 1;
+				day =  nei.endDate.substr(6, 2) * 1;
+				hours =  nei.endDate.substr(9, 2) * 1;
+				minutes =  nei.endDate.substr(11, 2) * 1;
+	            nei.endDate = new Date(year, month - 1, day, hours, minutes);
 	
 	           	this.eventData[nei.eventId] = nei;
 	            if (typeof this.eventIdsByEntryId[nei.entryId] == "undefined") {
-	            	this.eventIdsByEntryId[nei.entryId] = new Array();
+	            	this.eventIdsByEntryId[nei.entryId] = [];
 	            }
 	            this.eventIdsByEntryId[nei.entryId].push(nei.eventId);
 	            
-	            this.setupDayDisplayRules(nei);
-	            this.setupMonthDisplayRules(nei);
-	            this.sortEvent(nei);
+	            this.setupDisplayRulesAndOrder(nei);
 	        }
 	
 			this.reorderEvent();
@@ -1029,7 +1204,6 @@ function ss_calendar(prefix) {
 	    		delete this.eventData[this.eventIdsByEntryId[entryId][i]];
 	    	}
 	    	this.reorderEvent();
-			//ss_cal_Events.redrawAll();
 	    },
 	    
 	    removeEvent: function(event) {
@@ -1050,13 +1224,26 @@ function ss_calendar(prefix) {
 		    			}
 		    		}
 	    		}
-	        }	    	
+	        }
+			
+	        // sort collisionM by keys (used by prev/next functionality)
+	        for (var i = 0; i < this.eventsTypes.length; i++) {
+	        	var o1 = this.collisionM[this.eventsTypes[i]];
+	        	var keysTable = new Array();
+	        	for (var k in o1) {
+	        		keysTable.push(k);
+	        	}
+	        	keysTable.sort();
+	        	var resultObjectTemp = new Object();
+	        	for (var j = 0; j < keysTable.length; j++) {
+	        		resultObjectTemp[keysTable[j]] = o1[keysTable[j]];
+	        	} 
+				this.collisionM[this.eventsTypes[i]] = resultObjectTemp;      	
+	        }
+				    	
 	    },
 	
 	    incrCollision: function(eventType, t) {
-	        if (typeof this.collisions[eventType] == "undefined") { 
-	        	this.collisions[eventType] = new Object(); 
-	        }
 	        if (typeof this.collisions[eventType][t] == "undefined") { 
 	        	this.collisions[eventType][t] = 0; 
 	        }
@@ -1074,15 +1261,45 @@ function ss_calendar(prefix) {
 	        this.collisions[eventType][t]--;
 	        return this.collisions[eventType][t];
 	    },
-	    
-	    setupDayDisplayRules: function(event) {
+		
+		setMCollision: function(eventType, key, eventId) {
+	        if (typeof this.collisionM[eventType][key] == "undefined") { 
+	        	this.collisionM[eventType][key] = []; 
+	        }
+	        this.collisionM[eventType][key].push(eventId);
+	    },
+		
+		setOrder: function(eventType, key, v) {
+	    	if (typeof this.order[eventType][key] == "undefined") {
+	    		this.order[eventType][key] = [];
+	    	}    		
+	    	this.order[eventType][key].push(v);
+	    },
+		
+		setupDisplayRulesAndOrder: function(event) {
 	    	var date = event.startDate;
 	    	
-	    	this.incrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/" + date.getHours());
-	    	date = date.addDays(1);
-	    	while (date.daysTillDate(event.endDate) >= 0) {
-	    		this.incrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/0");
-	    		date = date.addDays(1);
+			var fullMonthKey = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
+			var key = date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate();
+			
+			this.incrCollision(event.eventType, key);
+	    	this.incrCollision(event.eventType, key + "/" + date.getHours());
+			this.setMCollision(event.eventType, fullMonthKey, event.eventId);
+			this.setOrder(event.eventType, key, (Math.floor(event.start * 10) + 1011) + "/" + event.eventId);
+			
+			date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+			var daysToEndOfEvent = daysDiff(date, event.endDate);
+			while (daysToEndOfEvent >= 0) {
+				fullMonthKey = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
+				key = date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate();
+					
+				this.incrCollision(event.eventType, key);
+	    		this.incrCollision(event.eventType, key + "/0");
+				this.setMCollision(event.eventType, fullMonthKey, event.eventId);
+				this.setOrder(event.eventType, key, (0 + 1011) + "/" + event.eventId);
+				
+	    		date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+				daysToEndOfEvent--;
 	    	}
 	    },
 	    
@@ -1090,35 +1307,20 @@ function ss_calendar(prefix) {
 	    	var date = event.startDate;
 	    	
 	    	this.decrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/" + date.getHours());
-	    	date = date.addDays(1);
-	    	while (date.daysTillDate(event.endDate) >= 0) {
+	    	date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+			var daysToEndOfEvent = daysDiff(date, event.endDate);
+	    	while (daysToEndOfEvent >= 0) {
 	    		this.decrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate() + "/0");
-	    		date = date.addDays(1);
-	    	}
-	    },
-	
-	    setupMonthDisplayRules: function(event) {
-	        var date = event.startDate;
-	
-	    	while (date.daysTillDate(event.endDate) >= 0) {
-	
-		        this.incrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate());
-		        if (typeof this.collisionM[event.eventType] == "undefined") { 
-		        	this.collisionM[event.eventType] = new Object(); 
-		        }
-		        if (typeof this.collisionM[event.eventType][date.getFullYear() + "/" + this.fullWithZeros(date.getMonth() ) + "/" + date.getDate()] == "undefined") { 
-		        	this.collisionM[event.eventType][date.getFullYear() + "/" + this.fullWithZeros(date.getMonth() ) + "/" + date.getDate()] = new Array(); 
-		        }
-		        this.collisionM[event.eventType][date.getFullYear() + "/" + this.fullWithZeros(date.getMonth() ) + "/" + date.getDate()].push(event.eventId);
-	
-				date = date.addDays(1);
+	    		date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+				daysToEndOfEvent--;
 	    	}
 	    },
 	    
 	    removeMonthDisplayRules: function(event) {
 	        var date = event.startDate;
-	    	while (date.daysTillDate(event.endDate) >= 0) {
-				var key = date.getFullYear() + "/" + this.fullWithZeros(date.getMonth() ) + "/" + date.getDate();
+			var daysToEndOfEvent = daysDiff(date, event.endDate);
+	    	while (daysToEndOfEvent >= 0) {
+				var key = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
 		        this.decrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate());
 		        if (typeof this.collisionM[event.eventType] != "undefined") { 
 			        if (typeof this.collisionM[event.eventType][key] != "undefined") {
@@ -1130,47 +1332,25 @@ function ss_calendar(prefix) {
 			        }
 		        }
 
-				date = date.addDays(1);
+				date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+				daysToEndOfEvent--;
 	    	}
-	    },	    
-	
+	    },
+
 	    collisionCount: function(eventType, year, month, dayOfMonth, start) {
 	        return this.collisions[eventType][year + "/" + month + "/" + dayOfMonth + "/" + Math.floor(start)];
 	    },
-	    
+
 	    collisionIndex: function(eventType, year, month, dayOfMonth, start) {
 	        var t = year + "/" + month + "/" + dayOfMonth + "/" + Math.floor(start);
 	        if (typeof this.collisionI[eventType] == "undefined") { 
-	        	this.collisionI[eventType] = new Object(); 
+	        	this.collisionI[eventType] = {}; 
 	        }
 	        if (typeof this.collisionI[eventType][t] == "undefined") { 
 	        	this.collisionI[eventType][t] = 0; 
 	        }
 	        return this.collisionI[eventType][t]++;
 	    },
-	
-	    sortEvent: function(event) {
-	    	if (typeof this.order[event.eventType] == "undefined") {
-	    		this.order[event.eventType] = new Object();
-	    	}
-	    	
-	    	var date = event.startDate;
-	    	var key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
-	    	if (typeof this.order[event.eventType][key] == "undefined") {
-	    		this.order[event.eventType][key] = new Array();
-	    	}    		
-	    	this.order[event.eventType][key].push((Math.floor(event.start * 10) + 1011) + "/" + event.eventId);
-	
-	    	date = date.addDays(1);
-	    	while (date.daysTillDate(event.endDate) >= 0) {
-	    		key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
-	    		if (typeof this.order[event.eventType][key] == "undefined") {
-	    			this.order[event.eventType][key] = new Array();
-	    		}  
-				this.order[event.eventType][key].push((0 + 1011) + "/" + event.eventId);
-				date = date.addDays(1);
-	    	}
-	    },    
 	    
 		unsortEvent: function(event) {
 	    	if (typeof this.order[event.eventType] == "undefined") {
@@ -1190,8 +1370,9 @@ function ss_calendar(prefix) {
 	    		}
 	    	}
 	    	
-	    	date = date.addDays(1);
-	    	while (date.daysTillDate(event.endDate) >= 0) {
+	    	date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+			var daysToEndOfEvent = daysDiff(date, event.endDate);
+	    	while (daysToEndOfEvent >= 0) {
 	    		key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
 	    		if (typeof this.order[event.eventType][key] != "undefined") {
 	    			for (var i = 0; i < this.order[event.eventType][key].length; i++) {
@@ -1201,7 +1382,8 @@ function ss_calendar(prefix) {
 			    		}
 			    	}
 	    		}  
-				date = date.addDays(1);
+				date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+				daysToEndOfEvent--;
 	    	}
 	    },
 	    
@@ -1212,8 +1394,14 @@ function ss_calendar(prefix) {
 	
 	    undrawMonthEvents: function() {
 	        while (this.monthGridEvents.length) {
-	            dojo.dom.removeNode(dojo.byId("calevt" + prefix + this.monthGridEvents.pop()));
+	            dojo.dom.removeNode(dojo.byId("calevt" + instanceId + this.monthGridEvents.pop()));
 	        }
+			for (var i = 0; i < this.monthEventIds.length; i++) {
+				if (this.eventData[this.monthEventIds[i]]) {
+					this.eventData[this.monthEventIds[i]].position = undefined;
+				}
+			}
+			this.monthEventIds = [];
 	    },
 	
 	    undrawDayEvents: function() {
@@ -1221,28 +1409,31 @@ function ss_calendar(prefix) {
 	        	var eventDisplayIds = this.dayGridEvents[eventId];
 	        	for (var i in eventDisplayIds) {
 					if (eventDisplayIds[i]) {
-		            	dojo.dom.removeNode(dojo.byId("calevt" + prefix + eventDisplayIds[i]).parentNode);
+		            	dojo.dom.removeNode(dojo.byId("calevt" + instanceId + eventDisplayIds[i]).parentNode);
 		            	delete eventDisplayIds[i];
 		           	}
 	            }	        	
 	        }
 	    },
+		
+		getDayEventsInMonthView: function(date) {
+			var key = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
+			return this.collisionM[this.eventsTypes[this.eventsType]][key];
+		},
 	    
-	    fullWithZeros: function (c) {
-	    	if (c < 10) {
-	    		return "0" + c;
-	    	}
-	    	return c;
-	    },
-	
 	    redrawDay: function() {
 	        ss_cal_CalAllDayEvent.reset();
 	        this.undrawEvents();
+			
+			ss_entryList = new Array();
+			ss_entriesSeen = new Array();
+			ss_entryCount = 0;
 	        
-	        var lastDayToShow = ss_cal_Grid.firstDayToShow.addDays(ss_cal_Grid.gridSize - 1);
+			var key, fullMonthKey;
+	        var lastDayToShow = dojo.date.add(ss_cal_Grid.firstDayToShow, dojo.date.dateParts.DAY, ss_cal_Grid.gridSize - 1);
 	        var date = ss_cal_Grid.firstDayToShow;
 			for (var gridDay = 0; gridDay < ss_cal_Grid.gridSize; gridDay++) {
-				var key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
+				key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
 				
 				if (typeof this.order[this.eventsTypes[this.eventsType]] != "undefined" &&
 					typeof this.order[this.eventsTypes[this.eventsType]][key] != "undefined") {
@@ -1253,81 +1444,122 @@ function ss_calendar(prefix) {
 						var start;
 						var duration;
 						var continues = null;
-								
-						if (date.compareByDate(e.endDate) < 0) {
+						
+						var daysToEndOfEvent = daysDiff(date, e.endDate);
+						var daysToStartOfEvent = daysDiff(date, e.startDate);
+							
+						if (daysToEndOfEvent < 0) {
 							// event finshed, go to next event
 							break;
-						} else if (date.compareByDate(e.startDate) == 0) {
+						} else if (daysToStartOfEvent == 0) {
 							// event begins
 							start = e.startDate.getHours() +  (e.startDate.getMinutes() / 60);
-							if (date.daysTillDate(e.endDate) == 0) {
+							if (daysToEndOfEvent == 0) {
 								// one day event
 								duration = e.dur;
 							} else {
 								// duration to the end of the day
-								duration = 1440 - e.startDate.getMinutesOfTheDay();
+								duration = 1440 - getMinutesOfTheDay(e.startDate);
 								continues = this.CONTINUES_RIGHT;
 							}
-						} else if (date.compareByDate(e.endDate) > 0 &&
-								date.compareByDate(e.startDate) < 0) {
+						} else if (daysToEndOfEvent > 0 &&
+								daysToStartOfEvent < 0) {
 							// event continues
 							start = 0;
 							duration = 1440;
 							continues = this.CONTINUES_LEFT_AND_RIGHT;
-						} else if (date.compareByDate(e.startDate) != 0 &&
-								date.compareByDate(e.endDate) == 0) {
+						} else if (daysToStartOfEvent != 0 &&
+								daysToEndOfEvent == 0) {
 							// event ends
 							start = 0;
-							duration = e.endDate.getMinutesOfTheDay();
+							duration = getMinutesOfTheDay(e.endDate);
 							continues = this.CONTINUES_LEFT;
 						}
 								
 						var eventDisplayId;
 			            if (e.eventType == "event" && e.allDay) {
-			                var grid = "ss_cal_dayGridAllDay" + prefix;
+			                var grid = "ss_cal_dayGridAllDay" + instanceId;
 			                eventDisplayId = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize, 1, 0,
 			                       gridDay, ss_cal_CalAllDayEvent.recordHourOffset(date.getFullYear(), date.getMonth(), date.getDate()), -1, e.title, e.text,
-			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid, continues, e);
+			                       eid, continues, e, date);
 			            } else {
-			                var grid = "ss_cal_dayGridHour" + prefix;
+			                var grid = "ss_cal_dayGridHour" + instanceId;
 			                if (duration == 0) duration = 30;
 			                eventDisplayId = ss_cal_drawCalendarEvent(grid, ss_cal_Grid.gridSize,
 			                       this.collisionCount(e.eventType, date.getFullYear(), date.getMonth(), date.getDate(), start),
 			                       this.collisionIndex(e.eventType, date.getFullYear(), date.getMonth(), date.getDate(), start),
 			                       gridDay, start, duration, e.title, e.text,
-			                       ss_cal_CalData.box(e.binderId), ss_cal_CalData.border(e.binderId), eid, false, e);
+			                       eid, false, e, date);
 			            }
 			            if (!this.dayGridEvents[eid]) {
-			            	this.dayGridEvents[eid] = new Object();
+			            	this.dayGridEvents[eid] = {};
 			            }
 			            this.dayGridEvents[eid][gridDay] = eventDisplayId;
 					}
 				}
+				
+				fullMonthKey = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
+				if (this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey]) {
+					for (var i = 0; i < this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey].length; i++) {
+						var event = ss_cal_Events.eventData[this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey][i]];
+						if (typeof ss_entriesSeen['docId' + event.entryId] == "undefined") {
+							ss_entryList[ss_entryCount++] = { 
+								index : event.entryId,
+								entryId : event.entryId,
+								binderId : event.binderId,
+								entityType : event.entityType
+							};
+					    	ss_entriesSeen['docId' + event.entryId] = 1;
+					    }
+					}
+				}
 			
-				date = date.addDays(1);
+				date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
 	        }
-	        this.collisionI = new Object();
+	        this.collisionI = {};
 	        ss_cal_CalAllDayEvent.resetGridHeight();
 	    },
 	
 	    redrawMonth: function() {
 	        this.undrawEvents();
-	        
-	        for (var d in this.collisionM[this.eventsTypes[this.eventsType]]) {
-	            var grid = "ss_cal_monthGrid" + prefix;
-	                        
-	            var year = 1 * d.substring(0, 4);
-	            var month = 1 * d.substring(5, 7);
-	            var dayOfMonth = 1 * d.substring(8, d.length);
-	            var date = new Date(year, month, dayOfMonth);
-	
-				var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
-				if (monthViewInfo.startViewDate <= date && date <= monthViewInfo.endViewDate) {
-		           var dids = ss_cal_drawMonthEventBlock(grid, date, this.collisionM[this.eventsTypes[this.eventsType]][d].length, this.collisionM[this.eventsTypes[this.eventsType]][d]);
-		           while (dids.length) { this.monthGridEvents.push(dids.pop()); }
-	            }
-	        }
-	        
+			
+			ss_entryList = new Array();
+			ss_entriesSeen = new Array();
+			ss_entryCount = 0;
+			
+			var grid = "ss_cal_monthGrid" + instanceId;
+			var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
+			var date = monthViewInfo.startViewDate;
+			var daysToEndOfMonthView = daysDiff(date, monthViewInfo.endViewDate);
+			var fullMonthKey;
+			var eventList;
+			while (daysToEndOfMonthView >= 0) {
+				eventList = ss_cal_Events.getDayEventsInMonthView(date);;
+				if (eventList) {
+					drawMonthEventBlock(grid, date, eventList);
+				}
+				
+				fullMonthKey = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
+				
+				if (this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey]) {
+					for (var i = 0; i < this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey].length; i++) {
+						var event = ss_cal_Events.eventData[this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey][i]];
+						if (typeof ss_entriesSeen['docId' + event.entryId] == "undefined") {
+							ss_entryList[ss_entryCount++] = { 
+								index : event.entryId,
+								entryId : event.entryId,
+								binderId : event.binderId,
+								entityType : event.entityType
+							};
+					    	ss_entriesSeen['docId' + event.entryId] = 1;
+					    }
+					}
+				}
+				
+				
+				date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+				daysToEndOfMonthView--;
+			}		
 	    },
 	
 	    redrawAll: function() {
@@ -1348,19 +1580,19 @@ function ss_calendar(prefix) {
 	            //console.log("requestHover", eventId);
 	            this.hoverTimer = setTimeout(function(){ss_cal_Events.displayHover(eventId, gridDay);}, 1000);
 	            var e = this.eventData[eventId];
-	            var n = dojo.byId("calevt" + prefix + ss_cal_Events.dayGridEvents[e.eventId][gridDay]).parentNode;
+	            var n = dojo.byId("calevt" + instanceId + ss_cal_Events.dayGridEvents[e.eventId][gridDay]).parentNode;
 	            n.onmouseout = function() { ss_cal_Events.cancelHover(true)};
 	        }
 	    },
 	
 	    cancelHover: function(animate) {
 	        if (this.overEventId != "") {
-	            var hb = dojo.byId("hoverBox" + prefix);
 	            if (animate) {
-	                dojo.lfx.html.fadeHide(hb, 100).play();
+	                dojo.lfx.html.fadeHide(hoverBox, 100).play();
 	            } else {
-	                dojo.html.hide(hb);
+	                dojo.html.hide(hoverBox);
 	            }
+				hoverBox.innerHTML = "";
 	        } else {
 	            return;
 	        }
@@ -1375,21 +1607,37 @@ function ss_calendar(prefix) {
 	        //console.log("display?", eventId, this.hoverEventId);
 	        if (this.overEventId == eventId + "-" + gridDay) {
 	            var e = this.eventData[eventId];
-	            var n = dojo.byId("calevt" + prefix + ss_cal_Events.dayGridEvents[e.eventId][gridDay]).parentNode;
+	            var n = dojo.byId("calevt" + instanceId + ss_cal_Events.dayGridEvents[e.eventId][gridDay]).parentNode;
 	            //console.log("Hover: " + eventId);
 	            this.hoverEventId = eventId + "-" + gridDay;
 	
-	            var hb = dojo.byId("hoverBox" + prefix);
 	            var ebox = dojo.html.abs(n);
-	            var eboxm = dojo.html.getBorderBox(n);
-	            hb.style.visibility = "visible";
-	            hb.innerHTML = dojo.byId("calevt" + prefix + ss_cal_Events.dayGridEvents[e.eventId][gridDay]).innerHTML;
-	            hb.style.backgroundColor = ss_cal_CalData.box(e.binderId);
-	            hb.style.borderColor = ss_cal_CalData.border(e.binderId);
-	            dojo.html.setOpacity(hb,0);
-	            dojo.html.show(hb);
-	            dojo.html.placeOnScreen(hb, (ebox.left + 30), (ebox.top - hb.offsetHeight - 20), 10, false, "TL");
-	            dojo.lfx.html.fadeIn(hb, 200).play();
+	            hoverBox.style.visibility = "visible";
+				var calEvtObj = dojo.byId("calevt" + instanceId + ss_cal_Events.dayGridEvents[e.eventId][gridDay]);
+				
+				var calStyle = getCalendarEventStyle(e.calendarId);
+				addTopCorners(hoverBox, calStyle);
+				
+				var hoverContentBox = document.createElement("div");
+				hoverContentBox.style.borderLeftStyle = "solid";
+				hoverContentBox.style.borderLeftWidth = "1px";
+				hoverContentBox.style.borderRightStyle = "solid";
+				hoverContentBox.style.borderRightWidth = "1px";
+				hoverContentBox.style.borderTop = "0";
+				hoverContentBox.style.borderBottom = "0";
+				hoverContentBox.style.padding = "10px"; 
+				
+	            hoverContentBox.innerHTML = calEvtObj.innerHTML;
+				
+				hoverBox.appendChild(hoverContentBox);
+				addBottomCorners(hoverBox, calStyle);
+				
+				hoverContentBox.className = calStyle;
+				
+	            dojo.html.setOpacity(hoverBox,0);
+	            dojo.html.show(hoverBox);
+	            dojo.html.placeOnScreen(hoverBox, (ebox.left + 30), (ebox.top - hoverBox.offsetHeight - 20), 10, false, "TL");
+	            dojo.lfx.html.fadeIn(hoverBox, 200).play();
 	        }
 	    },
 	
@@ -1402,23 +1650,20 @@ function ss_calendar(prefix) {
 	    	var requiredDay;
 	    	switch (mode) {
 				case "daydelta":
-					ss_cal_Grid.gridSize = 1;
-	                ss_cal_Grid.gridIncr = 1;
+					ss_cal_Grid.setGrid({size : 1, incr : 1});
 	                dayToShow = ss_cal_Grid.currentDate;
 	                grid = "day";
 	                break;
 	            case "3daydelta":
-	                ss_cal_Grid.gridSize = 3;
-	                ss_cal_Grid.gridIncr = 3;
+					ss_cal_Grid.setGrid({size : 3, incr : 3});
 	                dayToShow = ss_cal_Grid.currentDate;
 	                grid = "day";
 	                break;
 	            case "week":
-	                ss_cal_Grid.gridSize = 7;
-	                ss_cal_Grid.gridIncr = 7;
+					ss_cal_Grid.setGrid({size : 7, incr : 7});
 	
-	                var firstDayToShow = ss_cal_Grid.currentDate.addDays(-(ss_cal_Grid.currentDate.getDay()));
-	                var lastDayToShow = firstDayToShow.addDays(ss_cal_Grid.gridIncr);
+	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.DAY, -(ss_cal_Grid.currentDate.getDay()));
+	                var lastDayToShow = dojo.date.add(firstDayToShow, dojo.date.dateParts.DAY, ss_cal_Grid.gridIncr);
 	                
 	                dayToShow = firstDayToShow;
 	                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
@@ -1427,11 +1672,10 @@ function ss_calendar(prefix) {
 	                grid = "day";
 	                break;
 	            case "fortnight":
-	                ss_cal_Grid.gridSize = 14;
-	                ss_cal_Grid.gridIncr = 14;
+					ss_cal_Grid.setGrid({size : 14, incr : 14});
 	                
-	                var firstDayToShow = ss_cal_Grid.currentDate.addDays(-(ss_cal_Grid.currentDate.getDay()));
-	                var lastDayToShow = firstDayToShow.addDays(14);
+	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.DAY, -(ss_cal_Grid.currentDate.getDay()));
+	                var lastDayToShow = dojo.date.add(firstDayToShow, dojo.date.dateParts.DAY, 14);
 	                
 	                dayToShow = firstDayToShow;
 	                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
@@ -1440,11 +1684,10 @@ function ss_calendar(prefix) {
 	                grid = "day";
 	                break;
 	            case "workweek":
-	                ss_cal_Grid.gridSize = 5;
-	                ss_cal_Grid.gridIncr = 7;
+					ss_cal_Grid.setGrid({size : 5, incr : 7});
 	                
-	                var firstDayToShow = ss_cal_Grid.currentDate.addDays(-(ss_cal_Grid.currentDate.getDay()) + 1);
-	                var lastDayToShow = firstDayToShow.addDays(ss_cal_Grid.gridIncr);
+	                var firstDayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.DAY, -(ss_cal_Grid.currentDate.getDay()) + 1);
+	                var lastDayToShow = dojo.date.add(firstDayToShow, dojo.date.dateParts.DAY, ss_cal_Grid.gridIncr);
 	                
 	                dayToShow = firstDayToShow;
 	                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
@@ -1467,17 +1710,19 @@ function ss_calendar(prefix) {
 	                break;	                
 	                
 	            case "daydirect":
-	                ss_cal_Grid.gridSize = 1;
-	                ss_cal_Grid.gridIncr = 1;
+					ss_cal_Grid.setGrid({size : 1, incr : 1});
 	                dayToShow = new Date(year, month, dayOfMonth);
 	                grid = "day";
 	                break;
 	                
 	            case "prev":
-	            	dayToShow = ss_cal_Grid.currentDate.addDays(ss_cal_Grid.currentType=="month"?("-"+ss_cal_Grid.currentType):-ss_cal_Grid.gridIncr);
-	            	
+					if (ss_cal_Grid.currentType == "month") {
+	            		dayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.MONTH, -1);
+	            	} else {
+						dayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.DAY, -ss_cal_Grid.gridIncr);
+					}
 	            	if (ss_cal_Grid.currentType != "month") {
-		                var lastDayToShow = dayToShow.addDays(-ss_cal_Grid.gridIncr);
+		                var lastDayToShow = dojo.date.add(dayToShow, dojo.date.dateParts.DAY, -ss_cal_Grid.gridIncr);
 		                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
 		                	requiredDay = lastDayToShow;
 		                }
@@ -1486,10 +1731,13 @@ function ss_calendar(prefix) {
 		            grid = ss_cal_Grid.currentType;
 	                break;
 	            case "next":
-	            	dayToShow = ss_cal_Grid.currentDate.addDays(ss_cal_Grid.currentType=="month"?(ss_cal_Grid.currentType):ss_cal_Grid.gridIncr);
-	            	
+					if (ss_cal_Grid.currentType == "month") {
+	            		dayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.MONTH, 1);
+	            	} else {
+						dayToShow = dojo.date.add(ss_cal_Grid.currentDate, dojo.date.dateParts.DAY, ss_cal_Grid.gridIncr);
+					}
 	            	if (ss_cal_Grid.currentType != "month") {
-		                var lastDayToShow = dayToShow.addDays(ss_cal_Grid.gridIncr);
+		                var lastDayToShow = dojo.date.add(dayToShow, dojo.date.dateParts.DAY, ss_cal_Grid.gridIncr);
 		                if (!ss_cal_CalData.getMonthViewInfo(lastDayToShow)) {
 		                	requiredDay = lastDayToShow;
 		                }
@@ -1498,7 +1746,7 @@ function ss_calendar(prefix) {
 		            grid = ss_cal_Grid.currentType;
 	                break;
 	        }
-			ss_cal_CalData.loadEventsByDate(grid, dayToShow, requiredDay);
+			that.loadEventsByDate(grid, dayToShow, requiredDay);
 			
 	    },
 	    
@@ -1509,8 +1757,8 @@ function ss_calendar(prefix) {
 	    		}
 	    	}
 	    	
-	    	var ss_calChooseEntryTypes = document.getElementById("ss_calendarEventsTypeChoose" + prefix);
-			var ss_calSelectEntryTypes = document.getElementById("ss_calendarEventsTypeSelect" + prefix);
+	    	var ss_calChooseEntryTypes = document.getElementById(eventsTypeChooseId);
+			var ss_calSelectEntryTypes = document.getElementById(eventsTypeSelectId);
 			if (ss_calChooseEntryTypes && ss_calSelectEntryTypes) {
 				if (this.eventsType == 0) {
 					ss_calChooseEntryTypes.checked = false;
@@ -1528,8 +1776,8 @@ function ss_calendar(prefix) {
 	    changeEventType: function() {
 	    	var oldEventType = this.eventsType;
 			
-			var ss_calChooseEntryTypes = document.getElementById("ss_calendarEventsTypeChoose" + prefix);
-			var ss_calSelectEntryTypes = document.getElementById("ss_calendarEventsTypeSelect" + prefix);
+			var ss_calChooseEntryTypes = document.getElementById(eventsTypeChooseId);
+			var ss_calSelectEntryTypes = document.getElementById(eventsTypeSelectId);
 			if (!ss_calChooseEntryTypes || !ss_calSelectEntryTypes) {
 				return;
 			}
@@ -1545,40 +1793,21 @@ function ss_calendar(prefix) {
 			}
 	
 			if (oldEventType != this.eventsType) {
-				stickyCalendarOptions({eventType : this.eventsTypes[this.eventsType]});
+				calendarDataProvider.stickyCalendarDisplaySettings({eventType : this.eventsTypes[this.eventsType]});
 				this.redrawAll();			
 			}
 	    }
 	    
 	};
 	
-	this.ss_initializeCalendar = function () {
-		ss_cal_CalData.loadInitial();
-	}
-	
-	this.removeEntryEvents = function (entryId) {
-		ss_cal_Events.removeEntryEvents(entryId);		
-	}
-	
-	this.loadEntryEvents = function(entryId) {
-		ss_cal_CalData.loadEntryEvents(entryId);
-	}
-	
-	this.refreshEntryEvents = function(entryId) {
-		setTimeout(function(){
-			ss_cal_Events.removeEntryEvents(entryId);
-			ss_cal_CalData.loadEntryEvents(entryId);}, 2000);
-	}
-	
 	//////////////////////////////////////////////////////////////////////////////////////////
-
 
 	function ss_cal_newEventInfo(evt, gridControl) {
 	    evt = (evt) ? evt : ((event) ? event : null);
 	    
 	    var currEventData = gridControl.currEventData;
 	    
-	    var url = ss_addCalendarEntryUrl;
+	    var url = addEntryURL;
 	    url += "&year=" + currEventData.startDate.getFullYear();
 	    url += "&month=" + currEventData.startDate.getMonth();
 	    url += "&dayOfMonth=" + currEventData.startDate.getDate();
@@ -1590,107 +1819,234 @@ function ss_calendar(prefix) {
 	    gridControl.deleteCurrentEvent();
 	}
 	
-	function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, day, time, duration, title, text, boxColor, borderColor, eventId, continues, event) {
+	function ss_cal_drawCalendarEvent(containerId, gridDays, shareCount, shareSlot, day, time, duration, title, text, eventId, continues, event, date) {
+		if (day != 0 && event.allDay && (continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
+			return;
+		}
+
 	    var container = dojo.byId(containerId);
 	    var dayOffsetSize = (1.0 / gridDays) * 100.0;
-	    var e;
-	    var w;
 	
-	    if (day >= gridDays) return;	
+	    if (day >= gridDays) return;
 	        
-	    ss_cal_Events.displayId += 1;
+	    ss_cal_Events.displayId++;
 	
 	    var ebox = document.createElement("div");
 	    ebox.className = "ss_cal_eventBox";
 	
 	    if (eventId != "") {
-	        dojo.event.connect(ebox, "onmousedown", function(e) {
+	        // dojo.event.connect(ebox, "onmousedown", function(e) {
+			dojo.event.browser.addListener(ebox, "onmousedown", function(e) {
 	        	// prevent new events creation
 	        	if (!e) var e = window.event;
 				e.cancelBubble = true;
 				if (e.stopPropagation) e.stopPropagation();
 	        });
-	        dojo.event.connect(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
+	        // dojo.event.connect(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
+			dojo.event.browser.addListener(ebox, "onmouseover", function(evt) { ss_cal_Events.requestHover(evt, eventId, day); });
 	    }
 	
-	
-	    w = (dayOffsetSize / shareCount);
-	    ebox.style.width = (w - 0.2) + "%";
+		var eventLength = 1;
+		if (event.allDay && typeof date != "undefined") {
+			var daysToEndOfEvent = daysDiff(date, event.endDate) + 1;
+			if (daysToEndOfEvent > gridDays - day) {
+				eventLength = gridDays - day;
+			} else {
+				eventLength = daysToEndOfEvent;
+			}
+		}
+	    var w = (dayOffsetSize / shareCount);
+	    ebox.style.width = (w * eventLength - 0.2) + "%";
 	    ebox.style.left = (((day * dayOffsetSize) + 0.2) + (w * shareSlot)) + "%";
-	    ebox.style.top = (time * 42) + "px";
-	    
-	    e = document.createElement("div");
-	    e.className = "ss_smallRBoxTop2";
-	    e.style.backgroundColor = borderColor;
-	    ebox.appendChild(e);
-	
-	    e = document.createElement("div");
-	    e.className = "ss_smallRBoxTop1";
-	    e.style.backgroundColor = borderColor;
-	    ebox.appendChild(e);
-	
-	    e = document.createElement("div");
-	    e.className = "ss_smallRBoxBody ss_cal_eventBody";
-	    e.setAttribute("id", "calevt" + prefix + ss_cal_Events.displayId);
-	    e.style.backgroundColor = boxColor;
-	    e.style.borderColor = borderColor
-	    e.style.height = (((((duration <= 30) ? 30 : duration) / 60) * 42) - 4) + "px";
+	    ebox.style.top = ((time * 42) + 1) + "px";
+		ebox.style.height = (((((duration <= 30) ? 30 : duration) / 60) * 42) - 1) + "px";
+	    ebox.setAttribute("id", "calevt_out" + instanceId + ss_cal_Events.displayId);
+		
+		var calStyle = getCalendarEventStyle(event.calendarId);
+		addTopCorners(ebox, calStyle);
+		
+	    var eboxInner = document.createElement("div");
+		eboxInner.className = "ss_cal_eventBody " + calStyle;
+	    eboxInner.setAttribute("id", "calevt" + instanceId + ss_cal_Events.displayId);
+	    eboxInner.style.height = (((((duration <= 30) ? 30 : duration) / 60) * 42) - 5) + "px";
+		
 	    var eHtml = "";
-	   	
+	   	if (day == 0 && event.allDay && (continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
+			eHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.gif'+'" style="float: left; border: 0;" />';			
+		}
 	   	if (event) {
 			var viewHref = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:event.binderId, entryId:event.entryId}, "view_folder_entry");
-			eHtml += '<a href="'+viewHref+'" onClick="try {' + event.viewOnClick + ';} catch(e) {return true;} return false;">'+(event.title?event.title:'--no title--')+'</a>';
+			eHtml += '<a href="'+viewHref+'" onClick="try {' + event.viewOnClick + '; ss_currentEntryId = ' + event.entryId + ';} catch(e) {return true;} return false;" style="padding-left: 4px; float: left;">'+(event.title?event.title:that.locale.noTitle)+'</a>';
 	   	} else {
 	   		// new event creation
-			eHtml += '<a href="javascript: //">' + (title?title:'--no title--') + '</a>';
+			eHtml += '<a href="javascript: //"  style="padding-left: 4px; float: left;">' + (title?title:that.locale.noTitle) + '</a>';
 	   	}
-	   	
-	    eHtml += "<br/>" + text;
-	    // ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)?"<":"") +
-	    e.innerHTML =  eHtml; 
-	    // ((continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)?">":"");
-	    ebox.appendChild(e);
+   		if (daysToEndOfEvent > eventLength && event.allDay && (continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
+			eHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.gif'+'" style="float: right; border: 0; " />';			
+		}
+		
+		if (text != "") {
+	    	eHtml += "<br style='clear: both;'/>" + text;
+		}
+	    eboxInner.innerHTML =  eHtml; 
+
+			
+	    ebox.appendChild(eboxInner);
 	
-	    e = document.createElement("div");
-	    e.className = "ss_smallRBoxBtm1";
-	    e.style.backgroundColor = borderColor;
-	    ebox.appendChild(e);
-	
-	    e = document.createElement("div");
-	    e.className ="ss_smallRBoxBtm2";
-	    e.style.backgroundColor = borderColor;
-	    ebox.appendChild(e);
-	
+		addBottomCorners(ebox, calStyle);
+
 	    container.appendChild(ebox);
 	    dojo.html.setOpacity(ebox,0);
-	    var o = (title == "") ? 0.8 : 1.0
+	    var o = (title == "") ? 0.8 : 1.0;
+
 	    dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: o }], 200).play();
 	    
 	    return ss_cal_Events.displayId;
 	}
 	
+	function makeDayPositionFree(i, dayPositions) {
+			if (!dayPositions[i]) { // position is free
+				return;
+			}
+			if (i == 0) {
+				if (!dayPositions[i + 1]) {
+					dayPositions[i + 1] = dayPositions[i];
+				} else if (!dayPositions[i + 1].reserved) {
+					if (!dayPositions[i + 2] || !dayPositions[i + 2].reserved) {
+						dayPositions[i + 2] = dayPositions[i + 1];
+					}
+					dayPositions[i + 1] = dayPositions[i];
+				} else {
+					if (!dayPositions[i + 2] || !dayPositions[i + 2].reserved) {
+						dayPositions[i + 2] = dayPositions[i];
+					}
+				}
+			} else if (i == 1) {
+				if (!dayPositions[i + 1] || !dayPositions[i + 1].reserved) {
+					dayPositions[i + 1] = dayPositions[i];
+				}
+			}
+		}
+		
+		function fitsBetterThen(newEvent, oldEvent, monthViewInfo) {
+			var newEventStartDateInMonth = newEvent.startDate;
+			if (daysDiff(newEventStartDateInMonth, monthViewInfo.startViewDate) > 0) {
+				newEventStartDateInMonth =monthViewInfo.startViewDate;
+			}
+			
+			var oldEventStartDateInMonth = oldEvent.startDate;
+			if (daysDiff(oldEventStartDateInMonth, monthViewInfo.startViewDate) > 0) {
+				oldEventStartDateInMonth = monthViewInfo.startViewDate;
+			}
+			
+			var diff = daysDiff(newEventStartDateInMonth, oldEventStartDateInMonth);
+			if (diff > 0) {
+				return true;
+			} else if (diff < 0) {
+				return false;
+			}
+			
+			var newEventEndDateInMonth = newEvent.endDate;
+			if (daysDiff(monthViewInfo.endViewDate, newEventEndDateInMonth) > 0) {
+				newEventEndDateInMonth = monthViewInfo.endViewDate;
+			}			
+			
+			
+			var oldEventEndDateInMonth = oldEvent.endDate;
+			if (daysDiff(monthViewInfo.endViewDate, oldEventEndDateInMonth) > 0) {
+				oldEventEndDateInMonth = monthViewInfo.endViewDate;
+			}
+			
+			var newEventLength = daysDiff(newEventStartDateInMonth, newEventEndDateInMonth);
+			var oldEventLength = daysDiff(oldEventStartDateInMonth, oldEventEndDateInMonth);
+			if (newEventLength > oldEventLength) {
+				return true;
+			} else if (newEventLength < oldEventLength) {
+				return false;
+			}
+			
+			if (newEvent.entryId > oldEvent.entryId) {
+				return true;
+			} else if (newEvent.entryId < oldEvent.entryId) {
+				return false;
+			}
+			
+			if (newEvent.dur > oldEvent.dur) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+	var monthGridEventVOffsets = [0, 14.4, 28.6, 43, 57.3, 71.5, 85.9];
 	
-	function ss_cal_drawMonthEventBlock(containerId, date, eventCount, eventList) {
+	var eventWidths = [
+		[14.3, 28.5, 42.9, 57.2, 71.3, 85.7, 100], 
+		[14.1, 28.4, 42.9, 56.8, 71.3, 85.7],
+		[14.2, 28.4, 42.9, 56.8, 71.3],
+		[14.2, 28.4, 42.9, 57],
+		[14.1, 28.4, 42.9],
+		[14.2, 28.4],
+		[14.1]
+	];	
+
+	var monthGridEventHOffsets = {
+		4: {
+			0: [3.9, 10.9, 18.1],
+			1: [28.9, 35.9, 43.1],
+			2: [53.9, 60.9, 68.1],
+			3: [78.9, 85.9, 93.1]
+			},
+		5: {
+			0: [3.9, 9.2, 14.5],
+			1: [23.9, 29.2, 34.5],
+			2: [43.9, 49.2, 54.5],
+			3: [63.9, 69.2, 74.5],
+			4: [83.9, 89.2, 94.5]
+		},
+		6: {
+			0: [3.9, 8, 12.4],
+			1: [20.4, 24.6, 29],
+			2: [37.3, 41.5, 45.8],
+			3: [53.9, 58, 62.4],
+			4: [70.4, 74.6, 79],
+			5: [87.3, 91.7, 96.1]
+		}
+	};
+
+	var eventHeights = {
+		4: {
+			1: [9, 9, 9],
+			3: [30.6]
+		},
+		5: {
+			1: [6.5, 6.5, 6.5],
+			3: [23]
+		},
+		6: {
+			1: [5, 5, 4.6],
+			3: [18.1]
+		}
+	};
 	
-		// find day number on grid
+	function drawMonthEventBlock(containerId, date, eventList) {
 		var monthViewInfo = ss_cal_CalData.getMonthViewInfo(ss_cal_Grid.currentDate);
 		
-		var dayNumber = monthViewInfo.startViewDate.daysTillDate(date);
+		var dayPositions = [];
+
+		var eventCount = eventList.length;
+		
+		var dayInMonthViewOffset = daysDiff(monthViewInfo.startViewDate, date);
 		
 	    var container = dojo.byId(containerId);
-	    var vOffsetSize = (1.0 / 7) * 100.0;
-	    var hOffsetSize = (1.0 / ss_cal_Grid.monthGridWeeks) * 100.0;
-	    var resultDisplayIds = new Array();
-	    var heightFactor = 19.05;
-	    var heightFactor1 = 19.4;
-	    var badgeOffset = 4.5;
-	    var eventOffset = 5.18;
-	    if (ss_cal_Grid.monthGridWeeks > 5) {
-	        heightFactor = 25.1;
-	        heightFactor1 = 25.5;
-		    badgeOffset = 4.2;
-		    eventOffset = 4.1;
-	    }
+		
+		var hOffsetSize = 20;
+        if (ss_cal_Grid.monthGridWeeks == 6) {
+			hOffsetSize = 16.666666666666664;
+        } else if (ss_cal_Grid.monthGridWeeks == 4) {
+			hOffsetSize = 25;
+        }
+        var vOffsetSize = 14.285714285714285; // (1.0 / 7) * 100.0;
 	
 	    var eventHeight = 1;
 	    if (eventCount > 3) {
@@ -1698,185 +2054,469 @@ function ss_calendar(prefix) {
 	    } else {
 	        iterations = eventCount;
 	    }
-	    if (iterations == 1) { eventHeight = 3 }
 	
-	    var w = Math.floor(dayNumber / 7);
-	    var d = dayNumber % 7;
+	    var week = Math.floor(dayInMonthViewOffset / 7);
+	    var dayOfWeek = dayInMonthViewOffset % 7;
+		
+		var firstDayInCurrentWeekWithMoreThen3Events;
+		if (eventCount >= 3) {
+			var c = 0;
+			firstDayInCurrentWeekWithMoreThen3Events = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
+			while (c < (6 - dayOfWeek)) {
+				var tEventList = ss_cal_Events.getDayEventsInMonthView(firstDayInCurrentWeekWithMoreThen3Events);
+				if (tEventList && tEventList.length > 3) {
+					break;
+				}
+				
+				firstDayInCurrentWeekWithMoreThen3Events = dojo.date.add(firstDayInCurrentWeekWithMoreThen3Events, dojo.date.dateParts.DAY, 1);
+				c++;
+			}
+			if (daysDiff(firstDayInCurrentWeekWithMoreThen3Events, dojo.date.add(date, dojo.date.dateParts.DAY, 6 - dayOfWeek)) < 0) {
+				 firstDayInCurrentWeekWithMoreThen3Events = undefined;
+			}
+		}
+		
+		var maxEventLenghtToShow;
+		if (firstDayInCurrentWeekWithMoreThen3Events) {
+			maxEventLenghtToShow = daysDiff(date, firstDayInCurrentWeekWithMoreThen3Events);
+		}
+		
+		for (var i = 0; i < eventCount; i++) {
+			var e = ss_cal_Events.eventData[eventList[i]];
+			
+			// has reserved position
+			if (typeof e.position != "undefined") {
+				makeDayPositionFree(e.position.pos, dayPositions);
+				dayPositions[e.position.pos] = {reserved: true, eventId: eventList[i]};
+				continue;
+			}
+			// try position 0
+			if (!dayPositions[0]) {
+				dayPositions[0] = {reserved: false, eventId: eventList[i]};
+			} else if (!dayPositions[0]["reserved"] &&
+						fitsBetterThen(e, ss_cal_Events.eventData[dayPositions[0].eventId], monthViewInfo)) {
+				makeDayPositionFree(0, dayPositions);
+				dayPositions[0] = {reserved: false, eventId: eventList[i]};
+			} else {
+				// try position 1
+				if (!dayPositions[1]) {
+					dayPositions[1] = {reserved: false, eventId: eventList[i]};
+				} else if (!dayPositions[1]["reserved"] &&
+							fitsBetterThen(e, ss_cal_Events.eventData[dayPositions[1].eventId], monthViewInfo)) {
+					makeDayPositionFree(1, dayPositions);
+					dayPositions[1] = {reserved: false, eventId: eventList[i]};
+				} else {
+					// try position 2
+					if (!dayPositions[2]) {
+						dayPositions[2] = {reserved: false, eventId: eventList[i]};
+					} else if (!dayPositions[2]["reserved"] &&
+								fitsBetterThen(e, ss_cal_Events.eventData[dayPositions[2].eventId], monthViewInfo)) {
+						makeDayPositionFree(2, dayPositions);
+						dayPositions[2] = {reserved: false, eventId: eventList[i]};
+					}
+				}
+			}
+		}
+		
+		// leave place for "more..."
+		if (eventCount > 3 && dayPositions.length == 3) {
+			dayPositions.pop();
+		}
+		
+		// show full height event only if there is one event with one day length
+		if (dayPositions.length == 1) {
+			var e = ss_cal_Events.eventData[dayPositions[0].eventId];
+			var diff = daysDiff(e.startDate, e.endDate);
+			if (diff == 0) {
+				eventHeight = 3;
+			}
+		}
 	
-	    for (var i = 0; i < iterations; i++) {
+		for (var i = 0; i < dayPositions.length; i++) {
+			if (typeof dayPositions[i] == "undefined") {
+				continue;
+			}
 	        ss_cal_Events.displayId += 1;
-	        resultDisplayIds.push(ss_cal_Events.displayId);
-	        
+			ss_cal_Events.monthGridEvents.push(ss_cal_Events.displayId);
+			ss_cal_Events.monthEventIds.push(dayPositions[i].eventId);
+	        var e = ss_cal_Events.eventData[dayPositions[i].eventId];
+			var diffDateEventStartDate = daysDiff(date, e.startDate);
+			var diffDateEventEndDate = daysDiff(date, e.endDate);
+			
+			var continues = undefined;
+			if (diffDateEventStartDate == 0 && diffDateEventEndDate != 0) {
+				continues = ss_cal_Events.CONTINUES_RIGHT;
+			} else if (diffDateEventEndDate > 0 &&	diffDateEventStartDate < 0) {
+				continues = ss_cal_Events.CONTINUES_LEFT_AND_RIGHT;
+			} else if (diffDateEventStartDate != 0 && diffDateEventEndDate == 0) {
+				continues = ss_cal_Events.CONTINUES_LEFT;
+			}
+			
+			var takesDaysToTheEndOfEvent = diffDateEventEndDate + 1;
+			var takesDaysToTheEndOfWeek = takesDaysToTheEndOfEvent;
+			if (takesDaysToTheEndOfEvent > (6 - dayOfWeek + 1)) {
+				takesDaysToTheEndOfWeek = 6 - dayOfWeek + 1;
+			}
+			var eventDaysLength = takesDaysToTheEndOfWeek;
+			if (i == 2 && takesDaysToTheEndOfWeek > maxEventLenghtToShow) {
+				eventDaysLength = maxEventLenghtToShow;
+			}
+			
+			if (typeof e.position != "undefined" && e.position.week == week && daysDiff(dojo.date.add(e.position.date, dojo.date.dateParts.DAY, e.position.length - 1), date) <= 0 && (continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT) && dayOfWeek != 0) {
+				continue;
+			}
+			e.position = {pos: i, week: week, date: date, length: eventDaysLength};
+			
+		
 	        var ebox = document.createElement("div");
-	        ebox.className = "ss_cal_eventBox ss_cal_monthEventBody";
 	
-	        ebox.style.left = ((d * vOffsetSize) + 0.15) + "%";
-	    
-	        ebox.style.top = ((w * hOffsetSize) + badgeOffset + (i * eventOffset)) + "%";
-	        ebox.style.width = "13.79%";
+			ebox.className = "ss_cal_eventBox";
+			ebox.id =  "calevt" + instanceId + ss_cal_Events.displayId;
 	
-	        ebox.setAttribute("id", "calevt" + prefix + ss_cal_Events.displayId);
-	        ebox.style.height = ((eventHeight/heightFactor) * 100) + "%";
-	        var e = ss_cal_Events.eventData[eventList[i]];
-	        ebox.style.backgroundColor = ss_cal_CalData.box(e.binderId);
+			ebox.style.left = monthGridEventVOffsets[dayOfWeek] + "%";
+			ebox.style.top = monthGridEventHOffsets[ss_cal_Grid.monthGridWeeks][week][i] + "%";
+			ebox.style.height = eventHeights[ss_cal_Grid.monthGridWeeks][eventHeight][i] + "%";
+	        ebox.style.width = eventWidths[dayOfWeek][eventDaysLength - 1] + "%";
+			
+			var calStyle = getCalendarEventStyle(e.calendarId);
+			addTopCorners(ebox, calStyle);
+			
 			var viewHref = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:e.binderId, entryId:e.entryId}, "view_folder_entry");
-			ebox.innerHTML = '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + ';} catch(e) {return true;} return false;">'+(e.title?e.title:'--no title--')+'</a>';
+
+			var eboxInner = document.createElement("div");
+			var boxHtml = '';
+			
+			if ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
+				boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.gif'+'" style="float: left; border: 0;" />';			
+			}
+			boxHtml += '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + '; ss_currentEntryId = ' + e.entryId + ';} catch(e) {return true;} return false;" ' + (ss_cal_Grid.monthGridWeeks > 5? 'style="position: relative; top: -3px; margin-left: 4px; float: left;"':'style="margin-left: 4px; float: left;"') + '>'+(e.title?e.title:that.locale.noTitle)+'</a>';			
+			if (takesDaysToTheEndOfEvent > eventDaysLength && (continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
+				boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.gif'+'" style="float: right; border: 0;" />';			
+			}
+			
+			eboxInner.innerHTML = boxHtml;
+			eboxInner.style.height = "65%";
+			eboxInner.className = "ss_cal_monthEventBody " + getCalendarEventStyle(e.calendarId);
+			if (ss_cal_Grid.monthGridWeeks > 5) {
+				eboxInner.style.fontSize = "9px";
+			}
+			
+			ebox.appendChild(eboxInner);
+			
+			addBottomCorners(ebox, calStyle);
+			
 	        container.appendChild(ebox);
-	        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 200).play();        
+
+	        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 200).play();     
 	    }
 	
-	    if (eventCount > 3) {
+	    if (eventCount > dayPositions.length) {
 	        var ebox = document.createElement("div");
 	        ss_cal_Events.displayId += 1;
-	        resultDisplayIds.push(ss_cal_Events.displayId);
-	        ebox.className = "ss_cal_eventBox ss_cal_monthEventBody";
+			ss_cal_Events.monthGridEvents.push(ss_cal_Events.displayId);
+	        ebox.className = "ss_cal_eventBox";
+			ebox.id = "calevt" + instanceId + ss_cal_Events.displayId;
 	
-	        ebox.style.left = ((d * vOffsetSize) + 0.15) + "%";
-	    
-	        ebox.style.top = ((w * hOffsetSize) + badgeOffset + (2 * eventOffset)) + "%";
-	        ebox.style.width = "13.79%";
-	
-	        ebox.setAttribute("id", "calevt" + prefix + ss_cal_Events.displayId);
-	        ebox.style.backgroundColor = "#BBBBBB";
-	        ebox.style.height = ((eventHeight/heightFactor1) * 100) + "%";
-	        ebox.style.textAlign = "center";
-	        ebox.innerHTML = "+" + (eventCount - 2) + " " + ss_calendar.entriesLabel;
-	
+			ebox.style.left = monthGridEventVOffsets[dayOfWeek] + "%";
+			ebox.style.top = monthGridEventHOffsets[ss_cal_Grid.monthGridWeeks][week][2] + "%";
+			ebox.style.height = eventHeights[ss_cal_Grid.monthGridWeeks][1][2] + "%";
+	        ebox.style.width = eventWidths[dayOfWeek][0] + "%";
+
+			addTopCorners(ebox, "ss_cal_moreBox");
+			
+			var eboxInner = document.createElement("div");
+			eboxInner.className = "ss_cal_monthEventBody ss_cal_moreBox";
+			eboxInner.innerHTML = '<a href="javascript: //" ' + (ss_cal_Grid.monthGridWeeks > 5?'style="position: relative; top: -2px; "':'') + '>+' + (eventCount - 2) + ' ' + that.locale.entriesLabel + '</a>';
+			eboxInner.style.height = ss_cal_Grid.monthGridWeeks > 5?"65%":"65%";
+			eboxInner.style.textAlign = "center";
+			
+			(function(eboxInner, dayOfWeek, container, vOffsetSize, week, hOffsetSize, eventCount, eventList, date) {
+				dojo.event.browser.addListener(eboxInner, "onclick", function(evt) {
+				// dojo.event.connect(eboxInner, "onclick", function(evt) {
+					// create all events pane
+					var moreEventsDiv = document.createElement("div");
+					moreEventsDiv.className = "ss_calendar_more_box";
+					moreEventsDiv.style.left = monthGridEventVOffsets[dayOfWeek] + "%";
+					moreEventsDiv.style.width = "150px";
+					moreEventsDiv.style.height = ((18 * (eventCount<=10?eventCount:10)) + 19) + "px";
+					moreEventsDiv.style.top = (monthGridEventHOffsets[ss_cal_Grid.monthGridWeeks][week][0] - 5) + "%";
+					
+					var moreEventsDivHeader = document.createElement("div");
+					moreEventsDivHeader.className = "ss_calendar_more_box_header";
+					
+					var moreEventsDivClose = document.createElement("div");
+					moreEventsDivClose.className = "ss_calendar_more_box_close";
+					
+					moreEventsDivHeader.appendChild(moreEventsDivClose);
+				
+					moreEventsDiv.appendChild(moreEventsDivHeader);
+
+					container.appendChild(moreEventsDiv);
+
+					var moreEventsDivList = document.createElement("div");
+					moreEventsDivList.style.height = (18 * (eventCount<=10?eventCount:10)) + "px";
+					moreEventsDiv.appendChild(moreEventsDivList);
+					if (eventCount > 10) {
+						moreEventsDivList.style.overflowY = "scroll";
+					}
+
+					for (var i = 0; i < eventCount; i++) {
+				        var e = ss_cal_Events.eventData[eventList[i]];
+						var diffDateEventStartDate = daysDiff(date, e.startDate);
+						var diffDateEventEndDate = daysDiff(date, e.endDate);
+			
+						var continues = undefined;
+						
+						if (diffDateEventStartDate == 0 && diffDateEventEndDate != 0) {
+							continues = ss_cal_Events.CONTINUES_RIGHT;
+						} else if (diffDateEventEndDate > 0 &&	diffDateEventStartDate < 0) {
+							continues = ss_cal_Events.CONTINUES_LEFT_AND_RIGHT;
+						} else if (diffDateEventStartDate != 0 && diffDateEventEndDate == 0) {
+							continues = ss_cal_Events.CONTINUES_LEFT;
+						}
+						
+				        var ebox = document.createElement("div");
+						ebox.style.width = "100%";
+						ebox.style.height = "18px";
+											
+						var calStyle = getCalendarEventStyle(e.calendarId);
+						addTopCorners(ebox, calStyle);
+						
+						var viewHref = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:e.binderId, entryId:e.entryId}, "view_folder_entry");
+						
+						var eboxInner = document.createElement("div");
+						eboxInner.style.height = "14px";
+						var boxHtml = '';
+						
+						if ((continues == ss_cal_Events.CONTINUES_LEFT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
+							boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_prev.gif'+'" style="float: left; border: 0;" />';			
+						}
+						boxHtml += '<a href="'+viewHref+'" onClick="try{' + e.viewOnClick + '; ss_currentEntryId = ' + e.entryId + ';} catch(e) {return true;} return false;" ' + (ss_cal_Grid.monthGridWeeks > 5? 'style="position: relative; top: -3px; margin-left: 4px; float: left;"':'style="margin-left: 4px; float: left;"') + '>'+(e.title?e.title:that.locale.noTitle)+'</a>';			
+						if (takesDaysToTheEndOfEvent > eventDaysLength && (continues == ss_cal_Events.CONTINUES_RIGHT || continues == ss_cal_Events.CONTINUES_LEFT_AND_RIGHT)) {
+							boxHtml += '<img src="'+ss_imagesPath + 'pics/sym_s_next.gif'+'" style="float: right; border: 0;" />';			
+						}
+						
+						eboxInner.innerHTML = boxHtml;
+						
+						eboxInner.className = "ss_cal_monthEventBody " + getCalendarEventStyle(e.calendarId);
+									
+						ebox.appendChild(eboxInner);
+						
+						addBottomCorners(ebox, calStyle);						
+						
+				        moreEventsDivList.appendChild(ebox);
+					}
+					
+					
+					var lightBox = ss_showLightbox(null, null, null, "ss_lightBox_transparent");
+					// dojo.event.connect(lightBox, "onclick", function(evt) {
+					dojo.event.browser.addListener(lightBox, "onclick", function(evt) {
+						dojo.dom.removeNode(moreEventsDiv);
+						dojo.dom.removeNode(lightBox);
+					});
+					
+					// dojo.event.connect(moreEventsDiv, "onclick", function(evt) {
+					dojo.event.browser.addListener(moreEventsDiv, "onclick", function(evt) {
+						dojo.dom.removeNode(moreEventsDiv);
+						dojo.dom.removeNode(lightBox);
+					});
+			    });
+			})(eboxInner, dayOfWeek, container, vOffsetSize, week, hOffsetSize, eventCount, eventList, date);
+			
+			ebox.appendChild(eboxInner);
+			
+			addBottomCorners(ebox, "ss_cal_moreBox");
+			
 	        container.appendChild(ebox);
+					
 	        dojo.lfx.propertyAnimation(ebox, [{ property: "opacity", start: 0, end: 1 }], 250).play();
 	    }
 	
 	
-	    return resultDisplayIds;
+	    // return resultDisplayIds;
 	}
 	
-	function stickyCalendarOptions(options) {
-	 	if (!options) {
-	 		return;
-	 	}
-	 	var url = ss_stickyCalendarDisplaySettings;
-	 	
-		if (options.gridSize && options.grid) {
-			url += "\&ssGridSize=" + options.gridSize;
-			url += "\&ssGridType=" + options.grid;
-		}
-		
-		if (options.date) {
-			var m = options.date.getMonth() + 1
-			url += "\&year=" + options.date.getFullYear();
-			url += "\&month=" + m;
-			url += "\&dayOfMonth=" + options.date.getDate();
-		}
-		
-		if (options.dayViewType) {
-			url += "\&dayViewType=" + options.dayViewType;
-		}
-		
-		if (options.eventType) {
-			url += "\&eventType=" + options.eventType;
-		}
-		
-		dojo.io.bind({
-	    	url: url,
-			error: function(type, data, evt) {},
-			load: function(type, data, evt) {},
-			mimetype: "text/json",
-			preventCache: true,
-			method: "get"
-		});
-	}
-
-//////////////////////////////////////////////////////////////////////////////////////////
-
 	this.ss_cal_Events = ss_cal_Events;
-	this.ss_cal_Grid = ss_cal_Grid;
-	
 
 }
 
+if (!window.ss_calendar) {
+	var ss_calendar = new ss_calendarControl();
+}
 
-
-
-
-var ss_calendar_import = {
-	divId : "ss_calendar_import_div",
+if (!window.ss_calendar_import) {
+	var ss_calendar_import = {
+		divId : "ss_calendar_import_div",
+		
+		importForm : function(forumId, namespace, title) {
+			
+			// Build the import form
+			var calImportDiv = document.getElementById(this.divId);
+			if (calImportDiv != null) calImportDiv.parentNode.removeChild(calImportDiv);
+			
+			//Build a new calendar_import div
+			calImportDiv = document.createElement("div");
+		    calImportDiv.setAttribute("id", this.divId);
+		    calImportDiv.setAttribute("align", "left");
+		    calImportDiv.style.visibility = "hidden";
+		    calImportDiv.className = "ss_calendar_popup_div";
+		    calImportDiv.style.display = "none";
+			calImportDiv.innerHTML = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
+	         '<tbody><tr><td width="30px"><div class="ss_popup_topleft"></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_calendar_import_title" class="ss_popup_title"></div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_calendar_import_close" class="ss_popup_close"></div></div>' +
+	         '</td></tr><tr><td colspan="3"><div id="ss_calendar_import_inner" style="padding: 3px 10px;" class="ss_popup_body"></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div></td><td width="100%"><div class="ss_popup_bottomcenter"></div></td>' +
+	         '<td width="40px"><div class="ss_popup_bottomright"></div></td></tr></tbody></table>';
+			
+		
+			// Link into the document tree
+			document.getElementsByTagName("body").item(0).appendChild(calImportDiv);
+			
+			dojo.byId("ss_calendar_import_title").appendChild(document.createTextNode(title));
 	
-	importForm : function(forumId, namespace, title) {
-		
-		// Build the import form
-		var calImportDiv = document.getElementById(this.divId);
-		if (calImportDiv != null) calImportDiv.parentNode.removeChild(calImportDiv);
-		
-		//Build a new calendar_import div
-		calImportDiv = document.createElement("div");
-	    calImportDiv.setAttribute("id", this.divId);
-	    calImportDiv.setAttribute("align", "left");
-	    calImportDiv.style.visibility = "hidden";
-	    calImportDiv.className = "ss_calendar_import_div";
-	    calImportDiv.style.display = "none";
-		calImportDiv.innerHTML = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
-         '<tbody><tr><td width="30px"><div class="ss_popup_topleft"></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_calendar_import_title" class="ss_popup_title"></div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_calendar_import_close" class="ss_popup_close"></div></div>' +
-         '</td></tr><tr><td colspan="3"><div id="ss_calendar_import_inner" style="padding: 3px 10px;" class="ss_popup_body"></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div></td><td width="100%"><div class="ss_popup_bottomcenter"></div></td>' +
-         '<td width="40px"><div class="ss_popup_bottomright"></div></td></tr></tbody></table>';
-		
-		var brObj = document.createElement("br");
-	
-		// Link into the document tree
-		document.getElementsByTagName("body").item(0).appendChild(calImportDiv);
-		
-		dojo.byId("ss_calendar_import_title").appendChild(document.createTextNode(title));
-
-		dojo.event.connect(dojo.byId("ss_calendar_import_close"), "onclick", function(evt) {
-			ss_calendar_import.cancel();
-	    });
-	   
-	    dojo.byId("ss_calendar_import_inner").innerHTML = 
-		    "<form id=\"ss_calendar_import_form\" method=\"post\" enctype=\"multipart/form-data\" name=\"ss_calendar_import_form\">" +
-				"<div style=\"text-align: left; width: 100%; \">" +
-					"<input type=\"file\" name=\"iCalFile\" />" +
-				"</div><br/>" +
-				"<input type=\"button\" value=\"Upload\" onclick=\"ss_calendar_import.uploadFile('" + namespace + "');\"/>" +
-				"<input type=\"hidden\" name=\"folderId\" value=\"" + forumId + "\">" +
-			"</form>";
-	    
-		ss_showPopupDivCentered(this.divId);
-	},
-	
-	uploadFile : function (prefix) {
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"uploadICalendarFile"});
-		dojo.debug("uploadFile");
-		dojo.io.bind({
-	    	url: url,
-			error: function(type, data, evt) {
-				alert(ss_not_logged_in);
+			dojo.event.connect(dojo.byId("ss_calendar_import_close"), "onclick", function(evt) {
 				ss_calendar_import.cancel();
-			},
-			load: function(type, data, evt) {
-				if (data && data.notLoggedIn) {
+		    });
+		   
+		    dojo.byId("ss_calendar_import_inner").innerHTML = 
+			    "<form id=\"ss_calendar_import_form\" method=\"post\" enctype=\"multipart/form-data\" name=\"ss_calendar_import_form\">" +
+					"<div style=\"text-align: left; width: 100%; \">" +
+						"<input type=\"file\" name=\"iCalFile\" />" +
+					"</div><br/>" +
+					"<input type=\"button\" value=\"Upload\" onclick=\"ss_calendar_import.uploadFile('" + namespace + "');\"/>" +
+					"<input type=\"hidden\" name=\"folderId\" value=\"" + forumId + "\">" +
+				"</form>";
+		    
+			ss_showPopupDivCentered(this.divId);
+		},
+		
+		uploadFile : function (prefix) {
+			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"uploadICalendarFile"});
+			dojo.debug("uploadFile");
+			dojo.io.bind({
+		    	url: url,
+				error: function(type, data, evt) {
 					alert(ss_not_logged_in);
-				} else if (data && data.entriesAmountMsg && data.entryIds) {
-					if (window["ss_calendar_" + prefix]) {
-						for (var i = 0; i < data.entryIds.length; i++) {
-							window["ss_calendar_" + prefix].refreshEntryEvents(data.entryIds[i]);
+					ss_calendar_import.cancel();
+				},
+				load: function(type, data, evt) {
+					if (data && data.notLoggedIn) {
+						alert(ss_not_logged_in);
+					} else if (data && data.entriesAmountMsg && data.entryIds) {
+						if (window["ss_calendar_" + prefix]) {
+							for (var i = 0; i < data.entryIds.length; i++) {
+								window["ss_calendar_" + prefix].refreshEntryEvents(data.entryIds[i]);
+							}
 						}
+						alert(data.entriesAmountMsg);
+					} else {
+						throw "Wrong server response.";
 					}
-					alert(data.entriesAmountMsg);
-				} else {
-					throw "Wrong server response.";
-				}
-				ss_calendar_import.cancel();
-			},
-			preventCache: true,
-			mimetype: "text/json",
-			formNode: dojo.byId("ss_calendar_import_form")
-		});
-
-	},
+					ss_calendar_import.cancel();
+				},
+				preventCache: true,
+				mimetype: "text/json",
+				formNode: dojo.byId("ss_calendar_import_form")
+			});
 	
-	cancel : function () {
-		ss_cancelPopupDiv(this.divId);
-		return false;
+		},
+		
+		cancel : function () {
+			ss_cancelPopupDiv(this.divId);
+			return false;
+		}	
 	}
-	
+
 }
 
+if (!window.ss_calendar_settings) {
+	var ss_calendar_settings = {
+		divId : "ss_calendar_configure_div",
+		
+		locale: {
+			title: "Calendar settings",
+			weekStartsOnLabel: "Week starts on",
+			workDayStartsAtLabel: "Work day starts at",
+			dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+			submitLabel: "Save",
+			timeFormat: "12:00 AM"
+		},
+		
+		configure : function(weekFirstDay, workDayStart) {
+			var time12h = !this.locale.timeFormat||(this.locale.timeFormat.toLowerCase().indexOf("am")>-1||this.locale.timeFormat.toLowerCase().indexOf("pm")>-1);
+			weekFirstDay = typeof weekFirstDay !== "undefined"?weekFirstDay:1;
+			workDayStart = typeof workDayStart !== "undefined"?workDayStart:6;
+			
+			// Build the configuration form
+			var calConfigureDiv = document.getElementById(this.divId);
+			if (calConfigureDiv != null) calConfigureDiv.parentNode.removeChild(calConfigureDiv);
+			
+			//Build a new calendar_import div
+			calConfigureDiv = document.createElement("div");
+		    calConfigureDiv.setAttribute("id", this.divId);
+		    calConfigureDiv.setAttribute("align", "left");
+		    calConfigureDiv.style.visibility = "hidden";
+		    calConfigureDiv.className = "ss_calendar_popup_div";
+		    calConfigureDiv.style.display = "none";
+			var htmlCode = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
+	         '<tbody><tr><td width="30px"><div class="ss_popup_topleft"></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_calendar_import_title" class="ss_popup_title">' + this.locale.title + '</div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_calendar_configure_close" class="ss_popup_close"></div></div>' +
+	         '</td></tr><tr><td colspan="3"><div class="ss_popup_body"><form id="ss_calendar_settings_form">'+
+			 '<ul>' +
+			 '<li>' + this.locale.weekStartsOnLabel + ' <select name="weekFirstDay"><option value="7"' + (weekFirstDay==7?'selected="true"':'') + '>' + this.locale.dayNames[6] + '</option><option value="1"' + (weekFirstDay==1?'selected="true"':'') + '>' + this.locale.dayNames[0] + '</option><option value="2" ' + (weekFirstDay==2?'selected="true"':'') + '>' + this.locale.dayNames[1] + '</option></select></li>' +
+			 '<li>' + this.locale.workDayStartsAtLabel + ' <select name="workDayStart">';
+			
+			for (var hour = 0; hour <=12; hour++) {
+				htmlCode += ('<option value="' + hour + '" ' + (workDayStart==hour?'selected="true"':'') + '>' + (!time12h?(hour+":00"):((hour==0?"12":hour)+(hour<12?"am":"pm"))) + '</option>');
+			}
+			
+			htmlCode += '</select></li>' +
+			 '</ul>' +
+			 '<br/>' + 
+			 '<input type="button" value="' + this.locale.submitLabel + '" onclick="ss_calendar_settings.save();"/>' +
+			 '</form></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div></td><td width="100%"><div class="ss_popup_bottomcenter"></div></td>' +
+	         '<td width="40px"><div class="ss_popup_bottomright"></div></td></tr></tbody></table>';
+			
+			calConfigureDiv.innerHTML = htmlCode;
+			
+			// Link into the document tree
+			document.getElementsByTagName("body").item(0).appendChild(calConfigureDiv);
+
+			dojo.event.connect(dojo.byId("ss_calendar_configure_close"), "onclick", function(evt) {
+				ss_calendar_settings.cancel();
+		    });
+		    
+			ss_showPopupDivCentered(this.divId);	
+		},
+		
+		save : function () {
+			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"saveCalendarConfiguration"});
+			dojo.debug("save calendar configuration");
+			dojo.io.bind({
+		    	url: url,
+				error: function(type, data, evt) {
+					alert(ss_not_logged_in);
+					ss_calendar_import.cancel();
+				},
+				load: function(type, data, evt) {
+					if (data && data.notLoggedIn) {
+						alert(ss_not_logged_in);
+					} else if (data && data.status == "ok") {
+						// ok...
+					} else {
+						alert("Wrong server response.");
+					}
+					try {
+					  	document.location.reload();	  	
+	     			} catch (e) {alert(e);}
+				},
+				preventCache: true,
+				mimetype: "text/json",
+				formNode: dojo.byId("ss_calendar_settings_form")
+			});
+	
+		},
+		
+		cancel : function () {
+			ss_cancelPopupDiv(this.divId);
+			return false;
+		}	
+	}
+}

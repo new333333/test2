@@ -41,31 +41,18 @@
 		<table class="ss_style" cellspacing="0" cellpadding="0">
 			<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}">
 				<tr>
-				  <td>
+				  <td style="padding: 2px;">
 				    <a href="javascript: ;"
 						onClick="return ss_gotoPermalink('${folder.parentBinder.id}', '${folder.parentBinder.id}', '${folder.parentBinder.entityIdentifier.entityType}', '${ss_namespace}', 'yes');"
 						>${folder.parentBinder.title}</a> // 
 				    <a href="javascript: ;"
 						onClick="return ss_gotoPermalink('${folder.id}', '${folder.id}', 'folder', '${ss_namespace}', 'yes');"
-						id="ssDashboardFolderLink${prefix}${folder.id}" style="padding: 2px 3px 2px 3px;"><span class="ss_bold">${folder.title}</span></a></td>
+						id="ssDashboardFolderLink${prefix}${folder.id}"><span class="ss_bold">${folder.title}</span></a></td>
 				</tr>
 			</c:forEach>
 		</table>
 		<br/>
 		
-			<c:set var="binderIds" value="" />
-			<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}" varStatus="status">
-				<c:choose>
-					<c:when test="${status.first}">
-						<c:set var="binderIds" value="binderIds=${folder.id}" />
-					</c:when>
-					<c:otherwise>
-						<c:set var="binderIds" value="${binderIds}&binderIds=${folder.id}" />
-					</c:otherwise>
-				</c:choose>
-			</c:forEach>
-			<input type="hidden" id="ssDashboardFolderIds${prefix}" value="${binderIds}" />
-	
 	</c:if>
 
 	<div id="${ss_divId}" width="100%">

@@ -51,18 +51,21 @@
           <properties>
             <property name="name" value="open"/>
             <property name="caption" value="__milestone_status_open"/>
+            <property name="default" value="true"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="26">
           <properties>
             <property name="name" value="reopen"/>
             <property name="caption" value="__milestone_status_reopen"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="27">
           <properties>
             <property name="name" value="completed"/>
             <property name="caption" value="__milestone_status_completed"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
       </item>

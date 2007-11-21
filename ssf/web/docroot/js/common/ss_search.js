@@ -153,7 +153,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	document.getElementById('ss_entries_options').appendChild(div);
 
 	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_types_widget&randomNumber="+ss_random++, nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_fields_widget&randomNumber="+ss_random++, widgetContainer:sDiv, searchFieldIndex:orderNo, mode: "remote",
-								maxListLength : 10,	autoComplete: false};
+								maxListLength : 10,	autoComplete: false, weekStartsOn: ss_weekStartsOn};
 	var entryWidget = dojo.widget.createWidget("EntrySelect", properties, document.getElementById("placeholderEntry"+orderNo+""));
 	if (entryId && entryId != "") {
 		entryWidget.setDefaultValue(entryId, ss_searchEntries[entryId], fieldName, ss_searchFields[entryId+"-"+fieldName], value, ss_searchFieldsTypes[entryId+"-"+fieldName], valueLabel);
@@ -297,13 +297,14 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 	dojo.widget.createWidget("DropdownDatePickerActivateByInput", 
 								{value:startDate, 
 								lang: ss_user_locale, 
+								weekStartsOn: ss_weekStartsOn,
 								id:'searchStartDate'+orderNo, 
 								name:'searchStartDate'+orderNo,
 								maxListLength : 10,	
 								autoComplete: false}, 
 							document.getElementById("placeholderStartDate"+orderNo+""));
 
-	dojo.widget.createWidget("DropdownDatePickerActivateByInput", {value:endDate, lang: ss_user_locale, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
+	dojo.widget.createWidget("DropdownDatePickerActivateByInput", {value:endDate, lang: ss_user_locale, weekStartsOn: ss_weekStartsOn, id:'searchEndDate'+orderNo, name:'searchEndDate'+orderNo,
 								maxListLength : 10,	autoComplete: false}, document.getElementById("placeholderEndDate"+orderNo+""));
 }
 

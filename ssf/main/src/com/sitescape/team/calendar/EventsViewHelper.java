@@ -32,10 +32,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -44,31 +41,25 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
-import java.util.TreeMap;
 
 import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.log4j.Logger;
 import org.apache.lucene.document.DateTools;
-import org.joda.time.DateTimeZone;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.DateHelper;
-import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.cal.DayAndPosition;
 
 public class EventsViewHelper {
@@ -88,21 +79,6 @@ public class EventsViewHelper {
 		"calendar.october",
 		"calendar.november",
 		"calendar.december"
-	};
-	
-	public static final String[] monthNamesShort = { 
-		"calendar.abbreviation.january",
-		"calendar.abbreviation.february",
-		"calendar.abbreviation.march",
-		"calendar.abbreviation.april",
-		"calendar.abbreviation.may",
-		"calendar.abbreviation.june",
-		"calendar.abbreviation.july",
-		"calendar.abbreviation.august",
-		"calendar.abbreviation.september",
-		"calendar.abbreviation.october",
-		"calendar.abbreviation.november",
-		"calendar.abbreviation.december"
 	};
 	
 	private static final String dayNames[] = new String[10];
@@ -172,15 +148,11 @@ public class EventsViewHelper {
 				calendarViewRangeDates);
 		
 		Map calendarViewBean = new HashMap();
-		calendarViewBean.put("dayHeaders", getDayHeaders());
-		calendarViewBean.put("monthNames", Arrays.asList(EventsViewHelper.monthNames));
-		calendarViewBean.put("monthNamesShort", Arrays.asList(EventsViewHelper.monthNamesShort));
 		calendarViewBean.put("monthInfo", calendarViewRangeDates.getCurrentDateMonthInfo());
 		calendarViewBean.put("today", new Date());
 		calendarViewBean.put("events", events);
 		calendarViewBean.put("eventType", getCalendarDisplayEventType(portletSession));
 		calendarViewBean.put("dayViewType", getCalendarDayViewType(portletSession));
-		
 		
 		model.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
 	}
@@ -331,28 +303,11 @@ public class EventsViewHelper {
 		event.setDtStart(gcal);
 		event.setDtEnd(gcal);
 		event.setId(entryId + "-" + type);
+		event.setTimeZone(timeZone);
 		return event;
 	}
 
-	private static List getDayHeaders() {
-		List dayheaders = new ArrayList();
-		
-		User user = RequestContextHolder.getRequestContext().getUser();
-		TimeZone timeZone = user.getTimeZone();
-		
-		Calendar loopCal = new GregorianCalendar(timeZone);
-		int j = loopCal.getFirstDayOfWeek();
-		for (int i = 0; i < 7; i++) {
-			dayheaders.add(DateHelper.getDayAbbrevString(j));
-			// we don't know for sure that the d-o-w won't wrap, so prepare to
-			// wrap it
-			if (j++ == 7) {
-				j = 0;
-			}
-		}
-		
-		return dayheaders;
-	}
+
 
 	
 	/**
@@ -410,11 +365,11 @@ public class EventsViewHelper {
 		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE, eventType);
 	}
 
-	public static String setCalendarGridType(PortletSession portletSession, String gridType) {
+	public static String setCalendarGridType(PortletSession portletSession, UserProperties userProperties, String gridType) {
 		if (gridType == null || !(gridType.equals(GRID_DAY) ||
 				gridType.equals(GRID_MONTH))) {
 			
-			gridType = getCalendarGridType(portletSession);
+			gridType = getCalendarGridType(portletSession, userProperties);
 			if (gridType == null) {
 				gridType = GRID_DEFAULT;
 			}
@@ -423,13 +378,17 @@ public class EventsViewHelper {
 		return gridType;
 	}
 	
-	public static String getCalendarGridType(PortletSession portletSession) {
-		return (String)portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_GRID_TYPE);
+	public static String getCalendarGridType(PortletSession portletSession, UserProperties userProperties) {
+		String gridType = (String)portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_GRID_TYPE);
+		if (gridType == null) {
+			gridType = (String)userProperties.getProperty(WebKeys.CALENDAR_CURRENT_GRID_TYPE);
+		}
+		return gridType;
 	}
 	
-	public static int setCalendarGridSize(PortletSession portletSession, Integer gridSize) {
+	public static int setCalendarGridSize(PortletSession portletSession, UserProperties userProperties, Integer gridSize) {
 		if (gridSize == -1) {
-			gridSize = getCalendarGridSize(portletSession);
+			gridSize = getCalendarGridSize(portletSession, userProperties);
 			if (gridSize == null) {
 				gridSize = -1;
 			}
@@ -438,8 +397,13 @@ public class EventsViewHelper {
 		return gridSize;
 	}
 	
-	public static Integer getCalendarGridSize(PortletSession portletSession) {
-		return (Integer)portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_GRID_SIZE);
+	public static Integer getCalendarGridSize(PortletSession portletSession, UserProperties userProperties) {
+		Integer gridSize = (Integer)portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_GRID_SIZE);
+		if (gridSize == null) {
+			gridSize = (Integer)userProperties.getProperty(WebKeys.CALENDAR_CURRENT_GRID_SIZE);
+		}
+		
+		return gridSize;
 	}
 	
 	public static Date getDate(int year, int month, int dayOfMonth, Date defaultValue) {
@@ -617,5 +581,6 @@ public class EventsViewHelper {
 		}
 		return "th";
 	}
+
 	
 }

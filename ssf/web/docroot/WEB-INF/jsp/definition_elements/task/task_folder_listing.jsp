@@ -308,46 +308,36 @@
 				<c:if test="${! empty entry.priority}">
 					<c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}"><a <c:if test="${entry.priority == prio.key}">href="javascript:// ;" class="ss_taskPriority"</c:if><c:if test="${entry.priority != prio.key}">href="javascript: myTasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.changePriority(${entry._docId}, '${prio.key}');" class="ss_taskPriority ss_taskPriority_${prio.key}_u"</c:if> ><img <c:if test="${entry.priority == prio.key}"> src="<html:imagesPath/>icons/prio_${prio.key}.gif" </c:if><c:if test="${entry.priority != prio.key}">src="<html:imagesPath/>pics/1pix.gif"</c:if>	alt="${prio.value}" title="${prio.value}"></a></c:forEach></c:if></td>
 				<td class="ss_due<c:if test="${overdue}"> ss_overdue</c:if>" id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_due">
-					<c:choose>
-						<c:when test="${!empty entry['start_end#EndDate']}">
-							<c:choose>
-								<c:when test="${!empty entry['start_end#TimeZoneID']}">
-									<fmt:formatDate 
-											timeZone="${ssUser.timeZone.ID}"
-											value="${entry['start_end#EndDate']}" type="both" 
-											dateStyle="short" timeStyle="short" />						
-								</c:when>	
-								<c:otherwise>
-									<fmt:formatDate 
-											timeZone="GMT"
-											value="${entry['start_end#EndDate']}" type="date" 
-											dateStyle="short"/>
-								</c:otherwise>
-							</c:choose>
-							<c:if test="${overdue}">
-								<ssf:nlt tag="milestone.overdue"/>
-							</c:if>
-						</c:when>
-						<c:otherwise>
-							&nbsp;
-						</c:otherwise>
-					</c:choose>
+					<c:if test="${!empty entry['start_end#EndDate']}">
+						<c:choose>
+							<c:when test="${!empty entry['start_end#TimeZoneID']}">
+								<fmt:formatDate 
+										timeZone="${ssUser.timeZone.ID}"
+										value="${entry['start_end#EndDate']}" type="both" 
+										dateStyle="short" timeStyle="short" />						
+							</c:when>	
+							<c:otherwise>
+								<fmt:formatDate 
+										timeZone="GMT"
+										value="${entry['start_end#EndDate']}" type="date" 
+										dateStyle="short"/>
+							</c:otherwise>
+						</c:choose>
+						<c:if test="${overdue}">
+							<ssf:nlt tag="milestone.overdue"/>
+						</c:if>
+					</c:if>
 				</td>
 				<td class="ss_iconsContainer" id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_status"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><a <c:if test="${entry.status == status.key}">href="javascript: //" class="ss_taskStatus" </c:if><c:if test="${entry.status != status.key}">href="javascript:  myTasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.changeStatus(${entry._docId}, '${status.key}');" class="ss_taskStatus ss_taskStatus_${status.key}_u" </c:if>><img <c:if test="${entry.status == status.key}"> src="<html:imagesPath/>icons/status_${status.key}.gif" </c:if><c:if test="${entry.status != status.key}"> src="<html:imagesPath/>pics/1pix.gif" </c:if> alt="${status.value}" title="${status.value}"></a></c:forEach></c:if></td>
 				<td class="ss_assigned">
 					<c:set var="assignment" value="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>" />
-					<c:choose>
-						<c:when test="${!empty assignment}">
-							<ul>
-								<c:forEach var="assigned" items="${assignment}">
-									<li><ssf:showUser user="${assigned}"/></li>
-								</c:forEach>
-							</ul>
-						</c:when>
-						<c:otherwise>
-						&nbsp;
-						</c:otherwise>
-					</c:choose>
+					<c:if test="${!empty assignment}">
+						<ul>
+							<c:forEach var="assigned" items="${assignment}">
+								<li><ssf:showUser user="${assigned}"/></li>
+							</c:forEach>
+						</ul>
+					</c:if>
 				</td>
 				<td id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_completed">
 					<c:if test="${! empty entry.completed}">

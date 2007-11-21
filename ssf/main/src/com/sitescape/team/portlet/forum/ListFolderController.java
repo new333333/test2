@@ -614,15 +614,17 @@ public static final String[] monthNamesShort = {
 		model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 		EventsViewHelper.setCalendarCurrentDate(portletSession, currentDate);
 		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+		
 		String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
 		Integer gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
-		model.put(WebKeys.CALENDAR_CURRENT_GRID_TYPE, EventsViewHelper.setCalendarGridType(portletSession, gridType));
-		model.put(WebKeys.CALENDAR_CURRENT_GRID_SIZE, EventsViewHelper.setCalendarGridSize(portletSession, gridSize));
+		model.put(WebKeys.CALENDAR_CURRENT_GRID_TYPE, EventsViewHelper.setCalendarGridType(portletSession, userProperties, gridType));
+		model.put(WebKeys.CALENDAR_CURRENT_GRID_SIZE, EventsViewHelper.setCalendarGridSize(portletSession, userProperties, gridSize));
 		
-		User user = RequestContextHolder.getRequestContext().getUser();
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
-
+		
 		TimeZone timeZone = user.getTimeZone();
 		
 		Calendar calCurrentDate = new GregorianCalendar(timeZone);
@@ -639,8 +641,8 @@ public static final String[] monthNamesShort = {
    		calStartDateRange.setTime(currentDate);
    		calEndDateRange.setTime(currentDate);
 		
-       	String strSessGridType = EventsViewHelper.getCalendarGridType(portletSession);
-       	Integer sessGridSize = EventsViewHelper.getCalendarGridSize(portletSession);
+       	String strSessGridType = EventsViewHelper.getCalendarGridType(portletSession, userProperties);
+       	Integer sessGridSize = EventsViewHelper.getCalendarGridSize(portletSession, userProperties);
        	String strSessGridSize = "";
        	if (sessGridSize != null) strSessGridSize = sessGridSize.toString(); 
       	

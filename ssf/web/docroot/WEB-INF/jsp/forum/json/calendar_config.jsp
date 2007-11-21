@@ -28,25 +28,16 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<div class="ss_style">
-	<form style="display: inline;">
-<%
-boolean isIE = BrowserSniffer.is_ie(request);
-%>
-	  <ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_entry_control" offsetX="0" 
-        <c:if test="<%= isIE %>">
-          offsetY="7" 
-        </c:if>
-        <c:if test="<%= !isIE %>">
-          offsetY="-15" 
-        </c:if>
-	    title="<ssf:nlt tag="helpSpot.calendarEntryControl"/>"></ssHelpSpot>
-		<input style="margin: 0px" type="checkbox" id="ss_calendarEventsTypeChoose${prefix}" onclick="ss_calendar_${prefix}.changeEventType();"><label for="ss_calendarEventsTypeChoose${prefix}">&nbsp;<ssf:nlt tag="folder.calendar.show.all.entries.by" />:</label>
-		<select id="ss_calendarEventsTypeSelect${prefix}" onclick="ss_calendar_${prefix}.changeEventType();">
-			<option value="creation"><ssf:nlt tag="calendar.viewType.creation"/></option>
-			<option value="activity"><ssf:nlt tag="calendar.viewType.activity"/></option>
-		</select>
-	</form>
-</div>
+<%@ page language="java" pageEncoding="UTF-8"%>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:choose>
+	<c:when test="${ss_ajaxStatus.ss_ajaxNotLoggedIn}">
+		{notLoggedIn: ${ss_ajaxStatus.ss_ajaxNotLoggedIn}}
+	</c:when>
+	<c:when test="${!empty ss_ajaxStatus.ss_operation_denied}">
+		{denied: "<c:out value="${ss_ajaxStatus.ss_operation_denied}" escapeXml="false"/>"}
+	</c:when>	
+	<c:otherwise>
+		{status: "ok"}
+	</c:otherwise>
+</c:choose>

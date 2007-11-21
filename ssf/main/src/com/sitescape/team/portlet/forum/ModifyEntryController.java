@@ -202,6 +202,11 @@ public class ModifyEntryController extends SAbstractController {
 		String action = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION, "");
 		model.put(WebKeys.OPERATION, action);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		
 		String elementToEdit = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ELEMENT_TO_EDIT, "");
 		String path;
 		FolderEntry entry = null;

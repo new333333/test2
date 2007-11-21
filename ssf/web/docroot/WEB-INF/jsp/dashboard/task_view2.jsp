@@ -32,7 +32,6 @@
  //Don't include "include.jsp" directly 
 %>
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
-<c:set var="hitCount" value="${ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchRecordReturned}"/>
 
 <div class="ss_searchResult_dashboardHeader">
 	<div class="ss_dashboardPaginator"> 

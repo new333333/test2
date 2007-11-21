@@ -49,18 +49,21 @@
           <properties>
             <property name="name" value="open"/>
             <property name="caption" value="__project_status_open"/>
+            <property name="default" value="true"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="20">
           <properties>
             <property name="name" value="cancelled"/>
             <property name="caption" value="__project_status_cancelled"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="21">
           <properties>
             <property name="name" value="closed"/>
             <property name="caption" value="__project_status_closed"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
       </item>

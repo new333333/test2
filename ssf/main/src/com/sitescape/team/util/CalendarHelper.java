@@ -31,9 +31,13 @@ package com.sitescape.team.util;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Locale;
 import java.util.TimeZone;
 
 import com.sitescape.team.calendar.TimeZoneHelper;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.User;
 
 public class CalendarHelper {
 
@@ -55,6 +59,24 @@ public class CalendarHelper {
 		Calendar result = new GregorianCalendar(newTimeZone);
 		result.setTimeInMillis(calendar.getTimeInMillis());
 		return result;
+	}
+	
+	public static int getFirstDayOfWeek() {
+		return Calendar.getInstance(getLocale()).getFirstDayOfWeek();
+	}
+	
+	private static Locale getLocale() {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		if(rc != null) {
+			User user = rc.getUser();
+			if(user != null)
+				return user.getLocale();
+			else
+				return Locale.getDefault();			
+		}
+		else {
+			return Locale.getDefault();
+		}
 	}
 	
 }

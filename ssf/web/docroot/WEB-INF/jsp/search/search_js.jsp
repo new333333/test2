@@ -29,6 +29,7 @@
  */
 %>
 <%@ page import="java.util.ArrayList" %>
+<%@ page import="com.sitescape.team.util.CalendarHelper" %>
 <script type="text/javascript">
 dojo.require('dojo.widget.*');
 dojo.require('sitescape.widget.WorkflowSelect');
@@ -38,7 +39,6 @@ dojo.require('sitescape.widget.SelectPageable');
 dojo.require('sitescape.widget.DropdownDatePickerActivateByInput');
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_search.js"></script>
-
 <script type="text/javascript">
 
 var ss_nlt_searchFormLabelWorkflow = "<ssf:nlt tag="searchForm.label.workflow"/>";
@@ -67,4 +67,5 @@ var ss_searchFormMoreOptionsShowLabel = "<ssf:nlt tag="searchForm.advanced.moreO
 var ss_searchFormMoreOptionsHideLabel = "<ssf:nlt tag="searchForm.advanced.moreOptions.hide"/>";
 
 var ss_searchResultSavedSearchInputLegend = "<ssf:nlt tag="searchResult.savedSearch.input.legend"/>";
+var ss_weekStartsOn = "<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
 </script>

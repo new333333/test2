@@ -31,6 +31,7 @@
 <% //Date widget form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="com.sitescape.team.util.CalendarHelper" %>
 <%
 	//Get the formName of date being displayed
 	Element item = (Element) request.getAttribute("item");
@@ -72,12 +73,13 @@
 		id="date_${elementName}_${prefix}"
 		name="${elementName}_fullDate" 
 		lang="${ssUser.locale.language}" 
+		weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
 		value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" 
 		timeZone="${ssUser.timeZone.ID}"/>"></div>
 
 		<input type="hidden" name="${elementName}_timezoneid" value="${ssUser.timeZone.ID}" />
 		<input type="hidden" name="${elementName}_skipTime" value="false" />
-	
+		
 	<script type="text/javascript">
 		dojo.require("sitescape.widget.DropdownDatePickerActivateByInput");
 		djConfig.searchIds.push("date_${elementName}_${prefix}");

@@ -41,11 +41,12 @@ dojo.widget.defineWidget(
 		widgetContainer : null,
 		searchFieldIndex: '',
 		widgetStepsRef : null,
+		weekStartsOn: null,
 		selectOption : function(/*Event*/ evt){
 			if (this.widgetStepsRef != null) this.widgetStepsRef.destroy();
 			sitescape.widget.EntrySelect.superclass.selectOption.call(this, evt);
 			var id = this.widgetContainer.id+this.selectedResult[1];
-			var stepsProp = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.selectedResult[1], id:id, name:"elementName"+this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, nestedUrl:this.nestedUrl, entryTypeId:this.selectedResult[1], widgetContainer:this.widgetContainer};
+			var stepsProp = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.selectedResult[1], id:id, name:"elementName"+this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, nestedUrl:this.nestedUrl, entryTypeId:this.selectedResult[1], widgetContainer:this.widgetContainer, weekStartsOn:this.weekStartsOn};
 			this.widgetStepsRef = dojo.widget.createWidget("FieldSelect", stepsProp, this.widgetContainer, "last");
 		},
 		setDefaultValue: function(entryId, entryLabel, fieldId, fieldLabel, userValues, fieldType, userValueLabel) {
@@ -57,7 +58,7 @@ dojo.widget.defineWidget(
 				return;
 			}
 			var id = this.widgetContainer.id+entryId;
-			var stepsProp = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+entryId+"&elementName="+fieldId, id:id, name:"elementName"+this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, nestedUrl:this.nestedUrl, entryTypeId:entryId, widgetContainer:this.widgetContainer};
+			var stepsProp = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+entryId+"&elementName="+fieldId, id:id, name:"elementName"+this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, nestedUrl:this.nestedUrl, entryTypeId:entryId, widgetContainer:this.widgetContainer, weekStartsOn:this.weekStartsOn};
 			this.widgetStepsRef = dojo.widget.createWidget("FieldSelect", stepsProp, this.widgetContainer, "last");
 			
 			this.widgetStepsRef.setDefaultValues(fieldId, fieldLabel, userValues, fieldType, userValueLabel);

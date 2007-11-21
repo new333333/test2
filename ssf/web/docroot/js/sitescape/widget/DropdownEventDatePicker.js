@@ -51,7 +51,11 @@ dojo.widget.defineWidget(
 				if (this.startDateWidget && this.endDateWidget) {
 					diff = dojo.date.compare(this.startDateWidget.getDate(), this.endDateWidget.getDate(), dojo.date.compareTypes.DATE);
 					if (diff > 0) {
-						this.endDateWidget.setValue(this.startDateWidget.getValue());
+						if (this.widgetId == this.startDateWidgetId) {
+							this.endDateWidget.setValue(this.startDateWidget.getValue());
+						} else {
+							this.startDateWidget.setValue(this.endDateWidget.getValue());
+						}
 					}				
 				}
 				
