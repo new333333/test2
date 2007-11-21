@@ -1494,7 +1494,7 @@ public static final String[] monthNamesShort = {
 			
 		//Sendmail
 		if (!user.getEmailAddress().equals("") && 
-				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1506,7 +1506,7 @@ public static final String[] monthNamesShort = {
 		
 		//Meet
 		if (getIcBrokerModule().isEnabled() && 
-				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1741,7 +1741,7 @@ public static final String[] monthNamesShort = {
 		}
 
 		// clipboard
-		if (!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
 			String contributorIdsAsJSString = "";
 			for (int i = 0; i < contributorIds.length; i++) {
@@ -1756,7 +1756,7 @@ public static final String[] monthNamesShort = {
 		
 		// email
 		if (!user.getEmailAddress().equals("") && 
-				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1774,7 +1774,7 @@ public static final String[] monthNamesShort = {
 
 		// start meeting
 		if (getIcBrokerModule().isEnabled() && 
-				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1810,7 +1810,7 @@ public static final String[] monthNamesShort = {
 			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
 		}
 		
-		if (!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			qualifiers = new HashMap();
 			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
 					NLT.get("ui.availableThemeIds") + "', '" +
