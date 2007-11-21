@@ -203,7 +203,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 			if ((binder.getDefinitionType() != null) && 
 					(binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 				Principal owner = binder.getCreation().getPrincipal(); //creator is user
-				owner = binder.getOwner();
 				if (owner != null) {
 					//	turn owner into real object = not hibernate proxy
 					try {
@@ -436,11 +435,6 @@ public class WorkspaceTreeController extends SAbstractController  {
 		if ((workspace.getDefinitionType() != null) && 
 				(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
 			Principal owner = workspace.getCreation().getPrincipal(); //creator is user
-			if ((workspace.getDefinitionType() != null) && 
-					(workspace.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW) &&
-					workspace.getOwner() != null) {
-				owner = workspace.getOwner();
-			}
 		
 			boolean showModifyProfileMenu = false;
 			boolean showDeleteProfileMenu = false;
@@ -525,16 +519,18 @@ public class WorkspaceTreeController extends SAbstractController  {
 		toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
 			
 		// Sendmail
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
-			
+		if (!user.getEmailAddress().equals("") && !user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
+			qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);
+			toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
+		}
+		
 		// Meet
-		if (getIcBrokerModule().isEnabled()) {
+		if (getIcBrokerModule().isEnabled() && !user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -566,28 +562,32 @@ public class WorkspaceTreeController extends SAbstractController  {
 				adapterUrl.toString(), qualifiers);
 
 		// clipboard
-		qualifiers = new HashMap();
-		String contributorIdsAsJSString = "";
-		for (int i = 0; i < contributorIds.length; i++) {
-			contributorIdsAsJSString += contributorIds[i];
-			if (i < (contributorIds.length -1)) {
-				contributorIdsAsJSString += ", ";	
+		if (!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			qualifiers = new HashMap();
+			String contributorIdsAsJSString = "";
+			for (int i = 0; i < contributorIds.length; i++) {
+				contributorIdsAsJSString += contributorIds[i];
+				if (i < (contributorIds.length -1)) {
+					contributorIdsAsJSString += ", ";	
+				}
 			}
+			qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "], '" + forumId + "');return false;");
+			footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "", qualifiers);
 		}
-		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "], '" + forumId + "');return false;");
-		footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "", qualifiers);
-
+		
 		// send mail
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+		if (!user.getEmailAddress().equals("") && !user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
+			qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);
+			footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
+		}
 
 		// start meeting
-		if (getIcBrokerModule().isEnabled()) {
+		if (getIcBrokerModule().isEnabled() && !user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -596,11 +596,15 @@ public class WorkspaceTreeController extends SAbstractController  {
 			qualifiers.put("popup", Boolean.TRUE);
 			footerToolbar.addToolbarMenu("addMeeting", NLT.get("toolbar.menu.addMeeting"), adapterUrl.toString(), qualifiers);
 		}
-		qualifiers = new HashMap();
-		qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
-				NLT.get("ui.availableThemeIds") + "', '" +
-				NLT.get("ui.availableThemeNames") + "'); return false;");
-		footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+		
+		//Theme
+		if (!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
+					NLT.get("ui.availableThemeIds") + "', '" +
+					NLT.get("ui.availableThemeNames") + "'); return false;");
+			footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+		}
 		
 
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
