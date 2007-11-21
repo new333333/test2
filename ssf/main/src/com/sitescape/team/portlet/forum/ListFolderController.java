@@ -1491,16 +1491,20 @@ public static final String[] monthNamesShort = {
 		folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
 			
 		//Sendmail
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
+		if (!user.getEmailAddress().equals("") && 
+				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
+			qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);
+			folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.sendmail"), adapterUrl.toString(), qualifiers);
+		}
 		
 		//Meet
-		if (getIcBrokerModule().isEnabled()) {
+		if (getIcBrokerModule().isEnabled() && 
+				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1735,34 +1739,40 @@ public static final String[] monthNamesShort = {
 		}
 
 		// clipboard
-		qualifiers = new HashMap();
-		String contributorIdsAsJSString = "";
-		for (int i = 0; i < contributorIds.length; i++) {
-			contributorIdsAsJSString += contributorIds[i];
-			if (i < (contributorIds.length -1)) {
-				contributorIdsAsJSString += ", ";	
+		if (!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			qualifiers = new HashMap();
+			String contributorIdsAsJSString = "";
+			for (int i = 0; i < contributorIds.length; i++) {
+				contributorIdsAsJSString += contributorIds[i];
+				if (i < (contributorIds.length -1)) {
+					contributorIdsAsJSString += ", ";	
+				}
 			}
+			qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + ", '" + forumId + "');return false;");
+			footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "#", qualifiers);
 		}
-		qualifiers.put("onClick", "ss_muster.showForm('" + Clipboard.USERS + "', [" + contributorIdsAsJSString + "]" + ", '" + forumId + "');return false;");
-		footerToolbar.addToolbarMenu("clipboard", NLT.get("toolbar.menu.clipboard"), "#", qualifiers);
 		
 		// email
-		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
-			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());	
-		}		
-		qualifiers = new HashMap();
-		qualifiers.put("popup", Boolean.TRUE);
-		if (!op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
-			qualifiers.put("post", Boolean.TRUE);
-			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+		if (!user.getEmailAddress().equals("") && 
+				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+				adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());	
+			}		
+			qualifiers = new HashMap();
+			qualifiers.put("popup", Boolean.TRUE);
+			if (!op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+				qualifiers.put("post", Boolean.TRUE);
+				qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));
+			}
+			footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 		}
-		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
 		// start meeting
-		if (getIcBrokerModule().isEnabled()) {
+		if (getIcBrokerModule().isEnabled() && 
+				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -1798,11 +1808,13 @@ public static final String[] monthNamesShort = {
 			footerToolbar.addToolbarMenu("dropBox", NLT.get("toolbar.menu.dropBox"), "javascript: ;", qualifiers);
 		}
 		
-		qualifiers = new HashMap();
-		qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
-				NLT.get("ui.availableThemeIds") + "', '" +
-				NLT.get("ui.availableThemeNames") + "'); return false;");
-		footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+		if (!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			qualifiers = new HashMap();
+			qualifiers.put("onClick", "javascript: ss_changeUITheme('" +
+					NLT.get("ui.availableThemeIds") + "', '" +
+					NLT.get("ui.availableThemeNames") + "'); return false;");
+			footerToolbar.addToolbarMenu("themeChanger", NLT.get("toolbar.menu.changeUiTheme"), "javascript: ;", qualifiers);
+		}
 		
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
