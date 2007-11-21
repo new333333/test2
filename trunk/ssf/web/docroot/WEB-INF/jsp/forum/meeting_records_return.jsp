@@ -60,14 +60,10 @@
 										${meeting.key[5]} (<ssf:nlt tag="attachMeeting.meetingId"/>: ${meeting.key[0]})
 										<c:choose>
 											<c:when test="${meeting.key[2] == 1}">
-												<% /* TODO: missing nlt so don't display it! 
-													instant
-												*/ %>
+												<ssf:nlt tag="attachMeeting.instant"/>
 											</c:when>
 											<c:when test="${meeting.key[2] == 2}">
-												<% /* TODO: missing nlt so don't display it! 
-													scheduled
-												*/ %>
+												<ssf:nlt tag="attachMeeting.scheduled"/>
 											</c:when>								
 										</c:choose>
 									</th>

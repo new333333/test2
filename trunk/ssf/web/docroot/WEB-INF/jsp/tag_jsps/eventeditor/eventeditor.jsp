@@ -30,6 +30,7 @@
 %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.Date" %>
+<%@ page import="com.sitescape.team.util.CalendarHelper" %>
 <%@ page import="com.sitescape.team.domain.Event" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <% // these beans need to be here because we need to
@@ -85,6 +86,14 @@
 				name="${dateId}_fullDate" 
 				id="${dateId}_${prefix}"
 				lang="${ssUser.locale.language}"
+				<c:choose>
+				    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
+					    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
+				    </c:when>
+				    <c:otherwise>
+				    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
+				    </c:otherwise>
+				</c:choose>
 				value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 				startDateWidgetId="event_start_${prefix}"
 				startTimeWidgetId="event_start_time_${prefix}"
@@ -148,6 +157,14 @@
 					name="${dateId2}_fullDate" 
 					id="${dateId2}_${prefix}"
 					lang="${ssUser.locale.language}" 
+					<c:choose>
+					    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
+						    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
+					    </c:when>
+					    <c:otherwise>
+					    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
+					    </c:otherwise>
+					</c:choose>					
 					value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 					startDateWidgetId="event_start_${prefix}"
 					startTimeWidgetId="event_start_time_${prefix}"
@@ -504,6 +521,14 @@ function ${prefix}_toggleRecur(name) {
 		name="${endrangeId}_fullDate" 
 		id="${endrangeId}_${prefix}"
 		lang="${ssUser.locale.language}" 
+		<c:choose>
+		    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
+			    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
+		    </c:when>
+		    <c:otherwise>
+		    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
+		    </c:otherwise>
+		</c:choose>
 		<c:if test="${!empty initEvent.until}">
 			value="<fmt:formatDate value="${initEvent.until.time}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 		</c:if>

@@ -38,55 +38,24 @@
 <c:if test="${!empty ssCalendarViewBean.dayViewType}">
 	dayViewType : "<ssf:escapeJavaScript value="${ssCalendarViewBean.dayViewType}"/>",
 </c:if>
-<c:if test="${!empty ssCalendarViewBean.dayHeaders}">
-	dayNamesShort : [<%--
-	--%><c:forEach var="d" items="${ssCalendarViewBean.dayHeaders}" varStatus="status"><%--
-	  --%>"<ssf:escapeJavaScript value="${d}"/>"<c:if test="${!status.last}">,</c:if><%--
-	--%></c:forEach><%--
-	--%>],
-</c:if>
-<c:if test="${!empty ssCalendarViewBean.monthNamesShort}">
-	monthNamesShort : [<%--
-	--%><c:forEach var="d1" items="${ssCalendarViewBean.monthNamesShort}" varStatus="status"><%--
-	--%><jsp:useBean id="d1" type="java.lang.String" />"<ssf:escapeJavaScript 
-	  value="<%= com.sitescape.team.util.NLT.get(d1) %>"/>"<c:if test="${!status.last}">,</c:if><%--
-	--%></c:forEach><%--
-	--%>],
-</c:if>
-<c:if test="${!empty ssCalendarViewBean.monthNames}">
-monthNames : [<%--
---%><c:forEach var="d2" items="${ssCalendarViewBean.monthNames}" varStatus="status"><%--
-  --%><jsp:useBean id="d2" type="java.lang.String" />"<ssf:escapeJavaScript 
-  value="<%= com.sitescape.team.util.NLT.get(d2) %>"/>"<c:if test="${!status.last}">,</c:if><%--
---%></c:forEach><%--
---%>],
-</c:if>
 <c:if test="${!empty ssCalendarViewBean.today}">
-	today : {year : <fmt:formatDate value="${ssCalendarViewBean.today}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}"/>,
-				month : <fmt:formatDate value="${ssCalendarViewBean.today}" pattern="M" timeZone="${ssUser.timeZone.ID}"/>, 
-				dayOfMonth : <fmt:formatDate value="${ssCalendarViewBean.today}" pattern="d" timeZone="${ssUser.timeZone.ID}"/>},
+	today : "<fmt:formatDate value="${ssCalendarViewBean.today}" pattern="yyyyMMdd" timeZone="${ssUser.timeZone.ID}"/>",
 </c:if>
 <c:if test="${!empty ssCurrentDate}">
-	currentDate : {year : <fmt:formatDate value="${ssCurrentDate}" pattern="yyyy" timeZone="${ssUser.timeZone.ID}"/>,
-					month : <fmt:formatDate value="${ssCurrentDate}" pattern="M" timeZone="${ssUser.timeZone.ID}"/>,
-					dayOfMonth : <fmt:formatDate value="${ssCurrentDate}" pattern="d" timeZone="${ssUser.timeZone.ID}"/>},
+	currentDate : "<fmt:formatDate value="${ssCurrentDate}" pattern="yyyyMMdd" timeZone="${ssUser.timeZone.ID}"/>",
 </c:if>
 <c:if test="${!empty ssCurrentGridType}">
 	gridType : "${ssCurrentGridType}",
 </c:if>
 <c:if test="${!empty ssCurrentGridSize}">
-	gridSize : "${ssCurrentGridSize}",
+	gridSize : ${ssCurrentGridSize},
 </c:if>
 <c:if test="${!empty ssCalendarViewBean.monthInfo}">
 	monthViewInfo : {year : ${ssCalendarViewBean.monthInfo.year}, 
 					month : ${ssCalendarViewBean.monthInfo.month},
 					numberOfDaysInView: ${ssCalendarViewBean.monthInfo.numberOfDaysInView},
-					startViewDate : {year : ${ssCalendarViewBean.monthInfo.beginView.year}, 
-							month : ${ssCalendarViewBean.monthInfo.beginView.month}, 
-							dayOfMonth : ${ssCalendarViewBean.monthInfo.beginView.dayOfMonth}},
-					endViewDate : {year : ${ssCalendarViewBean.monthInfo.endView.year}, 
-							month : ${ssCalendarViewBean.monthInfo.endView.month}, 
-							dayOfMonth : ${ssCalendarViewBean.monthInfo.endView.dayOfMonth}}},
+					startViewDate : "<fmt:formatDate value="${ssCalendarViewBean.monthInfo.beginView}" timeZone="${ssUser.timeZone.ID}" pattern="yyyyMMdd"/>",
+					endViewDate : "<fmt:formatDate value="${ssCalendarViewBean.monthInfo.endView}" timeZone="${ssUser.timeZone.ID}" pattern="yyyyMMdd"/>"},
 </c:if>
 events : [<%--
   --%><c:forEach var="evim" items="${ssCalendarViewBean.events}" varStatus="status"><%--
@@ -96,24 +65,13 @@ events : [<%--
 		  eventId: "<ssf:escapeJavaScript value="${evim.eventid}"/>", 
 		  	entryId : "${evim.entry['_docId']}",
 		  	binderId : "${evim.entry['_binderId']}",
+		  	calendarId : "${evim.entry['_binderId']}",
 		  	<c:set var="timeZone" value="${ssUser.timeZone.ID}"/>
 		  	<c:if test="${evim.cal_allDay && evim.eventType == 'event'}">
 		  		<c:set var="timeZone" value="GMT"/>
 		  	</c:if>
-		  	startDate : {
-			  	year : <fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="yyyy"/>, 
-			  	month : <fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="M"/>, 
-			  	dayOfMonth : <fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="d"/>,
-			  	hour: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="HH"/>",
-			  	minutes: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="mm"/>"
-		  	},
-		  	endDate : {
-			  	year : <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="yyyy"/>, 
-			  	month : <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="M"/>, 
-			  	dayOfMonth : <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="d"/>,
-			  	hour: "<fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="HH"/>",
-			  	minutes: "<fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="mm"/>"
-		  	},
+		  	startDate : "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>",
+		  	endDate : "<fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>", 
 		  	<c:choose>
 			  	<c:when test="${!evim.cal_allDay}">
 				  	<c:choose>
@@ -133,7 +91,14 @@ events : [<%--
 					</c:choose>			  		
 			  	</c:when>
 			  	<c:otherwise>
-			  		text: "",
+				  	<c:choose>
+				  		<c:when test="${!evim.cal_oneDayEvent}">
+			  				text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="date" timeStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="date" timeStyle="short" />",
+					  	</c:when>
+					  	<c:otherwise>
+					  		text: "",
+					  	</c:otherwise>
+					</c:choose>	
 			  	</c:otherwise>
 			</c:choose>
 		  	dur: ${evim.cal_duration},
@@ -141,6 +106,7 @@ events : [<%--
 		  	title: "<ssf:escapeJavaScript value="${evim.entry.title}"/>", 
 		  	calsrc: "cal1",
 		  	eventType: "<ssf:escapeJavaScript value="${evim.eventType}"/>",
+                        entityType: "<ssf:escapeJavaScript value="${evim.entry._entityType}"/>",
 			viewOnClick: "ss_loadEntry(this, '${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}', '${ss_namespace}'<c:if test="${ssDashboardRequest}">, 'yes'</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
 	--%></c:forEach>]
 }

@@ -40,30 +40,35 @@
           <properties>
             <property name="name" value="p1"/>
             <property name="caption" value="__task_priority_critical"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="25">
           <properties>
             <property name="name" value="p2"/>
             <property name="caption" value="__task_priority_high"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="26">
           <properties>
             <property name="name" value="p3"/>
             <property name="caption" value="__task_priority_medium"/>
+            <property name="default" value="true"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="27">
           <properties>
             <property name="name" value="p4"/>
             <property name="caption" value="__task_priority_low"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="27">
           <properties>
             <property name="name" value="p5"/>
             <property name="caption" value="__task_priority_least"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <properties>
@@ -96,24 +101,28 @@
           <properties>
             <property name="name" value="s1"/>
             <property name="caption" value="__task_status_needs_action"/>
+            <property name="default" value="true"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="33">
           <properties>
             <property name="name" value="s2"/>
             <property name="caption" value="__task_status_in_process"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="34">
           <properties>
             <property name="name" value="s3"/>
             <property name="caption" value="__task_status_completed"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="35">
           <properties>
             <property name="name" value="s4"/>
             <property name="caption" value="__task_status_cancelled"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
       </item>
@@ -130,66 +139,77 @@
           <properties>
             <property name="name" value="c000"/>
             <property name="caption" value="__task_completed_0"/>
+            <property name="default" value="true"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="38">
           <properties>
             <property name="name" value="c010"/>
             <property name="caption" value="__task_completed_10"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="39">
           <properties>
             <property name="name" value="c020"/>
             <property name="caption" value="__task_completed_20"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="40">
           <properties>
             <property name="name" value="c030"/>
             <property name="caption" value="__task_completed_30"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="41">
           <properties>
             <property name="name" value="c040"/>
             <property name="caption" value="__task_completed_40"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="42">
           <properties>
             <property name="name" value="c050"/>
             <property name="caption" value="__task_completed_50"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="43">
           <properties>
             <property name="name" value="c060"/>
             <property name="caption" value="__task_completed_60"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="44">
           <properties>
             <property name="name" value="c070"/>
             <property name="caption" value="__task_completed_70"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="45">
           <properties>
             <property name="name" value="c080"/>
             <property name="caption" value="__task_completed_80"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="46">
           <properties>
             <property name="name" value="c090"/>
             <property name="caption" value="__task_completed_90"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
         <item name="selectboxSelection" caption="__selection" id="47">
           <properties>
             <property name="name" value="c100"/>
             <property name="caption" value="__task_completed_100"/>
+            <property name="default" value="false"/>
           </properties>
         </item>
       </item>

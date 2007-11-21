@@ -60,6 +60,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.FolderUtils;
 import com.sitescape.team.module.shared.MapInputData;
@@ -315,6 +316,11 @@ public class AddEntryController extends SAbstractController {
 		String title = PortletRequestUtils.getStringParameter(request, "title", "");
 		model.put(WebKeys.ENTRY_TITLE, title);
 		model.put(WebKeys.OPERATION, action);
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		String path = WebKeys.VIEW_ADD_ENTRY;
 		
 		if (action.equals(WebKeys.ACTION_ADD_FOLDER_ATTACHMENT)) {
@@ -401,7 +407,7 @@ public class AddEntryController extends SAbstractController {
 		
 			DateTime startDate = (new DateTime(DateTimeZone.forTimeZone(timeZone))).withYear(year).withMonthOfYear(month).withDayOfMonth(dayOfMonth);
 			
-			if (time != null) {
+			if (time != null && !time.equals("-1")) {
 				String[] timeS = time.split(":");
 				if (timeS != null) {
 					try {
@@ -419,6 +425,8 @@ public class AddEntryController extends SAbstractController {
 						// do nothing, no hour, no minute
 					}
 				}
+			} else if (time != null && time.equals("-1")) {
+				timeZone = null;
 			}
 		
 			Event event = new Event(startDate.toGregorianCalendar(), new Duration(0, 0, duration, 0), 0);

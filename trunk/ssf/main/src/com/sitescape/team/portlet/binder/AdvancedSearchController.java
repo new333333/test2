@@ -39,6 +39,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Date;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.text.DateFormat;
 
 import javax.portlet.ActionRequest;
@@ -348,11 +350,16 @@ public class AdvancedSearchController extends AbstractBinderController {
 	private ModelAndView ajaxGetEntryTypes(RenderRequest request, RenderResponse response) {
 		
 		Map model = new HashMap();
-		List entryTypes = new ArrayList();
+		SortedMap<String, Definition> entries = new TreeMap<String, Definition>();
 		if (WebHelper.isUserLoggedIn(request)) {
-			entryTypes = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
+			Iterator<Definition> it = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY).iterator();
+			while (it.hasNext()) {
+				Definition entry = it.next();
+				String title = NLT.get(entry.getTitle());
+				entries.put(title + "|" + entry.getId(), entry);
+			}
 		}
-		model.put(WebKeys.ENTRY, entryTypes);
+		model.put(WebKeys.ENTRY, entries);
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_entry_types_widget", model);
 	}
@@ -371,7 +378,14 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 	
 		if (entryField.equals("")) {
-			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsData);
+			SortedMap fieldsSorted = new TreeMap();
+			Iterator<Map.Entry<String, Map>> it = fieldsData.entrySet().iterator();
+			while (it.hasNext()) {
+				Map.Entry<String, Map> mapEntry = it.next();
+				fieldsSorted.put(mapEntry.getValue().get("caption") + "|" + mapEntry.getKey(), mapEntry.getValue());
+			}
+			
+			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, fieldsSorted);
 			return new ModelAndView("forum/json/find_entry_fields_widget", model);
 		} else {
 			Map valuesData = new HashMap();
@@ -391,6 +405,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 			return new ModelAndView("forum/json/find_entry_field_values_widget", model);
 		}
  	}
+	
 	private ModelAndView ajaxGetUsers(RenderRequest request, RenderResponse response) {
 		Map model = new HashMap();
 		User currentUser = RequestContextHolder.getRequestContext().getUser();

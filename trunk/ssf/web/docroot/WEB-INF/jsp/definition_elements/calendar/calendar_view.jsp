@@ -71,22 +71,7 @@
 					</ssf:toolbar>
 				</ssf:ifnotaccessible>
 
-			</ssf:toolbar>
-
-<script type="text/javascript">
-
-	var ss_findEventsUrl${prefix} = "<ssf:url 
-		    	adapter="true" 
-		    	portletName="ss_forum" 
-		    	action="__ajax_request" 
-		    	actionUrl="true" >
-					<ssf:param name="binderId" value="${ssBinder.id}" />
-					<ssf:param name="binderIds" value="${ssBinder.id}" />
-					<ssf:param name="operation" value="find_calendar_events" />
-					<ssf:param name="namespace" value="${prefix}" />
-		    	</ssf:url>";
-
-</script>		    	
+			</ssf:toolbar>		    	
 
 <ssf:ifaccessible>
 <%@ include file="/WEB-INF/jsp/definition_elements/calendar/calendar_view_content_accessible.jsp" %>

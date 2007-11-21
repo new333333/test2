@@ -746,7 +746,7 @@ div.ss_popup_close {
   background-image: url(<html:imagesPath/>pics/popup_close_box.gif);
   background-repeat: no-repeat;
   width: 12px;
-  height: 12px;
+  height: 13px;
   top: 1px;
   left: -1px;
 }
@@ -754,7 +754,7 @@ div.ss_popup_close {
 div.ss_popup_body {
   position: relative;
   background-color: ${ss_toolbar4_background_color};
-  padding: 1px 5px 5px 10px;
+  padding: 10px;
 }
 
 
@@ -839,6 +839,10 @@ img.ss_help_cpanel_hide {
 .ss_lightBox {
   position:absolute;
   background-color:${ss_lightBox_background_color};
+}
+
+.ss_lightBox_transparent {
+  position:absolute;
 }
 
 /******************************************************************/
@@ -3146,7 +3150,7 @@ table.ss_table thead th.ss_table_smheaders {
 }
 
 /* Muster div */
-.ss_calendar_import_div {
+.ss_calendar_popup_div {
 	position:absolute;
 }
 
@@ -3373,7 +3377,6 @@ div.ss_cal_monthGrid {
   position: relative;
   width: 99.8%;
   height: 320px;
-  min-height: 300px;
 }
 
 
@@ -3395,17 +3398,22 @@ div.ss_cal_monthHRule {
 
 
 /* Day of month numbers */
-div.ss_cal_monthGridDayBadge {
+div.ss_cal_monthGridDayBadgeCurrent, div.ss_cal_monthGridDayBadge {
   background-color: #ECECEC;
   position: absolute;
   height: 11px;
-  width: 14.0%;
+  width: 14.2857%;
   border-top: 1px solid #DDDDDD;
+  border-left: 1px solid #DDDDDD;
   text-align: right;
-  padding-right: 3px;
   font-size: 9px;
   font-family: sans-serif;
-  color: #666666;
+}
+
+div.ss_cal_monthGridDayBadgeCurrent a, div.ss_cal_monthGridDayBadge a {
+  position: relative;
+  right: 3px;
+  top: -2px;
 }
 
 /* Highlight for today */
@@ -3415,24 +3423,34 @@ div.ss_cal_monthGridDayBadgeToday {
 }
 
 div.ss_cal_monthGridDayBadge a {
+  color: #BBBBBB;
+  text-decoration: none;
+}
+
+div.ss_cal_monthGridDayBadgeCurrent a {
   color: #666666;
   text-decoration: none;
 }
 
-div.ss_cal_monthGridDayBadge a:hover {
+div.ss_cal_monthGridDayBadge a:hover, div.ss_cal_monthGridDayBadgeCurrent a:hover {
   color: #BBBBBB;
   text-decoration: underline;
 }
 
-
-
-a.ss_calDaySelectButton img, a.ss_calDaySelectButtonActive img {
+a.ss_calDaySelectButton img, a.ss_calDaySelectButtonActive img, 
+	a.ss_cal3DaysSelectButton img, a.ss_cal3DaysSelectButtonActive img,
+	a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButtonActive img,
+	a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButtonActive img,
+	a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButtonActive img,
+	a.ss_calMonthSelectButton img, a.ss_calMonthSelectButtonActive img {
 	width: 25px;
 	height: 24px;
 	margin: 0px;
-	padding: 0px;
+	padding: 0 5px 0 0;
 	border: 0px;
 	vertical-align: bottom;
+	position: relative;
+	top: -4px;
 }
 
 a.ss_calDaySelectButton img, a.ss_calDaySelectButton:link img , a.ss_calDaySelectButton:focus img, a.ss_calDaySelectButton:visited img { 
@@ -3443,39 +3461,12 @@ a.ss_calDaySelectButtonActive img, a.ss_calDaySelectButtonActive:link img , a.ss
 	background: transparent url(<html:imagesPath/>icons/day.gif) no-repeat top left; 
 }
 
-a.ss_calDaySelectButton:hover img {
-    background-position:  left -24px; 
-}
-
-
-a.ss_cal3DaysSelectButton img, a.ss_cal3DaysSelectButtonActive img {
-	width: 25px;
-	height: 24px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
-	vertical-align: bottom;
-}
-
 a.ss_cal3DaysSelectButton img, a.ss_cal3DaysSelectButton:link img , a.ss_cal3DaysSelectButton:focus img, a.ss_cal3DaysSelectButton:visited img { 
 	background: transparent url(<html:imagesPath/>icons/3_day_u.gif) no-repeat top left; 
 }
 
 a.ss_cal3DaysSelectButtonActive img, a.ss_cal3DaysSelectButtonActive:link img , a.ss_cal3DaysSelectButtonActive:focus img, a.ss_cal3DaysSelectButtonActive:visited img { 
 	background: transparent url(<html:imagesPath/>icons/3_day.gif) no-repeat top left; 
-}
-
-a.ss_cal3DaysSelectButton:hover img {
-    background-position:  left -24px; 
-}
-
-a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButtonActive img {
-	width: 25px;
-	height: 24px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
-	vertical-align: bottom;
 }
 
 a.ss_cal5DaysSelectButton img, a.ss_cal5DaysSelectButton:link img , a.ss_cal5DaysSelectButton:focus img, a.ss_cal5DaysSelectButton:visited img { 
@@ -3486,38 +3477,12 @@ a.ss_cal5DaysSelectButtonActive img, a.ss_cal5DaysSelectButtonActive:link img , 
 	background: transparent url(<html:imagesPath/>icons/5_day.gif) no-repeat top left; 
 }
 
-a.ss_cal5DaysSelectButton:hover img {
-    background-position:  left -24px; 
-}
-
-a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButtonActive img {
-	width: 25px;
-	height: 24px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
-	vertical-align: bottom;
-}
-
 a.ss_cal7DaysSelectButton img, a.ss_cal7DaysSelectButton:link img , a.ss_cal7DaysSelectButton:focus img, a.ss_cal7DaysSelectButton:visited img { 
 	background: transparent url(<html:imagesPath/>icons/7_day_u.gif) no-repeat top left; 
 }
 
 a.ss_cal7DaysSelectButtonActive img, a.ss_cal7DaysSelectButtonActive:link img , a.ss_cal7DaysSelectButtonActive:focus img, a.ss_cal7DaysSelectButtonActive:visited img { 
 	background: transparent url(<html:imagesPath/>icons/7_day.gif) no-repeat top left; 
-}
-
-a.ss_cal7DaysSelectButton:hover img {
-    background-position:  left -24px; 
-}
-
-a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButtonActive img {
-	width: 25px;
-	height: 24px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
-	vertical-align: bottom;
 }
 
 a.ss_cal14DaysSelectButton img, a.ss_cal14DaysSelectButton:link img , a.ss_cal14DaysSelectButton:focus img, a.ss_cal14DaysSelectButton:visited img { 
@@ -3528,28 +3493,20 @@ a.ss_cal14DaysSelectButtonActive img, a.ss_cal14DaysSelectButtonActive:link img 
 	background: transparent url(<html:imagesPath/>icons/14_day.gif) no-repeat top left; 
 }
 
-a.ss_cal14DaysSelectButton:hover img {
-    background-position:  left -24px; 
-}
-
-a.ss_calMonthSelectButton img, a.ss_calMonthSelectButtonActive img {
-	width: 25px;
-	height: 24px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
-	vertical-align: bottom;
-}
-
 a.ss_calMonthSelectButton img, a.ss_calMonthSelectButton:link img , a.ss_calMonthSelectButton:focus img, a.ss_calMonthSelectButton:visited img { 
 	background: transparent url(<html:imagesPath/>icons/month_u.gif) no-repeat top left; 
 }
 
 a.ss_calMonthSelectButtonActive img, a.ss_calMonthSelectButtonActive:link img , a.ss_calMonthSelectButtonActive:focus img, a.ss_calMonthSelectButtonActive:visited img { 
-	background-image: url(<html:imagesPath/>icons/month.gif); 
+	background: transparent url(<html:imagesPath/>icons/month.gif) no-repeat top left; 
 }
 
-a.ss_calMonthSelectButton:hover img {
+a.ss_calDaySelectButton:hover img, 
+	a.ss_cal3DaysSelectButton:hover img,
+	a.ss_cal5DaysSelectButton:hover img,
+	a.ss_cal7DaysSelectButton:hover img,
+	a.ss_cal14DaysSelectButton:hover img,
+	a.ss_calMonthSelectButton:hover img {
     background-position:  left -24px; 
 }
 
@@ -3605,7 +3562,61 @@ a.ss_calendarButton:hover img {
     background-position:  left -16px; 
 }
  
+ 
+.ss_calendar_defaultCalendar {
+	border-color: #CCCCCC;
+	background-color: #E8EFF7;
+}
 
+.ss_calendar_calendar0 {
+	border-color: #66AA66;
+	background-color: #88CC88;
+}
+
+.ss_calendar_calendar1 {
+	border-color: #AA66AA;
+	background-color: #CC88CC;
+}
+
+.ss_calendar_calendar2 {
+	border-color: #66AAAA;
+	background-color: #88CCCC;
+}
+
+.ss_calendar_calendar3 {
+	border-color: #AAAA66;
+	background-color: #CCCC88;
+}
+
+.ss_calendar_calendar4 {
+	border-color: #CCCCCC;
+	background-color: #E8EFF7;
+}
+
+.ss_calendar_more_box {
+	position: absolute;
+	z-index: 2003;
+	background-color: transparent;
+	border: 2px solid #AFC8E3;
+	background-color: #FFFFFF;
+}
+
+.ss_calendar_more_box_header {
+	height: 19px;
+	width: 100%;
+	background-color: #ECECEC;
+}
+
+.ss_calendar_more_box_close {
+	float: right;
+  	background-image: url(<html:imagesPath/>pics/popup_close_box.gif);
+	background-repeat: no-repeat;
+	height: 13px;
+	width: 13px;
+	margin-top: 3px;
+	margin-right: 3px;
+}
+			  
 
 /*
  * Calendar events are displayed in small boxes with rounded corners.
@@ -3620,13 +3631,53 @@ a.ss_calendarButton:hover img {
  *   box bottom 2
  *
  */
+div.ss_cal_smallRBoxTop2 {
+  line-height: 1px;
+  margin: 0 2px;
+  font-size: 1px;
+  border-top-width: 1px;
+  border-top-style: solid;
+}
+
+div.ss_cal_smallRBoxTop1 {
+  line-height: 1px;
+  margin: 0 1px;
+  height: 1px;
+  font-size: 1px;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+
+div.ss_cal_smallRBoxBtm1 {
+  line-height: 1px;
+  margin: 0 1px;
+  height: 1px;
+  font-size: 1px;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-top: 0;
+  border-bottom: 0;
+}
+
+div.ss_cal_smallRBoxBtm2 {
+  line-height: 1px;
+  margin: 0 2px;
+  font-size: 1px;
+  border-bottom-width: 1px;
+  border-bottom-style: solid;
+}
+
 <c:set var="sboxMargin" value="0px" />
 <c:if test="<%= isIE %>">
-    <c:set var="sboxMargin" value="-1px" />
+    <c:set var="sboxMargin" value="0px" />
 </c:if>
-
-
-
 div.ss_smallRBoxTop2 {
   line-height: 1px;
   margin: ${sboxMargin} 2px;
@@ -3728,27 +3779,46 @@ div.ss_cal_eventBody {
   color: #666666;
   font-family: sans-serif;
   margin: 0px;
-  padding-left: 4px;
-  border-left: 1px solid;
-  border-right: 1px solid;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-top: 0;
+  border-bottom: 0;
 }
 
 
 div.ss_cal_eventBox {
   overflow: hidden;
   position: absolute;
+  border: 0;
 }
 
+div.ss_cal_moreBox {
+	background-color: #BBBBBB;
+}
+
+div.ss_cal_moreBox a, div.ss_cal_moreBox a:hover {
+	text-decoration: none;
+}
 
 div.ss_cal_monthEventBody {
   font-size: 11px;
   color: #666666;
   font-family: sans-serif;
   margin: 0px;
-  padding-left: 4px;
+  border-right-width: 1px;
+  border-right-style: solid;
+  border-left-width: 1px;
+  border-left-style: solid;
+  border-top: 0;
+  border-bottom: 0;
 }
 
-div.ss_cal_monthEventBody a {
+div.ss_cal_monthEventBody a, div.ss_cal_monthEventBody a:hover, 
+	div.ss_cal_monthEventBody a:link, div.ss_cal_monthEventBody a:active,
+	div.ss_cal_monthEventBody a:visited {
+	text-decoration: none;
 	color: #666666;
 }
 
@@ -3779,6 +3849,9 @@ ul.ss_calendarNaviBar {
 
 ul.ss_calendarNaviBar li {
 	display: table-cell;
+	list-style-image:none;
+	list-style-position:outside;
+	list-style-type:none;
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption, ul.ss_calendarNaviBar .ss_calendarNaviBarSeparator {
@@ -3809,23 +3882,14 @@ ul.ss_calendarNaviBar .ss_hoursSelectorTitle {
 	font-size: 11px;
 }
 
-ul.ss_calendarNaviBar .ss_calHoursSelectorMenu {
-	height: 22px;
-	<c:if test="<%= isIE %>">
-		margin-top: 6px;
-	</c:if>
-	<c:if test="<%= !isIE %>">
-		margin-top: 4px;
-	</c:if>	
+ul.ss_calendarNaviBar li.ss_calHoursSelectorMenu {
+ <c:if test="<%= isIE %>">
+	padding-top: 5px;
+ </c:if>
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOptionMiddleImg {
 	padding-top: 3px;
-}
-
-ul.ss_calendarNaviBar li.ss_calendarNaviBarOptionBigImg {
-	padding-top: 1px;
-	font-size: 0px;
 }
 
 ul.ss_calendarNaviBar li.ss_calendarNaviBarOption > a > img.ss_fullHeight {
@@ -3840,14 +3904,8 @@ ul.ss_calendarNaviBar li.ss_calendarNaviBarOption a.ss_calendarButton img {
 	margin: 7px 0px 7px 0px;
 }
 
-ul.ss_calendarNaviBar span.ss_calViewDatesDescriptions {	
+ul.ss_calendarNaviBar li.ss_calViewDatesDescriptions td {	
 	color: #FFFFFF;
-}
-
-ul.ss_calendarNaviBar li.ss_calViewDatesDescriptionLi {
-	width: 208px;
-	text-align: center;
-	padding: 0px;
 }
 
 ul.ss_calendarNaviBar li.ss_calSelectDate {
@@ -4286,11 +4344,15 @@ div.ss_questionContainer h4 span {
 }
 div.ss_questionContainer input {width:300px;}
 
+div.ss_content_outer table.ss_milestones_list, div.ss_content_outer table.ss_surveys_list  {
+	empty-cells: show;
+	border-collapse: collapse;
+}
+
 table.ss_surveys_list, table.ss_milestones_list {
 	width:100%;
 	margin-top:6px;
 	padding: 0px;
-	border-collapse: collapse;
 }
 table.ss_surveys_list th, table.ss_milestones_list th {
 	background-color: #dbe6f2;
@@ -4491,6 +4553,12 @@ div.ss_task_list_container {
 	padding:0px;
 	text-align: center;
 }
+
+div.ss_content_outer table.ss_tasks_list {
+	empty-cells: show;
+	border-collapse: collapse;
+}
+
 table.ss_tasks_list {
 	margin:6px 0px 4px 10px;
 	padding: 0px;
@@ -4499,6 +4567,8 @@ table.ss_tasks_list {
 	border-right: 1px solid #afc8e3;
 	border-spacing: 0px;
 	width: 99%;
+	empty-cells: show;
+	border-collapse: collapse;
 }
 
 table.ss_tasks_list th {

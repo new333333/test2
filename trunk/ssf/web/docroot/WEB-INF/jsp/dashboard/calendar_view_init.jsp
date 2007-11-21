@@ -39,60 +39,88 @@
 	</script>
 
 <script type="text/javascript">
-
-	var ss_findEventsUrl${prefix} = "<ssf:url 
-		    	adapter="true" 
-		    	portletName="ss_forum" 
-		    	action="__ajax_request" 
-		    	actionUrl="true" >
-					<ssf:param name="binderId" value="${ssBinder.id}" />
-					<ssf:param name="operation" value="find_calendar_events" />
-					<ssf:param name="namespace" value="${prefix}" />
-		    	</ssf:url><c:if test="${!empty ssDashboard}">&ssDashboardRequest=true</c:if>";
-		    	
-				
-	var ss_stickyCalendarDisplaySettings =  "<ssf:url 
-		    	adapter="true" 
-		    	portletName="ss_forum" 
-		    	action="__ajax_request" 
-		    	actionUrl="true" >
-					<ssf:param name="binderId" value="${ssBinder.id}" />
-					<ssf:param name="operation" value="sticky_calendar_display_settings" />
-		    	</ssf:url>";				
-	
-	var ss_addCalendarEntryUrl = "${addDefaultEntryURL}";
-	if (ss_addCalendarEntryUrl.indexOf("addEntryFromIFrame=1&") > -1) {
-		ss_addCalendarEntryUrl = ss_addCalendarEntryUrl.replace("addEntryFromIFrame=1&", "");
-	}
-					
-	var ss_calendarWorkDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";
-	var ss_calendarFullDayGridTitle = "<ssf:nlt tag="calendar.hours.fullday"/>";
+	dojo.require("dojo.lfx.rounded");
 	
 	function ss_getMonthCalendarEvents${prefix}() {
 		var formObj = document.getElementById("ssCalNavBar${prefix}");
 		if (formObj && formObj.ss_goto${prefix}_year && formObj.ss_goto${prefix}_month && formObj.ss_goto${prefix}_date) {
-			ss_calendar_${prefix}.ss_cal_Events.switchView("datedirect", formObj.ss_goto${prefix}_year.value, formObj.ss_goto${prefix}_month.value - 1, formObj.ss_goto${prefix}_date.value);
+			ss_calendar_${prefix}.switchView("datedirect", formObj.ss_goto${prefix}_year.value, formObj.ss_goto${prefix}_month.value - 1, formObj.ss_goto${prefix}_date.value);
 		}
 	}
 
-	ss_calendar.entriesLabel = "<ssf:nlt tag="statistic.unity.plural"/>";
-	ss_calendar_${prefix} = new ss_calendar("${prefix}");
-	ss_calendar_${prefix}.ss_cal_Grid.readOnly = true;
-
+	<c:set var="binderIds" value="" />
+	<c:set var="defaultCalendarId" value="" />
+	<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}" varStatus="status">
+		<c:choose>
+			<c:when test="${status.first}">
+				<c:set var="binderIds" value="${folder.id}" />
+				<c:set var="defaultCalendarId" value="${folder.id}" />
+			</c:when>
+			<c:otherwise>
+				<c:set var="binderIds" value="${binderIds}, ${folder.id}" />
+			</c:otherwise>
+		</c:choose>
+	</c:forEach>
+	
+	ss_calendar_${prefix} = ss_calendar.createCalendar({
+		containerId: "ss_calendar_container${prefix}", 
+		readOnly: true,
+		calendarDataProvider: new ss_calendar_data_provider("${ssBinder.id}",
+									<c:choose><c:when test="${binderIds == ''}">"none"</c:when><c:otherwise>[${binderIds}]</c:otherwise></c:choose>
+									<c:if test="${!empty ssDashboard}">, true</c:if>), 
+	    defaultCalendarId: "<c:choose><c:when test="${defaultCalendarId != ''}">${defaultCalendarId}</c:when><c:otherwise>${ssBinder.id}</c:otherwise></c:choose>",
+	    <c:if test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
+	    	weekFirstDay: "${ssUserProperties.calendarFirstDayOfWeek}",
+	    </c:if>
+	    <c:if test="${!empty ssUserProperties.calendarWorkDayStart}">
+	    	workDayStart: ${ssUserProperties.calendarWorkDayStart},
+	    </c:if>
+	    viewDatesDescriptionsFieldId : "ss_calViewDatesDescriptions${prefix}",
+	    viewSelectorHrefIds: {
+			days1: "ss_calDaySelectButton${prefix}", 
+			days3: "ss_cal3DaysSelectButton${prefix}", 
+			days5: "ss_cal5DaysSelectButton${prefix}", 
+	    	days7: "ss_cal7DaysSelectButton${prefix}", 
+			days14: "ss_cal14DaysSelectButton${prefix}", 
+			month: "ss_calMonthSelectButton${prefix}"
+		},
+		calendarHoursSelectorId: "ss_selectCalendarHours${prefix}",
+		eventsTypeChooseId: "ss_calendarEventsTypeChoose${prefix}",
+		eventsTypeSelectId: "ss_calendarEventsTypeSelect${prefix}",
+		onCalendarStyleChoose : function(binderId, cssStyle) {
+			var calendarHref = document.getElementById("ssDashboardFolderLink${prefix}" + binderId);			
+			if (calendarHref && calendarHref.style.borderWidth == "") {
+				calendarHref.style.borderWidth = "1px";
+				calendarHref.style.borderStyle = "solid";				
+				calendarHref.style.marginBottom = "2px";
+				dojo.html.addClass(calendarHref, cssStyle);
+				
+				dojo.lfx.rounded(
+					{tl: {radius:2}, 
+					tr: {radius:2}, 
+					bl: {radius:2}, 
+					br: {radius:2}}, [calendarHref]); 
+			}
+		}
+	});
+	
+	ss_calendar_${prefix}.locale.workDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";
+	ss_calendar_${prefix}.locale.fullDayGridTitle = "<ssf:nlt tag="calendar.hours.fullday"/>";
+	ss_calendar_${prefix}.locale.entriesLabel = "<ssf:nlt tag="statistic.unity.plural"/>";
+	ss_calendar_${prefix}.locale.dayNamesShort = ["<ssf:nlt tag="calendar.day.abbrevs.su"/>", "<ssf:nlt tag="calendar.day.abbrevs.mo"/>", "<ssf:nlt tag="calendar.day.abbrevs.tu"/>", "<ssf:nlt tag="calendar.day.abbrevs.we"/>", "<ssf:nlt tag="calendar.day.abbrevs.th"/>", "<ssf:nlt tag="calendar.day.abbrevs.fr"/>", "<ssf:nlt tag="calendar.day.abbrevs.sa"/>"];
+	ss_calendar_${prefix}.locale.monthNamesShort = ["<ssf:nlt tag="calendar.abbreviation.january"/>", "<ssf:nlt tag="calendar.abbreviation.february"/>", "<ssf:nlt tag="calendar.abbreviation.march"/>", "<ssf:nlt tag="calendar.abbreviation.april"/>", "<ssf:nlt tag="calendar.abbreviation.may"/>", "<ssf:nlt tag="calendar.abbreviation.june"/>", "<ssf:nlt tag="calendar.abbreviation.july"/>", "<ssf:nlt tag="calendar.abbreviation.august"/>", "<ssf:nlt tag="calendar.abbreviation.september"/>", "<ssf:nlt tag="calendar.abbreviation.october"/>", "<ssf:nlt tag="calendar.abbreviation.november"/>", "<ssf:nlt tag="calendar.abbreviation.december"/>"];
+	ss_calendar_${prefix}.locale.monthNames = ["<ssf:nlt tag="calendar.january"/>", "<ssf:nlt tag="calendar.february"/>", "<ssf:nlt tag="calendar.march"/>", "<ssf:nlt tag="calendar.april"/>", "<ssf:nlt tag="calendar.may"/>", "<ssf:nlt tag="calendar.june"/>", "<ssf:nlt tag="calendar.july"/>", "<ssf:nlt tag="calendar.august"/>", "<ssf:nlt tag="calendar.september"/>", "<ssf:nlt tag="calendar.october"/>", "<ssf:nlt tag="calendar.november"/>", "<ssf:nlt tag="calendar.december"/>"];
+	ss_calendar_${prefix}.locale.timeFormat = "<fmt:formatDate value="<%= new java.util.Date() %>" type="time" timeStyle="short" />";
+	ss_calendar_${prefix}.locale.allDay = "<ssf:nlt tag="calendar.allDay"/>";
+	ss_calendar_${prefix}.locale.noTitle = "--<ssf:nlt tag="entry.noTitle"/>--";		
+											
 	ss_addDashboardEvent("${componentId}", 
 						"onAfterShow",
 						function() {
 							ss_calendar_${prefix}.ss_initializeCalendar();
-							
-							ss_createOnLoadObj('ss_cal_hoverBox${prefix}', function() {
-								ss_moveDivToBody("hoverBox${prefix}");
-								ss_moveDivToBody("infoLightBox${prefix}");
-								ss_moveDivToBody("infoBox${prefix}");
-								ss_moveDivToBody("infoBox2${prefix}");
-							});
 						});
 	if (!window.ssScope) { ssScope = {}; };
-		ssScope.refreshView = function (entryId) {
+	ssScope.refreshView = function (entryId) {
 		ss_calendar_${prefix}.refreshEntryEvents(entryId);
 	}
 
