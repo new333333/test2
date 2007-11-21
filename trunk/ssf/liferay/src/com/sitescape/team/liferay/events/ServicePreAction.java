@@ -54,7 +54,7 @@ public class ServicePreAction extends Action {
 	protected void doRun(HttpServletRequest req) throws Exception {
 		User user = PortalUtil.getUser(req);
 		
-		if(user == null)
+		if(user == null || user.isDefaultUser())
 			setupGuestAccess(req);		
 	}
 	
