@@ -34,6 +34,7 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -98,6 +99,7 @@ import com.sitescape.team.survey.Question;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.survey.SurveyModel;
 import com.sitescape.team.task.TaskHelper;
+import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -156,6 +158,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxUploadImageFile(request, response); 
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 				ajaxUploadICalendarFile(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_CONFIGURATION)) {
+				ajaxSaveCalendarConfiguration(request, response);				
 			} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
 				ajaxSetBinderOwnerId(request, response);
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
@@ -345,6 +349,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxFindPlaceForm(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 			return ajaxUploadICalendarFileStatus(request, response);
+		} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_CONFIGURATION)) {
+			return ajaxSaveCalendarConfigurationStatus(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_GET_CHANGE_LOG_ENTRY_FORM)) {
 			return ajaxGetChangeLogEntryForm(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_MEETING_RECORDS)) {
@@ -1024,6 +1030,38 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/json/icalendar_upload", model);
 	}
 	
+	private void ajaxSaveCalendarConfiguration(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		int weekFirstDay = PortletRequestUtils.getIntParameter(request, "weekFirstDay", CalendarHelper.getFirstDayOfWeek());
+		int workDayStart = PortletRequestUtils.getIntParameter(request, "workDayStart", 8);
+				
+		if (weekFirstDay < 1 || weekFirstDay > 7) {
+			weekFirstDay = CalendarHelper.getFirstDayOfWeek();
+		}
+		
+		if (workDayStart < 0 && workDayStart > 12) {
+			workDayStart = 6;
+		}
+		
+		User user = RequestContextHolder.getRequestContext().getUser();
+		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+
+		Integer weekFirstDayOld = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
+		if (weekFirstDayOld == null || weekFirstDay != weekFirstDayOld) {
+			getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK, weekFirstDay);
+		}
+
+		Integer workDayStartOld = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_WORK_DAY_START);
+		if (workDayStartOld == null || workDayStart != workDayStartOld) {
+			getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_CALENDAR_WORK_DAY_START, workDayStart);
+		}
+	}
+
+	private ModelAndView ajaxSaveCalendarConfigurationStatus(RenderRequest request, RenderResponse response) {
+		Map model = new HashMap();
+		return new ModelAndView("forum/json/calendar_config", model);
+	}	
+	
 	private ModelAndView ajaxGetChangeLogEntryForm(RenderRequest request, RenderResponse response) {
 		Map model = new HashMap();
 		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
@@ -1063,6 +1101,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private void ajaxStickyCalendarDisplaySettings(ActionRequest request, 
 			ActionResponse response) {
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		String eventType = PortletRequestUtils.getStringParameter(request, "eventType", "");
 		if (!"".equals(eventType)) {
@@ -1072,8 +1111,14 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
 		if (!"".equals(gridType)) {
 			int gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
-			EventsViewHelper.setCalendarGridType(portletSession, gridType);
-			EventsViewHelper.setCalendarGridSize(portletSession, gridSize);
+			
+			UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+			
+			gridType = EventsViewHelper.setCalendarGridType(portletSession, userProperties, gridType);
+			gridSize = EventsViewHelper.setCalendarGridSize(portletSession, userProperties, gridSize);
+			
+			getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID_TYPE, gridType);
+			getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID_SIZE, gridSize);
 		}
 		
 		String dayViewType = PortletRequestUtils.getStringParameter(request, "dayViewType", "");
@@ -1473,8 +1518,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 	
 	private ModelAndView ajaxFindCalendarEvents(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Map model = new HashMap();
-		
+		Map model = new HashMap();	
 		if (WebHelper.isUserLoggedIn(request)) {
 			model.put(WebKeys.NAMESPACE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE));
 			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
@@ -1519,12 +1563,25 @@ public class AjaxController  extends SAbstractControllerRetry {
 				model.put(WebKeys.CALENDAR_CURRENT_DATE, currentDate);
 				EventsViewHelper.setCalendarCurrentDate(portletSession, currentDate);
 				
+				User user = RequestContextHolder.getRequestContext().getUser();
+				UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+				
 				String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
 				Integer gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
-				model.put(WebKeys.CALENDAR_CURRENT_GRID_TYPE, EventsViewHelper.setCalendarGridType(portletSession, gridType));
-				model.put(WebKeys.CALENDAR_CURRENT_GRID_SIZE, EventsViewHelper.setCalendarGridSize(portletSession, gridSize));
 				
-				CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate);
+				gridType = EventsViewHelper.setCalendarGridType(portletSession, userProperties, gridType);
+				gridSize = EventsViewHelper.setCalendarGridSize(portletSession, userProperties, gridSize);
+
+				getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID_TYPE, gridType);
+				getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID_SIZE, gridSize);
+
+				model.put(WebKeys.CALENDAR_CURRENT_GRID_TYPE, gridType);
+				model.put(WebKeys.CALENDAR_CURRENT_GRID_SIZE, gridSize);
+				
+				Integer weekFirstDay = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
+				weekFirstDay = weekFirstDay!=null?weekFirstDay:CalendarHelper.getFirstDayOfWeek();
+				
+				CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate, weekFirstDay);
 	
 				options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
 		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
@@ -1536,7 +1593,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
 		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
 			
-				User user = RequestContextHolder.getRequestContext().getUser();
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
 				
