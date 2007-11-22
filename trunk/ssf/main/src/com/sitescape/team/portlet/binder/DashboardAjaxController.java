@@ -30,7 +30,6 @@ public class DashboardAjaxController extends SAbstractControllerRetry {
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 		if (WebHelper.isUserLoggedIn(request)) {
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 			String scope = PortletRequestUtils.getStringParameter(request, "_scope");
@@ -39,26 +38,32 @@ public class DashboardAjaxController extends SAbstractControllerRetry {
 			if (op.equals(WebKeys.OPERATION_SAVE_DASHBOARD_LAYOUT)) {
 				//Save the order of the dashboard components
 				String layout = PortletRequestUtils.getStringParameter(request, "dashboard_layout", "");
+				Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 				Binder binder = getBinderModule().getBinder(binderId);
 				DashboardHelper.saveComponentOrder(layout, binder, scope);
 			} else if (op.equals(WebKeys.OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS)) {
+				Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 				getProfileModule().setUserProperty(null, binderId, 
 							ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL, Boolean.TRUE);
 			} else if (op.equals(WebKeys.OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS)) {
+				Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 				getProfileModule().setUserProperty(null, binderId, 
 							ObjectKeys.USER_PROPERTY_DASHBOARD_SHOW_ALL, Boolean.FALSE);
 			} else if (op.equals(WebKeys.OPERATION_DASHBOARD_HIDE_COMPONENT)) {
 				if (Validator.isNotNull(componentId)) {
+					Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 					Binder binder = getBinderModule().getBinder(binderId);
 					DashboardHelper.showHideComponent(request, binder, componentId, scope, "hide");
 				}
 			} else if (op.equals(WebKeys.OPERATION_DASHBOARD_SHOW_COMPONENT)) {
 				if (Validator.isNotNull(componentId)) {
+					Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 					Binder binder = getBinderModule().getBinder(binderId);
 					DashboardHelper.showHideComponent(request, binder, componentId, scope, "show");
 				}				
 			} else if (op.equals(WebKeys.OPERATION_DASHBOARD_DELETE_COMPONENT)) {
 				if (Validator.isNotNull(componentId)) {
+					Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));
 					Binder binder = getBinderModule().getBinder(binderId);
 					DashboardHelper.deleteComponent(request, binder, componentId, scope);
 				}
