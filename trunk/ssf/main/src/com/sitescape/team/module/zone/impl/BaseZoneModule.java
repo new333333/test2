@@ -16,4 +16,8 @@ public class BaseZoneModule extends AbstractZoneModule {
 		return SZoneConfig.getDefaultZoneName();
 	}
 
+	public String getVirtualHost(String zoneName) {
+		return null;
+	}
+
 }

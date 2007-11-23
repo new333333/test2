@@ -48,7 +48,6 @@ public class PostingDef extends PersistentObject {
     private Binder binder;
     private String emailAddress="";
     private Definition definition;
-    private Long zoneId;
  
     /**
      * @hibernate.property 

@@ -28,17 +28,15 @@
  */
 package com.sitescape.team.security.function;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ZonedObject;
 import com.sitescape.team.util.CollectionUtil;
-import com.sitescape.team.util.NLT;
-import com.sitescape.util.Validator;
+
 /**
  * @hibernate.class table="SS_Functions" dynamic-update="true" lazy="false"
  * @hibernate.mapping auto-import="false"
@@ -49,10 +47,9 @@ import com.sitescape.util.Validator;
  * 
  * @author Jong Kim
  */
-public class Function {
+public class Function extends ZonedObject {
     
     private Long id;
-    private Long zoneId;
     private String name;
     private Set operations; // A set of WorkSpaceOperation - this is not persistent
     private Set operationNames; // Used for persistence only

@@ -58,4 +58,6 @@ public interface ZoneModule {
 	 * @return
 	 */
 	public Long getZoneIdByVirtualHost(String virtualHost);
+	
+	public String getVirtualHost(String zoneName);
 }

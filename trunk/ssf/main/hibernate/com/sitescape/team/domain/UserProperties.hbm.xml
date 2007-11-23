@@ -8,6 +8,7 @@
       <key-property name="principalId"/>
       <key-property name="binderId"/>
     </composite-id>
+    <property name="zoneId" access="field"/>
     <property name="properties" not-null="true" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
   </class>
 </hibernate-mapping>

@@ -38,11 +38,15 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Http;
+import com.sitescape.team.context.request.RequestContextHolder;
 
 public class WebUrlUtil {
 	
@@ -301,7 +305,7 @@ public class WebUrlUtil {
 				}
 				
 				if(host == null)
-					host = req.getServerName();
+					host = req.getServerName().toLowerCase();
 				if(port == -1)
 					port = req.getServerPort();
 				
@@ -313,7 +317,7 @@ public class WebUrlUtil {
 			else {
 				if(logger.isTraceEnabled())
 					logger.trace("No context (http request) passed in. Getting values from properties file.");
-				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+				host = getStaticHostName();
 				port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
 				secure = false;
 			}
@@ -343,7 +347,7 @@ public class WebUrlUtil {
 				}
 				
 				if(host == null)
-					host = req.getServerName();
+					host = req.getServerName().toLowerCase();
 				if(port == -1)
 					port = req.getServerPort();
 				
@@ -355,18 +359,18 @@ public class WebUrlUtil {
 			else {
 				if(logger.isTraceEnabled())
 					logger.trace("No context (http request) passed in. Getting values from properties file.");
-				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+				host = getStaticHostName();
 				port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
 				secure = true;
 			}			
 		}
 		else if(webProtocol == WEB_PROTOCOL_HTTP) {
-			host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+			host = getStaticHostName();
 			port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
 			secure = false;		
 		}
 		else { // WEB_PROTOCOL_HTTPS
-			host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+			host = getStaticHostName();
 			port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
 			secure = true;			
 		}
@@ -409,7 +413,7 @@ public class WebUrlUtil {
 				}
 				
 				if(host == null)
-					host = req.getServerName();
+					host = req.getServerName().toLowerCase();
 				if(port == -1)
 					port = req.getServerPort();
 				
@@ -421,7 +425,7 @@ public class WebUrlUtil {
 			else {
 				if(logger.isTraceEnabled())
 					logger.trace("No context (portlet request) passed in. Getting values from properties file.");
-				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+				host = getStaticHostName();
 				port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
 				// context override value isSecure is relevant only when req is non-null
 				secure = false;
@@ -452,7 +456,7 @@ public class WebUrlUtil {
 				}
 				
 				if(host == null)
-					host = req.getServerName();
+					host = req.getServerName().toLowerCase();
 				if(port == -1)
 					port = req.getServerPort();
 				
@@ -464,19 +468,19 @@ public class WebUrlUtil {
 			else {
 				if(logger.isTraceEnabled())
 					logger.trace("No context (portlet request) passed in. Getting values from properties file.");
-				host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+				host = getStaticHostName();
 				port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
 				// context override value isSecure is relevant only when req is non-null
 				secure = true;
 			}			
 		}
 		else if(webProtocol == WEB_PROTOCOL_HTTP) {
-			host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+			host = getStaticHostName();
 			port = SPropsUtil.getInt(SPropsUtil.SSF_PORT, Http.HTTP_PORT);
 			secure = false;		
 		}
 		else { // WEB_PROTOCOL_HTTPS
-			host = SPropsUtil.getString(SPropsUtil.SSF_HOST);
+			host = getStaticHostName();
 			port = SPropsUtil.getInt(SPropsUtil.SSF_SECURE_PORT, Http.HTTPS_PORT);
 			secure = true;			
 		}
@@ -602,4 +606,21 @@ public class WebUrlUtil {
 				ssfsWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;			
 		}
 	}
+	
+	private static String getStaticHostName() {
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		if(zoneName.equals(SZoneConfig.getDefaultZoneName())) {
+			// Default zone does not have virtual host name associated with it.
+			// Even if it did, we use the value specified in the properties file.
+			return SPropsUtil.getString(SPropsUtil.SSF_DEFAULT_HOST);
+		}
+		else {
+			return getZoneModule().getVirtualHost(zoneName);
+		}
+	}
+	
+	private static ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	}
+
 }

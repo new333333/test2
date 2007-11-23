@@ -72,7 +72,7 @@ import com.sitescape.util.Validator;
  * The name can remain the same, so user reporting can find the name of list members.
  * The folder/owner/ownerType fields should be used to walk up the object hierarchy.
  */
-public class CustomAttribute  {
+public class CustomAttribute extends ZonedObject {
     protected String stringValue;
     protected Description description;
     protected Long longValue;

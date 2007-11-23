@@ -47,9 +47,7 @@ public class UrlUtil {
 		
 		url.append(WebUrlUtil.getRssRootURL(req)).
 			append("list").
-			append("?zn=").
-			append(rc.getZoneName()).
-			append("&bi=").
+			append("?bi=").
 			append(binderId).
 			append("&ui=").
 			append(rc.getUserId()).

@@ -41,7 +41,7 @@ import com.sitescape.team.module.shared.XmlUtils;
  * @author janet
  */
 
-public class WorkflowResponse {
+public class WorkflowResponse extends ZonedObject {
 	protected String id;
 	protected String definitionId;
 	protected String name;

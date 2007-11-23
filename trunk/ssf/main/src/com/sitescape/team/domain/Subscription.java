@@ -45,7 +45,7 @@ package com.sitescape.team.domain;
  * An individual chooses to be notified.  A notification is managed by the folder 
  * administrator.
  */
-public class Subscription  {
+public class Subscription extends ZonedObject {
     public static final int DIGEST_STYLE_EMAIL_NOTIFICATION = 1;
     public static final int MESSAGE_STYLE_EMAIL_NOTIFICATION = 2;
     public static final int MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION = 3;

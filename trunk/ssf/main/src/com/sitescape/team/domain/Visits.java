@@ -42,7 +42,7 @@ import com.sitescape.team.domain.UserEntityPK;
  * @author Janet McCann
  *
  */
-public class Visits {
+public class Visits extends ZonedObject {
     private UserEntityPK id;
     private Long reads = Long.valueOf(0);
     protected Visits() {

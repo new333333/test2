@@ -47,7 +47,7 @@ import com.sitescape.team.domain.UserPropertiesPK;
  * A null folder is used to indicate general properties
  *
  */
-public class UserProperties {
+public class UserProperties extends ZonedObject {
     private Map userProperties;
     private UserPropertiesPK id;
 
