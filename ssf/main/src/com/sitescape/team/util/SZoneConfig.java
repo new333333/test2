@@ -60,11 +60,10 @@ public class SZoneConfig {
 	private Document doc;
 	private Element root;
 	private String defaultZoneName;
-	
 	// Caches super user names for each zone for faster access
-	private static ConcurrentHashMap<String,String> adminUsers = new ConcurrentHashMap<String,String>();
+	private ConcurrentHashMap<String,String> adminUsers = new ConcurrentHashMap<String,String>();
 	// Caches default user names for each zone for faster access
-	private static ConcurrentHashMap<String,String> guestUsers = new ConcurrentHashMap<String,String>();
+	private ConcurrentHashMap<String,String> guestUsers = new ConcurrentHashMap<String,String>();
 	
 	public SZoneConfig() {
 		if(instance != null)
@@ -161,6 +160,14 @@ public class SZoneConfig {
     }
     
     public static String getAdminUserName(String zoneName) {
+    	return getInstance()._getAdminUserName(zoneName);
+    }
+    
+    public static String getGuestUserName(String zoneName) {
+    	return getInstance()._getGuestUserName(zoneName);
+    }
+    
+    protected String _getAdminUserName(String zoneName) {
     	String adminUser = adminUsers.get(zoneName);
     	if(adminUser == null) {
     		adminUser = SZoneConfig.getString(zoneName, "property[@name='adminUser']", "admin");
@@ -169,7 +176,7 @@ public class SZoneConfig {
     	return adminUser;
     }
     
-    public static String getGuestUserName(String zoneName) {
+    protected String _getGuestUserName(String zoneName) {
     	String guestUser = guestUsers.get(zoneName);
     	if(guestUser == null) {
     		guestUser = SZoneConfig.getString(zoneName, "property[@name='guestUser']", "guest");

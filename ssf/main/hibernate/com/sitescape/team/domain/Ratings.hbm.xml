@@ -8,6 +8,7 @@
       <key-property name="entityId"/>
       <key-property name="entityType"/>
     </composite-id>
+   <property name="zoneId" access="field"/>
    <property name="rating"/>
   </class>
 </hibernate-mapping>

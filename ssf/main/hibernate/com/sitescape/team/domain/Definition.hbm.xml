@@ -9,12 +9,12 @@
       <generator class="uuid.hex"/>
     </id>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <property name="zoneId" not-null="true"/>
     <property name="name" length="64"/>
     <property name="title" length="128"/>
     <property name="type"/>
     <property name="internalId" length="32"/>
     <property name="visibility"/>
-    <property name="zoneId" not-null="true"/>
     <property name="encoding" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
     <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>

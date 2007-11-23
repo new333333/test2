@@ -31,28 +31,57 @@ package com.sitescape.team.security.authentication;
 import java.util.Map;
 
 import com.sitescape.team.domain.User;
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
 
 public class AuthenticationManagerUtil {
 
-	public static User authenticate(String zoneName, String username, String password,
-			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
-			Map updates, String authenticatorName)
+	public static User authenticate(final String zoneName, final String username, 
+			final String password, final boolean createUser, 
+			final boolean passwordAutoSynch, final boolean ignorePassword, 
+			final Map updates, final String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
-		AuthenticationManager am = (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
-		return am.authenticate(zoneName, username, password, true, passwordAutoSynch, ignorePassword, updates, authenticatorName);
+		return (User) new RunasTemplate(zoneName, SZoneConfig.getAdminUserName(zoneName)).execute(
+				new RunasCallback() {
+					public Object doAs() {
+						return getAuthenticationManager().authenticate
+						(zoneName, username, password, true, passwordAutoSynch, ignorePassword, updates, authenticatorName);
+					}	
+				}
+			);
 	}
 	
-	public static User authenticate(String zoneName, String username, String password,
-			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
+	public static User authenticate(final String zoneName, final String username, 
+			final String password, final boolean passwordAutoSynch, 
+			final boolean ignorePassword, final String authenticatorName)
 		throws UserDoesNotExistException, PasswordDoesNotMatchException {
-		AuthenticationManager am = (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
-		return am.authenticate(zoneName, username, password, passwordAutoSynch, ignorePassword, authenticatorName);
+		return (User) new RunasTemplate(zoneName, SZoneConfig.getAdminUserName(zoneName)).execute(
+				new RunasCallback() {
+					public Object doAs() {
+						return getAuthenticationManager().authenticate
+						(zoneName, username, password, passwordAutoSynch, ignorePassword, authenticatorName);
+					}	
+				}
+			);
 	}
 
-	public static User authenticate(String zoneName, Long userId, String binderId, String privateDigest, String authenticatorName)
+	public static User authenticate(final String zoneName, final Long userId, 
+			final String binderId, final String privateDigest, final String authenticatorName)
 	throws UserDoesNotExistException, DigestDoesNotMatchException {
-		AuthenticationManager am = (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
-		return am.authenticate(zoneName, userId, binderId, privateDigest, authenticatorName);
+		return (User) new RunasTemplate(zoneName, SZoneConfig.getAdminUserName(zoneName)).execute(
+				new RunasCallback() {
+					public Object doAs() {
+						return getAuthenticationManager().authenticate
+						(zoneName, userId, binderId, privateDigest, authenticatorName);
+					}	
+				}
+			);
 	}
+	
+	protected static AuthenticationManager getAuthenticationManager() {
+		return (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
+	}
+
 }

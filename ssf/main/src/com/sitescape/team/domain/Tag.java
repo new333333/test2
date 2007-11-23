@@ -37,7 +37,7 @@ package com.sitescape.team.domain;
  * @author Janet McCann
  *
  */
-public class Tag  {
+public class Tag extends ZonedObject {
 	protected String id;
 	protected String name="";
 	protected EntityIdentifier ownerId;

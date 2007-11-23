@@ -62,9 +62,7 @@ public class UrlUtil {
 		url.append(WebUrlUtil.getIcalRootURL(req)).
 			append("basic").
 			append(MailHelper.ICAL_FILE_EXTENSION).
-			append("?zn=").
-			append(rc.getZoneName()).
-			append("&bi=").
+			append("?bi=").
 			append(binderId);
 		
 		if (entryId != null) {

@@ -64,7 +64,6 @@ public abstract class Principal extends Entry  {
     protected String name;
     protected String foreignName="";
     protected List memberOf;//initialized by hiberate access=field
-    protected Long zoneId;
     protected Long workspaceId;
     protected List iMemberOf;
     protected String internalId;

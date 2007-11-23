@@ -110,6 +110,14 @@ public class RequestContextUtil {
 		RequestContextHolder.clear();
 	}
 	
+	public static void setThreadContext(RequestContext rc) {
+		RequestContextHolder.setRequestContext(rc);
+	}
+	
+	public static RequestContext getThreadContext() {
+		return RequestContextHolder.getRequestContext();
+	}
+	
 	public static User resolveToUser() {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		

@@ -47,7 +47,7 @@ import com.sitescape.team.util.XmlFileUtil;
  * We only update rows in this table if a binder moves
  *
  */
-public class ChangeLog {
+public class ChangeLog extends ZonedObject {
 	public static final String ADDENTRY="addEntry";
 	public static final String MODIFYENTRY="modifyEntry";
 	public static final String DELETEENTRY="deleteEntry";
@@ -83,7 +83,6 @@ public class ChangeLog {
 	protected String entityType;
 	protected Long owningBinderId;
 	protected Long version;
-	protected Long zoneId;
 	protected String docNumber;
 	protected String owningBinderKey;  //used for queries
 	

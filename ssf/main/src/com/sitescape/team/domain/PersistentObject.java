@@ -35,7 +35,7 @@ import com.sitescape.team.util.Constants;
  * @author Jong Kim
  *
  */
-public class PersistentObject implements PersistentStringId {
+public class PersistentObject extends ZonedObject implements PersistentStringId {
     private String id;
     long lockVersion;
 

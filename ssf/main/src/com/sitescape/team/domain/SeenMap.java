@@ -45,7 +45,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
  * @author Janet McCann
  * Manage the seen map for a user. 
  */
-public class SeenMap {
+public class SeenMap extends ZonedObject {
 	protected Long principalId;
 	protected Map seenMap;
 	protected Date lastPrune;

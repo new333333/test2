@@ -56,7 +56,7 @@ public class SPropsUtil extends PropsUtil {
 	public static final String DEBUG_WEB_REQUEST_ENV_PRINT = "debug.web.request.env.print";
 	
 	public static final String SSF_CTX ="ssf.ctx";
-	public static final String SSF_HOST = "ssf.host";
+	public static final String SSF_DEFAULT_HOST = "ssf.default.host";
 	public static final String SSF_PORT = "ssf.port";
 	public static final String SSF_SECURE_PORT = "ssf.secure.port";
 	public static final String SSFS_CTX = "ssfs.ctx";

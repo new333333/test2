@@ -53,7 +53,6 @@ public class Definition extends PersistentTimestampObject  {
 	private int visibility=PUBLIC;
     private byte[] xmlencoding;
     private Document doc;
-    private Long zoneId;
     private String title="";
     private String iId;
     //type values

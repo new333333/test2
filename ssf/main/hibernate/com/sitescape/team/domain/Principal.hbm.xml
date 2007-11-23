@@ -24,12 +24,12 @@
       <key column="principal" on-delete="cascade"/>
       <one-to-many class="com.sitescape.team.domain.Event"/>
     </set>
+    <property name="zoneId"/>
     <property name="type" update="false" insert="false"/> 
     <property name="workspaceId"/>
     <property name="internalId" length="32"/>
     <property name="deleted"/>
     <property name="disabled"/>
-    <property name="zoneId"/>
 	<property name="logVersion"/>
 	<property name="emailAddress" length="256" />
     <map lazy="true" name="alternateEmails" table="SS_AlternateEmail">

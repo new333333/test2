@@ -35,7 +35,7 @@ import java.util.Date;
  * @hibernate.discriminator type="char" discriminator-value="A" column="type"
  *
  */
-public class AuditTrail  {
+public class AuditTrail extends ZonedObject {
 	public enum AuditType {
 		unknown,
 		view,

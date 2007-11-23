@@ -8,6 +8,7 @@
       <key-property name="type"/>
       <key-property name="name" length="255"/>
     </composite-id>
+    <property name="zoneId" access="field"/>
     <property name="entityId"/>
 </class>
 </hibernate-mapping>

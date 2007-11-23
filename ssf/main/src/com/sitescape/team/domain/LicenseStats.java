@@ -39,9 +39,8 @@ import java.util.Date;
  * Log information used for license monitoring.
  * 
  */
-public class LicenseStats {
+public class LicenseStats extends ZonedObject {
 	protected String id;
-    protected Long zoneId; 
     protected Date snapshotDate;
 	protected long internalUserCount;
 	protected long externalUserCount;

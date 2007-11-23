@@ -30,7 +30,7 @@ package com.sitescape.team.domain;
 
 import java.io.Serializable;
 
-public class LibraryEntry implements Serializable {
+public class LibraryEntry extends ZonedObject implements Serializable {
 	private final static long serialVersionUID=1;
 	protected Long binderId;
 	protected String name=""; //set by hibernate access=Field

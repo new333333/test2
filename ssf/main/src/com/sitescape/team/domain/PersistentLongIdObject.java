@@ -41,7 +41,7 @@ import com.sitescape.team.util.Constants;
 /**
  * Base class of objects with a Long id and hibernate version column
  */
-public class PersistentLongIdObject implements PersistentLongId {
+public class PersistentLongIdObject extends ZonedObject implements PersistentLongId {
     private Long id;
     long lockVersion;
  

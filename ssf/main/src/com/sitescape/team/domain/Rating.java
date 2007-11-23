@@ -42,7 +42,7 @@ import com.sitescape.team.domain.UserEntityPK;
  * @author Janet McCann
  *
  */
-public class Rating {
+public class Rating extends ZonedObject {
     private UserEntityPK id;
     private Long rating = Long.valueOf(0);
     

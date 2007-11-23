@@ -62,7 +62,7 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, 
 			FilterChain chain) throws IOException, ServletException {
 		//String zoneName = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
-		String zoneName = getZoneModule().getZoneNameByVirtualHost(request.getServerName());
+		String zoneName = getZoneModule().getZoneNameByVirtualHost(request.getServerName().toLowerCase());
 		Long userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
 		String binderId = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		
 		String privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 

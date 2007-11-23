@@ -45,7 +45,7 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class WorkflowState {
+public class WorkflowState extends ZonedObject {
     protected String state;
     protected String threadName;
     protected Long tokenId;

@@ -9,6 +9,7 @@
     </id>
     <discriminator type="char" column="type"/>
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <property name="zoneId" access="field"/>
     <property name="type" update="false" insert="false"/>
      
     <component name="owner" class="com.sitescape.team.domain.AnyOwner">

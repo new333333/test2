@@ -10,6 +10,7 @@
     </id>
     <discriminator type="string" column="type" length="1"/>
    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <property name="zoneId" access="field"/>
  	<property name="nextComponentId"/>
     <property name="showComponents"/>
     <property name="version"/>

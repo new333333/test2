@@ -33,6 +33,7 @@ import java.util.Set;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.ZonedObject;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.util.LongIdUtil;
 
@@ -47,10 +48,9 @@ import com.sitescape.team.util.LongIdUtil;
  * 
  * @author Jong Kim
  */
-public class WorkAreaFunctionMembership {
+public class WorkAreaFunctionMembership extends ZonedObject {
        
     private Long id;
-    private Long zoneId;
     private Long workAreaId;
     private String workAreaType;
     private Long functionId;

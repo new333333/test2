@@ -1,8 +1,7 @@
 package com.sitescape.team.domain;
 
-public class ZoneInfo {
+public class ZoneInfo extends ZonedObject {
 	protected String id;
-	protected Long zoneId;
 	protected String zoneName;
 	protected String virtualHost;
 	
