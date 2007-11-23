@@ -33,51 +33,49 @@ import java.util.Map;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.runas.RunasCallback;
 import com.sitescape.team.runas.RunasTemplate;
-import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
 
 public class AuthenticationManagerUtil {
 
-	public static User authenticate(final String zoneName, final String username, 
-			final String password, final boolean createUser, 
-			final boolean passwordAutoSynch, final boolean ignorePassword, 
-			final Map updates, final String authenticatorName)
-		throws PasswordDoesNotMatchException, UserDoesNotExistException {
-		return (User) new RunasTemplate(zoneName, SZoneConfig.getAdminUserName(zoneName)).execute(
-				new RunasCallback() {
-					public Object doAs() {
-						return getAuthenticationManager().authenticate
-						(zoneName, username, password, true, passwordAutoSynch, ignorePassword, updates, authenticatorName);
-					}	
-				}
-			);
-	}
-	
-	public static User authenticate(final String zoneName, final String username, 
-			final String password, final boolean passwordAutoSynch, 
-			final boolean ignorePassword, final String authenticatorName)
-		throws UserDoesNotExistException, PasswordDoesNotMatchException {
-		return (User) new RunasTemplate(zoneName, SZoneConfig.getAdminUserName(zoneName)).execute(
-				new RunasCallback() {
-					public Object doAs() {
-						return getAuthenticationManager().authenticate
-						(zoneName, username, password, passwordAutoSynch, ignorePassword, authenticatorName);
-					}	
-				}
-			);
+	public static User authenticate(final String zoneName,
+			final String username, final String password,
+			final boolean createUser, final boolean passwordAutoSynch,
+			final boolean ignorePassword, final Map updates,
+			final String authenticatorName)
+			throws PasswordDoesNotMatchException, UserDoesNotExistException {
+		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
+			public Object doAs() {
+				return getAuthenticationManager().authenticate(zoneName,
+						username, password, true, passwordAutoSynch,
+						ignorePassword, updates, authenticatorName);
+			}
+		}, zoneName);
 	}
 
-	public static User authenticate(final String zoneName, final Long userId, 
-			final String binderId, final String privateDigest, final String authenticatorName)
-	throws UserDoesNotExistException, DigestDoesNotMatchException {
-		return (User) new RunasTemplate(zoneName, SZoneConfig.getAdminUserName(zoneName)).execute(
-				new RunasCallback() {
-					public Object doAs() {
-						return getAuthenticationManager().authenticate
-						(zoneName, userId, binderId, privateDigest, authenticatorName);
-					}	
-				}
-			);
+	public static User authenticate(final String zoneName,
+			final String username, final String password,
+			final boolean passwordAutoSynch, final boolean ignorePassword,
+			final String authenticatorName) throws UserDoesNotExistException,
+			PasswordDoesNotMatchException {
+		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
+			public Object doAs() {
+				return getAuthenticationManager().authenticate(zoneName,
+						username, password, passwordAutoSynch, ignorePassword,
+						authenticatorName);
+			}
+		}, zoneName);
+	}
+
+	public static User authenticate(final String zoneName, final Long userId,
+			final String binderId, final String privateDigest,
+			final String authenticatorName) throws UserDoesNotExistException,
+			DigestDoesNotMatchException {
+		return (User) RunasTemplate.runasAdmin(new RunasCallback() {
+			public Object doAs() {
+				return getAuthenticationManager().authenticate(zoneName,
+						userId, binderId, privateDigest, authenticatorName);
+			}
+		}, zoneName);
 	}
 	
 	protected static AuthenticationManager getAuthenticationManager() {
