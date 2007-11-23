@@ -32,32 +32,42 @@ import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextUtil;
 
 import com.sitescape.team.domain.User;
+import com.sitescape.team.util.SZoneConfig;
 
 public class RunasTemplate {
 
-	protected RequestContext runasRC;
-	
-	public RunasTemplate(User runasUser) {
-		runasRC = new RequestContext(runasUser, null);
+	public static Object runas(RunasCallback action, User user) {
+		RequestContext runasRC = new RequestContext(user, null);
+		return doRunas(action, runasRC);
+	}
+	public static Object runas(RunasCallback action, String zoneName, String userName) {
+		RequestContext runasRC = new RequestContext(zoneName, userName, null);
+		return doRunas(action, runasRC);
+	}
+	public static Object runas(RunasCallback action, String zoneName, Long userId) {
+		RequestContext runasRC = new RequestContext(zoneName, userId, null);
+		return doRunas(action, runasRC);
+	}
+	public static Object runas(RunasCallback action, Long zoneId, String userName) {
+		RequestContext runasRC = new RequestContext(zoneId, userName, null);
+		return doRunas(action, runasRC);
+	}
+	public static Object runas(RunasCallback action, Long zoneId, Long userId) {
+		RequestContext runasRC = new RequestContext(zoneId, userId, null);
+		return doRunas(action, runasRC);
+	}
+	public static Object runasAdmin(RunasCallback action, String zoneName) {
+		String adminUserName = SZoneConfig.getAdminUserName(zoneName);
+		RequestContext runasRC = new RequestContext(zoneName, adminUserName, null);
+		return doRunas(action, runasRC);
+	}
+	public static Object runasGuest(RunasCallback action, String zoneName) {
+		String guestUserName = SZoneConfig.getGuestUserName(zoneName);
+		RequestContext runasRC = new RequestContext(zoneName, guestUserName, null);
+		return doRunas(action, runasRC);
 	}
 	
-	public RunasTemplate(String runasZoneName, String runasUserName) {
-		runasRC = new RequestContext(runasZoneName, runasUserName, null);
-	}
-	
-	public RunasTemplate(String runasZoneName, Long runasUserId) {
-		runasRC = new RequestContext(runasZoneName, runasUserId, null);
-	}
-	
-	public RunasTemplate(Long zoneId, String runasUserName) {
-		runasRC = new RequestContext(zoneId, runasUserName, null);
-	}
-	
-	public RunasTemplate(Long zoneId, Long runasUserId) {
-		runasRC = new RequestContext(zoneId, runasUserId, null);
-	}
-	
-	public Object execute(RunasCallback action) {
+	protected static Object doRunas(RunasCallback action, RequestContext runasRC) {
 		RequestContext origContext = RequestContextUtil.getThreadContext();
 		
        	RequestContextUtil.setThreadContext(runasRC);
@@ -73,9 +83,10 @@ public class RunasTemplate {
        			RequestContextUtil.setThreadContext(origContext);
        		}
        		else {
-       			// Clean runas context
+       			// Clear runas context
        			RequestContextUtil.clearThreadContext();
        		}
        	}
 	}
+
 }
