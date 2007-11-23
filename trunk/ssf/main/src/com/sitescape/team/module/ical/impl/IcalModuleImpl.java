@@ -452,7 +452,7 @@ public class IcalModuleImpl implements IcalModule {
 		if (eventEl != null) {
 			return eventEl.attributeValue("value");
 		}
-		logger.error("Entry defintion ["+ definition.asXML() +"] has no events. iCalendar import aborted.");
+		logger.debug("Entry defintion ["+ definition.asXML() +"] has no events. iCalendar import aborted.");
 		return null;
 	}
 	
