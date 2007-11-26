@@ -32,7 +32,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -51,6 +50,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
+import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -67,12 +67,14 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleMultipartFile;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Html;
@@ -897,4 +899,25 @@ public class WebHelper {
 			return request.getRemoteUser();			
 		}
 	}
+	
+	public static String getZoneNameByVirtualHost(ServletRequest request) {
+		return getZoneModule().getZoneNameByVirtualHost(request.getServerName().toLowerCase());
+	}
+
+	public static Long getZoneIdByVirtualHost(ServletRequest request) {
+		return getZoneModule().getZoneIdByVirtualHost(request.getServerName().toLowerCase());
+	}
+
+	public static String getZoneNameByVirtualHost(PortletRequest request) {
+		return getZoneModule().getZoneNameByVirtualHost(request.getServerName().toLowerCase());
+	}
+
+	public static Long getZoneIdByVirtualHost(PortletRequest request) {
+		return getZoneModule().getZoneIdByVirtualHost(request.getServerName().toLowerCase());
+	}
+
+	private static ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	}
+
 }
