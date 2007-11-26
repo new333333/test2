@@ -452,7 +452,7 @@ public class AccessUtils  {
     }
     
     public static User getZoneGuestUser(Long zoneId) {
-		User guestUser = getInstance().getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, zoneId);
+		User guestUser = getInstance().getProfileDao().getReservedUser(ObjectKeys.GUEST_USER_INTERNALID, zoneId);
 		return guestUser;
     }
 }
