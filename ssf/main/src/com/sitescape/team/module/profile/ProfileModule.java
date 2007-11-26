@@ -82,7 +82,6 @@ public interface ProfileModule {
      * @return
      */
     public Principal getEntry(Long binderId, Long userId) throws AccessControlException;
-    public Principal getEntry(Long binderId, Long userId, boolean checkAccess) throws AccessControlException;
 
     /**
      * @param userId
