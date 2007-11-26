@@ -1723,8 +1723,6 @@ public static final String[] monthNamesShort = {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityType().toString());
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 		qualifiers = new HashMap();
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), 

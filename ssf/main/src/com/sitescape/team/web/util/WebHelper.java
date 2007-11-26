@@ -688,8 +688,6 @@ public class WebHelper {
 	    				action = WebKeys.ACTION_VIEW_PERMALINK;
 	    				params.put(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
 	    				params.put(WebKeys.URL_ENTITY_TYPE, ObjectKeys.FOLDER_ENTRY);
-	    				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-	    				params.put(WebKeys.URL_ZONE_ID, zoneId.toString());
 	    			}
 	    			String webUrl = getPortletUrl(req, res, httpReq, httpRes, action, true, params);
 	    			titleLink = "<a href=\"" + webUrl + "\" ";
@@ -769,8 +767,6 @@ public class WebHelper {
 			    				action = WebKeys.ACTION_VIEW_PERMALINK;
 			    				params.put(WebKeys.URL_ENTRY_TITLE, normalizedTitle);
 			    				params.put(WebKeys.URL_ENTITY_TYPE, ObjectKeys.FOLDER_ENTRY);
-			    				Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-			    				params.put(WebKeys.URL_ZONE_ID, zoneId.toString());
 			    			}
 			    			String webUrl = getPortletUrl(req, res, httpReq, httpRes, action, true, params);
 			    			titleLink = "<a href=\"" + webUrl + "\" ";

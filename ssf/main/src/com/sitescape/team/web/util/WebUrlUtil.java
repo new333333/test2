@@ -239,8 +239,6 @@ public class WebUrlUtil {
 			url.setParameter(WebKeys.URL_BINDER_ID, parentBinderId);
 			url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
-			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-			url.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 			entryUrl = url.toString();
 		}
 		catch(Exception e) {}

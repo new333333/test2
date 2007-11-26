@@ -70,7 +70,6 @@ public class AddFolderController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		if (formData.containsKey("okBtn")) {
@@ -114,7 +113,6 @@ public class AddFolderController extends SAbstractController {
 					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, newId.toString());
 					adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, newBinder.getEntityType().toString());
-					adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 					messageBody += adapterUrl.toString();
 					messageBody += "\">" + newBinder.getTitle() + "</a><br/><br/>";
 					String announcementText = PortletRequestUtils.getStringParameter(request, "announcementText", "");

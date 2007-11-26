@@ -471,8 +471,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL
 				.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 
 		if (entry == null && binder != null) {
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getId()

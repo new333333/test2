@@ -40,8 +40,6 @@ public class PermaLinkUtil {
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binder.getEntityIdentifier().getEntityId().toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, binder.getEntityType().toString());
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 
 		return adapterUrl.toString();
 	}
