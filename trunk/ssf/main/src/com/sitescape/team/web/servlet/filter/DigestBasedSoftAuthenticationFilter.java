@@ -51,6 +51,7 @@ import com.sitescape.team.security.authentication.DigestDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebHelper;
 
 public class DigestBasedSoftAuthenticationFilter implements Filter {
 
@@ -62,7 +63,7 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 	public void doFilter(ServletRequest request, ServletResponse response, 
 			FilterChain chain) throws IOException, ServletException {
 		//String zoneName = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "zn");
-		String zoneName = getZoneModule().getZoneNameByVirtualHost(request.getServerName().toLowerCase());
+		String zoneName = WebHelper.getZoneNameByVirtualHost(request);
 		Long userId = RequestUtils.getRequiredLongParameter((HttpServletRequest) request, "ui");
 		String binderId = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "bi"); 		
 		String privateDigest = RequestUtils.getRequiredStringParameter((HttpServletRequest) request, "pd"); 
