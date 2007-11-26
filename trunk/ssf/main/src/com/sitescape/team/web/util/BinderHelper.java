@@ -1477,8 +1477,6 @@ public class BinderHelper {
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
-			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-			adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 			messageBody += adapterUrl.toString();
 			messageBody += "\">" + entry.getTitle() + "</a><br/><br/>";
 			messageBody += body;

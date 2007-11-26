@@ -172,7 +172,6 @@ public class WebKeys {
 	public static final String URL_TASK_STATUS="ssTaskStatus";
 	public static final String URL_TASK_COMPLETED="ssTaskCompleted";
 	public static final String URL_DASHBOARD_REQUEST="ssDashboardRequest";
-    public static final String URL_ZONE_ID_PLACE_HOLDER="ss_zone_id_place_holder";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";

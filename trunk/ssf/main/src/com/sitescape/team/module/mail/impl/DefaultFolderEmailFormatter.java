@@ -402,8 +402,6 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getEntityIdentifier().getEntityId().toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityType().toString());
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 		element.addAttribute("href", adapterUrl.toString());
 		PostingDef post = folder.getPosting();
 		if (post != null) {
@@ -455,8 +453,6 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, entry.getParentBinder().getId().toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 		element.addAttribute("href", adapterUrl.toString());
 		
 		final String fullOrSummaryAttribute = (notifyDef.isFull()?"full":"summary");
@@ -538,8 +534,6 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getEntityIdentifier().getEntityId().toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityType().toString());
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		adapterUrl.setParameter(WebKeys.URL_ZONE_ID, zoneId.toString());
 		element.addAttribute("href", adapterUrl.toString());
 
 		for (Iterator i=entries.iterator();i.hasNext();) {
