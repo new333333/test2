@@ -28,22 +28,12 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
-<table cellspacing="0" cellpadding="0" border="0">
-<th colspan="2" align="left">${ssBinder.title}</th>
-<c:forEach var="entry1" items="${ssFolderEntries}" >
-<jsp:useBean id="entry1" type="java.util.HashMap" />
-  <tr>
-    <td align="right" valign="top"><%= (User)entry1.get("_principal").getTitle() %></td>
-    <td align="right" valign="top">${entry1._email}&nbsp;</td>
-  </tr>
-</c:forEach>
-</table>
-<br/>
-<a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
-<span style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
-</a>
+<% //View a mobile entry %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-</body>
-</html>
+<div class="ss_mobile">
+<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+  configElement="${item}" 
+  configJspStyle="${ssConfigJspStyle}" 
+  entry="${ssDefinitionEntry}" />
+</div>
