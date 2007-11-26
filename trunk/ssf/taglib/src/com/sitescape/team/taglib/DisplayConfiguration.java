@@ -110,6 +110,7 @@ public class DisplayConfiguration extends TagSupport {
 										if (itemEle != null) {
 											String jspName = "viewJsp";
 											if (configJspStyle.equals("mail")) jspName = "mailJsp";
+											if (configJspStyle.equals("mobile")) jspName = "mobileJsp";
 											Element jspEle = (Element) itemEle.getParent().getParent().selectSingleNode("properties/property[@name='"+jspName+"']");
 											if (jspEle != null) jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
 										}
@@ -117,6 +118,9 @@ public class DisplayConfiguration extends TagSupport {
 								}
 							} else if (itemType.equals("customJspView") && configJspStyle.equals("view")) {
 								Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='viewJsp']");
+								jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
+							} else if (itemType.equals("customJspView") && configJspStyle.equals("mobile")) {
+								Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='mobileJsp']");
 								jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
 							} else if (itemType.equals("customJspView") && configJspStyle.equals("mail")) {
 								Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='mailJsp']");

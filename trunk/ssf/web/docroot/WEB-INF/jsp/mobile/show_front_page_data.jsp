@@ -72,7 +72,7 @@
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    			folderId="${binder.id}" 
 					action="__ajax_mobile" actionUrl="false" 
-					operation="mobile_show_profiles" />"><span>${binder.title}</span></a>
+					operation="mobile_show_workspace" />"><span>${binder.title}</span></a>
 	</c:if>
   </td>
  </tr>

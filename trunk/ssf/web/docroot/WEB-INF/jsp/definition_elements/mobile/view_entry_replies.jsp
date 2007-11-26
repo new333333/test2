@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // View blog reply count %>
+<% // View replies %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <% // Process the replies only if this is the top level entry being displayed %>
@@ -37,7 +37,7 @@
 
 <div class="ss_entryContent" style="padding-top:15px;">
 <c:if test="${!empty property_caption}">
-<span class="ss_largerprint ss_bold"><c:out value="${property_caption}"/></span>
+<span><strong><c:out value="${property_caption}"/></strong></span>
 <br/>
 </c:if>
 

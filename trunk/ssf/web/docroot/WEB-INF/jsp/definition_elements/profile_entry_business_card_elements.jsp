@@ -139,7 +139,7 @@
     </span>
    </c:if>
    <c:if test="${!empty ssDefinitionEntry.customAttributes[element]}">
-    <span class="ss_bold"><c:out value="${ssDefinitionEntry[element]}"/></span>
+    <span class="ss_bold"><c:out value="${ssDefinitionEntry.customAttributes[element]}"/></span>
    </c:if>
   </td>
  </tr>

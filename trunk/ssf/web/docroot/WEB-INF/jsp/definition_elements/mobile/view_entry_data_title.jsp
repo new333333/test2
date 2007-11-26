@@ -29,17 +29,24 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="title_entry" value="${ssDefinitionEntry}"/>
+<jsp:useBean id="title_entry" type="com.sitescape.team.domain.FolderEntry" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <% //Title view %>
-
-<div class="ss_entryContent">
-<span>
+<div>
+<%
+	if (!ssSeenMap.checkIfSeen(title_entry)) {
+		%><img border="0" <ssf:alt tag="alt.unseen"/> src="<html:imagesPath/>pics/sym_s_unseen.gif"><%
+	}
+%>
+<span class="ss_bold">
 <c:if test="${!empty ssDefinitionEntry.docNumber}">
 ${ssDefinitionEntry.docNumber}.
 </c:if>
 <c:if test="${empty ssDefinitionEntry.title}" >
 --<ssf:nlt tag="ssDefinitionEntry.noTitle" />--
 </c:if>
-<c:out value="${ssDefinitionEntry.title}" /></a>
+<c:out value="${ssDefinitionEntry.title}" />
 </span>
 <br/>
 </div>

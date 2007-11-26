@@ -35,6 +35,12 @@
 	Map entriesSeen = new HashMap();
 %>
 <div class="ss_mobile">
+<div class="ss_breadcrumbs">
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
+	><ssf:nlt tag="mobile.returnToTop"/></a>
+</div>
+<br/>
   <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
 		<c:forEach var="entry" items="${ssFolderEntries}" varStatus="status">
 			<tr>
@@ -99,10 +105,11 @@
   </table>
 			
 <br/>
+<div class="ss_breadcrumbs">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
-<span class="ss_mobile" style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
-</a>
+	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
+	><ssf:nlt tag="mobile.returnToTop"/></a>
+</div>
 </div>
 
 </body>
