@@ -69,14 +69,14 @@ public class ViewPermalinkController  extends SAbstractController {
 		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
-		String zoneId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ZONE_ID, ObjectKeys.DEFAULT_ZONE_ID_FOR_V1);
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
 		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 		
 		User user = null;
+		Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
 		if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
-			if (!zoneId.equals("")) user = AccessUtils.getZoneGuestUser(new Long(zoneId));
+			user = AccessUtils.getZoneGuestUser(zoneId);
 			if (user == null || binderId.equals("") || 
 					!getBinderModule().checkBinderAccess(new Long(binderId), user)) {
 				//User must log in to see this
@@ -107,7 +107,6 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (!entryId.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_ID_PLACE_HOLDER, entryId);
 		if (!entryTitle.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER, entryTitle);
 		if (!entityType.equals("")) url = url.replaceAll(WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER, entityType);
-		if (!zoneId.equals("")) url = url.replaceAll(WebKeys.URL_ZONE_ID_PLACE_HOLDER, zoneId);
 		if (!newTab.equals("")) url = url.replaceAll(WebKeys.URL_NEW_TAB_PLACE_HOLDER, newTab);
 		
 		if (entityType.equals("") && entryId.equals("") && !binderId.equals("")) {
