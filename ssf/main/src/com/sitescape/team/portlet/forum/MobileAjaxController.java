@@ -181,12 +181,32 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileFrontPage(request, response);
 		} 
 		model.put(WebKeys.BINDER, binder);
-		folderEntries = getFolderModule().getEntries(binderId, options);
-		model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+
+      	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
+      	if (pageNumber == null) pageNumber = 0;
+      	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
+      	int pageStart = pageNumber.intValue() * pageSize;
+      	int pageEnd = pageStart + pageSize;
+      	String nextPage = "";
+      	String prevPage = "";
+      	options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.valueOf(pageSize));
+      	options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
+
+      	folderEntries = getFolderModule().getEntries(binderId, options);
+      	
+      	model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 		if (folderEntries != null) {
 			model.put(WebKeys.FOLDER_ENTRIES, (List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES));
 		}
 		
+      	if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber - 1);
+      	if (((List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES)).size() == pageSize && 
+      			((Integer)folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue() > ((pageNumber.intValue() + 1) * pageSize)) 
+      		nextPage = String.valueOf(pageNumber + 1);
+		model.put(WebKeys.URL_PAGE_NUMBER, pageNumber.toString());
+		model.put(WebKeys.NEXT_PAGE, nextPage);
+		model.put(WebKeys.PREV_PAGE, prevPage);
+
 		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
 		return new ModelAndView("mobile/show_folder", model);
 	}
@@ -212,7 +232,29 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
      		Workspace w = (Workspace)iter.next();
       		if (!w.isDeleted()) workspaces.add(w);
 		}
-		model.put(WebKeys.WORKSPACES, workspaces);
+      	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
+      	if (pageNumber == null) pageNumber = 0;
+      	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
+      	int pageStart = pageNumber.intValue() * pageSize;
+      	int pageEnd = pageStart + pageSize;
+      	List wsList;
+      	String nextPage = "";
+      	String prevPage = "";
+      	if (workspaces.size() < pageStart) {
+      		wsList = new ArrayList();
+      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
+      	} else if (workspaces.size() >= pageEnd) {
+      		wsList = workspaces.subList(pageStart, pageEnd);
+      		nextPage = String.valueOf(pageNumber.intValue() + 1);
+      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
+      	} else {
+      		wsList = workspaces.subList(pageStart, workspaces.size());
+      		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
+      	}
+		model.put(WebKeys.WORKSPACES, wsList);
+		model.put(WebKeys.URL_PAGE_NUMBER, pageNumber.toString());
+		model.put(WebKeys.NEXT_PAGE, nextPage);
+		model.put(WebKeys.PREV_PAGE, prevPage);
 		ws.clear();
 		ws.addAll(binder.getFolders());
       	for (Iterator iter=ws.iterator(); iter.hasNext();) {
@@ -249,7 +291,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.DEFINITION_ENTRY, entry);
 			model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
 			model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
-			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryBlogView']") == false) {
+			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 				DefinitionHelper.getDefaultEntryView(entry, model);
 			}
 			SeenMap seen = getProfileModule().getUserSeenMap(null);

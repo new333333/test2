@@ -30,23 +30,24 @@
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
+<div class="ss_breadcrumbs">
 <c:if test="${empty ssBinder.parentFolder && !empty ssBinder.parentBinder}">
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.parentBinder.id}" 
 	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />"><strong>${ssBinder.parentBinder.title}</strong></a>
+	actionUrl="false" />">${ssBinder.parentBinder.title}</a>
 <br/>&nbsp;&nbsp;</c:if>
 <c:if test="${!empty ssBinder.parentFolder}">
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinderparentFolder.id}" 
 	action="__ajax_mobile" operation="mobile_show_folder" 
-	actionUrl="false" />"><strong>${ssBinder.parentFolder.title}</strong></a>
+	actionUrl="false" />">${ssBinder.parentFolder.title}</a>
 <br/>&nbsp;&nbsp;</c:if>
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}" 
 	action="__ajax_mobile" operation="mobile_show_folder" 
-	actionUrl="false" />"><strong>${ssBinder.title}</strong></a>
-<br/>
+	actionUrl="false" />">${ssBinder.title}</a>
+</div>
 <br/>
 <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
 <c:forEach var="entry1" items="${ssFolderEntries}" >
@@ -62,8 +63,29 @@
 	</a>
   </td></tr>
 </c:forEach>
+<tr><td></td><td></td></tr>
+<tr><td colspan="2">
+<table><tr><td width="30">
+<c:if test="${!empty ss_prevPage}">
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.id}" 
+	action="__ajax_mobile" 
+	operation="mobile_show_folder" 
+	actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>">&lt;&lt;&lt;</a>
+</c:if>
+</td><td style="padding-left:30px;">
+<c:if test="${!empty ss_nextPage}">
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.id}" 
+	action="__ajax_mobile" 
+	operation="mobile_show_folder" 
+	actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>">&gt;&gt;&gt;</a>
+</c:if>
+</td></tr></table>
+</td></tr>
 </table>
 <br/>
+<div class="ss_breadcrumbs ss_small">
 <c:if test="${empty ssBinder.parentFolder && !empty ssBinder.parentBinder}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.parentBinder.id}" 
@@ -79,9 +101,9 @@
 <br/>
 </c:if>
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
-<span class="ss_mobile" style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
-</a>
+	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
+	><ssf:nlt tag="mobile.returnToTop"/></a>
+</div>
 </div>
 
 </body>

@@ -31,17 +31,99 @@
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
 <c:if test="${!empty ssBinder.parentBinder}">
+<div class="ss_breadcrumbs">
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.parentBinder.id}" 
 	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />"><strong>${ssBinder.parentBinder.title}</strong></a>
+	actionUrl="false" />">${ssBinder.parentBinder.title}</a>
 <br/>&nbsp;&nbsp;</c:if>
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}" 
 	action="__ajax_mobile" operation="mobile_show_workspace" 
-	actionUrl="false" />"><strong>${ssBinder.title}</strong></a>
+	actionUrl="false" />">${ssBinder.title}</a>
+</div>
 <br/>
-<br/>
+<c:if test="${ssBinder.definitionType == '12'}">
+ <%-- This is a user workspace --%>
+ <c:set var="creator" value="${ssBinder.creation.principal}" />
+ <jsp:useBean id="creator" type="com.sitescape.team.domain.Principal" />
+ <c:if test="${!empty creator.customAttributes['picture']}">
+  <div class="ss_profile_picture_frame">
+  <c:set var="selections" value="${creator.customAttributes['picture'].value}" />
+  <c:set var="pictureCount" value="0"/>
+  <c:forEach var="selection" items="${selections}">
+   <c:if test="${pictureCount == 0}">
+	<img 
+	  align="middle" id="ss_profilePicture"
+	  border="0" 
+	  src="<ssf:url 
+	    webPath="viewFile"
+	    folderId="${creator.parentBinder.id}"
+	    entryId="${creator.id}"
+	    entityType="${creator.entityType}" >
+	    <ssf:param name="fileId" value="${selection.id}"/>
+	    <ssf:param name="viewType" value="scaled"/>
+    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+	    </ssf:url>" alt="${property_caption}" /></a>
+   </c:if>
+   <c:set var="pictureCount" value="${pictureCount + 1}"/>
+  </c:forEach>
+  </div>
+ </c:if>
+ <br/>
+ <table>
+ <%
+ if (creator == null) {
+ 	String phone = ((com.sitescape.team.domain.User) creator).getPhone();
+ 	String email = ((com.sitescape.team.domain.User) creator).getEmailAddress();
+ 	String mobile = ((com.sitescape.team.domain.User) creator).getMobileEmailAddress();
+ 	String txt = ((com.sitescape.team.domain.User) creator).getTxtEmailAddress();
+ %>
+ <% 
+ 	if (phone != null && !phone.equals("")) { 
+ %>
+  <tr>
+   <td valign="top" align="left">
+     <span><%= phone %></span>
+    <span class="ss_small ss_light">(<ssf:nlt tag="profile.abv.element.phone"/>)</span>
+   </td>
+  </tr>
+ <% 
+ 	}
+ 	if (phone != null && !email.equals("")) { 
+ %>
+  <tr>
+   <td valign="top" align="left">
+     <span><%= email %></span>
+    <span class="ss_small ss_light">(<ssf:nlt tag="profile.abv.element.emailAddress"/>)</span>
+   </td>
+  </tr>
+ <% 
+ 	}
+ 	if (mobile != null && !mobile.equals("")) { 
+ %>
+  <tr>
+   <td valign="top" align="left">
+     <span><%= mobile %></span>
+    <span class="ss_small ss_light">(<ssf:nlt tag="profile.abv.element.mobileEmailAddress"/>)</span>
+   </td>
+  </tr>
+ <% 
+ 	}
+ 	if (txt != null && !txt.equals("")) { 
+ %>
+  <tr>
+   <td valign="top" align="left">
+     <span><%= txt %></span>
+    <span class="ss_small ss_light">(<ssf:nlt tag="profile.abv.element.txtEmailAddress"/>)</span>
+   </td>
+  </tr>
+ <% 
+ 	}
+ }
+ %>
+ </table> 
+</c:if>
 <div style="padding-left:6px;">
 <c:if test="${!empty ssWorkspaces}">
 <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
@@ -57,6 +139,28 @@
 	</a>
   </td></tr>
 </c:forEach>
+<c:if test="${!empty ss_nextPage || !empty ss_prevPage}">
+<tr><td></td></tr>
+<tr><td>
+<table><tr><td>
+<c:if test="${!empty ss_prevPage}">
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.id}" 
+	action="__ajax_mobile" 
+	operation="mobile_show_workspace" 
+	actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>">&lt;&lt;&lt;</a>
+</c:if>
+</td><td style="padding-left:30px;">
+<c:if test="${!empty ss_nextPage}">
+<a href="<ssf:url adapter="true" portletName="ss_forum" 
+	folderId="${ssBinder.id}" 
+	action="__ajax_mobile" 
+	operation="mobile_show_workspace" 
+	actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>">&gt;&gt;&gt;</a>
+</c:if>
+</td></tr></table>
+</td></tr>
+</c:if>
 </table>
 <br/>
 </c:if>
@@ -80,6 +184,7 @@
 </div>
 
 <br/>
+<div class="ss_breadcrumbs ss_small">
 <c:if test="${!empty ssBinder.parentBinder}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.parentBinder.id}" 
@@ -88,9 +193,9 @@
 <br/>
 </c:if>
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />">
-<span class="ss_mobile" style="color:blue;"><ssf:nlt tag="mobile.returnToTop"/></span>
-</a>
+	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
+	><ssf:nlt tag="mobile.returnToTop"/></a>
+</div>
 </div>
 
 </body>

@@ -29,10 +29,66 @@
  */
 %>
 <% // View entry attachments %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
-
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_attachments_list.jsp" %>
+<c:if test="${!empty ssDefinitionEntry.fileAttachments}">
+<br/>
+<c:if test="${!empty property_caption}">
+<strong>${property_caption}</strong>
+<br/>
+</c:if>
+
+<div>
+<table cellpadding="0" cellspacing="0">
+<tbody>
+<c:set var="selectionCount" value="0"/>
+<c:forEach var="selection" items="${ssDefinitionEntry.fileAttachments}" >
+  <jsp:useBean id="selection" type="com.sitescape.team.domain.FileAttachment" />
+<%
+	String fn = selection.getFileItem().getName();
+	String ext = "";
+	if (fn.lastIndexOf(".") >= 0) ext = fn.substring(fn.lastIndexOf("."));
+%>
+
+  <c:set var="selectionCount" value="${selectionCount + 1}"/>
+  <c:set var="versionCount" value="0"/>
+  <c:forEach var="fileVersion" items="${selection.fileVersionsUnsorted}">
+    <c:set var="versionCount" value="${versionCount + 1}"/>
+  </c:forEach>
+  <c:set var="thumbRowSpan" value="${versionCount}"/>
+  <c:if test="${versionCount > 1}">
+    <c:set var="thumbRowSpan" value="${thumbRowSpan + 2}"/>
+  </c:if>
+  <c:if test="${versionCount == 1}">
+    <c:set var="thumbRowSpan" value="1"/>
+  </c:if>
+	  <tr>
+		<td class="ss_att_title">
+		  <a style="text-decoration: none;" 
+			href="<ssf:url 
+		    webPath="viewFile"
+		    folderId="${ssDefinitionEntry.parentBinder.id}"
+		    entryId="${ssDefinitionEntry.id}"
+		    entityType="${ssDefinitionEntry.entityType}" >
+		    <ssf:param name="fileId" value="${selection.id}"/>
+		    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+		    </ssf:url>" 
+		    <ssf:title tag="title.open.file">
+			    <ssf:param name="value" value="${selection.fileItem.name}" />
+		    </ssf:title>
+			><c:out value="${selection.fileItem.name} "/></a>
+			<c:if test="${!empty selection.fileLock}">
+			  <br/>
+			  <img <ssf:alt tag="alt.locked"/> src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+			  <span class="ss_fineprint"><ssf:nlt tag="entry.lockedBy">
+	    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
+			  </ssf:nlt></span>
+			</c:if>
+		</td>
+	</tr>
+</c:forEach>
+</tbody>
+</table>
+</div>
+</c:if>
 

@@ -29,10 +29,10 @@
  */
 %>
 <% //Description view %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty ss_showMobileView}">
-<jsp:forward page="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
-</c:if>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %><%--
+--%><c:if test="${!empty ss_showMobileView}"><%--
+--%><jsp:forward page="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" /><%--
+--%></c:if>
 <c:if test="${!empty ssDefinitionEntry.description.text}">
 <div class="ss_entryDescriptionLead"></div>
 <ssf:editable entity="${ssDefinitionEntry}" element="description" aclMap="${ss_accessControlMap}">

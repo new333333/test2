@@ -635,9 +635,11 @@ public class WebKeys {
     public static final String MARKUP_FILE="file"; 
     public static final String MARKUP_VIEW="view"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
+    public static final String MOBILE_PAGE_SIZE="40"; 
     public static final String MY_TEAMS="ss_myTeams"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
+    public static final String NEXT_PAGE="ss_nextPage";
     public static final String NLT_VALUE="value";
     public static final String OPERATION="ssOperation";
     public static final String OWNER="ssOwner";
@@ -662,6 +664,7 @@ public class WebKeys {
     public static final String PRESENCE_TEXT="ss_presence_text";
     public static final String PRESENCE_USER="ss_presence_user";
     public static final String PRESENCE_ZON_BRIDGE="ss_presence_zonBridge";
+    public static final String PREV_PAGE="ss_prevPage";
 	public static final String PRODUCT_NAME="ssProductName";
 	public static final String PRODUCT_TITLE="ssProductTitle";
 	public static final String PRODUCT_NICKNAME="ssProductNickname";
