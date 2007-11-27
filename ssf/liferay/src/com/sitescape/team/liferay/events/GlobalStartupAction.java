@@ -20,16 +20,17 @@
  * SOFTWARE.
  */
 
-package com.liferay.portal.events;
+package com.sitescape.team.liferay.events;
 
 import com.liferay.portal.comm.CommLink;
+import com.liferay.portal.events.FixCounterAction;
+import com.liferay.portal.events.FixOracleAction;
 import com.liferay.portal.jcr.JCRFactoryUtil;
 import com.liferay.portal.kernel.deploy.auto.AutoDeployDir;
 import com.liferay.portal.kernel.deploy.auto.AutoDeployListener;
 import com.liferay.portal.kernel.deploy.auto.AutoDeployUtil;
 import com.liferay.portal.kernel.deploy.hot.HotDeployListener;
 import com.liferay.portal.kernel.deploy.hot.HotDeployUtil;
-import com.liferay.portal.kernel.util.PortalInitableUtil;
 import com.liferay.portal.smtp.SMTPServerUtil;
 import com.liferay.portal.struts.ActionException;
 import com.liferay.portal.struts.SimpleAction;
@@ -54,7 +55,14 @@ import org.apache.commons.logging.LogFactory;
  *
  */
 public class GlobalStartupAction extends SimpleAction {
-
+/*
+ * This class is a temporary substitute/patch for Liferay's 
+ * com.liferay.portal.events.GlobalStartupAction class with a fix for the 
+ * problem reported in LEP-2855. Also see ICEcore issue #1204 for additional
+ * details. This class will be no longer necessary once/when we upgrade to
+ * Liferay 4.3.1 or later since the later Liferay versions already contain
+ * fix for this problem.
+ */
 	public static List getAutoDeployListeners() {
 		List list = new ArrayList();
 
@@ -122,10 +130,6 @@ public class GlobalStartupAction extends SimpleAction {
 			_log.error(e);
 		}
 
-		// Portal initable
-
-		PortalInitableUtil.flushInitables();
-
 		// Hot deploy
 
 		_log.debug("Registering hot deploy listeners");
@@ -137,8 +141,6 @@ public class GlobalStartupAction extends SimpleAction {
 
 			HotDeployUtil.registerListener(hotDeployListener);
 		}
-
-		HotDeployUtil.flushEvents();
 
 		// Auto deploy
 
