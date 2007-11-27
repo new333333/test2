@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
-<div class="ss_breadcrumbs">
+<div class="ss_mobile_breadcrumbs">
 <c:if test="${empty ssBinder.parentFolder && !empty ssBinder.parentBinder}">
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.parentBinder.id}" 
@@ -85,7 +85,7 @@
 </td></tr>
 </table>
 <br/>
-<div class="ss_breadcrumbs ss_small">
+<div class="ss_mobile_breadcrumbs ss_small">
 <c:if test="${empty ssBinder.parentFolder && !empty ssBinder.parentBinder}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.parentBinder.id}" 

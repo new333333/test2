@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/mobile/mobile_init.jsp" %>
 <div class="ss_mobile">
-<div class="ss_breadcrumbs">
+<div class="ss_mobile_breadcrumbs">
 //<a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}" 
 	action="__ajax_mobile" operation="mobile_show_folder" 
@@ -47,7 +47,7 @@
 
 </c:if> 
 <br/>
-<div class="ss_breadcrumbs ss_small">
+<div class="ss_mobile_breadcrumbs ss_small">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}"
 	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />"

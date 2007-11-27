@@ -21,6 +21,6 @@ TD {
 .ss_bold, .ss_bold a, .ss_bold table td {
 	font-weight: bold;
 }
-.ss_breadcrumbs, .ss_breadcrumbs a a:visited, .ss_breadcrumbs table td {
+.ss_mobile_breadcrumbs, .ss_mobile_breadcrumbs a a:visited, .mobile_ss_breadcrumbs table td {
 	color:gray;
 }
