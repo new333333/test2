@@ -40,8 +40,8 @@ public interface ZoneModule {
 	/**
 	 * Returns the name of the zone corresponding to the specified virtual host.
 	 * It returns the default zone name if <code>virtualHost</code> is 
-	 * <code>null</code>, or no match is found, or the system does not support
-	 * multiple zones.
+	 * <code>null</code>, or no match is found, or the system does not 
+	 * support/honor multiple zones.
 	 * 
 	 * @param virtualHost virtual host name or <code>null</code>
 	 * @return zone name
@@ -51,13 +51,22 @@ public interface ZoneModule {
 	/**
 	 * Returns the ID of the zone corresponding to the specified virtual host.
 	 * It returns the default zone ID if <code>virtualHost</code> is 
-	 * <code>null</code>, or no match is found, or the system does not support
-	 * multiple zones.
+	 * <code>null</code>, or no match is found, or the system does not 
+	 * support/honor multiple zones.
 	 * 
 	 * @param virtualHost
 	 * @return
 	 */
 	public Long getZoneIdByVirtualHost(String virtualHost);
 	
+	/**
+	 * Returns the virtual host name associated with the specified zone.
+	 * It returns <code>null</code> if the specified zone represents the default
+	 * zone in the system, or the zone does not exist, or the system does not
+	 * support/honor multi zones. 
+	 * 
+	 * @param zoneName
+	 * @return
+	 */
 	public String getVirtualHost(String zoneName);
 }
