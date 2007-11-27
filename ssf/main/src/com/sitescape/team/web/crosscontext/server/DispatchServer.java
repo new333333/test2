@@ -124,19 +124,19 @@ public class DispatchServer extends GenericServlet {
 			}
 		}
 		else if(operation.equals(CrossContextConstants.OPERATION_SETUP_SESSION)) {
-			HttpServletRequest request = (HttpServletRequest) req;			
-			HttpSession ses = request.getSession();
+			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
+			if(zoneName != null) {
+				if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()) ||
+						LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.zone.MultiZone")))
+					return; // don't allow it; simply return					
+			}
+			else {
+				zoneName = SZoneConfig.getDefaultZoneName();
+			}
+					
+			HttpSession ses = ((HttpServletRequest) req).getSession();
 			
 			if(ses.getAttribute(WebKeys.ZONE_NAME) == null) {		
-				String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
-				if(zoneName != null) {
-					if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()) ||
-							LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.zone.MultiZone")))
-						return; // don't allow it; simply return					
-				}
-				else {
-					zoneName = SZoneConfig.getDefaultZoneName();
-				}
 				String userName = req.getParameter(CrossContextConstants.USER_NAME);
 				if(userName == null)
 					userName = SZoneConfig.getGuestUserName(zoneName);
