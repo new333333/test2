@@ -44,6 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
+import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
@@ -79,8 +80,14 @@ public class DispatchServer extends GenericServlet {
 		
 		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) {
 			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
-			if(zoneName == null)
+			if(zoneName != null) {
+				if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()) ||
+						LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.zone.MultiZone")))
+					return; // don't allow it; simply return
+			}
+			else {
 				zoneName = SZoneConfig.getDefaultZoneName();
+			}
 			String userName = req.getParameter(CrossContextConstants.USER_NAME);
 			String password = req.getParameter(CrossContextConstants.PASSWORD);
 			Map updates = (Map)req.getAttribute(CrossContextConstants.USER_INFO);
@@ -122,8 +129,14 @@ public class DispatchServer extends GenericServlet {
 			
 			if(ses.getAttribute(WebKeys.ZONE_NAME) == null) {		
 				String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
-				if(zoneName == null)
+				if(zoneName != null) {
+					if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()) ||
+							LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.zone.MultiZone")))
+						return; // don't allow it; simply return					
+				}
+				else {
 					zoneName = SZoneConfig.getDefaultZoneName();
+				}
 				String userName = req.getParameter(CrossContextConstants.USER_NAME);
 				if(userName == null)
 					userName = SZoneConfig.getGuestUserName(zoneName);
