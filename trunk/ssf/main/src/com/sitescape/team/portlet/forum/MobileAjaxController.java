@@ -154,8 +154,10 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileSearchResults(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
+		String queryName = PortletRequestUtils.getStringParameter(request, "ss_queryName", "");
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
+		model.put("ss_queryName", queryName);
 
 	    Tabs tabs = Tabs.getTabs(request);
     	model.putAll(BinderHelper.prepareSavedQueryResultData(this, request, tabs));

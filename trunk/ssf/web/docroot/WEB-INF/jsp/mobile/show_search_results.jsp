@@ -35,7 +35,7 @@
 	Map entriesSeen = new HashMap();
 %>
 <div class="ss_mobile">
-<div class="ss_breadcrumbs">
+<div class="ss_mobile_breadcrumbs">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
 	><ssf:nlt tag="mobile.returnToTop"/></a>
@@ -102,10 +102,33 @@
 				entriesSeen.put(entry.get("_docId"), "1");
 			%>
 		</c:forEach>
+	<tr><td></td><td></td></tr>
+	<tr><td colspan="2">
+	<table><tr><td width="30">
+		<c:if test="${ss_pageNumber > 1}">
+		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+			folderId="${ssBinder.id}" 
+			action="__ajax_mobile" 
+			operation="mobile_show_search_results" 
+			actionUrl="false" ><ssf:param name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
+			name="ss_queryName" value="${ss_queryName}" /></ssf:url>">&lt;&lt;&lt;</a>
+		</c:if>
+	</td><td style="padding-left:30px;">
+		<c:if test="${ssPageEndIndex < ssTotalRecords}">
+		<a href="<ssf:url adapter="true" portletName="ss_forum" 
+			folderId="${ssBinder.id}" 
+			action="__ajax_mobile" 
+			operation="mobile_show_search_results" 
+			actionUrl="false" ><ssf:param name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
+			name="ss_queryName" value="${ss_queryName}" /></ssf:url>">&gt;&gt;&gt;</a>
+		</c:if>
+	</td></tr></table>
+	</td></tr>
   </table>
+
 			
 <br/>
-<div class="ss_breadcrumbs">
+<div class="ss_mobile_breadcrumbs">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	action="__ajax_mobile" operation="mobile_show_front_page" actionUrl="false" />"
 	><ssf:nlt tag="mobile.returnToTop"/></a>

@@ -32,7 +32,7 @@
 <div class="ss_mobile">
 <c:if test="${!empty ss_mobileBinderList}">
 <div>
-  <strong><ssf:nlt tag="portlet.title.bookmarks"/></strong>
+  <scan class="ss_bold"><ssf:nlt tag="portlet.title.bookmarks"/></span>
 </div>
 <table class="ss_mobile" cellspacing="0" cellpadding="0">
 <c:forEach var="binder" items="${ss_mobileBinderList}">
@@ -86,7 +86,7 @@
 
 <c:if test="${!empty ss_UserQueries}">
 <div class="ss_mobile">
-<strong><ssf:nlt tag="searchResult.savedSearchTitle"/></strong>
+<span class="ss_bold"><ssf:nlt tag="searchResult.savedSearchTitle"/></span>
 <br/>
 <c:forEach var="query" items="${ss_UserQueries}" varStatus="status">
   <a href="<ssf:url adapter="true" portletName="ss_forum" folderId="${binder.id}" 
