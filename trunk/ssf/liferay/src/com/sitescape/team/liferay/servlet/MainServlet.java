@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.liferay.portal.servlet;
+package com.sitescape.team.liferay.servlet;
 
 import com.liferay.portal.deploy.hot.PluginPackageHotDeployListener;
 import com.liferay.portal.events.EventsProcessor;
@@ -61,6 +61,8 @@ import com.liferay.util.ParamUtil;
 import com.liferay.util.Validator;
 import com.liferay.util.servlet.EncryptedServletRequest;
 import com.liferay.util.servlet.ProtectedServletRequest;
+import com.liferay.portal.kernel.util.PortalInitableUtil;
+import com.liferay.portal.kernel.deploy.hot.HotDeployUtil;
 
 import java.io.IOException;
 import java.io.StringReader;
@@ -97,7 +99,14 @@ import org.dom4j.io.SAXReader;
  *
  */
 public class MainServlet extends ActionServlet {
-
+/*
+ * This class is a temporary substitute/patch for Liferay's 
+ * com.liferay.portal.servlet.MainServlet class with a fix for the problem 
+ * reported in LEP-2855. Also see ICEcore issue #1204 for additional details.
+ * This class will be no longer necessary once/when we upgrade to Liferay 
+ * 4.3.1 or later since the later Liferay versions already contain fix for
+ * this problem.
+ */
 	static {
 		InitUtil.init();
 	}
@@ -271,6 +280,12 @@ public class MainServlet extends ActionServlet {
 		for (int i = 0; i < webIds.length; i++) {
 			PortalInstances.initCompany(ctx, webIds[i]);
 		}
+		
+		// See LEP-2885. Don't flush hot deploy events until after the portal
+		// has initialized.
+
+		PortalInitableUtil.flushInitables();
+		HotDeployUtil.flushEvents();
 	}
 
 	public void callParentService(
