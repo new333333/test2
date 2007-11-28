@@ -56,6 +56,8 @@ import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.module.binder.AccessUtils;
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.web.util.WebUrlUtil;
 
@@ -85,10 +87,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			}
 		} else {
 	        user = RequestContextHolder.getRequestContext().getUser();
-			if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-	 			response.setRenderParameters(request.getParameterMap());
-	 			return;
-			} else if (binderId.equals("") || 
+			if (binderId.equals("") || 
 					!getBinderModule().checkBinderAccess(new Long(binderId), user)) {
 				//User must log in to see this
 	 			response.setRenderParameters(request.getParameterMap());
@@ -146,8 +145,8 @@ public class ViewPermalinkController  extends SAbstractController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
-		String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		final String binderId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		final String entryId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entityType= PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
 		String fileId= PortletRequestUtils.getStringParameter(request, WebKeys.URL_FILE_ID, "");
 		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
@@ -167,6 +166,23 @@ public class ViewPermalinkController  extends SAbstractController {
 				model.put("ss_screens_after_login_screen_to_logged_in", 
 						SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
 	 	    	return new ModelAndView("forum/portal_login.jsp", model);
+			} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
+				String zoneName = WebHelper.getZoneNameByVirtualHost(request);
+				try {
+					RunasTemplate.runasGuest(new RunasCallback() {
+						public Object doAs() {
+							getFolderModule().getEntry(new Long(binderId), new Long(entryId));
+							return null;
+						}
+					}, zoneName);
+				} catch(AccessControlException ac) {
+					model.put("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
+					model.put("ss_screens_to_login_screen", 
+							SPropsUtil.getString("permalink.login.screensToLoginScreen"));
+					model.put("ss_screens_after_login_screen_to_logged_in", 
+							SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
+		 	    	return new ModelAndView("forum/portal_login.jsp", model);
+				}
 			}
 		} else {
 	        user = RequestContextHolder.getRequestContext().getUser();
@@ -177,6 +193,10 @@ public class ViewPermalinkController  extends SAbstractController {
 					try {
 						//See if this user can access the binder
 						getBinderModule().getBinder(new Long(binderId));
+						if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
+							//See if the user can access the entry, too
+							getFolderModule().getEntry(new Long(binderId), new Long(entryId));
+						}
 					} catch(AccessControlException ac) {
 						model.put("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
 						model.put("ss_screens_to_login_screen", 
