@@ -38,6 +38,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -54,13 +56,18 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.search.filter.SearchFilter;
+import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -81,7 +88,7 @@ import com.sitescape.util.Validator;
  *
  */
 public class MobileAjaxController  extends SAbstractControllerRetry {
-	
+	static Pattern replacePtrn = Pattern.compile("([\\p{Punct}&&[^\\*]])");	
 	
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestWithRetry(ActionRequest request, ActionResponse response) throws Exception {
@@ -114,6 +121,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_SEARCH_RESULTS)) {
 			return ajaxMobileSearchResults(request, response);
+		} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
+			return ajaxMobileFindPeople(request, response);
 		}
 		return ajaxMobileFrontPage(request, response);
 	} 
@@ -325,5 +334,61 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		return new ModelAndView("mobile/show_entry", model);
 	}	
+
+	private ModelAndView ajaxMobileFindPeople(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Map model = new HashMap();
+		Map formData = request.getParameterMap();
+		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
+			if (formData.containsKey("okBtn")) {
+				String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+				model.put(WebKeys.SEARCH_TEXT, searchText);
+				String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
+				String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
+				Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
+
+				User user = RequestContextHolder.getRequestContext().getUser();
+				Map options = new HashMap();
+				String view;
+				options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
+				options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
+				options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+				
+				//Build the search query
+				SearchFilter searchTermFilter = new SearchFilter();
+				
+				String newStr = searchText;
+				Matcher matcher = replacePtrn.matcher(newStr);
+				while (matcher.find()) {
+					newStr = matcher.replaceFirst(" ");
+					matcher = replacePtrn.matcher(newStr);
+				}
+				newStr = newStr.replaceAll(" \\*", "\\*");
+				
+			    searchText = newStr + "*";
+				//Add the login name term
+				if (searchText.length()>0) {
+					searchTermFilter.addTitleFilter(searchText);
+					searchTermFilter.addLoginNameFilter(searchText);
+				}
+			   	
+				//Do a search to find the first few items that match the search text
+				options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
+				Map entries = getProfileModule().getUsers(user.getParentBinder().getId(), options);
+				model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
+				model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+				view = "mobile/find_people";
+
+				model.put(WebKeys.PAGE_SIZE, maxEntries);
+				model.put(WebKeys.PAGE_NUMBER, pageNumber);
+				
+				return new ModelAndView(view, model);
+				
+			}
+		}
+		return new ModelAndView("mobile/find_people", model);
+	}
 	
 }

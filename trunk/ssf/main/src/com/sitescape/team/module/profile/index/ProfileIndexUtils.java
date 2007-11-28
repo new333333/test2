@@ -57,6 +57,7 @@ public class ProfileIndexUtils  {
     public static final String ORGANIZATION_FIELD="_org";
     public static final String ZONNAME_FIELD="_zonName";
     public static final String RESERVEDID_FIELD="_reservedId";    
+    public static final String WORKSPACE_ID_FIELD="_workspaceId";    
     
     public static void addName(Document doc, User user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
@@ -76,6 +77,12 @@ public class ProfileIndexUtils  {
     			Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, user.getZonName(), Field.Store.NO, Field.Index.TOKENIZED);
     			doc.add(allText);
     		}
+    	}
+    }      
+    public static void addWorkspaceId(Document doc, User user) {
+    	if (user.getWorkspaceId() != null) {
+    		Field workspaceIdField = new Field(WORKSPACE_ID_FIELD, user.getWorkspaceId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    		doc.add(workspaceIdField);
     	}
     }      
     public static void addEmail(Document doc, User user, boolean fieldsOnly) {

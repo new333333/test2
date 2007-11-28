@@ -298,6 +298,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_ACCESS_CONTROL_TABLE = "get_access_control_table";
 	public static final String OPERATION_ADD_ATTACHMENT_OPTIONS = "add_attachment_options";
 	public static final String OPERATION_ADD_FOLDER_ATTACHMENT_OPTIONS = "add_folder_attachment_options";
+    public static final String OPERATION_MOBILE_FIND_PEOPLE="mobile_find_people"; 
     public static final String OPERATION_MOBILE_LOGIN="mobile_login"; 
     public static final String OPERATION_MOBILE_SHOW_FOLDER="mobile_show_folder"; 
     public static final String OPERATION_MOBILE_SHOW_ENTRY="mobile_show_entry"; 
@@ -722,6 +723,7 @@ public class WebKeys {
     public static final String SEARCH_SAVED_QUERY="ss_savedQuery";
     public static final String SEARCH_SAVED_QUERIES="ss_savedQueries";
     public static final String SEARCH_SEARCH_SORT_BY="sortBy";
+    public static final String SEARCH_TEXT="ss_searchText";
     public static final String SEARCH_TOTAL_HITS="ss_searchTotalHits";
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
