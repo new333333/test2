@@ -165,7 +165,7 @@ public class ViewPermalinkController  extends SAbstractController {
 						SPropsUtil.getString("permalink.login.screensToLoginScreen"));
 				model.put("ss_screens_after_login_screen_to_logged_in", 
 						SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
-	 	    	return new ModelAndView("forum/portal_login.jsp", model);
+	 	    	return new ModelAndView("forum/portal_login", model);
 			} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
 				String zoneName = WebHelper.getZoneNameByVirtualHost(request);
 				try {
@@ -181,7 +181,7 @@ public class ViewPermalinkController  extends SAbstractController {
 							SPropsUtil.getString("permalink.login.screensToLoginScreen"));
 					model.put("ss_screens_after_login_screen_to_logged_in", 
 							SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
-		 	    	return new ModelAndView("forum/portal_login.jsp", model);
+		 	    	return new ModelAndView("forum/portal_login", model);
 				}
 			}
 		} else {
@@ -203,7 +203,7 @@ public class ViewPermalinkController  extends SAbstractController {
 								SPropsUtil.getString("permalink.login.screensToLoginScreen"));
 						model.put("ss_screens_after_login_screen_to_logged_in", 
 								SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
-			 	    	return new ModelAndView("forum/portal_login.jsp", model);
+			 	    	return new ModelAndView("forum/portal_login", model);
 					}
 				}
 			}
