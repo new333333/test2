@@ -109,18 +109,23 @@ function ss_addInitializedAuthor(userId, userName) {
 function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
+	
+	var workflowsContainer = document.createElement('div');
+	workflowsContainer.setAttribute("style", "display:inline; float: left;");
+	div.appendChild(workflowsContainer);
+	
 	var remover = document.createElement('img');
 	dojo.event.connect(remover, "onclick", ss_callRemoveSearchOption(orderNo));
 	remover.setAttribute("src", ss_imagesPath + "pics/delete.gif");
-	div.appendChild(remover);
-	div.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelWorkflow + ": "));
+	workflowsContainer.appendChild(remover);
+	workflowsContainer.appendChild(document.createTextNode(" " + ss_nlt_searchFormLabelWorkflow + ": "));
 
 	var wDiv = document.createElement('div');
 	wDiv.id = "placeholderWorkflow"+orderNo;
-	div.appendChild(wDiv);
-	var sDiv = document.createElement('div');
+	workflowsContainer.appendChild(wDiv);
+	var sDiv = document.createElement('ul');
 	sDiv.id = "workflowSteps"+orderNo;
-	sDiv.setAttribute("style", "display:inline;");
+	sDiv.setAttribute("style", "display:inline; float: left; padding-left: 5px; ");
 	div.appendChild(sDiv);
 	document.getElementById('ss_workflows_options').appendChild(div);
 		
@@ -129,8 +134,13 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	var wfWidget = dojo.widget.createWidget("WorkflowSelect", properties, document.getElementById("placeholderWorkflow"+orderNo+""));
 
 	if (wfIdValue!=null && wfIdValue!=""){
-		wfWidget.setDefaultValue(wfIdValue, ss_searchWorkflows[wfIdValue], stepsValue, ss_searchSteps[wfIdValue+"-"+stepsValue]);
+		wfWidget.setDefaultValue(wfIdValue, ss_searchWorkflows[wfIdValue], stepsValue);
 	}
+	
+	var brObj = document.createElement('br');
+	brObj.setAttribute("style", "clear: both; ");
+	div.appendChild(brObj);
+	
 	return wfWidget;
 }
 

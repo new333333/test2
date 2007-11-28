@@ -33,6 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -57,6 +58,7 @@ import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.web.util.DateHelper;
 
 public class SearchFilter {
+	private static String [] sample = new String[0];
 	protected static List placeTypes = new ArrayList(3);
 	static {	
 		placeTypes.add(EntityIdentifier.EntityType.folder.name());
@@ -104,11 +106,21 @@ public class SearchFilter {
 		
 		String id;
 		
-		String[] steps;
+		List steps;
 
 		public Workflow(String id, String[] steps) {
 			this.id = id;
-			this.steps = steps;
+			addSteps(steps);
+		}
+		
+		public void addSteps(String[] steps) {
+			if (steps == null) {
+				return;
+			}
+			if (this.steps == null) {
+				this.steps = new ArrayList();
+			}
+			this.steps.addAll(Arrays.asList(steps));
 		}
 		
 	}
@@ -844,7 +856,7 @@ public class SearchFilter {
 		Iterator<Workflow> it = workflows.iterator();
 		while (it.hasNext()) {
 			Workflow workflow = it.next();
-			addWorkflow(workflowsListParent, workflow.id, workflow.steps);
+			addWorkflow(workflowsListParent, workflow.id, workflow.steps!=null?(String[])workflow.steps.toArray(sample):null);
 		}
 	}
 	

@@ -69,13 +69,12 @@ function ss_initSearchOptions() {
 <ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
 		<c:if test="${!empty ss_filterMap.additionalFilters.workflow}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.workflow}">
-				<c:forEach var="step" items="${block.filterWorkflowStateName}">
-					ss_addInitializedWorkflow("<ssf:escapeJavaScript value="${block.searchWorkflow}"/>", "<ssf:escapeJavaScript value="${step}"/>");
-				</c:forEach>
-				<c:if test="${empty block.filterWorkflowStateName}">
-					ss_addInitializedWorkflow("<ssf:escapeJavaScript value="${block.searchWorkflow}"/>", "");				
-				</c:if>				
-			</c:forEach>
+				ss_addInitializedWorkflow("<ssf:escapeJavaScript value="${block.searchWorkflow}"/>", [<%--
+				--%><c:forEach var="step" items="${block.filterWorkflowStateName}" varStatus="loopStatus"><%--
+					--%>"<ssf:escapeJavaScript value="${step}"/>"<c:if test="${!loopStatus.last}">, </c:if><%--
+				--%></c:forEach><%--
+				--%>]);<%--
+			--%></c:forEach>
 		</c:if>
 </ssf:ifAuthorizedByLicense>
 		<c:if test="${!empty ss_filterMap.additionalFilters.entry}">
