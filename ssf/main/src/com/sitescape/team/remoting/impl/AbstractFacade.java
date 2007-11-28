@@ -51,6 +51,7 @@ import org.dom4j.io.XMLWriter;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
@@ -90,7 +91,15 @@ import com.sitescape.util.Validator;
 public abstract class AbstractFacade extends AbstractAllModulesInjected implements Facade, ElementBuilder.BuilderContext {
 
 	protected final Log logger = LogFactory.getLog(getClass());
+	protected ProfileDao profileDao;
 
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
+	}
+	protected ProfileDao getProfileDao() {
+		return profileDao;
+	}
+	
 	public static class AttachmentHandler {
 		public void handleAttachment(FileAttachment att, String webUrl) {}
 	}
