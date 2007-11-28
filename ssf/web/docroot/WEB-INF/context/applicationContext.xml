@@ -626,7 +626,9 @@
 	
 	<bean id="wsFacade" class="org.springframework.aop.framework.ProxyFactoryBean">
 		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.FacadeImpl" parent="dependOnAllModulesTemplate" />
+			<bean class="com.sitescape.team.remoting.ws.FacadeImpl" parent="dependOnAllModulesTemplate">
+				<property name="profileDao"><ref local="profileDao"/></property>
+			</bean>
 		</property>
 		<property name="proxyInterfaces">
 			<value>com.sitescape.team.remoting.Facade</value>
