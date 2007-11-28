@@ -226,6 +226,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			response.setContentType("text/xml");			
 			if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
 				return new ModelAndView("forum/unseen_counts", model);
+			} else if (op.equals(WebKeys.OPERATION_CHECK_IF_LOGGED_IN)) {
+				return new ModelAndView("forum/check_if_logged_in_return", model);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_COLUMN_POSITIONS)) {
 				return new ModelAndView("forum/save_column_positions_return", model);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_ENTRY_HEIGHT)) {
@@ -269,6 +271,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
 			return ajaxGetUnseenCounts(request, response);
 			
+		} else if (op.equals(WebKeys.OPERATION_CHECK_IF_LOGGED_IN)) {
+			return ajaxCheckIfLoggedIn(request, response);
+
 		} else if (op.equals(WebKeys.OPERATION_ADD_FAVORITE_BINDER) || 
 				op.equals(WebKeys.OPERATION_ADD_FAVORITES_CATEGORY) ||
 				op.equals(WebKeys.OPERATION_GET_FAVORITES_TREE) ||
@@ -1895,6 +1900,20 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("ss_operation_status", WebStatusTicket.findStatusTicket(PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_STATUS_TICKET_ID), request).getStatus());
 		response.setContentType("text/xml");
 		return new ModelAndView("common/check_status", model);	
+	}
+
+	private ModelAndView ajaxCheckIfLoggedIn(RenderRequest request, RenderResponse response)  throws PortletRequestBindingException { 
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Map model = new HashMap();
+
+		if (user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			//Signal that the user is not logged in. 
+			Map statusMap = new HashMap();
+			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
+			model.put(WebKeys.AJAX_STATUS, statusMap);
+		}
+		response.setContentType("text/xml");
+		return new ModelAndView("forum/check_if_logged_in_return", model);	
 	}
 
 
