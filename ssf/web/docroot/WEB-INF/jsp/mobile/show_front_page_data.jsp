@@ -96,4 +96,17 @@
   <c:if test="${!status.last}"><br/></c:if>
 </c:forEach>
 </div>
+<br/>
 </c:if>
+
+<div class="ss_mobile">
+<form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="true" 
+					operation="mobile_find_people" />">
+<span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span>
+<br/>
+<input type="text" size="15" name="searchText" /><input 
+  type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+</form>
+</div>
+

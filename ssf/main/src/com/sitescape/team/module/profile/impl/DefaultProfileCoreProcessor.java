@@ -417,6 +417,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			ProfileIndexUtils.addName(indexDoc, user, false);
 			ProfileIndexUtils.addEmail(indexDoc, user, false);
 			ProfileIndexUtils.addZonName(indexDoc, user, false);
+			ProfileIndexUtils.addWorkspaceId(indexDoc, user);
 		} else {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
 		}

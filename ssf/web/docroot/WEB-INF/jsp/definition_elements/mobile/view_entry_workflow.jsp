@@ -33,15 +33,16 @@
 
 <c:if test="${!empty ssDefinitionEntry.workflowStates}">
 <div class="ss_mobile_workflow">
+ <span class="ss_mobile_small ss_mobile_light" style="text-decoration:underline;"><ssf:nlt tag="workflow"/></span>
  <c:set var="lastWorkflowTitle" value=""/>
  
 <c:forEach var="workflow" items="${ssDefinitionEntry.workflowStates}">
   <c:if test="${!empty workflow.definition}">
       <c:if test="${workflowTitle != lastWorkflowTitle}">
-        <span>${workflow.definition.title}</span><br/>
+        <br/><span>${workflow.definition.title}</span>
       </c:if>
       <c:if test="${empty workflow.threadName}">
-	    <span>${ssWorkflowCaptions[workflow.id]}</span><br/>
+	    <br/><span>${ssWorkflowCaptions[workflow.id]}</span>
       </c:if>
 
     <c:set var="workflowTitle" value="${workflow.definition.title}"/>
@@ -49,8 +50,8 @@
         <% //??? This next check needs to be fixed if multiple of the same workflow porcess is allowed %>
         <c:if test="${workflow2.definition.id == workflow.definition.id}">
           <c:if test="${!empty workflow2.threadName}">
-			<span class="ss_mobile_light">${workflow2.threadName}</span>
-		    ${ssWorkflowCaptions[workflow2.id]}<br/>
+			<br/><span class="ss_mobile_light">${workflow2.threadName}</span>
+		    ${ssWorkflowCaptions[workflow2.id]}
     	  </c:if>
   		</c:if>
   	</c:forEach>
