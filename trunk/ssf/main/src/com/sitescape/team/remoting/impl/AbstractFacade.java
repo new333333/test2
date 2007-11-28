@@ -31,9 +31,11 @@ package com.sitescape.team.remoting.impl;
 import java.io.IOException;
 import java.io.StringBufferInputStream;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 
 import net.fortuna.ical4j.data.ParserException;
@@ -56,6 +58,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
@@ -68,10 +71,12 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.util.SimpleProfiler;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.tree.WebSvcTreeHelper;
@@ -185,7 +190,9 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	{
 		entryElem.addAttribute("id", entry.getId().toString());
 		entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
-		entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
+		if(entry.getEntryDef() != null) {
+			entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
+		}
 		entryElem.addAttribute("title", entry.getTitle());
 		entryElem.addAttribute("docNumber", entry.getDocNumber());
 		entryElem.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
@@ -447,6 +454,26 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			throw new RemotingException(e);
 		}
 
+	}
+	
+	public void addUserToGroup(long userId, String username, long groupId) {
+		if(username != null) {			
+			userId = getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneName()).getId().longValue();
+		}
+		HashSet<Long> userIds = new HashSet<Long>();
+		userIds.add(userId);
+		Set<Principal> principals = getProfileModule().getPrincipals(userIds, RequestContextHolder.getRequestContext().getZoneId());
+		Long profileBinderId = getProfileModule().getProfileBinder().getId();
+		Group group = (Group)getProfileModule().getEntry(profileBinderId, groupId);		
+		List memberList = group.getMembers();
+		memberList.addAll(principals);
+		Map updates = new HashMap();
+		updates.put(ObjectKeys.FIELD_GROUP_MEMBERS, memberList);
+		try {
+			getProfileModule().modifyEntry(profileBinderId, groupId, new MapInputData(updates));
+		} catch(WriteFilesException e) {
+			// We have no files, so this can't actually happen
+		}
 	}
 	
 	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
