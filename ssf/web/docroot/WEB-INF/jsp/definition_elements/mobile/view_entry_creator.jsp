@@ -36,10 +36,10 @@
 	    action="__ajax_mobile"
 	    operation="mobile_show_workspace"
 	    binderId="${ssDefinitionEntry.creation.principal.workspaceId}" />"
-	  ><span class="ss_small">${ssDefinitionEntry.creation.principal.title}</span></a>
+	  ><span class="ss_mobile_small">${ssDefinitionEntry.creation.principal.title}</span></a>
   <c:if test="${!empty ssDefinitionEntry.postedBy}">
     <br/>
-    <span class="ss_small ss_light" style="padding-left:4px;">
+    <span class="ss_mobile_small ss_mobile_light" style="padding-left:4px;">
       (<ssf:nlt tag="entry.postedBy"/>&nbsp;<c:out value="${ssDefinitionEntry.postedBy}"/>)
     </span>
   </c:if>

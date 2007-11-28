@@ -59,7 +59,7 @@
 	    			folderId="${binder.parentBinder.id}" 
 					action="__ajax_mobile" actionUrl="false" 
 					operation="mobile_show_folder" />">
-			<span class="ss_smallprint ss_light">(${binder.parentBinder.title})</span></a>
+			<span class="ss_mobile_small ss_mobile_light">(${binder.parentBinder.title})</span></a>
 	  </c:if>
 	</c:if>
 	<c:if test="${binder.entityIdentifier.entityType == 'workspace'}">

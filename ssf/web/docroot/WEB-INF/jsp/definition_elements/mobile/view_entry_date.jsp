@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <div>
 <c:out value="${property_caption}" />
-<span class="ss_small"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+<span class="ss_mobile_small"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
      value="${ssDefinitionEntry.creation.date}" type="both" 
 	 timeStyle="medium" dateStyle="medium" /></span>
 </div>

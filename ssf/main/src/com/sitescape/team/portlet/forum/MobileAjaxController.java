@@ -31,9 +31,12 @@ package com.sitescape.team.portlet.forum;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import javax.portlet.ActionRequest;
@@ -50,7 +53,9 @@ import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -227,6 +232,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			binder = getWorkspaceModule().getWorkspace();				
 		}
 		model.put(WebKeys.BINDER, binder);
+		//See if this is a user workspace
+		if (binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+			Set wsUsers = new HashSet();
+			wsUsers.add(binder.getCreation().getPrincipal().getId());
+			SortedSet wsUsers2 = getProfileModule().getUsers(wsUsers);
+			model.put(WebKeys.WORKSPACE_CREATOR, wsUsers2.first());
+		}
         Comparator c = new BinderComparator(user.getLocale(),BinderComparator.SortByField.searchTitle);
 		TreeSet ws = new TreeSet(c);
 		ws.addAll(binder.getWorkspaces());
