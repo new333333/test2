@@ -31,6 +31,7 @@ package com.sitescape.team.search.filter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -228,14 +229,24 @@ public class SearchFilterRequestParser {
 				workflows.add(new SearchFilter.Workflow(workflowId, workflowSteps));
 			}
 		} else {
+			Map<String, SearchFilter.Workflow> workflowsMap = new HashMap();
 			for (int i = 0; i < types.length; i++) {
 				if (types[i].equals(SearchFilterToMapConverter.SearchBlockTypeWorkflow)) {
 					String workflowId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.SearchWorkflowId.concat(numbers[i]), "");
 					String[] workflowSteps =  PortletRequestUtils.getStringParameters(request, SearchFilterKeys.SearchWorkflowStep.concat(numbers[i]));
 					if (!workflowId.equals("")) {
-						workflows.add(new SearchFilter.Workflow(workflowId, workflowSteps));
+						if (workflowsMap.containsKey(workflowId)) {
+							workflowsMap.get(workflowId).addSteps(workflowSteps);
+						} else {
+							workflowsMap.put(workflowId, new SearchFilter.Workflow(workflowId, workflowSteps));
+						}
 					}
 				}
+			}
+			
+			Iterator<SearchFilter.Workflow> it = workflowsMap.values().iterator();
+			while (it.hasNext()) {
+				workflows.add(it.next());
 			}
 		}
 

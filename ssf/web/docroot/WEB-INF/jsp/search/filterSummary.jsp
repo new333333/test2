@@ -60,23 +60,22 @@
 		<c:if test="${!empty ss_filterMap.additionalFilters.workflow}">
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.workflow}">
 				<input type="hidden" name="searchWorkflow_hidden" value="${block.searchWorkflow}" />
-				<c:forEach var="step" items="${block.filterWorkflowStateName}">
-					<input type="hidden" name="searchWorkflowStep_${block.searchWorkflow}_step_hidden" value="${step}" />
-					<p><ssf:nlt tag="searchForm.label.workflow"/>:
-					<script type="text/javascript">
-						document.write(ss_searchWorkflows['${block.searchWorkflow}']+" - ");
-						if (ss_searchSteps['${block.searchWorkflow}-<ssf:escapeJavaScript value="${step}"/>'])
-							document.write(ss_searchSteps['${block.searchWorkflow}-<ssf:escapeJavaScript value="${step}"/>']);
-					</script>
-					</p>
-				</c:forEach>
-				<c:if test="${empty block.filterWorkflowStateName}">
-					<p><ssf:nlt tag="searchForm.label.workflow"/>:
+				<p>
+					<ssf:nlt tag="searchForm.label.workflow"/>:
 					<script type="text/javascript">
 						document.write(ss_searchWorkflows['${block.searchWorkflow}']);
 					</script>
-					</p>
-				</c:if>
+					<c:if test="${!empty block.filterWorkflowStateName}">
+						-
+					</c:if>
+					<c:forEach var="step" items="${block.filterWorkflowStateName}" varStatus="status">
+						<input type="hidden" name="searchWorkflowStep_${block.searchWorkflow}_step_hidden" value="${step}" />
+						<script type="text/javascript">
+							if (ss_searchSteps['${block.searchWorkflow}-<ssf:escapeJavaScript value="${step}"/>'])
+								document.write(ss_searchSteps['${block.searchWorkflow}-<ssf:escapeJavaScript value="${step}"/>']<c:if test="${!status.last}"> + ", "</c:if>);
+						</script>
+					</c:forEach>
+				</p>
 			</c:forEach>
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.tag}">

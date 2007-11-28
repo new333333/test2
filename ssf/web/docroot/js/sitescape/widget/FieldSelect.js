@@ -42,7 +42,6 @@ dojo.declare(
 	this.dataType = [];
 
 	this.getData = function(/*String*/ url){
-		url += "\&randomNumber="+ss_random++;
 		dojo.io.bind({
 			url: url,
 			load: dojo.lang.hitch(this, function(type, data, evt){ 
@@ -55,7 +54,8 @@ dojo.declare(
 				this.setData(arrData);
 				this.setDataType(arrDataType);				
 			}),
-			mimetype: "text/json"
+			mimetype: "text/json",
+			preventCache: true
 		});
 	};
 

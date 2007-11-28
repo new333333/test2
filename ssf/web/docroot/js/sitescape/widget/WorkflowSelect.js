@@ -44,24 +44,48 @@ dojo.widget.defineWidget(
 		selectOption : function(/*Event*/ evt){
 			if (this.widgetStepsRef != null) this.widgetStepsRef.destroy();
 			sitescape.widget.WorkflowSelect.superclass.selectOption.call(this, evt);
-			var id = this.stepsWidget.id+this.selectedResult[1];
-			var stepsProp = {dataUrl:this.nestedUrl+"&workflowId="+this.selectedResult[1], id:id, name:this.searchFieldName};
-			this.widgetStepsRef = dojo.widget.createWidget("Select", stepsProp, this.stepsWidget, "last");
+			this.loadWorkflowSteps(this.selectedResult[1]);
 		},
-		setDefaultValue: function(wfId, wfLabel, stepId, stepLabel) {
+		setDefaultValue: function(wfId, wfLabel, stepIds) {
 			this.setLabel(wfLabel);
 			this.setValue(wfId);
 			if (this.widgetStepsRef != null) this.widgetStepsRef.destroy();
 			
-			if (!stepId || stepId == "") {
+			if (!stepIds) {
 				return;
 			}
-			
-			var id = this.stepsWidget.id+wfId;
-			var stepsProp = {dataUrl:this.nestedUrl+"&workflowId="+wfId, id:id, name:this.searchFieldName};
-			this.widgetStepsRef = dojo.widget.createWidget("Select", stepsProp, this.stepsWidget, "last");
-			this.widgetStepsRef.setValue(stepId);
-			this.widgetStepsRef.setLabel(stepLabel);
+			this.loadWorkflowSteps(wfId, stepIds);
+		},
+		loadWorkflowSteps: function(workflowId, stepsIds) {
+			stepsIds = stepsIds||[];
+			var stepsS = "|" + stepsIds.join("|") + "|";
+			this.stepsWidget.innerHTML = "";
+			dojo.io.bind({
+				url: this.nestedUrl+"&workflowId="+workflowId,
+				load: dojo.lang.hitch(this, function(type, data, evt){ 
+					for (var i in data) {
+						var liObj = document.createElement("li");
+						this.stepsWidget.appendChild(liObj);
+						var chckboxId = this.stepsWidget.id+workflowId+i;
+						var chkbox = document.createElement("input");
+						chkbox.type = "checkbox";
+						chkbox.value = i;
+						chkbox.id = chckboxId;
+						chkbox.name = this.searchFieldName;
+						if (stepsS.indexOf("|" + i + "|") > -1) {
+							chkbox.checked = true;
+						}
+						liObj.appendChild(chkbox);
+						var label = document.createElement("label");
+						label.setAttribute("for", chckboxId);
+						label.setAttribute("style", "padding-left: 5px;");
+						label.appendChild(document.createTextNode(data[i]));
+						liObj.appendChild(label);
+					}
+				}),
+				mimetype: "text/json",
+				preventCache: true
+			});
 		}
 	}
 );
