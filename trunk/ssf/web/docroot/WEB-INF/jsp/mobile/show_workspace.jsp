@@ -43,13 +43,11 @@
 	actionUrl="false" />">${ssBinder.title}</a>
 </div>
 <br/>
-<c:if test="${ssBinder.definitionType == '12'}">
+<c:if test="${ssBinder.definitionType == '12' && !empty ssWorkspaceCreator}">
  <%-- This is a user workspace --%>
- <c:set var="creator" value="${ssBinder.creation.principal}" />
- <jsp:useBean id="creator" type="com.sitescape.team.domain.Principal" />
- <c:if test="${!empty creator.customAttributes['picture']}">
-  <div class="ss_profile_picture_frame">
-  <c:set var="selections" value="${creator.customAttributes['picture'].value}" />
+ <c:if test="${!empty ssWorkspaceCreator.customAttributes['picture']}">
+  <div>
+  <c:set var="selections" value="${ssWorkspaceCreator.customAttributes['picture'].value}" />
   <c:set var="pictureCount" value="0"/>
   <c:forEach var="selection" items="${selections}">
    <c:if test="${pictureCount == 0}">
@@ -58,9 +56,9 @@
 	  border="0" 
 	  src="<ssf:url 
 	    webPath="viewFile"
-	    folderId="${creator.parentBinder.id}"
-	    entryId="${creator.id}"
-	    entityType="${creator.entityType}" >
+	    folderId="${ssWorkspaceCreator.parentBinder.id}"
+	    entryId="${ssWorkspaceCreator.id}"
+	    entityType="${ssWorkspaceCreator.entityType}" >
 	    <ssf:param name="fileId" value="${selection.id}"/>
 	    <ssf:param name="viewType" value="scaled"/>
     	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
@@ -70,59 +68,41 @@
   </c:forEach>
   </div>
  </c:if>
- <br/>
- <table>
- <%
- if (creator == null) {
- 	String phone = ((com.sitescape.team.domain.User) creator).getPhone();
- 	String email = ((com.sitescape.team.domain.User) creator).getEmailAddress();
- 	String mobile = ((com.sitescape.team.domain.User) creator).getMobileEmailAddress();
- 	String txt = ((com.sitescape.team.domain.User) creator).getTxtEmailAddress();
- %>
- <% 
- 	if (phone != null && !phone.equals("")) { 
- %>
+ <table cellspacing="0" cellpadding="0">
+ <c:if test="${!empty ssWorkspaceCreator.phone}">
   <tr>
    <td valign="top" align="left">
-     <span><%= phone %></span>
-    <span class="ss_small ss_light">(<ssf:nlt tag="profile.abv.element.phone"/>)</span>
+     <span>${ssWorkspaceCreator.phone}</span>
+    <span class="ss_mobile_small ss_mobile_light">(<ssf:nlt tag="profile.abv.element.phone"/>)</span>
    </td>
   </tr>
- <% 
- 	}
- 	if (phone != null && !email.equals("")) { 
- %>
+ </c:if>
+ <c:if test="${!empty ssWorkspaceCreator.emailAddress}">
   <tr>
    <td valign="top" align="left">
-     <span><%= email %></span>
-    <span class="ss_small ss_light">(<ssf:nlt tag="profile.abv.element.emailAddress"/>)</span>
+     <span>${ssWorkspaceCreator.emailAddress}</span>
+    <span class="ss_mobile_small ss_mobile_light">(<ssf:nlt tag="profile.abv.element.emailAddress"/>)</span>
    </td>
   </tr>
- <% 
- 	}
- 	if (mobile != null && !mobile.equals("")) { 
- %>
+ </c:if>
+ <c:if test="${!empty ssWorkspaceCreator.mobileEmailAddress}">
   <tr>
    <td valign="top" align="left">
-     <span><%= mobile %></span>
-    <span class="ss_small ss_light">(<ssf:nlt tag="profile.abv.element.mobileEmailAddress"/>)</span>
+     <span>${ssWorkspaceCreator.mobileEmailAddress}</span>
+    <span class="ss_mobile_small ss_mobile_light">(<ssf:nlt tag="profile.abv.element.mobileEmailAddress"/>)</span>
    </td>
   </tr>
- <% 
- 	}
- 	if (txt != null && !txt.equals("")) { 
- %>
+ </c:if>
+ <c:if test="${!empty ssWorkspaceCreator.txtEmailAddress}">
   <tr>
    <td valign="top" align="left">
-     <span><%= txt %></span>
-    <span class="ss_small ss_light">(<ssf:nlt tag="profile.abv.element.txtEmailAddress"/>)</span>
+     <span>${ssWorkspaceCreator.txtEmailAddress}</span>
+    <span class="ss_mobile_small ss_mobile_light">(<ssf:nlt tag="profile.abv.element.txtEmailAddress"/>)</span>
    </td>
   </tr>
- <% 
- 	}
- }
- %>
+ </c:if>
  </table> 
+ <br/>
 </c:if>
 <div style="padding-left:6px;">
 <c:if test="${!empty ssWorkspaces}">
@@ -184,7 +164,7 @@
 </div>
 
 <br/>
-<div class="ss_mobile_breadcrumbs ss_small">
+<div class="ss_mobile_breadcrumbs ss_mobile_small">
 <c:if test="${!empty ssBinder.parentBinder}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.parentBinder.id}" 

@@ -47,7 +47,7 @@
 
 </c:if> 
 <br/>
-<div class="ss_mobile_breadcrumbs ss_small">
+<div class="ss_mobile_breadcrumbs ss_mobile_small">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	folderId="${ssBinder.id}"
 	action="__ajax_mobile" operation="mobile_show_folder" actionUrl="false" />"

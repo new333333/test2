@@ -2,13 +2,13 @@
   font-family: Lucida Sans Unicode, Arial, sans-serif;
   font-size: 12px; 
 }
-.ss_small, .ss_small a, .ss_small table td {
+.ss_mobile_small, .ss_mobile_small a, .ss_mobile_small table td {
 	font-size:9px;
 }
-.ss_large, .ss_large a, .ss_large table td {
+.ss_mobile_large, .ss_mobile_large a, .ss_mobile_large table td {
 	font-size:11px;
 }
-.ss_light, .ss_light a, .ss_light table td {
+.ss_mobile_light, .ss_mobile_light a, .ss_mobile_light table td {
 	color:#999999;
 }
 .ss_bold, .ss_bold a, .ss_bold table td {
@@ -16,4 +16,10 @@
 }
 .ss_mobile_breadcrumbs, .ss_mobile_breadcrumbs a a:visited, .ss_mobile_breadcrumbs table td {
 	color:gray;
+}
+.ss_mobile_description {
+	background-color:#CECECE;
+}
+.ss_mobile_workflow {
+	border: solid 1px #CCCCCC;
 }

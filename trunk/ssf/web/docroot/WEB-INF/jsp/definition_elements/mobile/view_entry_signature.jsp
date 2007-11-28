@@ -51,12 +51,12 @@
  <tr>
   <td>
 	<div>
-	  <span class="ss_light ss_small"><ssf:nlt tag="entry.modifiedBy"/></span>
+	  <span class="ss_mobile_light ss_mobile_small"><ssf:nlt tag="entry.modifiedBy"/></span>
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    action="__ajax_mobile"
 	    operation="mobile_show_workspace"
 	    binderId="${ssDefinitionEntry.modification.principal.workspaceId}" />"
-	  ><span class="ss_light ss_small"
+	  ><span class="ss_mobile_light ss_mobile_small"
 	  >${ssDefinitionEntry.modification.principal.title}</span></a>
 	</div>
   </td>
@@ -64,7 +64,7 @@
  <tr>
   <td>
 	<div>
-	<span class="ss_light ss_small"><fmt:formatDate 
+	<span class="ss_mobile_light ss_mobile_small"><fmt:formatDate 
 		timeZone="${ssUser.timeZone.ID}"
 	    value="${ssDefinitionEntry.modification.date}" type="both" 
 		timeStyle="medium" dateStyle="medium" /></span>
@@ -76,16 +76,15 @@
 </c:if>
 
 <c:if test="${!empty ssDefinitionEntry.reservation.principal}">
-	<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
+	<table style="padding-left: 12px;" cellspacing="0" cellpadding="0">
 	 <tr>
-	  <td valign="top" style="padding-left:30px;">
-		<div class="ss_entryContent ss_entrySignature">
-		  <span style="padding-right:8px;">
-		  <ssf:nlt tag="entry.reservedBy"/>&nbsp;<img <ssf:alt tag="alt.locked"/> 
+	  <td valign="top">
+		<div>
+		  <span><img <ssf:alt tag="alt.locked"/> 
 		    src="<html:imagesPath/>pics/sym_s_caution.gif"/>
+		    <ssf:nlt tag="entry.reservedBy"/>&nbsp;
+		    <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
 		  </span>
-		  
-		  <ssf:showUser user="${ssDefinitionEntry.reservation.principal}"/>
 		</div>
 	  </td>
 	 </tr>
