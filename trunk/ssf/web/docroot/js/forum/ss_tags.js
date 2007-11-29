@@ -28,7 +28,7 @@
  */
  function ss_tagShow(namespace, divNumber) {
 	var divId = 'ss_tags' + namespace + '_' + parseInt(divNumber) + '_pane';
-	if (!ss_isAdapter) {
+	if (ss_isAdapter == 'false') {
 		ss_moveDivToBody(divId);
 	}
 	var divObj = document.getElementById(divId);
@@ -37,14 +37,14 @@
 	divObj.style.zIndex = ssMenuZ;
 	var anchorName = 'ss_tags_anchor' + namespace + '_' + parseInt(divNumber);
 	var anchorObj = document.getElementById(anchorName);
-	if (!ss_isAdapter) {
+	if (ss_isAdapter == 'false') {
 		ss_setObjectTop(divObj, (ss_getDivTop(anchorName) + 20) + "px");
 	}
 	var leftEdge = parseInt(ss_getDivLeft(anchorName)) + 10;
 	var rightEdge = parseInt(leftEdge + ss_getObjectWidth(divObj));
 	if (leftEdge < 0) leftEdge = 0;
 	self.parent.ss_debug("top = "+ss_getDivTop(anchorName) + ", left = " +leftEdge)
-	if (!ss_isAdapter) {
+	if (ss_isAdapter == 'false') {
 		ss_setObjectLeft(divObj, leftEdge + "px")
 	}
 	ss_showDiv(divId);
