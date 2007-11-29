@@ -1180,6 +1180,9 @@ function ss_calendarEngine(
 				hours =  nei.endDate.substr(9, 2) * 1;
 				minutes =  nei.endDate.substr(11, 2) * 1;
 	            nei.endDate = new Date(year, month - 1, day, hours, minutes);
+				if (hours === 0 && minutes === 0) {
+					nei.endDate = new Date(nei.endDate - 1);
+				}
 	
 	           	this.eventData[nei.eventId] = nei;
 	            if (typeof this.eventIdsByEntryId[nei.entryId] == "undefined") {
