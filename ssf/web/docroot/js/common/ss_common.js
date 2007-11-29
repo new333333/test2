@@ -3498,7 +3498,7 @@ function ss_setFavoritesList(favList, namespace) {
 
 
 function ss_saveFavorites(namespace) {
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"add_favorites_category"});
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_favorites"});
 	var saveArgs = new Array();
 	saveArgs["deletedIds"] = ss_deletedFavorites.join(" ");
 	saveArgs["favorites"] = ss_readFavoriteList(namespace);
