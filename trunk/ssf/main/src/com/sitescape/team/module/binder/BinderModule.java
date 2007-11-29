@@ -72,7 +72,7 @@ public interface BinderModule {
 	 * @param binderId
 	 * @param style
 	 */
-	public void addSubscription(Long binderId, int style) throws AccessControlException;
+	public void addSubscription(Long binderId, Map<Integer,String[]> styles) throws AccessControlException;
 	/**
 	 * Delete a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but

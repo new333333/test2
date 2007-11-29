@@ -159,14 +159,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 }
             );
 	}
-     public SFQuery queryObjects(final ObjectControls objs, final FilterControls filter) { 
-        Query query = (Query)getHibernateTemplate().execute(
+	public SFQuery queryObjects(final ObjectControls objs, FilterControls filter, final Long zoneId) { 
+		final FilterControls myFilter = filter==null?new FilterControls():filter;
+		myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
+       Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
     	            	StringBuffer query = objs.getSelectAndFrom("x");
-                     	filter.appendFilter("x", query);
+    	            	myFilter.appendFilter("x", query);
                       	Query q = session.createQuery(query.toString());
-                		List filterValues = filter.getFilterValues();
+                		List filterValues = myFilter.getFilterValues();
                			for (int i=0; i<filterValues.size(); ++i) {
                				q.setParameter(i, filterValues.get(i));
                 		}
@@ -348,11 +350,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * Return a list containing an object array, where each object in a row representing the value of the requested attribute
 	 * This is used to return a subset of object attributes
 	 */
-	public List loadObjects(ObjectControls objs, FilterControls filter) {
-		return loadObjects(objs, filter, false);
+	public List loadObjects(ObjectControls objs, FilterControls filter, Long zoneId) {
+		return loadObjects(objs, filter, zoneId, false);
 	}
-	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter) {
-		return loadObjects(objs, filter, true);
+	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter, Long zoneId) {
+		return loadObjects(objs, filter, zoneId, true);
 	}
 	/**
 	 * Return a lsit containing an object array, where each object in a row representing the value of the requested attribute
@@ -389,11 +391,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	/**
 	 * Return a list ob objects
 	 */
-	public List loadObjects(Class className, FilterControls filter) {
-		return loadObjects(new ObjectControls(className), filter);
+	public List loadObjects(Class className, FilterControls filter, Long zoneId) {
+		return loadObjects(new ObjectControls(className), filter, zoneId);
 	}
-	public List loadObjectsCacheable(Class className, FilterControls filter) {
-		return loadObjects(new ObjectControls(className), filter, true);
+	public List loadObjectsCacheable(Class className, FilterControls filter, Long zoneId) {
+		return loadObjectsCacheable(new ObjectControls(className), filter, zoneId);
 	}
 	/**
 	 * Load a list of objects, OR'ing ids
@@ -410,7 +412,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                         	.add(Expression.in(Constants.ID, ids));
  
                         if (zoneId != null)
-                        	crit.add(Expression.eq("zoneId", zoneId));
+                        	crit.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId));
                         return crit.list();
                         
                     }
@@ -428,7 +430,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                        	.add(Expression.in(Constants.ID, ids));
 
                         if (zoneId != null)
-                        	crit.add(Expression.eq("zoneId", zoneId));
+                        	crit.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId));
                        for (int i=0; i<collections.size(); ++i) {
                     	   crit.setFetchMode((String)collections.get(i), FetchMode.JOIN);
                        }
@@ -445,15 +447,17 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        return result;
        
    }	
-   public long countObjects(final Class clazz, final FilterControls filter) {
+   public long countObjects(final Class clazz, FilterControls filter, Long zoneId) {
+   	final FilterControls myFilter = filter==null?new FilterControls():filter;
+	myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 		Long result = (Long)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
 		        	StringBuffer query = new StringBuffer();
                   	query.append(" select count(*) from x in class " + clazz.getName());
-                 	filter.appendFilter("x", query);
+                  	myFilter.appendFilter("x", query);
                   	Query q = session.createQuery(query.toString());
-            		List filterValues = filter.getFilterValues();
+            		List filterValues = myFilter.getFilterValues();
             		for (int i=0; i<filterValues.size(); ++i) {
             			q.setParameter(i, filterValues.get(i));
             		}
@@ -467,15 +471,17 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	   return result.longValue(); 	
 	}
 	
-	public double averageColumn(final Class clazz, final String column, final FilterControls filter) {
+	public double averageColumn(final Class clazz, final String column, FilterControls filter, Long zoneId) {
+    	final FilterControls myFilter = filter==null?new FilterControls():filter;
+    	myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 		Double result = (Double)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
 		        	StringBuffer query = new StringBuffer();
                   	query.append(" select avg(x." + column + ") from x in class " + clazz.getName());
-                 	filter.appendFilter("x", query);
+                  	myFilter.appendFilter("x", query);
                   	Query q = session.createQuery(query.toString());
-            		List filterValues = filter.getFilterValues();
+            		List filterValues = myFilter.getFilterValues();
             		for (int i=0; i<filterValues.size(); ++i) {
             			q.setParameter(i, filterValues.get(i));
             		}
@@ -494,15 +500,17 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        if (result==null) return 0;
 	   return result.doubleValue();	
 	}
-	public long sumColumn(final Class clazz, final String column, final FilterControls filter) {
-		Long result = (Long)getHibernateTemplate().execute(
+	public long sumColumn(final Class clazz, final String column, FilterControls filter, Long zoneId) {
+    	final FilterControls myFilter = filter==null?new FilterControls():filter;
+    	myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
+    	Long result = (Long)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
 		        	StringBuffer query = new StringBuffer();
                   	query.append(" select sum(x." + column + ") from x in class " + clazz.getName());
-                 	filter.appendFilter("x", query);
+                  	myFilter.appendFilter("x", query);
                   	Query q = session.createQuery(query.toString());
-            		List filterValues = filter.getFilterValues();
+            		List filterValues = myFilter.getFilterValues();
             		for (int i=0; i<filterValues.size(); ++i) {
             			q.setParameter(i, filterValues.get(i));
             		}
@@ -729,7 +737,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                     public Object doInHibernate(Session session) throws HibernateException {
                         List results = session.createCriteria(Binder.class)
                              		.add(Expression.eq("internalId", reservedId))
-                             		.add(Expression.eq("zoneId", zoneId))
+                             		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
                              		.setCacheable(true)
                              		.list();
                         if (results.isEmpty()) {
@@ -747,7 +755,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                     public Object doInHibernate(Session session) throws HibernateException {
                         List results = session.createCriteria(Definition.class)
                              		.add(Expression.eq("internalId", reservedId))
-                             		.add(Expression.eq("zoneId", zoneId))
+                             		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
                              		.setCacheable(true)
                              		.list();
                         if (results.isEmpty()) {
@@ -771,16 +779,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		OrderBy order = new OrderBy();
 		order.addColumn("type");
 		order.addColumn("name");
-		FilterControls filter = new FilterControls("zoneId", zoneId);
+		FilterControls filter = new FilterControls();
 		filter.setOrderBy(order);
-    	return loadObjects(new ObjectControls(Definition.class), filter);
+    	return loadObjects(new ObjectControls(Definition.class), filter, zoneId);
 	}
 	public List loadDefinitions(Long zoneId, int type) {
 		OrderBy order = new OrderBy();
 		order.addColumn("name");
-		FilterControls filter = new FilterControls(new String[]{"zoneId", "type"}, new Object[]{zoneId, Integer.valueOf(type)});
+		FilterControls filter = new FilterControls("type", Integer.valueOf(type));
 		filter.setOrderBy(order);
-    	return loadObjectsCacheable(new ObjectControls(Definition.class), filter);
+    	return loadObjectsCacheable(new ObjectControls(Definition.class), filter, zoneId);
 	}
 	
 	// return top level configurations
@@ -790,7 +798,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(TemplateBinder.class)
                  		.add(Expression.isNull("parentBinder"))
-                 		.add(Expression.eq("zoneId", zoneId))
+                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
                  		.addOrder(Order.asc("definitionType"))
                  		.addOrder(Order.asc("templateTitle"))
 	                 	.list();
@@ -804,7 +812,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(TemplateBinder.class)
                  		.add(Expression.isNull("parentBinder"))
-                 		.add(Expression.eq("zoneId", zoneId))
+                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
                  		.add(Expression.eq("definitionType", type))
                  		.addOrder(Order.asc("templateTitle"))
 	                 	.list();
@@ -821,11 +829,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	            	//see if in use
 	            	List results;
 	               	if (def.getType() != Definition.WORKFLOW) {
-	               		long count = countObjects(com.sitescape.team.domain.FolderEntry.class, new FilterControls("entryDef", def));
+	               		long count = countObjects(com.sitescape.team.domain.FolderEntry.class, new FilterControls("entryDef", def), def.getZoneId());
 	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
-	               		count = countObjects(com.sitescape.team.domain.Principal.class, new FilterControls("entryDef", def));
+	               		count = countObjects(com.sitescape.team.domain.Principal.class, new FilterControls("entryDef", def), def.getZoneId());
 	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
-	               		count = countObjects(com.sitescape.team.domain.Binder.class, new FilterControls("entryDef", def));
+	               		count = countObjects(com.sitescape.team.domain.Binder.class, new FilterControls("entryDef", def), def.getZoneId());
 	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
 	               		results = session.createCriteria(Binder.class)
 	               			.createCriteria("definitions")
@@ -838,7 +846,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		               		b.removeDefinition(def);
 		               	}
 	               	} else {
-	               		long count = countObjects(com.sitescape.team.domain.WorkflowState.class, new FilterControls("definition", def));
+	               		long count = countObjects(com.sitescape.team.domain.WorkflowState.class, new FilterControls("definition", def), def.getZoneId());
 	               		if (count > 0) throw new DefinitionInvalidOperation(NLT.get("definition.errror.inUse"));
 
 	               		results = session.createCriteria(Binder.class)
@@ -893,7 +901,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		
 	}
 	public List loadPostings(Long zoneId) {
-    	return loadObjects(new ObjectControls(PostingDef.class), new FilterControls("zoneId", zoneId));
+    	return loadObjects(new ObjectControls(PostingDef.class), null, zoneId);
 	}
 	public PostingDef loadPosting(String postingId, Long zoneId) {
 		PostingDef post = (PostingDef)load(PostingDef.class, postingId);
@@ -1029,9 +1037,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	
 	
-	public Tag loadTag(final String tagId) {
+	public Tag loadTag(final String tagId, Long zoneId) {
         Tag t =(Tag)getHibernateTemplate().get(Tag.class, tagId);
-        if (t != null) return t;
+        if (t != null && t.getZoneId().equals(zoneId)) return t;
         throw new NoObjectByTheIdException("errorcode.no.tag.by.the.id", tagId);
 	}
 	//The entries must be of the same type
@@ -1168,14 +1176,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}
-	private List loadObjects(final ObjectControls objs, final FilterControls filter, final boolean cacheable) {
+	private List loadObjects(final ObjectControls objs, FilterControls filter, Long zoneId, final boolean cacheable) {
+	   	final FilterControls myFilter = filter==null?new FilterControls():filter;
+		myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 		return (List)getHibernateTemplate().execute(
 	        new HibernateCallback() {
 	            public Object doInHibernate(Session session) throws HibernateException {
 	            	StringBuffer query = objs.getSelectAndFrom("x");
-                 	filter.appendFilter("x", query);
+	            	myFilter.appendFilter("x", query);
                   	Query q = session.createQuery(query.toString());
-            		List filterValues = filter.getFilterValues();
+            		List filterValues = myFilter.getFilterValues();
            			for (int i=0; i<filterValues.size(); ++i) {
            				q.setParameter(i, filterValues.get(i));
             		}
@@ -1218,9 +1228,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		return (EntityDashboard)result.get(0);
 	}
 
-	public Dashboard loadDashboard(String id) {
+	public Dashboard loadDashboard(String id, Long zoneId) {
 		Dashboard d = (Dashboard)getHibernateTemplate().get(Dashboard.class, id);
-        if (d != null) return d;
+        if (d != null || d.getZoneId().equals(zoneId)) return d;
         throw new NoObjectByTheIdException("errorcode.no.dashboard.by.the.id", id);
 	}
 	public void executeUpdate(final String query) {

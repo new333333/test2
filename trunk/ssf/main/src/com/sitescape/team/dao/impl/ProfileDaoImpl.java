@@ -433,8 +433,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                     		// temporary cache. 
                     		.setCacheable(cacheable);
         					if (checkActive) {
-        						crit.add(Expression.eq("deleted", Boolean.FALSE));
-        						crit.add(Expression.eq("disabled", Boolean.FALSE));
+        						crit.add(Expression.eq(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE));
+        						crit.add(Expression.eq(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE));
         					}            				
         					return crit.list();
             			} else {
@@ -454,8 +454,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                         		// temporary cache. 
                         		.setCacheable(cacheable);
             					if (checkActive) {
-            						crit.add(Expression.eq("deleted", Boolean.FALSE));
-            						crit.add(Expression.eq("disabled", Boolean.FALSE));
+            						crit.add(Expression.eq(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE));
+            						crit.add(Expression.eq(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE));
             					}            				
             					results.addAll(crit.list());
             				}
@@ -469,8 +469,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     }
     private List loadPrincipals(final FilterControls filter, Long zoneId, final Class clazz) throws DataAccessException { 
        	filter.add(ObjectKeys.FIELD_ZONE, zoneId);
-    	filter.add("deleted", Boolean.FALSE);
-    	filter.add("disabled", Boolean.FALSE);
+    	filter.add(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE);
+    	filter.add(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE);
         return (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
@@ -542,9 +542,9 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     }
     
     private SFQuery queryPrincipals(final FilterControls filter, Long zoneId, final Class clazz) throws DataAccessException { 
-    	filter.add("zoneId", zoneId);
-    	filter.add("deleted", Boolean.FALSE);
-    	filter.add("disabled", Boolean.FALSE);
+    	filter.add(ObjectKeys.FIELD_ZONE, zoneId);
+    	filter.add(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE);
+    	filter.add(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE);
         Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
@@ -640,9 +640,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     public Group getReservedGroup(String internalId, Long zoneId) {
     	Long id = getReservedId(internalId, zoneId);
     	if (id == null) {
-    		List<Group>objs = getCoreDao().loadObjects(Group.class, new FilterControls(
-    				new String[]{"internalId", "zoneId"},
-    				new Object[]{internalId, zoneId}));
+    		List<Group>objs = getCoreDao().loadObjects(Group.class, new FilterControls(ObjectKeys.FIELD_INTERNALID, internalId), zoneId);
     		if ((objs == null) || objs.isEmpty()) throw new NoGroupByTheNameException(internalId);
     		Group g = objs.get(0);
     		setReservedId(internalId, zoneId, g.getId());
@@ -653,9 +651,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     public User getReservedUser(String internalId, Long zoneId) {
     	Long id = getReservedId(internalId, zoneId);
     	if (id == null) {
-    		List<User>objs = getCoreDao().loadObjects(User.class, new FilterControls(
-    					new String[]{"internalId", "zoneId"},
-    					new Object[]{internalId, zoneId}));
+    		List<User>objs = getCoreDao().loadObjects(User.class, new FilterControls(ObjectKeys.FIELD_INTERNALID, internalId), zoneId);
     		if ((objs == null) || objs.isEmpty()) throw new NoUserByTheNameException(internalId);
     		User u = objs.get(0);
     		setReservedId(internalId, zoneId, u.getId());
@@ -679,9 +675,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		if ((ids == null) || ids.isEmpty()) return new TreeSet();
 		Set users;
 		if (ids.contains(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId))) {
-			List<Object[]> result = getCoreDao().loadObjects(new ObjectControls(User.class, 
-					new String[]{"id"}), 
-					new FilterControls(new String[]{"zoneId"}, new Object[]{zoneId}));
+			List<Object[]> result = getCoreDao().loadObjects(
+					new ObjectControls(User.class, new String[]{ObjectKeys.FIELD_ID}), null, zoneId);
 			users = new HashSet(result);
 			//remove postingAgent
 			users.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
@@ -796,19 +791,5 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	UserEntityPK id = new UserEntityPK(userId, entityId);
         return (Subscription)getHibernateTemplate().get(Subscription.class, id);	
 	}
-	public Map<Long, Principal> loadPrincipalsData(Collection<Long> ids, Long zoneId, boolean checkActive) {
-    	List<Principal> principles = loadPrincipals(ids, zoneId, Principal.class, true, checkActive);
-    	Map<Long,Principal> result = new HashMap();
-		//remove proxies
-		for (int i=0; i<principles.size(); ++i) {
-			Principal p = principles.get(i);
-			result.put(p.getId(), p);
-			if (!(p instanceof User) && !(p instanceof Group)) {
-				Principal principal = (Principal)getHibernateTemplate().get(User.class, p.getId());
-				if (principal==null) principal = (Principal)getHibernateTemplate().get(Group.class, p.getId());
-   				result.put(p.getId(), principal);
-            }
-        }
-		return result;
-	}
+
 }

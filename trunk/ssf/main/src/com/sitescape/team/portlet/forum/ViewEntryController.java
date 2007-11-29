@@ -128,13 +128,6 @@ public class ViewEntryController extends  SAbstractController {
 		        getFolderModule().setWorkflowResponse(folderId, replyId, tokenId, new MapInputData(formData));
 		        //force reload of listing for state change
 				response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-			} else if (formData.containsKey("subscribeBtn")) {
-				Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
-				if (style != null) {
-					if (style.intValue() == -1) getFolderModule().deleteSubscription(folderId, entryId);
-					else getFolderModule().addSubscription(folderId, entryId, style.intValue());
-					response.setRenderParameter(WebKeys.IS_REFRESH, "1");
-				} 
 			} else if (op.equals(WebKeys.OPERATION_SET_WIKI_HOMEPAGE)) {
 				Binder binder = getBinderModule().getBinder(folderId);
 				//Check the access rights of the user

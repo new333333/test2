@@ -122,7 +122,7 @@ import com.sitescape.util.Validator;
  *
  */
 public class AdminModuleImpl extends CommonDependencyInjection implements AdminModule {
-	private static final String[] defaultDefAttrs = new String[]{ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_ZONE, ObjectKeys.FIELD_ENTITY_DEFTYPE};
+	private static final String[] defaultDefAttrs = new String[]{ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_ENTITY_DEFTYPE};
 
 	protected MailModule mailModule;
 	/**
@@ -323,7 +323,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		switch (type) {
 			case Definition.FOLDER_VIEW: {
 				List result = getCoreDao().loadObjects(TemplateBinder.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_CONFIG, zoneId, Integer.valueOf(type)}));
+							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_CONFIG, Integer.valueOf(type)}), zoneId);
 				if (!result.isEmpty()) return (TemplateBinder)result.get(0);
 				config.setTemplateTitle("__template_default_folder");
 				config.setTemplateDescription("__template_default_folder_description");
@@ -336,7 +336,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			}
 			case Definition.WORKSPACE_VIEW: {
 				List result = getCoreDao().loadObjects(TemplateBinder.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_CONFIG, zoneId, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_CONFIG, Integer.valueOf(type)}), zoneId);
 				if (!result.isEmpty()) return (TemplateBinder)result.get(0);
 				config.setTemplateTitle("__template_workspace");
 				config.setTemplateDescription("__template_workspace_description");
@@ -348,7 +348,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			}
 			case Definition.USER_WORKSPACE_VIEW: {
 				List result = getCoreDao().loadObjects(TemplateBinder.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_WORKSPACE_CONFIG, zoneId, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_WORKSPACE_CONFIG, Integer.valueOf(type)}), zoneId);
 				if (!result.isEmpty()) return (TemplateBinder)result.get(0);
 				
 				config.setTemplateTitle("__template_user_workspace");
@@ -1269,7 +1269,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   order.addColumn("operationDate");	   
 	   filter.setOrderBy(order);
 	   
-	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter));
+	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter, RequestContextHolder.getRequestContext().getZoneId()));
 	   //need to filter for access
    }
    public List<ChangeLog> getChanges(EntityIdentifier entityIdentifier, String operation) {
@@ -1283,7 +1283,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   order.addColumn("operationDate");	   
 	   filter.setOrderBy(order);
 	   
-	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter)); 
+	   return filterChangeLogs(getCoreDao().loadObjects(ChangeLog.class, filter, RequestContextHolder.getRequestContext().getZoneId())); 
    	
    }
    private List<ChangeLog> filterChangeLogs(List<ChangeLog> changeLogs) {

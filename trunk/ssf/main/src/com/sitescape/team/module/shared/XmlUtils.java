@@ -188,8 +188,7 @@ public class XmlUtils {
 				 if (Validator.isNotNull(name)) {
 					 try {
 						 List<Definition> matches = ci.getCoreDao().loadObjects(Definition.class, 
-								 new FilterControls(new String[] {ObjectKeys.FIELD_BINDER_NAME, ObjectKeys.FIELD_ZONE}, 
-										 new Object[]{name, RequestContextHolder.getRequestContext().getZoneId()}));
+								 new FilterControls("name", name), RequestContextHolder.getRequestContext().getZoneId());
 						 if (!matches.isEmpty())  def = matches.get(0);
 					} catch (NoDefinitionByTheIdException nd) {};
 				 } 
@@ -212,7 +211,7 @@ public class XmlUtils {
 		 for (Element wfmElement:wfmElements) {
 			 String functionName = getProperty(wfmElement, ObjectKeys.XTAG_WA_FUNCTION_NAME);
 			 List<Function> fs = ci.getCoreDao().loadObjects(Function.class, 
-					 new FilterControls(new String[] {ObjectKeys.FIELD_ZONE, "name"}, new Object[] {zoneId, functionName}));
+					 new FilterControls("name", functionName), zoneId);
 			 if (fs.isEmpty()) continue;
 			 List<Element> teamElements = wfmElement.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_PROPERTY + "[@name='" + ObjectKeys.XTAG_WA_MEMBER_NAME + "']");
 			 Set ids = namesToIds(teamElements, ci);

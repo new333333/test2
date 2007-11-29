@@ -69,7 +69,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 		this.binderModule = binderModule;
 	}
 	public Dashboard getDashboard(String id) {
-		return getCoreDao().loadDashboard(id);
+		return getCoreDao().loadDashboard(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	public EntityDashboard getEntityDashboard(EntityIdentifier ownerId) {
 		return getCoreDao().loadEntityDashboard(ownerId);
@@ -113,7 +113,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
         return d;
     }
     public void modifyDashboard(String id, Map inputData) {
-    	Dashboard d = getCoreDao().loadDashboard(id);
+    	Dashboard d = getCoreDao().loadDashboard(id, RequestContextHolder.getRequestContext().getZoneId());
     	checkAccess(d);
     	for (Iterator iter=inputData.entrySet().iterator(); iter.hasNext();) {
     		Map.Entry me = (Map.Entry)iter.next();
@@ -126,13 +126,13 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
    	}
     }
     public void setProperty(String id, String key, Object value) {
-    	Dashboard d = getCoreDao().loadDashboard(id);
+    	Dashboard d = getCoreDao().loadDashboard(id, RequestContextHolder.getRequestContext().getZoneId());
     	checkAccess(d);
    		d.setProperty(key, value);
    	   	
     }
     public String addComponent(String id, String scope, String listName, Map component) {
-    	Dashboard d = getCoreDao().loadDashboard(id);
+    	Dashboard d = getCoreDao().loadDashboard(id, RequestContextHolder.getRequestContext().getZoneId());
     	checkAccess(d);
 		
     	Map components = (Map) d.getProperty(Dashboard.COMPONENTS);
@@ -159,7 +159,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
 		return cId;
     }
     public void modifyComponent(String id, String componentId, Map component) {
-    	Dashboard d = getCoreDao().loadDashboard(id);
+    	Dashboard d = getCoreDao().loadDashboard(id, RequestContextHolder.getRequestContext().getZoneId());
     	checkAccess(d);
 		
     	Map components = (Map) d.getProperty(Dashboard.COMPONENTS);
@@ -171,7 +171,7 @@ public class DashboardModuleImpl extends CommonDependencyInjection implements Da
     }
     
     public void deleteComponent(String id, String listName, String componentId) {
-    	Dashboard d = getCoreDao().loadDashboard(id);
+    	Dashboard d = getCoreDao().loadDashboard(id, RequestContextHolder.getRequestContext().getZoneId());
     	checkAccess(d);
 		
     	if (Validator.isNotNull(listName)) {

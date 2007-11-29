@@ -31,8 +31,9 @@
     <property name="deleted"/>
     <property name="disabled"/>
 	<property name="logVersion"/>
-	<property name="emailAddress" length="256" />
-    <map lazy="true" name="alternateEmails" table="SS_AlternateEmail">
+	<property name="emailAddress" length="24" access="field"/>
+    <map lazy="false" name="emailAddresses" table="SS_EmailAddresses">
+      <cache usage="read-write"/>
       <key column="principal"/>
       <index column="type" type="string" length="64"/>
       <element column="address" type="string"  length="256"/>

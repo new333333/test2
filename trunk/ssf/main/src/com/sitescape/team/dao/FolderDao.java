@@ -50,13 +50,14 @@ public interface FolderDao {
 	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, Long zoneId) throws DataAccessException;
    /**
      * Return iterator of child entries
+     * @param parentFolder
      * @param filter
      * @return SFQuery
      * @throws DataAccessException
      */
-    public SFQuery queryEntries(FilterControls filter) throws DataAccessException; 
-	public SFQuery queryChildEntries(Folder folder) throws DataAccessException;    
-    /**
+    public SFQuery queryEntries(Folder folder, FilterControls filter) throws DataAccessException; 
+    public List<FolderEntry> loadEntries(final Folder folder, FilterControls filter) throws DataAccessException ;
+    	    /**
      * 
      * @param parentFolder
      * @param entry

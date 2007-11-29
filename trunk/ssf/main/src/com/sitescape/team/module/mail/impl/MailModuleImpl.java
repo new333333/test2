@@ -457,6 +457,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		Map messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
 		// Users wanting individual, message style email without attachments
 		Map messageNoAttsResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
+		// Users wanting individual, text message email
+		Map messageTxtResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION);
 
 
 		JavaMailSender mailSender = getMailSender(folder);
@@ -464,12 +466,16 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 		mHelper.setEntry(entry);
 		mHelper.setTimeZone(getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+
+		mHelper.setType(Notify.NotifyType.text);
+		mHelper.setSendAttachments(false);
+		doSubscription (folder, mailSender, mHelper, messageTxtResults);
 		
-		mHelper.setType(Notify.FULL);
+		mHelper.setType(Notify.NotifyType.full);
 		mHelper.setSendAttachments(false);
 		doSubscription (folder, mailSender, mHelper, messageNoAttsResults);
 	
-		mHelper.setType(Notify.FULL);
+		mHelper.setType(Notify.NotifyType.full);
 		mHelper.setSendAttachments(true);
 		doSubscription (folder, mailSender, mHelper, messageResults);
 	}
@@ -514,6 +520,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		List messageResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
 		// Users wanting individual, message style email without attachments
 		List messageNoAttsResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
+		// Users wanting individual, text message email
+		List messageTxtResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION);
 		
 		JavaMailSender mailSender = getMailSender(folder);
 		MimeHelper mHelper = new MimeHelper(processor, folder, start);
@@ -523,15 +531,25 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		for (int i=0; i<digestResults.size(); ++i) {
 			Object row[] = (Object [])digestResults.get(i);
 			mHelper.setEntries((Collection)row[0]);
-			mHelper.setType(Notify.SUMMARY);
+			mHelper.setType(Notify.NotifyType.summary);
 			mHelper.setSendAttachments(false);
 			doSubscription(folder, mailSender, mHelper, (Map)row[1]);
 		}
 		
 		mHelper.setEntries(null);
+		for (int i=0; i<messageTxtResults.size(); ++i) {
+			Object row[] = (Object [])messageTxtResults.get(i);
+			mHelper.setType(Notify.NotifyType.text);
+			mHelper.setSendAttachments(false);
+			for (Iterator iter=((Collection)row[0]).iterator(); iter.hasNext();) {
+				mHelper.setEntry(iter.next());
+				doSubscription(folder, mailSender, mHelper, (Map)row[1]);
+			}
+		}
+
 		for (int i=0; i<messageNoAttsResults.size(); ++i) {
 			Object row[] = (Object [])messageNoAttsResults.get(i);
-			mHelper.setType(Notify.FULL);
+			mHelper.setType(Notify.NotifyType.full);
 			mHelper.setSendAttachments(false);
 			for (Iterator iter=((Collection)row[0]).iterator(); iter.hasNext();) {
 				mHelper.setEntry(iter.next());
@@ -541,7 +559,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 
 		for (int i=0; i<messageResults.size(); ++i) {
 			Object row[] = (Object [])messageResults.get(i);
-			mHelper.setType(Notify.FULL);
+			mHelper.setType(Notify.NotifyType.full);
 			mHelper.setSendAttachments(true);
 			for (Iterator iter=((Collection)row[0]).iterator(); iter.hasNext();) {
 				mHelper.setEntry(iter.next());
@@ -594,7 +612,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		Collection entries;
 		Object entry;
 		MimeMessage message;
-		String messageType;
+		Notify.NotifyType messageType;
 		Date startDate;
 		String defaultFrom;
 		Locale locale;
@@ -625,7 +643,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		protected void setTimeZone(String timezone) {			
 			this.timezone = TimeZoneHelper.getTimeZone(timezone);
 		}
-		protected void setType(String type) {
+		protected void setType(Notify.NotifyType type) {
 			messageType = type;
 		}
 		public MimeMessage getMessage() {
@@ -648,12 +666,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			
 			boolean folderNotification = (entry == null);
 			
-			Map result ;
-			if (entry != null)
-				result = processor.buildNotificationMessage(folder, (FolderEntry)entry, notify);
-			else
-				result = processor.buildNotificationMessage(folder, entries, notify);
-			
 			message = null;
 			int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
 
@@ -664,7 +676,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED;
 			}
 			MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
-			helper.setSubject(processor.getSubject(folder, notify));
+			helper.setSubject(processor.getSubject(folder, (FolderEntry)entry, notify));
 			for (Iterator iter=toAddrs.iterator();iter.hasNext();) {
 				String email = (String)iter.next();
 				try	{
@@ -680,12 +692,22 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			helper.setFrom(from);
 
 			mimeMessage.addHeader(MailHelper.HEADER_CONTENT_TRANSFER_ENCODING, MailHelper.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
+			Map result ;
+			if (!messageType.equals(Notify.NotifyType.text)) {
+				if (entry != null) {
+					result = processor.buildNotificationMessage(folder, (FolderEntry)entry, notify);
+				} else {
+					result = processor.buildNotificationMessage(folder, entries, notify);
+				}
+//				currently not implemented 			
+//				MailHelper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML), helper);
+				MailHelper.setText(null, (String)result.get(FolderEmailFormatter.HTML), helper);
+				prepareAttachments(notify, helper);
+				prepareICalendars(notify, helper, folderNotification);
+			} else {
+				MailHelper.setText("", "", helper);
+			}
 
-//currently not implemented 			
-//			MailHelper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML), helper);
-			MailHelper.setText(null, (String)result.get(FolderEmailFormatter.HTML), helper);
-			prepareAttachments(notify, helper);
-			prepareICalendars(notify, helper, folderNotification);
 			
 			//save message incase cannot connect and need to resend;
 			message = mimeMessage;

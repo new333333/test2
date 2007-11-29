@@ -96,7 +96,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	private Document definitionConfig;
 	private Element configRoot;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
-	private static final String[] defaultDefAttrs = new String[]{"internalId", "zoneId", "type"};
+	private static final String[] defaultDefAttrs = new String[]{"internalId", "type"};
 	private boolean hasWorkflow;
 	
 	private WorkflowModule workflowModule;
@@ -193,7 +193,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		} else {
 			//import - try reusing existing guid
 			// see if already exist in any zone
-			List oldDefs = getCoreDao().loadObjects(Definition.class, new FilterControls("id", id));
+			List oldDefs = getCoreDao().loadObjects(Definition.class, new FilterControls("id", id), zoneId);
 			if (oldDefs.isEmpty()) {
 				def = new Definition();
 				def.setId(id);
@@ -472,7 +472,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		switch (type) {
 			case Definition.FOLDER_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_DEF, zoneId, Integer.valueOf(type)}));
+							new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_DEF, Integer.valueOf(type)}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_folder";
 				definitionName="_discussionFolder";
@@ -481,7 +481,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.FOLDER_ENTRY: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF, zoneId, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF, Integer.valueOf(type)}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_folder_entry";
 				internalId = ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF;
@@ -490,7 +490,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.WORKSPACE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_DEF, zoneId, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_WORKSPACE_DEF, Integer.valueOf(type)}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_workspace";
 				internalId = ObjectKeys.DEFAULT_WORKSPACE_DEF;
@@ -500,7 +500,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			
 			case Definition.USER_WORKSPACE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_WORKSPACE_DEF, zoneId, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_WORKSPACE_DEF, Integer.valueOf(type)}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				definitionTitle = "__definition_default_user_workspace";
 				internalId = ObjectKeys.DEFAULT_USER_WORKSPACE_DEF;
@@ -510,7 +510,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			
 			case Definition.PROFILE_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_PROFILES_DEF, zoneId, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_PROFILES_DEF, Integer.valueOf(type)}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_PROFILES_DEF;
 				definitionTitle = "__definition_default_profiles";
@@ -519,7 +519,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.PROFILE_ENTRY_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_DEF, zoneId, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_USER_DEF, Integer.valueOf(type)}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_USER_DEF;
 				definitionTitle = "__definition_default_user";
@@ -528,7 +528,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 			case Definition.PROFILE_GROUP_VIEW: {
 				List result = getCoreDao().loadObjects(Definition.class, 
-						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_GROUP_DEF, zoneId, Integer.valueOf(type)}));
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_GROUP_DEF, Integer.valueOf(type)}), zoneId);
 				if (!result.isEmpty()) return (Definition)result.get(0);
 				internalId = ObjectKeys.DEFAULT_GROUP_DEF;
 				definitionTitle = "__definition_default_group";
@@ -981,7 +981,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		FilterControls fc = new FilterControls();
 		fc.add("definition", def);
 		fc.add("state", state);
-		List inUse = getCoreDao().loadObjects(WorkflowState.class, fc);
+		List inUse = getCoreDao().loadObjects(WorkflowState.class, fc, def.getZoneId());
 		if (!inUse.isEmpty()) return true;
 		return false;
 		
@@ -991,7 +991,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		FilterControls fc = new FilterControls();
 		fc.add("definition", def);
 		fc.add("threadName", threadName);
-		List inUse = getCoreDao().loadObjects(WorkflowState.class, fc);
+		List inUse = getCoreDao().loadObjects(WorkflowState.class, fc, def.getZoneId());
 		if (!inUse.isEmpty()) return true;
 		return false;
 	}

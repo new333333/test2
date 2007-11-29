@@ -693,17 +693,23 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		//this call is the json ajax part of ajaxSubscription, made by ss_post
 		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		Integer style = PortletRequestUtils.getIntParameter(request, "notifyType");
 		Long entryId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		if (style != null) {
-			if (entryId == null) {
-				if (style.intValue() == -1) getBinderModule().deleteSubscription(binderId);
-				else getBinderModule().addSubscription(binderId, style.intValue());
-			} else {
-				if (style.intValue() == -1) getFolderModule().deleteSubscription(binderId, entryId);
-				else getFolderModule().addSubscription(binderId, entryId, style.intValue());
-			}
+		Map<Integer, String[]> styles = new HashMap();
+		Boolean disable = PortletRequestUtils.getBooleanParameter(request, "disable", false);
+		if (Boolean.TRUE.equals(disable)) styles.put(Subscription.DISABLE_ALL_NOTIFICATIONS, null);
+		for (int i=1; i<6; ++i) {
+			String[] address = PortletRequestUtils.getStringParameters(request, "_subscribe"+i);
+			if (address == null || address.length ==0) continue;
+			else styles.put(Integer.valueOf(i), address);
 		}
+		if (entryId == null) {
+			if (styles.isEmpty()) getBinderModule().deleteSubscription(binderId);
+			else getBinderModule().addSubscription(binderId, styles);
+		} else {
+			if (styles.isEmpty()) getFolderModule().deleteSubscription(binderId, entryId);
+			else getFolderModule().addSubscription(binderId, entryId, styles);
+		}
+
 		return new ModelAndView("common/json_ajax_return");
 
 	}

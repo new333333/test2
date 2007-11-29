@@ -115,11 +115,10 @@ implements LicenseModule, InitializingBean {
 	{
 		return getCoreDao().countObjects(Principal.class,
 										 (new FilterControls())
-										 	.add(Restrictions.eq("parentBinder.zoneId", zoneId))
 										 	.add(Restrictions.eq("type", "user"))
 										 	.add(Restrictions.eq("disabled", Boolean.FALSE))
 										 	.add(Restrictions.eq("deleted", Boolean.FALSE))
-										 	.add(Restrictions.notNull("password")));
+										 	.add(Restrictions.notNull("password")), zoneId);
 	}
 
 	public void recordCurrentUsage()

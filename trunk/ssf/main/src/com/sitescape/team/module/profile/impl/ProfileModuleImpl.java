@@ -31,6 +31,7 @@
  *
  */
 package com.sitescape.team.module.profile.impl;
+import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -98,7 +99,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	private String[] userDocType = {EntityIndexUtils.ENTRY_TYPE_USER};
 	private String[] groupDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP};
-
+	private List<String> guestSavedProps = Arrays.asList(new String[]{ObjectKeys.USER_PROPERTY_PERMALINK_URL});
     protected DefinitionModule definitionModule;
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
@@ -223,7 +224,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			UserPropertiesPK key = new UserPropertiesPK(user.getId(), binderId);
 			uProps = (UserProperties)RequestContextHolder.getRequestContext().getSessionContext().getProperty(key);
 			if (uProps == null) {
-				uProps = new UserProperties(key);
+				//load any saved props
+				UserProperties gProps = getProfileDao().loadUserProperties(user.getId(), binderId);
+				uProps = new GuestProperties(gProps);
 				RequestContextHolder.getRequestContext().getSessionContext().setProperty(key, uProps);					
 			}
 		} else {
@@ -237,7 +240,9 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			UserPropertiesPK key = new UserPropertiesPK(user.getId());
 			uProps = (UserProperties)RequestContextHolder.getRequestContext().getSessionContext().getProperty(key);
 			if (uProps == null) {
-				uProps = new UserProperties(key);
+				//load any saved props
+				UserProperties gProps = getProfileDao().loadUserProperties(user.getId());
+				uProps = new GuestProperties(gProps);
 				RequestContextHolder.getRequestContext().getSessionContext().setProperty(key, uProps);				
 			}
 		} else {
@@ -273,15 +278,27 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    		User user = getUser(userId, true);
 		UserProperties uProps=getProperties(user, binderId);
 		uProps.setProperty(property, value); 
-  		return uProps;
+		if (user.isShared() && guestSavedProps.contains(property)) {
+			//get real props and save value
+			UserProperties gProps = getProfileDao().loadUserProperties(user.getId(), binderId);
+			gProps.setProperty(property, value);
+		}
+ 		return uProps;
    }
     //RW transaction
 	public UserProperties setUserProperties(Long userId, Long binderId, Map<String, Object> values) {
    		User user = getUser(userId, true);
 		UserProperties uProps=getProperties(user, binderId);
+		UserProperties gProps=null;
 		for (Map.Entry<String, Object> me: values.entrySet()) {
  			uProps.setProperty(me.getKey(), me.getValue()); //saved in requestContext
- 		}
+ 			if (user.isShared() && guestSavedProps.contains(me.getKey())) {
+ 				//get real props and save value
+ 				if (gProps == null) gProps = getProfileDao().loadUserProperties(user.getId(), binderId);
+ 				gProps.setProperty(me.getKey(), me.getValue());
+ 			}
+		}
+
   		return uProps;		   
 	}
 	   
@@ -296,14 +313,25 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		User user = getUser(userId, true);
 		UserProperties uProps = getProperties(user);
 		uProps.setProperty(property, value); 	
+		if (user.isShared() && guestSavedProps.contains(property)) {
+			//get real props and save value
+			UserProperties gProps = getProfileDao().loadUserProperties(user.getId());
+			gProps.setProperty(property, value);
+		}
 		return uProps;
     }
    //RW transaction
    public UserProperties setUserProperties(Long userId, Map<String, Object> values) {
 		User user = getUser(userId, true);
 		UserProperties uProps = getProperties(user);
-  		for (Map.Entry<String, Object> me: values.entrySet()) {
+		UserProperties gProps = null;
+		for (Map.Entry<String, Object> me: values.entrySet()) {
  			uProps.setProperty(me.getKey(), me.getValue()); 
+			if (user.isShared() && guestSavedProps.contains(me.getKey())) {
+				//get real props and save value
+				if (gProps == null) gProps = getProfileDao().loadUserProperties(user.getId());
+ 				gProps.setProperty(me.getKey(), me.getValue());
+ 			}
  		}
 		return uProps;
 	  
@@ -881,5 +909,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			return true;
 		}
     }
+	protected class GuestProperties extends UserProperties {
+	    protected GuestProperties(UserProperties uProps) {
+	    	setId(uProps.getId());
+	    	//session access may be concurrent, so use synchronzied map
+	    	Map props = java.util.Collections.synchronizedMap(new HashMap());
+	    	props.putAll(uProps.getProperties());
+	    	setProperties(props);	    	
+	    }
+	}
 }
 

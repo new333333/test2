@@ -46,6 +46,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.FolderDao;
 import com.sitescape.team.dao.util.FilterControls;
@@ -65,8 +66,6 @@ import com.sitescape.team.util.Constants;
  *
  */
 public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
-	protected String[] cfAttrs = new String[]{"parentBinder", "HKey.level"};
-	protected OrderBy cfOrder = new OrderBy("HKey.sortKey", OrderBy.DESCENDING);
 	private CoreDao coreDao;
 
 	public void setCoreDao(CoreDao coreDao) {
@@ -100,32 +99,49 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      * Query for a collection of FolderEntries.  An iterator is returned.  The entries are 
      * not pre-loaded.
      */
-    public SFQuery queryEntries(final FilterControls filter) throws DataAccessException { 
-        Query query = (Query)getHibernateTemplate().execute(
+    public SFQuery queryEntries(final Folder folder, FilterControls filter) throws DataAccessException { 
+    	final FilterControls myFilter = filter==null?new FilterControls():filter;
+    	myFilter.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder.getId());
+    	Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         //sqlqueries, filters and criteria don't help with frontbase problem
-                        //
-                        Query query = session.createQuery("from com.sitescape.team.domain.FolderEntry d " + filter.getFilterString("d"));
-                		List filterValues = filter.getFilterValues();
+                        Query query = session.createQuery("from com.sitescape.team.domain.FolderEntry d " + myFilter.getFilterString("d"));
+                        	
+                		List filterValues = myFilter.getFilterValues();
                			for (int i=0; i<filterValues.size(); ++i) {
                				query.setParameter(i, filterValues.get(i));
                 		}
-                       return query;
+                        return query;
                     }
                 }
             );  
        return new SFQuery(query);
     }
     /**
-     * Load level 1 FolderEntries for 1 folder.  Replies are not loaded
+     * Load child entries of a folder 
      */
-    public SFQuery queryChildEntries(Folder parentFolder) throws DataAccessException {
-    	Object[] cfValues = new Object[]{parentFolder, new Integer(1)};
-    	// use default query
-     	return queryEntries(new FilterControls(cfAttrs, cfValues, cfOrder));
+    public List<FolderEntry> loadEntries(final Folder folder, FilterControls filter) throws DataAccessException { 
+    	final FilterControls myFilter = filter==null?new FilterControls():filter;
+    	myFilter.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder.getId());
+    	List result = (List)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        //sqlqueries, filters and criteria don't help with frontbase problem
+                        Query query = session.createQuery("from com.sitescape.team.domain.FolderEntry d " + myFilter.getFilterString("d"));
+                        	
+                		List filterValues = myFilter.getFilterValues();
+               			for (int i=0; i<filterValues.size(); ++i) {
+               				query.setParameter(i, filterValues.get(i));
+                		}
+                        return query.list();
+                    }
+                }
+            );  
+       return result;
     }
-	/*
+
+ 	/*
      * Load the ancestors and descendants of an entry.  Entry will be included in List
      */
     public List loadEntryTree(final FolderEntry entry) throws DataAccessException { 
@@ -151,7 +167,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                                 	)
                             	 )
                             	.setFetchMode("entryDef", FetchMode.SELECT)	
-                            	.setFetchMode("parentBinder", FetchMode.SELECT)	
+                            	.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT)	
                             	.setFetchMode("topFolder", FetchMode.SELECT)	
                             	.addOrder(Order.asc("HKey.sortKey"))
                             	.list();
@@ -173,7 +189,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                      return  session.createCriteria(entry.getClass())
                      	.add(Expression.in("HKey.sortKey", keys))
                        	.setFetchMode("entryDef", FetchMode.SELECT)	
-                       	.setFetchMode("parentBinder", FetchMode.SELECT)	
+                       	.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT)	
                        	.setFetchMode("topFolder", FetchMode.SELECT)	
                      	.addOrder(Order.asc("HKey.sortKey"))
                      	.list();
@@ -204,7 +220,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
                 		 	.add(Expression.eq("topEntry", entry));                 		 
                 	 };
                      crit.setFetchMode("entryDef", FetchMode.SELECT);	
-                     crit.setFetchMode("parentBinder", FetchMode.SELECT);	
+                     crit.setFetchMode(ObjectKeys.FIELD_ENTITY_PARENTBINDER, FetchMode.SELECT);	
                      crit.setFetchMode("topFolder", FetchMode.SELECT);	
                      crit.addOrder(Order.asc("HKey.sortKey"));
                      return crit.list();

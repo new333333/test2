@@ -33,7 +33,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-
+import java.lang.reflect.Field;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -44,6 +44,7 @@ import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
@@ -51,8 +52,11 @@ import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoUserByTheNameException;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserDashboard;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
@@ -70,6 +74,8 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SessionUtil;
+import com.sitescape.util.Validator;
+import com.sitescape.team.util.ReflectHelper;
 
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected DefinitionModule definitionModule;
@@ -127,11 +133,22 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		}
 		try {
 			final List companies = getCoreDao().findCompanies();
+			final String zoneName = SZoneConfig.getDefaultZoneName();
 			//only execting one
 			if (companies.size() == 0) {
-				String zoneName = SZoneConfig.getDefaultZoneName();
 				addZone(zoneName, null);
 			} else {
+        		for (int i=0; i<companies.size(); ++i) {
+        			final Workspace zone = (Workspace)companies.get(i);
+        			if (zone.getName().equals(zoneName)) {
+        				getTransactionTemplate().execute(new TransactionCallback() {
+        					public Object doInTransaction(TransactionStatus status) {
+        						upgradeZoneTx(zone);
+        						return null;
+        					}
+        				});
+        			}
+        		}
 				//make sure zone is setup correctly
 				getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
@@ -141,7 +158,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	    	        }
 		        	return null;
 	        	}
-       	   });
+				});
  			
 			}
 		} finally {
@@ -151,7 +168,148 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		RequestContextHolder.clear();
  		
  	}
- 	
+ 	protected void upgradeZoneTx(Workspace zone) {
+ 		//TODO: setZoneId as non=null, only do on based on version
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.AuditTrail set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.Tag set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.WorkflowState set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.Event set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.Visits set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.Subscription set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.LibraryEntry set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.Dashboard set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.Attachment set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.SeenMap set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.WorkflowResponse set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.UserProperties set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.CustomAttribute set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.PostingDef set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.Rating set zoneId=" + zone.getId() + 
+			" where zoneId is null");
+		//fixup user emails
+ 		SFQuery query=null;
+ 		List batch = new ArrayList();
+ 		// Load processor class
+ 		try {
+ 			Class processorClass = ReflectHelper.classForName(Principal.class.getName());
+ 			Field fld = processorClass.getDeclaredField("emailAddress");
+ 			fld.setAccessible(true);
+ 			query = getProfileDao().queryAllPrincipals(new FilterControls(), zone.getId());
+      		while (query.hasNext()) {
+       			int count=0;
+       			batch.clear();
+       			// process 1000 entries
+       			while (query.hasNext() && (count < 1000)) {
+       				Object obj = query.next();
+       				if (obj instanceof Object[])
+       					obj = ((Object [])obj)[0];
+       				Principal principal = (Principal)obj;
+       		        String email = (String)fld.get(principal);
+       		        if (Validator.isNotNull(email)) {
+       					principal.setEmailAddress(Principal.PRIMARY_EMAIL, email);
+          		        fld.set(principal, null);
+       		        }
+       				++count;
+       				batch.add(principal);
+       			}
+       			//flush updates
+       			getCoreDao().flush();
+       			//flush cache
+       			for (int i=0; i<batch.size(); ++i) {
+       				getCoreDao().evict(batch.get(i));
+       			}
+      		}
+   			//flush updates
+   			getCoreDao().flush();
+   			//flush cache
+   			for (int i=0; i<batch.size(); ++i) {
+   				getCoreDao().evict(batch.get(i));
+   			}
+
+		} catch (ClassNotFoundException cn) {
+ 			//this cannot happen, can it?
+			logger.error(cn);
+		} catch (NoSuchFieldException nf) {
+ 			//this cannot happen, can it?
+			logger.error(nf);
+		} catch (IllegalAccessException ia) {
+ 			//this cannot happen, can it?
+			logger.error(ia);
+ 		} finally {
+ 			if (query != null) query.close();
+ 			query=null;
+ 		}
+		
+
+		//fixup styles
+ 		try {
+			Class processorClass = ReflectHelper.classForName(Subscription.class.getName());
+			Field fld = processorClass.getDeclaredField("style");
+			fld.setAccessible(true);
+			String [] styles = new String[] {Principal.PRIMARY_EMAIL};
+ 			query = getCoreDao().queryObjects(new ObjectControls(Subscription.class), null, zone.getId());
+      		while (query.hasNext()) {
+       			int count=0;
+       			batch.clear();
+       			// process 1000 entries
+       			while (query.hasNext() && (count < 1000)) {
+       				Object obj = query.next();
+       				if (obj instanceof Object[])
+       					obj = ((Object [])obj)[0];
+       				Subscription sub = (Subscription)obj;
+     				int style = fld.getInt(sub);
+       				if (style != 0) {
+           				fld.setInt(sub, 0);
+       					sub.addStyle(style, styles);
+       				}
+       				++count;
+       				batch.add(sub);
+       			}
+       			//flush updates
+       			getCoreDao().flush();
+       			//flush cache
+       			for (int i=0; i<batch.size(); ++i) {
+       				getCoreDao().evict(batch.get(i));
+       			}
+      		}
+   			//flush updates
+   			getCoreDao().flush();
+   			//flush cache
+   			for (int i=0; i<batch.size(); ++i) {
+   				getCoreDao().evict(batch.get(i));
+   			}
+
+		} catch (ClassNotFoundException cn) {
+ 			//this cannot happen, can it?
+			logger.error(cn);
+		} catch (NoSuchFieldException nf) {
+ 			//this cannot happen, can it?
+			logger.error(nf);
+		} catch (IllegalAccessException ia) {
+ 			//this cannot happen, can it?
+			logger.error(ia);
+		} finally {
+ 			if (query != null) query.close();
+ 			query=null;
+ 		}
+ 		
+ 	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {
  		String superName = SZoneConfig.getAdminUserName(zone.getName());
