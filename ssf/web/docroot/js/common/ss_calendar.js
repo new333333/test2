@@ -32,8 +32,10 @@ dojo.require("dojo.html.util");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.event");
 dojo.require("dojo.date.common");
+dojo.require("dojo.date.format");
 dojo.require("dojo.lfx");
 dojo.require("dojo.io.IframeIO");
+
 
 function ss_calendar_data_provider(binderId, calendarIds, isDashboard) {
 	
@@ -64,9 +66,7 @@ function ss_calendar_data_provider(binderId, calendarIds, isDashboard) {
 				alert(ss_not_logged_in);
 			},
 			load: function(type, data, evt) {
-try { // TODO: remove try/catch
 				calendarObj.addEvents(data, date);
-} catch(e) {alert(e)}
 			},
 						
 			mimetype: "text/json",
@@ -85,9 +85,7 @@ try { // TODO: remove try/catch
 				alert(ss_not_logged_in);
 			},
 			load: function(type, data, evt) {
-try { // TODO: remove try/catch
 				calendarObj.addEvents(data);
-} catch(e) {alert(e)}
 			},
 			mimetype: "text/json",
 			preventCache: true,
@@ -164,7 +162,7 @@ function ss_calendarEngine(
 		workDayGridTitle: "Work day",
 		fullDayGridTitle: "Full day",
 		entriesLabel: "entries",
-		timeFormat: "12:00 AM"
+		lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en"
 	};
 	
 	this.NUMBER_OF_DEFINED_CALENDAR_STYLES = 5;
@@ -316,7 +314,8 @@ function ss_calendarEngine(
 	}
 	
 	function getDayHeader(date) {
-		return that.locale.dayNamesShort[date.getDay()] + " " + date.getDate() + "/" + (date.getMonth() + 1);
+		return that.locale.dayNamesShort[date.getDay()] + " " +
+					dojo.date.format(date, {formatLength: 'monthAndDayOnly', locale: that.locale.lang});
 	}
 	
 	function getMinutesOfTheDay(date) {
@@ -869,7 +868,6 @@ function ss_calendarEngine(
 	    },    
 	
 	    drawHourMarkers: function(containerId) {
-			var time12h = !that.locale.timeFormat||(that.locale.timeFormat.toLowerCase().indexOf("am")>-1||that.locale.timeFormat.toLowerCase().indexOf("pm")>-1);
 	        var container = dojo.byId(containerId);
 			
 			if (container.childNodes.length > 0) {
@@ -888,7 +886,7 @@ function ss_calendarEngine(
 	            hmark.style.top = (hour * 42) + "px";
 	            var tick = document.createElement("div");
 	            tick.className = "ss_cal_timeHead";
-	            var tickText = document.createTextNode(!time12h?(hour+":00"):((hour==0?"12":hour)+(hour<12?"am":"pm")));
+				var tickText = document.createTextNode(ss_calendar_formatHour(hour, that.locale.lang));
 	            tick.appendChild(tickText);
 	            hmark.appendChild(tick);
 	            container.appendChild(hmark);
@@ -2437,11 +2435,10 @@ if (!window.ss_calendar_settings) {
 			workDayStartsAtLabel: "Work day starts at",
 			dayNames: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
 			submitLabel: "Save",
-			timeFormat: "12:00 AM"
+			lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en"
 		},
 		
 		configure : function(weekFirstDay, workDayStart) {
-			var time12h = !this.locale.timeFormat||(this.locale.timeFormat.toLowerCase().indexOf("am")>-1||this.locale.timeFormat.toLowerCase().indexOf("pm")>-1);
 			weekFirstDay = typeof weekFirstDay !== "undefined"?weekFirstDay:1;
 			workDayStart = typeof workDayStart !== "undefined"?workDayStart:6;
 			
@@ -2464,7 +2461,7 @@ if (!window.ss_calendar_settings) {
 			 '<li>' + this.locale.workDayStartsAtLabel + ' <select name="workDayStart">';
 			
 			for (var hour = 0; hour <=12; hour++) {
-				htmlCode += ('<option value="' + hour + '" ' + (workDayStart==hour?'selected="true"':'') + '>' + (!time12h?(hour+":00"):((hour==0?"12":hour)+(hour<12?"am":"pm"))) + '</option>');
+				htmlCode += ('<option value="' + hour + '" ' + (workDayStart==hour?'selected="true"':'') + '>' + ss_calendar_formatHour(hour, this.locale.lang) + '</option>');
 			}
 			
 			htmlCode += '</select></li>' +
@@ -2519,4 +2516,12 @@ if (!window.ss_calendar_settings) {
 			return false;
 		}	
 	}
+}
+
+function ss_calendar_formatHour(hour, lang) {
+	var d = new Date();
+	d.setHours(hour);
+	var hourS = dojo.date.format(d, {formatLength: 'hourOnly', locale: lang});
+	// next line because dojo.date.format requires to use separators in pattern 
+	return hourS.replace(" ", "").toLowerCase();
 }

@@ -111,15 +111,14 @@
 	<script type="text/javascript">
 		dojo.addOnLoad(function() {
 			if (ss_calendar_settings) {
-				if (!ss_calendar_settings.locale) {
+				if (!ss_calendar_settings["locale"]) {
 					ss_calendar_settings.locale = {};
 				}
 				ss_calendar_settings.locale.title = "<ssf:nlt tag="calendar.settings.title"/>";
 				ss_calendar_settings.locale.weekStartsOnLabel = "<ssf:nlt tag="calendar.settings.weekStartsOn"/>";
 				ss_calendar_settings.locale.workDayStartsAtLabel = "<ssf:nlt tag="calendar.settings.workDayStartsAt"/>";
 				ss_calendar_settings.locale.dayNames = ["<ssf:nlt tag="calendar.day.names.su"/>", "<ssf:nlt tag="calendar.day.names.mo"/>", "<ssf:nlt tag="calendar.day.names.tu"/>", "<ssf:nlt tag="calendar.day.names.we"/>", "<ssf:nlt tag="calendar.day.names.th"/>", "<ssf:nlt tag="calendar.day.names.fr"/>", "<ssf:nlt tag="calendar.day.names.sa"/>"];
-				ss_calendar_settings.locale.submitLabel = "<ssf:nlt tag="calendar.settings.submit"/>";
-				ss_calendar_settings.locale.timeFormat = "<fmt:formatDate value="<%= new java.util.Date() %>" type="time" timeStyle="short" />";
+				ss_calendar_settings.locale.submitLabel = "<ssf:nlt tag="calendar.settings.submit"/>";				
 			}
 		});
 	</script>
