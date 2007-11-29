@@ -99,7 +99,7 @@ public class CustomAttribute extends ZonedObject {
        	public static final int ATTACHMENT=10;
        	public static final int COMMASEPARATEDSTRING=11;
        	public static final int SURVEY= 12;
-   protected String name;
+   protected String name;//set by hibernate access="field"
    protected AnyOwner owner;
    protected String id;
    //no versioning on custom attributes
