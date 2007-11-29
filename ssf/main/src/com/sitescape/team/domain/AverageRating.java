@@ -30,7 +30,7 @@ package com.sitescape.team.domain;
 /**
  * Component class
  */
-public class AverageRating extends ZonedObject {
+public class AverageRating {
 	Double rating=null; 
 	Long count=null;
 	public AverageRating() {

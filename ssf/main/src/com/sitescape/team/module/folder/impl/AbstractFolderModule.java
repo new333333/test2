@@ -697,7 +697,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         processor.moveEntry(folder, entry, destination);
     }
     //inside write transaction    
-    public void addSubscription(Long folderId, Long entryId, int style) {
+    public void addSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
     	//getEntry check read access
 		FolderEntry entry = getEntry(folderId, entryId);
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -705,9 +705,9 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		//digest doesn't make sense here - only individual messages are sent 
 		if (s == null) {
 			s = new Subscription(user.getId(), entry.getEntityIdentifier());
-			s.setStyle(style);
+			s.setStyles(styles);
 			getCoreDao().save(s);
-		} else 	s.setStyle(style);
+		} else 	s.setStyles(styles);
   	
     }
     public Subscription getSubscription(FolderEntry entry) {
@@ -767,7 +767,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 	   	FolderEntry entry = loadEntry(binderId, entryId);
   		Tag tag = null;
    		try {
-	   		tag = coreDao.loadTag(tagId);
+	   		tag = coreDao.loadTag(tagId, entry.getParentBinder().getZoneId());
 	   	} catch(Exception e) {
 	   		return;
 	   	}
@@ -829,7 +829,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
        	//update entry average
      	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
     	// see if title exists for this folder
-     	long result = getCoreDao().sumColumn(Visits.class, "readCount", new FilterControls(ratingAttrs, cfValues));
+     	long result = getCoreDao().sumColumn(Visits.class, "readCount", new FilterControls(ratingAttrs, cfValues), user.getZoneId());
      	entry.setPopularity(Long.valueOf(result));
      	getReportModule().addAuditTrail(AuditTrail.AuditType.view, entry);
 	}
@@ -959,10 +959,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title)
 	throws AccessControlException {
     	Folder folder = getFolder(folderId);
-    	FilterControls fc = new FilterControls();
-    	fc.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
-    	fc.add(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE, title);
-   		List<FolderEntry> results = getCoreDao().loadObjects(FolderEntry.class, fc);
+    	List<FolderEntry> results = getFolderDao().loadEntries(folder, new FilterControls(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE, title));
    		Set views = new HashSet();
    		for (FolderEntry entry: results) {
    			try {
@@ -1012,10 +1009,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     
     //called by scheduler to complete folder deletions
     public void cleanupFolders() {
-   		FilterControls fc = new FilterControls();
-   		fc.add(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId());
-   		fc.add("deleted", Boolean.TRUE);
-   	    List<Folder> folders = getCoreDao().loadObjects(Folder.class, fc);
+   	    List<Folder> folders = getCoreDao().loadObjects(Folder.class, new FilterControls("deleted", Boolean.TRUE), RequestContextHolder.getRequestContext().getZoneId());
    		logger.debug("checking for deleted folders");
    		for (Folder f: folders) {
    			FolderCoreProcessor processor = loadProcessor(f);

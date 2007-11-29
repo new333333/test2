@@ -116,7 +116,6 @@ public interface ProfileDao {
     public List<Group> loadGroups(FilterControls filter, Long zoneId) throws DataAccessException; 
     public Principal loadPrincipal(Long prinId, Long zoneId, boolean checkActive);
     public List<Principal> loadPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
-    public Map<Long, Principal> loadPrincipalsData(Collection<Long> ids, Long zoneId,  boolean checkActive);
 	public Rating loadRating(Long userId, EntityIdentifier entityId);
     public SeenMap loadSeenMap(Long userId);
 	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);

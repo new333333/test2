@@ -140,8 +140,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	
 	public void testAddGroup() {
 		Binder top = createZone(zoneName);
-		FilterControls filter = new FilterControls("zoneId", top.getZoneId());
-		long count = cdi.countObjects(Group.class, filter);
+		long count = cdi.countObjects(Group.class, null, top.getZoneId());
 		
 		Group newGroup = new Group();
 		newGroup.setName("brandNewGroup");
@@ -150,7 +149,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		
 		cdi.save(newGroup);
 		
-		long newCount = cdi.countObjects(Group.class, filter);
+		long newCount = cdi.countObjects(Group.class, null, top.getZoneId());
 		
 		assertEquals(count + 1, newCount);
 	}
@@ -163,22 +162,22 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		String userName = "testUser";
 		Workspace top = createZone(zoneName);;
 		FilterControls filter = new FilterControls("zoneId", top.getId());
-		long count = cdi.countObjects(User.class, filter);
+		long count = cdi.countObjects(User.class, filter, top.getZoneId());
 		User user = createBaseUser(top, userName);
-		long newCount = cdi.countObjects(User.class, filter);
+		long newCount = cdi.countObjects(User.class, filter, top.getZoneId());
 		assertEquals(count + 1, newCount);
 
 		FilterControls fc = new FilterControls("owner.principal", user);
 		//make sure attributes are there
-		if (cdi.countObjects(CustomAttribute.class, fc) != 3)
+		if (cdi.countObjects(CustomAttribute.class, fc, top.getZoneId()) != 3)
 			fail("Custom attributes missing");
-		if (cdi.countObjects(Attachment.class, fc) != 1)
+		if (cdi.countObjects(Attachment.class, fc, top.getZoneId()) != 1)
 			fail("Attachments missing");
-		if (cdi.countObjects(Event.class, fc) != 0)
+		if (cdi.countObjects(Event.class, fc, top.getZoneId()) != 0)
 			fail("Events missing");
-		if (cdi.countObjects(WorkflowState.class, fc) != 0)
+		if (cdi.countObjects(WorkflowState.class, fc, top.getZoneId()) != 0)
 			fail("WorkflowStates missing");
-		if (cdi.countObjects(Membership.class, new FilterControls("userId", user.getId())) != 1)
+		if (cdi.countObjects(Membership.class, new FilterControls("userId", user.getId()), top.getZoneId()) != 1)
 			fail("Membership not added for user " + user.getName());
 	}
 	/**
@@ -188,12 +187,11 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	 */
 	public void testLoadPrincipals() {
 		Workspace top = createZone("testZone");
-		FilterControls filter = new FilterControls("zoneId",top.getZoneId());
-		long count = cdi.countObjects(User.class, filter);
+		long count = cdi.countObjects(User.class, null, top.getZoneId());
 		List users = pdi.loadUsers(new FilterControls(), top.getZoneId());
 		assertEquals(count,users.size());
 
-		count = cdi.countObjects(Group.class, filter);
+		count = cdi.countObjects(Group.class, null, top.getZoneId());
 		List groups = pdi.loadGroups(new FilterControls(), top.getZoneId());
 		assertEquals(count,groups.size());
 		List ids = new ArrayList();
@@ -409,17 +407,17 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 	}
 	private void checkDeleted(Principal p) {
 		FilterControls fc = new FilterControls("owner.principal", p);
-		if (cdi.countObjects(CustomAttribute.class, fc) != 0)
+		if (cdi.countObjects(CustomAttribute.class, fc, p.getZoneId()) != 0)
 			fail("Custom attributes not deleted from user " + p.getName());
-		if (cdi.countObjects(Attachment.class, fc) != 0)
+		if (cdi.countObjects(Attachment.class, fc, p.getZoneId()) != 0)
 			fail("Attachments not deleted from user " + p.getName());
-		if (cdi.countObjects(Event.class, fc) != 0)
+		if (cdi.countObjects(Event.class, fc, p.getZoneId()) != 0)
 			fail("Events not deleted from user " + p.getName());
-		if (cdi.countObjects(WorkflowState.class, fc) != 0)
+		if (cdi.countObjects(WorkflowState.class, fc, p.getZoneId()) != 0)
 			fail("WorkflowStates not deleted from user " + p.getName());
-		if (cdi.countObjects(UserProperties.class, new FilterControls("id.principalId", p.getId())) != 0)
+		if (cdi.countObjects(UserProperties.class, new FilterControls("id.principalId", p.getId()), p.getZoneId()) != 0)
 			fail("User properties were not deleted for user " + p.getName());
-		if (cdi.countObjects(SeenMap.class, new FilterControls("principalId", p.getId())) != 0)
+		if (cdi.countObjects(SeenMap.class, new FilterControls("principalId", p.getId()), p.getZoneId()) != 0)
 			fail("Seen map was not deleted for user " + p.getName());
 		
 	}

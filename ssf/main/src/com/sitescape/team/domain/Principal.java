@@ -57,9 +57,9 @@ import com.sitescape.team.NotSupportedException;
 */
 public abstract class Principal extends Entry  {
 	//use _ to reserve names, perhaps allow customized additions later
-	protected static final String PRIMARY="_primary";
-	protected static final String TEXT="_text";
-	protected static final String MOBILE="_mobile";
+	public static final String PRIMARY_EMAIL="_primary";
+	public static final String TEXT_EMAIL="_text";
+	public static final String MOBILE_EMAIL="_mobile";
 	protected boolean disabled=false;
     protected String name;
     protected String foreignName="";
@@ -69,7 +69,7 @@ public abstract class Principal extends Entry  {
     protected String internalId;
     protected String type;
     protected String theme="";
-    protected String emailAddress="";
+    protected String emailAddress=null;
     protected Map<String,String> emails;
      public EntityIdentifier.EntityType getEntityType() {
     	return EntityIdentifier.EntityType.valueOf(getType());
@@ -150,30 +150,36 @@ public abstract class Principal extends Entry  {
     }
  
     /**
-     * @hibernate.property length="256"
-     * @return Returns the emailAddress.
+     * @return Returns the primary email address
+     * Left here for historical purposes
      */
     public String getEmailAddress() {
-        return emailAddress;
+        return getEmailAddress(PRIMARY_EMAIL);
     }
     public void setEmailAddress(String address) {
-        emailAddress = address;
-    }
+    	setEmailAddress(PRIMARY_EMAIL, address);
+   }
     /**
-     * @hibernate.element map for alternative address, primary kept in principal row
+     * @hibernate.element map for email address
      * @return
      */
-    protected Map getAlternateEmails() {
+    public Map getEmailAddresses() {
     	return emails;
     }
-    protected void setAlternateEmails(Map emailAddresses) {
-    	emails = emailAddresses;
+    public void setEmailAddresses(Map emailAddresses) {
+    	if (emails != null) {
+    		emails.clear();
+    		emails.putAll(emailAddresses);
+    	} else {
+    		emails = emailAddresses;
+    	}
+    		
     }
-    private String getEmailAddress(String type) {
+    public String getEmailAddress(String type) {
        	if (emails == null) emails = new HashMap();
        	return emails.get(type);
     }
-    private void setEmailAddress(String type, String address) {
+    public void setEmailAddress(String type, String address) {
     	if (emails == null) emails = new HashMap();
     	emails.put(type, address);
     }
@@ -181,19 +187,19 @@ public abstract class Principal extends Entry  {
      * @return Returns the mobileEmailAddress.
      */
     public String getMobileEmailAddress() {
-        return getEmailAddress(MOBILE);
+        return getEmailAddress(MOBILE_EMAIL);
     }
     public void setMobileEmailAddress(String address) {
-        setEmailAddress(MOBILE, address);
+        setEmailAddress(MOBILE_EMAIL, address);
     }
    /**
      * @return Returns the txtEmailAddress.
      */
     public String getTxtEmailAddress() {
-        return getEmailAddress(TEXT);
+        return getEmailAddress(TEXT_EMAIL);
     }
     public void setTxtEmailAddress(String address) {
-        setEmailAddress(TEXT, address);
+        setEmailAddress(TEXT_EMAIL, address);
     }
     /**
      * @hibernate.property length="128"

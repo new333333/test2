@@ -1498,16 +1498,18 @@ public class BinderHelper {
 	
 	public static void subscribeToThisEntry(AllModulesInjected bs, ActionRequest request, 
 			Long folderId, Long entryId) {
-		String subscribe = PortletRequestUtils.getStringParameter(request, "_subscribe", "");
-		String subscribeIncludeAttachments = PortletRequestUtils.getStringParameter(request, "_subscribe_include_attachments", "");
 		String subscribeElementPresent = PortletRequestUtils.getStringParameter(request, "_subscribe_element_present", "");
 		//test attachments first for higher precedence
-		if ("on".equals(subscribeIncludeAttachments)) {
-			//The user has asked to subscribe to this entry
-			bs.getFolderModule().addSubscription(folderId, entryId, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
-		} else if ("on".equals(subscribe)) {
-			//The user has asked to subscribe to this entry
-			bs.getFolderModule().addSubscription(folderId, entryId, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
+		Map<Integer,String[]> styles = new HashMap();
+		for (int i=2; i<6; ++i) {
+			if (i == 4) continue;
+			String[] address = PortletRequestUtils.getStringParameters(request, "_subscribe"+i);
+			if (address == null || address.length ==0) continue;
+			else styles.put(Integer.valueOf(i), address);
+		}
+		if (!styles.isEmpty()) {
+			bs.getFolderModule().addSubscription(folderId, entryId, styles);
+			
 		} else if (Validator.isNotNull(subscribeElementPresent)) {
 			//The user turned off the subscription
 			bs.getFolderModule().deleteSubscription(folderId, entryId);

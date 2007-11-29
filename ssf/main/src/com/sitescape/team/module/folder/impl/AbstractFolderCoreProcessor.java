@@ -450,9 +450,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //***********************************************************************************************************
        
     protected SFQuery indexEntries_getQuery(Binder binder) {
-        //do actual db query 
-    	FilterControls filter = new FilterControls(ObjectKeys.FIELD_ENTITY_PARENTBINDER, binder);
-        return getFolderDao().queryEntries(filter);
+        return getFolderDao().queryEntries((Folder)binder, null);
    	}
  	protected void indexEntries_postIndex(Binder binder, Entry entry) {
  		super.indexEntries_postIndex(binder, entry);
@@ -474,8 +472,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		//if binder is marked deleted, we are called from cleanup code without a transation 
     		final Folder folder = (Folder)binder;
     		final FilterControls filter = new FilterControls(
-    				new String[] {ObjectKeys.FIELD_ENTITY_PARENTBINDER, ObjectKeys.FIELD_ENTITY_DELETED},
-					new Object[] {binder, Boolean.FALSE});
+    				new String[] {ObjectKeys.FIELD_ENTITY_DELETED},
+					new Object[] {Boolean.FALSE});
 
     		
     		//loop through all entries and record delete
@@ -483,7 +481,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 			while (!done) {
 				done = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
 					public Object doInTransaction(TransactionStatus status) {
-						SFQuery query = getFolderDao().queryEntries(filter); 
+						SFQuery query = getFolderDao().queryEntries(folder, filter); 
 						try {
 							int count = 0;
 							List entries = new ArrayList();

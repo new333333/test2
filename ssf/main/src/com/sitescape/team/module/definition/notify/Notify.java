@@ -27,28 +27,30 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.definition.notify;
+import java.sql.Timestamp;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
-import java.text.DateFormat;
-import java.util.Date;
-import java.sql.Timestamp;
-
-import net.fortuna.ical4j.model.Calendar;
 
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 
 public class Notify {
-	public static final String FULL="full";
-	public static final String SUMMARY="summary";
+	//string values need to match definitionBuilder
+	public enum NotifyType {
+		summary ,
+		full,
+		text;
+	};
 	
-	protected boolean full=false;
+	protected NotifyType type=NotifyType.summary;
 	protected Locale locale;
 	protected DateFormat dateFormat;
 	protected Set files= null;
@@ -87,26 +89,11 @@ public class Notify {
 	public void clearEvents() {
 		if (events != null) events.clear();
 	}
-	public String getType() {
-		if (isFull()) return FULL;
-		return SUMMARY;
+	public NotifyType getType() {
+		return type;
 	}
-	public void setType(String type) {
-		if (FULL.equals(type)) setFull(true);
-		else if (SUMMARY.equals(type)) setSummary(true);
-		else throw new IllegalArgumentException("Illegal type value");
-	}
-	public boolean isFull() {
-		return full;
-	}
-	public void setFull(boolean full) {
-		this.full = full;
-	}
-	public boolean isSummary() {
-		return !full;
-	}
-	public void setSummary(boolean summary) {
-		this.full = !summary;
+	public void setType(NotifyType type) {
+		this.type = type;
 	}
 
 	public Locale getLocale() {

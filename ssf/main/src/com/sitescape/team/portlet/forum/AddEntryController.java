@@ -110,6 +110,8 @@ public class AddEntryController extends SAbstractController {
 				MapInputData inputData = new MapInputData(formData);
 				
 				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap);
+				getFolderModule().addReply(folderId, entryId, entryType, inputData, fileMap);
+				getFolderModule().addReply(folderId, entryId, entryType, inputData, fileMap);
 				setupReloadOpener(response, folderId, entryId);
 				if (!addEntryFromIFrame.equals("")) {
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);

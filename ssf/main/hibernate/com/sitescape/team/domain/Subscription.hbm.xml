@@ -9,6 +9,7 @@
       <key-property name="entityType"/>
     </composite-id>
     <property name="zoneId" access="field"/>
-    <property name="style"/>
+    <property name="style" access="field"/>
+    <property name="encodedStyles" length="256"/>
   </class>
 </hibernate-mapping>

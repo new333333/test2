@@ -38,7 +38,7 @@ import java.io.Serializable;
  * the user and group records. The same table is referenced from
  * Principal.java and Group.java but in those cases the ids are mapped to real objects
  */
-public class Membership extends ZonedObject implements Serializable {
+public class Membership implements Serializable {
     Long user_id;
     Long group_id;
     public Membership(){

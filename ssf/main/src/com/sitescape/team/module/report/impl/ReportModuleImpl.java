@@ -33,7 +33,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -50,6 +49,7 @@ import org.hibernate.criterion.Restrictions;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.AuditTrail;
@@ -171,6 +171,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			public Object doInHibernate(Session session) throws HibernateException {
 		
 				List result = session.createCriteria(LicenseStats.class)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 						.add(Restrictions.ge("snapshotDate", startDate.getTime()))
 						.add(Restrictions.lt("snapshotDate", endDate.getTime()))
 						.setProjection(Projections.projectionList()
@@ -259,6 +260,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					}
 					Criteria crit = session.createCriteria(AuditTrail.class)
 						.setProjection(proj)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, binder.getZoneId()))
 						.add(Restrictions.like("owningBinderKey", binder.getBinderKey().getSortKey() + "%"))
 						.add(Restrictions.ge("startDate", startDate))
 						.add(Restrictions.lt("startDate", endDate))
@@ -299,7 +301,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	
 	public List<Map<String,Object>> generateActivityReport(final Long binderId, final Long entryId) {
 		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
-		Binder binder = getBinderModule().getBinder(binderId);
+		final Binder binder = getBinderModule().getBinder(binderId);
 		getBinderModule().checkAccess(binder, BinderOperation.report);
 
 		List result = (List)getHibernateTemplate().execute(new HibernateCallback() {
@@ -312,6 +314,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 									.add(Projections.groupProperty("startBy"));
 					Criteria crit = session.createCriteria(AuditTrail.class)
 						.setProjection(proj)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, binder.getZoneId()))
 						.add(Restrictions.eq("owningBinderId", binderId))
 						.add(Restrictions.eq("entityId", entryId))
 						.add(Restrictions.in("transactionType", activityTypes))
@@ -352,6 +355,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 									.add(Projections.groupProperty("startBy"))
 									.add(Projections.max("startDate"))
 									.add(Projections.rowCount()))
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 						.add(Restrictions.ge("startDate", startDate))
 						.add(Restrictions.lt("startDate", endDate))
 					.list();
@@ -398,6 +402,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 									.add(Projections.avg("endDate"));
 					Criteria crit = session.createCriteria(WorkflowStateHistory.class)
 						.setProjection(proj)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, binder.getZoneId()))
 						.add(Restrictions.like("owningBinderKey", binder.getBinderKey().getSortKey() + "%"))
 						.add(Restrictions.ge("startDate", startDate))
 						.add(Restrictions.lt("startDate", endDate))
@@ -447,6 +452,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						.add(Projections.rowCount());
 					states = session.createCriteria(WorkflowState.class)
 						.setProjection(proj)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, binder.getZoneId()))
 						.add(Restrictions.like("owner.owningBinderKey", binder.getBinderKey().getSortKey() + "%"))
 						.addOrder(Order.asc("definition.id"))
 						.addOrder(Order.asc("state"))
@@ -531,6 +537,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						proj.add(Projections.groupProperty("creation.principal.id"));
 					}
 					Criteria crit = session.createCriteria(VersionAttachment.class)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 						.setProjection(proj);
 					l = crit.list();
 				} catch(Exception e) {
@@ -572,6 +579,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					try {
 						l = session.createCriteria(Binder.class)
 						.addOrder(Order.asc("binderKey.sortKey"))
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 						.add(Restrictions.ne("type", "template"))
 						.list();
 					} catch(Exception e) {
@@ -613,9 +621,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			public Object doInHibernate(Session session) throws HibernateException {
 		
 				List auditTrail = session.createCriteria(LicenseStats.class)
+						.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 						.add(Restrictions.ge("snapshotDate", startDate))
 						.add(Restrictions.lt("snapshotDate", endDate))
-						.addOrder(Order.asc("zoneId"))
 						.addOrder(Order.asc("snapshotDate"))
 					.list();
 				return auditTrail;

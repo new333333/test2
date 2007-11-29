@@ -116,7 +116,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		assertEquals(sub.getBinderKey().getSortKey() + "00002", sub2.getBinderKey().getSortKey());
 		assertEquals(folder.getBinderKey().getSortKey() + "0000200002", sub2.getBinderKey().getSortKey());
 		FilterControls fc = new FilterControls("topFolder", folder);
-		assertEquals(cdi.countObjects(Folder.class, fc), 4);
+		assertEquals(cdi.countObjects(Folder.class, fc, top.getZoneId()), 4);
 	}
 	public void testFindFolderById() {
 		Workspace top = createZone(zoneName);
@@ -176,14 +176,14 @@ public class FolderDaoImplTests extends AbstractTestBase {
 
 		FilterControls fc = new FilterControls("owner.folderEntry", entry);
 		//make sure attributes are there
-		if (cdi.countObjects(CustomAttribute.class, fc) != entry.getCustomAttributes().size())
+		if (cdi.countObjects(CustomAttribute.class, fc, top.getZoneId()) != entry.getCustomAttributes().size())
 			fail("Custom attributes missing");
-		if (cdi.countObjects(Attachment.class, fc) != entry.getAttachments().size())
+		if (cdi.countObjects(Attachment.class, fc, top.getZoneId()) != entry.getAttachments().size())
 			fail("Attachments missing");
 		 
-		if (cdi.countObjects(Event.class, fc) != entry.getEvents().size())
+		if (cdi.countObjects(Event.class, fc, top.getZoneId()) != entry.getEvents().size())
 			fail("Events missing");
-		if (cdi.countObjects(WorkflowState.class, fc) != entry.getWorkflowStates().size())
+		if (cdi.countObjects(WorkflowState.class, fc, top.getZoneId()) != entry.getWorkflowStates().size())
 			fail("WorkflowStates missing");
 	}
 	
@@ -375,14 +375,15 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		return entries;
 	}
 	private void checkDeleted(FolderEntry e) {
+		Long zoneId = e.getParentFolder().getZoneId();
 		FilterControls fc = new FilterControls("owner.folderEntry", e);
-		if (cdi.countObjects(CustomAttribute.class, fc) != 0)
+		if (cdi.countObjects(CustomAttribute.class, fc, zoneId) != 0)
 			fail("Custom attributes not deleted from entry " + e.getId());
-		if (cdi.countObjects(Attachment.class, fc) != 0)
+		if (cdi.countObjects(Attachment.class, fc, zoneId) != 0)
 			fail("Attachments not deleted from entry " + e.getId());
-		if (cdi.countObjects(Event.class, fc) != 0)
+		if (cdi.countObjects(Event.class, fc, zoneId) != 0)
 			fail("Events not deleted from entry " + e.getId());
-		if (cdi.countObjects(WorkflowState.class, fc) != 0)
+		if (cdi.countObjects(WorkflowState.class, fc, zoneId) != 0)
 			fail("WorkflowStates not deleted from entry " + e.getId());
 		
 	}

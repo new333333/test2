@@ -163,8 +163,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 * Return a map from locale to a collection of email Addresses
 	 */
 	public Map buildDistributionList(FolderEntry entry, Collection subscriptions, int style) {
-		//Users wanting digest style messages
-		List users = getUsers(subscriptions, style);
+		Map<User, String[]> users = getUsers(subscriptions, style);
 		return buildDistributionMap(entry, users);
 	}
 	/**
@@ -173,46 +172,43 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 * @param users
 	 * @return
 	 */
-	private Map buildDistributionMap(FolderEntry entry, Collection users) {
+	private Map buildDistributionMap(FolderEntry entry, Map<User, String[]> users) {
 		Map languageMap = new HashMap();
 		//check access to folder/entry and build lists of users to receive mail
-		List checkList = new ArrayList();
-		//remove users that don't have access to the entry
-		for (Iterator iter=users.iterator(); iter.hasNext();) {
-			User u = (User)iter.next();
-			if (!Validator.isNull(u.getEmailAddress())) {
-				try {
-					AccessUtils.readCheck(u, entry);
-					checkList.add(u);
-				} catch (Exception ex) {};
-			}
-		}
-		Set email;
-		for (Iterator iter=checkList.iterator(); iter.hasNext();) {
-			User u = (User)iter.next();
-			email = (Set)languageMap.get(u.getLocale());
-			if (email != null) {
-				email.add(u.getEmailAddress().trim());
-			} else {
-				email = new HashSet();
-				email.add(u.getEmailAddress().trim());
-				languageMap.put(u.getLocale(), email);
-			}
+		Set email = new HashSet();
+		for (Map.Entry<User, String[]> me:users.entrySet()) {
+			try {
+				User u = me.getKey();
+				AccessUtils.readCheck(u, entry);
+				email = (Set)languageMap.get(u.getLocale());
+				if (email != null) {
+					addAddresses(email, u, me.getValue());
+				} else {
+					email = new HashSet();
+					addAddresses(email, u, me.getValue());
+					languageMap.put(u.getLocale(), email);
+				}
+			} catch (Exception ex) {};
 		}
 		return languageMap;
 	}
-
+	private void addAddresses(Set email, User u, String[] types) {
+		for (int i=0;i<types.length;++i) {
+			email.add(u.getEmailAddress(types[i]));
+		}
+		
+	}
 	/**
 	 * Determine which users have access to which entries.
 	 * Return a list of Object[].  Each Object[0] contains a list of entries,
-	 * Object[1] contains a map.  The map maps locales to a list of emailAddress of userse
+	 * Object[1] contains a map.  The map maps locales to a list of emailAddress of users
 	 * using that locale that have access to the entries.
 	 * The list of entries will maintain the order used to do lookup.  This is important
 	 * when actually building the message	
 	 */
 	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style) {
 		List result = new ArrayList();
-		List<User> users=null;
+		Map<User, String[]> userMap=null;
 		if (folder.getNotificationDef().getStyle() == style) {
 			Set userIds = new HashSet();
 			Set groupIds = new HashSet();
@@ -237,31 +233,34 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			}
 			//expand groups so we can remove users
 			userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneId()));
+			Map<Long, String[]> userSubs = new HashMap();
 			//Add users wanting the same style messages, remove users wanting nothing or another style
 			for (Subscription notify: (Collection<Subscription>)subscriptions) {
-				if (notify.getStyle() == style) {
+				if (notify.hasStyle(style)) {
 					userIds.add(notify.getId().getPrincipalId());
+					userSubs.put(notify.getId().getPrincipalId(), notify.getStyle(style));
 				} else {
 					//user wants some other type of Notification
 					userIds.remove(notify.getId().getPrincipalId());
 				}
 			}
-			users = getProfileDao().loadUsers(userIds, folder.getZoneId());
+			List<User> us = getProfileDao().loadUsers(userIds, folder.getZoneId());
+			for (User u:us) {
+				userMap.put(u, userSubs.get(u.getId()));
+			}
 		} else {
 			//done if no-one is interested
 			if (subscriptions.isEmpty()) return result;
 			//Users wanting this style messages
-			users = getUsers(subscriptions, style);
+			userMap = getUsers(subscriptions, style);
 		}
 		
 		//check access to folder/entry and build lists of users to receive mail
 		List checkList = new ArrayList();
-		for (User u: users) {
-			if (!Validator.isNull(u.getEmailAddress())) {
-				AclChecker check = new AclChecker(u);
-				check.checkEntries(entries);
-				checkList.add(check);
-			}
+		for (Map.Entry<User, String[]> me:userMap.entrySet()) {
+			AclChecker check = new AclChecker(me.getKey(), me.getValue());
+			check.checkEntries(entries);
+			checkList.add(check);
 		}
 		//get a map containing a list of users mapped to a list of entries
 		while (!checkList.isEmpty()) {
@@ -330,7 +329,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		checkList.remove(0);
 		Set email = new HashSet();
 		//separate into languages
-		email.add(check.getUser().getEmailAddress());
+		addAddresses(email, check.getUser(), check.getEmails());
 		Map languageMap = new HashMap();
 		languageMap.put(check.getUser().getLocale(), email);
 		//make a copy so we can alter original
@@ -341,10 +340,10 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			if (check.compareEntries(c)) {
 				email = (Set)languageMap.get(c.getUser().getLocale());
 				if (email != null) {
-					email.add(c.getUser().getEmailAddress().trim());
+					addAddresses(email, c.getUser(), c.getEmails());
 				} else {
 					email = new HashSet();
-					email.add(c.getUser().getEmailAddress().trim());
+					addAddresses(email, c.getUser(), c.getEmails());
 					languageMap.put(c.getUser().getLocale(), email);
 				}
 				checkList.remove(c);
@@ -354,14 +353,35 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		return new Object[] {check.getEntries(), languageMap};
 		
 	}
-	public String getSubject(Folder folder, Notify notify) {
-		String subject = folder.getNotificationDef().getSubject();
-		if (Validator.isNull(subject))
-			subject = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_SUBJECT);
-		//if not specified, us a localized default
-		if (Validator.isNull(subject))
-			return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
-		return subject;
+
+	public String getSubject(Folder folder, FolderEntry entry, Notify notify) {
+		if (entry == null) {
+			String subject = folder.getNotificationDef().getSubject();
+			if (Validator.isNull(subject))
+				subject = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_SUBJECT);
+			//	if not specified, use a localized default
+			if (Validator.isNull(subject))
+				return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
+			return subject;
+		} else {
+			StringBuffer buf = new StringBuffer();
+			buf.append(NLT.get("notify.subject.entry", notify.getLocale()));
+			buf.append(":");
+			if (checkDate(entry.getCreation(), notify.getStartDate()) > 0) {
+				buf.append(NLT.get("strings.xml.newEntry", notify.getLocale()));
+			} else if (checkDate(entry.getWorkflowChange(), entry.getModification()) >= 0) {
+				buf.append(NLT.get("strings.xml.workflowEntry", notify.getLocale()));
+			} else {
+				buf.append(NLT.get("strings.xml.modifiedEntry", notify.getLocale()));
+			} 
+			buf.append(" - ");
+			if (Notify.NotifyType.text.equals(notify.getType())) {
+				buf.append(entry.toString());
+			} else {
+				buf.append(folder.toString() + "/" + entry.toString());				
+			}
+			return buf.toString();
+		}
 	}
 	
 	public String getFrom(Folder folder, Notify notify) {
@@ -371,17 +391,22 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		return from;
 	}
 
-	private List getUsers(Collection<Subscription> subscriptions, int style) {
-		Set userIds = new HashSet();
+	private Map<User, String[]> getUsers(Collection<Subscription> subscriptions, int style) {
+		Map<Long, String[]> userIds = new HashMap();
 	
 		for (Subscription notify: subscriptions) {
-			if (notify.getStyle() == style) {
-				userIds.add(notify.getId().getPrincipalId());
+			if (notify.hasStyle(style)) {
+				userIds.put(notify.getId().getPrincipalId(), notify.getStyle(style));
 			} 
 		}
 		
- 		return getProfileDao().loadUsers(userIds,  RequestContextHolder.getRequestContext().getZoneId());
-
+ 		List<User> users = getProfileDao().loadUsers(userIds.keySet(),  RequestContextHolder.getRequestContext().getZoneId());
+ 		//return map of users to subscriptions
+ 		Map<User, String[]> results =new HashMap();
+ 		for (User u:users) {
+ 			results.put(u, userIds.get(u.getId()));
+ 		}
+ 		return results;
 		
 	}
 	private int checkDate(HistoryStamp dt1, Date dt2) {
@@ -455,12 +480,13 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
 		element.addAttribute("href", adapterUrl.toString());
 		
-		final String fullOrSummaryAttribute = (notifyDef.isFull()?"full":"summary");
+		final String fullOrSummaryAttribute = (notifyDef.getType().name());
 		
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
 			public void visit(Element entryElement, Element flagElement, Map args)
 			{
-				if(flagElement.attributeValue(fullOrSummaryAttribute).equals("true")) {
+				String include = flagElement.attributeValue(fullOrSummaryAttribute);
+				if("true".equals(include)) {
 					String fieldBuilder = flagElement.attributeValue("notifyBuilder");
 					String itemName = entryElement.attributeValue("name");
 					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
@@ -502,12 +528,12 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		return trans.newTransformer();
 	}
 
-	protected String doTransform(Document document, String zoneName, String type, Locale locale, boolean oneEntry) {
+	protected String doTransform(Document document, String zoneName, String type, Locale locale, Notify.NotifyType notifyType) {
 		StreamResult result = new StreamResult(new StringWriter());
 		try {
 			Transformer trans = getTransformer(zoneName, type);
 			trans.setParameter("Lang", locale.toString());
-			trans.setParameter("TOC", Boolean.valueOf(oneEntry).toString());
+//			trans.setParameter("TOC", Boolean.valueOf(oneEntry).toString());
 			trans.transform(new DocumentSource(document), result);
 		} catch (Exception ex) {
 			return ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage();
@@ -522,7 +548,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		Document mailDigest = DocumentHelper.createDocument();
 		
     	Element rootElement = mailDigest.addElement("mail");
-       	rootElement.addAttribute("summary", String.valueOf(notify.isSummary()));
+       	rootElement.addAttribute("summary", String.valueOf(Notify.NotifyType.summary.equals(notify.getType())));
 		Element element;
 		Folder lastFolder=null;
 		Element fElement=null;
@@ -566,7 +592,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.isSummary()));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.getType()));
 		
 		return result;
 	}
@@ -601,7 +627,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		doEntry(element, entry, notify, true);
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale(), false));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.getType()));
 		
 		return result;
 	}
@@ -922,19 +948,24 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	}
 	protected class AclChecker {
 		private User user;
+		private String [] emails;
 		//keep an ordered list for easier comparision
 		protected List entries = new ArrayList();
 		
-		protected AclChecker(User user) {
-			this.user = user;	
+		protected AclChecker(User user, String[] emails) {
+			this.user = user;
+			if (emails != null) this.emails = emails;
+			this.emails = new String[] {user.getEmailAddress()};
 		}
 		protected User getUser() {
 			return user;
 		}
+		protected String[] getEmails() {
+			return emails;
+		}
 		protected void checkEntries(Collection entries) {
 			for (Iterator iter=entries.iterator(); iter.hasNext(); ) {
 				WorkflowControlledEntry e = (WorkflowControlledEntry)iter.next();
-//TODO: this isn't accounting for the binder override
 				try {
 					AccessUtils.readCheck(user, e);
 					this.entries.add(e);

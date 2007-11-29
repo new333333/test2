@@ -32,6 +32,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -55,6 +56,9 @@ import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -275,8 +279,12 @@ public class SearchUtils {
     				ids.add(Long.parseLong((String)entry.get(userField)));
     			} catch (Exception ex) {}
     	}
-		Map users = profileDao.loadPrincipalsData(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
-
+    	List<Principal> principles = profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
+		Map users = new HashMap();
+		for (Principal p:principles) {
+			users.put(p.getId(), p);
+		}
+		
 		// walk the entries, and stuff in the requested user object.
 		for (int i = 0; i < entries.size(); i++) {
 			HashMap entry = (HashMap)entries.get(i);

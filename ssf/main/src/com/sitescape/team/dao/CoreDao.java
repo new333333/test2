@@ -65,7 +65,7 @@ public interface CoreDao {
 	public void clear();
     public void clearFileNames(Binder binder);
     public void clearTitles(Binder binder);
-	public long countObjects(Class clazz, FilterControls filter);
+	public long countObjects(Class clazz, FilterControls filter, Long zoneId);
 	public void delete(Object obj);
 	public void delete(Binder binder);
 	public void delete(Binder binder, Class entryClass);
@@ -95,16 +95,16 @@ public interface CoreDao {
 	public List<Tag> loadCommunityTagsByEntity(EntityIdentifier entityId);
     public List<TemplateBinder> loadConfigurations(Long zoneId);
     public List<TemplateBinder> loadConfigurations(Long zoneId, int type);
-	public Dashboard loadDashboard(String id);
+	public Dashboard loadDashboard(String id, Long zoneId);
 	public Definition loadDefinition(String defId, Long zoneId);   
     public List<Definition> loadDefinitions(Long zoneId);
     public List<Definition> loadDefinitions(Long zoneId, int type);
 	public EntityDashboard loadEntityDashboard(EntityIdentifier ownerId);
     public List<Tag> loadEntityTags(EntityIdentifier entityIdentifier, EntityIdentifier ownerIdentifier);
-	public List loadObjects(ObjectControls objs, FilterControls filter);
-	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter);
-	public List loadObjects(Class className, FilterControls filter);
-	public List loadObjectsCacheable(Class className, FilterControls filter);
+	public List loadObjects(ObjectControls objs, FilterControls filter, Long zoneId);
+	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter, Long zoneId);
+	public List loadObjects(Class className, FilterControls filter, Long zoneId);
+	public List loadObjectsCacheable(Class className, FilterControls filter, Long zoneId);
     public List loadObjects(Collection ids, Class className, Long zoneId);
 	public List loadObjects(String query, Map namedValues);
 	/**
@@ -125,11 +125,11 @@ public interface CoreDao {
 	public Binder loadReservedBinder(String reservedId, Long zoneId);
 	public Definition loadReservedDefinition(String reservedId, Long zoneId);
 	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId);
-	public Tag loadTag(String id);
+	public Tag loadTag(String id, Long zoneId);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public Object merge(Object obj); 
     public void move(Binder binder);
-    public SFQuery queryObjects(ObjectControls objs, FilterControls filter);
+    public SFQuery queryObjects(ObjectControls objs, FilterControls filter, Long zoneId);
 	public void refresh(Object obj);
     public void registerFileName(Binder binder, DefinableEntity entity, String name);
     public void registerTitle(Binder binder, DefinableEntity entity);
@@ -138,8 +138,8 @@ public interface CoreDao {
 	public void save(Collection objs);
 	public Object saveNewSession(Object obj);
 	public void update(Object obj);
-	public double averageColumn(Class clazz, String column, FilterControls filter);
-	public long sumColumn(Class clazz, String column, FilterControls filter);
+	public double averageColumn(Class clazz, String column, FilterControls filter, Long zoneId);
+	public long sumColumn(Class clazz, String column, FilterControls filter, Long zoneId);
 
     public void updateFileName(Binder binder, DefinableEntity entity, String oldName, String newName);
     public void updateTitle(Binder binder, DefinableEntity entity, String oldName, String newName);

@@ -28,31 +28,14 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_style" align="left">
-<form method="post" id="${ss_namespace}subscription_form${ssBinder.id}">
-<c:if test="${ssScheduleInfo.enabled}">
-<span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.type"/></span>
-</c:if>
-<c:if test="${!ssScheduleInfo.enabled}">
-<span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.disabled"/>
-<c:if test="${!empty ssBinder && !empty ssBinder.owner}">
-<br/><ssf:nlt tag="subscribe.contact.admin">
-<ssf:param name="value" value="${ssBinder.owner.emailAddress}"/>
-<ssf:param name="value" value="${ssBinder.owner.title}"/>
-</ssf:nlt>
-</c:if>
-</span>
-</c:if>
-<br/>
-<br/>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:set var="styles" value="${ssSubscription.styles}"/>
 <c:if test="${!empty styles}">
 <jsp:useBean id="styles" type="java.util.Map" />
 <%
 	java.util.Map currentStyles = new java.util.HashMap();
-	for (int i=1; i<6; ++i) {
+	for (int i=2; i<6; ++i) {
+		if (i == 4) continue;
 		String [] types = (String[])styles.get(Integer.valueOf(i));
 		if (types == null) continue;
 		if (types.length==0) {
@@ -66,20 +49,10 @@
 	request.setAttribute("currentStyles", currentStyles);
 %>
 </c:if>
-<div class="ss_indent_medium">
-   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.digest"/><ssf:inlineHelp tag="ihelp.email.digest_notify"/></span> 
-  <select multiple="multiple" size="2" name="_subscribe1">
-		<option value="" ><ssf:nlt tag="__none"/></option>
-	<c:forEach var="email" items="${ssUser.emailAddresses}"> 	
-	<c:set var="styleName" value="1${email.key}"/>
-		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
-		>${email.value}</option>
-	</c:forEach>
-   </select>
-
-
-   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/><ssf:inlineHelp tag="ihelp.email.individual_notify"/></span> 
-  <select multiple="multiple" size="2" name="_subscribe2">
+    <c:if test="${!empty currentStyles}"> <input type="hidden" name="_subscribe_element_present" value="1"/> </c:if>
+	
+  <span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/><ssf:inlineHelp tag="ihelp.email.individual_notify_entry"/></span> 
+  <select multiple="multiple" name="_subscribe2" >
 		<option value="" ><ssf:nlt tag="__none"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="2${email.key}"/>
@@ -88,7 +61,7 @@
 	</c:forEach>
    </select>
 	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.noattachments"/></span>
-    <select multiple="multiple" size="2" name="_subscribe3">
+     <select multiple="multiple" name="_subscribe3">
 		<option value="" ><ssf:nlt tag="__none"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="3${email.key}"/>
@@ -96,8 +69,9 @@
 		>${email.value}</option>
 	</c:forEach>
    </select>
-	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.text"/></span>
-    <select multiple="multiple" size="2" name="_subscribe5">
+   
+ 	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.text"/></span>
+   <select multiple="multiple"  name="_subscribe5">
 		<option value="" ><ssf:nlt tag="__none"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="5${email.key}"/>
@@ -105,25 +79,3 @@
 		>${email.value}</option>
 	</c:forEach>
    </select>
- 
-<br/>
-  <input type="checkbox" name="disable" id="notifyType_${ssSubscription.id.entityId}_4"
-  <c:if test="${!empty currentStyles['4']}"> checked="checked"</c:if>
-  /><label for="notifyType_${ssSubscription.id.entityId}_4"><ssf:nlt tag="subscribe.disable"/></label> <ssf:inlineHelp tag="ihelp.email.disable_admin_notify"/><br/>
-  
-  <br/>
-    <input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"
-    onClick="ss_post('<ssf:url adapter="true" action="__ajax_request" actionUrl="true" portletName="ss_forum" binderId="${ssBinder.id}" >
-    <ssf:param name="namespace" value="${ss_namespace}"/>
-    <ssf:param name="operation" value="subscribe"/>
-     <ssf:param name="okBtn" value="1"/>
-    </ssf:url>', '${ss_namespace}subscription_form${ssBinder.id}');ss_cancelPopupDiv('ss_subscription_menu');return false;">
- &nbsp;&nbsp;&nbsp;
-  
-  <input type="submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="ss_cancelPopupDiv('ss_subscription_menu');return false;">
-  
-</div>
-</form>
-</div>
-

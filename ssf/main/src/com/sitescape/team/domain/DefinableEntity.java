@@ -545,5 +545,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     public String getTypedId() {
     	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
     }
-    
+    public String toString() {
+    	return title;
+    }
 }

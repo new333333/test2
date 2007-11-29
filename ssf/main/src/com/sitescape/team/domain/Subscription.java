@@ -33,8 +33,11 @@
  * Window - Preferences - Java - Code Style - Code Templates
  */
 package com.sitescape.team.domain;
-
-
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Iterator;
+import com.sitescape.util.StringUtil;
+import com.sitescape.util.Validator;
 /**
  * @author Janet McCann
  * @hibernate.class table="SS_Subscriptions" dynamic-update="true" lazy="false" 
@@ -46,13 +49,18 @@ package com.sitescape.team.domain;
  * administrator.
  */
 public class Subscription extends ZonedObject {
-    public static final int DIGEST_STYLE_EMAIL_NOTIFICATION = 1;
-    public static final int MESSAGE_STYLE_EMAIL_NOTIFICATION = 2;
-    public static final int MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION = 3;
-    public static final int DISABLE_ALL_NOTIFICATIONS=4;
+    public static final Integer DIGEST_STYLE_EMAIL_NOTIFICATION = 1;
+    public static final Integer MESSAGE_STYLE_EMAIL_NOTIFICATION = 2;
+    public static final Integer MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION = 3;
+    public static final Integer MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION = 5;
+    public static final Integer DISABLE_ALL_NOTIFICATIONS=4;
     
-    private int style=DIGEST_STYLE_EMAIL_NOTIFICATION;
+    protected int style=0;//obsolete; set by hibernate field access until we remove it
     private UserEntityPK id;
+    private Map<Integer, String[]> styles;
+    private String encodedStyles;
+    private static String EMAIL_DELIMITER=",";
+    private static String STYLE_DELIMITER=":";
 	public Subscription() {
     	
     }
@@ -72,15 +80,68 @@ public class Subscription extends ZonedObject {
 		this.id = id;
 	}    
 
+
     /**
-     * @hibernate.property
+     * @hibernate.property length="256"
      * @return
      */
-    public int getStyle() {
-        return style;
+    private String getEncodedStyles() {
+    	return encodedStyles;
     }
-    public void setStyle(int style) {
-        this.style = style;
+    private void setEncodedStyles(String encodedStyles) {
+    	this.encodedStyles = encodedStyles;
+    }
+    private void decode() {
+    	styles.clear();
+    	if (Validator.isNotNull(encodedStyles)) {
+			String [] pairs = StringUtil.split(encodedStyles, STYLE_DELIMITER);
+			for (int i=0; i < pairs.length; i+=2) {
+				try {
+					styles.put(Integer.valueOf(pairs[i]), StringUtil.split(pairs[i+1], EMAIL_DELIMITER));
+				} catch (Exception ex) {};
+			}   			
+		}   	
+    }
+    private void encode() {
+    	StringBuffer st = new StringBuffer();
+    	for (Map.Entry<Integer, String[]> me: styles.entrySet()) {
+    		st.append(me.getKey().toString() + STYLE_DELIMITER);
+    		String vals = StringUtil.merge(me.getValue(), EMAIL_DELIMITER);
+    		if (Validator.isNull(vals)) st.append(STYLE_DELIMITER);
+    		else st.append( vals + STYLE_DELIMITER);
+    	}
+    	encodedStyles = st.toString();
+    }
+    //styles are encoded as style0,emailType0,style1,emailType1...
+    public Map<Integer, String[]> getStyles() {
+    	if (styles == null) {
+    		styles = new HashMap();
+    		decode();
+    	}
+        return styles;
+    }
+    public void setStyles(Map<Integer, String[]> styles) {
+    	if (this.styles == null) {
+    		this.styles = new HashMap<Integer, String[]>();
+    	} else this.styles.clear();
+       this.styles.putAll(styles);
+       encode();
+    }
+    public void addStyle(Integer style, String[] emailType) {
+        getStyles().put(style, emailType);
+        encode();
+    }
+    public void removeStyle(Integer style) {
+    	getStyles().remove(style);
+    	encode();
+    }
+    public boolean hasStyle(Integer style) {
+    	return getStyles().containsKey(style);
+    }
+    public String[] getStyle(Integer style) {
+    	String [] result = getStyles().get(style);
+    	if (result != null) return result;
+    	return new String[0];
     }
     public boolean equals(Object obj) {
         if(this == obj)

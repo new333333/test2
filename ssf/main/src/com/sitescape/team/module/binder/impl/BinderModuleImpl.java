@@ -49,6 +49,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
+import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -344,7 +345,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		        			FilterControls filter = new FilterControls(new String[]{"owner.owningBinderId", "type"},
    		        					new Object[] {binder.getId(), "F"});
    		        			ObjectControls objs = new ObjectControls(FileAttachment.class, new String[] {"fileItem.name", "owner.ownerId"});
-   		        			SFQuery query = getCoreDao().queryObjects(objs, filter);
+   		        			SFQuery query = getCoreDao().queryObjects(objs, filter, binder.getZoneId());
    		        			try {
    		        				while (query.hasNext()) {
    		        					Object [] result = (Object[])query.next();
@@ -391,7 +392,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		        			//add entry titles
   		        			if (binder instanceof Folder) {
   		        				Folder parentFolder = (Folder)binder;
-  		        				SFQuery query = getFolderDao().queryChildEntries(parentFolder); 
+  		        				SFQuery query = getFolderDao().queryEntries(parentFolder, new FilterControls("HKey.level", Integer.valueOf(1))); 
+
   		        				try {
   		        					while (query.hasNext()) {
   	  		        					Object obj = query.next();
@@ -605,7 +607,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Binder binder = loadBinder(binderId);
 	   	Tag tag;
 	   	try {
-	   		tag = coreDao.loadTag(tagId);
+	   		tag = coreDao.loadTag(tagId, binder.getZoneId());
 	   	} catch (Exception ex) {return;}
 	   	if (tag.isPublic()) checkAccess(binder, BinderOperation.manageTag); 
 	   	else if (!tag.isOwner(RequestContextHolder.getRequestContext().getUser())) return;
@@ -614,16 +616,16 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	}
 	
     //inside write transaction    
-   public void addSubscription(Long binderId, int style) {
+   public void addSubscription(Long binderId, Map<Integer,String[]> styles) {
     	//getEntry check read access
 		Binder binder = loadBinder(binderId);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
 		if (s == null) {
 			s = new Subscription(user.getId(), binder.getEntityIdentifier());
-			s.setStyle(style);
+			s.setStyles(styles);
 			getCoreDao().save(s);
-		} else s.setStyle(style); 	
+		} else s.setStyles(styles); 	
     }
     public Subscription getSubscription(Long binderId) {
     	//getBinder checks read access
@@ -745,8 +747,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	
    	public Binder getBinderByPathName(String pathName) throws AccessControlException {   			
 	   	List<Binder> binders = getCoreDao().loadObjectsCacheable(Binder.class, 
-	   			new FilterControls(new String[] {"zoneId", "lower(pathName)"}, 
-	   					new Object[] {RequestContextHolder.getRequestContext().getZoneId(), pathName.toLowerCase()}));
+	   			new FilterControls("lower(pathName)", pathName.toLowerCase()), RequestContextHolder.getRequestContext().getZoneId());
 	    	
 	    // only maximum of one matching non-deleted binder
 	   	for(Binder binder : binders) {
@@ -945,10 +946,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         	email = email.toLowerCase();
         	//see if assigned to someone else
         	if ((post == null) || !email.equals(post.getEmailAddress())) {
-        		FilterControls fc = new FilterControls();
-        		fc.add("emailAddress", email);
-        		fc.add("zoneId", binder.getZoneId());
-        		List results = getCoreDao().loadObjects(PostingDef.class, fc);
+        		List results = getCoreDao().loadObjects(PostingDef.class, new FilterControls("emailAddress", email), binder.getZoneId());
         		if (!results.isEmpty()) {
         			//exists, see if it is assigned
         			PostingDef oldPost = (PostingDef)results.get(0);
