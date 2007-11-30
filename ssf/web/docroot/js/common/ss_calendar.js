@@ -1180,7 +1180,11 @@ function ss_calendarEngine(
 				hours =  nei.endDate.substr(9, 2) * 1;
 				minutes =  nei.endDate.substr(11, 2) * 1;
 	            nei.endDate = new Date(year, month - 1, day, hours, minutes);
-				if (hours === 0 && minutes === 0) {
+				if (hours === 0 && minutes === 0 && 
+					!(nei.startDate.getHours() == 0 && nei.startDate.getMinutes() == 0 &&
+						nei.startDate.getFullYear() == nei.endDate.getFullYear() && 
+						nei.startDate.getMonth() == nei.endDate.getMonth() && 
+						nei.startDate.getDate() == nei.endDate.getDate())) {
 					nei.endDate = new Date(nei.endDate - 1);
 				}
 	
