@@ -771,7 +771,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
   		Definition def = (Definition)load(Definition.class, defId);
         if (def == null) {throw new NoDefinitionByTheIdException(defId);}
         //make sure from correct zone
-        if (!def.getZoneId().equals(zoneId)) {throw new NoDefinitionByTheIdException(defId);}
+        if (zoneId != null && !def.getZoneId().equals(zoneId)) {throw new NoDefinitionByTheIdException(defId);}
   		return def;
 	}
 

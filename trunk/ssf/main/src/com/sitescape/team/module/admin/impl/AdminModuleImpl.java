@@ -481,9 +481,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					in = new ClassPathResource(file).getInputStream();
 					Document doc = reader.read(in);
 					getDefinitionModule().addDefinition(doc, true);
+					getCoreDao().flush();
 					//TODO:if support multiple zones, database and replyIds may have to be changed
 				} catch (Exception ex) {
-					logger.error("Cannot read definition from file: " + file);
+					logger.error("Cannot read definition from file: " + file + " " + ex.getMessage());
+					return; //cannot continue, rollback is enabled
 				} finally {
 					if (in!=null) in.close();
 				}
@@ -513,9 +515,11 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					in = new ClassPathResource(file).getInputStream();
 					Document doc = reader.read(in);
 					addTemplate(doc);
+					getCoreDao().flush();
 					//TODO:if support multiple zones, database and replyIds may have to be changed
 				} catch (Exception ex) {
-					logger.error("Cannot add template:", ex);
+					logger.error("Cannot add template:" + file + " " + ex.getMessage());
+					return; //cannot continue, rollback is enabled
 				} finally {
 					if (in!=null) in.close();
 				}
