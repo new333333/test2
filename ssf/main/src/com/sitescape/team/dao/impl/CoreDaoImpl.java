@@ -664,7 +664,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 			}
 			else throw new TitleException(newLe.getName());
 		} catch (Exception ex) {
-			throw new TitleException(newLe.getName());
+			throw new TitleException(newLe.getName(),ex);
 		}  	
     	
     }

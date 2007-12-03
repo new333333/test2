@@ -208,6 +208,9 @@ public class DispatchServer extends GenericServlet {
 				req.setAttribute(CrossContextConstants.ERROR_MESSAGE, e.getLocalizedMessage());
 				return;
 			}
+			finally {
+				RequestContextUtil.clearThreadContext();
+			}
 		}
 
 	}
