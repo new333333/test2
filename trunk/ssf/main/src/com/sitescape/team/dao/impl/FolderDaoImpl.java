@@ -101,7 +101,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      */
     public SFQuery queryEntries(final Folder folder, FilterControls filter) throws DataAccessException { 
     	final FilterControls myFilter = filter==null?new FilterControls():filter;
-    	myFilter.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder.getId());
+    	myFilter.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
     	Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
@@ -123,7 +123,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      */
     public List<FolderEntry> loadEntries(final Folder folder, FilterControls filter) throws DataAccessException { 
     	final FilterControls myFilter = filter==null?new FilterControls():filter;
-    	myFilter.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder.getId());
+    	myFilter.add(ObjectKeys.FIELD_ENTITY_PARENTBINDER, folder);
     	List result = (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
