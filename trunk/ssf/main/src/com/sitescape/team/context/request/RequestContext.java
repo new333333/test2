@@ -115,6 +115,9 @@ public class RequestContext {
     public Long getZoneId() {
     	return zoneId;
     }
+    public void setZoneId(Long zoneId) {
+    	this.zoneId = zoneId;
+    }
     public void setUser(User user) {
     	this.user = user;
     	if(user != null) {

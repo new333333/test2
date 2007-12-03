@@ -394,6 +394,9 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		getCoreDao().save(top);
     		top.setZoneId(top.getId());
     		top.setupRoot();
+    		
+    		// some piece of code needs zone id in the context
+    		RequestContextHolder.getRequestContext().setZoneId(top.getId());   		
 	
     		ProfileBinder profiles = addPersonalRoot(top);
 

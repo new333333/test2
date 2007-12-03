@@ -55,7 +55,7 @@ import com.sitescape.team.web.crosscontext.CrossContextConstants;
 
 public class DispatchServer extends GenericServlet {
 
-	private static final Log logger = LogFactory.getLog(DispatchServer.class);
+	protected static final Log logger = LogFactory.getLog(DispatchServer.class);
 	
 	private static final String PORTAL_CC_DISPATCHER = "portalCCDispatcher";
 	private static final String SSF_CONTEXT_PATH_DEFAULT = "/ssf";
@@ -119,6 +119,8 @@ public class DispatchServer extends GenericServlet {
 				logger.warn(e.getLocalizedMessage(), e);
 				if(e instanceof IOException)
 					throw (IOException) e;
+				else if(e instanceof ServletException)
+					throw (ServletException) e;
 				else
 					throw new ServletException(e.getLocalizedMessage());
 			}
