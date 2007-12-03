@@ -189,56 +189,51 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			getCoreDao().save(def);
 			root.addAttribute("databaseId", def.getId());
 			setDefinition(def,doc);
-			id = def.getId();
-		} else {
-			//import - try reusing existing guid
-			// see if already exist in any zone
-			List oldDefs = getCoreDao().loadObjects(Definition.class, new FilterControls("id", id), zoneId);
-			if (oldDefs.isEmpty()) {
-				def = new Definition();
-				def.setId(id);
-				def.setZoneId(zoneId);
-				def.setName(name);
-				def.setTitle(caption);
-				def.setType(Integer.parseInt(type));
-				def.setInternalId(internalId);	
-				root.addAttribute("databaseId", def.getId());
-				setDefinition(def,doc);
-				getCoreDao().replicate(def);				
-			} else {
+			return def;
+		} 
+		// import - try reusing existing guid;
+		// see if already exists in this zone
+		Definition oldDef=null;
+		try {
+			oldDef = getCoreDao().loadDefinition(id, null);
+			//see if from this zone
+			if (oldDef.getZoneId().equals(zoneId)) {
 				if (!replace) throw new DefinitionInvalidException("definition.error.alreadyExists", new Object[]{id});
-
-				//see if matches zone
-				boolean found=false;
-				for (int i=0; i<oldDefs.size(); ++i) {
-					Definition oldDef = (Definition)oldDefs.get(i);
-					if (oldDef.getZoneId().equals(zoneId)) {
-						found=true;
-						//update it
-						oldDef.setName(name);
-						oldDef.setTitle(caption);
-						oldDef.setType(Integer.parseInt(type));
-						oldDef.setInternalId(internalId);	
-						setDefinition(oldDef, doc);
-						def = oldDef;
-						break;
-					}
-				}
-				if (!found) {
-					//generate a new one
-					def = new Definition();
-					def.setZoneId(zoneId);
-					def.setName(name);
-					def.setTitle(caption);
-					def.setType(Integer.parseInt(type));
-					def.setInternalId(internalId);	
-					getCoreDao().save(def);
-					root.addAttribute("databaseId", def.getId());
-					setDefinition(def,doc);
-					id = def.getId();						
-				}
-			}			
+				//update it
+				oldDef.setName(name);
+				oldDef.setTitle(caption);
+				oldDef.setType(Integer.parseInt(type));
+				oldDef.setInternalId(internalId);	
+				setDefinition(oldDef, doc);
+				return oldDef;
+			}
+		} catch (NoDefinitionByTheIdException nd) {oldDef = null;};
+		
+		
+		if (oldDef == null) {
+			//try to create in this zone using existing GUID
+			def = new Definition();
+			def.setId(id);
+			def.setZoneId(zoneId);
+			def.setName(name);
+			def.setTitle(caption);
+			def.setType(Integer.parseInt(type));
+			def.setInternalId(internalId);	
+			setDefinition(def,doc);
+			getCoreDao().replicate(def);
+		} else {
+			//try with new id
+			def = new Definition();
+			def.setZoneId(zoneId);
+			def.setName(name);
+			def.setTitle(caption);
+			def.setType(Integer.parseInt(type));
+			def.setInternalId(internalId);	
+			getCoreDao().save(def);
+			root.addAttribute("databaseId", def.getId());
+			setDefinition(def,doc);
 		}
+		
 		return def;
 	}
 	public Definition getDefinition(String id) {
