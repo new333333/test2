@@ -1713,11 +1713,12 @@ public class BinderHelper {
 		
 		Boolean quickSearch = PortletRequestUtils.getBooleanParameter(request, WebKeys.SEARCH_FORM_QUICKSEARCH, Boolean.FALSE);
 		options.put(WebKeys.SEARCH_FORM_QUICKSEARCH, quickSearch);
-
+		DateFormat fmt = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale());
+		fmt.setTimeZone(user.getTimeZone());
 		if (quickSearch) {
-			options.put(Tabs.TITLE, NLT.get("searchForm.quicksearch.Title") + " " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale()).format(new Date()));
+			options.put(Tabs.TITLE, NLT.get("searchForm.quicksearch.Title") + " " + fmt.format(new Date()));
 		} else {
-			options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title") + " " + DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, user.getLocale()).format(new Date()));
+			options.put(Tabs.TITLE, NLT.get("searchForm.advanced.Title") + " " + fmt.format(new Date()));
 		} 
 	
 		return options;
