@@ -128,13 +128,13 @@ function ssAccessControl(namespace, binderId) {
 	}
 	this.addClipboardUsers = function () {
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users"}, "clipboard");
-		ss_get_url(url, addClipboardUsersCallback, this)
+		ss_get_url(url, ss_createDelegate(this, addClipboardUsersCallback));
 	}
-	function addClipboardUsersCallback(data, owner) {
+	function addClipboardUsersCallback(data) {
 		var userIds = new Array();
 		for (var i = 0; i < data.length; i++) {
 			userIds.push(data[i][0]);
 		}
-		owner.selectPrincipals(userIds);		
+		this.selectPrincipals(userIds);		
 	}	
 }

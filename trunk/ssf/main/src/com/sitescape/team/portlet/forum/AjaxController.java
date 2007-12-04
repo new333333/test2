@@ -217,7 +217,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 			if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY) ||
 					op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY) ||
 					op.equals(WebKeys.OPERATION_SAVE_ENTRY_WIDTH) ||
-					op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
+					op.equals(WebKeys.OPERATION_SUBSCRIBE) ||
+					op.equals(WebKeys.OPERATION_ADD_FAVORITE_BINDER) || 
+					op.equals(WebKeys.OPERATION_ADD_FAVORITES_CATEGORY) || 
+					op.equals(WebKeys.OPERATION_GET_FAVORITES_TREE) ||
+					op.equals(WebKeys.OPERATION_SAVE_FAVORITES)) {
 				model.put(WebKeys.AJAX_ERROR_MESSAGE, "general.notLoggedIn");	
 				response.setContentType("text/json");
 				return new ModelAndView("common/json_ajax_return", model);
@@ -244,12 +248,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("definition_builder/get_condition_element", model);
 			} else if (op.equals(WebKeys.OPERATION_WORKSPACE_TREE)) {
 				return new ModelAndView("tag_jsps/tree/get_tree_div", model);
-			} else if (op.equals(WebKeys.OPERATION_ADD_FAVORITE_BINDER) || 
-					op.equals(WebKeys.OPERATION_ADD_FAVORITES_CATEGORY) || 
-					op.equals(WebKeys.OPERATION_SAVE_FAVORITES)) {
-				return new ModelAndView("forum/favorites_return", model);
-			} else if (op.equals(WebKeys.OPERATION_GET_FAVORITES_TREE)) {
-				return new ModelAndView("forum/favorites_tree", model);
 			} else if (op.equals(WebKeys.OPERATION_GET_ACCESS_CONTROL_TABLE)) {
 				return new ModelAndView("binder/access_control_table", model);
 			} else if (op.equals(WebKeys.OPERATION_START_MEETING)) {

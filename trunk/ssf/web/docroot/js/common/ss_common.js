@@ -120,8 +120,6 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	
 	var ss_favoritesPaneTopOffset = 5;
 	var ss_favoritesPaneLeftOffset = 4;
-	var ss_favoritesMarginW = 4;
-	var ss_favoritesMarginH = 6;
 
 	var ss_dashboardClones = new Array();
 	var ss_dashboardSliderObj = null;
@@ -228,7 +226,7 @@ function ss_post(url, formId, callBackRoutine, callbackData) {
 	};   
 	dojo.io.bind(bindArgs);
 }     
-//Yse dojo to get a url.  Results in text/json. 
+//Use dojo to get a url.  Results in text/json. 
 //When result contains failure, message display
 function ss_get_url(url, callBackRoutine, callbackData) {
 	var bindArgs = {
@@ -256,12 +254,26 @@ function ss_buildAdapterUrl(base, paramMap, action) {
 		url += "\&action=__ajax_request";
 	}	
 	for (var i in paramMap) {
-		url += "\&" + i + "=" + paramMap[i];
+		if (dojo.lang.isArray(paramMap[i])){
+			for(var j=0,l=arr.length; j<l; j++){
+				url += "\&" + i + "=" + encodeURIComponent(paramMap[i][j]);
+			}
+		} else {
+			url += "\&" + i + "=" + encodeURIComponent(paramMap[i]);
+		}
 	}
 
 	return url;
 }
 
+//use for callbacks into objects
+function ss_createDelegate(object, method)
+{
+    var shim = function() {
+          method.apply(object, arguments);
+    }
+    return shim;
+}
 
 //Routine to go to a permalink without actually using the permalink
 function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, useParentOrOpener) {
@@ -3423,178 +3435,173 @@ function ss_saveDragId(id) {
     return false;
 }
 
-
 // Favorites Management
 
-var ss_deletedFavorites = new Array();
+function ssFavorites(namespace) {
+	var deletedFavorites = new Array();
 
-function ss_showFavoritesPane(namespace) {	
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_favorites_tree"});
-	ss_setupStatusMessageDiv()
-	var fObj = self.document.getElementById("ss_favorites_pane" + namespace);
-	ss_moveObjectToBody(fObj);
-	fObj.style.zIndex = ssMenuZ;
-	fObj.style.visibility = "visible";
-	ss_setOpacity(fObj, 100)
-	//fObj.style.display = "none";
-	fObj.style.display = "block";
-	var w = ss_getObjectWidth(fObj)
-	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_favorites" + namespace) + ss_favoritesPaneTopOffset))
-	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_favorites" + namespace)))
-	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
-	dojo.html.hide("ss_favorites_editor" + namespace);
-    dojo.html.show(fObj);
-    dojo.html.setVisibility(fObj, "visible");
-    dojo.html.setOpacity(fObj,0);
-    dojo.lfx.html.fadeIn(fObj, 100).play();
-	ss_loadFavorites(namespace, url);
-}
+	this.showFavoritesPane = function() {	
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_favorites_tree"});
+		ss_setupStatusMessageDiv()
+		var fObj = self.document.getElementById("ss_favorites_pane" + namespace);
+		ss_moveObjectToBody(fObj);
+		fObj.style.zIndex = ssMenuZ;
+		fObj.style.visibility = "visible";
+		ss_setOpacity(fObj, 100)
+		//fObj.style.display = "none";
+		fObj.style.display = "block";
+		var w = ss_getObjectWidth(fObj)
+		ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_favorites" + namespace) + ss_favoritesPaneTopOffset))
+		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_favorites" + namespace)))
+		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
+		dojo.html.hide("ss_favorites_editor" + namespace);
+    	dojo.html.show(fObj);
+	    dojo.html.setVisibility(fObj, "visible");
+	    dojo.html.setOpacity(fObj,0);
+	    dojo.lfx.html.fadeIn(fObj, 100).play();
+		loadFavorites(url);
+	}
+	
+	function loadFavorites(url) {
+		ss_showDiv("ss_favorites_loading" + namespace);
+		ss_get_url(url, ss_createDelegate(this, loadFavoritesCallback));
+	}
+	function loadFavoritesCallback(data) {
+		setFavoritesList(data);
+		ss_hideDiv("ss_favorites_loading" + namespace);
+	}
 
-function ss_loadFavorites(namespace, url) {
-	ss_showDiv("ss_favorites_loading" + namespace);
-	var postArgs = new Array();
-	postArgs["IEcacheBuster"] = Math.random();
-	var bindArgs = {
-    	url: url,
-		content: postArgs,
-		error: function(type, data, evt) {
-			alert(ss_not_logged_in);
-		},
-		load: function(type, data, evt) {
-  		  try {
-			ss_setFavoritesList(data, namespace);
-			ss_hideDiv("ss_favorites_loading" + namespace);
-	      } catch (e) {alert(e);}
-		},
-		preventCache: true,				
-		mimetype: "text/json",
-		method: "post"
-	};   
-	dojo.io.bind(bindArgs);
-}
-
-function ss_setFavoritesList(favList, namespace) {
-	var d = dojo.byId("ss_favorites_list" + namespace);
-	var t = '<ul style="margin: 0px 0px 0px 5px; list-style-type: none;">';
-	for (var i = 0; i < favList.length; i++) {
-		var f = favList[i];
-		if (f.eletype != 'favorite') continue
-		t += '<li id ="ss_favorite_' + f.id + '">';
-		t += '<input type="checkbox" style="display: none;" />';
-		t += '<a href="javascript:;" onClick="ss_treeShowId(' + "'" + f.value + "', this";
-		if (typeof f.action == "undefined") {
-			f.action = "view_ws_listing";
+	function setFavoritesList(favList) {
+		var d = dojo.byId("ss_favorites_list" + namespace);
+		var t = '<ul style="margin: 0px 0px 0px 5px; list-style-type: none;">';
+		for (var i = 0; i < favList.length; i++) {
+			var f = favList[i];
+			if (f.eletype != 'favorite') continue
+			t += '<li id ="ss_favorite_' + f.id + '">';
+			t += '<input type="checkbox" style="display: none;" />';
+			t += '<a href="javascript:;" onClick="ss_treeShowId(' + "'" + f.value + "', this";
+			if (typeof f.action == "undefined") {
+				f.action = "view_ws_listing";
+			}
+			t += ", '" + f.action + "'";
+			t += ');">' + f.name + '</a>';
+			t += '</li>';
 		}
-		t += ", '" + f.action + "'";
-		t += ');">' + f.name + '</a>';
-		t += '</li>';
+		// Close the list and add a space so the div has something in it
+		// even when empty so a floating div has something to float in.
+		t += '</ul>&nbsp;';
+		d.innerHTML = t;
 	}
-	// Close the list and add a space so the div has something in it
-	// even when empty so a floating div has something to float in.
-	t += '</ul>&nbsp;';
-	d.innerHTML = t;
-}
 
 
 
-function ss_saveFavorites(namespace) {
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_favorites"});
-	var saveArgs = new Array();
-	saveArgs["deletedIds"] = ss_deletedFavorites.join(" ");
-	saveArgs["favorites"] = ss_readFavoriteList(namespace);
-	ss_showDiv("ss_favorites_loading" + namespace);
-	var bindArgs = {
-    	url: url,
-		error: function(type, data, evt) {
-			alert(ss_not_logged_in);
-		},
-		content: saveArgs,
-		load: function(type, data, evt) {
-  		  try {
-			ss_setFavoritesList(data, namespace);
-			ss_hideDiv("ss_favorites_loading" + namespace);
-			dojo.lfx.html.fadeHide("ss_favorites_editor" + namespace, 100).play()
-	      } catch (e) {alert(e);}
-		},					
-		mimetype: "text/json",
-		method: "post"
-	};   
-	dojo.io.bind(bindArgs);
-}
-
-function ss_addBinderToFavorites(namespace, favoriteBinderUrl) {
-	ss_loadFavorites(namespace, favoriteBinderUrl);
-}
-
-function ss_showhideFavoritesEditor(namespace) {
-   var ebox = dojo.byId("ss_favorites_editor" + namespace);
-	if (dojo.html.isDisplayed(ebox)) {
-		dojo.lfx.html.fadeHide(ebox, 100).play()
-		ss_setFavoriteListEditable(namespace, false);
-	} else {
-	    dojo.html.show(ebox);
-	    dojo.html.setVisibility(ebox, "visible");
-	    dojo.html.setOpacity(ebox,0);
-	    dojo.lfx.html.fadeIn(ebox, 300).play();
-		ss_setFavoriteListEditable(namespace, true);
+	this.saveFavorites = function() {
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_favorites", deletedIds:deletedFavorites.join(" "),
+						 favorites: readFavoriteList()});
+		ss_showDiv("ss_favorites_loading" + namespace);
+		var callback = function(data) {
+				setFavoritesList(data);
+				ss_hideDiv("ss_favorites_loading" + namespace);
+				dojo.lfx.html.fadeHide("ss_favorites_editor" + namespace, 100).play()
+		}
+		ss_get_url(url, ss_createDelegate(this, callback));
 	}
-}
-
-function ss_setFavoriteListEditable(namespace, enable) {
-	var container = dojo.byId("ss_favorites_list" + namespace);
-	// Clear any prior activity
-	while (ss_deletedFavorites.length) { ss_deletedFavorites.pop() };
-	// Get the ul inside
-    var ul = dojo.dom.getFirstChildElement(container);
-    // Walk the list items
-    var li = dojo.dom.getFirstChildElement(ul);
-    while (li) {
-    	var cb = dojo.dom.getFirstChildElement(li);
-    	if (enable) {
-	    	dojo.html.show(cb);
-	    } else {
-	    	dojo.html.hide(cb);
-	    }
-	    li = dojo.dom.getNextSiblingElement(li);
-    }    
-}
-
-function ss_getSelectedFavorites(namespace) {
-	var container = dojo.byId("ss_favorites_list" + namespace);
-	// Get the ul inside
-    var ul = dojo.dom.getFirstChildElement(container);
-    // Walk the list items
-    var li = dojo.dom.getFirstChildElement(ul);
-    var selected = new Array();
-    while (li) {
-    	var cb = dojo.dom.getFirstChildElement(li);
-    	if (cb.checked) {
-    		selected.push(li);
-    	}
-	    li = dojo.dom.getNextSiblingElement(li);
-    }    
-    return selected;
-}
-
-
-function ss_deleteSelectedFavorites(namespace) {
-    var toDelete = ss_getSelectedFavorites(namespace);
-    dojo.lang.forEach(toDelete, ss_recordDeletedFavorite) 
-    dojo.lang.forEach(toDelete, dojo.dom.removeNode)
-}
-
-function ss_recordDeletedFavorite(node) {
-  	ss_deletedFavorites.push(node.id.substr(12));
-}
-
-function ss_moveSelectedFavorites(namespace, upDown) {
-    var toMove = ss_getSelectedFavorites(namespace);
-    if (upDown == 'up') {
-	    dojo.lang.forEach(toMove, ss_moveElementUp);
-	} else {
-	    dojo.lang.forEach(toMove.reverse(), ss_moveElementDown);
+	function readFavoriteList() {
+		var container = dojo.byId("ss_favorites_list" + namespace);
+		// Get the ul inside
+	    var ul = dojo.dom.getFirstChildElement(container);
+	    // Walk the list items
+	    var li = dojo.dom.getFirstChildElement(ul);
+	    var favs = new Array();
+	    while (li) {
+	    	// Ids = "ss_favorite_N"
+	    	favs.push(li.id.substr(12));
+		    li = dojo.dom.getNextSiblingElement(li);
+	    }    
+	    return favs.join(" ");
 	}
+
+	this.addBinderToFavorites = function(favoriteBinderUrl) {
+		loadFavorites(favoriteBinderUrl);
+	}
+
+	this.showhideFavoritesEditor = function() {
+	   var ebox = dojo.byId("ss_favorites_editor" + namespace);
+		if (dojo.html.isDisplayed(ebox)) {
+			dojo.lfx.html.fadeHide(ebox, 100).play()
+			setFavoriteListEditable(false);
+		} else {
+		    dojo.html.show(ebox);
+		    dojo.html.setVisibility(ebox, "visible");
+		    dojo.html.setOpacity(ebox,0);
+		    dojo.lfx.html.fadeIn(ebox, 300).play();
+			setFavoriteListEditable(true);
+		}
+	}
+
+	function setFavoriteListEditable(enable) {
+		var container = dojo.byId("ss_favorites_list" + namespace);
+		// Clear any prior activity
+		while (deletedFavorites.length) {deletedFavorites.pop() };
+		// Get the ul inside
+	    var ul = dojo.dom.getFirstChildElement(container);
+	    // Walk the list items
+	    var li = dojo.dom.getFirstChildElement(ul);
+	    while (li) {
+	    	var cb = dojo.dom.getFirstChildElement(li);
+	    	if (enable) {
+		    	dojo.html.show(cb);
+		    } else {
+		    	dojo.html.hide(cb);
+		    }
+		    li = dojo.dom.getNextSiblingElement(li);
+	    }    
+	}
+
+	function getSelectedFavorites() {
+		var container = dojo.byId("ss_favorites_list" + namespace);
+		// Get the ul inside
+	    var ul = dojo.dom.getFirstChildElement(container);
+	    // Walk the list items
+	    var li = dojo.dom.getFirstChildElement(ul);
+	    var selected = new Array();
+	    while (li) {
+	    	var cb = dojo.dom.getFirstChildElement(li);
+	    	if (cb.checked) {
+	    		selected.push(li);
+	    	}
+		    li = dojo.dom.getNextSiblingElement(li);
+	    }    
+	    return selected;
+	}
+
+
+	this.deleteSelectedFavorites = function() {
+	    var toDelete = getSelectedFavorites();
+	    dojo.lang.forEach(toDelete, recordDeletedFavorite) 
+	    dojo.lang.forEach(toDelete, dojo.dom.removeNode)
+	}
+
+	function recordDeletedFavorite(node) {
+	  	deletedFavorites.push(node.id.substr(12));
+	}
+
+	this.moveSelectedFavorites = function(upDown) {
+	    var toMove = getSelectedFavorites();
+	    if (upDown == 'up') {
+		    dojo.lang.forEach(toMove, ss_moveElementUp);
+		} else {
+		    dojo.lang.forEach(toMove.reverse(), ss_moveElementDown);
+		}
+	}
+	
+	this.hideFavoritesPane = function() {
+		ss_hideDivFadeOut('ss_favorites_pane'+namespace, 20);
+	}
+
+	
 }
+
 
 function ss_moveThisTableRow(objToMove, namespace, upDown) {
     var toMove = ss_findOwningElement(objToMove, "tr");
@@ -3628,56 +3635,34 @@ function ss_moveElementDown(node) {
 	}
 }
 
-function ss_readFavoriteList(namespace) {
-	var container = dojo.byId("ss_favorites_list" + namespace);
-	// Get the ul inside
-    var ul = dojo.dom.getFirstChildElement(container);
-    // Walk the list items
-    var li = dojo.dom.getFirstChildElement(ul);
-    var favs = new Array();
-    while (li) {
-    	// Ids = "ss_favorite_N"
-    	favs.push(li.id.substr(12));
-	    li = dojo.dom.getNextSiblingElement(li);
-    }    
-    return favs.join(" ");
+function ssTeams(namespace) {
+	this.show = function() {
+		var fObj = self.document.getElementById("ss_myteams_pane" + namespace);
+		ss_moveObjectToBody(fObj);
+		fObj.style.zIndex = ssMenuZ;
+		fObj.style.visibility = "visible";
+		ss_setOpacity(fObj, 100)
+		//fObj.style.display = "none";
+		fObj.style.display = "block";
+		var w = ss_getObjectWidth(fObj)
+		ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_myteams" + namespace) + ss_favoritesPaneTopOffset))
+		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)))
+		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
+	    dojo.html.show(fObj);
+	    dojo.html.setVisibility(fObj, "visible");
+	    dojo.html.setOpacity(fObj,0);
+	    dojo.lfx.html.fadeIn(fObj, 100).play();
+	    ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace}), ss_createDelegate(this, showCallback));
+	}
+	function showCallback(data) {
+		ss_hideDiv("ss_myteams_loading" + namespace);
+		var d = dojo.byId("ss_myteams_list" + namespace);
+		d.innerHTML = data;
+	}
+	this.hide = function() {
+		ss_hideDivFadeOut('ss_myteams_pane'+namespace, 20);
+	}
 }
-
-
-function ss_hideFavoritesPane(namespace) {
-	ss_hideDivFadeOut('ss_favorites_pane'+namespace, 20);
-}
-
-
-
-function ss_showMyTeamsPane(namespace) {
-	var fObj = self.document.getElementById("ss_myteams_pane" + namespace);
-	ss_moveObjectToBody(fObj);
-	fObj.style.zIndex = ssMenuZ;
-	fObj.style.visibility = "visible";
-	ss_setOpacity(fObj, 100)
-	//fObj.style.display = "none";
-	fObj.style.display = "block";
-	var w = ss_getObjectWidth(fObj)
-	ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_myteams" + namespace) + ss_favoritesPaneTopOffset))
-	ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)))
-	var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
-    dojo.html.show(fObj);
-    dojo.html.setVisibility(fObj, "visible");
-    dojo.html.setOpacity(fObj,0);
-    dojo.lfx.html.fadeIn(fObj, 100).play();
-    ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace}), function(data, args) {
-				ss_hideDiv("ss_myteams_loading" + namespace);
-				var d = dojo.byId("ss_myteams_list" + namespace);
-				d.innerHTML = data;
-				});    
-}
-
-function ss_hideMyTeamsPane(namespace) {
-	ss_hideDivFadeOut('ss_myteams_pane'+namespace, 20);
-}
-
-
 
 //
 //         Routine to show/hide portal
