@@ -35,6 +35,8 @@
 <!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script> -->
 <script type="text/javascript">
 var	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
+var ssMyFavorites${renderResponse.namespace} = new ssFavorites('${renderResponse.namespace}');
+var ssMyTeams${renderResponse.namespace} = new ssTeams('${renderResponse.namespace}');
 </script>
 <c:if test="${ssUserProperties.debugMode}">
 <!-- Start of debug window -->
@@ -117,7 +119,7 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
 
 <!-- Favorites -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_favs" onClick="ss_showFavoritesPane('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"
+	<div class="ss_global_toolbar_favs" onClick="ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
 	  title="<ssf:nlt tag="navigation.favorites"/>"
       onMouseOver="this.style.cursor = 'pointer';"
     >
@@ -134,7 +136,7 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
 
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<a href="javascript:;" onClick="ss_showFavoritesPane('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"
+	<a href="javascript:;" onClick="ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
 	  title="<ssf:nlt tag="navigation.favorites"/>"
     ><ssf:nlt tag="navigation.favorites"/></a>
       <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
@@ -154,7 +156,7 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
 
 <!-- My Teams -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_myteams" onClick="ss_showMyTeamsPane('${renderResponse.namespace}');return false;"
+	<div class="ss_global_toolbar_myteams" onClick="ssMyTeams${renderResponse.namespace}.show();return false;"
 	  title="<ssf:nlt tag="navigation.myTeams"/>"
       onMouseOver="this.style.cursor = 'pointer';"
     >
@@ -478,7 +480,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   </td>
   <td valign="top" width="75" rowspan="5"><!-- Favorites -->
 <ssf:ifnotaccessible>
-    <div class="ss_global_toolbar_favs_big" onClick="ss_showFavoritesPane('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"
+    <div class="ss_global_toolbar_favs_big" onClick="ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
       onMouseOver="this.style.cursor = 'pointer';"
     >
       <ssHelpSpot helpId="navigation_bar/favorites_button_portlet" offsetY="25" offsetX="5"  
@@ -722,7 +724,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   title="<ssf:nlt tag="helpSpot.myTeams"/>"
   offsetX="-11" offsetY="2" xAlignment="center">
 <div style="padding-top:5px; padding-bottom: 5px;">
-<a class="ss_linkButton" href="javascript: ;" onClick="ss_showMyTeamsPane('${renderResponse.namespace}');return false;">
+<a class="ss_linkButton" href="javascript: ;" onClick="ssMyTeams${renderResponse.namespace}.show();return false;">
   <ssf:nlt tag="navigation.myTeams"/> <img src="<html:imagesPath/>pics/menudown.gif"/>
 </a>
 <div id="ss_navbar_myteams<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
@@ -750,7 +752,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   style="position:absolute; visibility:hidden;">
 
 <ssf:popupPane width="250px" titleTag="favorites"
-      closeScript="ss_hideFavoritesPane('${renderResponse.namespace}');return false;">
+      closeScript="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();return false;">
 
 
 <div style="padding: 5px 10px 5px 10px;">
@@ -760,8 +762,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   <c:if test="${ssBinder != null && ssEntry.entityType != 'folderEntry'}">
   	<div class="ss_style_trans">
 		<a href="javascript: ;" 
-		 onClick="ss_addBinderToFavorites('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>',
-		 '<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" >
+		 onClick="ssMyFavorites${renderResponse.namespace}.addBinderToFavorites('<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" >
 			<ssf:param name="operation" value="add_favorite_binder" />
 			<ssf:param name="binderId" value="${ssBinder.id}" />
 			<ssf:param name="viewAction" value="${action}" /></ssf:url>');return false;"
@@ -773,7 +774,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </c:if>
   <div class="ss_style_trans">
 		<a href="javascript: ;" 
-		 onClick="ss_showhideFavoritesEditor('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')"
+		 onClick="ssMyFavorites${renderResponse.namespace}.showhideFavoritesEditor()"
 		><img <ssf:alt tag="favorites.edit"/> src="<html:brandedImagesPath/>icons/button_edit_bookmark.gif" />
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" 
 			text="Edit Favorites"/></span></a>
@@ -788,18 +789,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
 	  <td>
-		<a class="ss_inlineButton" onClick="ss_moveSelectedFavorites('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', 'down')"
+		<a class="ss_inlineButton" onClick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('down')"
 		><img <ssf:alt tag="favorites.movedown"/> src="<html:imagesPath/>icons/button_move_down.gif" 
 		/><span><ssf:nlt tag="favorites.movedown"/></span></a>
   	  </td>	
 	  <td>		
-		<a class="ss_inlineButton" onClick="ss_moveSelectedFavorites('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', 'up')"
+		<a class="ss_inlineButton" onClick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('up')"
 		><img <ssf:alt tag="favorites.moveup"/> src="<html:imagesPath/>icons/button_move_up.gif" 
 		/><span><ssf:nlt tag="favorites.moveup"/></span></a>
   	  </td>
 	  <td>
 		
-		<a class="ss_inlineButton" onClick="ss_deleteSelectedFavorites('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')"
+		<a class="ss_inlineButton" onClick="ssMyFavorites${renderResponse.namespace}.deleteSelectedFavorites()"
 		><img <ssf:alt tag="favorites.delete"/> src="<html:imagesPath/>icons/button_delete.gif" 
 		/><span><ssf:nlt tag="favorites.delete"/></span></a>
 	  </td>
@@ -807,7 +808,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
      </div>
      <div style="padding: 3px 0px 0px 135px; width: 40px;">
 		<a class="ss_inlineButton" href="javascript: ;" 
-		 onClick="ss_saveFavorites('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')"
+		 onClick="ssMyFavorites${renderResponse.namespace}.saveFavorites()"
 		><span><ssf:nlt tag="button.ok"/></span></a>
 	 </div>
 
@@ -825,7 +826,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <div class="ss_style_trans" id="ss_myteams_pane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
   style="position:absolute; visibility:hidden;">
 <ssf:popupPane width="250px" titleTag="navigation.myTeams"
-      closeScript="ss_hideMyTeamsPane('${renderResponse.namespace}');return false;">
+      closeScript="ssMyTeams${renderResponse.namespace}.hide();return false;">
 <div style="padding: 5px 10px 5px 10px;">
   <div class="ss_style_trans" id="ss_myteams<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" align="left">
 	  <div style="float: right;" id="ss_myteams_loading<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"><ssf:nlt tag="Loading"/></div>
