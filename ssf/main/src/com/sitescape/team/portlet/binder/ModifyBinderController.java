@@ -28,6 +28,12 @@
  */
 package com.sitescape.team.portlet.binder;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
@@ -37,27 +43,17 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.HashSet;
-import java.util.Iterator;
-
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
-import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
-import com.sitescape.team.web.util.WebStatusTicket;
-import com.sitescape.util.GetterUtil;
-import com.sitescape.util.Validator;
 
 /**
  * @author Peter Hurley
@@ -114,8 +110,13 @@ public class ModifyBinderController extends AbstractBinderController {
 		   				mid = new MapInputData(formDataPlus);
 		   			}
 		   		}
-				getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts);				
-				setupViewBinder(response, binderId, binderType);	
+		   		try {
+		   			getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts);				
+		   			setupViewBinder(response, binderId, binderType);	
+		   		} catch (ConfigurationException cf) {
+		   			response.setRenderParameters(formData);
+		   			response.setRenderParameter(WebKeys.EXCEPTION, cf.getLocalizedMessage() != null ? cf.getLocalizedMessage() : cf.getMessage());
+		   		}
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be a move
 				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
@@ -192,6 +193,7 @@ public class ModifyBinderController extends AbstractBinderController {
 			} else {
 				DefinitionHelper.getDefinition(binderDef, model, "//item[@type='form']");
 			}
+			model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 			path = WebKeys.VIEW_MODIFY_BINDER;
 		} 
 		return new ModelAndView(path, model);

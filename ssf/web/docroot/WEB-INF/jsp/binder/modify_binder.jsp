@@ -31,7 +31,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <c:set var="ssBinderMarker" value="true" scope="request"/>
-<div class="ss_portlet"> 
+<c:if test="${!empty ssException}">
+<span class="ss_formError"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
+</c:if><div class="ss_portlet"> 
 
 <% // Show the workspace according to its definition %>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
