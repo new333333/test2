@@ -72,7 +72,7 @@
 		widgetId="date_${elementName}_${prefix}" 
 		id="date_${elementName}_${prefix}"
 		name="${elementName}_fullDate" 
-		lang="${ssUser.locale.language}" 
+		lang="<ssf:convertLocaleToDojoStyle />" 
 		weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
 		value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" 
 		timeZone="${ssUser.timeZone.ID}"/>"></div>

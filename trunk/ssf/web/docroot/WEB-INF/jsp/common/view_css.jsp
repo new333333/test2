@@ -87,23 +87,8 @@ var ss_baseBinderUrl<portlet:namespace/> = ss_baseBinderUrl;
 // Dojo configuration
 djConfig = { 
 	isDebug: false,
-<c:choose><%--
-    --%><c:when test="${ssUser.locale == 'da_DK'}">locale: 'da',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'de_DE'}">locale: 'de',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'es_ES'}">locale: 'es',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'fr_FR'}">locale: 'fr',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'it_IT'}">locale: 'it',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'ja_JP'}">locale: 'ja',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'nl_NL'}">locale: 'nl',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'pl_PL'}">locale: 'pl',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'pt_BR'}">locale: 'pt-br',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'sv_SE'}">locale: 'sv',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'sv_SV'}">locale: 'sv',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'zh_CN'}">locale: 'zh-cn',</c:when><%--
-    --%><c:when test="${ssUser.locale == 'zh_TW'}">locale: 'zh-tw',</c:when><%--
-    --%><c:otherwise>locale: 'en',</c:otherwise><%--
---%></c:choose>
-	parseWidgets: false, 
+	locale: '<ssf:convertLocaleToDojoStyle />',
+	parseWidgets: false,
 	searchIds: []
 };
 </script>
