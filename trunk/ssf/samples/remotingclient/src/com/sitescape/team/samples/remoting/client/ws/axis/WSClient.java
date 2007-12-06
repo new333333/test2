@@ -87,7 +87,7 @@ public class WSClient
 				String s = FacadeClientHelper.readText(args[3]);
 				System.out.println("XML: " + s);
 				String filename = null;
-				if(args.length > 3) {
+				if(args.length > 4) {
 					filename = args[4];
 				}
 				fetchAndPrintIdentifier("addFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s, filename}, filename);
@@ -109,6 +109,8 @@ public class WSClient
 				String s = FacadeClientHelper.readText(args[1]);
 				System.out.println("XML: " + s);
 				fetchAndPrintXML("search", new Object[] {s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+			} else if(args[0].equals("addUserToGroup")) {
+				justDoIt("addUserToGroup", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("getBinderTitle")) {
 				fetchAndPrintString("getBinderTitle", new Object[] {Long.parseLong(args[1])});
 			} else {
@@ -168,7 +170,11 @@ public class WSClient
 		for (int i=0;iteAtta.hasNext();i++) {
 			AttachmentPart ap = (AttachmentPart) iteAtta.next();
 			dhTab[i] = ap.getDataHandler();
-			System.out.println("Filename=" + dhTab[i].getName());
+			String s = ap.getMimeHeader("Content-Disposition")[0];
+			s = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
+			System.out.println("Attachment:" + s);
+			File src = new File(dhTab[i].getName());
+			src.renameTo(new File(s));
 		}
 		return result;
 	}
@@ -224,7 +230,8 @@ public class WSClient
 		System.out.println("addEntry <folder id> <definition id> <entryDataXMLString> [<attachmentFileName>]");
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
 		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
-		System.out.println("uploadCalendarEntries <folder id> <xmlFilename> [<iCalFilename>]");
+		System.out.println("uploadCalendar <folder id> <xmlFilename> [<iCalFilename>]");
+		System.out.println("addUserToGroup <user id> <group id>");
 		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
 		System.out.println("getBinderTitle <binder id>");
 	}

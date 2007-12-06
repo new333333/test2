@@ -78,6 +78,8 @@ public interface Facade {
 	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords);
 	public String getPrincipalAsXML(long binderId, long principalId);
 
+	public void addUserToGroup(long userId, String username, long groupId);
+
 	/*
 	public long addUser(long binderId, String definitionId, String inputDataAsXML);
 

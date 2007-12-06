@@ -28,12 +28,15 @@
  */
 package com.sitescape.team.portlet.administration;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -66,11 +69,17 @@ public class ImportDefinitionController extends  SAbstractController {
 						myFile = (MultipartFile)fileMap.get("definition" + i);
 						if (myFile == null) break;
 						if (Validator.isNull(myFile.getOriginalFilename())) continue; //not filled in
-						SAXReader xIn = new SAXReader();
-						InputStream fIn = myFile.getInputStream();
-						Document doc = xIn.read(fIn);   
-						fIn.close();
-						getDefinitionModule().addDefinition(doc, true);
+						if(myFile.getOriginalFilename().toLowerCase().endsWith(".zip")) {
+							ZipInputStream zipIn = new ZipInputStream(myFile.getInputStream());
+							ZipEntry entry = null;
+							while((entry = zipIn.getNextEntry()) != null) {
+								loadDefinitions(entry.getName(), new ZipStreamWrapper(zipIn), errors);
+								zipIn.closeEntry();
+							}
+						} else {
+							loadDefinitions(myFile.getOriginalFilename(), myFile.getInputStream(), errors);
+						}
+						myFile.getInputStream().close();
 					} catch (Exception fe) {
 						errors.add((myFile==null ? "" : myFile.getOriginalFilename()) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
 					}
@@ -92,6 +101,35 @@ public class ImportDefinitionController extends  SAbstractController {
 		}
 	}
 
+	protected void loadDefinitions(String fileName, InputStream fIn, List errors)
+	{
+		try {
+			SAXReader xIn = new SAXReader();
+			Document doc = xIn.read(fIn);   
+			getDefinitionModule().addDefinition(doc, true);
+		} catch (Exception fe) {
+			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
+		}
+	}
+
+	static class ZipStreamWrapper extends InputStream
+	{
+		ZipInputStream zipIn;
+		public ZipStreamWrapper(ZipInputStream zipIn)
+		{
+			this.zipIn = zipIn;
+		}
+		
+		public int read() throws IOException
+		{
+			return zipIn.read();
+		}
+		
+		public void close() throws IOException
+		{
+		}
+	}
+	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
