@@ -85,7 +85,7 @@
 				widgetId="event_start_${prefix}" 
 				name="${dateId}_fullDate" 
 				id="${dateId}_${prefix}"
-				lang="${ssUser.locale.language}"
+				lang="<ssf:convertLocaleToDojoStyle />"
 				<c:choose>
 				    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
 					    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
@@ -110,7 +110,7 @@
 					widgetId="event_start_time_${prefix}" 
 					name="${dateId}_0_fullTime" 
 					id="${dateId}_time_${prefix}"
-					lang="${ssUser.locale.language}" 	
+					lang="<ssf:convertLocaleToDojoStyle />" 	
 					<c:choose>
 						<c:when test="${initEvent.allDayEvent}">
 							value="08:00:00"
@@ -118,7 +118,7 @@
 						<c:otherwise>
 							value="<fmt:formatDate value="${startDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
 						</c:otherwise>
-					</c:choose>									
+					</c:choose>
 					startDateWidgetId="event_start_${prefix}"
 					startTimeWidgetId="event_start_time_${prefix}"
 					endDateWidgetId="event_end_${prefix}"
@@ -156,7 +156,7 @@
 					widgetId="event_end_${prefix}" 
 					name="${dateId2}_fullDate" 
 					id="${dateId2}_${prefix}"
-					lang="${ssUser.locale.language}" 
+					lang="<ssf:convertLocaleToDojoStyle />" 
 					<c:choose>
 					    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
 						    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
@@ -181,7 +181,7 @@
 						widgetId="event_end_time_${prefix}" 
 						name="${dateId2}_0_fullTime" 
 						id="${dateId2}_time_${prefix}"
-						lang="${ssUser.locale.language}" 
+						lang="<ssf:convertLocaleToDojoStyle />" 
 						<c:choose>
 							<c:when test="${initEvent.allDayEvent}">
 								value="08:30:00"
@@ -520,7 +520,7 @@ function ${prefix}_toggleRecur(name) {
 		widgetId="repeat_until_${prefix}" 
 		name="${endrangeId}_fullDate" 
 		id="${endrangeId}_${prefix}"
-		lang="${ssUser.locale.language}" 
+		lang="<ssf:convertLocaleToDojoStyle />" 
 		<c:choose>
 		    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
 			    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"

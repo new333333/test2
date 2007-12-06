@@ -273,6 +273,18 @@
 			<type>boolean</type>
 		</attribute>		
 	</tag>
+	
+	<tag>
+		<name>convertLocaleToDojoStyle</name>
+		<tag-class>com.sitescape.team.taglib.ConvertLocaleToDojoStyle</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>locale</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.util.Locale</type>
+		</attribute>
+	</tag>
 
 	<tag>
 		<name>drawChart</name>

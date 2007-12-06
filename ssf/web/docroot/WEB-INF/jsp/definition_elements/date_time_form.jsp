@@ -72,7 +72,7 @@
 					widgetId="date_${elementName}_${prefix}" 
 					id="date_${elementName}_${prefix}"
 					name="${elementName}_fullDate" 
-					lang="${ssUser.locale.language}" 
+					lang="<ssf:convertLocaleToDojoStyle />" 
 					weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
 					value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"></div>
 				</div>
@@ -82,7 +82,7 @@
 					widgetId="date_time_${elementName}_${prefix}" 
 					id="date_time_${elementName}_${prefix}"
 					name="${elementName}_0_fullTime" 
-					lang="${ssUser.locale.language}" 
+					lang="<ssf:convertLocaleToDojoStyle />" 
 					value="<fmt:formatDate value="${initDate}" pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"></div>
 				<input type="hidden" name="${elementName}_timezoneid" value="${ssUser.timeZone.ID}" />
 			</td>

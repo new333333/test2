@@ -160,7 +160,7 @@ dojo.widget.defineWidget(
 		},
 		
 		addDateField: function(value) {
-			var prop = {value: value, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
+			var prop = {value: value, lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en", id: "elementValue" + this.searchFieldIndex, 
 						name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
 						autoComplete: false, nodeObj: this.widgetContainer};
 			if (typeof this.weekStartsOn !== "undefined") {
