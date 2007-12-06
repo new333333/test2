@@ -7,7 +7,7 @@
      <key-many-to-one name="principal"/>
      <key-property name="type" length="64"/>
     </composite-id>
-    <property name="zoneId" access="field"/>
+    <property name="zoneId" access="field" not-null="true"/>
     <property name="address" type="string"  length="256"/>
 </class>
 </hibernate-mapping>
