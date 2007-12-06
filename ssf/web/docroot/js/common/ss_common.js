@@ -255,7 +255,7 @@ function ss_buildAdapterUrl(base, paramMap, action) {
 	}	
 	for (var i in paramMap) {
 		if (dojo.lang.isArray(paramMap[i])){
-			for(var j=0,l=arr.length; j<l; j++){
+			for(var j=0,l=paramMap[i].length; j<l; j++){
 				url += "\&" + i + "=" + encodeURIComponent(paramMap[i][j]);
 			}
 		} else {
