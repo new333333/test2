@@ -1,0 +1,8 @@
+"product","ICEcore","no description"
+"product_short","ICEcore","no description"
+"conf_prod_name","ICEcore Conference","no description"
+"conf_prod_name_short","Conference","no description"
+"thrdmrk","*","no description"
+"mdash","-","no description"
+"ycc_runlevel","System Services (Runlevel)","no description"
+"euro","&#x20AC;","no description"
