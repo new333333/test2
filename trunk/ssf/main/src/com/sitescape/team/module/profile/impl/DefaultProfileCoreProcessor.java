@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.module.profile.impl;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
-import java.text.DateFormat;
 
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
@@ -58,9 +58,12 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
@@ -76,13 +79,11 @@ import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.XmlUtils;
-import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleProfiler;
-
 import com.sitescape.util.Validator;
 /**
  *
@@ -91,24 +92,84 @@ import com.sitescape.util.Validator;
 public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	implements ProfileCoreProcessor {
 	DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
-    
-	//cannot be deleted
-    protected void deleteBinder_preDelete(Binder binder, Map ctx) {     	
-    }
-  
-    
-    protected void deleteBinder_processFiles(Binder binder, Map ctx) {
-    }
-    
-    protected void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
-    }
-    protected void deleteBinder_postDelete(Binder binder, Map ctx) {
-    }
+	//inside write transaction    
+	public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
+		if(logger.isDebugEnabled())
+			logger.debug("Deleting binder [" + binder.getPathName() + "]");
+		if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource);
+		else {
+			//if binder is marked deleted, we are called from cleanup code without a transaction 
+			final ProfileBinder pBinder = (ProfileBinder)binder;
 
-    protected void deleteBinder_indexDel(Binder binder, Map ctx) {
-     }
-    
-    //*******************************************************************/
+			//loop through all entries and record delete
+			Boolean done=Boolean.FALSE;
+			while (!done) {
+				done = (Boolean)getTransactionTemplate().execute(new TransactionCallback() {
+					public Object doInTransaction(TransactionStatus status) {
+						SFQuery query = getProfileDao().queryAllPrincipals(new FilterControls(), pBinder.getZoneId()); 
+						try {
+							int count = 0;
+							List entries = new ArrayList();
+							while (query.hasNext()) {
+								Object obj = query.next();
+								if (obj instanceof Object[])
+									obj = ((Object [])obj)[0];
+				 				Principal entry = (Principal)obj;
+				 				if(logger.isDebugEnabled())
+				 					logger.debug("Deleting entry [" + entry.getTitle() + "], id=" + entry.getId());
+				 				//create history - using timestamp and version from folder delete
+				 				try {
+				 					entry.setModification(pBinder.getModification());
+				 					entry.incrLogVersion();
+				 					processChangeLog(entry, ChangeLog.DELETEENTRY);
+				 				} catch (Exception ex) {
+				 					logger.warn("Error logging entry " + entry.toString(), ex);
+				 				}
+									
+				 				getFileModule().deleteFiles(pBinder, entry, false, null);
+				 				entries.add(entry);
+				 				++count;
+									
+				 				//commit after 100
+				 				if (count == 100) {
+				 					//mark processed entries as deleted, so not read again
+				 					//evict entries so not updated
+				 					getProfileDao().markEntriesDeleted(pBinder, entries);
+				 					return Boolean.FALSE;
+								}
+							}
+							getCoreDao().flush();  //flush before bulk updates
+							//finally remove folder and its entries
+							getProfileDao().delete(pBinder);
+							//delete binder
+							return Boolean.TRUE;
+						} catch (Exception ex) {
+							//don't want the transaction to clear the session
+							logger.warn("Error delete folder " + pBinder.getPathName(), ex);
+							return Boolean.TRUE;
+						} finally {
+							query.close();
+						}
+					}
+		        });
+			}
+	     };
+	}
+	    
+	//inside write transaction    
+	public void deleteBinder_delete(Binder binder, boolean deleteMirroredSource, Map ctx) {
+		//don't remove from parent, cause needs zone pointer for request context setup on zone delete
+		//mark for delete now and continue later
+		binder.setDeleted(true);
+	} 
+	    
+	//inside write transaction    
+	protected void deleteBinder_processFiles(Binder binder, Map ctx) {
+		getFileModule().deleteFiles(binder, binder, false, null);
+	}
+
+ 
+       //*******************************************************************/
   	//not supported
 	public void moveBinder(Binder source, Binder destination) {
 		throw new NotSupportedException("Move", "ProfileBinder");
@@ -623,8 +684,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_ZONNAME, ObjectKeys.XTAG_TYPE_STRING, user.getZonName());
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_TIMEZONE, ObjectKeys.XTAG_TYPE_STRING, user.getTimeZone().getID());
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL_TEXT, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL_MOBILE, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL_TEXT, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress(User.TEXT_EMAIL));
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL_MOBILE, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress(User.MOBILE_EMAIL));
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_ORGANIZATION, ObjectKeys.XTAG_TYPE_STRING, user.getOrganization());
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_PHONE, ObjectKeys.XTAG_TYPE_STRING, user.getPhone());
 

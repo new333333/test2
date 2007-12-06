@@ -55,7 +55,7 @@ import com.sitescape.team.NotSupportedException;
 * @author Jong Kim
 *
 */
-public abstract class Principal extends Entry  {
+public abstract class Principal extends Entry {
 	//use _ to reserve names, perhaps allow customized additions later
 	public static final String PRIMARY_EMAIL="_primary";
 	public static final String TEXT_EMAIL="_text";
@@ -70,7 +70,10 @@ public abstract class Principal extends Entry  {
     protected String type;
     protected String theme="";
     protected String emailAddress=null;
-    protected Map<String,String> emails;
+    protected Map<String,EmailAddress> emailAddresses;//initialized by hibernate access=field
+    // these collections are loaded for quicker indexing, hibernate will not persist them
+    protected Map iEmailAddresses;
+
      public EntityIdentifier.EntityType getEntityType() {
     	return EntityIdentifier.EntityType.valueOf(getType());
     }
@@ -163,25 +166,25 @@ public abstract class Principal extends Entry  {
      * @hibernate.element map for email address
      * @return
      */
-    public Map getEmailAddresses() {
-    	return emails;
+    public Map<String, EmailAddress> getEmailAddresses() {
+    	if (iEmailAddresses != null) return iEmailAddresses; //must be indexing
+    	return emailAddresses;
     }
-    public void setEmailAddresses(Map emailAddresses) {
-    	if (emails != null) {
-    		emails.clear();
-    		emails.putAll(emailAddresses);
-    	} else {
-    		emails = emailAddresses;
-    	}
-    		
-    }
+ 
     public String getEmailAddress(String type) {
-       	if (emails == null) emails = new HashMap();
-       	return emails.get(type);
+       	if (emailAddresses == null) return null;
+       	EmailAddress a = emailAddresses.get(type);
+       	return (a==null ? null:a.getAddress());
     }
     public void setEmailAddress(String type, String address) {
-    	if (emails == null) emails = new HashMap();
-    	emails.put(type, address);
+    	if (emailAddresses == null) emailAddresses = new HashMap();
+    	if (Validator.isNull(address)) {
+    		emailAddresses.remove(type);
+    	} else {
+    		EmailAddress a = emailAddresses.get(type);
+    		if (a == null) emailAddresses.put(type, new EmailAddress(this, type, address));
+    		else a.setAddress(address);
+    	}
     }
      /**
      * @return Returns the mobileEmailAddress.
@@ -283,6 +286,9 @@ public abstract class Principal extends Entry  {
     public void setIndexMemberOf(List iMemberOf) {
     	this.iMemberOf = iMemberOf;
     }
-    
+    public void setIndexEmailAddresses(Map iEmailAddresses) {
+    	this.iEmailAddresses = iEmailAddresses;
+    }
+
  }
 

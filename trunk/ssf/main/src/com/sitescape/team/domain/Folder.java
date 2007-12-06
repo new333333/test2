@@ -65,6 +65,10 @@ public class Folder extends Binder {
     public boolean isTop() {
     	return topFolder == null;
     }
+    public Folder getRootFolder() {
+    	if (isTop()) return this;
+    	return getTopFolder();
+    }
     public Folder getParentFolder() {
         if (topFolder == null) return null;
     	return (Folder)getParentBinder();

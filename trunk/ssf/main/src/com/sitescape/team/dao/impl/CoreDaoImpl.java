@@ -707,7 +707,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                              		.setCacheable(true)
                              		.list();
                         if (results.isEmpty()) {
-                            throw new NoWorkspaceByTheNameException(ObjectKeys.TOP_WORKSPACE_INTERNALID); 
+                            throw new NoWorkspaceByTheNameException(zoneName); 
                         }
                         return (Workspace)results.get(0);
                     }

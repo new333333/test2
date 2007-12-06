@@ -32,11 +32,11 @@
     <property name="disabled"/>
 	<property name="logVersion"/>
 	<property name="emailAddress" length="24" access="field"/>
-    <map lazy="false" name="emailAddresses" table="SS_EmailAddresses">
+    <map lazy="true" inverse="true" access="field" cascade="all,delete-orphan" batch-size="4" name="emailAddresses">
       <cache usage="read-write"/>
-      <key column="principal"/>
-      <index column="type" type="string" length="64"/>
-      <element column="address" type="string"  length="256"/>
+      <key column="principal" on-delete="cascade"/>
+      <map-key type="string" column="type"/>
+      <one-to-many class="com.sitescape.team.domain.EmailAddress"/>
     </map>
     <property name="name" length="128"/>
     <property name="foreignName" length="128" />

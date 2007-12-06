@@ -21,5 +21,7 @@ public class BaseZoneModule extends AbstractZoneModule {
 	public String getVirtualHost(String zoneName) {
 		return null;
 	}
-
+	public void removeZone(String zoneName) {
+		logger.info("Cannot remove zone " + zoneName + " - Open source edition does not support multi zone");
+	}
 }

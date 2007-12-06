@@ -763,7 +763,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //inside write transaction    
     public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
-    	if (binder.isReserved()) 
+    	if (binder.isReserved() && !binder.getRoot().isDeleted()) 
     		throw new NotSupportedException(
     				"errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()});
     	SimpleProfiler sp = new SimpleProfiler(false);
@@ -869,7 +869,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	if (!binder.isRoot()) {
     		binder.getParentBinder().removeBinder(binder);
     	}
-       	getCoreDao().delete(binder);
+       	if (!binder.isDeleted()) {
+    		//assume other code is handling the delete
+    		getCoreDao().delete(binder);
+    	}
     }
    //inside write transaction    
    protected void deleteBinder_postDelete(Binder binder, Map ctx) {

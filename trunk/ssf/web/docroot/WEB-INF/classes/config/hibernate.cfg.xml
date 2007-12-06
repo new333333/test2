@@ -44,6 +44,7 @@
 	    <mapping resource="com/sitescape/team/domain/CustomAttribute.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Dashboard.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Definition.hbm.xml"/>
+	    <mapping resource="com/sitescape/team/domain/EmailAddress.hbm.xml"/> 
 	    <mapping resource="com/sitescape/team/domain/Event.hbm.xml"/> 
 	    <mapping resource="com/sitescape/team/domain/FolderEntry.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/LibraryEntry.hbm.xml"/>

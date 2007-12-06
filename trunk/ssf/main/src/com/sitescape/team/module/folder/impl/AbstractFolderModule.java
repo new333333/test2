@@ -144,12 +144,13 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
  			startScheduledJobs(zone);
 	   }
  	}
-    public void startScheduledJobs(Workspace zone) {
+     public void startScheduledJobs(Workspace zone) {
+    	if (zone.isDeleted()) return;
 	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
  	   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultFolderDelete";
  	   try {
  		   Class processorClass = ReflectHelper.classForName(jobClass);
- 		  FolderDelete job = (FolderDelete)processorClass.newInstance();
+ 		   FolderDelete job = (FolderDelete)processorClass.newInstance();
  		   //make sure a delete job is scheduled for the zone
  		   String hrsString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_HOURS + "']");
  		   int hours = 24;
@@ -345,6 +346,8 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         }
         
         Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems);
+        Date stamp = entry.getCreation().getDate();
+        processor.scheduleSubscription(folder, (FolderEntry)entry, new Date(stamp.getTime()-1));
         return entry.getId();
     }
     //no transaction    
@@ -360,7 +363,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         checkAccess(entry, FolderOperation.addReply);
         FolderEntry reply = processor.addReply(entry, def, inputData, fileItems);
         Date stamp = reply.getCreation().getDate();
-        scheduleSubscription(folder, reply, new Date(stamp.getTime()-1));
+        processor.scheduleSubscription(folder, reply, new Date(stamp.getTime()-1));
         
         return reply.getId();
     }
@@ -380,7 +383,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	Date stamp = entry.getModification().getDate();
 		try {
 			processor.modifyEntry(folder, entry, inputData, null, null, null);
-      		if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);    		
+      		if (!stamp.equals(entry.getModification().getDate())) processor.scheduleSubscription(folder, entry, stamp);    		
     	} catch (WriteFilesException ex) {
     	    //should never happen   
     	}
@@ -412,10 +415,10 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	
     	try {
     		processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo);
-       		if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
+       		if (!stamp.equals(entry.getModification().getDate())) processor.scheduleSubscription(folder, entry, stamp);
     		
     	} catch (WriteFilesException ex) {
-    		if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
+    		if (!stamp.equals(entry.getModification().getDate())) processor.scheduleSubscription(folder, entry, stamp);
     	    throw ex;   
     	}
         
@@ -997,15 +1000,6 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	return subFolders;    	
     }
     
-    protected void scheduleSubscription(Folder folder, FolderEntry entry, Date when) {
-  		FillEmailSubscription process = (FillEmailSubscription)processorManager.getProcessor(folder, FillEmailSubscription.PROCESSOR_KEY);
-  		//if anyone subscribed to the topLevel entry, notify them of a change
-  		FolderEntry parent = entry.getTopEntry();
-  		if (parent == null) parent = entry;
-  		if (!getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier()).isEmpty())
-  			process.schedule(folder.getId(), entry.getId(), when);
-    	
-    }
     
     //called by scheduler to complete folder deletions
     public void cleanupFolders() {

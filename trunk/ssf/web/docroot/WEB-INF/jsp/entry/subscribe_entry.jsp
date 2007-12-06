@@ -57,7 +57,7 @@
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="2${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
-		>${email.value}</option>
+		>${email.value.address}</option>
 	</c:forEach>
    </select>
 	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.noattachments"/></span>
@@ -66,7 +66,7 @@
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="3${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
-		>${email.value}</option>
+		>${email.value.address}</option>
 	</c:forEach>
    </select>
    
@@ -76,6 +76,6 @@
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="5${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
-		>${email.value}</option>
+		>${email.value.address}</option>
 	</c:forEach>
    </select>

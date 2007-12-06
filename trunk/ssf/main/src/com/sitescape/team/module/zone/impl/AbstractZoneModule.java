@@ -154,6 +154,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		for (int i=0; i<companies.size(); ++i) {
 	        			Workspace zone = (Workspace)companies.get(i);
+	        			if (zone.isDeleted()) continue;
 	        			validateZoneTx(zone);
 	    	        }
 		        	return null;
