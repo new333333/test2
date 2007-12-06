@@ -115,12 +115,14 @@ public class DomInputData implements InputDataAccessor {
 	public Event getEventValue(String key, boolean hasDuration, boolean hasRecurrence)
 	{
 		Element eventElem = (Element) root.selectSingleNode("attribute[@name='" + key + "']");
-		try {
-			List<Event> events = icalModule.parseEvents(new StringReader(eventElem.getText()));
-			return events.get(0);
-		} catch(IOException e) {
-		} catch(ParserException e) {
-		} catch(IndexOutOfBoundsException e) {
+		if(eventElem != null) {
+			try {
+				List<Event> events = icalModule.parseEvents(new StringReader(eventElem.getText()));
+				return events.get(0);
+			} catch(IOException e) {
+			} catch(ParserException e) {
+			} catch(IndexOutOfBoundsException e) {
+			}
 		}
 		return null;
 	}

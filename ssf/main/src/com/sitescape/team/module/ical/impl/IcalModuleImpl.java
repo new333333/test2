@@ -583,6 +583,7 @@ public class IcalModuleImpl implements IcalModule {
 			if (event.getDtEnd() != null) {
 				end = new Date(event.getDtEnd().getTime());
 			}
+			end = new Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
 			vToDo = new VToDo(start, end, entry.getTitle());
 			vToDo.getProperties().getProperty(Property.DTSTART)
 					.getParameters().add(Value.DATE);
@@ -766,7 +767,7 @@ public class IcalModuleImpl implements IcalModule {
 
 		Set value = (Set) customAttribute.getValueSet();
 		
-		com.sitescape.team.ical.util.Priority priority = null;
+		com.sitescape.team.ical.util.Priority priority = com.sitescape.team.ical.util.Priority.p1;
 		if (value != null) {
 			if (value.contains("p5")) {
 				priority = com.sitescape.team.ical.util.Priority.p5;

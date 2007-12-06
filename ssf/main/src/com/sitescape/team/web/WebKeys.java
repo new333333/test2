@@ -197,6 +197,7 @@ public class WebKeys {
     public static final String ACTION_ADD_BINDER = "add_binder";
     public static final String ACTION_ADD_TEAM_MEMBER = "add_team_member";
     public static final String ACTION_ADVANCED_SEARCH = "advanced_search";
+    public static final String ACTION_IMPORT_FORUM_ENTRIES = "forum_import";
     public static final String ACTION_MODIFY_BINDER = "modify_binder";
     public static final String ACTION_CLIPBOARD = "clipboard";
     public static final String ACTION_CONFIG_EMAIL="config_email";
@@ -496,6 +497,7 @@ public class WebKeys {
     public static final String DEFINITION_ID="ssDefinitionId";
     public static final String DEFINITION_BINDER="ssDefinitionBinder";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
+    public static final String DEFINITION_CHOICES="ssDefinitionChoices";
     public static final String DISPLAY_STYLE="ss_displayStyle";
     public static final String DISPLAY_STYLE_BLOG="blog";
     public static final String DISPLAY_STYLE_SEARCH="search";
@@ -855,6 +857,7 @@ public class WebKeys {
     public static final String VIEW_FORUM_EDIT="forum/edit";
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_FORUM="forum/view";
+    public static final String VIEW_FORUM_IMPORT = "forum/forum_import";
     public static final String VIEW_GALLERY="gallery/view";
     public static final String VIEW_GALLERY_EDIT="gallery/edit";
     public static final String VIEW_GUESTBOOK_SUMMARY="guestbook_summary/view";

@@ -73,7 +73,7 @@ public abstract class TextConverter extends Converter<String>
 	{
 		String result = "";
 		String tmp = "," + excludedExtensions + ",";
-		if(! tmp.contains("," + EntityIndexUtils.getFileExtension(fa.getFileItem().getName()) + ",")) {
+		if(! tmp.contains("," + EntityIndexUtils.getFileExtension(fa.getFileItem().getName()).toLowerCase() + ",")) {
 			SimpleProfiler.startProfiler("TextConverter.convert");
 			InputStream textStream = super.convert(binder, entry, fa, null, TEXT_SUBDIR, TEXT_FILE_SUFFIX);
 			StringWriter textWriter = new StringWriter();

@@ -1,3 +1,4 @@
+<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -26,67 +27,57 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.web.servlet.filter;
+%>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body>
+</ssf:ifadapter>
 
-import java.io.*;
-import java.util.*;
-import javax.servlet.*;
-import javax.servlet.http.*;
+<table class="ss_style" cellpadding="10" width="100%"><tr><td>
 
-public class GZIPResponseWrapper extends HttpServletResponseWrapper {
-  protected HttpServletResponse origResponse = null;
-  protected ServletOutputStream stream = null;
-  protected PrintWriter writer = null;
+<form class="ss_form" method="post" style="display:inline;" enctype="multipart/form-data"
+	action="<ssf:url 
+	adapter="true" 
+	portletName="ss_forum" 
+	action="forum_import" 
+	actionUrl="true" ><ssf:param 
+	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
+	
+<ssf:nlt tag="ihelp.forum_import.general"/><br/>
 
-  public GZIPResponseWrapper(HttpServletResponse response) {
-    super(response);
-    origResponse = response;
-  }
+  <input type="file" class="ss_text" name="forumFile" id="forumFile"/><br/>
 
-  public ServletOutputStream createOutputStream() throws IOException {
-    return (new GZIPResponseStream(origResponse));
-  }
+<c:if test="${!empty ssDefinitionChoices}">
+Create imported entries as: <select name="entryType">
+<c:forEach var="def" items="${ssDefinitionChoices}">
+	<option value="${def.key}">${def.value}</option>
+</c:forEach>
+</select>
+</li>
+</c:if>
+<c:if test="${empty ssDefinitionChoices}">
+Imported entries will be created as: <ssf:nlt tag="${ssDefinition.title}"/> (${ssDefinition.name})
+<input type="hidden" name="entryType" value="${ssDefinition.id}"/>
+</c:if>
+<br/>
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" />
 
-  public void finishResponse() {
-    try {
-      if (writer != null) {
-        writer.close();
-      } else {
-        if (stream != null) {
-          stream.close();
-        }
-      }
-    } catch (IOException e) {}
-  }
+</form>
+</td></tr></table>
+<c:if test="${!empty ssErrorList}">
+<span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
+<br/>
+<br/>
+<ul>
+<c:forEach var="err" items="${ssErrorList}">
+	<li>${err}</li>
+</c:forEach>
+</ul>
+</c:if>
 
-  public void flushBuffer() throws IOException {
-    stream.flush();
-  }
-
-  public ServletOutputStream getOutputStream() throws IOException {
-    if (writer != null) {
-      throw new IllegalStateException("getWriter() has already been called!");
-    }
-
-    if (stream == null)
-      stream = createOutputStream();
-    return (stream);
-  }
-
-  public PrintWriter getWriter() throws IOException {
-    if (writer != null) {
-      return (writer);
-    }
-
-    if (stream != null) {
-      throw new IllegalStateException("getOutputStream() has already been called!");
-    }
-
-   stream = createOutputStream();
-   // BUG FIX 2003-12-01 Reuse content's encoding, don't assume UTF-8
-   writer = new PrintWriter(new OutputStreamWriter(stream, origResponse.getCharacterEncoding()));
-   return (writer);
-  }
-
-  public void setContentLength(int length) {}
-}
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>

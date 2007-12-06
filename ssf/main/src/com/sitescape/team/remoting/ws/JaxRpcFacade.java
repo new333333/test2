@@ -108,6 +108,11 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public String getPrincipalAsXML(long binderId, long principalId) {
 		return this.facade.getPrincipalAsXML(binderId, principalId);
 	}
+	
+	public void addUserToGroup(long userId, String username, long groupId) {
+		this.facade.addUserToGroup(userId, username, groupId);
+	}
+	
 	/*
 	public long addUser(long binderId, String definitionId, String inputDataAsXML) {
 		return this.facade.addUser(binderId, definitionId, inputDataAsXML);

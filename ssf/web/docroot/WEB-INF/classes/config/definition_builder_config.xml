@@ -194,7 +194,7 @@
 	</item>
 	<item name="entryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false">
 		<properties>
-			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" 
+			<property name="name" caption="__form_name" type="text" characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" 
 				value="form1" setAttribute="formName"/>
 			<property name="type" caption="__type" type="selectbox" 
 				  default="form" value="form">
@@ -238,7 +238,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="hasDuration" caption="__has_a_duration" type="boolean" default="true"/>
@@ -692,7 +692,7 @@
 		  multipleAllowed="false">
 		<properties>
 			<property name="name" caption="__form_name" type="text" 
-				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName" value="form1"/>
+				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" setAttribute="formName" value="form1"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" initial="true" />
@@ -750,7 +750,7 @@
 		  multipleAllowed="false">
 		<properties>
 			<property name="name" caption="__form_name" type="text" 
-				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName" value="form1"/>
+				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" setAttribute="formName" value="form1"/>
 			<property name="type" caption="__type" type="selectbox" 
 				  default="profile" value="profile">
 				<option name="profile" caption="__profile_form_standard" />
@@ -1298,7 +1298,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
@@ -1318,7 +1318,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="height" caption="__height_px" type="text"/>
@@ -1338,7 +1338,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false"></property>
@@ -1364,7 +1364,7 @@
 			<property name="caption" caption="__selection_string" type="text">
 				<help>ihelp.designers.selection_string</help>
 			</property>			
-			<property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__selection_data_name" type="text" characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$">
 				<help>ihelp.designers.selection_data_name</help>
 			</property>
 		</properties>
@@ -1377,7 +1377,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text"
-				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$"
+				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$"
 				unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
@@ -1405,7 +1405,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="layout" caption="__layout" type="selectbox" 
@@ -1434,7 +1434,7 @@
 			<property name="caption" caption="__selection_string" type="text">
 				<help>ihelp.designers.radio_string</help>
 			</property>			
-			<property name="name" caption="__selection_data_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+			<property name="name" caption="__selection_data_name" type="text" characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$">
 				<help>ihelp.designers.selection_data_name</help>
 			</property>
 			<property name="selected" caption="__selected" type="boolean" default="false"></property>
@@ -1448,7 +1448,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="multipleAllowed" caption="__allow_multiple" type="boolean" default="false"></property>
@@ -1469,7 +1469,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
@@ -1487,7 +1487,7 @@
 	<item name="hidden" caption="__hidden" type="data" category="commonEntryData">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="value" caption="__value" type="text"/>
@@ -1502,7 +1502,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
@@ -1566,7 +1566,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="width" caption="__browseboxWidth" type="text" default="60"/>
@@ -1587,7 +1587,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
@@ -1606,7 +1606,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data_time']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data_time']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
@@ -1625,7 +1625,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
@@ -1644,7 +1644,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
@@ -2166,7 +2166,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']"
-				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$">
+				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="description" caption="__description" type="textarea" />
@@ -2299,7 +2299,7 @@
 		<properties>
 			<property name="question" caption="__workflow_question_text" type="text" />
 			<property name="name" caption="__data_name" type="text" 
-				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" 
+				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" 
 				unique="//item[@type='workflowQuestion']" />
 		</properties>
 		<options>
@@ -2311,7 +2311,7 @@
 		<properties>
 			<property name="response" caption="__workflow_response_text" type="text" />
 			<property name="name" caption="__data_name" type="text" 
-				characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$"
+				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$"
 				unique="//item[@type='workflowResponse']" />
 		</properties>
 	</item>

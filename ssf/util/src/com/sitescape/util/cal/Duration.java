@@ -213,7 +213,11 @@ public class Duration implements Cloneable {
    */
   public void setString(String str)
   {
+	str = str.trim();
     int s = 0;
+    if(str.startsWith("DURATION:")) {
+    	s = 9;
+    }
     int end = str.length();
   
     int w = 0, d = 0, h = 0, m = 0, sec = 0;

@@ -34,6 +34,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.LinkedList;
+
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -57,25 +59,59 @@ import com.sitescape.util.PasswordEncryptor;
 
 public class WSLoadTest
 {
+	static String loremIpsum = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Phasellus commodo. Duis nibh mauris, venenatis et, nonummy vitae, rutrum quis, massa. Vestibulum rutrum. Maecenas arcu est, venenatis eget, pellentesque sit amet, dignissim fringilla, ipsum. Maecenas neque pede, accumsan a, pellentesque a, fringilla lobortis, felis. Sed dapibus nonummy lorem. Aliquam adipiscing. Etiam porttitor sagittis arcu. Integer laoreet ipsum vitae lacus. Duis tempor quam vel pede. Nam ornare pede vel turpis.\n\nNulla sapien felis, cursus commodo, elementum id, tristique vel, mauris. Quisque pede. Etiam sit amet turpis in ligula congue suscipit. Nulla venenatis, lectus vel ornare tincidunt, odio ipsum vehicula mi, in cursus felis odio vitae est. Nulla nibh tellus, dignissim vel, laoreet ac, elementum vel, diam. Curabitur non eros. Sed tempor felis non pede. Sed imperdiet fermentum ante. Nulla fermentum, eros ultrices pulvinar malesuada, velit massa luctus risus, id convallis mi tortor lobortis leo. Etiam congue semper ipsum. Mauris sodales libero ut erat. Proin tellus. Quisque ullamcorper mauris a dui. Duis commodo. Quisque ac quam. Ut magna. Maecenas a neque ac augue feugiat convallis. Sed a tortor at magna dapibus porttitor. Phasellus quam purus, sagittis et, hendrerit sit amet, lacinia ut, mauris. In luctus.\n\nMauris urna. Quisque ipsum. Curabitur non sapien non mi facilisis lobortis. Nam id nibh at tellus faucibus nonummy. Duis congue mollis risus. Etiam gravida sodales tortor. Aenean gravida dui id pede. Proin quis mauris non leo luctus tempus. Praesent non ante. Praesent tempus libero id purus. Quisque faucibus. Etiam vulputate ipsum eu elit. Nam eget ante. Nullam elementum semper libero.\n\nIn hac habitasse platea dictumst. Curabitur metus. Duis vestibulum massa ullamcorper sem mollis placerat. Fusce metus odio, feugiat ac, cursus at, faucibus a, eros. Phasellus ligula elit, venenatis a, venenatis eget, pretium vel, augue. Donec sit amet diam. Suspendisse sit amet metus quis lectus ornare consequat. Pellentesque condimentum accumsan velit. Donec in mauris. Mauris varius orci vel ipsum. Fusce viverra ante nec diam. Mauris massa massa, fringilla tempus, pellentesque at, lobortis ut, orci. Pellentesque cursus mi sed nisi. Aliquam vulputate ultrices neque. Vivamus condimentum.\n\nNulla lacinia velit at lectus. Suspendisse vel urna tristique purus feugiat gravida. Vestibulum ullamcorper. Suspendisse potenti. Morbi suscipit mi vel turpis. Nulla quis neque. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nam egestas elit in eros. Cras pede elit, rutrum et, pellentesque ut, euismod id, mauris. Morbi justo neque, accumsan non, suscipit et, consequat quis, sapien. Nulla egestas, turpis sit amet venenatis mattis, neque ante ultricies lacus, vel molestie orci purus ut justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer nibh enim, sollicitudin ac, vestibulum eget, mattis quis, est. In egestas scelerisque velit. Nulla accumsan mollis sem. Praesent tincidunt. Donec blandit. Integer lacinia ipsum vitae tortor. Aliquam ullamcorper placerat tellus.\n";
 	public static void main(String[] args) {
 		if(args.length < 3 || args.length > 4) {
-			System.err.println("Usage: WSLoadTest <count> <folderId> <definitionId> [<attachmentFilename>]");
+			System.err.println("Usage: WSLoadTest <count> <commaSeparatedFolderIdList> <definitionId> [<attachmentFilename>]");
+			System.err.println("           folder id's can be ranges, e.g. 3-15:4 is the same as 3,7,11,15");
 			return;
 		}
 		Integer count = Integer.parseInt(args[0]);
-		Long folderId = Long.parseLong(args[1]);
+		Long[] folderIds = null;
+		String ids[] = null;
+		if(args[1].contains(",")) {
+			ids = args[1].split(",");
+		} else {
+			ids = new String[] {args[1]};
+		}
+		long startId, stopId, step;
+		LinkedList<Long> generatedIds = new LinkedList<Long>();
+		for(int i = 0; i < ids.length; i++) {
+			if(ids[i].contains("-")) {
+				String[] range = ids[i].split("-");
+				if(range[1].contains(":")) {
+					String parts[] = range[1].split(":");
+					range[1] = parts[0];
+					step = Long.parseLong(parts[1]);
+				} else {
+					step = 1;
+				}
+				startId = Long.parseLong(range[0]);
+				stopId = Long.parseLong(range[1]);
+			} else {
+				startId = stopId = Long.parseLong(ids[i]);
+				step = 1;
+			}
+			for(long id = startId; id <= stopId; id += step) {
+				generatedIds.add(new Long(id));
+			}
+		}
+		folderIds = generatedIds.toArray(new Long[0]);
+
 		String definitionId = args[2];
 		String filename = null;
 		if(args.length == 4) { filename = args[3]; }
 		Date start = new Date();
 		try {
 			for(int i = 0; i < count.intValue(); i++) {
+				for(int j = 0; j < folderIds.length; j++) {
+					String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><entry>  <attribute name=\"title\" type=\"title\">Load Test Entry " + j + "-" + i + " " + start.toString()  + "</attribute><attribute name=\"description\" type=\"description\">" + loremIpsum + "</attribute></entry>";
+					Long entryId = (Long) fetch("addFolderEntry", new Object[] {folderIds[j], definitionId, s, filename}, filename);
+					//				justDoIt("uploadFolderFile", new Object[] {folderId, entryId, "ss_attachFile1", "attachment" + i + ".txt"}, filename);
+				}
 				if((i+1)%10 == 0) {
 					System.err.println(i+1);
 				}
-				String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><entry>  <attribute name=\"title\" type=\"title\">Load Test Entry"+ i + " " + start.toString()  + "</attribute></entry>";
-				Long entryId = (Long) fetch("addFolderEntry", new Object[] {folderId, definitionId, s, filename}, filename);
-//				justDoIt("uploadFolderFile", new Object[] {folderId, entryId, "ss_attachFile1", "attachment" + i + ".txt"}, filename);
 			}
 		}
 		catch(Exception e) {
@@ -86,7 +122,7 @@ public class WSLoadTest
 	
 	static Object fetch(String operation, Object[] args, String filename) throws Exception {
 		// Replace the hostname in the endpoint appropriately.
-		String endpoint = "https://localhost:8443/ssf/ws/Facade";
+		String endpoint = "http://localhost:8080/ssf/ws/Facade";
 
 		// Make sure that the client_deploy.wsdd file is accessible to the program.
 		EngineConfiguration config = new FileProvider("client_deploy.wsdd");
@@ -105,7 +141,7 @@ public class WSLoadTest
 		// the username in the WS deployment descriptor client_deploy.wsdd
 		// if the username is known at deployment time and does not change
 		// between calls, which is rarely the case in Aspen.
-		call.setProperty(WSHandlerConstants.USER, "administrator");
+		call.setProperty(WSHandlerConstants.USER, "admin");
 		
 		if(filename != null) {
 			DataHandler dhSource = new DataHandler(new FileDataSource(new File(filename)));

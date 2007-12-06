@@ -28,8 +28,10 @@
  */
 package com.sitescape.team.samples.remoting.client.util;
 
+import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.Date;
 
 import org.dom4j.Document;
@@ -82,18 +84,46 @@ public class FacadeClientHelper {
 		}
 	}
 
+	public static String readText(File file)
+	{
+		FileReader reader = null;
+		String s = "";
+		try {
+			reader = new FileReader(file);
+			s = readText(reader);
+		} catch(IOException e) {
+		} finally {
+			if(reader != null) {try { reader.close(); } catch(Exception e) {}}
+		}
+		return s;
+	}
+	
 	public static String readText(String filename)
+	{
+		FileReader reader = null;
+		String s = "";
+		try {
+			reader = new FileReader(filename);
+			s = readText(reader);
+		} catch(IOException e) {
+		} finally {
+			if(reader != null) {try { reader.close(); } catch(Exception e) {}}
+		}
+		
+		return s;
+	}
+	
+	public static String readText(Reader reader)
 	{
 		StringBuffer buf = new StringBuffer();
 		try {
-			FileReader f = new FileReader(filename);
 			char in[] = new char[32768];
 			int len;
-			while((len = f.read(in, 0, 32767)) > 0) {
+			while((len = reader.read(in, 0, 32767)) > 0) {
 				buf.append(in, 0, len);
 			}
 		} catch(IOException e) {
-			System.err.println("Error reading file " + filename + ": " + e);
+			System.err.println("Error reading file: " + e);
 		}
 		return buf.toString();
 	}
