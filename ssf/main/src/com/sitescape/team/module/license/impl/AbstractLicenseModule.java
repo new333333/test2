@@ -69,6 +69,7 @@ implements LicenseModule, InitializingBean {
 	   }
 	}
     protected void startScheduledJobs(Workspace zone) {
+ 	   if (zone.isDeleted()) return;
     	String jobClass = SZoneConfig.getString(zone.getName(), "licenseConfiguration/property[@name='" + LicenseMonitor.LICENSE_JOB + "']");
     	if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultLicenseMonitor";
     	try {

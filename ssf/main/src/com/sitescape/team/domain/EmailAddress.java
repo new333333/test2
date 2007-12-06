@@ -26,52 +26,66 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.zone;
+package com.sitescape.team.domain;
 
-public interface ZoneModule {
+import java.io.Serializable;
+
+//This could be a composite element, but then the primary key contains all fields, and don't want that.
+public class EmailAddress extends ZonedObject implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	protected String type;
+	protected String address;
+	protected Long zoneId; //hibernate field access
+	protected Principal principal;	
+
+	protected EmailAddress() {
+	}
+	public EmailAddress(Principal principal, String type, String address) {
+		this.type = type;
+		this.address = address;
+		this.principal = principal;
+	}
 	/**
-	 * Creates or updates zone info.
-	 * 
-	 * @param zoneName zone name
-	 * @param virtualHost virtual host
+	 * @hibernate.key-many-to-one
 	 */
-	public void writeZone(String zoneName, String virtualHost);
-	
+	public Principal getPrincipal() {
+		return principal;
+	}
+	public void setPrincipal(Principal principal) {
+		this.principal = principal;
+	}
 	/**
-	 * Returns the name of the zone corresponding to the specified virtual host.
-	 * It returns the default zone name if <code>virtualHost</code> is 
-	 * <code>null</code>, or no match is found, or the system does not 
-	 * support/honor multiple zones.
-	 * 
-	 * @param virtualHost virtual host name or <code>null</code>
-	 * @return zone name
-	 */
-	public String getZoneNameByVirtualHost(String virtualHost);
-	
-	/**
-	 * Returns the ID of the zone corresponding to the specified virtual host.
-	 * It returns the default zone ID if <code>virtualHost</code> is 
-	 * <code>null</code>, or no match is found, or the system does not 
-	 * support/honor multiple zones.
-	 * 
-	 * @param virtualHost
+	 * @hibernate.key-property length="64"
 	 * @return
 	 */
-	public Long getZoneIdByVirtualHost(String virtualHost);
-	
+	public String getType()  {
+		return type;
+	}
+	protected void setType(String type) {
+		this.type = type;
+	}
 	/**
-	 * Returns the virtual host name associated with the specified zone.
-	 * It returns <code>null</code> if the specified zone represents the default
-	 * zone in the system, or the zone does not exist, or the system does not
-	 * support/honor multi zones. 
-	 * 
-	 * @param zoneName
+	 * @hibernate.property length="356"
 	 * @return
 	 */
-	public String getVirtualHost(String zoneName);
-	/**
-	 * Remove a zone deleteing all its contents.
-	 * @param zoneName
-	 */
-	public void removeZone(String zoneName);
+	public String getAddress() {
+		return address;
+	}
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	public boolean equals(Object obj) {
+		if (obj == null) return false;
+		if (obj == this) return true;
+		if (obj instanceof EmailAddress) {
+			EmailAddress pk = (EmailAddress) obj;
+			if (pk.getPrincipal().equals(principal) && 
+					pk.getType().equals(type)) return true;
+		}
+		return false;
+	}
+	public int hashCode() {
+		return 31*principal.hashCode() + type.hashCode();
+	}
 }

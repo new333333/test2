@@ -163,20 +163,13 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 * Return a map from locale to a collection of email Addresses
 	 */
 	public Map buildDistributionList(FolderEntry entry, Collection subscriptions, int style) {
-		Map<User, String[]> users = getUsers(subscriptions, style);
-		return buildDistributionMap(entry, users);
-	}
-	/**
-	 * return map where key is a locale and value is a list of email addresses
-	 * @param entry
-	 * @param users
-	 * @return
-	 */
-	private Map buildDistributionMap(FolderEntry entry, Map<User, String[]> users) {
+		List entries = new ArrayList();
+		entries.add(entry);
+		Map<User, String[]> userMap = getUserList(entry.getTopFolder(), entries, subscriptions,  style);
 		Map languageMap = new HashMap();
 		//check access to folder/entry and build lists of users to receive mail
 		Set email = new HashSet();
-		for (Map.Entry<User, String[]> me:users.entrySet()) {
+		for (Map.Entry<User, String[]> me:userMap.entrySet()) {
 			try {
 				User u = me.getKey();
 				AccessUtils.readCheck(u, entry);
@@ -190,11 +183,36 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				}
 			} catch (Exception ex) {};
 		}
+		NotificationDef nDef = entry.getTopFolder().getNotificationDef();
+		if (nDef.getStyle() == style) {
+			//add in email address only subscriptions
+	 		String addrs = nDef.getEmailAddress();
+	 		if (Validator.isNull(addrs)) return languageMap;
+			String [] emailAddrs = StringUtil.split(addrs);
+			//done if no-one is interested
+			if (emailAddrs.length == 0)  return languageMap;
+
+			Set emailSet = new HashSet();
+			//add email address listed 
+			for (int j=0; j<emailAddrs.length; ++j) {
+				if (!Validator.isNull(emailAddrs[j]))
+					emailSet.add(emailAddrs[j].trim());
+			}
+				
+			Locale l = Locale.getDefault();
+			Set address = (Set)languageMap.get(l);
+			if (address != null) address.addAll(emailSet);
+			else languageMap.put(l, emailSet);
+		}
 		return languageMap;
 	}
 	private void addAddresses(Set email, User u, String[] types) {
-		for (int i=0;i<types.length;++i) {
-			email.add(u.getEmailAddress(types[i]));
+		if (types == null || types.length == 0) {
+			email.add(u.getEmailAddress());
+		} else {
+			for (int i=0;i<types.length;++i) {
+				email.add(u.getEmailAddress(types[i]));
+			}
 		}
 		
 	}
@@ -208,7 +226,27 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 */
 	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style) {
 		List result = new ArrayList();
-		Map<User, String[]> userMap=null;
+		Map<User, String[]> userMap = getUserList(folder, entries, subscriptions,  style);
+		if (userMap.isEmpty()) return result;
+		//check access to folder/entry and build lists of users to receive mail
+		List checkList = new ArrayList();
+		for (Map.Entry<User, String[]> me:userMap.entrySet()) {
+			AclChecker check = new AclChecker(me.getKey(), me.getValue());
+			check.checkEntries(entries);
+			checkList.add(check);
+		}
+		//get a map containing a list of users mapped to a list of entries
+		while (!checkList.isEmpty()) {
+			Object [] lists = mapEntries(checkList);
+			result.add(lists);
+		}
+		if (folder.getNotificationDef().getStyle() == style) {
+			//add in email address only subscriptions
+			return doEmailAddrs(folder, entries, result);
+		}
+		return result;
+	}
+	private Map<User, String[]> getUserList(Folder folder, Collection entries, Collection subscriptions, int style) {
 		if (folder.getNotificationDef().getStyle() == style) {
 			Set userIds = new HashSet();
 			Set groupIds = new HashSet();
@@ -234,44 +272,36 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			//expand groups so we can remove users
 			userIds.addAll(getProfileDao().explodeGroups(groupIds, folder.getZoneId()));
 			Map<Long, String[]> userSubs = new HashMap();
-			//Add users wanting the same style messages, remove users wanting nothing or another style
+			//Remove users wanting nothing first.  The user could appear 2X in the list, 1 for folder subscription, 1 for entry
+			//so process removes first
 			for (Subscription notify: (Collection<Subscription>)subscriptions) {
-				if (notify.hasStyle(style)) {
-					userIds.add(notify.getId().getPrincipalId());
-					userSubs.put(notify.getId().getPrincipalId(), notify.getStyle(style));
-				} else {
-					//user wants some other type of Notification
+				if (notify.hasStyle(Subscription.DISABLE_ALL_NOTIFICATIONS)) {
+					//user wants to disable admin settings
 					userIds.remove(notify.getId().getPrincipalId());
 				}
 			}
+			//Add users wanting the same style messages 
+			for (Subscription notify: (Collection<Subscription>)subscriptions) {
+				//user may reenable - who knows
+				if (notify.hasStyle(style)) {
+					userIds.add(notify.getId().getPrincipalId());
+					//The first in the list takes priority - should be entry subscription
+					if (!userSubs.containsKey(notify.getId().getPrincipalId())) userSubs.put(notify.getId().getPrincipalId(), notify.getStyle(style));
+				} 
+			}
 			List<User> us = getProfileDao().loadUsers(userIds, folder.getZoneId());
+			Map<User, String[]> userMap=new HashMap();
 			for (User u:us) {
 				userMap.put(u, userSubs.get(u.getId()));
 			}
+			return userMap;
 		} else {
 			//done if no-one is interested
-			if (subscriptions.isEmpty()) return result;
+			if (subscriptions.isEmpty()) return new HashMap();
 			//Users wanting this style messages
-			userMap = getUsers(subscriptions, style);
+			return getUsers(subscriptions, style);
 		}
 		
-		//check access to folder/entry and build lists of users to receive mail
-		List checkList = new ArrayList();
-		for (Map.Entry<User, String[]> me:userMap.entrySet()) {
-			AclChecker check = new AclChecker(me.getKey(), me.getValue());
-			check.checkEntries(entries);
-			checkList.add(check);
-		}
-		//get a map containing a list of users mapped to a list of entries
-		while (!checkList.isEmpty()) {
-			Object [] lists = mapEntries(checkList);
-			result.add(lists);
-		}
-		if (folder.getNotificationDef().getStyle() == style) {
-			//add in email address only subscriptions
-			return doEmailAddrs(folder, entries, result);
-		}
-		return result;
 	}
 	/**
 	 * Add email only subscriptions to the lists
@@ -954,8 +984,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		
 		protected AclChecker(User user, String[] emails) {
 			this.user = user;
-			if (emails != null) this.emails = emails;
-			this.emails = new String[] {user.getEmailAddress()};
+			this.emails = emails;
 		}
 		protected User getUser() {
 			return user;

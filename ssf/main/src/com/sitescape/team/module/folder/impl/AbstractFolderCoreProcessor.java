@@ -30,6 +30,7 @@ package com.sitescape.team.module.folder.impl;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,7 @@ import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
+import com.sitescape.team.jobs.FillEmailSubscription;
 import com.sitescape.team.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
@@ -469,7 +471,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		logger.debug("Deleting binder [" + binder.getPathName() + "]");
     	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource);
     	else {
-    		//if binder is marked deleted, we are called from cleanup code without a transation 
+    		//if binder is marked deleted, we are called from cleanup code without a transaction 
     		final Folder folder = (Folder)binder;
     		final FilterControls filter = new FilterControls(
     				new String[] {ObjectKeys.FIELD_ENTITY_DELETED},
@@ -655,7 +657,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		//add folderEntry fields
 		if (entry instanceof FolderEntry) {
 			FolderEntry fEntry = (FolderEntry)entry;
-
+			if (operation == ChangeLog.WORKFLOWTIMEOUT) {
+				//need to notify folder of out-of-band change
+				scheduleSubscription(fEntry.getParentFolder(), fEntry, fEntry.getWorkflowChange().getDate());
+			}
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
 			if (fEntry.getTopEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
 			if (fEntry.getParentEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_PARENTENTRY, fEntry.getParentEntry().getId());
@@ -664,6 +669,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		getCoreDao().save(changes);
 		return changes;
 	}
+	//***********************************************************************************************************
+    public void scheduleSubscription(Folder folder, FolderEntry entry, Date when) {
+  		FillEmailSubscription process = (FillEmailSubscription)processorManager.getProcessor(folder.getRootFolder(), FillEmailSubscription.PROCESSOR_KEY);
+  		//schedule email notification - for anyone who subsrcibed to this entry or this folder (non-digest)
+ 		process.schedule(folder.getRootFolder().getId(), entry.getId(), when);
+    	
+    }
 	//***********************************************************************************************************
     private Statistics getFolderStatistics(Folder folder) {
         CustomAttribute statisticsAttribute = folder.getCustomAttribute(Statistics.ATTRIBUTE_NAME);

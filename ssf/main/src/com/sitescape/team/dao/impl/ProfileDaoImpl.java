@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,6 +62,9 @@ import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.EmailAddress;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Membership;
 import com.sitescape.team.domain.NoGroupByTheIdException;
@@ -78,6 +82,8 @@ import com.sitescape.team.domain.UserEntityPK;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.UserPropertiesPK;
 import com.sitescape.team.domain.Visits;
+import com.sitescape.team.domain.WorkflowControlledEntry;
+import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
@@ -120,6 +126,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	/**
 	 * Delete the binder object and its assocations.
 	 * Child binders should already have been deleted
+	 * This code assumes all users/groups are stored
 	 */	
 	public void delete(final ProfileBinder binder) {
 		//cleanup entries - the delete of the folder in coreDao will handle associations through owningBinderId + LibraryEntries
@@ -133,15 +140,9 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
       	   						"(select p.id from SS_Principals p where  p.parentBinder=" + binder.getId() + ")");
       	   				s.executeUpdate("delete from SS_Notifications where principalId in " + 
       	   						"(select p.id from SS_Principals p where  p.parentBinder=" + binder.getId() + ")");
-      	   			} catch (SQLException sq) {
+     	   			} catch (SQLException sq) {
        	   				throw new HibernateException(sq);
        	   			}
-
- 		   			session.createQuery("Delete com.sitescape.team.domain.SeenMap where principalId in " + 
- 			   				"(select p.id from com.sitescape.team.domain.Principal p where " +
- 		   					" p.parentBinder=:profile)")
-		   			  	.setEntity("profile", binder)
-		   				.executeUpdate();
 		   			session.createQuery("Delete com.sitescape.team.domain.Membership where groupId in " +
  			   				"(select p.id from com.sitescape.team.domain.Principal p where " +
 			  				" p.parentBinder=:profile)")
@@ -152,6 +153,32 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			  				" p.parentBinder=:profile)")
 				   			.setEntity("profile", binder)
  	 		   				.executeUpdate();
+      	   			//If we are here the user space is being deleted, so get rid of things they own
+		   			session.createQuery("Delete com.sitescape.team.domain.UserProperties where zoneId=" + binder.getZoneId())
+			         	.executeUpdate();
+		   			session.createQuery("Delete com.sitescape.team.domain.SeenMap where zoneId=" + binder.getZoneId())
+			         	.executeUpdate();
+		   			//delete ratings/visits owned or on hese principals
+		   			session.createQuery("Delete com.sitescape.team.domain.Rating where zoneId=" + binder.getZoneId())
+		   				.executeUpdate();
+		   			//delete subscriptions owned by these principals
+		   			session.createQuery("Delete com.sitescape.team.domain.Subscription where zoneId=" + binder.getZoneId())
+		   				.executeUpdate();
+		   			//delete tags owned or on these principals
+		   			session.createQuery("Delete com.sitescape.team.domain.Tag where zoneId=" + binder.getZoneId())
+		   				.executeUpdate();
+
+		   			//delete dahsboards in Zone = not totally correct, but if we are here the zone is being deleted
+		   			session.createQuery("Delete com.sitescape.team.domain.Dashboard where zoneId=" + binder.getZoneId())
+		   				.executeUpdate();
+		   			
+		   		/*Pre zoneId on each item
+  
+ 		   			session.createQuery("Delete com.sitescape.team.domain.SeenMap where principalId in " + 
+ 			   				"(select p.id from com.sitescape.team.domain.Principal p where " +
+ 		   					" p.parentBinder=:profile)")
+		   			  	.setEntity("profile", binder)
+		   				.executeUpdate();
 
 		   			session.createQuery("Delete com.sitescape.team.domain.UserProperties where principalId in " +
 			   				"(select p.id from com.sitescape.team.domain.Principal p where " +
@@ -212,6 +239,15 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		   			  	.setEntity("profile", binder)
 		   			  	.setParameterList("tList", types)
 		   				.executeUpdate();
+ */
+		   			session.createQuery("Update com.sitescape.team.domain.Principal set creation.principal=null, modification.principal=null " +
+ 		   					"where parentBinder=:profile")
+ 		   			  	.setEntity("profile", binder)
+		   				.executeUpdate();
+ 		   			session.createQuery("Update com.sitescape.team.domain.Binder set creation.principal=null, modification.principal=null, owner=null " +
+	   					"where id=" + binder.getId())
+	   			  		.executeUpdate();
+ 		   			
  		   			//the delete of the binder in coreDao will handle associations through owningBinderId + LibraryEntries + entries
  		   			getCoreDao().delete((Binder)binder, Principal.class);			
 	       	   		return null;
@@ -281,6 +317,10 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	   					.setParameterList("pList", ids)
 		   				.executeUpdate();
 
+		   			//delete email addresses associated with these users
+ 		   			session.createQuery("Delete com.sitescape.team.domain.EmailAddress where principal in (:pList)")
+	   					.setParameterList("pList", entries)
+		   				.executeUpdate();
  		   			List types = new ArrayList();
 	       			types.add(EntityIdentifier.EntityType.user.getValue());
 	       			types.add(EntityIdentifier.EntityType.group.getValue());
@@ -313,6 +353,11 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
    						.executeUpdate();
  		   			//only delete groups; leave users around
  		   			session.createQuery("Delete com.sitescape.team.domain.Principal where id in (:pList) and type='group'")
+            			.setParameterList("pList", ids)
+       	   				.executeUpdate();
+ 		   			//leave users around; just mark deleted
+ 		   			session.createQuery("update com.sitescape.team.domain.Principal set deleted=:deleted where id in (:pList) and type='user'")
+            			.setBoolean("deleted", Boolean.TRUE)
             			.setParameterList("pList", ids)
        	   				.executeUpdate();
 		   			//this flushes secondary cache
@@ -562,20 +607,38 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        return new SFQuery(query);
     }    
  	public void bulkLoadCollections(final Collection<Principal> entries) {
-		//try loading the isMemberOf collection - we will get the Membership and assume the groups are in the secondary cache.
-/* membership is not cached
- * 	    getHibernateTemplate().execute(
+  	    getHibernateTemplate().execute(
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
                 	//ids will be sorted
                 	TreeSet<Principal> sorted = new TreeSet(new LongIdComparator());
       		    	sorted.addAll(entries);
-      		    	List<Long> ids = new ArrayList();
+                   	List<Long> ids = new ArrayList();
       		    	//ids will now be in order
       		    	for (Principal p : sorted) {
       		    		ids.add(p.getId());
        		    	}
-       		    	List<Membership> result = session.createCriteria(Membership.class)
+      		    	List<EmailAddress> objs = session.createCriteria(EmailAddress.class)
+      		    		.add(Expression.in("principal", entries))
+      		    		.addOrder(Order.asc("principal"))
+      		    		.list();
+      		    	//now build EMAIL collection
+ 		    		HashSet tSet = new HashSet();
+ 		    		for (Principal p:sorted) {
+      		    		HashMap tMap = new HashMap();
+      		    		for (EmailAddress email:objs) {
+      		    			if (p.equals(email.getPrincipal())) {
+      		    				tMap.put(email.getType(), email);
+      		    				tSet.add(email);    
+      		    			} else break;
+      		    		}
+      		    		p.setIndexEmailAddresses(tMap);
+      		    		objs.removeAll(tSet);
+      		    		tSet.clear();
+      		    	}
+     		    	
+      		    	/* not cacheing membership
+        	    	List<Membership> result = session.createCriteria(Membership.class)
                  		.add(Expression.in("userId", ids))
 						.addOrder(Order.asc("userId"))
 						.list();
@@ -607,11 +670,12 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		    			};
       		    		
        		    	}
+*/
 					return null;
                  }
             }
         );
-*/
+
  		getCoreDao().bulkLoadCollections(entries);
 		
 	}
@@ -791,5 +855,25 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	UserEntityPK id = new UserEntityPK(userId, entityId);
         return (Subscription)getHibernateTemplate().get(Subscription.class, id);	
 	}
-
+	//mark entries deleted - used when deleting entries in bulk and want
+	//to exclude some from future queries
+	//entries evicted from cache
+	public void markEntriesDeleted(final ProfileBinder binder, final Collection<Principal> entries) {
+		getHibernateTemplate().execute(
+				new HibernateCallback() {
+					public Object doInHibernate(Session session) throws HibernateException {
+						Set ids = new HashSet();	               			
+						for (Principal p:entries) {
+							ids.add(p.getId());
+							session.evict(p);
+	            	    }
+						session.createQuery("Update com.sitescape.team.domain.Principal set deleted=:delete where id in (:pList)")
+						.setBoolean("delete", Boolean.TRUE)
+						.setParameterList("pList", ids)
+						.executeUpdate();
+						return null;
+					}
+				}
+		);    		             		 
+	}
 }

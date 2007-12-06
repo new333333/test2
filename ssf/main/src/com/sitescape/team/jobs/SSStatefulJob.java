@@ -48,9 +48,12 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.dao.CoreDao;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.util.SessionUtil;
 import com.sitescape.team.util.SpringContextUtil;
 
@@ -95,18 +98,35 @@ public abstract class SSStatefulJob implements StatefulJob {
            	}
            	zoneId = jobDataMap.getLong(ZONEID);
            	//Validate user and zone are compatible
-           	if (jobDataMap.containsKey(USERID)) {
-           		Long id = new Long(jobDataMap.getLong(USERID));
-           		user = profileDao.loadUser(id, zoneId);
-           	} else {
-           		user = profileDao.getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId);
+           	try {
+           		if (jobDataMap.containsKey(USERID)) {
+           			Long id = new Long(jobDataMap.getLong(USERID));
+           			user = profileDao.loadUser(id, zoneId);
+           		} else {
+           			user = profileDao.getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId);
+           		}
+           	} catch (Exception ex) {
+           		//see if zone is deleted and remove job gracefully
+           		CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
+           		try {
+           			Workspace zone = (Workspace)coreDao.loadBinder(zoneId, zoneId);
+           			if (zone.isDeleted()) {
+           	   			removeJob(context);
+          				return;
+           			}
+           		} catch (NoBinderByTheIdException nb) {
+       	   			removeJob(context);          			
+           		}
+           		throw ex;  //zone exists, other error
            	}
-    	
-           	//Setup thread context expected by business logic
-           	RequestContextUtil.setThreadContext(user);
+           	if (user.getParentBinder().getRoot().isDeleted()) {
+  	   			removeJob(context); 
+           	} else {
+           		//	Setup thread context expected by business logic
+           		RequestContextUtil.setThreadContext(user);
             	//	do the real work
-           	doExecute(context);
-
+           		doExecute(context);
+           	}
 		} catch (NoUserByTheIdException nu) {
 			removeJobOnError(context, nu);
 		} catch (NoUserByTheNameException nn) {
@@ -127,6 +147,11 @@ public abstract class SSStatefulJob implements StatefulJob {
     	}
 
 	}  
+	protected void removeJob(JobExecutionContext context) {
+		context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
+		context.setResult("Success");
+		return;
+	}
 	protected void setupSession() {
 		SessionUtil.sessionStartup();		
 	}

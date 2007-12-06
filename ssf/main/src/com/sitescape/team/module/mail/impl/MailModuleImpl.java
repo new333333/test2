@@ -446,13 +446,15 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	}
 	public void fillSubscription(Long folderId, Long entryId, Date stamp) {
 		FolderEntry entry = getFolderDao().loadFolderEntry(folderId, entryId, RequestContextHolder.getRequestContext().getZoneId());
-		Folder folder = entry.getParentFolder();
+		Folder folder = entry.getTopFolder();
 		FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
 		//subscriptions are made to toplevel entries only
 		FolderEntry parent = entry.getTopEntry();
 		if (parent == null) parent = entry;
 		List subscriptions = getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier());
-		if (subscriptions.isEmpty()) return;
+		//make sure folder subscriptions show up second, entry will take precedence
+		subscriptions.addAll(getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier()));
+		//Handle subscriptions plus notifications for 3 types 
 		// Users wanting individual, message style email with attachments
 		Map messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
 		// Users wanting individual, message style email without attachments
@@ -516,12 +518,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
  		List subscriptions = getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier());
 		List digestResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);
-		// Users wanting individual, message style email with attachments
-		List messageResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
-		// Users wanting individual, message style email without attachments
-		List messageNoAttsResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
-		// Users wanting individual, text message email
-		List messageTxtResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION);
+		
 		
 		JavaMailSender mailSender = getMailSender(folder);
 		MimeHelper mHelper = new MimeHelper(processor, folder, start);
@@ -536,7 +533,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			doSubscription(folder, mailSender, mHelper, (Map)row[1]);
 		}
 		
-		mHelper.setEntries(null);
+/* now handled by fillsubscription
+  		// Users wanting individual, message style email with attachments
+		List messageResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
+		// Users wanting individual, message style email without attachments
+		List messageNoAttsResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
+		// Users wanting individual, text message email
+		List messageTxtResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION);
+ 		mHelper.setEntries(null);
 		for (int i=0; i<messageTxtResults.size(); ++i) {
 			Object row[] = (Object [])messageTxtResults.get(i);
 			mHelper.setType(Notify.NotifyType.text);
@@ -566,6 +570,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				doSubscription(folder, mailSender, mHelper, (Map)row[1]);
 			}
 		}
+*/
 		return until;
 	}
     //used for re-try mail.  MimeMessage has been serialized 
