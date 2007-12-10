@@ -197,7 +197,7 @@ public class XmlUtils {
 			 if (def != null) {
 				 if (def.getType() == Definition.WORKFLOW) {
 					 String eId = getProperty(defElement, ObjectKeys.XTAG_ENTITY_DEFINITION); 
-					 if (!Validator.isNotNull(id)) workflows.put(eId, def);
+					 if (Validator.isNotNull(eId)) workflows.put(eId, def);
 				 }
 				 else defs.add(def);
 			 }
