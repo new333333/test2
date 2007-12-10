@@ -161,7 +161,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	public SFQuery queryObjects(final ObjectControls objs, FilterControls filter, final Long zoneId) { 
 		final FilterControls myFilter = filter==null?new FilterControls():filter;
-		myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
+		if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
        Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
@@ -449,7 +449,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
    }	
    public long countObjects(final Class clazz, FilterControls filter, Long zoneId) {
    	final FilterControls myFilter = filter==null?new FilterControls():filter;
-	myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
+	if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 		Long result = (Long)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
@@ -473,7 +473,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	
 	public double averageColumn(final Class clazz, final String column, FilterControls filter, Long zoneId) {
     	final FilterControls myFilter = filter==null?new FilterControls():filter;
-    	myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
+    	if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 		Double result = (Double)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
@@ -502,7 +502,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	public long sumColumn(final Class clazz, final String column, FilterControls filter, Long zoneId) {
     	final FilterControls myFilter = filter==null?new FilterControls():filter;
-    	myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
+    	if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
     	Long result = (Long)getHibernateTemplate().execute(
 		    new HibernateCallback() {
 		        public Object doInHibernate(Session session) throws HibernateException {
@@ -1178,7 +1178,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	private List loadObjects(final ObjectControls objs, FilterControls filter, Long zoneId, final boolean cacheable) {
 	   	final FilterControls myFilter = filter==null?new FilterControls():filter;
-		myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
+		if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
 		return (List)getHibernateTemplate().execute(
 	        new HibernateCallback() {
 	            public Object doInHibernate(Session session) throws HibernateException {
@@ -1233,6 +1233,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         if (d != null || d.getZoneId().equals(zoneId)) return d;
         throw new NoObjectByTheIdException("errorcode.no.dashboard.by.the.id", id);
 	}
+	//Don't use , only for special cases
 	public void executeUpdate(final String query) {
     	getHibernateTemplate().execute(
         	   	new HibernateCallback() {

@@ -608,8 +608,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		User user = RequestContextHolder.getRequestContext().getUser();
 		// TODO is there accesschecking on creating meeting
 
-		List users = getCoreDao().loadObjects(userIds, User.class,
-				user.getZoneId());
+		List users = getProfileDao().loadUsers(userIds, user.getZoneId());
 
 		// Each participants list element consists of: screenName displayName
 		// phone email IM system (int: 0=none, 1=aol, 2=yahoo, 3=msn) IM
