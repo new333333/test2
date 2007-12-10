@@ -39,11 +39,20 @@ public class FilterControls implements Cloneable {
 	private List<Object> filterValues = new ArrayList();
 	private List<Criterion> criteria = new ArrayList<Criterion>();
 	private OrderBy orderBy;
+	boolean doCheck=true;
 	public FilterControls() {
 	}
 	public FilterControls(String name, Object value)
 	{
 		add(name, value);
+	}
+	//allow callers to disable zonecheck done at dao layer.  
+	//This just reduces the need for more indexing by zoneId, when another id already restricts the search
+	public void setZoneCheck(boolean doCheck) {
+		this.doCheck = doCheck;
+	}
+	public boolean isZoneCheck() {
+		return doCheck;
 	}
 	public FilterControls(String[] filterNames, Object[] filterValues) {
 		for(int i = 0; i < filterNames.length; i++) {

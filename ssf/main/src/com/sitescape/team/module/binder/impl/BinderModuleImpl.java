@@ -344,6 +344,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    		        			//get all attachments in this binder
    		        			FilterControls filter = new FilterControls(new String[]{"owner.owningBinderId", "type"},
    		        					new Object[] {binder.getId(), "F"});
+   		        			filter.setZoneCheck(false); //skip zone, binder good enough
    		        			ObjectControls objs = new ObjectControls(FileAttachment.class, new String[] {"fileItem.name", "owner.ownerId"});
    		        			SFQuery query = getCoreDao().queryObjects(objs, filter, binder.getZoneId());
    		        			try {

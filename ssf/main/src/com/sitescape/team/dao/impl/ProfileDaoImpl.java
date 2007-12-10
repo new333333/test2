@@ -586,17 +586,18 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        	return queryPrincipals(filter, zoneId, Principal.class);
     }
     
-    private SFQuery queryPrincipals(final FilterControls filter, Long zoneId, final Class clazz) throws DataAccessException { 
-    	filter.add(ObjectKeys.FIELD_ZONE, zoneId);
-    	filter.add(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE);
-    	filter.add(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE);
+    private SFQuery queryPrincipals(FilterControls filter, Long zoneId, final Class clazz) throws DataAccessException { 
+		final FilterControls myFilter = filter==null?new FilterControls():filter;
+		if (myFilter.isZoneCheck()) myFilter.add(ObjectKeys.FIELD_ZONE, zoneId);
+		myFilter.add(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE);
+		myFilter.add(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE);
         Query query = (Query)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         //sqlqueries, filters and criteria don't help with frontbase problem
                         //
-                        Query query = session.createQuery("from " + clazz.getName() + " u " + filter.getFilterString("u"));
-                		List filterValues = filter.getFilterValues();
+                        Query query = session.createQuery("from " + clazz.getName() + " u " + myFilter.getFilterString("u"));
+                		List filterValues = myFilter.getFilterValues();
                			for (int i=0; i<filterValues.size(); ++i) {
                 			query.setParameter(i, filterValues.get(i));
                 		}
