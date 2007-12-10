@@ -240,6 +240,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		} catch (Exception ex) {
 			binder = getWorkspaceModule().getWorkspace();				
 		}
+		if (binder == null) binder = getWorkspaceModule().getWorkspace();
 		model.put(WebKeys.BINDER, binder);
 		//See if this is a user workspace
 		if (binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {

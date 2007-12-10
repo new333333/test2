@@ -30,7 +30,12 @@
 %>
 <% // View entry attachments %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
+<%@ page import="com.sitescape.util.BrowserSniffer" %>
+<%
+boolean isIECheck = BrowserSniffer.is_ie(request);
+String strBrowserType = "nonie";
+if (isIECheck) strBrowserType = "ie";
+%>
 <c:if test="${!empty ssDefinitionEntry.fileAttachments}">
 <br/>
 <c:if test="${!empty property_caption}">
@@ -84,6 +89,18 @@
 	    		<ssf:param name="value" value="${selection.fileLock.owner.title}"/>
 			  </ssf:nlt></span>
 			</c:if>
+		  <ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" 
+		    browserType="<%=strBrowserType%>">
+				&nbsp;&nbsp;&nbsp;<a style="text-decoration: none;" href="<ssf:url 
+				    webPath="viewFile"
+				    folderId="${ssDefinitionEntry.parentBinder.id}"
+			   	 	entryId="${ssDefinitionEntry.id}"
+				    entityType="${ssDefinitionEntry.entityType}" >
+			    	<ssf:param name="fileId" value="${selection.id}"/>
+			    	<ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+			    	<ssf:param name="viewType" value="html"/>
+			    	</ssf:url>"><span class="ss_mobile_small">[<ssf:nlt tag="entry.HTML" />]</span></a>
+		  </ssf:ifSupportsViewAsHtml>
 		</td>
 	</tr>
 </c:forEach>
