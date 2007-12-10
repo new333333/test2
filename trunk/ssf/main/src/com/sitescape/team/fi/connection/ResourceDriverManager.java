@@ -35,8 +35,6 @@ import com.sitescape.team.fi.FIException;
 
 public interface ResourceDriverManager {
 
-	public List<ResourceDriver> getResourceDrivers();
-
 	public List<ResourceDriver> getAllowedResourceDrivers();
 	
 	public ResourceDriver getDriver(String driverName) throws FIException;
