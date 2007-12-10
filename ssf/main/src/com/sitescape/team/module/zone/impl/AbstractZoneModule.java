@@ -170,6 +170,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		
  	}
  	protected void upgradeZoneTx(Workspace zone) {
+		String superName = SZoneConfig.getAdminUserName(zone.getName());
+		//	get super user from config file - must exist or throws and error
+		User superU = getProfileDao().findUserByName(superName, zone.getName());
+		RequestContextUtil.setThreadContext(superU);
  		//TODO: setZoneId as non=null, only do on based on version
 		getCoreDao().executeUpdate("update com.sitescape.team.domain.AuditTrail set zoneId=" + zone.getId() + 
 			" where zoneId is null");
