@@ -384,8 +384,9 @@ public class WorkflowViewer extends JApplet implements ActionListener {
             Element stateName = (Element) state.selectSingleNode("properties/property[@name='name']");
             Element stateCaption = (Element) state.selectSingleNode("properties/property[@name='caption']");
             if (stateName != null) {
-            	String name = stateName.attributeValue("value", "");
+            	String name = stateName.attributeValue("value", "???");
             	String caption = stateCaption.attributeValue("value", "");
+            	if (name.equals("")) name = "???";
             	if (!name.equals("")) {
                     System.out.println("State: " + name + ", vertex number: " + String.valueOf(i).toString());
                     v[i] = g.addVertex(new SparseVertex());
