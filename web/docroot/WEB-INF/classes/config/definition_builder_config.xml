@@ -2101,7 +2101,7 @@
 		</options>
 	</item>
 	
-	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true">
+	<item name="state" caption="__state" canBeDeleted="true" multipleAllowed="true" type="data">
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='state']"
@@ -2144,7 +2144,8 @@
 		</options>
 	</item>
 	
-	<item name="parallelThread" caption="__parallelThread" canBeDeleted="true" multipleAllowed="true" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+	<item name="parallelThread" caption="__parallelThread" canBeDeleted="true" multipleAllowed="true" 
+		type="data" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__data_name" type="text" unique="//item[@name='parallelThread']">
