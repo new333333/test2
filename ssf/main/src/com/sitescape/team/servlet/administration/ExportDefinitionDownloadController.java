@@ -40,6 +40,6 @@ public class ExportDefinitionDownloadController extends  ZipDownloadController {
 		Definition def = getDefinitionModule().getDefinition(defId);
 		String name = def.getName();
 		if (Validator.isNull(name)) name = def.getTitle();
-		return new NamedDocument(name, def.getDefinition());
+		return new NamedDocument(name, getDefinitionModule().getDefinitionAsXml(def));
 	}
 }

@@ -46,8 +46,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
 import org.hibernate.FetchMode;
-import org.hibernate.LockMode;
 import org.hibernate.HibernateException;
+import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.ReplicationMode;
 import org.hibernate.Session;
@@ -768,13 +768,28 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
    	
     }
 	public Definition loadDefinition(String defId, Long zoneId) {
-  		Definition def = (Definition)load(Definition.class, defId);
+ 		Definition def = (Definition)load(Definition.class, defId);
         if (def == null) {throw new NoDefinitionByTheIdException(defId);}
         //make sure from correct zone
         if (zoneId != null && !def.getZoneId().equals(zoneId)) {throw new NoDefinitionByTheIdException(defId);}
   		return def;
 	}
 
+	public Definition loadDefinitionByName(final String name, final Long zoneId) {
+		return (Definition)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                 	Definition def = (Definition)session.getNamedQuery("find-definition-by-name")
+                 		.setLong(ParameterNames.ZONE_ID, zoneId)
+                 		.setString(ParameterNames.NAME, name)
+                 		.setCacheable(true)
+                		.uniqueResult();
+	                    if (def == null) {throw new NoDefinitionByTheIdException(name);}
+	                    return def;
+	                }
+	            }
+	        );
+ 	}
 	public List loadDefinitions(Long zoneId) {
 		OrderBy order = new OrderBy();
 		order.addColumn("type");
@@ -792,7 +807,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	}
 	
 	// return top level configurations
-	public List loadConfigurations(final Long zoneId) {
+	public List loadTemplates(final Long zoneId) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
@@ -806,20 +821,43 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	            }
 	        );
 	}
-	public List loadConfigurations(final Long zoneId, final int type) {
+	public List loadTemplates(final Long zoneId, final int type) {
 		return (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
 	                 	return session.createCriteria(TemplateBinder.class)
-                 		.add(Expression.isNull("parentBinder"))
+                 		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_PARENTBINDER))
                  		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
                  		.add(Expression.eq("definitionType", type))
-                 		.addOrder(Order.asc("templateTitle"))
+                 		.addOrder(Order.asc(ObjectKeys.FIELD_TEMPLATE_TITLE))
 	                 	.list();
 	                }
 	            }
 	        );
 	}
+	public TemplateBinder loadTemplate(Long templateId, Long zoneId) {
+		TemplateBinder template = (TemplateBinder)load(TemplateBinder.class, templateId);
+        if (template == null) {throw new NoBinderByTheIdException(templateId);}
+        //make sure from correct zone
+        if (zoneId != null && !template.getZoneId().equals(zoneId)) {throw new NoBinderByTheIdException(templateId);}
+  		return template;
+	}
+
+	public TemplateBinder loadTemplateByName(final String name, final Long zoneId) {
+		return (TemplateBinder)getHibernateTemplate().execute(
+	            new HibernateCallback() {
+	                public Object doInHibernate(Session session) throws HibernateException {
+	                	TemplateBinder template = (TemplateBinder)session.createCriteria(TemplateBinder.class)
+                 		.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+                  		.add(Expression.isNull(ObjectKeys.FIELD_ENTITY_PARENTBINDER))
+                		.add(Expression.eq(ObjectKeys.FIELD_BINDER_NAME, name))
+                		.uniqueResult();
+	                    if (template == null) {throw new NoBinderByTheNameException(name);}
+	                    return template;
+	                }
+	            }
+	        );
+ 	}
 	//associations not maintained from definition to binders, only from
 	//binders to definitions
 	public void delete(final Definition def) {

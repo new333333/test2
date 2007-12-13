@@ -47,16 +47,46 @@
 <%@ include file="/WEB-INF/jsp/binder/modify_binder.jsp" %>
 
 </c:if>
+<script type="text/javascript">
 
+function ss_checkForm(obj, binderId) {
+    if(ss_buttonSelected == "cancelBtn") {
+    	return true;
+    }
+    
+	if (ss_buttonSelected == "") return false;
+	if (obj.title.value == '') {
+		alert('<ssf:nlt tag="general.required.title"/>');
+		ss_buttonSelected="";
+		return false;
+	}
+	if (obj.templateName != undefined && obj.templateName.value == '') {
+		alert('<ssf:nlt tag="general.required.name"/>');
+		ss_buttonSelected="";
+		return false;
+	}
+	
+	if (ss_onSubmit(obj)) return true;
+	ss_buttonSelected="";
+	return false;
+
+}
+</script>
 <c:if test="${ssOperation == 'modify_template'}">
+<c:if test="${ssBinder.root}">
+<script type="text/javascript">
+ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
+</script>
+</c:if>
 <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
 		name="operation" value="modify_template"/><portlet:param 
-		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >
+		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" 
+		onSubmit="return ss_checkForm(this, '${ssBinderConfig.id}');">
 
 <div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>">
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>" onClick="ss_buttonSelect('okBtn');">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 </div>
 <h2>
 <c:if test="${ssBinderConfig.entityType == 'workspace'}">
@@ -68,10 +98,19 @@
 <ssf:nlt tag="${ssBinderConfig.templateTitle}" checkIfTag="true"/></h2>
 
 <table>
+<c:if test="${ssBinder.root}">
+<tr><td>
+<div class="needed-because-of-ie-bug"><div id="ss_nameCheck" style="display:none; visibility:hidden;" 
+      ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
+<span class="ss_labelLeft" id="ss_nameLabel"><label for="templateName"><ssf:nlt tag="administration.configure_cfg.name"/></label></span>
+<input type="text" name="templateName" id="templateName" size="50" value="${ssBinderConfig.name}" onchange="ss_ajaxValidate(ss_buildAdapterUrl(ss_AjaxBaseUrl,{operation:'check_template_name',binderId:'${ssBinderConfig.id}'}), this, 'ss_nameLabel', 'ss_nameCheck');"/>
+</td></tr>
+</c:if>
 <tr><td>
 <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.title"/></span>
-<input type="text" name="title" size="50" value="<ssf:nlt tag="${ssBinderConfig.templateTitle}" checkIfTag="true"/>"/>
+<input type="text" name="title" size="50" value="${ssBinderConfig.templateTitle}"/>
 </td></tr>
+
 <tr><td>
 <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.description"/></span>
     <div align="left">
@@ -84,8 +123,8 @@
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>">
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.modify"/>" onClick="ss_buttonSelect('okBtn');">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 </div>
 
 </form>
@@ -136,33 +175,33 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 </c:if>
 <c:if test="${cfgType != '-1' and cfgType != '-2'}">
-
 <script type="text/javascript">
-
-function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(obj) {
-	if (obj.title.value == '') {
-		alert('<ssf:nlt tag="general.required.title"/>');
-		return false;
-	}
-	return true;
-}
+ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </script>
+
+
 <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
 		name="action" value="configure_configuration"/><portlet:param 
 		name="operation" value="add"/></portlet:actionURL>" 
-		>
+		onSubmit="return ss_checkForm(this);">
 <input type="hidden" name="cfgType" value="${cfgType}"/>
 <div class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this.form))">
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="ss_buttonSelect('okBtn');">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 </div>
 <h2><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.add"/></span></h2>
 
 <table>
 <tr><td>
+<div class="needed-because-of-ie-bug"><div id="ss_nameCheck" style="display:none; visibility:hidden;" 
+      ss_ajaxResult="ok"><span class="ss_formError"></span></div></div>
+<span class="ss_labelLeft" id="ss_nameLabel"><label for="templateName"><ssf:nlt tag="administration.configure_cfg.name"/></label></span>
+<input type="text" name="templateName" id="templateName" size="50" onchange="ss_ajaxValidate(ss_buildAdapterUrl(ss_AjaxBaseUrl,{operation:'check_template_name'}), this, 'ss_nameLabel', 'ss_nameCheck');"/>
+</td></tr><tr><td>
 <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.title"/></span>
 <input type="text" name="title" size="50" value="" />
 </td></tr>
+
 <tr><td>
 <span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.description"/></span>
     <div align="left">
@@ -174,8 +213,8 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <div class="ss_formBreak"/>
 
 <div class="ss_buttonBarLeft">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this.form))">
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="ss_buttonSelect('okBtn');">
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 </div>
 
 </form>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_project" caption="__project_management" type="8" nextId="23" definitionType="8" databaseId="402881831317fb620113180363870017">
+<definition name="_projectWorkspace" caption="__project_management" type="8" nextId="23" definitionType="8" databaseId="402881831317fb620113180363870017">
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1">
     <properties/>
     <item name="title" caption="__title" type="data" id="2">

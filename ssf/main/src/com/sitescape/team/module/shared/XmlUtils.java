@@ -57,7 +57,13 @@ import com.sitescape.team.util.LongIdUtil;
 
 public class XmlUtils {
 
-
+	public static Element addDefinition(Element parent, Definition def) {
+		Element e = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
+		e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
+		e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
+		e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, def.getId().toString());
+		return e;
+	}
 	public static Element addProperty(Element parent, String name, String value) {
 		Element prop = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_PROPERTY);
 		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, name);
@@ -167,43 +173,59 @@ public class XmlUtils {
 		 Map workflows = new HashMap();
 		 List<Element> defElements = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
 		 for (Element defElement:defElements) {
-			 Definition def = null;
-			 //first try databaseId because any workflows will reference it
-			 String dId = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_ID);
-			 if (Validator.isNotNull(dId)) {
-				 try {
-					 def = ci.getCoreDao().loadDefinition(dId, RequestContextHolder.getRequestContext().getZoneId());
-				} catch (NoDefinitionByTheIdException nd) {};				 
-			 }
-		 	String id = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID);
-		 	if (Validator.isNotNull(id)) {
-				 //first try internalId
-				 try {
-					 def = ci.getCoreDao().loadReservedDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
-				 } catch (NoDefinitionByTheIdException nd) {};
-			 }
-			 // last try name
-			 if (def == null) {
-				 String name = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_NAME);
-				 if (Validator.isNotNull(name)) {
-					 try {
-						 List<Definition> matches = ci.getCoreDao().loadObjects(Definition.class, 
-								 new FilterControls("name", name), RequestContextHolder.getRequestContext().getZoneId());
-						 if (!matches.isEmpty())  def = matches.get(0);
-					} catch (NoDefinitionByTheIdException nd) {};
-				 } 
-			 }
+			 Definition def = getDefinitionFromElement(defElement, ci);
 			 if (def != null) {
 				 if (def.getType() == Definition.WORKFLOW) {
-					 String eId = getProperty(defElement, ObjectKeys.XTAG_ENTITY_DEFINITION); 
-					 if (!Validator.isNotNull(id)) workflows.put(eId, def);
+					 List<Element> entryElements = defElement.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
+					 if (entryElements.isEmpty()) {
+						 //v1 stored only the id
+						 String eId = getProperty(defElement, ObjectKeys.XTAG_ENTITY_DEFINITION); 
+						 if (Validator.isNotNull(eId)) workflows.put(eId, def);
+						 
+					 } else {
+						 for (Element entryElement:entryElements) {
+							 Definition entryDef = getDefinitionFromElement(entryElement, ci);
+							 if (entryDef != null) workflows.put(entryDef.getId(), def);
+						 }
+					 }
+
 				 }
-				 else defs.add(def);
+				 defs.add(def);
 			 }
 		 }
 		 //now see if we can map the workflows
 		 binder.setDefinitions(defs);
 		 binder.setWorkflowAssociations(workflows);
+	 }
+	 public static Definition getDefinitionFromElement(Element defElement, CommonDependencyInjection ci) {
+		 Definition def = null;
+		 //first try databaseId because any workflows will reference it
+		 String dId = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_ID);
+		 if (Validator.isNotNull(dId)) {
+			 try {
+				 def = ci.getCoreDao().loadDefinition(dId, RequestContextHolder.getRequestContext().getZoneId());
+			} catch (NoDefinitionByTheIdException nd) {};				 
+		 }
+		 if (def == null) {
+			 String id = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID);
+			 if (Validator.isNotNull(id)) {
+				 //first try internalId
+				 try {
+					 def = ci.getCoreDao().loadReservedDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
+				 } catch (NoDefinitionByTheIdException nd) {};
+			 }
+		 }
+	 	// last try name
+		 if (def == null) {
+			 String name = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_NAME);
+			 if (Validator.isNotNull(name)) {
+				 try {
+					 def = ci.getCoreDao().loadDefinitionByName(name, RequestContextHolder.getRequestContext().getZoneId());
+				} catch (NoDefinitionByTheIdException nd) {};
+			 } 
+		 }
+		 return def;
+		 
 	 }
 	 public static Set getFunctionMembershipFromXml(Binder binder, Element config, CommonDependencyInjection ci) {
 		 Long zoneId = RequestContextHolder.getRequestContext().getZoneId();  //may not be set yet on binder

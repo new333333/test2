@@ -207,6 +207,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			" where zoneId is null");
 		getCoreDao().executeUpdate("update com.sitescape.team.domain.Rating set zoneId=" + zone.getId() + 
 			" where zoneId is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.TemplateBinder set name=templateTitle where parentBinder is null and (name is null or name='')");
 		//fixup user emails
  		SFQuery query=null;
  		List batch = new ArrayList();
@@ -313,8 +314,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			if (query != null) query.close();
  			query=null;
  		}
- 		
- 	}
+  	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {
  		String superName = SZoneConfig.getAdminUserName(zone.getName());

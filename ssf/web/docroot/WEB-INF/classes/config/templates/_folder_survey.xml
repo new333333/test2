@@ -6,10 +6,12 @@
   <attribute name="title" type="string"><![CDATA[__template_folder_survey]]></attribute>
   <attribute name="description" type="description"><![CDATA[]]></attribute>
   <attribute name="iconName" type="string">/icons/folder_blue_discussion.gif</attribute>
+  <attribute name="name" type="string">_folder_survey</attribute>
   <property name="library">false</property>
   <property name="uniqueTitle">false</property>
   <property name="inheritFunctionMembership">true</property>
   <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
   <definition name="_surveyFolder" databaseId="402883c1129b1f8101129b28bc620005"/>
   <definition name="_surveyEntry" databaseId="402883c1129b1f8101129b28bbe50004"/>
 </template>

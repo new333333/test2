@@ -81,6 +81,7 @@ import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -334,6 +335,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxFindEntryForFile(request, response);
 		} else if (op.equals(WebKeys.OPERATION_CHECK_BINDER_TITLE)) {
 			return ajaxCheckBinderTitle(request, response);
+		} else if (op.equals(WebKeys.OPERATION_CHECK_TEMPLATE_NAME)) {
+			return ajaxCheckTemplateName(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SAVE_SEARCH_QUERY)) {
 			return ajaxGetSearchQueryName(request, response);
 		} else if (op.equals(WebKeys.OPERATION_REMOVE_SEARCH_QUERY)) {
@@ -1718,6 +1721,30 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("binder/ajax_validate_return", model);	
 	}
 	
+	private ModelAndView ajaxCheckTemplateName(RenderRequest request, RenderResponse response) throws Exception
+	{
+		Map model = new HashMap();
+		String name = PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,"");
+		if (Validator.isNull(name)) {
+			model.put(WebKeys.AJAX_ERROR_MESSAGE, "general.required.name");
+			model.put(WebKeys.AJAX_ERROR_DETAIL, "");			
+		} else {
+			try {
+				TemplateBinder binder = getAdminModule().getTemplateByName(name);
+				Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+				if (binderId == null || !binder.getId().equals(binderId)) {
+					model.put(WebKeys.AJAX_ERROR_MESSAGE, NLT.get("errorcode.notsupported.duplicateTemplateName", new Object[]{name}));
+					model.put(WebKeys.AJAX_ERROR_DETAIL, "");
+				}
+			} catch (NoBinderByTheNameException nb) {}
+		}
+		model.put(WebKeys.URL_AJAX_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_ID));
+		model.put(WebKeys.URL_AJAX_VALUE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,""));
+		model.put(WebKeys.URL_AJAX_LABEL_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_LABEL_ID));
+		model.put(WebKeys.URL_AJAX_MESSAGE_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_MESSAGE_ID));
+		response.setContentType("text/xml");
+		return new ModelAndView("binder/ajax_validate_return", model);	
+	}
 	private ModelAndView ajaxCheckBinderTitle(RenderRequest request, RenderResponse response) throws Exception
 	{
 		Map model = new HashMap();
@@ -1733,6 +1760,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setContentType("text/xml");
 		return new ModelAndView("binder/ajax_validate_return", model);	
 	}
+
 
 	private void ajaxSaveSearchQuery(ActionRequest request, 
 			ActionResponse response) throws PortletRequestBindingException {

@@ -6,10 +6,12 @@
   <attribute name="title" type="string"><![CDATA[__template_folder_wiki]]></attribute>
   <attribute name="description" type="description"><![CDATA[]]></attribute>
   <attribute name="iconName" type="string">/icons/folder_blue_wiki.gif</attribute>
+  <attribute name="name" type="string">_folder_wiki</attribute>
   <property name="library">false</property>
   <property name="uniqueTitle">true</property>
   <property name="inheritFunctionMembership">true</property>
   <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
   <definition name="_wikiFolder" databaseId="402883c6115753d8011157619e350007"/>
   <definition name="_blogFolder" databaseId="402883c6115753d8011157619e35000b"/>
   <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>

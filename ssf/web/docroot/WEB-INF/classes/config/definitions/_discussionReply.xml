@@ -123,6 +123,6 @@
   <properties>
     <property name="name" value="_discussionReply"/>
     <property name="caption" value="__definition_default_discussion_reply"/>
-    <property name="replyStyle" value="402883c6115753d801115773ea5a000a"/>
+    <property name="replyStyle" value="_discussionReply"/>
   </properties>
 </definition>

@@ -42,4 +42,6 @@ public class ParameterNames {
     public static final String USER_NAME = "userName";
     public static final String INTERNAL_ID = "internalId";
     public static final String ZONE_ID="zoneId";
+    public static final String NAME="name";
 }
+

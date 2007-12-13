@@ -371,6 +371,6 @@
     <property name="name" value="_taskEntry"/>
     <property name="caption" value="__definition_default_task_entry"/>
     <property name="family" value="task"/>
-    <property name="replyStyle" value="402883c6115753d801115777f284000b"/>
+    <property name="replyStyle" value="_comment"/>
   </properties>
 </definition>

@@ -83,7 +83,7 @@ public class ExportDefinitionController extends  SAbstractController {
 							// explicity set encoding so their is not mistake.
 							//cannot guarentee default will be set to UTF-8
 							zipOut.putNextEntry(new ZipEntry(Validator.replacePathCharacters(name) + ".xml"));
-							XmlFileUtil.writeFile(def.getDefinition(), zipOut);
+							XmlFileUtil.writeFile(getDefinitionModule().getDefinitionAsXml(def), zipOut);
 						} catch (Exception ex) {
 							errors.add(ex.getLocalizedMessage());
 						}
