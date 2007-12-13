@@ -244,7 +244,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
  		   					"where parentBinder=:profile")
  		   			  	.setEntity("profile", binder)
 		   				.executeUpdate();
- 		   			session.createQuery("Update com.sitescape.team.domain.Binder set creation.principal=null, modification.principal=null, owner=null " +
+ 		   			session.createQuery("Update com.sitescape.team.domain.Binder set creation.principal=null, modification.principal=null, owner=null, entryDef=null " +
 	   					"where id=" + binder.getId())
 	   			  		.executeUpdate();
  		   			
