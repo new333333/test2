@@ -278,6 +278,7 @@ public class WebKeys {
     public static final String OPERATION_MODIFY_ALIAS="modify_alias";
     public static final String OPERATION_MODIFY_TAGS="modify_tags";
     public static final String OPERATION_CHECK_BINDER_TITLE="check_binder_title";
+    public static final String OPERATION_CHECK_TEMPLATE_NAME="check_template_name";
     public static final String OPERATION_CHECK_IF_LOGGED_IN="check_if_logged_in";
     public static final String OPERATION_CHECK_STATUS="check_status";
     public static final String OPERATION_CONFIGURE_FOLDER_COLUMNS="configure_folder_columns";

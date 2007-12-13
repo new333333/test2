@@ -101,9 +101,10 @@ public interface AdminModule {
     /**
      * Create a template from a document
      * @param document
+     * @param replace
      * @return
      */
-	public Long addTemplate(Document document) throws AccessControlException;
+	public Long addTemplate(Document document, boolean replace) throws AccessControlException;
 	/**
 	 * Create a template
 	 * @param type
@@ -190,6 +191,7 @@ public interface AdminModule {
      * @return
      */
  	public TemplateBinder getTemplate(Long id); 
+	public TemplateBinder getTemplateByName(String name);
  	/**
  	 * Get all system top level templates
  	 * @return

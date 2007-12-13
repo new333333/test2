@@ -152,6 +152,6 @@
     <property name="name" value="_libraryEntry"/>
     <property name="caption" value="__definition_default_library_entry"/>
     <property name="family" value="file"/>
-    <property name="replyStyle" value="402883c6115753d801115777f284000b"/>
+    <property name="replyStyle" value="_comment"/>
   </properties>
 </definition>

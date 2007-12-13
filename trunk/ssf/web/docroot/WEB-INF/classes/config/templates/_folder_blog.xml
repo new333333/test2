@@ -6,10 +6,12 @@
   <attribute name="title" type="string"><![CDATA[__template_folder_blog]]></attribute>
   <attribute name="description" type="description"><![CDATA[]]></attribute>
   <attribute name="iconName" type="string">/icons/folder_blue_blog.gif</attribute>
+  <attribute name="name" type="string">_folder_blog</attribute>
   <property name="library">false</property>
   <property name="uniqueTitle">false</property>
   <property name="inheritFunctionMembership">true</property>
   <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
   <definition name="_blogFolder" databaseId="402883c6115753d8011157619e35000b"/>
   <definition name="_calendarFolder" databaseId="402883c6115753d8011157619e35000c"/>
   <definition name="_discussionFolderList" internalId="402883b90cc53079010cc539bf260001" databaseId="402883b90cc53079010cc539bf260001"/>

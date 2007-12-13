@@ -16,7 +16,11 @@
     <property name="internalId" length="32"/>
     <property name="visibility"/>
     <property name="encoding" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
-    <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
+ <properties name="nameKey" unique="true" update="false" insert="false">
+<property name="zoneId" update="false" insert="false"/>
+<property name="name" update="false" insert="false"/>
+</properties>
+   <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
       <many-to-one class="com.sitescape.team.domain.Principal" name="principal">
         <column name="creation_principal"/>
@@ -29,4 +33,5 @@
       </many-to-one>
     </component>
   </class>
+  <query name="find-definition-by-name"><![CDATA[from com.sitescape.team.domain.Definition def where def.name=:name and def.zoneId=:zoneId]]></query>
 </hibernate-mapping>

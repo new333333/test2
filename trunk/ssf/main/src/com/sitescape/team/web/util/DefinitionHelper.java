@@ -235,7 +235,7 @@ public class DefinitionHelper {
 		return defaultFolderDefinitions;
 	}
 
-	public static Map getEntryDefsAsMap(Binder binder) {
+	public static Map<String, Definition> getEntryDefsAsMap(Binder binder) {
 		Map defaultEntryDefinitions = new HashMap();
 		Iterator itDefaultEntryDefinitions = binder.getEntryDefinitions().listIterator();
 		while (itDefaultEntryDefinitions.hasNext()) {

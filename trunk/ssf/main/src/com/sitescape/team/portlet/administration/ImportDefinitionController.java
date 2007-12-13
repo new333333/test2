@@ -63,6 +63,7 @@ public class ImportDefinitionController extends  SAbstractController {
 			Map fileMap = ((MultipartFileSupport) request).getFileMap();
 			if (fileMap != null) {
 				List errors = new ArrayList();
+				List<String> defs = new ArrayList();
 				while (++i>0) {
 					MultipartFile myFile=null;
 					try {
@@ -73,7 +74,7 @@ public class ImportDefinitionController extends  SAbstractController {
 							ZipInputStream zipIn = new ZipInputStream(myFile.getInputStream());
 							ZipEntry entry = null;
 							while((entry = zipIn.getNextEntry()) != null) {
-								loadDefinitions(entry.getName(), new ZipStreamWrapper(zipIn), errors);
+								defs.add(loadDefinitions(entry.getName(), new ZipStreamWrapper(zipIn), errors));
 								zipIn.closeEntry();
 							}
 						} else {
@@ -83,6 +84,10 @@ public class ImportDefinitionController extends  SAbstractController {
 					} catch (Exception fe) {
 						errors.add((myFile==null ? "" : myFile.getOriginalFilename()) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
 					}
+
+				}
+				for (String id:defs) {
+					if (id != null) getDefinitionModule().updateDefinitionReferences(id);
 				}
 				if (!errors.isEmpty()) response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 			}
@@ -101,15 +106,16 @@ public class ImportDefinitionController extends  SAbstractController {
 		}
 	}
 
-	protected void loadDefinitions(String fileName, InputStream fIn, List errors)
+	protected String loadDefinitions(String fileName, InputStream fIn, List errors)
 	{
 		try {
 			SAXReader xIn = new SAXReader();
 			Document doc = xIn.read(fIn);   
-			getDefinitionModule().addDefinition(doc, true);
+			return getDefinitionModule().addDefinition(doc, true);
 		} catch (Exception fe) {
 			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
 		}
+		return null;
 	}
 
 	static class ZipStreamWrapper extends InputStream

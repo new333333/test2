@@ -665,7 +665,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
-  				List templates = getCoreDao().loadConfigurations(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
+  				List templates = getCoreDao().loadTemplates(entry.getZoneId(), Definition.USER_WORKSPACE_VIEW);
 
   				if (!templates.isEmpty()) {
   					//	pick the first

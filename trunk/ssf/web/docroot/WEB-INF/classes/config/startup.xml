@@ -31,18 +31,18 @@
 	<definitionFile>config/definitions/_projectWorkspace.xml</definitionFile>
 	<definitionFile>config/definitions/_team_workspace.xml</definitionFile>
 	<definitionFile>config/definitions/_team_root.xml</definitionFile>
-	<templateFile>config/templates/__template_folder_blog.xml</templateFile>
-	<templateFile>config/templates/__template_folder_calendar.xml</templateFile>
-	<templateFile>config/templates/__template_folder.xml</templateFile>
-	<templateFile>config/templates/__template_folder_guestbook.xml</templateFile>
-	<templateFile>config/templates/__template_folder_library.xml</templateFile>
-	<templateFile>config/templates/__template_folder_milestone.xml</templateFile>
-	<templateFile>config/templates/__template_folder_photo.xml</templateFile>
-	<templateFile>config/templates/__template_user_workspace.xml</templateFile>
-	<templateFile>config/templates/__template_project_workspace.xml</templateFile>
-	<templateFile>config/templates/__template_folder_wiki.xml</templateFile>
-	<templateFile>config/templates/__template_workspace.xml</templateFile>
-	<templateFile>config/templates/__template_folder_task.xml</templateFile>
-	<templateFile>config/templates/__template_folder_survey.xml</templateFile>
-	<templateFile>config/templates/__template_team_workspace.xml</templateFile>
+	<templateFile>config/templates/_folder_blog.xml</templateFile>
+	<templateFile>config/templates/_folder_calendar.xml</templateFile>
+	<templateFile>config/templates/_folder.xml</templateFile>
+	<templateFile>config/templates/_folder_guestbook.xml</templateFile>
+	<templateFile>config/templates/_folder_library.xml</templateFile>
+	<templateFile>config/templates/_folder_milestone.xml</templateFile>
+	<templateFile>config/templates/_folder_photo.xml</templateFile>
+	<templateFile>config/templates/_folder_wiki.xml</templateFile>
+	<templateFile>config/templates/_folder_task.xml</templateFile>
+	<templateFile>config/templates/_folder_survey.xml</templateFile>
+	<templateFile>config/templates/_workspace.xml</templateFile>
+	<templateFile>config/templates/_workspace_team.xml</templateFile>
+	<templateFile>config/templates/_workspace_user.xml</templateFile>
+	<templateFile>config/templates/_workspace_project_management.xml</templateFile>
 </zoneConfiguration>

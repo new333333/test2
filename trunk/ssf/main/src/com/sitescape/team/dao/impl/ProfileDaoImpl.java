@@ -860,6 +860,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	//to exclude some from future queries
 	//entries evicted from cache
 	public void markEntriesDeleted(final ProfileBinder binder, final Collection<Principal> entries) {
+		if (entries.isEmpty()) return;
 		getHibernateTemplate().execute(
 				new HibernateCallback() {
 					public Object doInHibernate(Session session) throws HibernateException {

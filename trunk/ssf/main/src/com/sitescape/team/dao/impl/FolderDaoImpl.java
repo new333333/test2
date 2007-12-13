@@ -327,7 +327,8 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
    //to exclude some from future queries
    //entries evicted from cache
    public void markEntriesDeleted(final Folder folder, final Collection<FolderEntry> entries) {
-    	getHibernateTemplate().execute(
+	   if (entries.isEmpty()) return;
+	   getHibernateTemplate().execute(
         	   	new HibernateCallback() {
         	   		public Object doInHibernate(Session session) throws HibernateException {
                	   	   	Set ids = new HashSet();

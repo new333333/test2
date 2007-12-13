@@ -287,7 +287,9 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_THEME="theme";
     public static final String TASK_FIELD_ASSIGNMENT="assignment";
     public static final String TASK_FIELD_EVENT="start_end#EndDate";
-    
+    public static final String FIELD_TEMPLATE_TITLE="templateTitle";
+    public static final String FIELD_TEMPLATE_DESCRIPTION="templateDescription";
+
     // families of entries
     public static final String FAMILY_TASK = "task";
     public static final String FAMILY_CALENDAR = "calendar";
@@ -336,6 +338,7 @@ public interface ObjectKeys {
     public static final String XTAG_ENTITY_PARENTBINDER="parentBinder";
     public static final String XTAG_ENTITY_LOGVERSION="logVersion";
     public static final String XTAG_ENTITY_DEFINITION="entryDef";
+    public static final String XTAG_ENTITY_DEFINITION_NAME="entryDefName";
     public static final String XTAG_ENTITY_ICONNAME="iconName";
     public static final String XTAG_ENTITY_CREATION="created";
     public static final String XTAG_ENTITY_MODIFICATION="modified";
@@ -388,6 +391,7 @@ public interface ObjectKeys {
 
     
     public static final String XTAG_BINDER_UNIQUETITLES="uniqueTitle";
+    public static final String XTAG_BINDER_NAME="name";
     public static final String XTAG_BINDER_LIBRARY="library";
     public static final String XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP="inheritFunctionMembership";
     public static final String XTAG_BINDER_INHERITDEFINITIONS="inheritDefinitions";

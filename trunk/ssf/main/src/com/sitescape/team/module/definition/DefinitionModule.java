@@ -73,9 +73,11 @@ public interface DefinitionModule {
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException, AccessControlException;
 
 	public Definition getDefinition(String id);
+	public Definition getDefinitionByName(String id);
 	public List<Definition> getDefinitions();
 	public List<Definition> getDefinitions(int type);
 	public Document getDefinitionConfig();
+	public Document getDefinitionAsXml(Definition def);
 	/**
 	 * Routine to process the input data and return a map of only the entry data
 	 * 
@@ -97,7 +99,12 @@ public interface DefinitionModule {
 	public void setDefinitionLayout(String id, InputDataAccessor inputData) throws AccessControlException;
 
   	public boolean testAccess(int type, DefinitionOperation operation);
-	
+  	/**
+  	 * After importing a definition, references to other definitions must be resolved.
+  	 * 
+  	 * @param defId
+  	 */
+  	public void updateDefinitionReferences(String defId);
   	public void walkDefinition(DefinableEntity entry, DefinitionModule.DefinitionVisitor visitor, Map args);
 	
   	interface DefinitionVisitor

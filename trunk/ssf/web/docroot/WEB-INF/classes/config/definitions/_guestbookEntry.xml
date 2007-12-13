@@ -123,6 +123,6 @@
   <properties>
     <property name="name" value="_guestbookEntry"/>
     <property name="caption" value="__definition_default_guestbook_entry"/>
-    <property name="replyStyle" value="402883c6115753d801115777f284000b"/>
+    <property name="replyStyle" value="_comment"/>
   </properties>
 </definition>

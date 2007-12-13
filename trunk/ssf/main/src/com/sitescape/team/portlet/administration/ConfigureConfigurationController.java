@@ -119,7 +119,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 									InputStream fIn = myFile.getInputStream();
 									Document doc = xIn.read(fIn);   
 									fIn.close();
-									getAdminModule().addTemplate(doc);
+									getAdminModule().addTemplate(doc, true);
 								} catch (Exception fe) {
 									errors.add((myFile==null ? "" : myFile.getOriginalFilename()) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
 								}
@@ -133,9 +133,11 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				} else {
 					Map updates = new HashMap();
 					String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
-					updates.put("templateTitle", sVal);
+					updates.put(ObjectKeys.FIELD_TEMPLATE_TITLE, sVal);
 					sVal = PortletRequestUtils.getStringParameter(request, "description", null);
-					updates.put("templateDescription", new Description(sVal));
+					updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(sVal));
+					sVal = PortletRequestUtils.getStringParameter(request, "templateName", null);
+					if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, sVal);
 					Long configId = getAdminModule().addTemplate(type, updates);
 					TemplateBinder config = getAdminModule().getTemplate(configId);
 					//	redirect to modify binder
@@ -168,11 +170,11 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				//Get the function id from the form
 				Map updates = new HashMap();
 				String sVal = PortletRequestUtils.getStringParameter(request, "title", null);
-				updates.put("templateTitle", sVal);
+				updates.put(ObjectKeys.FIELD_TEMPLATE_TITLE, sVal);
 				sVal = PortletRequestUtils.getStringParameter(request, "description", null);
-				updates.put("templateDescription", new Description(sVal));
-				sVal = PortletRequestUtils.getStringParameter(request, "iconName", null);
-				updates.put("iconName", sVal);
+				updates.put(ObjectKeys.FIELD_TEMPLATE_DESCRIPTION, new Description(sVal));
+				sVal = PortletRequestUtils.getStringParameter(request, "templateName", null);
+				if (sVal != null) updates.put(ObjectKeys.FIELD_BINDER_NAME, sVal); //should only be present for root templates
 			
 				getAdminModule().modifyTemplate(configId, updates);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());

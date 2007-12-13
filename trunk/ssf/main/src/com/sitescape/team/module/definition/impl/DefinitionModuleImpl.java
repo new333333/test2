@@ -144,6 +144,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			accessControlManager.checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
 		}
    	}
+   
     public String addDefinition(Document doc, boolean replace) {
     	Element root = doc.getRootElement();
 		String type = root.attributeValue("type");
@@ -154,6 +155,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	Element root = doc.getRootElement();
 		String name = root.attributeValue("name");
 		String caption = root.attributeValue("caption");
+		if (Validator.isNull(name)) {
+			//make sure doc is updated
+			name=caption;
+			root.addAttribute("name", name);
+		}
 		String type = root.attributeValue("type");
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String id = root.attributeValue("databaseId", "");
@@ -173,55 +179,63 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					setDefinition(def, doc);
 					return def;
 				}
-				//alread exists
+				//already exists
 				throw new DefinitionInvalidException("definition.error.internalAlreadyExists", new Object[]{internalId});
 			} catch (NoDefinitionByTheIdException nd) {}
 			
 		}
-		if (Validator.isNull(id)) {
-			//doesn't have an id, so generate one
-			def = new Definition();
-			def.setZoneId(zoneId);
-			def.setName(name);
-			def.setTitle(caption);
-			def.setType(Integer.parseInt(type));
-			def.setInternalId(internalId);
-			getCoreDao().save(def);
-			root.addAttribute("databaseId", def.getId());
-			setDefinition(def,doc);
-			return def;
-		} 
 		// import - try reusing existing guid;
 		// see if already exists in this zone
-		Definition oldDef=null;
+		if (Validator.isNotNull(id)) {
+			try {
+				def = getCoreDao().loadDefinition(id, null);
+				//see if from this zone
+				if (def.getZoneId().equals(zoneId)) {
+					if (!replace) throw new DefinitionInvalidException("definition.error.alreadyExists", new Object[]{id});
+					//	update it
+					def.setName(name);
+					def.setTitle(caption);
+					def.setType(Integer.parseInt(type));
+					def.setInternalId(internalId);	
+					setDefinition(def, doc);
+				} else {
+					//try to create in this zone using existing GUID
+					def = new Definition();
+					def.setZoneId(zoneId);
+					def.setName(name);
+					def.setTitle(caption);
+					def.setType(Integer.parseInt(type));
+					def.setInternalId(internalId);	
+					getCoreDao().save(def);
+					root.addAttribute("databaseId", def.getId());
+					setDefinition(def,doc);
+				}
+			} catch (NoDefinitionByTheIdException nd) {
+				//try to create in this zone using existing GUID
+				def = new Definition();
+				def.setId(id);
+				def.setZoneId(zoneId);
+				def.setName(name);
+				def.setTitle(caption);
+				def.setType(Integer.parseInt(type));
+				def.setInternalId(internalId);	
+				setDefinition(def,doc);
+				getCoreDao().replicate(def);				
+			};
+			return def;
+		}
+		
 		try {
-			oldDef = getCoreDao().loadDefinition(id, null);
-			//see if from this zone
-			if (oldDef.getZoneId().equals(zoneId)) {
-				if (!replace) throw new DefinitionInvalidException("definition.error.alreadyExists", new Object[]{id});
-				//update it
-				oldDef.setName(name);
-				oldDef.setTitle(caption);
-				oldDef.setType(Integer.parseInt(type));
-				oldDef.setInternalId(internalId);	
-				setDefinition(oldDef, doc);
-				return oldDef;
-			}
-		} catch (NoDefinitionByTheIdException nd) {oldDef = null;};
-		
-		
-		if (oldDef == null) {
-			//try to create in this zone using existing GUID
-			def = new Definition();
-			def.setId(id);
-			def.setZoneId(zoneId);
+			def = getCoreDao().loadDefinitionByName(name, zoneId);
+			if (!replace) throw new DefinitionInvalidException("definition.error.alreadyExistsByName", new Object[]{name});
 			def.setName(name);
 			def.setTitle(caption);
 			def.setType(Integer.parseInt(type));
 			def.setInternalId(internalId);	
+			root.addAttribute("databaseId", def.getId());
 			setDefinition(def,doc);
-			getCoreDao().replicate(def);
-		} else {
+			
+		} catch (NoDefinitionByTheIdException nd) {
 			//try with new id
 			def = new Definition();
 			def.setZoneId(zoneId);
@@ -236,9 +250,78 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		
 		return def;
 	}
-	public Definition getDefinition(String id) {
+    public void updateDefinitionReferences(String defId) {
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	Definition def = getCoreDao().loadDefinition(defId, zoneId);
+    	Document doc = def.getDefinition();
+    	if (doc == null) return;
+    	List<Element> replyStyles = doc.getRootElement().selectNodes("//properties/property[@name='replyStyle']");
+    	for (Element styleElement:replyStyles) {
+    		String styleId = styleElement.attributeValue("value", "");
+   			Definition zoneDef = getCoreDao().loadDefinitionByName(styleId, zoneId);
+   			styleElement.addAttribute("value", zoneDef.getId().toString());
+    	}
+		//not just on workflow types
+    	List<Element> conditions = doc.getRootElement().selectNodes("//workflowEntryDataUserList | //workflowCondition");
+    	for (Element condition:conditions) {
+    		String entryId = condition.attributeValue("definitionId", "");
+   			Definition zoneDef = getCoreDao().loadDefinitionByName(entryId, zoneId);
+   			condition.addAttribute("definitionId", zoneDef.getId().toString());
+	    }
+    	//Write out the new definition file
+    	def.setDefinition(doc);
+
+    }
+    protected void setDefinition(Definition def, Document doc) {
+ 
+    	//Write out the new definition file
+    	def.setDefinition(doc);
+    	
+    	//If this is a workflow definition, build the corresponding JBPM workflow definition
+    	if (def.getType() == Definition.WORKFLOW) {
+    		//Use the definition id as the workflow process name
+    		getWorkflowModule().modifyProcessDefinition(def.getId(), def);
+    	}
+    }
+    public Document getDefinitionAsXml(Definition def) {
+    	//convert enty definitionId references to names
+    	Document srcDoc = def.getDefinition();
+    	Document outDoc;
+    	if (srcDoc != null) outDoc = (Document)srcDoc.clone();
+    	else outDoc = DocumentHelper.createDocument();
+    	
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		List<Element> replyStyles = outDoc.getRootElement().selectNodes("//properties/property[@name='replyStyle']");
+		for (Element styleElement:replyStyles) {
+			String styleId = styleElement.attributeValue("value", "");
+			if (Validator.isNotNull(styleId)) {
+				try {
+					Definition zoneDef = getCoreDao().loadDefinition(styleId, zoneId);
+					styleElement.addAttribute("value", zoneDef.getName());
+				} catch (NoDefinitionByTheIdException nz) {
+				}
+			}	
+		}
+		//not just on workflow types
+		List<Element> conditions = outDoc.getRootElement().selectNodes("//workflowEntryDataUserList | //workflowCondition");
+		for (Element condition:conditions) {
+			String entryId = condition.attributeValue("definitionId", "");
+			if (Validator.isNotNull(entryId)) {
+				try {
+					Definition zoneDef = getCoreDao().loadDefinition(entryId, zoneId);
+					condition.addAttribute("definitionId", zoneDef.getName());
+				} catch (NoDefinitionByTheIdException nz) {}
+			}	
+    	}    
+    	return outDoc;
+    }
+    public Definition getDefinition(String id) {
 		// Controllers need access to definitions.  Allow world read        
  		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
+	}
+	public Definition getDefinitionByName(String id) {
+		// Controllers need access to definitions.  Allow world read        
+ 		return coreDao.loadDefinitionByName(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
 	protected DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
@@ -313,17 +396,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		validateDefinitionAttributes(def);
 		validateDefinitionTree(def);
 	}
-	
-    protected void setDefinition(Definition def, Document doc) {
-    	//Write out the new definition file
-    	def.setDefinition(doc);
-    	
-    	//If this is a workflow definition, build the corresponding JBPM workflow definition
-    	if (def.getType() == Definition.WORKFLOW) {
-    		//Use the definition id as the workflow process name
-    		getWorkflowModule().modifyProcessDefinition(def.getId(), def);
-    	}
-   }
 
 	
 	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) {

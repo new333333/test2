@@ -93,11 +93,12 @@ public interface CoreDao {
      */
     public Binder loadBinder(Long binderId, Long zoneId);
 	public List<Tag> loadCommunityTagsByEntity(EntityIdentifier entityId);
-    public List<TemplateBinder> loadConfigurations(Long zoneId);
-    public List<TemplateBinder> loadConfigurations(Long zoneId, int type);
+    public List<TemplateBinder> loadTemplates(Long zoneId);
+    public List<TemplateBinder> loadTemplates(Long zoneId, int type);
 	public Dashboard loadDashboard(String id, Long zoneId);
 	public Definition loadDefinition(String defId, Long zoneId);   
-    public List<Definition> loadDefinitions(Long zoneId);
+	public Definition loadDefinitionByName(String name, Long zoneId);
+	public List<Definition> loadDefinitions(Long zoneId);
     public List<Definition> loadDefinitions(Long zoneId, int type);
 	public EntityDashboard loadEntityDashboard(EntityIdentifier ownerId);
     public List<Tag> loadEntityTags(EntityIdentifier entityIdentifier, EntityIdentifier ownerIdentifier);
@@ -126,6 +127,8 @@ public interface CoreDao {
 	public Definition loadReservedDefinition(String reservedId, Long zoneId);
 	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId);
 	public Tag loadTag(String id, Long zoneId);
+	public TemplateBinder loadTemplate(Long templateId, Long zoneId);
+	public TemplateBinder loadTemplateByName(String name, Long zoneId);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public Object merge(Object obj); 
     public void move(Binder binder);
