@@ -1587,7 +1587,7 @@
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
-			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]$" unique="//item[@type='data']">
+			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
