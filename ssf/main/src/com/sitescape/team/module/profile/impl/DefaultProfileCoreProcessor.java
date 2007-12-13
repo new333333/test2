@@ -138,6 +138,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 				 					return Boolean.FALSE;
 								}
 							}
+							//mark delete and flush from cache, cause handled in bulk way
 		 					getProfileDao().markEntriesDeleted(pBinder, entries);
 							getCoreDao().flush();  //flush before bulk updates
 							//finally remove folder and its entries

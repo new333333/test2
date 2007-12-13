@@ -522,6 +522,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 							} catch (Exception ex) {
 								logger.warn("Error delete files: " + folder.getPathName(), ex);
 							}
+							//mark delete and flush from cache, cause handled in bulk way
 							getFolderDao().markEntriesDeleted(folder, entries);
 							getCoreDao().flush();  //flush before bulk updates
 							//finally remove folder and its entries
