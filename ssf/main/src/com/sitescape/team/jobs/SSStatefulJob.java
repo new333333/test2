@@ -115,7 +115,8 @@ public abstract class SSStatefulJob implements StatefulJob {
           				return;
            			}
            		} catch (NoBinderByTheIdException nb) {
-       	   			removeJob(context);          			
+       	   			removeJob(context);   
+       	   			return;
            		}
            		throw ex;  //zone exists, other error
            	}
