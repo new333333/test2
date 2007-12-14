@@ -34,13 +34,24 @@
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");
 %>
+<c:if test="${!empty ss_element_display_style && ss_element_display_style == 'tableAlignLeft'}">
+<tr>
+  <td class="ss_table_spacer_right" valign="top" align="right">
+</c:if>
 <div class="ss_entryContent" style="padding-top:3px;">
 <fieldset class="ss_fieldset">
 <c:if test="${!empty property_legend}">
 <legend class="ss_legend"><ssf:nlt tag="${property_legend}" checkIfTag="true"/></legend>
 </c:if>
+<c:set var="ss_element_display_style_saved_fieldset" value="${ss_element_display_style}"/>
+<c:set var="ss_element_display_style" value="" scope="request"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="<%= item %>" 
   configJspStyle="${ssConfigJspStyle}" />
+<c:set var="ss_element_display_style" value="${ss_element_display_style_saved_fieldset}" scope="request"/>
 </fieldset>
 </div>
+<c:if test="${!empty ss_element_display_style && ss_element_display_style == 'tableAlignLeft'}">
+</td>
+</tr>
+</c:if>

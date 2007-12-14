@@ -29,6 +29,7 @@
  */
 %>
 <% //Date view %>
+<c:if test="${empty ss_element_display_style}"><table></c:if>
 <tr>
   <td class="ss_table_spacer_right"><c:out value="${property_caption}" />:</td>
   <td valign="top">
@@ -37,3 +38,4 @@
 				      type="both" dateStyle="medium" timeStyle="short" />
   </td>
 </tr>
+<c:if test="${empty ss_element_display_style}"></table></c:if>
