@@ -32,6 +32,7 @@
 <%@ page import="com.sitescape.team.web.util.DefinitionHelper" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 
+<c:if test="${empty ss_element_display_style}"><table></c:if>
 <tr>
   <td class="ss_table_spacer_right"><c:out value="${property_caption}" />:</td>
   <td valign="top">
@@ -48,4 +49,5 @@
 	</ul>
   </td>
 </tr>
+<c:if test="${empty ss_element_display_style}"></table></c:if>
 

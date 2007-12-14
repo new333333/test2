@@ -29,6 +29,7 @@
  */
 %>
 <% //User_list view %>
+<c:if test="${empty ss_element_display_style}"><table></c:if>
 <tr>
 	<td class="ss_table_spacer_right"><c:out value="${property_caption}" />:</td>
 	<td>
@@ -39,3 +40,4 @@
 		</ul>
 	</td>
 </tr>
+<c:if test="${empty ss_element_display_style}"></table></c:if>
