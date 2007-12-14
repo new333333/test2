@@ -100,13 +100,11 @@ public class WorkspaceTreeController extends SAbstractController  {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
+        User user = RequestContextHolder.getRequestContext().getUser();
  		Map<String,Object> model = new HashMap<String,Object>();
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 
-		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-			
-		User user = RequestContextHolder.getRequestContext().getUser();
 		BinderHelper.setBinderPermaLink(this, request, response);
 		try {
 			//won't work on adapter
@@ -243,10 +241,20 @@ public class WorkspaceTreeController extends SAbstractController  {
 		} catch(NoBinderByTheIdException e) {
 		}
 		
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+
+		//Set up the standard beans
+		//These have been documented, so don't delete any
+		model.put(WebKeys.USER_PRINCIPAL, user);
 		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
-
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+			
 		Tabs.TabEntry tab = BinderHelper.initTabs(request, binder);
 		model.put(WebKeys.TABS, tab.getTabs());		
 
