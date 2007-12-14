@@ -145,18 +145,24 @@ public class ViewEntryController extends  SAbstractController {
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
+        User user = RequestContextHolder.getRequestContext().getUser();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		Map formData = request.getParameterMap();
+		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 				
 		Map model = new HashMap();
+
+		//Set up the standard beans
+		//These have been documented, so don't delete any
+		model.put(WebKeys.USER_PRINCIPAL, user);
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 		model.put(WebKeys.NAMESPACE, namespace);
 		
-		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
-		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
  		//BinderHelper.getViewType requires read access to the binder.  
  		//This causes access errors when have access to an entry but not the binder which happens
@@ -194,6 +200,11 @@ public class ViewEntryController extends  SAbstractController {
 					throw nf;
 				}
 			}
+
+			//Set up the rest of the standard beans
+			//These have been documented, so don't delete any
+			model.put(WebKeys.DEFINITION_ENTRY, fe);
+			model.put(WebKeys.ENTRY, fe);
 
 			//Build the reload url (after getting the entryId from the title if necessary)
 			if (PortletAdapterUtil.isRunByAdapter((PortletRequest) request)) {
