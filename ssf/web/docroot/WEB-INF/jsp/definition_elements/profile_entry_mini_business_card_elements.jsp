@@ -53,6 +53,7 @@
 		<c:if test="${!empty propertyValues__elements}">
 			<td valign="center">
 			
+				<c:set var="ss_element_display_style_saved" value="${ss_element_display_style}"/>
 				<c:set var="ss_element_display_style" value="tableAlignLeft" scope="request"/>
 				<table cellpadding="0" cellspacing="0" border="0">
 				
@@ -84,7 +85,7 @@
 				</c:forEach>
 				
 				</table>
-				<c:set var="ss_element_display_style" value="" scope="request"/>
+				<c:set var="ss_element_display_style" value="${ss_element_display_style_saved}" scope="request"/>
 			
 			</td>
 		</c:if>
