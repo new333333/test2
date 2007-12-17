@@ -43,6 +43,7 @@ JSTL Implementation (from Apache) 1.0.6
 JTA 1.0.1b
 JTDS 0.9.1
 JUnit 3.8.1
+Liferay portal-client.jar 4.3.0
 Liferay portal-impl.jar 4.3.0
 Liferay portal-kernel.jar 4.3.0
 Liferay portal-service.jar 4.3.0
