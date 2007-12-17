@@ -38,6 +38,12 @@
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="profileModule"><ref bean="profileModule"/></property>
 		<property name="binderModule"><ref bean="binderModule"/></property>
+		<property name="scheduleModules">
+			<list>
+			<ref bean="folderModule"/>
+			<ref bean="licenseModule"/>
+			</list>
+		</property>
 	</bean>
 	
 	<!-- ============================== Services ============================= -->

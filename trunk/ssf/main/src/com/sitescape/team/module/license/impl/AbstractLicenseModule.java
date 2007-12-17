@@ -29,9 +29,7 @@
 package com.sitescape.team.module.license.impl;
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.dom4j.Document;
 import org.springframework.beans.factory.InitializingBean;
@@ -44,8 +42,8 @@ import com.sitescape.team.dao.util.Restrictions;
 import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.jobs.LicenseMonitor;
+import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.license.LicenseException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.license.LicenseModule;
@@ -57,31 +55,16 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
 
 abstract public class AbstractLicenseModule extends CommonDependencyInjection
-implements LicenseModule, InitializingBean {
+implements LicenseModule, ZoneSchedule {
 
-	public void afterPropertiesSet() throws Exception {
-		// TODO whatever you need to do to initialize the module... such as
-		// initializing a background job, etc.
- 		List companies = getCoreDao().findCompanies();
- 		for (int i=0; i<companies.size(); ++i) {
- 			Workspace zone = (Workspace)companies.get(i);
- 			startScheduledJobs(zone);
-	   }
-	}
-    protected void startScheduledJobs(Workspace zone) {
- 	   if (zone.isDeleted()) return;
-    	String jobClass = SZoneConfig.getString(zone.getName(), "licenseConfiguration/property[@name='" + LicenseMonitor.LICENSE_JOB + "']");
+
+	protected LicenseMonitor getProcessor(Workspace zone) {
+	   	String jobClass = SZoneConfig.getString(zone.getName(), "licenseConfiguration/property[@name='" + LicenseMonitor.LICENSE_JOB + "']");
     	if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultLicenseMonitor";
     	try {
     		Class processorClass = ReflectHelper.classForName(jobClass);
     		LicenseMonitor job = (LicenseMonitor)processorClass.newInstance();
-    		String hrString = (String)SZoneConfig.getString(zone.getName(), "licenseConfiguration/property[@name='" + LicenseMonitor.LICENSE_HOUR + "']");
-    		int hour = 6;
-    		try {
-    			hour = Integer.parseInt(hrString);
-    		} catch (Exception ex) {};
-    		job.schedule(zone.getId(), hour);
-
+    		return job;
     	} catch (ClassNotFoundException e) {
     		throw new ConfigurationException(
     				"Invalid LicenseMontior class name '" + jobClass + "'",
@@ -94,9 +77,26 @@ implements LicenseModule, InitializingBean {
     		throw new ConfigurationException(
     				"Cannot instantiate LicenseMonitor of type '"
     				+ jobClass + "'");
-    	} 
+    	} 		
+	}
+	//called on zone startup
+    public void startScheduledJobs(Workspace zone) {
+ 	   	if (zone.isDeleted()) return;
+ 	   	LicenseMonitor job =getProcessor(zone);
+   		String hrString = (String)SZoneConfig.getString(zone.getName(), "licenseConfiguration/property[@name='" + LicenseMonitor.LICENSE_HOUR + "']");
+    	int hour = 6;
+    	try {
+    		hour = Integer.parseInt(hrString);
+    	} catch (Exception ex) {};
+    	job.schedule(zone.getId(), hour);
+
 	}
 
+	//called on zone delete
+	public void stopScheduledJobs(Workspace zone) {
+ 	   	LicenseMonitor job =getProcessor(zone);
+   		job.remove(zone.getId());
+	}
 	private ReportModule reportModule;
 	/**
 	 * @return the reportModule

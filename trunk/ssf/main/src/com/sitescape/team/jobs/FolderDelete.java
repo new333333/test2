@@ -34,4 +34,5 @@ public interface FolderDelete {
 	public final static String DELETE_JOB="delete.job";
 	public final static String DELETE_HOURS="timeout.hours";
 	public void schedule(Long zoneId, int hours);
+	public void remove(Long zoneId);
 }

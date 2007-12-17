@@ -112,10 +112,5 @@ public interface WorkflowModule {
 	 */
 	public boolean modifyWorkflowStateOnUpdate(WorkflowSupport entry);
 	public void processTimers();
-	/**
-	 * Start any workflow jobs for the zone
-	 * @param zone
-	 */
-    public void startScheduledJobs(Workspace zone);
 
 }

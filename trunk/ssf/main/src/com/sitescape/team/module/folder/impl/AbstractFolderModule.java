@@ -79,7 +79,7 @@ import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Visits;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.jobs.FillEmailSubscription;
+import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.lucene.LanguageTaster;
@@ -111,7 +111,7 @@ import com.sitescape.util.Validator;
  * @author Jong Kim
  */
 public abstract class AbstractFolderModule extends CommonDependencyInjection 
-implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
+implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	protected String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
 	protected String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
@@ -133,32 +133,14 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		this.reportModule = reportModule;
 	}
 	
-	/**
-     * Called after bean is initialized.  
-     */
- 	public void afterPropertiesSet() {
- 		//make sure job to delete and log folders is running
- 		List companies = getCoreDao().findCompanies();
- 		for (int i=0; i<companies.size(); ++i) {
- 			Workspace zone = (Workspace)companies.get(i);
- 			startScheduledJobs(zone);
-	   }
- 	}
-     public void startScheduledJobs(Workspace zone) {
-    	if (zone.isDeleted()) return;
-	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
+
+ 	protected FolderDelete getProcessor(Workspace zone) {
+ 	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
  	   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultFolderDelete";
  	   try {
  		   Class processorClass = ReflectHelper.classForName(jobClass);
  		   FolderDelete job = (FolderDelete)processorClass.newInstance();
- 		   //make sure a delete job is scheduled for the zone
- 		   String hrsString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_HOURS + "']");
- 		   int hours = 24;
- 		   try {
- 			  hours = Integer.parseInt(hrsString);
- 		   } catch (Exception ex) {};
- 		   	job.schedule(zone.getId(), hours);
- 	
+ 		   return job;
  	   } catch (ClassNotFoundException e) {
  		   throw new ConfigurationException(
  				"Invalid FolderDelete class name '" + jobClass + "'",
@@ -173,7 +155,25 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
  				+ jobClass + "'");
  	   } 
  	   
-     }
+  		
+ 	}
+ 	//called on zone delete
+	public void stopScheduledJobs(Workspace zone) {
+		FolderDelete job = getProcessor(zone);
+		job.remove(zone.getId());
+	}
+ 	//called on zone startup
+     public void startScheduledJobs(Workspace zone) {
+    	if (zone.isDeleted()) return;
+    	//make sure a delete job is scheduled for the zone
+		FolderDelete job = getProcessor(zone);
+		String hrsString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_HOURS + "']");
+    	int hours = 24;
+    	try {
+    		hours = Integer.parseInt(hrsString);
+    	} catch (Exception ex) {};
+    	job.schedule(zone.getId(), hours);
+   }
 
 	public boolean testAccess(Folder folder, FolderOperation operation) {
 		try {

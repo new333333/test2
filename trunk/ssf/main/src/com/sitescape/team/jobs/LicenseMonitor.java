@@ -34,4 +34,5 @@ public interface LicenseMonitor {
 	public final static String LICENSE_JOB="license.job";
 	public final static String LICENSE_HOUR="timeout.hour";
 	public void schedule(Long zoneId, int hour);
+	public void remove(Long zoneId);
 }

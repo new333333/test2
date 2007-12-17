@@ -56,7 +56,6 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.UserDashboard;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
@@ -76,7 +75,7 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SessionUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.team.util.ReflectHelper;
-
+import com.sitescape.team.jobs.ZoneSchedule;
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected DefinitionModule definitionModule;
 	/**
@@ -121,6 +120,10 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	protected BinderModule getBinderModule() {
 		return binderModule;
 	}
+	protected List<ZoneSchedule> startupModules;
+	public void setScheduleModules(List modules) {
+		startupModules = modules;		
+	}
 	/**
      * Called after bean is initialized.  
      * Check on zones
@@ -137,7 +140,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			//only execting one
 			if (companies.size() == 0) {
 				addZone(zoneName, null);
-			} else {
+ 			} else {
         		for (int i=0; i<companies.size(); ++i) {
         			final Workspace zone = (Workspace)companies.get(i);
         			if (zone.getName().equals(zoneName)) {
@@ -160,6 +163,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		        	return null;
 	        	}
 				});
+    			for (ZoneSchedule zoneM:startupModules) {
+	        		for (int i=0; i<companies.size(); ++i) {
+	        			Workspace zone = (Workspace)companies.get(i);
+	        			zoneM.startScheduledJobs(zone);
+	        		}
+    			}
  			
 			}
 		} finally {
@@ -516,10 +525,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	        	public Object doInTransaction(TransactionStatus status) {
 	    			IndexSynchronizationManager.begin();
 
-	        		addZoneTx(name, adminName, virtualHost);
+	        		Workspace zone = addZoneTx(name, adminName, virtualHost);
 	        		
 	        		//do now, with request context set - won't have one if here on zone startup
 	        		IndexSynchronizationManager.applyChanges();
+					for (ZoneSchedule zoneM:startupModules) {
+						zoneM.startScheduledJobs(zone);
+					}
 	    		
 	        		return null;
 	        	}

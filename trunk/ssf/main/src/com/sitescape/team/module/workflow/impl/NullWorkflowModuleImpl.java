@@ -33,12 +33,11 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.workflow.WorkflowModule;
 
 public class NullWorkflowModuleImpl extends CommonDependencyInjection implements WorkflowModule {
-   public void startScheduledJobs(Workspace zone) {	   
-    }
 
 	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef) {
 	}
