@@ -175,7 +175,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 		Map formData = request.getParameterMap();
 	    Tabs tabs = Tabs.getTabs(request);
-	    if (formData.containsKey("searchBtn")) {
+	    if (formData.containsKey("searchBtn") || formData.containsKey("quickSearch")) {
 	    	model.putAll(BinderHelper.prepareSearchResultData(this, request, tabs));
 	    } else {
 	    	model.putAll(BinderHelper.prepareSavedQueryResultData(this, request, tabs));
@@ -247,8 +247,11 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		}
 		if (binder == null) binder = getWorkspaceModule().getWorkspace();
 		model.put(WebKeys.BINDER, binder);
+		if (binder == null) {
+			return new ModelAndView("mobile/show_workspace", model);
+		}
 		//See if this is a user workspace
-		if (binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+		if (binder != null && Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType()) {
 			Set wsUsers = new HashSet();
 			wsUsers.add(binder.getCreation().getPrincipal().getId());
 			SortedSet wsUsers2 = getProfileModule().getUsers(wsUsers);
