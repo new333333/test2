@@ -1938,7 +1938,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map model = new HashMap();
 
-		if (user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			//Signal that the user is not logged in. 
 			Map statusMap = new HashMap();
 			statusMap.put(WebKeys.AJAX_STATUS_NOT_LOGGED_IN, new Boolean(true));
