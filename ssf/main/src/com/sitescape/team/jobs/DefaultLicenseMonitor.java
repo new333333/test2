@@ -57,6 +57,15 @@ public class DefaultLicenseMonitor extends SSStatefulJob implements
 		licenseModule.recordCurrentUsage();
 	}
 
+	public void remove(Long zoneId) {
+		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		try {
+			scheduler.unscheduleJob(zoneId.toString(), LICENSE_MONITOR_GROUP);
+		} catch (SchedulerException se) {			
+			logger.error(se.getLocalizedMessage()==null?se.getMessage():se.getLocalizedMessage());
+		}
+		
+	}
 	public void schedule(Long zoneId, int hour)
 	{
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 

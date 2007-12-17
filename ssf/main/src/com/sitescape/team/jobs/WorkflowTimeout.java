@@ -34,4 +34,5 @@ public interface WorkflowTimeout {
 	public final static String TIMEOUT_JOB="timeout.job";
 	public final static String TIMEOUT_SECONDS="timeout.seconds";
 	public void schedule(Long zoneId, int seconds);
+	public void remove(Long zoneId);
 }

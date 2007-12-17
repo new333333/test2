@@ -59,7 +59,15 @@ public class DefaultWorkflowTimeout extends SSStatefulJob implements WorkflowTim
 		work.processTimers();
 	}
 
-	
+	public void remove(Long zoneId) {
+		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		try {
+			scheduler.unscheduleJob(zoneId.toString(), WORKFLOW_TIMER_GROUP);
+		} catch (SchedulerException se) {			
+			logger.error(se.getLocalizedMessage()==null?se.getMessage():se.getLocalizedMessage());
+		}
+		
+	}
     public void schedule(Long zoneId, int seconds) {
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		try {

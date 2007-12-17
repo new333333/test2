@@ -60,6 +60,15 @@ public class DefaultFolderDelete extends SSStatefulJob implements FolderDelete {
     	folderModule.cleanupFolders();
     }
 
+	public void remove(Long zoneId) {
+		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+		try {
+			scheduler.unscheduleJob(zoneId.toString(), FOLDER_DELETE_GROUP);
+		} catch (SchedulerException se) {			
+			logger.error(se.getLocalizedMessage()==null?se.getMessage():se.getLocalizedMessage());
+		}
+		
+	}
     public void schedule(Long zoneId, int hours) {
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		try {
