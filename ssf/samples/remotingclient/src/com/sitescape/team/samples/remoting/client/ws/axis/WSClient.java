@@ -113,6 +113,8 @@ public class WSClient
 				justDoIt("addUserToGroup", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("getBinderTitle")) {
 				fetchAndPrintString("getBinderTitle", new Object[] {Long.parseLong(args[1])});
+			} else if(args[0].equals("addZoneUnderPortal")) {
+				justDoIt("addZoneUnderPortal", new Object[] {args[1], args[2], args[3], args[4], args[5]});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -234,5 +236,11 @@ public class WSClient
 		System.out.println("addUserToGroup <user id> <group id>");
 		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
 		System.out.println("getBinderTitle <binder id>");
+		System.out.println("-- The following is to be used only with ICEcore Enterprise server with appropriate license --");
+		System.out.println("addZoneUnderPortal <portal admin userid> <portal admin password> <zone name> <virtual host> <mail domain>");
+		
+		// an example of addZone invocation - 
+		// addZone 2 test fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com
 	}
+
 }

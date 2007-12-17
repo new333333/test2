@@ -8,6 +8,13 @@ public class BaseZoneModule extends AbstractZoneModule {
 		logger.info("Cannot write zone " + zoneName + " - Open source edition does not support multi zone");
 	}
 
+	public boolean zoneExists(String zoneName) {
+		if(SZoneConfig.getDefaultZoneName().equals(zoneName))
+			return true;
+		else
+			return false;
+	}
+
 	public Long getZoneIdByVirtualHost(String virtualHost) {
 		String zoneName = SZoneConfig.getDefaultZoneName();
 		Workspace top = getCoreDao().findTopWorkspace(zoneName);
@@ -24,4 +31,10 @@ public class BaseZoneModule extends AbstractZoneModule {
 	public void removeZone(String zoneName) {
 		logger.info("Cannot remove zone " + zoneName + " - Open source edition does not support multi zone");
 	}
+
+	public void addZoneUnderPortal(String portalAdminUserId, String portalAdminPassword,
+			String zoneName, String virtualHost, String mailDomain) {
+		logger.info("Cannot add zone " + zoneName + " - Open source edition does not support multi zone");
+	}
+
 }

@@ -37,7 +37,12 @@ import com.sitescape.team.exception.UncheckedCodedException;
  * 
  * @author Jong Kim
  */
-public abstract class AccessControlException extends UncheckedCodedException {
+public class AccessControlException extends UncheckedCodedException {
+	private static final String AccessControlException_ErrorCode = "errorcode.access.denied";
+
+	public AccessControlException() {
+		super(AccessControlException_ErrorCode, null);
+	}
     public AccessControlException(String errorCode, Object[] errorArgs) {
     	super(errorCode, errorArgs);
     }

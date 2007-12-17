@@ -43,6 +43,7 @@ import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.module.zone.ZoneModule;
 
 /**
  * This convenience interface acts as a facade for all business modules and 
@@ -111,4 +112,7 @@ public interface AllModulesInjected {
 	
 	void setLicenseModule(LicenseModule licenseModule);
 	LicenseModule getLicenseModule();
+	
+	void setZoneModule(ZoneModule zoneModule);
+	ZoneModule getZoneModule();
 }
