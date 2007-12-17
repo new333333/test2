@@ -36,6 +36,7 @@
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 
+<c:if test="${empty ss_showMobileView}">
 <c:if test="${ss_showUserShowPresence}">
   <ssf:presenceInfo user="${ss_showUserUser}" showTitle="true" titleStyle="${ss_showUserTitleStyle}" /> 
 </c:if>
@@ -67,4 +68,12 @@
   <span id="${ss_showUserUser.id}" 
     class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
 </c:if>
+</c:if>
+</c:if>
+<c:if test="${!empty ss_showMobileView}">
+  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+	    action="__ajax_mobile"
+	    operation="mobile_show_workspace"
+	    binderId="${ss_showUserUser.workspaceId}" />"
+  ><span>${ss_showUserUser.title}</span></a>
 </c:if>
