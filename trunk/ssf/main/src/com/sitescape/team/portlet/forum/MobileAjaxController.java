@@ -173,8 +173,13 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		model.put("ss_queryName", queryName);
 
+		Map formData = request.getParameterMap();
 	    Tabs tabs = Tabs.getTabs(request);
-    	model.putAll(BinderHelper.prepareSavedQueryResultData(this, request, tabs));
+	    if (formData.containsKey("searchBtn")) {
+	    	model.putAll(BinderHelper.prepareSearchResultData(this, request, tabs));
+	    } else {
+	    	model.putAll(BinderHelper.prepareSavedQueryResultData(this, request, tabs));
+	    }
 		Map userQueries = new HashMap();
 		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
 			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
