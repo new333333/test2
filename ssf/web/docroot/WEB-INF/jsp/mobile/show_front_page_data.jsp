@@ -105,8 +105,21 @@
 					operation="mobile_find_people" />">
 <span class="ss_bold"><ssf:nlt tag="navigation.findUser"/></span>
 <br/>
-<input type="text" size="15" name="searchText" /><input 
+<input type="text" size="15" name="searchText" />&nbsp;<input 
   type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
 </form>
 </div>
 
+<br/>
+<div class="ss_mobile">
+<form method="post"
+	action="<ssf:url adapter="true" portletName="ss_forum" 
+					action="__ajax_mobile" actionUrl="true" 
+					operation="mobile_show_search_results" />">
+<span class="ss_bold"><ssf:nlt tag="searchForm.button.label"/></span>
+<br/>
+<input name="searchText" type="text" size="15" />&nbsp;<input type="submit" 
+  name="searchBtn" value="<ssf:nlt tag="button.ok"/>"/>
+<input type="hidden" name="quickSearch" value="true"/>
+</form>
+</div>
