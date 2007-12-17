@@ -34,12 +34,10 @@
 
 <c:if test="${empty ss_element_display_style}">
 <div class="ss_entryContent">
-<span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
-<ul class="ss_nobullet">
+<span class="ss_labelLeft"><c:out value="${property_caption}" /></span><br/>
 <c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(property_name)) %>" >
-<li><ssf:showUser user="${selection}" /></li>
+<ssf:showUser user="${selection}" /><br/>
 </c:forEach>
-</ul>
 </div>
 </c:if>
 
@@ -47,14 +45,12 @@
     ss_element_display_style == 'tableAlignLeft'}">
 <tr>
   <td class="ss_table_spacer_right" valign="top" align="right">
-    <span class="ss_light"><c:out value="${property_caption}" /></span>
+    <span class="ss_mobile_light"><c:out value="${property_caption}" /></span>
   </td>
   <td valign="top" align="left">
-	<ul class="ss_nobullet">
 	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(userlist_entry.getCustomAttribute(property_name)) %>" >
- 	 <li><ssf:showUser user="${selection}" /></li>
+ 	 <ssf:showUser user="${selection}" /><br/>
 	</c:forEach>
-	</ul>
   </td>
 </tr>
 </c:if>

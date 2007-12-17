@@ -72,7 +72,7 @@
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_graphic.jsp" %><%
 		
 	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_user_list.jsp" %><%
+		%><%@ include file="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_user_list.jsp" %><%
 
 	} else if (itemType.equals("survey")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_data_survey.jsp" %><%
