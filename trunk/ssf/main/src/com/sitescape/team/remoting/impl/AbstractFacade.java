@@ -76,7 +76,6 @@ import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.util.SimpleProfiler;
-import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.tree.WebSvcTreeHelper;
@@ -593,4 +592,10 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		getDefinitionModule().walkDefinition(entry, visitor, null);
 		
 	}
+	
+	public void addZoneUnderPortal(String portalAdminUserId, String portalAdminPassword,
+			String zoneName, String virtualHost, String mailDomain) {
+		getZoneModule().addZoneUnderPortal(portalAdminUserId, portalAdminPassword, zoneName, virtualHost, mailDomain);
+	}
+
 }

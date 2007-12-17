@@ -46,6 +46,7 @@ import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.module.zone.ZoneModule;
 
 public class AbstractAllModulesInjected implements AllModulesInjected {
 
@@ -66,6 +67,7 @@ public class AbstractAllModulesInjected implements AllModulesInjected {
 	private IcalModule icalModule;
 	private RssModule rssModule;
 	private LicenseModule licenseModule;
+	private ZoneModule zoneModule;
 
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
@@ -183,4 +185,12 @@ public class AbstractAllModulesInjected implements AllModulesInjected {
 	public void setLicenseModule(LicenseModule licenseModule) {
 		this.licenseModule = licenseModule;
 	}
+	
+	public ZoneModule getZoneModule() {
+		return zoneModule;
+	}
+	public void setZoneModule(ZoneModule zoneModule) {
+		this.zoneModule = zoneModule;
+	}
+
 }

@@ -53,6 +53,7 @@ import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.rss.RssModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
@@ -77,6 +78,7 @@ implements AllModulesInjected {
 	private IcalModule icalModule;
 	private RssModule rssModule;
 	private LicenseModule licenseModule;
+	private ZoneModule zoneModule;
 
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
@@ -193,6 +195,13 @@ implements AllModulesInjected {
 	}
 	public void setLicenseModule(LicenseModule licenseModule) {
 		this.licenseModule = licenseModule;
+	}
+
+	public ZoneModule getZoneModule() {
+		return zoneModule;
+	}
+	public void setZoneModule(ZoneModule zoneModule) {
+		this.zoneModule = zoneModule;
 	}
 
 	protected void handleActionRequestInternal(ActionRequest request, ActionResponse response)

@@ -120,5 +120,8 @@ public interface Facade {
 	 * @return XML representation of teams
 	 */
 	public String getTeamsAsXML();
+
+	public void addZoneUnderPortal(String portalAdminUserId, String portalAdminPassword,
+			String zoneName, String virtualHost, String mailDomain);
 }
 

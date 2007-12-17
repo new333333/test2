@@ -64,6 +64,7 @@
 		<property name="icalModule"><ref local="icalModule"/></property>
 		<property name="rssModule"><ref local="rssModule"/></property>
 		<property name="licenseModule"><ref local="licenseModule"/></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
 	</bean>
 
 	<!-- Default lob handler.  Override this in applicationContext-ext.xml for specific databases -->
