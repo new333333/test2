@@ -1948,12 +1948,15 @@ function ss_replaceSubStr(str, subStr, newSubStrVal) {
 }
 function ss_replaceSubStrAll(str, subStr, newSubStrVal) {
     var newStr = str;
-    while (1) {
-        var i = newStr.indexOf(subStr);
+    var i = -1
+    //Prevent a possible loop by only doing 1000 passes through this loop
+    while (1000) {
+        i = newStr.indexOf(subStr, i);
         var lenS = newStr.length;
         var lenSS = subStr.length;
         if (i >= 0) {
             newStr = newStr.substring(0, i) + newSubStrVal + newStr.substring(i+lenSS, lenS);
+            i += newSubStrVal.length
         } else {
             break;
         }
