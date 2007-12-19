@@ -43,7 +43,8 @@
 <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 	configElement="${ssConfigElement}" 
-	configJspStyle="mobile" />
+	configJspStyle="mobile" 
+	entry="${ssEntry}" />
 
 </c:if> 
 <br/>
