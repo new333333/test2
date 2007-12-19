@@ -66,7 +66,9 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
+import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
@@ -120,7 +122,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return ajaxMobileFrontPage(request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_SEARCH_RESULTS)) {
-			return ajaxMobileSearchResults(request, response);
+			return ajaxMobileSearchResults(this, request, response);
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
 			return ajaxMobileFindPeople(request, response);
 		}
@@ -165,25 +167,73 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("mobile/show_front_page", model);
 	}
 
-	private ModelAndView ajaxMobileSearchResults(RenderRequest request, 
+	private ModelAndView ajaxMobileSearchResults(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
-		User user = RequestContextHolder.getRequestContext().getUser();
-		String queryName = PortletRequestUtils.getStringParameter(request, "ss_queryName", "");
+		User user = RequestContextHolder.getRequestContext().getUser(); 
+		String queryName = PortletRequestUtils.getStringParameter(request, WebKeys.URL_SEARCH_QUERY_NAME, "");
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
 		model.put("ss_queryName", queryName);
 
+		String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "1");
+      	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
+      	int pageStart = (Integer.parseInt(pageNumber) -1) * pageSize;
+      	int pageEnd = pageStart + pageSize;
 		Map formData = request.getParameterMap();
 	    Tabs tabs = Tabs.getTabs(request);
+		model.put(WebKeys.TABS, tabs);		
 	    if (formData.containsKey("searchBtn") || formData.containsKey("quickSearch")) {
-	    	model.putAll(BinderHelper.prepareSearchResultData(this, request, tabs));
+			SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
+			Document searchQuery = requestParser.getSearchQuery();
+			Map options = BinderHelper.prepareSearchOptions(bs, request);
+			options.put(ObjectKeys.SEARCH_OFFSET, new Integer(pageStart));
+			options.put(ObjectKeys.SEARCH_USER_MAX_HITS, new Integer(pageSize));
+			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
+			
+			Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
+			
+			BinderHelper.prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
 	    } else {
-	    	model.putAll(BinderHelper.prepareSavedQueryResultData(this, request, tabs));
+			
+			// get query and options from tab		
+			Document searchQuery = BinderHelper.getSavedQuery(bs, queryName, bs.getProfileModule().getUserProperties(user.getId()));
+			
+			// get page no and actualize options
+			// execute query
+			// actualize tabs info
+			Map options = BinderHelper.prepareSearchOptions(bs, request);
+			options.put(ObjectKeys.SEARCH_OFFSET, new Integer(pageStart));
+			options.put(ObjectKeys.SEARCH_USER_MAX_HITS, new Integer(pageSize));
+
+			options.put(Tabs.TITLE, queryName);
+			Map results =  bs.getBinderModule().executeSearchQuery(searchQuery, options);
+			
+			Tabs.TabEntry tab = tabs.addTab(searchQuery, options);
+			
+			BinderHelper.prepareSearchResultPage(bs, results, model, searchQuery, options, tab);
 	    }
 		Map userQueries = new HashMap();
 		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
 			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
 		}
+
+      	List results = (List)model.get(WebKeys.FOLDER_ENTRIES);
+      	Integer searchCountTotal = results.size();
+      	if (searchCountTotal == null) searchCountTotal = 0;
+      	String nextPage = "";
+      	String prevPage = "";
+      	if (searchCountTotal.intValue() < pageStart) {
+      		if (Integer.parseInt(pageNumber) > 1) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
+      	} else if (searchCountTotal.intValue() >= pageEnd) {
+      		nextPage = String.valueOf(Integer.parseInt(pageNumber) + 1);
+      		if (Integer.parseInt(pageNumber) > 1) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
+      	} else {
+      		if (Integer.parseInt(pageNumber) > 1) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
+      	}
+		model.put(WebKeys.TAB_ID, String.valueOf(model.get(WebKeys.URL_TAB_ID)));
+		model.put(WebKeys.PAGE_NUMBER, pageNumber);
+		model.put(WebKeys.NEXT_PAGE, nextPage);
+		model.put(WebKeys.PREV_PAGE, prevPage);
 
 		return new ModelAndView("mobile/show_search_results", model);
 	}
@@ -224,7 +274,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       	if (((List) folderEntries.get(ObjectKeys.SEARCH_ENTRIES)).size() == pageSize && 
       			((Integer)folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue() > ((pageNumber.intValue() + 1) * pageSize)) 
       		nextPage = String.valueOf(pageNumber + 1);
-		model.put(WebKeys.URL_PAGE_NUMBER, pageNumber.toString());
+		model.put(WebKeys.PAGE_NUMBER, pageNumber.toString());
 		model.put(WebKeys.NEXT_PAGE, nextPage);
 		model.put(WebKeys.PREV_PAGE, prevPage);
 
@@ -284,7 +334,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
       		if (pageNumber.intValue() > 0) prevPage = String.valueOf(pageNumber.intValue() - 1);
       	}
 		model.put(WebKeys.WORKSPACES, wsList);
-		model.put(WebKeys.URL_PAGE_NUMBER, pageNumber.toString());
+		model.put(WebKeys.PAGE_NUMBER, pageNumber.toString());
 		model.put(WebKeys.NEXT_PAGE, nextPage);
 		model.put(WebKeys.PREV_PAGE, prevPage);
 		ws.clear();
@@ -392,7 +442,25 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 
 				model.put(WebKeys.PAGE_SIZE, maxEntries);
 				model.put(WebKeys.PAGE_NUMBER, pageNumber);
-				
+
+		      	Integer searchCountTotal = (Integer) entries.get(ObjectKeys.SEARCH_COUNT_TOTAL);
+		      	if (searchCountTotal == null) searchCountTotal = 0;
+		      	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
+		      	int pageStart = Integer.parseInt(pageNumber) * pageSize;
+		      	int pageEnd = pageStart + pageSize;
+		      	String nextPage = "";
+		      	String prevPage = "";
+		      	if (searchCountTotal.intValue() < pageStart) {
+		      		if (Integer.parseInt(pageNumber) > 0) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
+		      	} else if (searchCountTotal.intValue() >= pageEnd) {
+		      		nextPage = String.valueOf(Integer.parseInt(pageNumber) + 1);
+		      		if (Integer.parseInt(pageNumber) > 0) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
+		      	} else {
+		      		if (Integer.parseInt(pageNumber) > 0) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
+		      	}
+				model.put(WebKeys.NEXT_PAGE, nextPage);
+				model.put(WebKeys.PREV_PAGE, prevPage);
+
 				return new ModelAndView(view, model);
 				
 			}

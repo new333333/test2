@@ -110,7 +110,10 @@
 			folderId="${ssBinder.id}" 
 			action="__ajax_mobile" 
 			operation="mobile_show_search_results" 
-			actionUrl="false" ><ssf:param name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
+			actionUrl="false" ><ssf:param 
+			name="quickSearch" value="true"/><ssf:param 
+			name="tabId" value="${ss_tab_id}"/><ssf:param 
+			name="pageNumber" value="${ss_pageNumber-1}"/><ssf:param 
 			name="ss_queryName" value="${ss_queryName}" /></ssf:url>">&lt;&lt;&lt;</a>
 		</c:if>
 	</td><td style="padding-left:30px;">
@@ -119,7 +122,10 @@
 			folderId="${ssBinder.id}" 
 			action="__ajax_mobile" 
 			operation="mobile_show_search_results" 
-			actionUrl="false" ><ssf:param name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
+			actionUrl="false" ><ssf:param 
+			name="quickSearch" value="true"/><ssf:param 
+			name="tabId" value="${ss_tab_id}"/><ssf:param 
+			name="pageNumber" value="${ss_pageNumber+1}"/><ssf:param 
 			name="ss_queryName" value="${ss_queryName}" /></ssf:url>">&gt;&gt;&gt;</a>
 		</c:if>
 	</td></tr></table>

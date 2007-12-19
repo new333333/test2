@@ -1671,7 +1671,7 @@ public class BinderHelper {
 		return model;
 	}
 	
-	private static Map prepareSearchOptions(AllModulesInjected bs, RenderRequest request) {
+	public static Map prepareSearchOptions(AllModulesInjected bs, RenderRequest request) {
 		
 		Map options = new HashMap();
 		
