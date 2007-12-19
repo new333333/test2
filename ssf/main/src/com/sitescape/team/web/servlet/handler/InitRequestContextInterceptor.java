@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.context.request.HttpSessionContext;
 import com.sitescape.team.web.UnauthenticatedAccessException;
@@ -60,7 +61,7 @@ public class InitRequestContextInterceptor extends HandlerInterceptorAdapter {
             java.lang.Exception ex)
      throws java.lang.Exception {
         
-    	RequestContextUtil.clearThreadContext();
+    	RequestContextHolder.clear();
     }
 
 }

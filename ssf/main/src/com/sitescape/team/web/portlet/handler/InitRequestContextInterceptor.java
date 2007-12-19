@@ -37,6 +37,7 @@ import org.springframework.web.portlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.PortletSessionContext;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.web.util.WebHelper;
 
@@ -44,7 +45,7 @@ public class InitRequestContextInterceptor implements HandlerInterceptor {
 	
 	public boolean preHandle(PortletRequest request, PortletResponse response, 
 			Object handler) throws Exception {
-		RequestContextUtil.clearThreadContext();
+		RequestContextHolder.clear();
 			
 		if(WebHelper.isUnauthenticatedRequest(request)) {
 			// The framework says that this request is being made unauthenticated,

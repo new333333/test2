@@ -41,6 +41,7 @@ import javax.servlet.ServletResponse;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.User;
@@ -209,7 +210,7 @@ public class DispatchServer extends GenericServlet {
 				return;
 			}
 			finally {
-				RequestContextUtil.clearThreadContext();
+				RequestContextHolder.clear();
 			}
 		}
 

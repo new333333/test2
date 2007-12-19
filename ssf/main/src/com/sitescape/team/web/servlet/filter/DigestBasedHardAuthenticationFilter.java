@@ -42,6 +42,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.web.bind.RequestUtils;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.User;
@@ -74,7 +75,7 @@ public class DigestBasedHardAuthenticationFilter implements Filter {
 			
 			chain.doFilter(request, response); // Proceed
 			
-			RequestContextUtil.clearThreadContext();
+			RequestContextHolder.clear();
 		}
 		catch(UserDoesNotExistException e) {
 			logger.warn(e);

@@ -46,6 +46,7 @@ import org.quartz.Trigger;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.TimeZoneHelper;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.dao.CoreDao;
@@ -144,7 +145,7 @@ public abstract class SSStatefulJob implements StatefulJob {
     		throw new JobExecutionException(e);
     	} finally {
     		SessionUtil.sessionStop();
-    		RequestContextUtil.clearThreadContext();
+    		RequestContextHolder.clear();
     	}
 
 	}  

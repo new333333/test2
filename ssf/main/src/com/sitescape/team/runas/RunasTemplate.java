@@ -29,6 +29,7 @@
 package com.sitescape.team.runas;
 
 import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 
 import com.sitescape.team.domain.User;
@@ -68,9 +69,9 @@ public class RunasTemplate {
 	}
 	
 	protected static Object doRunas(RunasCallback action, RequestContext runasRC) {
-		RequestContext origContext = RequestContextUtil.getThreadContext();
+		RequestContext origContext = RequestContextHolder.getRequestContext(); 
 		
-       	RequestContextUtil.setThreadContext(runasRC);
+       	RequestContextHolder.setRequestContext(runasRC);
        	
        	try {
        		RequestContextUtil.resolveToUser();
@@ -80,11 +81,11 @@ public class RunasTemplate {
        	finally {
        		if(origContext != null) {
        			// Restore original context
-       			RequestContextUtil.setThreadContext(origContext);
+       			RequestContextHolder.setRequestContext(origContext);
        		}
        		else {
        			// Clear runas context
-       			RequestContextUtil.clearThreadContext();
+       			RequestContextHolder.clear();
        		}
        	}
 	}
