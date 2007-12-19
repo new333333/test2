@@ -66,7 +66,10 @@ var ss_ostatus_sendIm = '<ssf:nlt tag="presence.sendIM" text="Send instant messa
 var ss_ostatus_startIm = '<ssf:nlt tag="presence.startIM" text="Start instant meeting..."/>';
 var ss_ostatus_schedIm = '<ssf:nlt tag="presence.scheduleMeeting" text="Schedule a meeting..."/>';
 var ss_ostatus_call = '<ssf:nlt tag="presence.call" text="Call..."/>';
+
+var ss_pagePermalink = "${ssPermalink}"
 var ss_ostatus_sendMail = '<ssf:nlt tag="presence.sendMail" text="Send mail"/>';
+
 var ss_ostatus_outlook = '<ssf:nlt tag="presence.addToOutlook" text="Add to Outlook contacts..."/>';
 var ss_ostatus_clipboard = '<ssf:nlt tag="presence.addToClipboard" text="Add to clipboard"/>';
 
