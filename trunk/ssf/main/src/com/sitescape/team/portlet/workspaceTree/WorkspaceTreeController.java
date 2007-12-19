@@ -562,6 +562,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.workspacePermalink"), 
 				adapterUrl.toString(), qualifiers);
+		
+		model.put(WebKeys.PERMALINK, adapterUrl.toString());
 
 		// clipboard
 		if (!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
