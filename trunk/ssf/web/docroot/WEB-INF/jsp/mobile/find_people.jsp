@@ -33,11 +33,17 @@
 <table class="ss_mobile" cellspacing="0" cellpadding="0" border="0">
 <c:forEach var="user" items="${ssUsers}" >
   <tr>
-	<td><a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${user['_workspaceId']}"
-	action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
-	<c:out value="${user.title}"/>
-	</a>
+	<td>
+	<c:if test="${!empty user['_workspaceId']}">
+	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+	    folderId="${user['_workspaceId']}"
+	    action="__ajax_mobile" operation="mobile_show_workspace" actionUrl="false" />">
+	  <c:out value="${user.title}"/>
+	  </a>
+	</c:if>
+	<c:if test="${empty user['_workspaceId']}">
+	  <c:out value="${user.title}"/>
+	</c:if>
   </td></tr>
 </c:forEach>
 <tr><td></td></tr>

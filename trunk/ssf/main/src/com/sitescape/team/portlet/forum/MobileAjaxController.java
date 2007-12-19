@@ -411,8 +411,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
-			if (formData.containsKey("okBtn")) {
-				String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+			String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+			if (formData.containsKey("okBtn") || !searchText.equals("")) {
 				model.put(WebKeys.SEARCH_TEXT, searchText);
 				String maxEntries = PortletRequestUtils.getStringParameter(request, "maxEntries", "10");
 				String pageNumber = PortletRequestUtils.getStringParameter(request, "pageNumber", "0");
