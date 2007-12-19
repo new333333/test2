@@ -32,8 +32,7 @@ public class BaseZoneModule extends AbstractZoneModule {
 		logger.info("Cannot remove zone " + zoneName + " - Open source edition does not support multi zone");
 	}
 
-	public void addZoneUnderPortal(String portalAdminUserId, String portalAdminPassword,
-			String zoneName, String virtualHost, String mailDomain) {
+	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
 		logger.info("Cannot add zone " + zoneName + " - Open source edition does not support multi zone");
 	}
 
