@@ -50,14 +50,11 @@ public interface ZoneModule {
 	/**
 	 * Adds new zone under the portal in which ICEcore runs 
 	 * 
-	 * @param portalAdminUserId portal admin user id
-	 * @param portalAdminPassword portal admin password (in clear text)
 	 * @param zoneName zone name
 	 * @param virtualHost virtual host
 	 * @param mailDomian mail domain
 	 */
-	public void addZoneUnderPortal(String portalAdminUserId, String portalAdminPassword, 
-			String zoneName, String virtualHost, String mailDomian);
+	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomian);
 	
 	/**
 	 * Returns the name of the zone corresponding to the specified virtual host.

@@ -593,9 +593,8 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		
 	}
 	
-	public void addZoneUnderPortal(String portalAdminUserId, String portalAdminPassword,
-			String zoneName, String virtualHost, String mailDomain) {
-		getZoneModule().addZoneUnderPortal(portalAdminUserId, portalAdminPassword, zoneName, virtualHost, mailDomain);
+	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
+		getZoneModule().addZoneUnderPortal(zoneName, virtualHost, mailDomain);
 	}
 
 }

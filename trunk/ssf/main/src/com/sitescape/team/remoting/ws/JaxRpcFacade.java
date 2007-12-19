@@ -142,9 +142,8 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		return this.facade.getTeamsAsXML();
 	}
 	
-	public void addZoneUnderPortal(String portalAdminUserId, String portalAdminPassword,
-			String zoneName, String virtualHost, String mailDomain) {
-		this.facade.addZoneUnderPortal(portalAdminUserId, portalAdminPassword, zoneName, virtualHost, mailDomain);
+	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
+		this.facade.addZoneUnderPortal(zoneName, virtualHost, mailDomain);
 	}
 
 }

@@ -111,6 +111,8 @@ public class MainServlet extends ActionServlet {
 		InitUtil.init();
 	}
 
+	public static ServletContext servletContext; // hack to get hold of servlet context
+	
 	public void init() throws ServletException {
 
 		// Initialize
@@ -286,6 +288,8 @@ public class MainServlet extends ActionServlet {
 
 		PortalInitableUtil.flushInitables();
 		HotDeployUtil.flushEvents();
+		
+		servletContext = getServletContext(); // cache this for backdoor use
 	}
 
 	public void callParentService(
