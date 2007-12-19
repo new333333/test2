@@ -99,6 +99,7 @@
 <br/>
 </c:if>
 
+<c:if test="${ss_accessControlMap['ss_canViewUserProfiles'] == true}">
 <div class="ss_mobile">
 <form method="post" action="<ssf:url adapter="true" portletName="ss_forum" 
 					action="__ajax_mobile" actionUrl="true" 
@@ -109,8 +110,9 @@
   type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" class="ss_mobile_small" />
 </form>
 </div>
-
 <br/>
+</c:if>
+
 <div class="ss_mobile">
 <form method="post"
 	action="<ssf:url adapter="true" portletName="ss_forum" 

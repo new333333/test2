@@ -105,7 +105,7 @@
 	<tr><td></td><td></td></tr>
 	<tr><td colspan="2">
 	<table><tr><td width="30">
-		<c:if test="${ss_pageNumber > 1}">
+		<c:if test="${!empty ss_prevPage}">
 		  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 			folderId="${ssBinder.id}" 
 			action="__ajax_mobile" 
@@ -117,7 +117,7 @@
 			name="ss_queryName" value="${ss_queryName}" /></ssf:url>">&lt;&lt;&lt;</a>
 		</c:if>
 	</td><td style="padding-left:30px;">
-		<c:if test="${ssPageEndIndex < ssTotalRecords}">
+		<c:if test="${!empty ss_nextPage}">
 		<a href="<ssf:url adapter="true" portletName="ss_forum" 
 			folderId="${ssBinder.id}" 
 			action="__ajax_mobile" 

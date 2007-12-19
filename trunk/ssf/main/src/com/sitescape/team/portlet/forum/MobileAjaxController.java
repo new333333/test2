@@ -55,10 +55,12 @@ import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -161,6 +163,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map userQueries = new HashMap();
 		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
 			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
+		}
+		
+		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+		ProfileBinder profileBinder = null;
+		try {
+			profileBinder = getProfileModule().getProfileBinder();
+		} catch(Exception e) {}
+		if (profileBinder != null) {
+			accessControlMap.put(WebKeys.CAN_VIEW_USER_PROFILES, true);
 		}
 
 		model.put("ss_UserQueries", userQueries);
