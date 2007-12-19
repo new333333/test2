@@ -639,7 +639,7 @@ public class WebKeys {
     public static final String MARKUP_FILE="file"; 
     public static final String MARKUP_VIEW="view"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
-    public static final String MOBILE_PAGE_SIZE="40"; 
+    public static final String MOBILE_PAGE_SIZE="15"; 
     public static final String MY_TEAMS="ss_myTeams"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
