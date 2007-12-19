@@ -1,6 +1,7 @@
 package com.sitescape.team.liferay.proxy;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.User;
@@ -36,7 +37,10 @@ public class LiferayProxyServer {
 		
 		Method methodObj = classObj.getMethod(methodName, methodArgTypes);
 		
-		Object obj = classObj.newInstance();
+		Object obj = null;
+		
+		if(!Modifier.isStatic(methodObj.getModifiers()))
+			obj = classObj.newInstance();
 		
 		Company company = CompanyLocalServiceUtil.getCompanyByWebId(companyWebId);
 		
