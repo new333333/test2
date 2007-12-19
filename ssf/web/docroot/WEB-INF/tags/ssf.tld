@@ -453,6 +453,80 @@
 	</tag>
 	
 	<tag>
+		<name>fileurl</name>
+		<tag-class>com.sitescape.team.taglib.FileUrlTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>action</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>binderId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>folderId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>entryId</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>entityType</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>operation</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>actionUrl</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
+		<attribute>
+			<name>stayInFrame</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
+		<attribute>
+			<name>url</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>webPath</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>adapter</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
+		</attribute>		
+		<attribute>
+			<name>portletName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>fileName</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+	</tag>
+
+	<tag>
 		<name>find</name>
 		<tag-class>com.sitescape.team.taglib.Find</tag-class>
 		<body-content>JSP</body-content>
@@ -560,6 +634,23 @@
 	</tag>
 
 	<tag>
+		<name>ifAccessAllowed</name>
+		<tag-class>com.sitescape.team.taglib.IfAccessAllowedTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>binder</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.team.domain.Binder</type>
+		</attribute>		
+		<attribute>
+			<name>operation</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>			
+	</tag>
+
+	<tag>
 		<name>ifaccessible</name>
 		<tag-class>com.sitescape.team.taglib.IfAccessibleTag</tag-class>
 		<body-content>JSP</body-content>
@@ -635,6 +726,18 @@
 	<tag>
 		<name>ifLicenseInvalid</name>
 		<tag-class>com.sitescape.team.taglib.LicenseInvalidTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	
+	<tag>
+		<name>ifLoggedIn</name>
+		<tag-class>com.sitescape.team.taglib.IfLoggedInTag</tag-class>
+		<body-content>JSP</body-content>
+	</tag>
+	
+	<tag>
+		<name>ifNotLoggedIn</name>
+		<tag-class>com.sitescape.team.taglib.IfNotLoggedInTag</tag-class>
 		<body-content>JSP</body-content>
 	</tag>
 	
@@ -1631,95 +1734,4 @@
 		</attribute>		
 	</tag>
 	
-	<tag>
-		<name>ifAccessAllowed</name>
-		<tag-class>com.sitescape.team.taglib.IfAccessAllowedTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>binder</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>com.sitescape.team.domain.Binder</type>
-		</attribute>		
-		<attribute>
-			<name>operation</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>			
-	</tag>
-
-	<tag>
-		<name>fileurl</name>
-		<tag-class>com.sitescape.team.taglib.FileUrlTag</tag-class>
-		<body-content>JSP</body-content>
-		<attribute>
-			<name>action</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>binderId</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>folderId</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>entryId</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>entityType</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>operation</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>actionUrl</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>boolean</type>
-		</attribute>		
-		<attribute>
-			<name>stayInFrame</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>boolean</type>
-		</attribute>		
-		<attribute>
-			<name>url</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>webPath</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>adapter</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-			<type>boolean</type>
-		</attribute>		
-		<attribute>
-			<name>portletName</name>
-			<required>false</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-		<attribute>
-			<name>fileName</name>
-			<required>true</required>
-			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
-	</tag>
-
 </taglib>

@@ -68,6 +68,7 @@ function ss_setMobileIframeSize() {
 }
 </script>
 
+<ssf:ifLoggedIn>
 <c:if test="${!empty ss_mobileBinderList}">
 <div align="right">
   <a class="ss_linkButton" 
@@ -77,6 +78,7 @@ function ss_setMobileIframeSize() {
     ><ssf:nlt tag="button.configure"/></a>
 </div>
 </c:if>
+</ssf:ifLoggedIn>
 
 <c:set var="folderIdList" value=""/>
 <jsp:useBean id="folderIdList" type="java.lang.String" />
@@ -88,6 +90,7 @@ function ss_setMobileIframeSize() {
 <ssHelpSpot helpId="portlets/mobile_portlet" offsetX="0" offsetY="-10" 
 			    title="<ssf:nlt tag="helpSpot.mobilePortlet"/>"></ssHelpSpot>
 
+<ssf:ifLoggedIn>
 <c:if test="${empty ss_mobileBinderList}">
 <div align="right">
   <a class="ss_linkButton" 
@@ -97,8 +100,8 @@ function ss_setMobileIframeSize() {
     ><ssf:nlt tag="button.configure"/></a>
 </div>
 </c:if>
+</ssf:ifLoggedIn>
 
-<c:if test="${!empty ss_mobileBinderList || !empty ss_UserQueries}">
 <div id="ss_mobileDiv">
   <iframe id="ss_mobileIframe" 
     name="ss_mobileIframe" 
@@ -118,8 +121,6 @@ function ss_setMobileIframeSize() {
 <script type="text/javascript">
 ss_createOnLoadObj("ss_setMobileIframeSize", ss_setMobileIframeSize);
 </script>
-
-</c:if>
 
 </div>
 </div>
