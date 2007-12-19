@@ -1743,6 +1743,8 @@ public static final String[] monthNamesShort = {
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.folderPermalink"), 
 				adapterUrl.toString(), qualifiers);
+		
+		model.put(WebKeys.PERMALINK, adapterUrl.toString());
 
 		String[] contributorIds = collectContributorIds((List)model.get(WebKeys.FOLDER_ENTRIES));
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
