@@ -552,7 +552,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		  </ssHelpSpot>
 		</form>
 		
-		<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"><img src="<html:imagesPath/>pics/menudown.gif" /></a>
+		<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
+		onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>',
+				  '<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				  name="action" value="advanced_search"/><portlet:param 
+				  name="newTab" value="1"/></portlet:actionURL>');"><img 
+				  src="<html:imagesPath/>pics/menudown.gif" /></a>
 		<div id="ss_navbarPopupPane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_navbarPopupPane"></div>
 	</div>
 </ssf:ifnotaccessible>
