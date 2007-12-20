@@ -1168,7 +1168,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     				doFieldUpdate(binders, BasicIndexUtils.FOLDER_ACL_FIELD, value);
     				//evict used binders so don't fill session cache, but don't evict starting binder
     				if (binders.get(0).equals(binder)) binders.remove(0);
-    				for (int i=0; i<binders.size(); ++i) getCoreDao().evict(binders.get(i));					
+    				getCoreDao().evict(binders);					
     				binders.clear();
     			}
     		}
@@ -1195,7 +1195,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     			if (binders.size() >= 100) {
     				doFieldUpdate(binders, BasicIndexUtils.TEAM_ACL_FIELD, value);
     				if (binders.get(0).equals(binder)) binders.remove(0);
-    				for (int i=0; i<binders.size(); ++i) getCoreDao().evict(binders.get(i));					
+    				getCoreDao().evict(binders);					
     				binders.clear();
     			}
     		}

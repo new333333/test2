@@ -86,6 +86,7 @@ import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
+import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
@@ -116,7 +117,21 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		getSession().clear();
 	}
 	public void evict(Object obj) {
-		getSession().evict(obj);
+		if (obj instanceof Collection) {
+			final Collection objs = (Collection)obj;
+			getHibernateTemplate().execute(
+					new HibernateCallback() {
+						public Object doInHibernate(Session session) throws HibernateException {
+							Iterator iter = objs.iterator();
+							while (iter.hasNext()) {
+								session.evict(iter.next());
+							}
+							return null;
+						}
+					}
+			);
+			
+		} else getSession().evict(obj);
 	}
 	public void refresh(Object obj) {
 		getSession().refresh(obj);
@@ -126,22 +141,22 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		//getSession().lock(obj, LockMode.WRITE);
 	}
 	public void save(Object obj) {
-        getHibernateTemplate().save(obj);
+		if (obj instanceof Collection) {
+			final Collection objs = (Collection)obj;
+		       getHibernateTemplate().execute(
+		                new HibernateCallback() {
+		                    public Object doInHibernate(Session session) throws HibernateException {
+		                    	 Iterator iter = objs.iterator();
+		                     	 while (iter.hasNext()) {
+		                     	 	session.save(iter.next());                     	 	
+		                     	 }
+		                     	 return null;
+		                    }
+		                }
+		            );
+		} else getHibernateTemplate().save(obj);
     }
-	public void save(final Collection objs) {
-	       getHibernateTemplate().execute(
-                new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                    	 Iterator iter = objs.iterator();
-                     	 while (iter.hasNext()) {
-                     	 	session.save(iter.next());                     	 	
-                     	 }
-                     	 return null;
-                    }
-                }
-            );
-		
-	}
+
 	//re-attach object
 	public void update(Object obj) {
 	    getHibernateTemplate().update(obj);
@@ -196,6 +211,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	  	   				.executeUpdate();
 	       	   		session.createQuery("DELETE com.sitescape.team.domain.CustomAttribute where " + whereClause)
   	   				.executeUpdate();
+	       	   		session.createQuery("DELETE com.sitescape.team.domain.NotifyStatus where " + whereClause)
+  	   				.executeUpdate();
+ 	       	   		
 /*
  * db servers can deal with these cause on-delete cascade will work
  * 	    	   		session.createQuery("DELETE com.sitescape.team.domain.Event where " + whereClause)
@@ -311,6 +329,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		getHibernateTemplate().execute(
 	    	new HibernateCallback() {
 	    		public Object doInHibernate(Session session) throws HibernateException {
+    	   			session.createQuery("update com.sitescape.team.domain.NotifyStatus set owningBinderKey=:sortKey where owningBinderId=:id")
+    	   				.setString("sortKey", binder.getBinderKey().getSortKey())
+    	   				.setLong("id", binder.getId().longValue())
+    	   				.executeUpdate();
 	    			//update binder key for binders attributes only
 	    	   		session.createQuery("update com.sitescape.team.domain.Attachment set owningBinderKey=:sortKey where owningBinderId=:id")
 	    	   			.setString("sortKey", binder.getBinderKey().getSortKey())
@@ -677,13 +699,13 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	//Clears only folderentries. sub-folder remain since they must always be unique for webdav to traverse the tree
     public void clearFileNames(Binder binder) {
     	executeUpdate("delete from com.sitescape.team.domain.LibraryEntry where binderId=" +
-    			binder.getId() + " and type=" + LibraryEntry.FILE.toString() + " and not entityId is null");
+    			binder.getId() + " and type=" + LibraryEntry.FILE.toString() + " and not entityId is null", null);
     	
     }
     //Clear all titles, don't need if uniqueTitles not enabled.
     public void clearTitles(Binder binder) {
     	executeUpdate("delete from com.sitescape.team.domain.LibraryEntry where binderId=" +
-    			binder.getId() + " and type=" + LibraryEntry.TITLE.toString());
+    			binder.getId() + " and type=" + LibraryEntry.TITLE.toString(), null);
     	
     }
     public List findCompanies() {
@@ -1272,12 +1294,28 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         throw new NoObjectByTheIdException("errorcode.no.dashboard.by.the.id", id);
 	}
 	//Don't use , only for special cases
-	public void executeUpdate(final String query) {
+	public void executeUpdate(final String queryStr) {
+		executeUpdate(queryStr, null);
+	}
+	public void executeUpdate(final String queryStr, final Map values) {
     	getHibernateTemplate().execute(
         	   	new HibernateCallback() {
         	   		public Object doInHibernate(Session session) throws HibernateException {
-    		   			session.createQuery(query)
-		   				.executeUpdate();
+    		   			Query query = session.createQuery(queryStr);
+	                  	if (values != null) {
+	                  		for (Iterator iter=values.entrySet().iterator(); iter.hasNext();) {
+	                  			Map.Entry me = (Map.Entry)iter.next();
+	                  			Object val = me.getValue();
+	                  			if (val instanceof Collection) {
+	                  				query.setParameterList((String)me.getKey(), (Collection)val);
+	                  			} else if (val instanceof Object[]) {
+	                  				query.setParameterList((String)me.getKey(), (Object[])val);
+	                  			} else {
+	                  				query.setParameter((String)me.getKey(), val);
+	                  			}
+	                  		}
+	            		}
+		   				query.executeUpdate();
           	   		
           	   			return null;
 
@@ -1311,5 +1349,37 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		
 		return 0;
 	}
-	
+	public NotifyStatus loadNotifyStatus(Binder binder, DefinableEntity entity) {
+		//currently only the id is used in the key cause folderEntries are the only users
+		NotifyStatus status = (NotifyStatus)getHibernateTemplate().get(NotifyStatus.class, entity.getEntityIdentifier().getEntityId());
+        if (status != null) return status;
+        //create one and return
+        status = new NotifyStatus(binder, entity);
+        save(status);
+        return status;       
+	}
+	/**
+     * Load folder entries that have been updated.
+     * The begin date is really a performance optimization, cause it limits the number of records that are even checked since the key is hopefully ordered by modifyDate.
+     */
+    public List<NotifyStatus> loadNotifyStatus(final String sinceField, final Date begin, final int maxResults, final Long zoneId) {
+       	List result = (List)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	Criteria crit = session.createCriteria(NotifyStatus.class)
+                    	.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+                    	.add(Expression.ge("lastModified", begin))
+                    	.add(Expression.gtProperty("lastModified", sinceField))
+                    	.addOrder(Order.asc("owningBinderKey"));
+                    	
+                    	if (maxResults > 0) {
+                    		crit.setMaxResults(maxResults);
+						}
+                    	
+                       return crit.list();
+                    }
+                }
+            );  
+       return result;   	
+    }
 }

@@ -12,6 +12,7 @@
     <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
     <property name="zoneId" access="field"/>
 	<property name="deleted"/>
+	<property name="subscribed"/>
     <map inverse="true" access="field" cascade="all,delete-orphan" lazy="true" batch-size="4" name="customAttributes">
       <key column="folderEntry"/>
       <map-key type="string" column="name"/>
@@ -96,5 +97,5 @@
       <property name="count" column="ratings_count"/>
     </component>
     <property name="popularity" optimistic-lock="false"/>
-  </class>
+   </class>
 </hibernate-mapping>

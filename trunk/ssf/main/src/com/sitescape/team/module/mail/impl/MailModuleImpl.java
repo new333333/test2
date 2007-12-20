@@ -65,12 +65,16 @@ import net.fortuna.ical4j.util.Calendars;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
+import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.jndi.JndiAccessor;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.calendar.TimeZoneHelper;
@@ -80,11 +84,19 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
+import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.dao.util.OrderBy;
+import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.ical.util.ICalUtils;
 import com.sitescape.team.jobs.FailedEmail;
+import com.sitescape.team.jobs.FillEmailSubscription;
+import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.jobs.SendEmail;
+import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.ical.IcalModule;
@@ -98,6 +110,7 @@ import com.sitescape.team.util.ByteArrayResource;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.PortabilityUtil;
+import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
@@ -114,7 +127,7 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class MailModuleImpl extends CommonDependencyInjection implements MailModule, InitializingBean {
+public class MailModuleImpl extends CommonDependencyInjection implements MailModule, ZoneSchedule, InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected Map zoneProps = new HashMap();
 	protected Map mailPosters = new HashMap();
@@ -133,6 +146,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED, "false");
 	}
 
+	private TransactionTemplate transactionTemplate;
+    protected TransactionTemplate getTransactionTemplate() {
+		return transactionTemplate;
+	}
+	public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
+		this.transactionTemplate = transactionTemplate;
+	}
+	
 	private IcalModule icalModule;
 	public IcalModule getIcalModule() {
 		return icalModule;
@@ -203,6 +224,45 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 */		
 	}
 
+	protected FillEmailSubscription getSubscriptionProcessor(Workspace zone) {
+	 	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FillEmailSubscription.SUBSCRIPTION_JOB + "']");
+	 	   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultFillEmailSubscription";
+	 	   try {
+	 		   Class processorClass = ReflectHelper.classForName(jobClass);
+	 		   FillEmailSubscription job = (FillEmailSubscription)processorClass.newInstance();
+	 		   return job;
+	 	   } catch (ClassNotFoundException e) {
+	 		   throw new ConfigurationException(
+	 				"Invalid FillEmailSubscription class name '" + jobClass + "'",
+	 				e);
+	 	   } catch (InstantiationException e) {
+	 		   throw new ConfigurationException(
+	 				"Cannot instantiate FillEmailSubscription of type '"
+	                     	+ jobClass + "'");
+	 	   } catch (IllegalAccessException e) {
+	 		   throw new ConfigurationException(
+	 				"Cannot instantiate FillEmailSubscription of type '"
+	 				+ jobClass + "'");
+	 	   } 
+	 	}
+	//called on zone delete
+	public void stopScheduledJobs(Workspace zone) {
+		FillEmailSubscription sub = getSubscriptionProcessor(zone);
+		sub.remove(zone.getId());
+	}
+	//called on zone startup
+	public void startScheduledJobs(Workspace zone) {
+		if (zone.isDeleted()) return;
+		//make sure a delete job is scheduled for the zone
+		FillEmailSubscription sub = getSubscriptionProcessor(zone);
+		String minString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FillEmailSubscription.SUBSCRIPTION_MINUTES + "']");
+		int minutes = 5;
+		try {
+			minutes = Integer.parseInt(minString);
+		} catch (Exception ex) {};
+		sub.schedule(zone.getId(), null, minutes);
+	}
+
 	public File getMailDirPath(Binder binder) {
 		return new File(new StringBuffer(mailRootDir).append(RequestContextHolder.getRequestContext().getZoneName()).append(File.separator).append(binder.getId().toString()).append(File.separator).toString());
 	}
@@ -240,6 +300,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 //		else jndiName = PortabilityUtil.getJndiName(getMailAttribute(binder, "notify", "session"));
 		return getMailSender(jndiName);
 	}
+
 
 	public synchronized List getMailPosters(String zoneName) {
 		//posting map is indexed by zoneName.  Value is a list of mail sessions
@@ -444,93 +505,176 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		}
 		
 	}
-	public void fillSubscription(Long folderId, Long entryId, Date stamp) {
-		FolderEntry entry = getFolderDao().loadFolderEntry(folderId, entryId, RequestContextHolder.getRequestContext().getZoneId());
-		Folder folder = entry.getTopFolder();
-		FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
-		//subscriptions are made to toplevel entries only
-		FolderEntry parent = entry.getTopEntry();
-		if (parent == null) parent = entry;
-		List subscriptions = getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier());
-		//make sure folder subscriptions show up second, entry will take precedence
-		subscriptions.addAll(getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier()));
-		//Handle subscriptions plus notifications for 3 types 
-		// Users wanting individual, message style email with attachments
-		Map messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
-		// Users wanting individual, message style email without attachments
-		Map messageNoAttsResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
-		// Users wanting individual, text message email
-		Map messageTxtResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION);
+    /*
+     * Fill any subscriptions to modified entries.  Handles user requested subscriptions and administrator notifications that are not digest.
+     * Begin represents the last time we got through this without errors and used as a query optimization.
+     */
+	public Date fillSubscriptions(Date begin)  {
+		final String updateString="update com.sitescape.team.domain.NotifyStatus set lastFullSent=:p1 where ownerId in (:p2)";
+   		final Map values = new HashMap();
+		Object ctx = null;
+		Date end = new Date();
+		values.put("p1", end);
+		Map params = new HashMap();
+		JavaMailSender mailSender = getMailSender(RequestContextHolder.getRequestContext().getZone());
+		try {
+			ctx = mailSender.initializeConnection();
+			Folder currentFolder = null;
+			List<Subscription> folderSubscriptions = null;
+			FolderEmailFormatter processor=null;
+			MimeHelper mHelper = null;
+			String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE);
+			//Will be sorted by owningBinderkey
+			List<NotifyStatus> uStatus = getCoreDao().loadNotifyStatus("lastFullSent", begin, 100, RequestContextHolder.getRequestContext().getZoneId());
+			List ids = new ArrayList();
+			while (!uStatus.isEmpty()) {
+				//get Ids to log folderEntries
+				ids.clear();
+				for (NotifyStatus status: uStatus) {
+					ids.add(status.getOwnerId());
+				}
+				params.put("ids", ids);
+				List<FolderEntry> entries = getCoreDao().loadObjects("from com.sitescape.team.domain.FolderEntry where id in (:ids)", params);
+				for (NotifyStatus eStatus:uStatus) {
+					//find corresponding folderEntry
+					FolderEntry entry = null;
+					for (FolderEntry fEntry:entries) {
+						if (fEntry.getId().equals(eStatus.getOwnerId())) {
+							entry = fEntry;
+							break;
+						}
+					}
+					if (entry == null) continue;
+	   				if (!entry.getRootFolder().equals(currentFolder)) {
+	   					currentFolder = entry.getRootFolder();
+	   					folderSubscriptions = getCoreDao().loadSubscriptionByEntity(currentFolder.getEntityIdentifier());  					
+	   					processor = (FolderEmailFormatter)processorManager.getProcessor(currentFolder,FolderEmailFormatter.PROCESSOR_KEY);
+	   					mHelper = new MimeHelper(processor, currentFolder, begin);
+	   	   				mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
+	   	  				mHelper.setTimeZone(timeZone);
+					}
+	  				FolderEntry parent = entry.getTopEntry();
+	   				if (parent == null) parent = entry;
+	   				//Handle subscriptions plus notifications for 3 types 
+	   				List subscriptions;
+	   				if (parent.isSubscribed()) {
+	   					subscriptions = getCoreDao().loadSubscriptionByEntity(parent.getEntityIdentifier());
+	   					//	make sure entry subscription is 1st in list so overrides folder subscription for same user
+	   					subscriptions.addAll(folderSubscriptions);
+	   				} else {
+	   					subscriptions = folderSubscriptions;
+	   				}
+	   				//still have to add in notifications, so continue event if subscriptions is empty
+	   				// Users wanting individual, message style email with attachments
+	   				Map messageResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
+	   				// Users wanting individual, message style email without attachments
+	   				Map messageNoAttsResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
+	   				// Users wanting individual, text message email
+	   				Map messageTxtResults = processor.buildDistributionList(entry, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION);
+	   				mHelper.setEntry(entry);
+	   				mHelper.setStartDate(eStatus.getLastFullSent());
+	   				if (!messageTxtResults.isEmpty()) {
+	   					mHelper.setType(Notify.NotifyType.text);
+	   					mHelper.setSendAttachments(false);
+	   					doSubscription (currentFolder, mailSender, mHelper, messageTxtResults, ctx);
+	   				}	
+	  				if (!messageNoAttsResults.isEmpty()) {
+	  					mHelper.setType(Notify.NotifyType.full);
+	  					mHelper.setSendAttachments(false);
+	  					doSubscription (currentFolder, mailSender, mHelper, messageNoAttsResults, ctx);
+	  				}
+	   		   					
+	  				if (!messageResults.isEmpty()) {
+	  					mHelper.setType(Notify.NotifyType.full);
+	  					mHelper.setSendAttachments(true);
+	  					doSubscription (currentFolder, mailSender, mHelper, messageResults, ctx);
+	  				}
+				}
+				values.put("p2", ids);
+				for (int count=0; count<10; ++count) {
+					try {
+						getTransactionTemplate().execute(new TransactionCallback() {
+							public Object doInTransaction(TransactionStatus status) {
+								getCoreDao().executeUpdate(updateString, values);
+								return null;
+							}});
+					} catch (org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException ol) {
+						continue;
+					} catch (org.springframework.dao.DataIntegrityViolationException di) {
+						continue;
+					} catch (StaleObjectStateException so) {
+						continue;
+					}
+					break;  //assume we got through
+				}
+				getCoreDao().evict(uStatus);
+				getCoreDao().evict(entries);
+				uStatus = getCoreDao().loadNotifyStatus("lastFullSent", begin, 100, RequestContextHolder.getRequestContext().getZoneId());
+ 			}
 
-
-		JavaMailSender mailSender = getMailSender(folder);
-		MimeHelper mHelper = new MimeHelper(processor, folder, stamp);
-		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
-		mHelper.setEntry(entry);
-		mHelper.setTimeZone(getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
-
-		mHelper.setType(Notify.NotifyType.text);
-		mHelper.setSendAttachments(false);
-		doSubscription (folder, mailSender, mHelper, messageTxtResults);
-		
-		mHelper.setType(Notify.NotifyType.full);
-		mHelper.setSendAttachments(false);
-		doSubscription (folder, mailSender, mHelper, messageNoAttsResults);
-	
-		mHelper.setType(Notify.NotifyType.full);
-		mHelper.setSendAttachments(true);
-		doSubscription (folder, mailSender, mHelper, messageResults);
+		} catch (MailSendException sx) {
+    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
+    		throw sx;
+		} catch (MailAuthenticationException ax) {
+    		logger.error("Error sending mail:" + ax.getLocalizedMessage());
+    		throw ax;
+		} finally {
+			if (ctx !=null) mailSender.releaseConnection(ctx);
+		}
+		return end;
 	}
 	
-	private void doSubscription (Folder folder, JavaMailSender mailSender, MimeHelper mHelper, Map results) {
+	private void doSubscription (Folder folder, JavaMailSender mailSender, MimeHelper mHelper, Map results, Object ctx) {
 		for (Iterator iter=results.entrySet().iterator(); iter.hasNext();) {			
 			//Use spring callback to wrap exceptions into something more useful than javas 
 			try {
 				Map.Entry e = (Map.Entry)iter.next();
 				mHelper.setLocale((Locale)e.getKey());
 				mHelper.setToAddrs((Set)e.getValue());
-				mailSender.send(mHelper);
+				mailSender.send(mHelper, ctx);
 			} catch (MailSendException sx) {
 	    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
 		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
-		   	} catch (MailAuthenticationException ax) {
-	    		logger.error("Error sending mail:" + ax.getLocalizedMessage());
-		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
-		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));		   	 
 		   	} catch (Exception ex) {
+		   		//message gets throw away here
 	       		logger.error(ex.getLocalizedMessage());
 	    	} 
 		}
 
 	}
 	/**
-	 * Send email notifications for recent changes
+	 * Send email notifications for recent changes.  Only used for digest style messages
 	 */
     public Date sendNotifications(Long folderId, Date start) {
  		Folder folder = (Folder)coreDao.loadBinder(folderId, RequestContextHolder.getRequestContext().getZoneId()); 
 		Date until = new Date();
-		//get folder specific helper to build message
-  		FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
-  		List entries = processor.getEntries(folder, start, until);
+
+  		List entries = getFolderDao().loadFolderTreeUpdates(folder, start, until, new OrderBy("HKey.sortKey"), -1);
  		if (entries.isEmpty()) {
 			return until;
 		}
+		//get folder specific helper to build message
+  		FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
  		List subscriptions = getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier());
-		List digestResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);
-		
-		
+		List digestResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);		
+		if (digestResults.isEmpty()) return until;
 		JavaMailSender mailSender = getMailSender(folder);
 		MimeHelper mHelper = new MimeHelper(processor, folder, start);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 		mHelper.setTimeZone(getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
-
-		for (int i=0; i<digestResults.size(); ++i) {
-			Object row[] = (Object [])digestResults.get(i);
-			mHelper.setEntries((Collection)row[0]);
-			mHelper.setType(Notify.NotifyType.summary);
-			mHelper.setSendAttachments(false);
-			doSubscription(folder, mailSender, mHelper, (Map)row[1]);
+		Object ctx = null;
+		try {
+			ctx = mailSender.initializeConnection();
+			for (int i=0; i<digestResults.size(); ++i) {
+				Object row[] = (Object [])digestResults.get(i);
+				mHelper.setEntries((Collection)row[0]);
+				mHelper.setType(Notify.NotifyType.summary);
+				mHelper.setSendAttachments(false);
+				doSubscription(folder, mailSender, mHelper, (Map)row[1], ctx);
+			}
+		} finally {
+			mailSender.releaseConnection(ctx);
 		}
 		
 /* now handled by fillsubscription
@@ -615,7 +759,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		Folder folder;
 		Collection toAddrs;
 		Collection entries;
-		Object entry;
+		FolderEntry entry;
 		MimeMessage message;
 		Notify.NotifyType messageType;
 		Date startDate;
@@ -632,9 +776,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		protected void setToAddrs(Collection toAddrs) {
 			this.toAddrs = toAddrs;			
 		}
-		protected void setEntry(Object entry) {
+		protected void setEntry(FolderEntry entry) {
 			this.entry = entry;
 			
+		}
+		protected void setStartDate(Date startDate) {
+			this.startDate = startDate;
 		}
 		protected void setSendAttachments(boolean sendAttachments) {
 			this.sendAttachments = sendAttachments;
@@ -662,14 +809,13 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			Notify notify = new Notify();
 			notify.setType(messageType);
 			notify.setAttachmentsIncluded(sendAttachments);
-			notify.setStartDate(startDate);
+			notify.setStartDate(startDate);				
 			notify.setLocale(locale);
 			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale);
 			if (timezone == null) timezone = TimeZoneHelper.getDefault();
 			df.setTimeZone(timezone);
 			notify.setDateFormat(df);
 			
-			boolean folderNotification = (entry == null);
 			
 			message = null;
 			int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
@@ -708,8 +854,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 //				MailHelper.setText((String)result.get(FolderEmailFormatter.PLAIN), (String)result.get(FolderEmailFormatter.HTML), helper);
 				MailHelper.setText(null, (String)result.get(FolderEmailFormatter.HTML), helper);
 				prepareAttachments(notify, helper);
-				prepareICalendars(notify, helper, folderNotification);
+				prepareICalendars(notify, helper);
 			} else {
+				//just a subject line
 				MailHelper.setText("", "", helper);
 			}
 
@@ -718,7 +865,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			message = mimeMessage;
 		}
 		
-		private void prepareICalendars(Notify notify, MimeMessageHelper helper, boolean folderNotification) throws MessagingException {
+		private void prepareICalendars(Notify notify, MimeMessageHelper helper) throws MessagingException {
 			int c = 0;
 			int eventsSize = notify.getEvents().size();
 			Calendar margedCalendars = null;
@@ -749,9 +896,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					//If okay to send todo or not a todo build alternatative
 					if (sendVTODO || !Component.VTODO.equals(component)) {
 						// 	attach alternative iCalendar content
-						if (eventsSize == 1 && !folderNotification) {
+						if (eventsSize == 1 && Notify.NotifyType.full.equals(messageType)) {
 							MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
-						} else {
+						} else if (!Notify.NotifyType.text.equals(messageType)) {
 							if (margedCalendars == null) {
 								margedCalendars = new Calendar();
 							}

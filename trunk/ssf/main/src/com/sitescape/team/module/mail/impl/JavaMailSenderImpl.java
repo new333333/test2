@@ -27,13 +27,28 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.mail.impl;
+import java.io.IOException;
+import java.util.Date;
+
+import javax.mail.AuthenticationFailedException;
+import javax.mail.MessagingException;
 import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.MimeMessage;
+
+import org.springframework.mail.MailAuthenticationException;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailParseException;
+import org.springframework.mail.MailPreparationException;
+import org.springframework.mail.MailSendException;
+import org.springframework.mail.javamail.MimeMessagePreparator;
 
 import com.sitescape.util.Validator;
 /**
  * This class extends the spring JavaMailSenderImpl.  It adds the bean name, so
  * we can locate the sender when mail is resent after an error.  The resend occurs
- * as a scheduled job.
+ * as a scheduled job.  It also caches the coneection so we can send lots of messages without
+ * reconnecting and without holding lots of messages in memory
  * @author Janet McCann
  *
  */
@@ -84,5 +99,67 @@ public class JavaMailSenderImpl extends
 	public String getName() {
 		return name;
 	}
+	public void send(MimeMessagePreparator mimeMessagePreparator, Object ctx) throws MailException {
+		Cache cache = (Cache)ctx;
+		cache.validate();
 
+		try {
+			MimeMessage mimeMessage = createMimeMessage();
+			mimeMessagePreparator.prepare(mimeMessage);
+			if (mimeMessage.getSentDate() == null) {
+				mimeMessage.setSentDate(new Date());
+			}
+			mimeMessage.saveChanges();
+			cache.transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
+		}
+		catch (MailException ex) {
+			throw ex;
+		}
+		catch (MessagingException ex) {
+			throw new MailParseException(ex);
+		}
+		catch (IOException ex) {
+			throw new MailPreparationException(ex);
+		}
+		catch (Exception ex) {
+			throw new MailPreparationException(ex);
+		}
+	}
+	public Object initializeConnection() throws MailException {
+		Transport transport;
+		try {
+			transport = super.getTransport(getSession());
+			transport.connect(getHost(), getPort(), getUsername(), getPassword());
+		} catch (AuthenticationFailedException ex) {
+				throw new MailAuthenticationException(ex);
+
+		} catch (MessagingException ex) {
+			throw new MailSendException("Mail server connection failed", ex);
+		}
+		return new Cache(transport);
+	}
+	public void releaseConnection(Object ctx) {
+		if (ctx != null) ((Cache)ctx).release();
+	}
+	private class Cache {
+		Transport transport;
+		protected Cache(Transport transport) {
+			this.transport = transport;
+		}
+		protected void release() {
+			try {
+				transport.close();
+			} catch (Exception ex) {};
+		}
+		protected void validate() {
+			try {
+				if (!transport.isConnected()) transport.connect(getHost(), getPort(), getUsername(), getPassword());
+			} catch (AuthenticationFailedException ex) {
+				throw new MailAuthenticationException(ex);
+			} catch (MessagingException ex) {
+				throw new MailSendException("Mail server connection failed", ex);
+			}
+				
+		}
+	}
 }

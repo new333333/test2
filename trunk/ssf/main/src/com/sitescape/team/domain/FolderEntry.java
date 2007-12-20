@@ -63,7 +63,7 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     // including both effective and expired locks. 
     protected Integer lockedFileCount; // access="field"
     protected String postedBy;
- 
+    protected boolean subscribed=false;
     public FolderEntry() {
         super();
     }
@@ -77,13 +77,8 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public void setParentFolder(Folder parentFolder) {
         setParentBinder(parentFolder);
     }
-    public Folder getTopFolder() {
-		Folder f = getParentFolder().getTopFolder();
-  		if (f != null) {
-  			return f;
-  		} else {
-  			return getParentFolder();
-  		}
+    public Folder getRootFolder() {
+		return getParentFolder().getRootFolder();
 
     }
     /** 
@@ -275,6 +270,18 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
             parent.removeAncestor(reply);
         }
         
+    }
+    /**
+     * Indicates if individual subscriptions to the is entry exist
+     * Performance optimization
+     * @hiberate.property
+     * @return
+     */
+    public boolean isSubscribed() {
+    	return subscribed;
+    }
+    public void setSubscribed(boolean subscribed) {
+    	this.subscribed = subscribed;
     }
     
 }

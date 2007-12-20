@@ -629,7 +629,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 					logger.error("Error updating principals:", ex);
 				}
 				//flush from cache
-				for (int i=0; i<exists.size(); ++i) getCoreDao().evict(exists.get(i));
+				getCoreDao().evict(exists);
 				//returns list of user objects
 				try {
 					if (logger.isInfoEnabled()) {
@@ -642,7 +642,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 					//processor commits entries - so update indexnow
 					IndexSynchronizationManager.applyChanges();
 					//flush from cache
-					for (int i=0; i<addedEntries.size(); ++i) getCoreDao().evict(addedEntries.get(i));			
+					getCoreDao().evict(addedEntries);			
 				} catch (Exception ex) {
 					IndexSynchronizationManager.discardChanges();
 					logger.error("Error creating principals:", ex);

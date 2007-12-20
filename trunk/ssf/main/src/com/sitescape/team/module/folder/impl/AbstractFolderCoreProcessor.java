@@ -57,12 +57,12 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.FolderHierarchyException;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.Statistics;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
-import com.sitescape.team.jobs.FillEmailSubscription;
 import com.sitescape.team.module.binder.impl.AbstractEntryProcessor;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;
@@ -344,6 +344,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //inside write transaction
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition) {
     	super.addEntryWorkflow(binder, entry, definition);
+    	
     	//reindex top whose lastActivity has changed
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
@@ -376,7 +377,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    public void setWorkflowResponse(Binder binder, Entry entry, Long stateId, InputDataAccessor inputData)  {
 	   Long version = entry.getLogVersion();
 	   super.setWorkflowResponse(binder, entry, stateId, inputData);
- 	   if (version != entry.getLogVersion()) {
+	   if (version != entry.getLogVersion()) {
 		   FolderEntry fEntry = (FolderEntry)entry;
 		   fEntry.updateLastActivity(fEntry.getModification().getDate());
  		   if (!fEntry.isTop()) {
@@ -659,9 +660,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		//add folderEntry fields
 		if (entry instanceof FolderEntry) {
 			FolderEntry fEntry = (FolderEntry)entry;
-			if (operation == ChangeLog.WORKFLOWTIMEOUT) {
-				//need to notify folder of out-of-band change
-				scheduleSubscription(fEntry.getParentFolder(), fEntry, fEntry.getWorkflowChange().getDate());
+			if (!ChangeLog.DELETEENTRY.equals(operation)) {
+				NotifyStatus status = getCoreDao().loadNotifyStatus(fEntry.getParentFolder(), fEntry);
+				status.setLastModified(fEntry.getModification().getDate());
 			}
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_DOCNUMBER, fEntry.getDocNumber());
 			if (fEntry.getTopEntry() != null) XmlUtils.addProperty(element, ObjectKeys.XTAG_FOLDERENTRY_TOPENTRY, fEntry.getTopEntry().getId());
@@ -672,13 +673,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		return changes;
 	}
 	//***********************************************************************************************************
-    public void scheduleSubscription(Folder folder, FolderEntry entry, Date when) {
-  		FillEmailSubscription process = (FillEmailSubscription)processorManager.getProcessor(folder.getRootFolder(), FillEmailSubscription.PROCESSOR_KEY);
-  		//schedule email notification - for anyone who subsrcibed to this entry or this folder (non-digest)
- 		process.schedule(folder.getRootFolder().getId(), entry.getId(), when);
-    	
-    }
-	//***********************************************************************************************************
     private Statistics getFolderStatistics(Folder folder) {
         CustomAttribute statisticsAttribute = folder.getCustomAttribute(Statistics.ATTRIBUTE_NAME);
         Statistics statistics = null;
@@ -686,7 +680,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         	statistics = new Statistics();
         } else {
         	 statistics = (Statistics)statisticsAttribute.getValue();
-//        	statistics = new Statistics();
         }
         return statistics;
 	}

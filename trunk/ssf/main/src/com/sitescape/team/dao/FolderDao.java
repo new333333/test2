@@ -57,7 +57,7 @@ public interface FolderDao {
      */
     public SFQuery queryEntries(Folder folder, FilterControls filter) throws DataAccessException; 
     public List<FolderEntry> loadEntries(final Folder folder, FilterControls filter) throws DataAccessException ;
-    	    /**
+     /**
      * 
      * @param parentFolder
      * @param entry
@@ -80,7 +80,7 @@ public interface FolderDao {
 	public List<FolderEntry> loadFolderTreeUpdates(Folder folder, Date since, Date before, OrderBy order, int maxResults);
 	
 	public Folder loadFolder(Long folderId, Long zoneId) throws DataAccessException,NoFolderByTheIdException;
-  
+		   
     public void delete(Folder folder);
     public void deleteEntries(Folder folder, Collection<FolderEntry> entries);
     public void markEntriesDeleted(Folder folder, Collection<FolderEntry> entries);
