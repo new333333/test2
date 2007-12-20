@@ -2552,7 +2552,8 @@ var ss_helpSystem = {
 	},
 	
 	postShowPanel : function(data) {
-		var pObj = self.document.getElementById(data.panelId);
+		panelId = data.panelId;
+		var pObj = self.document.getElementById(panelId);
 		pObj.setAttribute("helpId", data.id);
 		pObj.style.display = "block"
 		var width = parseInt(dojo.html.getMarginBox(pObj).width);
