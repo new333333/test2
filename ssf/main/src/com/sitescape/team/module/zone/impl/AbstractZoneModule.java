@@ -217,6 +217,8 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		getCoreDao().executeUpdate("update com.sitescape.team.domain.Rating set zoneId=" + zone.getId() + 
 			" where zoneId is null");
 		getCoreDao().executeUpdate("update com.sitescape.team.domain.TemplateBinder set name=templateTitle where parentBinder is null and (name is null or name='')");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set subscribed=false where subscribed is null");
+		getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set subscribed=true where id in (select id.entityId from com.sitescape.team.domain.Subscription where id.entityType=6)");
 		//fixup user emails
  		SFQuery query=null;
  		List batch = new ArrayList();

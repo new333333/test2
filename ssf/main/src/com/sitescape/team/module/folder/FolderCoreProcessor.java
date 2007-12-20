@@ -28,7 +28,6 @@
  */
 package com.sitescape.team.module.folder;
 
-import java.util.Date;
 import java.util.Map;
 
 import com.sitescape.team.domain.Definition;
@@ -50,5 +49,4 @@ public interface FolderCoreProcessor extends EntryProcessor {
     public FolderEntry addReply(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
     public Map getEntryTree(Folder parentFolderId, FolderEntry entry) throws AccessControlException;
-    public void scheduleSubscription(Folder folder, FolderEntry entry, Date stamp);
 }

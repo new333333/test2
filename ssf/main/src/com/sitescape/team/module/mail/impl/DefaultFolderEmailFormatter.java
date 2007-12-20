@@ -29,7 +29,6 @@
 
 package com.sitescape.team.module.mail.impl;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -78,7 +77,6 @@ import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.team.dao.util.OrderBy;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
@@ -97,7 +95,6 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
-import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
@@ -147,17 +144,6 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		this.icalModule = icalModule;
 	}	
 
-
-
-	/**
-	 * Get updates to this folder and all its sub-folders
-	 */
-	public List getEntries(Folder folder, Date start, Date until) {
- 		Folder top = folder.getTopFolder();
-		if (top == null) top = folder;
-		return getFolderDao().loadFolderTreeUpdates(top, start ,until, new OrderBy("HKey.sortKey"), -1);
- 		
-    }
 	/**
 	 * Determine which users have access to the entry.
 	 * Return a map from locale to a collection of email Addresses
@@ -165,7 +151,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public Map buildDistributionList(FolderEntry entry, Collection subscriptions, int style) {
 		List entries = new ArrayList();
 		entries.add(entry);
-		Map<User, String[]> userMap = getUserList(entry.getTopFolder(), entries, subscriptions,  style);
+		Map<User, String[]> userMap = getUserList(entry.getRootFolder(), entries, subscriptions,  style);
 		Map languageMap = new HashMap();
 		//check access to folder/entry and build lists of users to receive mail
 		Set email = new HashSet();
@@ -183,7 +169,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				}
 			} catch (Exception ex) {};
 		}
-		NotificationDef nDef = entry.getTopFolder().getNotificationDef();
+		NotificationDef nDef = entry.getRootFolder().getNotificationDef();
 		if (nDef.getStyle() == style) {
 			//add in email address only subscriptions
 	 		String addrs = nDef.getEmailAddress();
@@ -222,7 +208,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 * Object[1] contains a map.  The map maps locales to a list of emailAddress of users
 	 * using that locale that have access to the entries.
 	 * The list of entries will maintain the order used to do lookup.  This is important
-	 * when actually building the message	
+	 * when actually building the digest message	
 	 */
 	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style) {
 		List result = new ArrayList();

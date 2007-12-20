@@ -40,6 +40,7 @@ import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.criterion.Criterion;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.springframework.dao.DataAccessException;
@@ -56,6 +57,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HKey;
+import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.NoFolderByTheIdException;
 import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Tag;
@@ -229,7 +231,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
          );  
          return result;
      } 
-
+ 
     /**
      * Load all entries of a folder and it sub-folders that have been updated with a specified range.
      */
@@ -361,9 +363,10 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
             	    		session.evict(p);
             	    	}
              			inList.deleteCharAt(inList.length()-1);
+             			String entityString = "ownerId in (" + inList.toString() + ") and ownerType='" +
+		   					EntityType.folderEntry.name() + "'";
             			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by folderentry
-    		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and ownerType='" +
-   		   					EntityType.folderEntry.name() + "'");
+    		   			getCoreDao().deleteEntityAssociations(entityString);
     		   			//delete ratings/visits for these entries
      		   			session.createQuery("Delete com.sitescape.team.domain.Rating where entityId in (:pList) and entityType=:entityType")
          	   				.setParameterList("pList", ids)
@@ -411,7 +414,7 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
      * Sub folder and their entries must be handled separetly
      */
     public void move(final Folder folder) {
-    	getCoreDao().move(folder);
+    	getCoreDao().move(folder);  //handles most generic associations
 	   	getHibernateTemplate().execute(
 	     	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
@@ -475,6 +478,13 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	    	   			.setString("type", EntityType.folderEntry.name())
 	       	   			.executeUpdate();
       	   			session.createQuery("update com.sitescape.team.domain.WorkflowResponse set owningBinderKey=:sortKey,owningBinderId=:id where " +
+      	   				"ownerId in (:pList) and ownerType=:type")
+      	   				.setString("sortKey", folder.getBinderKey().getSortKey())
+      	   				.setLong("id", folder.getId().longValue())
+      	   				.setParameterList("pList", ids)
+      	   				.setString("type", EntityType.folderEntry.name())
+      	   				.executeUpdate();
+      	   			session.createQuery("update com.sitescape.team.domain.NotifyStatus set owningBinderKey=:sortKey,owningBinderId=:id where " +
       	   				"ownerId in (:pList) and ownerType=:type")
       	   				.setString("sortKey", folder.getBinderKey().getSortKey())
       	   				.setLong("id", folder.getId().longValue())

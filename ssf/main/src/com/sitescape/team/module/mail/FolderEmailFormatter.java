@@ -48,7 +48,6 @@ public interface FolderEmailFormatter {
     public static final String PLAIN="plain";
     public static final String HTML="html";
     public static final String ATTACHMENT="attachment";
-    public List getEntries(Folder folder, Date start, Date until);
     public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style);
 	public Map buildDistributionList(FolderEntry entry, Collection subscriptions, int style);
 	public Map buildNotificationMessage(Folder folder, Collection entries, Notify notify);

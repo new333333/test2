@@ -32,6 +32,7 @@ package com.sitescape.team.dao;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 import org.springframework.dao.DataAccessException;
 
@@ -44,6 +45,7 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
@@ -77,6 +79,7 @@ public interface CoreDao {
 	public void flush();
 	public void evict(Object obj); 
 	public void executeUpdate(String update);
+	public void executeUpdate(String update, Map values);
 	public boolean isDirty();
 	public void lock(Object obj);
 	public Object load(Class className, String id);
@@ -102,6 +105,7 @@ public interface CoreDao {
     public List<Definition> loadDefinitions(Long zoneId, int type);
 	public EntityDashboard loadEntityDashboard(EntityIdentifier ownerId);
     public List<Tag> loadEntityTags(EntityIdentifier entityIdentifier, EntityIdentifier ownerIdentifier);
+	public NotifyStatus loadNotifyStatus(Binder binder, DefinableEntity entity);
 	public List loadObjects(ObjectControls objs, FilterControls filter, Long zoneId);
 	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter, Long zoneId);
 	public List loadObjects(Class className, FilterControls filter, Long zoneId);
@@ -129,6 +133,7 @@ public interface CoreDao {
 	public Tag loadTag(String id, Long zoneId);
 	public TemplateBinder loadTemplate(Long templateId, Long zoneId);
 	public TemplateBinder loadTemplateByName(String name, Long zoneId);
+	public List<NotifyStatus> loadNotifyStatus(String sinceField, Date begin, int maxResults, Long zoneId);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public Object merge(Object obj); 
     public void move(Binder binder);
@@ -138,7 +143,6 @@ public interface CoreDao {
     public void registerTitle(Binder binder, DefinableEntity entity);
 	public void replicate(Object obj);
 	public void save(Object obj);
-	public void save(Collection objs);
 	public Object saveNewSession(Object obj);
 	public void update(Object obj);
 	public double averageColumn(Class clazz, String column, FilterControls filter, Long zoneId);

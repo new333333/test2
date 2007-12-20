@@ -647,8 +647,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		List<Long> ids = new ArrayList();
 		for (Principal p: newEntries.keySet()) {
 			ids.add(p.getId());
-			getCoreDao().evict(p);
 		}
+		getCoreDao().evict(newEntries);
 
 		//since we changed the creation/modification principal need reload
 		List<Principal> ps = getProfileDao().loadPrincipals(ids, binder.getZoneId(), false);

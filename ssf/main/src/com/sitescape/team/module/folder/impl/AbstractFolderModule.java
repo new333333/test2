@@ -47,7 +47,6 @@ import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NoObjectByTheIdException;
@@ -93,6 +92,7 @@ import com.sitescape.team.module.folder.FilesLockedByOtherUsersException;
 import com.sitescape.team.module.folder.FolderCoreProcessor;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.folder.index.IndexUtils;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
@@ -132,9 +132,35 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	public void setReportModule(ReportModule reportModule) {
 		this.reportModule = reportModule;
 	}
+	protected DefinitionModule getDefinitionModule() {
+		return definitionModule;
+	}
+	 
+	/**
+	 * 
+	 * Setup by spring
+	 * @param definitionModule
+	 */
+	public void setDefinitionModule(DefinitionModule definitionModule) {
+		this.definitionModule = definitionModule;
+	}
+	protected FileModule getFileModule() {
+		return fileModule;
+	}
+	//set by spring
+	public void setFileModule(FileModule fileModule) {
+		this.fileModule = fileModule;
+	}
+	
+	protected BinderModule getBinderModule() {
+		return binderModule;
+	}
+	public void setBinderModule(BinderModule binderModule) {
+		this.binderModule = binderModule;
+	}
 	
 
- 	protected FolderDelete getProcessor(Workspace zone) {
+ 	protected FolderDelete getDeleteProcessor(Workspace zone) {
  	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_JOB + "']");
  	   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultFolderDelete";
  	   try {
@@ -159,14 +185,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
  	}
  	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {
-		FolderDelete job = getProcessor(zone);
+		FolderDelete job = getDeleteProcessor(zone);
 		job.remove(zone.getId());
 	}
  	//called on zone startup
      public void startScheduledJobs(Workspace zone) {
     	if (zone.isDeleted()) return;
     	//make sure a delete job is scheduled for the zone
-		FolderDelete job = getProcessor(zone);
+		FolderDelete job = getDeleteProcessor(zone);
 		String hrsString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FolderDelete.DELETE_HOURS + "']");
     	int hours = 24;
     	try {
@@ -236,32 +262,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 
 	}
 	
-	protected DefinitionModule getDefinitionModule() {
-		return definitionModule;
-	}
-	 
-	/**
-	 * 
-	 * Setup by spring
-	 * @param definitionModule
-	 */
-	public void setDefinitionModule(DefinitionModule definitionModule) {
-		this.definitionModule = definitionModule;
-	}
-	protected FileModule getFileModule() {
-		return fileModule;
-	}
-	//set by spring
-	public void setFileModule(FileModule fileModule) {
-		this.fileModule = fileModule;
-	}
-	
-	protected BinderModule getBinderModule() {
-		return binderModule;
-	}
-	public void setBinderModule(BinderModule binderModule) {
-		this.binderModule = binderModule;
-	}
 	
 	Folder loadFolder(Long folderId)  {
         Folder folder = getFolderDao().loadFolder(folderId, RequestContextHolder.getRequestContext().getZoneId());
@@ -346,8 +346,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         }
         
         Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems);
-        Date stamp = entry.getCreation().getDate();
-        processor.scheduleSubscription(folder, (FolderEntry)entry, new Date(stamp.getTime()-1));
         return entry.getId();
     }
     //no transaction    
@@ -362,9 +360,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId);
         checkAccess(entry, FolderOperation.addReply);
         FolderEntry reply = processor.addReply(entry, def, inputData, fileItems);
-        Date stamp = reply.getCreation().getDate();
-        processor.scheduleSubscription(folder, reply, new Date(stamp.getTime()-1));
-        
         return reply.getId();
     }
     //no transaction    
@@ -380,10 +375,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         if(reservation != null && !reservation.getPrincipal().equals(user))
         	throw new ReservedByAnotherUserException(entry);
  
-    	Date stamp = entry.getModification().getDate();
-		try {
+ 		try {
 			processor.modifyEntry(folder, entry, inputData, null, null, null);
-      		if (!stamp.equals(entry.getModification().getDate())) processor.scheduleSubscription(folder, entry, stamp);    		
     	} catch (WriteFilesException ex) {
     	    //should never happen   
     	}
@@ -411,17 +404,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
    				if (a != null) delAtts.add(a);
     		}
     	}
-    	Date stamp = entry.getModification().getDate();
-    	
-    	try {
-    		processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo);
-       		if (!stamp.equals(entry.getModification().getDate())) processor.scheduleSubscription(folder, entry, stamp);
-    		
-    	} catch (WriteFilesException ex) {
-    		if (!stamp.equals(entry.getModification().getDate())) processor.scheduleSubscription(folder, entry, stamp);
-    	    throw ex;   
-    	}
-        
+    	processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo);
+         
     }    
     
 
@@ -703,6 +687,8 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     public void addSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
     	//getEntry check read access
 		FolderEntry entry = getEntry(folderId, entryId);
+		//only subscribe at top level
+		if (!entry.isTop()) entry = entry.getTopEntry();
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
 		//digest doesn't make sense here - only individual messages are sent 
@@ -711,20 +697,28 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			s.setStyles(styles);
 			getCoreDao().save(s);
 		} else 	s.setStyles(styles);
+		entry.setSubscribed(true);
   	
     }
     public Subscription getSubscription(FolderEntry entry) {
     	//have entry so assume read access
 		User user = RequestContextHolder.getRequestContext().getUser();
+		if (!entry.isTop()) entry = entry.getTopEntry();
 		return getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
     }
     //inside write transaction    
     public void deleteSubscription(Long folderId, Long entryId) {
     	//should be able to delete you own
 		FolderEntry entry = loadEntry(folderId, entryId);
+		if (!entry.isTop()) entry = entry.getTopEntry();
 		User user = RequestContextHolder.getRequestContext().getUser();
+		List subs = getCoreDao().loadSubscriptionByEntity(entry.getEntityIdentifier());
 		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
-		if (s != null) getCoreDao().delete(s);
+		if (s != null) {
+			getCoreDao().delete(s);
+			//if this is the last subscription, let entry know
+			if (subs.size() == 1) entry.setSubscribed(false);
+		}
     }
 
 	public List<Tag> getTags(FolderEntry entry) {
@@ -1002,6 +996,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     
     
     //called by scheduler to complete folder deletions
+    //no transaction
     public void cleanupFolders() {
    	    List<Folder> folders = getCoreDao().loadObjects(Folder.class, new FilterControls("deleted", Boolean.TRUE), RequestContextHolder.getRequestContext().getZoneId());
    		logger.debug("checking for deleted folders");
@@ -1014,6 +1009,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
    			}
    		}
     }
+
     public void indexEntry(FolderEntry entry, boolean includeReplies) {
 		FolderCoreProcessor processor = loadProcessor(entry.getParentFolder());
 		processor.indexEntry(entry);

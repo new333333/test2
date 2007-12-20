@@ -79,6 +79,7 @@
 	  </bean>
 
  -->
+	<bean id="zoneInterceptor" class="com.sitescape.team.dao.interceptor.ZoneInterceptor"/>
 
 	<bean id="hibernateConfiguration" class="com.sitescape.team.util.HibernateConfigurationFactory">
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
@@ -461,7 +462,7 @@
 	</bean>
 
 
-	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig, scheduler" >
+	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig" >
 		<property name="target"><ref bean="folderModuleTarget"/></property>
 		<!-- addEntry, addFolder, addReply,addVote, modifyEntry, deleteEntry provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
@@ -794,6 +795,7 @@ text/calendar											  ics
 		<property name="jndiAccessor"><ref local="mailJndiAccessor"/></property>
 		<property name="mailRootDir"><value>${data.root.dir}/mail</value></property>
 		<property name="icalModule"><ref local="icalModule"/></property>
+		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 	</bean>	
 	
 	<!-- ================================  JMX/MBean Support =============================== -->

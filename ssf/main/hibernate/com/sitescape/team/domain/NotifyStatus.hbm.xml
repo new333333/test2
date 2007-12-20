@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping>
+  <class dynamic-update="true" table="SS_NotifyStatus" name="com.sitescape.team.domain.NotifyStatus">
+    <id name="ownerId">
+      <generator class="assigned"/>
+    </id>
+    <property name="zoneId" access="field"/>
+	<property name="ownerType" length="16"/>
+    <property name="owningBinderKey" length="255"/>
+    <property name="owningBinderId"/>
+	<property name="lastModified"/>
+	<property name="lastDigestSent"/>
+	<property name="lastFullSent"/>
+<properties name="digestKey" update="false" insert="false">
+<property name="zoneId" update="false" insert="false" access="field"/>
+<property name="lastModified" update="false" insert="false"/>
+<property name="lastDigestSent" update="false" insert="false"/>
+</properties>
+<properties name="fullKey" update="false" insert="false">
+<property name="zoneId" update="false" insert="false" access="field"/>
+<property name="lastModified" update="false" insert="false"/>
+<property name="lastFullSent" update="false" insert="false"/>
+</properties>
+
+   </class>
+</hibernate-mapping>
