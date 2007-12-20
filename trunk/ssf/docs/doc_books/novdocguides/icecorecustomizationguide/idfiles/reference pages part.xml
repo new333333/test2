@@ -128,7 +128,7 @@
 
  <target id="bcmodwf" pid="bck356s2" name="VarListEntry" level="4"> <text>call.setOperationName(new QName("addFolderEntry"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new String("402883b90cc53079010cc539bf260002"), s, filename}, filename);  </text> </target>
 
- <target id="bcuwsws" pid="bck356s2" name="VarListEntry" level="4"> <text>call.setOperationName(new QName("addFolderEntry"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new String("402883b90cc53079010cc539bf260002"), null});  </text> </target>
+ <target id="bcuwsws" pid="bck356s2" name="VarListEntry" level="4"> <text>call.setOperationName(new QName("addFolderEntry"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new String("402883b90cc53079010cc539bf260002"), s, null});  </text> </target>
 
  <target id="bck357d" pid="bck356s2" name="RefSect1" level="3"> <text>See Also</text> </target>
 
@@ -334,15 +334,13 @@
 
  <target id="bcqal3u" pid="bcqal3q" name="VarListEntry" level="4"> <text>folderId  </text> </target>
 
- <target id="bcqal3x" pid="bcqal3q" name="VarListEntry" level="4"> <text>iCalDataFileName  </text> </target>
-
  <target id="bcuytne" pid="bcqal3q" name="VarListEntry" level="4"> <text>XMLCalendarData  </text> </target>
 
  <target id="bcqal3y" pid="bcqal3q" name="VarListEntry" level="4"> <text>return_value  </text> </target>
 
  <target id="bcqal3z" pid="bcqal3q" name="RefSect1" level="3"> <text>Example</text> </target>
 
- <target id="bcqal40" pid="bcqal3q" name="VarListEntry" level="4"> <text>call.setOperationName(new QName("uploadCalendarEntries"));                                                                         Object result = call.invoke(new Object[] {new Long(21), filename), filename});  </text> </target>
+ <target id="bcqal40" pid="bcqal3q" name="VarListEntry" level="4"> <text>call.setOperationName(new QName("uploadCalendarEntries"));                                                                         Object result = call.invoke(new Object[] {new Long(21), s});  </text> </target>
 
  <target id="bcqal41" pid="bcqal3q" name="RefSect1" level="3"> <text>See Also</text> </target>
 
