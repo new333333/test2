@@ -50,8 +50,7 @@
         overflowToDisk="true">
         <cacheEventListenerFactory
 			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
-			properties="replicatePuts=false,replicateUpdatesViaCopy=false"
-			propertySeparator="," />
+			properties="replicatePuts=false,replicateUpdatesViaCopy=false" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />
 	</defaultCache>
 
