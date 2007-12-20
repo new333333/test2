@@ -125,6 +125,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_SHOW_SEARCH_RESULTS)) {
 			return ajaxMobileSearchResults(this, request, response);
+		
 		} else if (op.equals(WebKeys.OPERATION_MOBILE_FIND_PEOPLE)) {
 			return ajaxMobileFindPeople(request, response);
 		}
@@ -193,6 +194,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 	    Tabs tabs = Tabs.getTabs(request);
 		model.put(WebKeys.TABS, tabs);		
+		String searchText = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		model.put(WebKeys.SEARCH_TEXT, searchText);
 	    if (formData.containsKey("searchBtn") || formData.containsKey("quickSearch")) {
 			SearchFilterRequestParser requestParser = new SearchFilterRequestParser(request, getDefinitionModule());
 			Document searchQuery = requestParser.getSearchQuery();
@@ -228,14 +231,15 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
 		}
 
+      	//Get the total records found by the search
+      	Integer totalRecords = (Integer)model.get(WebKeys.PAGE_TOTAL_RECORDS);
+      	//Get the records returned (which may be more than the page size)
       	List results = (List)model.get(WebKeys.FOLDER_ENTRIES);
-      	Integer searchCountTotal = results.size();
-      	if (searchCountTotal == null) searchCountTotal = 0;
       	String nextPage = "";
       	String prevPage = "";
-      	if (searchCountTotal.intValue() < pageStart) {
+      	if (totalRecords.intValue() < pageStart) {
       		if (Integer.parseInt(pageNumber) > 1) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
-      	} else if (searchCountTotal.intValue() >= pageEnd) {
+      	} else if (totalRecords.intValue() >= pageEnd) {
       		nextPage = String.valueOf(Integer.parseInt(pageNumber) + 1);
       		if (Integer.parseInt(pageNumber) > 1) prevPage = String.valueOf(Integer.parseInt(pageNumber) - 1);
       	} else {

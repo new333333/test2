@@ -51,18 +51,20 @@
 <table><tr><td width="30">
 <c:if test="${!empty ss_prevPage}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.id}" 
 	action="__ajax_mobile" 
-	operation="mobile_show_folder" 
-	actionUrl="false" ><ssf:param name="pageNumber" value="${ss_prevPage}"/></ssf:url>">&lt;&lt;&lt;</a>
+	operation="mobile_find_people" 
+	actionUrl="false" ><ssf:param 
+	name="searchText" value="${ss_searchText}"/><ssf:param 
+	name="pageNumber" value="${ss_prevPage}"/></ssf:url>">&lt;&lt;&lt;</a>
 </c:if>
 </td><td style="padding-left:30px;">
 <c:if test="${!empty ss_nextPage}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	folderId="${ssBinder.id}" 
 	action="__ajax_mobile" 
-	operation="mobile_show_folder" 
-	actionUrl="false" ><ssf:param name="pageNumber" value="${ss_nextPage}"/></ssf:url>">&gt;&gt;&gt;</a>
+	operation="mobile_find_people" 
+	actionUrl="false" ><ssf:param 
+	name="searchText" value="${ss_searchText}"/><ssf:param 
+	name="pageNumber" value="${ss_nextPage}"/></ssf:url>">&gt;&gt;&gt;</a>
 </c:if>
 </td></tr></table>
 </td></tr>
