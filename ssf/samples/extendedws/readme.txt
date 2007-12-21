@@ -14,7 +14,10 @@ com.sitescape.team.samples.extendedws.server.Facade2.
 
 4. Restart ICEcore server.
 
-5. To test the newly added WS operation, go to samples/remtingclient, execute
-"ant compile", and run "wsclient.bat getBinderTitle 1" (on Windows). 
+5. To test the newly added WS operation, go to samples/remotingclient, execute
+"ant zip", and run "wsclient.bat getBinderTitle 1" (on Windows). 
 It runs a sample client program that invokes the getBinderTitle WS operation
 that was built and deployed in the step 1 above.
+
+You can also point your browser to http://<icecore host>:<port>/ssf/ws/Facade?wsdl
+to make sure that the newly added WS operation is exported through WSDL.
