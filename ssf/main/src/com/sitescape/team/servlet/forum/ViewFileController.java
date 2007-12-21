@@ -62,6 +62,8 @@ import com.sitescape.util.BrowserSniffer;
 import com.sitescape.util.FileUtil;
 import com.sitescape.util.Validator;
 
+import org.apache.commons.lang.StringUtils;
+
 public class ViewFileController extends SAbstractController {
 	
 	private FileTypeMap mimeTypes;
@@ -321,10 +323,16 @@ public class ViewFileController extends SAbstractController {
 	
 	private String encodeFileName(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
 		if(BrowserSniffer.is_ie(request)) {
-			return URLEncoder.encode(fileName, "UTF8");
+			String file = URLEncoder.encode(fileName, "UTF8");
+			file = StringUtils.replace(file, "+", "%20");
+			file = StringUtils.replace(file, "%2B", "+");
+			return file;
 		}
 		else if(BrowserSniffer.is_mozilla(request)) {
-			return MimeUtility.encodeText(fileName, "UTF8", "B");
+			String file = MimeUtility.encodeText(fileName, "UTF8", "B");
+			file = StringUtils.replace(file, "+", "%20");
+			file = StringUtils.replace(file, "%2B", "+");
+			return file;
 		}
 		else {
 			return fileName;
