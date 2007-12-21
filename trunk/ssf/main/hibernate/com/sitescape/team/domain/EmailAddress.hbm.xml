@@ -3,6 +3,7 @@
 
 <hibernate-mapping auto-import="false">
   <class table="SS_EmailAddresses" lazy="false" name="com.sitescape.team.domain.EmailAddress">
+    <cache usage="read-write"/>
     <composite-id >
      <key-many-to-one name="principal"/>
      <key-property name="type" length="64"/>

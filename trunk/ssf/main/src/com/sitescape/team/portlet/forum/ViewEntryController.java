@@ -535,7 +535,7 @@ public class ViewEntryController extends  SAbstractController {
 
 		model.put(WebKeys.PERMALINK, adapterUrl.toString());
 
-		if (!user.getEmailAddress().equals("") && 
+		if (entry.isTop() && !user.getEmailAddresses().isEmpty() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			AdaptedPortletURL adapterSubscriptionUrl = new AdaptedPortletURL(request, "ss_forum", false);
 			adapterSubscriptionUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
@@ -551,7 +551,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 		String[] contributorIds = collectContributorIds(entry);
 		
-		if (!user.getEmailAddress().equals("") && 
+		if (!user.getEmailAddresses().isEmpty() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_ENTRY_EMAIL);
