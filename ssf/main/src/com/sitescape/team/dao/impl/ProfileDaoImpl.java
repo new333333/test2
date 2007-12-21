@@ -47,6 +47,7 @@ import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.FetchMode;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.springframework.dao.DataAccessException;
@@ -469,6 +470,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
            					Criteria crit = session.createCriteria(clazz)
         					.add(Expression.in(Constants.ID, ids))
         					.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+        					.setFetchMode("emailAddresses", FetchMode.JOIN)
                     		// Unlike some other query caches used for reference type objects,
                     		// this cache is not very useful in the sense that the result of
                     		// this query is very unlikely to be shared across users.
@@ -480,17 +482,23 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         					if (checkActive) {
         						crit.add(Expression.eq(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE));
         						crit.add(Expression.eq(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE));
-        					}            				
-        					return crit.list();
+        					}  
+        					List result = crit.list();
+                            //eagar select results in duplicates
+                            Set res = new HashSet(result);
+                            result.clear();
+                            result.addAll(res);
+        					return result;
             			} else {
             				List idList = new ArrayList(ids);
-            				List results = new ArrayList();
+            				Set results = new HashSet(); //fetch returns duplicates, se weed them out
             				for (int i=0; i<idList.size(); i+=useLimit) {
             					List subList = idList.subList(i, Math.min(idList.size(), i+useLimit));
             					Criteria crit = session.createCriteria(clazz)
             					.add(Expression.in(Constants.ID, subList))
             					.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
-                        		// Unlike some other query caches used for reference type objects,
+            					.setFetchMode("emailAddresses", FetchMode.JOIN)
+            					// Unlike some other query caches used for reference type objects,
                         		// this cache is not very useful in the sense that the result of
                         		// this query is very unlikely to be shared across users.
                         		// However, some WebDAV usage patterns make it useful because it
@@ -504,7 +512,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
             					}            				
             					results.addAll(crit.list());
             				}
-            				return results;
+            				return new ArrayList(results);
             			}
             		}
            	}
@@ -526,6 +534,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                			for (int i=0; i<filterValues.size(); ++i) {
                 			query.setParameter(i, filterValues.get(i));
                 		}
+               			
                        return query.list();
                     }
                 }
@@ -612,7 +621,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
                 	//ids will be sorted
-                	TreeSet<Principal> sorted = new TreeSet(new LongIdComparator());
+                 	TreeSet<Principal> sorted = new TreeSet(new LongIdComparator());
       		    	sorted.addAll(entries);
                    	List<Long> ids = new ArrayList();
       		    	//ids will now be in order
