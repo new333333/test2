@@ -545,6 +545,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 
 	}
 	
+	/**
+	 * Remove a zone deleteing all its contents.
+	 * @param zoneName
+	 */
+	protected abstract void removeZone(String zoneName);
+
     private Group addAllUserGroup(Binder parent, HistoryStamp stamp) {
 		//build allUsers group
 		Group group = new Group();

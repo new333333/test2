@@ -122,5 +122,7 @@ public interface Facade {
 	public String getTeamsAsXML();
 
 	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomain);
+	
+	public void deleteZoneUnderPortal(String zoneName);
 }
 
