@@ -20,17 +20,18 @@ public class LiferayProxyServer {
 	 * This mechanism allows an invocation to be <i>initiated</i> from ICEcore
 	 * side, yet <i>executed</i> within the environment of Liferay context. 
 	 * 
-	 * @param companyWebId ID of the company whose context the service
-	 * is to be invoked in
-	 * @param userName screen name of the portal user in whose context the 
-	 * service is to be invoked
+	 * @param contextCompanyWebId Web ID of the company whose context the 
+	 * service is to be invoked in
+	 * @param contextUserName screen name of the portal user in whose context
+	 * the service is to be invoked
 	 * @param className class name of the Liferay service
 	 * @param methodName method name of the Liferay service
 	 * @param methodArgTypes method argument types
 	 * @param methodArgs method arguments to the invocation
+	 * @return object
 	 * @throws Exception
 	 */
-	public static void invoke(String companyWebId, String userName, String className, 
+	public static Object invoke(String contextCompanyWebId, String contextUserName, String className, 
 			String methodName, Class[] methodArgTypes, Object[] methodArgs)
 	throws Exception {
 		Class classObj = Class.forName(className);
@@ -42,9 +43,9 @@ public class LiferayProxyServer {
 		if(!Modifier.isStatic(methodObj.getModifiers()))
 			obj = classObj.newInstance();
 		
-		Company company = CompanyLocalServiceUtil.getCompanyByWebId(companyWebId);
+		Company company = CompanyLocalServiceUtil.getCompanyByWebId(contextCompanyWebId);
 		
-		User user = UserLocalServiceUtil.getUserByScreenName(company.getCompanyId(), userName);
+		User user = UserLocalServiceUtil.getUserByScreenName(company.getCompanyId(), contextUserName);
 		
 		PermissionCheckerImpl permissionChecker = PermissionCheckerFactory.create(user, true, true);
 
@@ -52,7 +53,7 @@ public class LiferayProxyServer {
 			PermissionThreadLocal.setPermissionChecker(permissionChecker);
 			CompanyThreadLocal.setCompanyId(user.getCompanyId());
 
-			methodObj.invoke(obj, methodArgs);	
+			return methodObj.invoke(obj, methodArgs);	
 		}
 		finally {
 			PermissionCheckerFactory.recycle(permissionChecker);

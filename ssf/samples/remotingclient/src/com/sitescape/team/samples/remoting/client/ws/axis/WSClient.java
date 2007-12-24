@@ -115,6 +115,8 @@ public class WSClient
 				fetchAndPrintString("getBinderTitle", new Object[] {Long.parseLong(args[1])});
 			} else if(args[0].equals("addZoneUnderPortal")) {
 				justDoIt("addZoneUnderPortal", new Object[] {args[1], args[2], args[3]});
+			} else if(args[0].equals("deleteZoneUnderPortal")) {
+				justDoIt("deleteZoneUnderPortal", new Object[] {args[1]});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -238,9 +240,13 @@ public class WSClient
 		System.out.println("getBinderTitle <binder id>");
 		System.out.println("-- The following is to be used only with ICEcore Enterprise server with appropriate license --");
 		System.out.println("addZoneUnderPortal <zone name> <virtual host> <mail domain>");
+		System.out.println("deleteZoneUnderPortal <zone name>");
 		
-		// an example of addZone invocation - 
-		// addZone fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com
+		// an example of addZoneUnderPortal invocation - 
+		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com
+		
+		// an example of deleteZoneUnderPortal invocation - 
+		// deleteZoneUnderPortal fake-bestbuy
 	}
 
 }

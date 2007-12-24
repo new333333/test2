@@ -28,8 +28,6 @@
  */
 package com.sitescape.team.module.zone;
 
-import java.util.Map;
-
 public interface ZoneModule {
 	/**
 	 * Creates or updates zone.
@@ -54,7 +52,14 @@ public interface ZoneModule {
 	 * @param virtualHost virtual host
 	 * @param mailDomian mail domain
 	 */
-	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomian);
+	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomian) throws ZoneException;
+	
+	/**
+	 * Deletes the zone under the portal in which ICEcore runts
+	 * 
+	 * @param zoneName
+	 */
+	public void deleteZoneUnderPortal(String zoneName) throws ZoneException;
 	
 	/**
 	 * Returns the name of the zone corresponding to the specified virtual host.
@@ -88,9 +93,4 @@ public interface ZoneModule {
 	 * @return
 	 */
 	public String getVirtualHost(String zoneName);
-	/**
-	 * Remove a zone deleteing all its contents.
-	 * @param zoneName
-	 */
-	public void removeZone(String zoneName);
 }
