@@ -47,7 +47,7 @@
         eternal="false"
         timeToIdleSeconds="600"
         timeToLiveSeconds="86400"
-        overflowToDisk="true">
+        overflowToDisk="false">
         <!--<cacheEventListenerFactory
 			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"
 			properties="replicatePuts=false,replicateUpdatesViaCopy=false" />
@@ -67,7 +67,7 @@
 		name="org.hibernate.cache.UpdateTimestampsCache"
 		maxElementsInMemory="5000"
 		eternal="true"
-		overflowToDisk="true">
+		overflowToDisk="false">
         <!--<cacheEventListenerFactory
 			class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
@@ -78,7 +78,7 @@
 	    maxElementsInMemory="3000"
 	    eternal="false"
 	    timeToLiveSeconds="3600"
-	    overflowToDisk="true">
+	    overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
 	</cache>
@@ -88,7 +88,7 @@
 	    maxElementsInMemory="3000"
 	    eternal="false"
 	    timeToLiveSeconds="86400"
-	    overflowToDisk="true">
+	    overflowToDisk="false">
 		<!--<cacheEventListenerFactory class="net.sf.ehcache.distribution.RMICacheReplicatorFactory" />
 		<bootstrapCacheLoaderFactory class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory" />-->
 	</cache>
