@@ -69,7 +69,7 @@
 <div class="ss_indent_medium">
    <span class="ss_labelAbove"><ssf:nlt tag="subscribe.digest"/><ssf:inlineHelp tag="ihelp.email.digest_notify"/></span> 
   <select multiple="multiple" name="_subscribe1">
-		<option value="" ><ssf:nlt tag="__none"/></option>
+		<option value="" selected = "selected"><ssf:nlt tag="__none"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}"> 	
 	<c:set var="styleName" value="1${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
@@ -80,7 +80,7 @@
 
    <span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/><ssf:inlineHelp tag="ihelp.email.individual_notify"/></span> 
   <select multiple="multiple" name="_subscribe2">
-		<option value="" ><ssf:nlt tag="__none"/></option>
+		<option value="" selected = "selected"><ssf:nlt tag="__none"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="2${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
@@ -89,7 +89,7 @@
    </select>
 	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.noattachments"/></span>
     <select multiple="multiple" name="_subscribe3">
-		<option value="" ><ssf:nlt tag="__none"/></option>
+		<option value="" selected = "selected"><ssf:nlt tag="__none"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="3${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
@@ -98,7 +98,7 @@
    </select>
 	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.text"/></span>
     <select multiple="multiple" name="_subscribe5">
-		<option value="" ><ssf:nlt tag="__none"/></option>
+		<option value="" selected = "selected"><ssf:nlt tag="__none"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="5${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
