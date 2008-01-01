@@ -50,7 +50,8 @@ public class LiferayProxyServer {
 		
 		PermissionCheckerImpl permissionChecker = null;
 		
-		if(PermissionThreadLocal.getPermissionChecker() == null)
+		if(PermissionThreadLocal.getPermissionChecker() == null ||
+				CompanyThreadLocal.getCompanyId() == 0)
 			permissionChecker = PermissionCheckerFactory.create(user, true, true);
 
 		try {
@@ -66,6 +67,7 @@ public class LiferayProxyServer {
 			if(permissionChecker != null) {
 				CompanyThreadLocal.setCompanyId(0);
 				PrincipalThreadLocal.setName(null);
+				PermissionThreadLocal.setPermissionChecker(null);
 				PermissionCheckerFactory.recycle(permissionChecker);
 			}
 		}
