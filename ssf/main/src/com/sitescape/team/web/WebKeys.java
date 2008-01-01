@@ -172,6 +172,8 @@ public class WebKeys {
 	public static final String URL_TASK_STATUS="ssTaskStatus";
 	public static final String URL_TASK_COMPLETED="ssTaskCompleted";
 	public static final String URL_DASHBOARD_REQUEST="ssDashboardRequest";
+	public static final String URL_ZONE_NAME = "zoneName";
+	public static final String URL_VIRTUAL_HOST = "virtualHost";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
@@ -238,6 +240,7 @@ public class WebKeys {
 	public static final String ACTION_CONFIGURATION="configure_configuration";
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_MANAGE_LICENSE="manage_license";
+	public static final String ACTION_MANAGE_ZONES="manage_zones";
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
 	public static final String ACTION_QUOTA_REPORT="quota_report";
 	public static final String ACTION_SEND_EMAIL="send_email";
@@ -701,6 +704,8 @@ public class WebKeys {
     
     public static final String ROLE_USERS="ssRoleUsers";
     
+    public static final String ZONE_INFO_LIST="ss_zoneInfoList";
+
     public static final String SCHEDULE="ssSchedule";
     public static final String SCHEDULE_INFO="ssScheduleInfo";
     public static final String SCHEDULE_INFO2="ssScheduleInfo2";
@@ -840,6 +845,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
     public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
+    public static final String VIEW_ADMIN_MANAGE_ZONES="administration/manage_zones";
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";
     public static final String VIEW_ASPEN_TYPE="forum/select_portlet_type";
     public static final String VIEW_BINDER_CONFIGURE_EMAIL="binder/configureEmail";
