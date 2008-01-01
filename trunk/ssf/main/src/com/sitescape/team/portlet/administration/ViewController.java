@@ -57,6 +57,7 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionModule.DefinitionOperation;
+import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.license.LicenseModule.LicenseOperation;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -496,6 +497,22 @@ public class ViewController extends  SAbstractController {
 			}
 		}
 
+		//Manage zones
+		
+		if (LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.zone.MultiZone") &&
+				getZoneModule().testAccess()) {
+			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+			element.addAttribute("title", NLT.get("administration.manage.zones"));
+			element.addAttribute("image", "bullet");
+			element.addAttribute("id", String.valueOf(nextId++));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_ZONES);
+			url.setWindowState(WindowState.MAXIMIZED);
+			url.setPortletMode(PortletMode.VIEW);
+			element.addAttribute("url", url.toString());
+			elements.put(element.attributeValue("title"), element);
+		}
+		
 		for (Iterator iter=elements.entrySet().iterator(); iter.hasNext(); ) {
 			Map.Entry me = (Map.Entry)iter.next();
 			rootElement.add((Element)me.getValue());

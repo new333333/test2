@@ -28,6 +28,11 @@
  */
 package com.sitescape.team.module.zone;
 
+import java.util.List;
+
+import com.sitescape.team.domain.ZoneInfo;
+import com.sitescape.team.security.AccessControlException;
+
 public interface ZoneModule {
 	/**
 	 * Creates or updates zone.
@@ -50,9 +55,17 @@ public interface ZoneModule {
 	 * 
 	 * @param zoneName zone name
 	 * @param virtualHost virtual host
-	 * @param mailDomian mail domain
+	 * @param mailDomian mail domain or null
 	 */
 	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomian) throws ZoneException;
+	
+	/**
+	 * Modifies existing zone under the portal in which ICEcore runs 
+	 * 
+	 * @param zoneName zone name
+	 * @param virtualHost virtual host
+	 */
+	public void modifyZoneUnderPortal(String zoneName, String virtualHost) throws ZoneException;
 	
 	/**
 	 * Deletes the zone under the portal in which ICEcore runts
@@ -93,4 +106,25 @@ public interface ZoneModule {
 	 * @return
 	 */
 	public String getVirtualHost(String zoneName);
+	
+	/**
+	 * Returns a list of <code>ZoneInfo</code> objects. 
+	 * 
+	 * @return
+	 */
+	public List<ZoneInfo> getZoneInfos();
+	
+	/**
+	 * Tests whether the user has a right to add/update/delete zone.
+	 * 
+	 * @return
+	 */
+   	public boolean testAccess();
+   	
+   	/**
+   	 * Checks whether the user has a right to add/update/delete zone.
+   	 * 
+   	 * @throws AccessControlException
+   	 */
+   	public void checkAccess() throws AccessControlException;
 }

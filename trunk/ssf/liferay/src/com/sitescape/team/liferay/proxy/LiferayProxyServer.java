@@ -6,6 +6,7 @@ import java.lang.reflect.Modifier;
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.User;
 import com.liferay.portal.security.auth.CompanyThreadLocal;
+import com.liferay.portal.security.auth.PrincipalThreadLocal;
 import com.liferay.portal.security.permission.PermissionCheckerFactory;
 import com.liferay.portal.security.permission.PermissionCheckerImpl;
 import com.liferay.portal.security.permission.PermissionThreadLocal;
@@ -47,16 +48,26 @@ public class LiferayProxyServer {
 		
 		User user = UserLocalServiceUtil.getUserByScreenName(company.getCompanyId(), contextUserName);
 		
-		PermissionCheckerImpl permissionChecker = PermissionCheckerFactory.create(user, true, true);
+		PermissionCheckerImpl permissionChecker = null;
+		
+		if(PermissionThreadLocal.getPermissionChecker() == null)
+			permissionChecker = PermissionCheckerFactory.create(user, true, true);
 
 		try {
-			PermissionThreadLocal.setPermissionChecker(permissionChecker);
-			CompanyThreadLocal.setCompanyId(user.getCompanyId());
-
+			if(permissionChecker != null) {
+				CompanyThreadLocal.setCompanyId(user.getCompanyId());
+				PrincipalThreadLocal.setName(String.valueOf(user.getUserId()));
+				PermissionThreadLocal.setPermissionChecker(permissionChecker);
+			}
+			
 			return methodObj.invoke(obj, methodArgs);	
 		}
 		finally {
-			PermissionCheckerFactory.recycle(permissionChecker);
+			if(permissionChecker != null) {
+				CompanyThreadLocal.setCompanyId(0);
+				PrincipalThreadLocal.setName(null);
+				PermissionCheckerFactory.recycle(permissionChecker);
+			}
 		}
 	}
 }
