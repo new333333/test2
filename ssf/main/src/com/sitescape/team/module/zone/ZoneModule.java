@@ -60,13 +60,14 @@ public interface ZoneModule {
 	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomian) throws ZoneException;
 	
 	/**
-	 * Modifies existing zone under the portal in which ICEcore runs 
+	 * Modifies new zone under the portal in which ICEcore runs 
 	 * 
 	 * @param zoneName zone name
 	 * @param virtualHost virtual host
+	 * @param mailDomian mail domain or null
 	 */
-	public void modifyZoneUnderPortal(String zoneName, String virtualHost) throws ZoneException;
-	
+	public void modifyZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) throws ZoneException;
+		
 	/**
 	 * Deletes the zone under the portal in which ICEcore runts
 	 * 

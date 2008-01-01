@@ -597,6 +597,10 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		getZoneModule().addZoneUnderPortal(zoneName, virtualHost, mailDomain);
 	}
 
+	public void modifyZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
+		getZoneModule().modifyZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	}
+
 	public void deleteZoneUnderPortal(String zoneName) {
 		getZoneModule().deleteZoneUnderPortal(zoneName);
 	}

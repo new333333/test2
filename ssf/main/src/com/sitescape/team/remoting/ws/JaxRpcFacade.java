@@ -146,6 +146,10 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.facade.addZoneUnderPortal(zoneName, virtualHost, mailDomain);
 	}
 
+	public void modifyZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
+		this.facade.modifyZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	}
+
 	public void deleteZoneUnderPortal(String zoneName) {
 		this.facade.deleteZoneUnderPortal(zoneName);
 	}
