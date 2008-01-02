@@ -34,7 +34,7 @@ import javax.servlet.ServletException;
 import java.util.Map;
 
 import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
-import com.sitescape.team.web.crosscontext.CrossContextConstants;
+import com.sitescape.team.portal.CrossContextConstants;
 import com.sitescape.team.web.util.AttributesAndParamsOnlyServletRequest;
 import com.sitescape.team.web.util.NullServletResponse;
 
