@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.ssfs.web.crosscontext.server;
+package com.sitescape.team.ssfs.server.servlet;
 
 import java.io.IOException;
 import java.io.InputStream;

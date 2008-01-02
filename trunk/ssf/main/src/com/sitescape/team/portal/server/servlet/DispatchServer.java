@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.web.crosscontext.server;
+package com.sitescape.team.portal.server.servlet;
 
 import java.io.IOException;
 import java.util.Map;
@@ -45,13 +45,13 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
 import com.sitescape.team.module.license.LicenseChecker;
+import com.sitescape.team.portal.CrossContextConstants;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.crosscontext.CrossContextConstants;
 
 public class DispatchServer extends GenericServlet {
 

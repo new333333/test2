@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.web.crosscontext;
+package com.sitescape.team.portal;
 
 /**
  * IMPORTANT: Do NOT make this class dependent upon any other class in the
