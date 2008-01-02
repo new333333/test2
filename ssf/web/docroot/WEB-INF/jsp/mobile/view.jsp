@@ -54,6 +54,7 @@
 <%
 	} else {
 %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
 var ss_mobileIframeOffset = 30;
 function ss_setMobileIframeSize() {
