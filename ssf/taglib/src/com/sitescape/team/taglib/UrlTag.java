@@ -66,6 +66,7 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
     private String entityType;
     private String operation;
     private String webPath;
+    private String windowState;
     private boolean adapter=false;
     private String portletName = "";
     private boolean actionUrl = true;
@@ -185,7 +186,14 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				} else {
 					portletURL = renderResponse.createRenderURL();
 				}
-				portletURL.setWindowState(new WindowState(WindowState.MAXIMIZED.toString()));
+				if (this.windowState == null) {
+					//If not specified, assume the window state is maximized
+					portletURL.setWindowState(new WindowState(WindowState.MAXIMIZED.toString()));
+				} else if (!this.windowState.equals("")) {
+					//If specified, use the windowState; 
+					//  if windowState explicitly set to "", then leave the windowState unspecified in the URL
+					portletURL.setWindowState(new WindowState(this.windowState));
+				}
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
@@ -254,6 +262,10 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setWebPath(String webPath) {
 	    this.webPath = webPath;
+	}
+
+	public void setWindowState(String windowState) {
+	    this.windowState = windowState;
 	}
 
 	public void setAdapter(boolean adapter) {
