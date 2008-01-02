@@ -55,7 +55,8 @@ public class GeneratePortletProperties {
 		
         String []propNames = {"administration", "blog", "exception", "forum", 
         		"gallery", "guestbook", "mobile", "presence", "search", "task", 
-        		"toolbar", "welcome", "widgettest",	"wiki",	"workspacetree"};
+        		"toolbar", "welcome", "widgettest",	"wiki",	"workspacetree", 
+        		"workarea", "workarea_accessories", "workarea_context", "workarea_navigation"};
            	
         String []localeCodes = {"en", "da", "de", "es", "fr", "it", "ja",	
         		"nl", "pl", "pt_BR", "sv", "zh_CN", "zh_TW"};

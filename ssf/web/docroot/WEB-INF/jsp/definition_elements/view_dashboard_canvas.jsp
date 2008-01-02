@@ -66,7 +66,7 @@ request.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 
 <script type="text/javascript">
 //Define the variables needed by the javascript routines
-var ss_iframe_box_div_name = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_iframe_box_div';
+var ss_iframe_box_div_name = '${renderResponse.namespace}_iframe_box_div';
 
 <c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
 	var ss_entryWindowTopOriginal = ${ss_entryWindowTop};
@@ -153,9 +153,12 @@ function ss_showForumEntryInIframe_Popup(url) {
 
 </script>
   
+<div id="ss_workareaAccessories_${renderResponse.namespace}" class="ss_style"
+<c:if test="${ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}"> style="display:none;" </c:if>
+>
   <!-- Start of dashboard "Add penlet" form -->
   <c:if test="${empty ssBinderConfig && (!ssUser.shared || ssDashboard.sharedModificationAllowed)}">
-  <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
+  <div id="${renderResponse.namespace}_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
     <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
     	name="action" value="modify_dashboard"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
@@ -192,7 +195,7 @@ function ss_showForumEntryInIframe_Popup(url) {
   </div>
   </c:if>
   <c:if test="${!empty ssBinderConfig}">
-  <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
+  <div id="${renderResponse.namespace}_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
     <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
     	name="action" value="modify_dashboard"/><portlet:param 
     	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
@@ -228,7 +231,7 @@ function ss_showForumEntryInIframe_Popup(url) {
 
 <c:if test="${!empty ssDashboard.wide_top || !empty ssDashboard.wide_bottom || !empty ssDashboard.narrow_fixed || !empty ssDashboard.narrow_variable}">
 
-  <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardConfigurationMenu" class="ss_dashboard_menu" align="left">
+  <div id="${renderResponse.namespace}_dashboardConfigurationMenu" class="ss_dashboard_menu" align="left">
 	<ul class="ss_dropdownmenu" 
 	  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
 	  <li><a href="<portlet:renderURL windowState="maximized"><portlet:param 
@@ -253,7 +256,7 @@ function ss_showForumEntryInIframe_Popup(url) {
   </div>
 
  <!-- Start of dashboard canvas -->
-  <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardComponentCanvas"
+  <div id="${renderResponse.namespace}_dashboardComponentCanvas"
 	<c:if test="${ss_show_all_dashboard_components}">
 	  style="visibility:visible; display:block;"
 	</c:if>
@@ -269,7 +272,7 @@ function ss_showForumEntryInIframe_Popup(url) {
 		  </c:if>
 		</span>
 
-		<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_toolbar_${ss_toolbar_count}"
+		<div id="${renderResponse.namespace}_dashboard_toolbar_${ss_toolbar_count}"
 		   style="visibility:hidden; display:none;">
 		  <c:set var="ss_toolbar_count" value="${ss_toolbar_count + 1}"/>
 		</div>
@@ -290,4 +293,24 @@ function ss_showForumEntryInIframe_Popup(url) {
 </c:if>
 <c:if test="${!empty ssDashboardToolbar}">
 </div>
+</c:if>
+</div>
+<c:if test="${ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}">
+<script type="text/javascript">
+function ss_workareaMoveAccessories_${renderResponse.namespace}() {
+	var accessoriesDiv = document.getElementById("ss_workareaAccessories");
+	if (accessoriesDiv != null) {
+		var accessoriesDivSource = document.getElementById("ss_workareaAccessories_${renderResponse.namespace}");
+		if (accessoriesDivSource != null) {
+			dojo.dom.moveChildren(accessoriesDivSource, accessoriesDiv, false);
+			return true;
+		}
+	}
+	return false;
+}
+if (!ss_workareaMoveAccessories_${renderResponse.namespace}()) {
+	//Could not move them yet, so move the accessories after loading is done
+	ss_createOnLoadObj('ss_workareaMoveAccessories_${renderResponse.namespace}', ss_workareaMoveAccessories_${renderResponse.namespace});
+}
+</script>
 </c:if>

@@ -39,8 +39,24 @@
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 
+<c:if test="${ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}">
+<script type="text/javascript">
+function ss_workarea_showId(id, action) {
+	//Build a url to go to
+	var url = "<portlet:renderURL><portlet:param 
+			name="action" value="ssActionPlaceHolder"/><portlet:param 
+			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	self.location.href = url;
+	return false;
+}
+</script>
+</c:if>
+
 <div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<c:if test="${1 == 1 || ss_displayType != 'ss_workarea' || ss_windowState == 'maximized'}">
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
@@ -53,7 +69,45 @@
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 
 	<% // Folder Sidebar %>
+    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
 
+    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
+        initOpen="true" sticky="true">
+		<c:if test="${!empty ssSidebarWsTree}">
+		<ssf:tree treeName="sidebarWsTree" 
+		  treeDocument="${ssSidebarWsTree}" 
+		  highlightNode="${ssBinder.id}" 
+		  showIdRoutine="ss_treeShowIdNoWS"
+		  rootOpen="true"
+		  nowrap="true"/>
+		</c:if>
+	</ssf:sidebarPanel>
+
+	</td>
+	<td valign="top" class="ss_view_info">
+</c:if>
+	    <div class="ss_style_color" >
+			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+		
+			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+					  configElement="${ssConfigElement}" 
+					  configJspStyle="${ssConfigJspStyle}" />
+		</div>
+		<% // Footer toolbar %>
+		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+<c:if test="${1 == 1 || ss_displayType != 'ss_workarea' || ss_windowState == 'maximized'}">
+	</td>
+	</tr>
+	</tbody>
+	</table>
+</c:if>
+</div>
+
+<c:if test="${0 == 1 && ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}">
+	<% // Folder Sidebar %>
+	<div id="ss_workareaContext_${renderResponse.namespace}" class="ss_style" style="display:none">
+	<div class="ss_style">
     <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
 
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
@@ -68,24 +122,25 @@
 		</c:if>
 	</ssf:sidebarPanel>
 
-	</td>
-	<td valign="top" class="ss_view_info">
-	    <div class="ss_style_color" >
-			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
-			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-		
-			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-					  configElement="${ssConfigElement}" 
-					  configJspStyle="${ssConfigJspStyle}" />
-		</div>
-		<% // Footer toolbar %>
-		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
-	</td>
-	</tr>
-	</tbody>
-	</table>
-
-</div>
+    </div>
+    </div>
+</c:if>
+<c:if test="${ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}">
+<script type="text/javascript">
+function ss_workareaMoveContext_${renderResponse.namespace}() {
+	var contextDiv = document.getElementById("ss_workareaContext");
+	if (contextDiv != null) {
+		var contextDivSource = document.getElementById("ss_workareaContext_${renderResponse.namespace}");
+		//dojo.dom.moveChildren(contextDivSource, contextDiv, false);
+		//return true;
+	}
+	return false;
+}
+if (!ss_workareaMoveContext_${renderResponse.namespace}()) {
+	ss_createOnLoadObj('ss_workareaMoveContext_${renderResponse.namespace}', ss_workareaMoveContext_${renderResponse.namespace});
+}
+</script>
+</c:if>
 
 <c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 	<script type="text/javascript">

@@ -33,6 +33,10 @@
 <%@ page import="com.sitescape.team.util.SPropsUtil" %>
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="ss_urlWindowState" value="maximized"/>
+<c:if test="${ss_windowState != 'maximized' && ss_displayType == 'ss_workarea'}">
+  <c:set var="ss_urlWindowState" value=""/>
+</c:if>
 <c:set var="numTabs" value="0"/>
 <ssf:sidebarPanel title="sidebar.history" id="ss_history_box" initOpen="true" sticky="true">
 <ul style="padding-top: 2px; padding-left: 5px;">
@@ -45,27 +49,31 @@
 		  <c:if test="${tab.type == 'binder'}">
 		    href="<ssf:url 
   				binderId="${tab.binderId}" 
-  				action="view_folder_listing">
+  				action="view_folder_listing"
+  				windowState="${ss_urlWindowState}">
   				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 		  </c:if>
 		  <c:if test="${tab.type == 'workspace'}">
 		    href="<ssf:url 
   				binderId="${tab.binderId}" 
-  				action="view_ws_listing">
+  				action="view_ws_listing"
+  				windowState="${ss_urlWindowState}">
   				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 		  </c:if>
 		  <c:if test="${tab.type == 'profiles'}">
 		    href="<ssf:url 
   				binderId="${tab.binderId}" 
-  				action="view_profile_listing">
+  				action="view_profile_listing"
+  				windowState="${ss_urlWindowState}">
   				<ssf:param name="newTab" value="0"/>
   				</ssf:url>" 
 		  </c:if>
 		  <c:if test="${tab.type == 'search'}">
 		    href="<ssf:url 
-  				action="advanced_search">
+  				action="advanced_search"
+  				windowState="${ss_urlWindowState}">
   				<ssf:param name="tabId" value="${tab.tabId}"/>
   				<ssf:param name="operation" value="viewPage"/>
   				</ssf:url>" 

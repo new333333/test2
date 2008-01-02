@@ -255,7 +255,9 @@ public static final String[] monthNamesShort = {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		if (request.getWindowState().equals(WindowState.NORMAL)) 
+		String displayType = BinderHelper.getDisplayType(request);
+		if (request.getWindowState().equals(WindowState.NORMAL) &&
+				!BinderHelper.WORKAREA_PORTLET.equals(displayType)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -322,7 +324,9 @@ public static final String[] monthNamesShort = {
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-		
+
+		model.put(WebKeys.DISPLAY_TYPE, displayType);
+
 		//See if the entry to be shown is also included
 		String entryIdToBeShown = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		if (entryIdToBeShown.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) entryIdToBeShown = "";
