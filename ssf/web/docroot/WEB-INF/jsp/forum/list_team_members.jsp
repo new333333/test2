@@ -125,7 +125,7 @@
 							    optionsDivId="ss_presenceOptions_${member.id}_${ss_namespace}_${componentId}"/>
 						</td>
 						<td><a href="mailto:<c:out value="${member.emailAddress}" 
-						/>"><c:out value="${member.emailAddress}" /></a></td>
+						/>"><c:out value="${member.emailAddress}" />&nbsp</a></td>
 					</tr>
 				</c:forEach>
 			</c:when>
