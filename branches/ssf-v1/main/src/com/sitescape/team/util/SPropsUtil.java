@@ -30,6 +30,7 @@ package com.sitescape.team.util;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.SingletonViolationException;
 import com.sitescape.util.PropsUtil;
@@ -48,7 +49,7 @@ import com.sitescape.util.PropsUtil;
  * @author jong
  *
  */
-public class SPropsUtil extends PropsUtil {
+public class SPropsUtil extends PropsUtil implements InitializingBean {
 	// This is a singleton class. 
 	
 	private static SPropsUtil instance; // A singleton instance
@@ -69,12 +70,23 @@ public class SPropsUtil extends PropsUtil {
 			throw new SingletonViolationException(SPropsUtil.class);
 		
 		instance = this;
-		
-		logger.info("System properties" + Constants.NEWLINE + Utils.toStringML(System.getProperties()));
-		logger.info("System environment" + Constants.NEWLINE + Utils.toStringML(System.getenv()));
 	}
 	
     public void setConfig(PropertiesClassPathConfigFiles config) {
     	setProperties(config.getProperties());
     }
+
+	public void afterPropertiesSet() throws Exception {
+		
+		if(logger.isInfoEnabled()) {
+			logger.info(ReleaseInfo.getReleaseInfo());
+			logger.info("System properties" + Constants.NEWLINE + Utils.toStringML(System.getProperties()));
+			logger.info("System environment" + Constants.NEWLINE + Utils.toStringML(System.getenv()));
+		}
+		else {
+			System.out.println(ReleaseInfo.getReleaseInfo());
+			System.out.println("System properties" + Constants.NEWLINE + Utils.toStringML(System.getProperties()));
+			System.out.println("System environment" + Constants.NEWLINE + Utils.toStringML(System.getenv()));		
+		}	
+	}
 }
