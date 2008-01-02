@@ -84,6 +84,7 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -119,10 +120,14 @@ public class BinderHelper {
 	public static final String TOOLBAR_PORTLET="ss_toolbar";
 	public static final String WIKI_PORTLET="ss_wiki";
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
+	public static final String WORKAREA_PORTLET="ss_workarea";
+	public static final String WORKAREA_ACCESSORIES_PORTLET="ss_workarea_accessories";
+	public static final String WORKAREA_CONTEXT_PORTLET="ss_workarea_context";
+	public static final String WORKAREA_NAVIGATION_PORTLET="ss_workarea_navigation";
 
 	static public ModelAndView CommonPortletDispatch(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) {
- 		Map<String,Object> model = new HashMap<String,Object>();
+		Map<String,Object> model = new HashMap<String,Object>();
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
  		PortletPreferences prefs = null;
  		String ss_initialized = null;
@@ -143,6 +148,13 @@ public class BinderHelper {
 			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
 		}
 		
+		//Set up the standard beans
+		//These have been documented, so don't delete any
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+		model.put(WebKeys.USER_PRINCIPAL, user);
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
 
 		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
 		model.put(WebKeys.PRODUCT_TITLE, SPropsUtil.getString("product.title", ObjectKeys.PRODUCT_TITLE_DEFAULT));
@@ -156,7 +168,6 @@ public class BinderHelper {
 			displayType = getDisplayType(request);
 		}
 			
-        User user = RequestContextHolder.getRequestContext().getUser();
 		BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
 
 		if (FORUM_PORTLET.equals(displayType)) {
@@ -242,6 +253,14 @@ public class BinderHelper {
 			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_GALLERY);		
 		} else if (MOBILE_PORTLET.equals(displayType)) {
 			return setupMobilePortlet(bs, request, prefs, model, WebKeys.VIEW_MOBILE);		
+		} else if (WORKAREA_PORTLET.equals(displayType)) {
+			return setupWorkareaPortlet(bs, request, prefs, model, WebKeys.VIEW_WORKAREA);		
+		} else if (WORKAREA_ACCESSORIES_PORTLET.equals(displayType)) {
+			return setupWorkareaPortlet(bs, request, prefs, model, WebKeys.VIEW_WORKAREA_ACCESSORIES);		
+		} else if (WORKAREA_CONTEXT_PORTLET.equals(displayType)) {
+			return setupWorkareaPortlet(bs, request, prefs, model, WebKeys.VIEW_WORKAREA_CONTEXT);		
+		} else if (WORKAREA_NAVIGATION_PORTLET.equals(displayType)) {
+			return setupWorkareaNavigationPortlet(bs, request, prefs, model, WebKeys.VIEW_WORKAREA_NAVIGATION);		
 		}
 
 		return null;
@@ -252,10 +271,9 @@ public class BinderHelper {
 		if (prefs != null) gId = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
 		if (gId != null) {
 			try {
+				Map userProperties = (Map) model.get(WebKeys.USER_PROPERTIES);
 				DashboardPortlet d = (DashboardPortlet)bs.getDashboardModule().getDashboard(gId);
 				model.put(WebKeys.DASHBOARD_PORTLET, d);
-				Map userProperties = (Map) bs.getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
-				model.put(WebKeys.USER_PROPERTIES, userProperties);
 				if (request.getWindowState().equals(WindowState.MAXIMIZED))
 					model.put(WebKeys.PAGE_SIZE, "20");
 				else
@@ -270,8 +288,7 @@ public class BinderHelper {
 
 	protected static ModelAndView setupMobilePortlet(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
 		//This is the portlet view; get the configured list of folders to show
-		User user = RequestContextHolder.getRequestContext().getUser();
-		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+		Map userProperties = (Map) model.get(WebKeys.USER_PROPERTIES);
 		String[] mobileBinderIds = (String[])userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS);
 
 		//Build the jsp bean (sorted by folder title)
@@ -291,6 +308,33 @@ public class BinderHelper {
 			userQueries = (Map)userProperties.get(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES);
 		}
 		model.put("ss_UserQueries", userQueries);
+		return new ModelAndView(view, model);
+		
+	}
+
+	protected static ModelAndView setupWorkareaPortlet(AllModulesInjected bs, RenderRequest request, 
+			PortletPreferences prefs, Map model, String view) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		//This is the workarea view.
+		//Set up the navigation beans
+		Binder binder = bs.getWorkspaceModule().getWorkspace();
+		Document tree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), 
+				new WsDomTreeBuilder(null, true, bs), 1);
+		model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
+
+		return new ModelAndView(view, model);
+		
+	}
+
+	protected static ModelAndView setupWorkareaNavigationPortlet(AllModulesInjected bs, 
+			RenderRequest request, PortletPreferences prefs, Map model, String view) {
+		//This is the workarea navigation view
+		Binder binder = bs.getWorkspaceModule().getWorkspace();
+		Document tree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), 
+				new WsDomTreeBuilder(null, true, bs), 1);
+
+		model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
+
 		return new ModelAndView(view, model);
 		
 	}
@@ -322,6 +366,14 @@ public class BinderHelper {
 			return ViewController.WIKI_PORTLET;
 		else if (pName.contains(ViewController.MOBILE_PORTLET))
 			return ViewController.MOBILE_PORTLET;
+		else if (pName.contains(ViewController.WORKAREA_ACCESSORIES_PORTLET))
+			return ViewController.WORKAREA_ACCESSORIES_PORTLET;
+		else if (pName.contains(ViewController.WORKAREA_CONTEXT_PORTLET))
+			return ViewController.WORKAREA_CONTEXT_PORTLET;
+		else if (pName.contains(ViewController.WORKAREA_NAVIGATION_PORTLET))
+			return ViewController.WORKAREA_NAVIGATION_PORTLET;
+		else if (pName.contains(ViewController.WORKAREA_PORTLET))
+			return ViewController.WORKAREA_PORTLET;
 		return null;
 
 	}

@@ -448,6 +448,23 @@ function ss_treeShowId(id, obj, action) {
 	return false;
 }
 
+function ss_treeShowIdNoWS(id, obj, action) {
+	var binderId = id;
+	//See if the id is formatted (e.g., "ss_favorites_xxx")
+	if (binderId.indexOf("_") >= 0) {
+		var binderData = id.substr(13).split("_");
+		binderId = binderData[binderData.length - 1];
+	}
+
+	//Build a url to go to
+	var url = ss_baseBinderUrlNoWS;
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	//console.log(url);
+	self.location.href = url;
+	return false;
+}
+
 
 //Routine to fetch a url in a iframe window (for accessibility mode)
 function ss_fetchUrlInIframe(url, anchorDivName, width, height) {
@@ -736,10 +753,10 @@ function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
 	ss_showHide(divId);
 	if (imgObj.src.indexOf("flip_down16H.gif") > -1) {
 		imgObj.src=ss_imagesPath + "pics/flip_up16H.gif";
-		urlParams.operation = "show_sidebar_panel";
+		urlParams.operation = "hide_sidebar_panel";
 	} else {
 		imgObj.src=ss_imagesPath + "pics/flip_down16H.gif";
-		urlParams.operation="hide_sidebar_panel";
+		urlParams.operation="show_sidebar_panel";
 	}
 	if (sticky) {
 		ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));

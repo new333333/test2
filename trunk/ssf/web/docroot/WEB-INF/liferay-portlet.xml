@@ -81,6 +81,30 @@
 		<maximize-edit>true</maximize-edit>
 		<instanceable>false</instanceable>
 	</portlet>
+	<portlet>
+		<portlet-name>ss_workarea</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>false</maximize-edit>
+		<instanceable>false</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_workarea_accessories</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>false</maximize-edit>
+		<instanceable>false</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_workarea_context</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>false</maximize-edit>
+		<instanceable>false</instanceable>
+	</portlet>
+	<portlet>
+		<portlet-name>ss_workarea_navigation</portlet-name>
+		<restore-current-view>false</restore-current-view>
+		<maximize-edit>false</maximize-edit>
+		<instanceable>false</instanceable>
+	</portlet>
 
 <!--
 	<portlet>

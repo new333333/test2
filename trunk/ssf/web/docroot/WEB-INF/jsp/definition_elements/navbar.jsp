@@ -54,7 +54,7 @@ function ss_turnOffDebugMode() {
 	var url = self.location.href + "&enableDebug=off"
 	self.location.href = url;
 }
-var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 
 </script>
     </td>
@@ -62,7 +62,7 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
     </table>
   </div>
   <div>
-  <textarea id="debugTextarea<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="width:100%;" rows="6"></textarea>
+  <textarea id="debugTextarea${renderResponse.namespace}" style="width:100%;" rows="6"></textarea>
   </div>
   </div>
   <br/>
@@ -71,7 +71,8 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
 
 <!-- Start of global toolbar - MAXIMIZED PORTAL WINDOW MODE -->
 <c:if test="${ss_navbar_style != 'portlet'}">
-<ssf:sidebarPanel title="sidebar.navigator" id="ss_navigator_box" divClass="ss_global_toolbar ss_global_toolbar_maximized"
+<ssf:sidebarPanel title="sidebar.navigator" id="ss_navigator_box" 
+     divClass="ss_global_toolbar ss_global_toolbar_maximized"
      initOpen="true" sticky="true">
 <table class="ss_global_toolbar_maximized" width="100%" cellspacing="0" cellpadding="0" border="0"><tbody>
 <tr>
@@ -119,18 +120,19 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
 
 <!-- Favorites -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_favs" onClick="ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
+	<div class="ss_global_toolbar_favs" 
+	  onClick="ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
 	  title="<ssf:nlt tag="navigation.favorites"/>"
       onMouseOver="this.style.cursor = 'pointer';"
     >
       <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-	    <div id="ss_navbarFavoritesButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+	    <div id="ss_navbarFavoritesButton${renderResponse.namespace}">
 	      	    <img src="<html:imagesPath/>pics/1pix.gif"/>
 	    </div>
 	  </ssHelpSpot>
 	</div>
-    <div id="ss_navbar_favorites<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+    <div id="ss_navbar_favorites${renderResponse.namespace}" 
       style="visibility:hidden;margin:0px;padding:0px;"
     ></div>
 
@@ -142,7 +144,7 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
       <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 	  </ssHelpSpot>
-    <div id="ss_navbar_favorites<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+    <div id="ss_navbar_favorites${renderResponse.namespace}" 
       style="visibility:hidden;margin:0px;padding:0px;"
     ></div>
 </ssf:ifaccessible>
@@ -156,18 +158,19 @@ var ss_debugTextareaId = "debugTextarea<ssf:ifadapter><portletadapter:namespace/
 
 <!-- My Teams -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_myteams" onClick="ssMyTeams${renderResponse.namespace}.show();return false;"
+	<div class="ss_global_toolbar_myteams" 
+	  onClick="ssMyTeams${renderResponse.namespace}.show();return false;"
 	  title="<ssf:nlt tag="navigation.myTeams"/>"
       onMouseOver="this.style.cursor = 'pointer';"
     >
       <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
           title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
-	    <div id="ss_navbarMyTeamsButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+	    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}">
 	      	    <img src="<html:imagesPath/>pics/1pix.gif"/>
 	    </div>
 	  </ssHelpSpot>
 	</div>
-	<div id="ss_navbar_myteams<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+	<div id="ss_navbar_myteams${renderResponse.namespace}"
 	      style="visibility:hidden;margin:0px;padding:0px;"></div>
 
 </ssf:ifnotaccessible>
@@ -206,10 +209,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			  	name="newTab" value="0"/></portlet:actionURL>"
 				><ssf:nlt tag="navigation.search.advanced"/></a></span>
 		</div>
-		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" 
 		  onMouseOver="this.style.cursor = 'pointer';">
-     		<form class="ss_form" method="post" id="ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
-		  		name="ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+     		<form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
+		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
 		  		action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  			name="action" value="advanced_search"/><portlet:param 
 		  			name="newTab" value="1"/></portlet:actionURL>">
@@ -223,7 +226,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 					<input name="searchText" style="width: 140px;" type="text" /> 
 					<a class="ss_searchButton" 
-					  href="javascript: document.ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.submit();" ><img 
+					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
 					  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/1pix.gif" /></a>
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
@@ -231,12 +234,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			  </ssHelpSpot>
 				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
 				  title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
-				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>',
+				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
 				  '<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 				  name="action" value="advanced_search"/><portlet:param 
 				  name="newTab" value="1"/></portlet:actionURL>');"><img 
 				  src="<html:imagesPath/>pics/menudown.gif" /></a>
-				<div id="ss_navbarPopupPane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_navbarPopupPane"></div>
+				<div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
 			</form>
      	</div>
 	</div>
@@ -244,7 +247,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <ssf:ifaccessible>
 	<div class="ss_global_toolbar_accessible">
 		<div >
-			<span class="ss_global_toolbar_label_text_quickSearch"><label for="ss_searchSearchText<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+			<span class="ss_global_toolbar_label_text_quickSearch"><label for="ss_searchSearchText${renderResponse.namespace}"
 			  ><ssf:nlt tag="navigation.search"/></label></span>
 			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
 				  href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
@@ -253,7 +256,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				  name="newTab" value="0"/></portlet:actionURL>"
 				><ssf:nlt tag="navigation.search.advanced"/></a></span>
 		</div>
-		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" >
+		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
 		  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
                  <c:if test="<%= isIE %>">
                    offsetX="159" 
@@ -263,14 +266,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
                  </c:if>
 		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 		  </ssHelpSpot>
-     		<form method="post" id="ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
-		  		name="ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+     		<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
+		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
 		  		action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  			name="action" value="advanced_search"/><portlet:param 
 		  			name="newTab" value="1"/></portlet:actionURL>">
-					<input name="searchText" type="text" id="ss_searchSearchText<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" /> 
+					<input name="searchText" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
 					<a class="ss_searchButton" 
-					  href="javascript: document.ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.submit();" ><img 
+					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
 					  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/search_icon.gif" /></a>
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
@@ -291,9 +294,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <td>
 	<!-- Find people -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+	<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
      onMouseOver="this.style.cursor = 'pointer';">
-			<form method="post" id="ss_findUserForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findUserForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+			<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
+			  name="ss_findUserForm${renderResponse.namespace}" 
 			  action="<portlet:actionURL windowState="maximized"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
@@ -304,9 +308,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindUserButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindUserButton${renderResponse.namespace}">
 		<div>
-			<form method="post" id="ss_findUserForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findUserForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+			<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
+			  name="ss_findUserForm${renderResponse.namespace}" 
 			  action="<portlet:actionURL windowState="maximized"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
@@ -332,10 +337,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <td>
 	<!-- Find place -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+	<div class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton${renderResponse.namespace}"
      onMouseOver="this.style.cursor = 'pointer';">
 		<div>
-			<form method="post" id="ss_findPlacesForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findPlacesForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+			<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
+			  name="ss_findPlacesForm${renderResponse.namespace}" 
 			  action="<portlet:actionURL windowState="maximized"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find 
@@ -348,9 +354,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindPlacesButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindPlacesButton${renderResponse.namespace}">
 		<div>
-			<form method="post" id="ss_findPlacesForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findPlacesForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+			<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
+			  name="ss_findPlacesForm${renderResponse.namespace}" 
 			  action="<portlet:actionURL windowState="maximized"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find 
@@ -376,10 +383,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <td>
 		<!-- Find tag -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_findUser" id="ss_navbarFindTagsButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+	<div class="ss_global_toolbar_findUser" id="ss_navbarFindTagsButton${renderResponse.namespace}"
      onMouseOver="this.style.cursor = 'pointer';">
 		<div>
-			<form method="post" id="ss_findTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+			<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
+			  name="ss_findTagsForm${renderResponse.namespace}" 
 			  action="<portlet:actionURL windowState="maximized"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find 
@@ -392,9 +400,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible" id="ss_navbarFindTagsButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+	<div class="ss_global_toolbar_accessible" id="ss_navbarFindTagsButton${renderResponse.namespace}">
 		<div>
-			<form method="post" id="ss_findTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+			<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
+			  name="ss_findTagsForm${renderResponse.namespace}" 
 			  action="<portlet:actionURL windowState="maximized"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find 
@@ -485,10 +494,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
     >
       <ssHelpSpot helpId="navigation_bar/favorites_button_portlet" offsetY="25" offsetX="5"  
           title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-	    <div id="ss_navbarFavoritesButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+	    <div id="ss_navbarFavoritesButton${renderResponse.namespace}">
 	      <span class="ss_fineprint"><ssf:nlt tag="navigation.favorites"/></span>
 	    </div>
-	    <div id="ss_navbar_favorites<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="visibility:hidden;margin:0px;padding:0px;"
+	    <div id="ss_navbar_favorites${renderResponse.namespace}" style="visibility:hidden;margin:0px;padding:0px;"
 	    ><img <ssf:alt tag="navigation.favorites"/> border="0" src="<html:imagesPath/>pics/1pix.gif"></div>
 	  </ssHelpSpot>
 	</div>
@@ -497,7 +506,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   
   <td class="ss_global_toolbar_portlet_box" colspan="3">
     <span class="ss_global_toolbar_label_text_quickSearch">
-      <label for="ss_searchSearchText<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+      <label for="ss_searchSearchText${renderResponse.namespace}">
         <ssf:nlt tag="navigation.search"/>
       </label>
     </span>
@@ -533,9 +542,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <tr>
   <td class="ss_global_toolbar_portlet_box" colspan="3"><!-- Search form -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
-		<form method="post" id="ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
-		  name="ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+	<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}">
+		<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
+		  name="ss_simpleSearchForm${renderResponse.namespace}" 
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  	name="action" value="advanced_search"/><portlet:param 
 		  	name="newTab" value="1"/></portlet:actionURL>" style="display: inline;">
@@ -546,35 +555,36 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			<input type="hidden" name="operation" value="ss_searchResults"/>
 			  
 			  <a class="ss_searchButton" 
-			    href="javascript: document.ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.submit();" ><img 
+			    href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
 			    src="<html:imagesPath/>pics/1pix.gif" <ssf:alt tag="alt.search"/> /></a>
 		    <input type="hidden" name="searchBtn" value="searchBtn"/>
 		  </ssHelpSpot>
 		</form>
 		
-		<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
-		onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>',
+		<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
+		title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
+		onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
 				  '<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
 				  name="action" value="advanced_search"/><portlet:param 
 				  name="newTab" value="1"/></portlet:actionURL>');"><img 
 				  src="<html:imagesPath/>pics/menudown.gif" /></a>
-		<div id="ss_navbarPopupPane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" class="ss_navbarPopupPane"></div>
+		<div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible"  id="ss_navbarSearchButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" >
+	<div class="ss_global_toolbar_accessible"  id="ss_navbarSearchButton${renderResponse.namespace}" >
 	  <ssHelpSpot helpId="navigation_bar/search_button"  offsetX="-20" offsetY="0" 
 	    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 	  </ssHelpSpot>
- 		<form method="post" id="ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
-	  		name="ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+ 		<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
+	  		name="ss_simpleSearchForm${renderResponse.namespace}" 
 	  		action="<portlet:actionURL windowState="maximized"><portlet:param 
 	  			name="action" value="advanced_search"/><portlet:param 
 	  			name="newTab" value="1"/></portlet:actionURL>"
 			style="display: inline;">
-				<input name="searchText" type="text" id="ss_searchSearchText<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" /> 
+				<input name="searchText" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
 				<a class="ss_searchButton" 
-				  href="javascript: document.ss_simpleSearchForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>.submit();" ><img 
+				  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
 				  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/search_icon.gif" /></a>
 				<input type="hidden" name="searchBtn" value="searchBtn"/>
 				<input type="hidden" name="quickSearch" value="true"/>					
@@ -599,9 +609,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <tr class="ss_row_last">
   <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find people-->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+	<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
      onMouseOver="this.style.cursor = 'pointer';">
-		<form method="post" id="ss_findUserForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findUserForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+		<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
+		  name="ss_findUserForm${renderResponse.namespace}" 
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  name="action" value="findUser"/></portlet:actionURL>">
 			  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
@@ -612,9 +623,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindUserButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindUserButton${renderResponse.namespace}">
 		<div>
-			<form method="post" id="ss_findUserForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findUserForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+			<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
+			  name="ss_findUserForm${renderResponse.namespace}" 
 			  action="<portlet:actionURL windowState="maximized"><portlet:param 
 			  name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
@@ -632,9 +644,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
   </td>
   <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find places form -->
 <ssf:ifnotaccessible>
-    <div class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+    <div class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton${renderResponse.namespace}"
      onMouseOver="this.style.cursor = 'pointer';">
-		<form method="post" id="ss_findPlacesForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findPlacesForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+		<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
+		  name="ss_findPlacesForm${renderResponse.namespace}" 
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  	name="action" value="findUser"/></portlet:actionURL>">
 			  <ssf:find 
@@ -646,9 +659,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindPlacesButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindPlacesButton${renderResponse.namespace}">
 		<div>
-			<form method="post" id="ss_findPlacesForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findPlacesForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+			<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
+			  name="ss_findPlacesForm${renderResponse.namespace}" 
 			  action="<portlet:actionURL windowState="maximized"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find 
@@ -667,9 +681,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
   </td>
   <td class="ss_global_toolbar_portlet_box" align="left" valign="top"><!-- Find tags form -->
 <ssf:ifnotaccessible>
-   <div class="ss_global_toolbar_findUser" id="ss_navbarFindTagsButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+   <div class="ss_global_toolbar_findUser" id="ss_navbarFindTagsButton${renderResponse.namespace}"
      onMouseOver="this.style.cursor = 'pointer';">
-		<form method="post" id="ss_findTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+		<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
+		  name="ss_findTagsForm${renderResponse.namespace}" 
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  	name="action" value="findUser"/></portlet:actionURL>">
 			  <ssf:find 
@@ -681,9 +696,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible" id="ss_navbarFindTagsButton<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+	<div class="ss_global_toolbar_accessible" id="ss_navbarFindTagsButton${renderResponse.namespace}">
 		<div>
-			<form method="post" id="ss_findTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_findTagsForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+			<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
+			  name="ss_findTagsForm${renderResponse.namespace}" 
 			  action="<portlet:actionURL windowState="maximized"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find 
@@ -715,12 +731,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <a class="ss_advanced ss_fineprint" href="javascript: ;" 
   onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'navigation_bar/create_team_button', '', 200, 20, 'left', 'top');return false;"
 ><ssf:nlt tag="navigation.createTeam"/></a>
-<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}" class="ss_inlineHelp">
+<div id="${renderResponse.namespace}ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}" class="ss_inlineHelp">
  <div align="right"><a href="javascript:;" 
-  onClick="ss_hideDivNone('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"><img 
+  onClick="ss_hideDivNone('${renderResponse.namespace}ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"><img 
   border="0" alt="<ssf:nlt tag="button.close"/>" 
   src="<html:imagesPath/>pics/sym_s_delete.gif"></a></div>
- <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}"></div>
+ <div id="${renderResponse.namespace}ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}"></div>
 </div>
 </ssHelpSpot>
 </div>
@@ -732,9 +748,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <a class="ss_linkButton" href="javascript: ;" onClick="ssMyTeams${renderResponse.namespace}.show();return false;">
   <ssf:nlt tag="navigation.myTeams"/> <img src="<html:imagesPath/>pics/menudown.gif"/>
 </a>
-<div id="ss_navbar_myteams<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
+<div id="ss_navbar_myteams${renderResponse.namespace}"
 	      style="visibility:hidden;margin:0px;padding:0px;"></div>
-<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_myTeams"></div>
+<div id="${renderResponse.namespace}ss_myTeams"></div>
 </div>
 </ssHelpSpot>
 
@@ -748,12 +764,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:if test="${empty ss_navbarBottomSeen}">
 <c:set var="ss_navbarBottomSeen" value="1"/>
 
-<div id="ss_navbar_bottom<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"></div>
+<div id="ss_navbar_bottom${renderResponse.namespace}"></div>
 
 </c:if>
 
 <!-- Start of favorites pane -->
-<div class="ss_style_trans" id="ss_favorites_pane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+<div class="ss_style_trans" id="ss_favorites_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">
 
 <ssf:popupPane width="250px" titleTag="favorites"
@@ -785,11 +801,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			text="Edit Favorites"/></span></a>
   </div>
   <hr style="width: 90%" class="ss_att_divider"/>
-  <div class="ss_style_trans" id="ss_favorites<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" align="left">
-	  <div style="float: right;" id="ss_favorites_loading<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"><ssf:nlt tag="Loading"/></div>
-	  <div id="ss_favorites_list<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">&nbsp;</div>
+  <div class="ss_style_trans" id="ss_favorites${renderResponse.namespace}" align="left">
+	  <div style="float: right;" id="ss_favorites_loading${renderResponse.namespace}"><ssf:nlt tag="Loading"/></div>
+	  <div id="ss_favorites_list${renderResponse.namespace}">&nbsp;</div>
   </div>
-  <div class="ss_style_trans" style="display: none;" id="ss_favorites_editor<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">
+  <div class="ss_style_trans" style="display: none;" id="ss_favorites_editor${renderResponse.namespace}">
      <div style="padding: 10px 0px 7px 0px;">
 
 	<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
@@ -828,14 +844,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <!-- End of favorites pane -->
 <!-- Start of myteams pane -->
-<div class="ss_style_trans" id="ss_myteams_pane<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+<div class="ss_style_trans" id="ss_myteams_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">
 <ssf:popupPane width="250px" titleTag="navigation.myTeams"
       closeScript="ssMyTeams${renderResponse.namespace}.hide();return false;">
 <div style="padding: 5px 10px 5px 10px;">
-  <div class="ss_style_trans" id="ss_myteams<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" align="left">
-	  <div style="float: right;" id="ss_myteams_loading<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"><ssf:nlt tag="Loading"/></div>
-	  <div id="ss_myteams_list<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>">&nbsp;</div>
+  <div class="ss_style_trans" id="ss_myteams${renderResponse.namespace}" align="left">
+	  <div style="float: right;" id="ss_myteams_loading${renderResponse.namespace}"><ssf:nlt tag="Loading"/></div>
+	  <div id="ss_myteams_list${renderResponse.namespace}">&nbsp;</div>
   </div>
 </div>
 </ssf:popupPane>

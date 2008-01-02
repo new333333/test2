@@ -510,6 +510,7 @@ public class WebKeys {
     public static final String DISPLAY_STYLE_GUESTBOOK="guestbook";
     public static final String DISPLAY_STYLE_TASK="task";
     public static final String DISPLAY_STYLE_WIKI="wiki";
+    public static final String DISPLAY_TYPE="ss_displayType";
     public static final String DIV_ID="ss_divId";
     public static final String DOM_TREE="ssDomTree";
     public static final String DOWNLOAD_URL="ssDownloadURL";
@@ -908,6 +909,10 @@ public class WebKeys {
     public static final String VIEW_TOOLBAR="toolbar/view";
     public static final String VIEW_WIKI="wiki/view";
     public static final String VIEW_WIKI_EDIT="wiki/edit";
+    public static final String VIEW_WORKAREA="forum/view_workarea";
+    public static final String VIEW_WORKAREA_ACCESSORIES="forum/view_workarea_accessories";
+    public static final String VIEW_WORKAREA_CONTEXT="forum/view_workarea_context";
+    public static final String VIEW_WORKAREA_NAVIGATION="forum/view_workarea_navigation";
     public static final String VIEW_WORKSPACE="forum/view_workspace";
     public static final String VIEW_WORKSPACE_EDIT="workspacetree/edit";
     public static final String VIEW_TEAM_MEMBERS="forum/view_team_members";

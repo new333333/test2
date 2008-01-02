@@ -68,6 +68,10 @@ public class ViewController  extends SAbstractController {
 	public static final String TOOLBAR_PORTLET="ss_toolbar";
 	public static final String WIKI_PORTLET="ss_wiki";
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
+	public static final String WORKAREA_PORTLET="ss_workarea";
+	public static final String WORKAREA_ACCESSORIES_PORTLET="ss_workarea_accessories";
+	public static final String WORKAREA_CONTEXT_PORTLET="ss_workarea_context";
+	public static final String WORKAREA_NAVIGATION_PORTLET="ss_workarea_navigation";
 
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
  		PortletPreferences prefs = null;

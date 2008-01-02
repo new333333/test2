@@ -37,6 +37,75 @@
         <resource-bundle>content.forum</resource-bundle>
     </portlet>
 
+    <portlet>
+        <description xml:lang="en">ICEcore Workarea Portlet</description>
+        <portlet-name>ss_workarea</portlet-name>
+        <display-name xml:lang="en">Workarea</display-name>
+        <portlet-class>com.sitescape.team.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/ssf.xml /WEB-INF/context/portlet/ssf-additional.xml</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <resource-bundle>content.workarea</resource-bundle>
+    </portlet>
+    <portlet>
+        <description xml:lang="en">ICEcore Workarea Accessories Portlet</description>
+        <portlet-name>ss_workarea_accessories</portlet-name>
+        <display-name xml:lang="en">Workarea Accessories</display-name>
+        <portlet-class>com.sitescape.team.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/ssf.xml /WEB-INF/context/portlet/ssf-additional.xml</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <resource-bundle>content.workarea_accessories</resource-bundle>
+    </portlet>
+    <portlet>
+        <description xml:lang="en">ICEcore Workarea Context Portlet</description>
+        <portlet-name>ss_workarea_context</portlet-name>
+        <display-name xml:lang="en">Workarea Context</display-name>
+        <portlet-class>com.sitescape.team.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/ssf.xml /WEB-INF/context/portlet/ssf-additional.xml</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <resource-bundle>content.workarea_context</resource-bundle>
+    </portlet>
+    <portlet>
+        <description xml:lang="en">ICEcore Workarea Navigation Portlet</description>
+        <portlet-name>ss_workarea_navigation</portlet-name>
+        <display-name xml:lang="en">WorkareaNavigation</display-name>
+        <portlet-class>com.sitescape.team.web.portlet.DispatcherPortlet</portlet-class>
+		<init-param>
+			<name>contextConfigLocation</name>
+			<value>/WEB-INF/context/portlet/ssf.xml /WEB-INF/context/portlet/ssf-additional.xml</value>
+		</init-param>
+        <expiration-cache>300</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
+            <portlet-mode>edit</portlet-mode>
+        </supports>
+        <resource-bundle>content.workarea_navigation</resource-bundle>
+    </portlet>
+
 
      <portlet>
         <description xml:lang="en">ICEcore Administration</description>

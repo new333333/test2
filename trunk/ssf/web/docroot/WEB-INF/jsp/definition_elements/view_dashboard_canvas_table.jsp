@@ -54,7 +54,7 @@
 				  <c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
 				  <c:set var="ss_dashboard_dashboardList" value="wide_top" scope="request"/>
 				  <c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
-				  <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_component_${component.id}" 
+				  <div id="${renderResponse.namespace}_dashboard_component_${component.id}" 
 				    class="ss_dashboard_component" style="margin:0px; padding:0px;">
 				    <ssf:dashboard id="${component.id}" 
 				      type="viewComponent" configuration="${ssDashboard}"/>
@@ -82,7 +82,7 @@
 				<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
 				<c:set var="ss_dashboard_dashboardList" value="narrow_fixed" scope="request"/>
 				<c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
-				<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_component_${component.id}"
+				<div id="${renderResponse.namespace}_dashboard_component_${component.id}"
 				  class="ss_dashboard_component" style="margin:0px; padding:0px;">
 				  <ssf:dashboard id="${component.id}" 
 				    type="viewComponent" configuration="${ssDashboard}"/>
@@ -108,7 +108,7 @@
 				<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
 				<c:set var="ss_dashboard_dashboardList" value="narrow_variable" scope="request"/>
 				<c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
-				<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_component_${component.id}"
+				<div id="${renderResponse.namespace}_dashboard_component_${component.id}"
 				  class="ss_dashboard_component" style="margin:0px; padding:0px;">
 				  <ssf:dashboard id="${component.id}" 
 				    type="viewComponent" configuration="${ssDashboard}"/>
@@ -132,7 +132,7 @@
 				<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
 				<c:set var="ss_dashboard_dashboardList" value="wide_bottom" scope="request"/>
 				<c:set var="ss_dashboard_returnView" value="binder" scope="request"/>
-				<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_component_${component.id}"
+				<div id="${renderResponse.namespace}_dashboard_component_${component.id}"
 				  class="ss_dashboard_component" style="margin:0px; padding:0px;">
 				  <ssf:dashboard id="${component.id}" 
 				    type="viewComponent" configuration="${ssDashboard}"/>
@@ -155,17 +155,15 @@
 </form>
 
 <script type="text/javascript">
-<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_toolbar_count = <c:out value="${ss_toolbar_count}"/>;
-<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_count = <c:out value="${ss_dashboard_control_count}"/>;
-<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_count = <c:out value="${ss_dashboard_border_count}"/>;
-ss_createOnLoadObj("<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardInitialization", <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardInitialization);
-function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardInitialization() {
-//	ss_dashboardInitialization('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboardTable');
+${renderResponse.namespace}_toolbar_count = <c:out value="${ss_toolbar_count}"/>;
+${renderResponse.namespace}_dashboard_control_count = <c:out value="${ss_dashboard_control_count}"/>;
+${renderResponse.namespace}_dashboard_border_count = <c:out value="${ss_dashboard_border_count}"/>;
+ss_createOnLoadObj("${renderResponse.namespace}_dashboardInitialization", ${renderResponse.namespace}_dashboardInitialization);
+function ${renderResponse.namespace}_dashboardInitialization() {
+//	ss_dashboardInitialization('${renderResponse.namespace}_dashboardTable');
 //leave this until peter fixes the dojo stuff?? to user namespaces
 	ss_dashboardInitialization('ss_dashboardTable');
 }
-
-
 </script>
 
 </c:if>

@@ -35,7 +35,7 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:if test="${empty ss_breadcrumbsShowIdRoutine}">
-  <c:set var="ss_breadcrumbsShowIdRoutine" value="ss_treeShowId" scope="request" />
+  <c:set var="ss_breadcrumbsShowIdRoutine" value="ss_treeShowIdNoWS" scope="request" />
 </c:if>
 <c:if test="${empty ss_breadcrumbsTreeName}">
   <c:set var="ss_breadcrumbsTreeName" value="wsTree" scope="request" />

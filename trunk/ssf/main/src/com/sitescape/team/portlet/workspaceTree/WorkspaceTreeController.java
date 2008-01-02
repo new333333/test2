@@ -102,7 +102,9 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
         User user = RequestContextHolder.getRequestContext().getUser();
  		Map<String,Object> model = new HashMap<String,Object>();
-		if (request.getWindowState().equals(WindowState.NORMAL)) 
+		String displayType = BinderHelper.getDisplayType(request);
+		if (request.getWindowState().equals(WindowState.NORMAL) &&
+				!BinderHelper.WORKAREA_PORTLET.equals(displayType)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 
 		BinderHelper.setBinderPermaLink(this, request, response);
@@ -111,7 +113,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
 		} catch (UnsupportedOperationException us) {}
 
-		Long binderId= PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (operation.equals(WebKeys.OPERATION_RELOAD_LISTING)) {
 			//An action is asking us to build the url to reload the parent page
@@ -255,6 +257,8 @@ public class WorkspaceTreeController extends SAbstractController  {
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 			
+		model.put(WebKeys.DISPLAY_TYPE, displayType);
+		
 		Tabs.TabEntry tab = BinderHelper.initTabs(request, binder);
 		model.put(WebKeys.TABS, tab.getTabs());		
 
