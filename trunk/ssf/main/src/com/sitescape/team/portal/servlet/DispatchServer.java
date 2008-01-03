@@ -138,13 +138,14 @@ public class DispatchServer extends GenericServlet {
 					
 			HttpSession ses = ((HttpServletRequest) req).getSession();
 			
-			if(ses.getAttribute(WebKeys.ZONE_NAME) == null) {		
-				String userName = req.getParameter(CrossContextConstants.USER_NAME);
-				if(userName == null)
-					userName = SZoneConfig.getGuestUserName(zoneName);
-				
-				ses.setAttribute(WebKeys.ZONE_NAME, zoneName);
-				ses.setAttribute(WebKeys.USER_NAME, userName);
+			String userName = req.getParameter(CrossContextConstants.USER_NAME);
+			if(userName == null)
+				userName = SZoneConfig.getGuestUserName(zoneName);
+			
+			ses.setAttribute(WebKeys.ZONE_NAME, zoneName);
+			ses.setAttribute(WebKeys.USER_NAME, userName);
+
+			if(ses.getAttribute(WebKeys.SERVER_NAME) == null) {		
 				ses.setAttribute(WebKeys.SERVER_NAME, req.getServerName().toLowerCase());
 				ses.setAttribute(WebKeys.SERVER_PORT, Integer.valueOf(req.getServerPort()));
 				if(logger.isDebugEnabled())
