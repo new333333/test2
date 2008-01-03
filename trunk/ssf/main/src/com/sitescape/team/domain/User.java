@@ -352,6 +352,13 @@ public class User extends Principal {
             }
         }
     }
+    public boolean isAllUserMember() {
+    	if (!isReserved()) return true;
+		if (ObjectKeys.GUEST_USER_INTERNALID.equals(getInternalId())) return false;
+    	if (ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(getInternalId())) return false;
+    	if (ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(getInternalId())) return false;
+    	return true;
+    }
  
 
     /**
