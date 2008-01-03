@@ -549,7 +549,6 @@ public class ViewEntryController extends  SAbstractController {
 			footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
 		}
 		
-		String[] contributorIds = collectContributorIds(entry);
 		
 		if (!user.getEmailAddresses().isEmpty() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -564,6 +563,7 @@ public class ViewEntryController extends  SAbstractController {
 
 		if (getIcBrokerModule().isEnabled() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+			String[] contributorIds = collectContributorIds(entry);
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
