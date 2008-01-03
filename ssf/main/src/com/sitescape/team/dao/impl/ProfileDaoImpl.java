@@ -734,8 +734,9 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	return loadUser(id, zoneId);
    }
    public Set<Long> getPrincipalIds(User user) {
-    	if (!user.isShared()) return new HashSet(user.computePrincipalIds(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
-    	else return new HashSet(user.computePrincipalIds(null));
+	   if (user.isAllUserMember()) return new HashSet(user.computePrincipalIds(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
+	   return new HashSet(user.computePrincipalIds(null));
+   
     }
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 
@@ -747,17 +748,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	 */
 	public Set<Long> explodeGroups(final Collection<Long> ids, Long zoneId) {   
 		if ((ids == null) || ids.isEmpty()) return new TreeSet();
-		Set users;
-		if (ids.contains(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId))) {
-			List<Object[]> result = getCoreDao().loadObjects(
-					new ObjectControls(User.class, new String[]{ObjectKeys.FIELD_ID}), null, zoneId);
-			users = new HashSet(result);
-			//remove postingAgent
-			users.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
-			users.remove(getReservedId(ObjectKeys.GUEST_USER_INTERNALID, zoneId));
-			users.remove(getReservedId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
-		} else {
-			users = (Set)getHibernateTemplate().execute(
+		Set users = (Set)getHibernateTemplate().execute(
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
                     Set<Long> result = new TreeSet(ids);
@@ -785,7 +776,20 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                     return result;
                 }
             }
-        );}
+        );
+		Long allId = getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zoneId);
+		if (ids.contains(allId) || users.contains(allId)) {
+			//need to remove some users from the all users group.  Original list may add them back in.
+			//so need to do this step last
+			List<Object[]> result = getCoreDao().loadObjects(
+					new ObjectControls(User.class, new String[]{ObjectKeys.FIELD_ID}), null, zoneId);
+			//remove users not included
+			result.remove(getReservedId(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, zoneId));
+			result.remove(getReservedId(ObjectKeys.GUEST_USER_INTERNALID, zoneId));
+			result.remove(getReservedId(ObjectKeys.JOB_PROCESSOR_INTERNALID, zoneId));
+			users.addAll(result);
+		} 
+		users.remove(allId);
 		return users;		
 	}
 	/**
