@@ -582,18 +582,18 @@ public class ViewEntryController extends  SAbstractController {
 		qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 		footerToolbar.addToolbarMenu("permalink", NLT.get("toolbar.menu.entryPermalink"), adapterUrl.toString(), qualifiers);
 
-		AdaptedPortletURL adapterSubscriptionUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		adapterSubscriptionUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-		adapterSubscriptionUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ENTRY_SUBSCRIBE);
-		adapterSubscriptionUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
-		adapterSubscriptionUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-		adapterSubscriptionUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
+		if (entry.isTop()) { //only for top
+			AdaptedPortletURL adapterSubscriptionUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterSubscriptionUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+			adapterSubscriptionUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ENTRY_SUBSCRIBE);
+			adapterSubscriptionUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+			adapterSubscriptionUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+			adapterSubscriptionUrl.setParameter("rn", "ss_randomNumberPlaceholder");			
 		
-		qualifiers = new HashMap();		
-		qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_entry"+entryId+"'); return false;");
-		footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
-		
-		String[] contributorIds = collectContributorIds(entry);
+			qualifiers = new HashMap();		
+			qualifiers.put("onClick", "ss_createPopupDiv(this, 'ss_subscription_entry"+entryId+"'); return false;");
+			footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
+		}
 		
 		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_ENTRY_EMAIL);
@@ -604,6 +604,7 @@ public class ViewEntryController extends  SAbstractController {
 		footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 
 		if (getIcBrokerModule().isEnabled()) {
+			String[] contributorIds = collectContributorIds(entry);
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
