@@ -37,6 +37,7 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 
 import com.sitescape.team.lucene.Hits;
+import com.sitescape.team.search.LuceneException;
 
 /**
  * The main runtime interface between application and Lucene service. 
@@ -90,8 +91,8 @@ public interface LuceneSession {
 	 * @param fieldvalue
 	 * @throws LuceneException
 	 */
-	public void updateDocument(String uid, String fieldname, String fieldvalue)
-			throws LuceneException;
+	//public void updateDocument(String uid, String fieldname, String fieldvalue)
+	//		throws LuceneException;
 
 	/**
 	 * Update all documents matching the query.
@@ -104,17 +105,6 @@ public interface LuceneSession {
 	public void updateDocuments(Query query, String fieldname, String fieldvalue)
 			throws LuceneException;
 	
-	/**
-	 * Update all documents matching the query.
-	 * 
-	 * @param query
-	 * @param fieldname
-	 * @param fieldvalue
-	 * @throws LuceneException
-	 */
-	public void updateDocuments(ArrayList<Query> queries, String fieldname, ArrayList<String> values)
-			throws LuceneException;
-
 	/**
 	 * Delete the document identified by the uid. 
 	 * 
