@@ -207,6 +207,10 @@ public class FolderUtils {
 		getFolderModule().deleteEntry(parentFolder.getId(), entry.getId(), deleteMirroredSource);
 	}
 	
+	public static void deleteMirroredEntry(Long folderId, Long entryId, boolean deleteMirroredSource) {
+		getFolderModule().deleteEntry(folderId, entryId, deleteMirroredSource);
+	}
+	
 	public static boolean isMirroredFolder(Binder binder) {
 		return ((binder instanceof Folder) && ((Folder) binder).isMirrored());
 	}

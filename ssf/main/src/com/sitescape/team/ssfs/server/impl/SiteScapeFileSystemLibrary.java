@@ -878,7 +878,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 	
 	private Set<String> getLibraryFolderChildrenFileNames(Folder libraryFolder) {
-		return bs.getFileModule().getChildrenFileNames(libraryFolder);
+		return bs.getFileModule().getChildrenFileNames(libraryFolder).keySet();
 	}
 		
 	private void removeResource(Map uri, Map objMap) throws NoAccessException {
