@@ -41,6 +41,7 @@ import javax.mail.internet.MimeUtility;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -315,10 +316,16 @@ public class ViewFileController extends SAbstractController {
 	
 	private String encodeFileName(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
 		if(BrowserSniffer.is_ie(request)) {
-			return URLEncoder.encode(fileName, "UTF8");
+			String file = URLEncoder.encode(fileName, "UTF8");
+			file = StringUtils.replace(file, "+", "%20");
+			file = StringUtils.replace(file, "%2B", "+");
+			return file;
 		}
 		else if(BrowserSniffer.is_mozilla(request)) {
-			return MimeUtility.encodeText(fileName, "UTF8", "B");
+			String file = MimeUtility.encodeText(fileName, "UTF8", "B");
+			file = StringUtils.replace(file, "+", "%20");
+			file = StringUtils.replace(file, "%2B", "+");
+			return file;
 		}
 		else {
 			return fileName;
