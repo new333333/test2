@@ -56,7 +56,9 @@ public class GZIPResponseWrapper extends HttpServletResponseWrapper {
           stream.close();
         }
       }
-    } catch (IOException e) {}
+    }
+    catch (IOException e) {}
+    catch (IllegalStateException e) {}
   }
 
   public void flushBuffer() throws IOException {
