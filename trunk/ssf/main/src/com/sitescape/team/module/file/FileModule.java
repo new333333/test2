@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import com.sitescape.team.UncheckedIOException;
@@ -422,10 +423,11 @@ public interface FileModule {
 			VersionAttachment va) throws DeleteVersionException; 
 	
 	/**
-	 * Returns a set of names of the files contained in the specified binder.
+	 * Returns a map of names of the files contained in the specified binder
+	 * to its enclosing entry ids.
 	 * 
 	 * @param binder
 	 * @return
 	 */
-	public Set<String> getChildrenFileNames(Binder binder);
+	public Map<String,Long> getChildrenFileNames(Binder binder);
 }	

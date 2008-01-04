@@ -39,9 +39,11 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.dom4j.Element;
@@ -860,7 +862,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		//		va.getFileItem().getName());
 	}
 
-	public Set<String> getChildrenFileNames(Binder binder) {
+	public Map<String,Long> getChildrenFileNames(Binder binder) {
 		// We use search engine to get the list of file names in the specified folder.
 		
 		// create empty search filter
@@ -912,15 +914,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
             luceneSession.close();
         }
     	
-        Set<String> result = new HashSet<String>();
+        Map<String,Long> result = new HashMap<String,Long>();
         int count = hits.length();
         org.apache.lucene.document.Document doc;
         String fileName;
+        Long entryId;
         for(int i = 0; i < count; i++) {
         	doc = hits.doc(i);
         	fileName = doc.get(EntityIndexUtils.FILENAME_FIELD);
-        	if(fileName != null)
-        		result.add(fileName);
+        	if(fileName != null) {
+        		try {
+	        		entryId = Long.valueOf(doc.get(EntityIndexUtils.DOCID_FIELD));
+	        		result.put(fileName, entryId);
+        		}
+        		catch(Exception ignore) {}
+        	}
         }
         
         return result;
