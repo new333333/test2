@@ -192,9 +192,9 @@ public class Datepicker extends TagSupport {
 			sb.append(varname).append(".setReturnFunction(\"setMultipleValues_")
 			  .append(prefix).append("\");\n");
 			sb.append(varname).append(".showNavigationDropdowns();\n");
-			sb.append(varname).append(".setTodayText('"+ NLT.get("button.today") +"');\n");
-			sb.append(varname).append(".setOkText('"+ NLT.get("button.ok") +"');\n");
-			sb.append(varname).append(".setCancelText('"+ NLT.get("button.cancel") +"');\n");
+			sb.append(varname).append(".setTodayText('"+ NLT.get("button.today").replaceAll("'", "\\\\'") +"');\n");
+			sb.append(varname).append(".setOkText('"+ NLT.get("button.ok").replaceAll("'", "\\\\'") +"');\n");
+			sb.append(varname).append(".setCancelText('"+ NLT.get("button.cancel").replaceAll("'", "\\\\'") +"');\n");
 			sb.append(varname).append(".offsetX = -75;\n");
 			if (!this.calendarDivId.equals("")) {
 				sb.append(varname).append(".noAutoHide();\n");
