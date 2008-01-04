@@ -112,8 +112,8 @@ public class LuceneHelper {
 		return indexSearcher;
 	}
 
-	public static IndexWriter getWriter(String indexPath, boolean create)
-			throws IOException {
+	public static IndexWriter getWriter(String indexPath, boolean create,
+			boolean forOptimize) throws IOException {
 		synchronized (LuceneHelper.class) {
 			switch (prevState) {
 			case (WRITE):
@@ -129,7 +129,11 @@ public class LuceneHelper {
 				closeReader();
 				indexWriter = getNewWriter(indexPath, create);
 			}
-			prevState = WRITE;
+			if (forOptimize) {
+				prevState = SEARCH;
+			} else {
+				prevState = WRITE;
+			}
 		}
 		return indexWriter;
 	}
@@ -213,8 +217,12 @@ public class LuceneHelper {
 		return indexSearcher;
 	}
 
+	public static IndexWriter getWriterForOptimize(String indexPath) throws IOException {
+		return getWriter(indexPath,false,true);
+	}
+	
 	public static IndexWriter getWriter(String indexPath) throws IOException {
-		return getWriter(indexPath, false);
+		return getWriter(indexPath, false, false);
 	}
 
 	private static boolean initializeIndex(String indexPath) throws IOException {
@@ -225,7 +233,7 @@ public class LuceneHelper {
 				return false;
 			} else {
 				// No index exists at the specified directory. Create a new one.
-				getWriter(indexPath, true);
+				getWriter(indexPath, true, false);
 				indexWriter.close();
 				indexWriter = null;
 				return true;
@@ -245,6 +253,7 @@ public class LuceneHelper {
 			closeWriter();
 			closeReader();
 			closeSearcher();
+			prevState = WRITE;
 		}
 	}
 
