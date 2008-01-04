@@ -94,7 +94,7 @@ public class LocalLuceneSession implements LuceneSession {
 	private static boolean debugEnabled = logger.isDebugEnabled();
 	
 	private String indexPath;
-
+	
 	public LocalLuceneSession(String indexPath) {
 		this.indexPath = indexPath;		
 	}
@@ -303,18 +303,6 @@ public class LocalLuceneSession implements LuceneSession {
 
 	}
 
-	public void updateDocument(String uid, String fieldname, String fieldvalue) {
-		// build the query
-		Query q = null;
-		QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,
-				new SsfQueryAnalyzer());
-		try {
-			q = qp.parse(BasicIndexUtils.UID_FIELD + ":" + uid);
-		} catch (ParseException pe) {
-			throw new LuceneException(pe.toString());
-		}
-		updateDocuments(q, fieldname, fieldvalue);
-	}
 
 	public void updateDocuments(Query query, String fieldname, String fieldvalue) {
 		SimpleProfiler.startProfiler("LocalLuceneSession.updateDocuments(Query,String,String");
@@ -328,55 +316,47 @@ public class LocalLuceneSession implements LuceneSession {
 		SimpleProfiler.stopProfiler("LocalLuceneSession.updateDocs(Query,String,String");
 	}
 	
-	public void updateDocuments(ArrayList<Query> queries, String fieldname, ArrayList<String> values) {
-		SimpleProfiler.startProfiler("LocalLuceneSession.updateDocuments(ArrayList,String,ArrayList");
-		
-		try {
-			updateDocs(queries, fieldname, values);
-		} catch (Exception e) {
-			throw new LuceneException("Error updating index [" + indexPath
-					+ "]", e);
-		}
-		SimpleProfiler.stopProfiler("LocalLuceneSession.updateDocs(ArrayList,String,ArrayList");
-	}
 
 	public com.sitescape.team.lucene.Hits search(Query query) {
 		return this.search(query, 0, -1);
 	}
 
-	public com.sitescape.team.lucene.Hits search(Query query, int offset, int size) {
+	public com.sitescape.team.lucene.Hits search(Query query, int offset,
+			int size) {
 		IndexSearcher indexSearcher = null;
 		long startTime = System.currentTimeMillis();
 
-		try {
-			indexSearcher = LuceneHelper.getSearcher(indexPath);
-		} catch (IOException e) {
-			throw new LuceneException("Could not open searcher on the index ["
-					+ this.indexPath + "]", e);
-		}
-
-		try {
-			org.apache.lucene.search.Hits hits = indexSearcher.search(query);
-			if (size < 0)
-				size = hits.length();
-			com.sitescape.team.lucene.Hits tempHits = com.sitescape.team.lucene.Hits
-					.transfer(hits, offset, size);
-			tempHits.setTotalHits(hits.length());
-			long endTime = System.currentTimeMillis();
-			if(debugEnabled)
-				logger.debug("LocalLucene: search took: " + (endTime - startTime) + " milliseconds");
-			return tempHits;
-		} catch (IOException e) {
-			throw new LuceneException("Error searching index [" + indexPath
-					+ "]", e);
-		} finally {
-			/*
+		synchronized (SearchLock.class) {
+			try {
+				indexSearcher = LuceneHelper.getSearcher(indexPath);
+			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open searcher on the index ["
+								+ this.indexPath + "]", e);
+			}
 
 			try {
-				indexSearcher.close();
+				org.apache.lucene.search.Hits hits = indexSearcher
+						.search(query);
+				if (size < 0)
+					size = hits.length();
+				com.sitescape.team.lucene.Hits tempHits = com.sitescape.team.lucene.Hits
+						.transfer(hits, offset, size);
+				tempHits.setTotalHits(hits.length());
+				long endTime = System.currentTimeMillis();
+				if (debugEnabled)
+					logger.debug("LocalLucene: search took: "
+							+ (endTime - startTime) + " milliseconds");
+				return tempHits;
 			} catch (IOException e) {
+				throw new LuceneException("Error searching index [" + indexPath
+						+ "]", e);
+			} finally {
+				/*
+				 * 
+				 * try { indexSearcher.close(); } catch (IOException e) { }
+				 */
 			}
-			*/
 		}
 	}
 
@@ -390,43 +370,46 @@ public class LocalLuceneSession implements LuceneSession {
 
 		Hits hits = null;
 		IndexSearcher indexSearcher = null;
-		
-		try {
-			indexSearcher = LuceneHelper.getSearcher(indexPath);
-		} catch (IOException e) {
-			throw new LuceneException("Could not open searcher on the index ["
-					+ this.indexPath + "]", e);
-		}
 
-		try {
-			if (sort == null)
-				hits = indexSearcher.search(query);
-			else
-				try {
-					hits = indexSearcher.search(query, sort);
-				} catch (Exception ex) {
-					hits = indexSearcher.search(query);
-				}
-			if (size < 0)
-				size = hits.length();
-			com.sitescape.team.lucene.Hits tempHits = com.sitescape.team.lucene.Hits
-					.transfer(hits, offset, size);
-			tempHits.setTotalHits(hits.length());
-			long endTime = System.currentTimeMillis();
-			if(debugEnabled)
-				logger.debug("LocalLucene: search took: " + (endTime - startTime) + " milliseconds");
-			return tempHits;
-		} catch (IOException e) {
-			throw new LuceneException("Error searching index [" + indexPath
-					+ "]", e);
-		} finally {
-			/*
+		synchronized (SearchLock.class) {
 			try {
-				indexSearcher.close();
+
+				indexSearcher = LuceneHelper.getSearcher(indexPath);
+
 			} catch (IOException e) {
+				throw new LuceneException(
+						"Could not open searcher on the index ["
+								+ this.indexPath + "]", e);
 			}
-			*/
-		}		
+
+			try {
+				if (sort == null)
+					hits = indexSearcher.search(query);
+				else
+					try {
+						hits = indexSearcher.search(query, sort);
+					} catch (Exception ex) {
+						hits = indexSearcher.search(query);
+					}
+				if (size < 0)
+					size = hits.length();
+				com.sitescape.team.lucene.Hits tempHits = com.sitescape.team.lucene.Hits
+						.transfer(hits, offset, size);
+				tempHits.setTotalHits(hits.length());
+				long endTime = System.currentTimeMillis();
+				if (debugEnabled)
+					logger.debug("LocalLucene: search took: "
+							+ (endTime - startTime) + " milliseconds");
+				return tempHits;
+			} catch (IOException e) {
+				throw new LuceneException("Error searching index [" + indexPath
+						+ "]", e);
+			} finally {
+				/*
+				 * try { indexSearcher.close(); } catch (IOException e) { }
+				 */
+			}
+		}
 	}
 	/**
 	 * Get all the unique tags that this user can see, based on the wordroot passed in.
@@ -559,7 +542,7 @@ public class LocalLuceneSession implements LuceneSession {
 
 		IndexWriter indexWriter = null;
 		try {
-			indexWriter = LuceneHelper.getWriter(indexPath);
+			indexWriter = LuceneHelper.getWriterForOptimize(indexPath);
 		} catch (IOException e) {
 			throw new LuceneException("Could not open writer on the index ["
 					+ this.indexPath + "]", e);
@@ -627,86 +610,54 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	private void updateDocs(Query q, String fieldname, String fieldvalue) {
-		long startTime = System.currentTimeMillis();
-		//block every read/write while updateDocs is in progress
+		long start = 0L;
+		// block every read/write while updateDocs is in progress
 		synchronized (LocalLuceneSession.class) {
 			// first Optimize the index.
 			IndexWriter indexWriter = null;
 
+			//LuceneHelper.closeAll();
+			LuceneHelper.closeWriter();
+			LuceneHelper.closeReader();
 			try {
-				indexWriter = LuceneHelper.getWriter(indexPath);
+				// need this writer to check for segment count and optimization of the index.
+				// This allows searchers to remain open during optimize
+				indexWriter = LuceneHelper.getWriterForOptimize(indexPath);
 			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not open writer on the index [" + this.indexPath
+				throw new LuceneException("Could not open writer on the index [" + this.indexPath
 								+ "]", e);
 			}
+
 			try {
-				addDocForOptimize(indexWriter);
-				indexWriter.optimize();
-				LuceneHelper.closeAll();
-				/*ROY indexWriter.close();
-				 * 
-				 */
-				doUpdate(q,fieldname,fieldvalue);
+				// open a searcher for use by other threads while we're updating
+				// the index.
+				//LuceneHelper.getSearcher(indexPath);
+				if (indexWriter.getSegmentCount() > 1) {
+					start = System.currentTimeMillis();
+					indexWriter.optimize();
+					if(debugEnabled)
+						logger.debug("LocalLucene: updateDocs(after optimize) took: "
+													+ (System.currentTimeMillis() - start)
+													+ " milliseconds");
+				
+				} 
+				indexWriter.close();
+				start = System.currentTimeMillis();
+				doUpdate(q, fieldname, fieldvalue);
+				if(debugEnabled)
+					logger.debug("LocalLucene: updateDocs(doUpdate) took: "
+													+ (System.currentTimeMillis() - start)
+													+ " milliseconds");
 			} catch (IOException ioe) {
 				throw new LuceneException(
 						"Could not update fields on the index ["
 								+ this.indexPath + " ], query is: "
 								+ q.toString() + " field: " + fieldname);
 			}
-			
-		}
-		long endTime = System.currentTimeMillis();
-		if(debugEnabled)
-			logger.debug("LocalLucene: updateDocs(query) took: " + (endTime - startTime) + " milliseconds");
-	}
 
-	private void addDocForOptimize(IndexWriter writer) {
-		Document doc = new Document();
-		doc.add(new Field("__optimizer", "a", Field.Store.NO,
-				Field.Index.TOKENIZED));
-		try {
-			writer.addDocument(doc);
-		} catch (IOException ioe) {
-			if(debugEnabled)
-				logger.debug("LocalLucene: addDocForOptimize() failed to add opt doc");
 		}
 	}
 	
-	private void updateDocs(ArrayList<Query> queries, String fieldname, ArrayList<String> values) {
-		long startTime = System.currentTimeMillis();
-		//block every read/write while updateDocs is in progress
-		int count = 0;
-		synchronized (LocalLuceneSession.class) {
-			// first Optimize the index.
-			IndexWriter indexWriter = null;
-
-			try {
-				indexWriter = LuceneHelper.getWriter(indexPath);
-			} catch (IOException e) {
-				throw new LuceneException(
-						"Could not open writer on the index [" + this.indexPath
-								+ "]", e);
-			}
-			try {
-				addDocForOptimize(indexWriter);
-				indexWriter.optimize();
-				LuceneHelper.closeAll();
-				/*ROY indexWriter.close();*/
-				for (count = 0; count < queries.size(); count++)
-					doUpdate(queries.get(count),fieldname,values.get(count));
-			} catch (IOException ioe) {
-				throw new LuceneException(
-						"Could not update fields on the index ["
-								+ this.indexPath + " ], query is: "
-								+ queries.get(count).toString() + " field: " + fieldname);
-			} 
-			
-		}
-		long endTime = System.currentTimeMillis();
-		if(debugEnabled)
-			logger.debug("LocalLucene: updateDocs(list) took: " + (endTime - startTime) + " milliseconds");
-	}
 
 	private void doUpdate(Query q, String fieldname, String fieldvalue) {
 		AclUpdater updater = null;
@@ -720,7 +671,10 @@ public class LocalLuceneSession implements LuceneSession {
 				updater.addField(new Field(fieldname, fieldvalue,
 						Field.Store.NO, Field.Index.TOKENIZED),
 						new SsfIndexAnalyzer(), docsel);
-			updater.close();
+			synchronized (SearchLock.class) {
+				LuceneHelper.closeSearcher();
+				updater.close();
+			}
 			updater = null;
 		} catch (IOException ioe) {
 			throw new LuceneException("Could not update fields on the index ["
@@ -871,7 +825,7 @@ public class LocalLuceneSession implements LuceneSession {
 		LuceneHelper.closeAll();
 		
 		try {
-			LuceneHelper.getWriter(indexPath, true);
+			LuceneHelper.getWriter(indexPath, true, false);
 		} catch (IOException e) {
 			throw new LuceneException(
 					"Could not open writer on the index [" + this.indexPath
@@ -987,3 +941,4 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 	}
 }
+class SearchLock {}
