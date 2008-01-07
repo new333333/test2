@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
@@ -505,7 +506,7 @@ public class WorkspaceTreeHelper {
 			
 		// Sendmail
 		if (!user.getEmailAddress().equals("") && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl = new AdaptedPortletURL((PortletRequest) null, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
