@@ -45,6 +45,15 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <span class="ss_titlebold"><ssf:nlt tag="administration.manage.groups" /></span>
 <br>
 <br>
+
+<c:if test="${!empty ssException}">
+<font color="red">
+
+<span class="ss_largerprint"><c:out value="${ssException}"/></span>
+<br/>
+
+</font>
+</c:if>
 <ssf:expandableArea title="<%= NLT.get("administration.add.group") %>">
 <form class="ss_style ss_form" method="post" 
 	action="<portlet:actionURL windowState="maximized"><portlet:param 
