@@ -37,7 +37,8 @@
 <body class="ss_style_body">
 </ssf:ifadapter>
 
--- This portlet is no longer being used --
+<span class="ss_bold">This portlet is no longer being used. </span><br/>
+<span class="ss_bold ss_error">Please delete it now (or your account will stop working)</span>
 
 <div id="ss_workareaContext" class="ss_style">
 </div>

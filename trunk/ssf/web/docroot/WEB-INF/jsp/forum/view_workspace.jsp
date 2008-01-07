@@ -53,6 +53,10 @@
 	</script>
 
 	<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+<c:if test="${ss_displayType == 'ss_workarea'}">
+	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+</c:if>
+<c:if test="${ss_displayType != 'ss_workarea'}">
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
@@ -82,7 +86,7 @@
 
 	</td>
 	<td valign="top" class="ss_view_info">
-
+</c:if>
 		<div class="ss_tab_canvas">
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 				<div class="ss_style_color">				
@@ -140,10 +144,12 @@
 			</c:if>
 
 		</div>
+<c:if test="${ss_displayType != 'ss_workarea'}">
 	</td>
 	</tr>
 	</tbody>
 	</table>
+</c:if>
   </div>
 	
 </c:if>

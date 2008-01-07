@@ -78,9 +78,10 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	var ss_reloadUrl = "${ss_reloadUrl}";
 </script>
 
+<c:if test="${empty ssBinder}">
 	<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+	<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
     </div>
 
 <div class="ss_style ss_portlet">
@@ -92,7 +93,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	  showIdRoutine="<%= wsTreeName + "_showId" %>"
 	  />
 </div>	
-
+</c:if>
 </c:if>
 
 <ssf:ifadapter>

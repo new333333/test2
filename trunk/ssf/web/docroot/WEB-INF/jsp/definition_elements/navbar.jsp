@@ -32,6 +32,10 @@
 <% // Navigation bar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
+<c:set var="ss_urlWindowState" value="maximized"/>
+<c:if test="${ss_displayType == 'ss_workarea'}">
+  <c:set var="ss_urlWindowState" value=""/>
+</c:if>
 <!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script> -->
 <script type="text/javascript">
 var	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
@@ -86,7 +90,7 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 	<div class="ss_global_toolbar_myworkspace" 
 	  title="<ssf:nlt tag="navigation.myWorkspace"/>"
       onClick="self.location.href='<portlet:renderURL 
-      	windowState="maximized"><portlet:param 
+      	windowState="${ss_urlWindowState}"><portlet:param 
       	name="action" value="view_ws_listing"/><portlet:param 
       	name="binderId" value="${ssUser.parentBinder.id}"/><portlet:param 
       	name="entryId" value="${ssUser.id}"/><portlet:param 
@@ -202,7 +206,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<div >
 			<span class="ss_global_toolbar_label_text_quickSearch"><ssf:nlt tag="navigation.search"/></span>
 			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
-			  href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+			  href="<portlet:actionURL windowState="${ss_urlWindowState}" portletMode="view"><portlet:param 
 			  	name="action" value="advanced_search"/><portlet:param 
 			  	name="binderId" value="${ssBinder.id}"/><portlet:param 
 			  	name="tabTitle" value="SEARCH FORM"/><portlet:param 
@@ -213,7 +217,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		  onMouseOver="this.style.cursor = 'pointer';">
      		<form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
 		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
-		  		action="<portlet:actionURL windowState="maximized"><portlet:param 
+		  		action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
 		  			name="action" value="advanced_search"/><portlet:param 
 		  			name="newTab" value="1"/></portlet:actionURL>">
 			  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
@@ -235,7 +239,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
 				  title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
 				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
-				  '<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				  '<portlet:actionURL windowState="${ss_urlWindowState}" portletMode="view"><portlet:param 
 				  name="action" value="advanced_search"/><portlet:param 
 				  name="newTab" value="1"/></portlet:actionURL>');"><img 
 				  src="<html:imagesPath/>pics/menudown.gif" /></a>
@@ -298,7 +302,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
      onMouseOver="this.style.cursor = 'pointer';">
 			<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
 			  name="ss_findUserForm${renderResponse.namespace}" 
-			  action="<portlet:actionURL windowState="maximized"><portlet:param 
+			  action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 				    formElement="searchText" 
@@ -342,7 +346,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<div>
 			<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
 			  name="ss_findPlacesForm${renderResponse.namespace}" 
-			  action="<portlet:actionURL windowState="maximized"><portlet:param 
+			  action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find 
 				    formName="ss_findPlacesForm${renderResponse.namespace}" 
@@ -388,7 +392,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<div>
 			<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
 			  name="ss_findTagsForm${renderResponse.namespace}" 
-			  action="<portlet:actionURL windowState="maximized"><portlet:param 
+			  action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
 			  	name="action" value="findUser"/></portlet:actionURL>">
 				  <ssf:find 
 				    formName="ss_findTagsForm${renderResponse.namespace}" 
@@ -430,7 +434,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <c:if test="${!empty ssSidebarCurrentWorkspace.id}">
   <div class="ss_global_toolbar_quick">
     <div style="text-align: center; padding: 3px;">
-      <a href="<portlet:actionURL windowState="maximized"><portlet:param 
+      <a href="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
 			  	name="action" value="add_binder"/><portlet:param 
 			  	name="operation" value="add_workspace"/><portlet:param 
 			  	name="binderId" value="${ssSidebarCurrentWorkspace.id}"/></portlet:actionURL>"
@@ -454,7 +458,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_myworkspace_big" 
       onClick="self.location.href='<portlet:renderURL 
-      	windowState="maximized"><portlet:param 
+      	windowState="${ss_urlWindowState}"><portlet:param 
       	name="action" value="view_ws_listing"/><portlet:param 
       	name="binderId" value="${ssUser.parentBinder.id}"/><portlet:param 
       	name="entryId" value="${ssUser.id}"/><portlet:param 
@@ -511,7 +515,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
       </label>
     </span>
 		<a class="ss_advanced ss_fineprint" style="margin-left: 15px;" 
-			href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+			href="<portlet:actionURL windowState="${ss_urlWindowState}" portletMode="view"><portlet:param 
 			name="action" value="advanced_search"/><portlet:param 
 			name="tabTitle" value="SEARCH FORM"/><portlet:param 
 			name="newTab" value="0"/></portlet:actionURL>"
@@ -545,7 +549,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}">
 		<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
 		  name="ss_simpleSearchForm${renderResponse.namespace}" 
-		  action="<portlet:actionURL windowState="maximized"><portlet:param 
+		  action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
 		  	name="action" value="advanced_search"/><portlet:param 
 		  	name="newTab" value="1"/></portlet:actionURL>" style="display: inline;">
 		  <ssHelpSpot helpId="navigation_bar/search_button_portlet" offsetX="-15" offsetY="12" xAlignment="center" 
@@ -564,7 +568,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
 		title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
 		onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
-				  '<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				  '<portlet:actionURL windowState="${ss_urlWindowState}" portletMode="view"><portlet:param 
 				  name="action" value="advanced_search"/><portlet:param 
 				  name="newTab" value="1"/></portlet:actionURL>');"><img 
 				  src="<html:imagesPath/>pics/menudown.gif" /></a>
@@ -613,7 +617,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
      onMouseOver="this.style.cursor = 'pointer';">
 		<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
 		  name="ss_findUserForm${renderResponse.namespace}" 
-		  action="<portlet:actionURL windowState="maximized"><portlet:param 
+		  action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
 		  name="action" value="findUser"/></portlet:actionURL>">
 			  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 			    formElement="searchText" 
@@ -648,7 +652,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
      onMouseOver="this.style.cursor = 'pointer';">
 		<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
 		  name="ss_findPlacesForm${renderResponse.namespace}" 
-		  action="<portlet:actionURL windowState="maximized"><portlet:param 
+		  action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
 		  	name="action" value="findUser"/></portlet:actionURL>">
 			  <ssf:find 
 			    formName="ss_findPlacesForm${renderResponse.namespace}" 
@@ -685,7 +689,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
      onMouseOver="this.style.cursor = 'pointer';">
 		<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
 		  name="ss_findTagsForm${renderResponse.namespace}" 
-		  action="<portlet:actionURL windowState="maximized"><portlet:param 
+		  action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
 		  	name="action" value="findUser"/></portlet:actionURL>">
 			  <ssf:find 
 			    formName="ss_findTagsForm${renderResponse.namespace}" 

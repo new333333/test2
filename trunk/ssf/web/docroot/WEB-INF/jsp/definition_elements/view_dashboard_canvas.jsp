@@ -154,7 +154,7 @@ function ss_showForumEntryInIframe_Popup(url) {
 </script>
   
 <div id="ss_workareaAccessories_${renderResponse.namespace}" class="ss_style"
-<c:if test="${ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}"> style="display:none;" </c:if>
+<c:if test="${0 == 1 && ss_displayType == 'ss_workarea'}"> style="display:none;" </c:if>
 >
   <!-- Start of dashboard "Add penlet" form -->
   <c:if test="${empty ssBinderConfig && (!ssUser.shared || ssDashboard.sharedModificationAllowed)}">
@@ -295,7 +295,7 @@ function ss_showForumEntryInIframe_Popup(url) {
 </div>
 </c:if>
 </div>
-<c:if test="${ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}">
+<c:if test="${0 == 1 && ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}">
 <script type="text/javascript">
 function ss_workareaMoveAccessories_${renderResponse.namespace}() {
 	var accessoriesDiv = document.getElementById("ss_workareaAccessories");

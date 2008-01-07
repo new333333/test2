@@ -82,6 +82,7 @@ import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.web.util.ListFolderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
@@ -318,7 +319,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 						model.put(WebKeys.PROFILE_CONFIG_ENTRY, user);
 					} 
 				} else {
-					ListFolderController.getShowTemplate(request, response, config, model);
+					ListFolderHelper.getShowTemplate(request, response, config, model);
 				}
 				model.put(WebKeys.CONFIG_JSP_STYLE, "template");
 				Tabs tabs = Tabs.getTabs(null);

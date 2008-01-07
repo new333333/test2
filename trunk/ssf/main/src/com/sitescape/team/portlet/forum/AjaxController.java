@@ -114,6 +114,7 @@ import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.Favorites;
+import com.sitescape.team.web.util.ListFolderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.WebHelper;
@@ -1545,7 +1546,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 
 				User user = RequestContextHolder.getRequestContext().getUser();
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-				options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
+				options.putAll(ListFolderHelper.getSearchFilter(this, request, userFolderProperties));
 				
 		       	List entries;
 				if (binder instanceof Folder || binder instanceof Workspace) {
@@ -1604,7 +1605,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
 			
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
-				options.putAll(ListFolderController.getSearchFilter(request, userFolderProperties));
+				options.putAll(ListFolderHelper.getSearchFilter(this, request, userFolderProperties));
 				
 				
 		       	List entries;
