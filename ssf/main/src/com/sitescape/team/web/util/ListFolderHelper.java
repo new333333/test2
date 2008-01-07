@@ -1433,7 +1433,7 @@ public class ListFolderHelper {
 		//Sendmail
 		if (!user.getEmailAddress().equals("") && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl = new AdaptedPortletURL((PortletRequest) null, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
