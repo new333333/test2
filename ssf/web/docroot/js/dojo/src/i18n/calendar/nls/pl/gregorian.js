@@ -18,8 +18,8 @@
 
 	'dateFormat-full': "EEEE, d MMMM yyyy",
 	'dateFormat-long': "d MMMM yyyy",
-	'dateFormat-medium': "d MMM yyyy",
-	'dateFormat-short': "d/M/y",
+	'dateFormat-medium': "yyyy-MM-dd",
+	'dateFormat-short': "dd/MM/yy",
 
 	'timeFormat-full': "h:mm:ss a v",
 	'timeFormat-long': "h:mm:ss a z",

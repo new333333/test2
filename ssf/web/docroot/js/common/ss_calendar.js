@@ -1150,7 +1150,6 @@ function ss_calendarEngine(
 	    
 	    collisions: {"event": {}, "creation": {}, "activity": {}},
 	    collisionI: {},
-	    collisionM: {"event": {}, "creation": {}, "activity": {}},
 	    order: {"event": {}, "creation": {}, "activity": {}},// eventType -> date(YYYY/MM/DD) -> events key
 	    
 	    monthGridEvents: [],
@@ -1226,22 +1225,6 @@ function ss_calendarEngine(
 		    		}
 	    		}
 	        }
-			
-	        // sort collisionM by keys (used by prev/next functionality)
-	        for (var i = 0; i < this.eventsTypes.length; i++) {
-	        	var o1 = this.collisionM[this.eventsTypes[i]];
-	        	var keysTable = new Array();
-	        	for (var k in o1) {
-	        		keysTable.push(k);
-	        	}
-	        	keysTable.sort();
-	        	var resultObjectTemp = new Object();
-	        	for (var j = 0; j < keysTable.length; j++) {
-	        		resultObjectTemp[keysTable[j]] = o1[keysTable[j]];
-	        	} 
-				this.collisionM[this.eventsTypes[i]] = resultObjectTemp;      	
-	        }
-				    	
 	    },
 	
 	    incrCollision: function(eventType, t) {
@@ -1263,13 +1246,6 @@ function ss_calendarEngine(
 	        return this.collisions[eventType][t];
 	    },
 		
-		setMCollision: function(eventType, key, eventId) {
-	        if (typeof this.collisionM[eventType][key] == "undefined") { 
-	        	this.collisionM[eventType][key] = []; 
-	        }
-	        this.collisionM[eventType][key].push(eventId);
-	    },
-		
 		setOrder: function(eventType, key, v) {
 	    	if (typeof this.order[eventType][key] == "undefined") {
 	    		this.order[eventType][key] = [];
@@ -1285,7 +1261,7 @@ function ss_calendarEngine(
 			
 			this.incrCollision(event.eventType, key);
 	    	this.incrCollision(event.eventType, key + "/" + date.getHours());
-			this.setMCollision(event.eventType, fullMonthKey, event.eventId);
+			// this.setMCollision(event.eventType, fullMonthKey, event.eventId);
 			this.setOrder(event.eventType, key, (Math.floor(event.start * 10) + 1011) + "/" + event.eventId);
 			
 			date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
@@ -1296,7 +1272,7 @@ function ss_calendarEngine(
 					
 				this.incrCollision(event.eventType, key);
 	    		this.incrCollision(event.eventType, key + "/0");
-				this.setMCollision(event.eventType, fullMonthKey, event.eventId);
+				// this.setMCollision(event.eventType, fullMonthKey, event.eventId);
 				this.setOrder(event.eventType, key, (0 + 1011) + "/" + event.eventId);
 				
 	    		date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
@@ -1323,16 +1299,6 @@ function ss_calendarEngine(
 	    	while (daysToEndOfEvent >= 0) {
 				var key = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
 		        this.decrCollision(event.eventType, date.getFullYear() + "/" + date.getMonth()  + "/" + date.getDate());
-		        if (typeof this.collisionM[event.eventType] != "undefined") { 
-			        if (typeof this.collisionM[event.eventType][key] != "undefined") {
-			        	for (var i = 0; i < this.collisionM[event.eventType][key].length; i++) {
-			        		if (this.collisionM[event.eventType][key][i] == event.eventId) {
-			        			this.collisionM[event.eventType][key].splice(i, 1);
-			        		}
-			        	}
-			        }
-		        }
-
 				date = dojo.date.add(date, dojo.date.dateParts.DAY, 1);
 				daysToEndOfEvent--;
 	    	}
@@ -1418,8 +1384,8 @@ function ss_calendarEngine(
 	    },
 		
 		getDayEventsInMonthView: function(date) {
-			var key = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
-			return this.collisionM[this.eventsTypes[this.eventsType]][key];
+			var key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
+			return this.order[this.eventsTypes[this.eventsType]][key];
 		},
 	    
 	    redrawDay: function() {
@@ -1435,6 +1401,7 @@ function ss_calendarEngine(
 	        var date = ss_cal_Grid.firstDayToShow;
 			for (var gridDay = 0; gridDay < ss_cal_Grid.gridSize; gridDay++) {
 				key = date.getFullYear() + "/" + date.getMonth() + "/" + date.getDate();
+				fullMonthKey = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
 				
 				if (typeof this.order[this.eventsTypes[this.eventsType]] != "undefined" &&
 					typeof this.order[this.eventsTypes[this.eventsType]][key] != "undefined") {
@@ -1496,22 +1463,18 @@ function ss_calendarEngine(
 			            	this.dayGridEvents[eid] = {};
 			            }
 			            this.dayGridEvents[eid][gridDay] = eventDisplayId;
-					}
-				}
-				
-				fullMonthKey = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
-				if (this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey]) {
-					for (var i = 0; i < this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey].length; i++) {
-						var event = ss_cal_Events.eventData[this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey][i]];
-						if (typeof ss_entriesSeen['docId' + event.entryId] == "undefined") {
-							ss_entryList[ss_entryCount++] = { 
-								index : event.entryId,
-								entryId : event.entryId,
-								binderId : event.binderId,
-								entityType : event.entityType
-							};
-					    	ss_entriesSeen['docId' + event.entryId] = 1;
+					
+						if (typeof ss_entriesSeen['docId' + e.entryId] == "undefined") {
+							ss_entryCount++;
+							ss_entryList.unshift({ 
+								index : e.entryId,
+								entryId : e.entryId,
+								binderId : e.binderId,
+								entityType : e.entityType
+							});
+					    	ss_entriesSeen['docId' + e.entryId] = 1;
 					    }
+					
 					}
 				}
 			
@@ -1535,23 +1498,21 @@ function ss_calendarEngine(
 			var fullMonthKey;
 			var eventList;
 			while (daysToEndOfMonthView >= 0) {
-				eventList = ss_cal_Events.getDayEventsInMonthView(date);;
+				eventList = ss_cal_Events.getDayEventsInMonthView(date);
 				if (eventList) {
 					drawMonthEventBlock(grid, date, eventList);
-				}
-				
-				fullMonthKey = date.getFullYear() + "/" + fullWithZeros(date.getMonth() ) + "/" + fullWithZeros(date.getDate());
-				
-				if (this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey]) {
-					for (var i = 0; i < this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey].length; i++) {
-						var event = ss_cal_Events.eventData[this.collisionM[this.eventsTypes[this.eventsType]][fullMonthKey][i]];
+					
+					for (var i = 0; i < eventList.length; i++) {
+						var eventId = eventList[i].substr(5);
+						var event = ss_cal_Events.eventData[eventId];
 						if (typeof ss_entriesSeen['docId' + event.entryId] == "undefined") {
-							ss_entryList[ss_entryCount++] = { 
+							ss_entryCount++;
+							ss_entryList.unshift({ 
 								index : event.entryId,
 								entryId : event.entryId,
 								binderId : event.binderId,
 								entityType : event.entityType
-							};
+							});
 					    	ss_entriesSeen['docId' + event.entryId] = 1;
 					    }
 					}
@@ -1966,9 +1927,15 @@ function ss_calendarEngine(
 				return false;
 			}
 			
-			if (newEvent.entryId > oldEvent.entryId) {
+			if (+newEvent.startDate > +oldEvent.startDate) {
+				return false;
+			} else if (+newEvent.startDate < +oldEvent.startDate) {
 				return true;
-			} else if (newEvent.entryId < oldEvent.entryId) {
+			}
+			
+			if (newEvent.entryId * 1 < oldEvent.entryId * 1) {
+				return true;
+			} else if (newEvent.entryId * 1 > oldEvent.entryId * 1) {
 				return false;
 			}
 			
@@ -2083,37 +2050,38 @@ function ss_calendarEngine(
 		}
 		
 		for (var i = 0; i < eventCount; i++) {
-			var e = ss_cal_Events.eventData[eventList[i]];
+			var eventId = eventList[i].substr(5);
+			var e = ss_cal_Events.eventData[eventId];
 			
 			// has reserved position
 			if (typeof e.position != "undefined") {
 				makeDayPositionFree(e.position.pos, dayPositions);
-				dayPositions[e.position.pos] = {reserved: true, eventId: eventList[i]};
+				dayPositions[e.position.pos] = {reserved: true, eventId: eventId};
 				continue;
 			}
 			// try position 0
 			if (!dayPositions[0]) {
-				dayPositions[0] = {reserved: false, eventId: eventList[i]};
+				dayPositions[0] = {reserved: false, eventId: eventId};
 			} else if (!dayPositions[0]["reserved"] &&
 						fitsBetterThen(e, ss_cal_Events.eventData[dayPositions[0].eventId], monthViewInfo)) {
 				makeDayPositionFree(0, dayPositions);
-				dayPositions[0] = {reserved: false, eventId: eventList[i]};
+				dayPositions[0] = {reserved: false, eventId: eventId};
 			} else {
 				// try position 1
 				if (!dayPositions[1]) {
-					dayPositions[1] = {reserved: false, eventId: eventList[i]};
+					dayPositions[1] = {reserved: false, eventId: eventId};
 				} else if (!dayPositions[1]["reserved"] &&
 							fitsBetterThen(e, ss_cal_Events.eventData[dayPositions[1].eventId], monthViewInfo)) {
 					makeDayPositionFree(1, dayPositions);
-					dayPositions[1] = {reserved: false, eventId: eventList[i]};
+					dayPositions[1] = {reserved: false, eventId: eventId};
 				} else {
 					// try position 2
 					if (!dayPositions[2]) {
-						dayPositions[2] = {reserved: false, eventId: eventList[i]};
+						dayPositions[2] = {reserved: false, eventId: eventId};
 					} else if (!dayPositions[2]["reserved"] &&
 								fitsBetterThen(e, ss_cal_Events.eventData[dayPositions[2].eventId], monthViewInfo)) {
 						makeDayPositionFree(2, dayPositions);
-						dayPositions[2] = {reserved: false, eventId: eventList[i]};
+						dayPositions[2] = {reserved: false, eventId: eventId};
 					}
 				}
 			}
@@ -2262,7 +2230,8 @@ function ss_calendarEngine(
 					}
 
 					for (var i = 0; i < eventCount; i++) {
-				        var e = ss_cal_Events.eventData[eventList[i]];
+						var eventId = eventList[i].substr(5);
+				        var e = ss_cal_Events.eventData[eventId];
 						var diffDateEventStartDate = daysDiff(date, e.startDate);
 						var diffDateEventEndDate = daysDiff(date, e.endDate);
 			
