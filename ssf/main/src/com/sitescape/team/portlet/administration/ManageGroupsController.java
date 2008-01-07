@@ -46,6 +46,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.ObjectExistsException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
@@ -68,15 +69,28 @@ public class ManageGroupsController extends  SAbstractController {
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		if (formData.containsKey("addBtn")) {
-			//make sure it is present
-			MapInputData inputData = new MapInputData(formData);
-			Map fileMap=null;
-			if (request instanceof MultipartFileSupport) {
-				fileMap = ((MultipartFileSupport) request).getFileMap();
-			} else {
-				fileMap = new HashMap();
+			
+			String name = PortletRequestUtils.getStringParameter(request, "name", "").trim();
+			
+			try{
+				
+				if(name.equals(""))
+					throw new IllegalArgumentException("Group must have a non-whitespace name");
+				//make sure it is present
+				MapInputData inputData = new MapInputData(formData);
+				Map fileMap=null;
+				if (request instanceof MultipartFileSupport) {
+					fileMap = ((MultipartFileSupport) request).getFileMap();
+				} else {
+					fileMap = new HashMap();
+				}
+				getProfileModule().addGroup(binderId, null, inputData, fileMap);
+			} catch (ObjectExistsException oee) {
+				response.setRenderParameter(WebKeys.EXCEPTION, oee.getLocalizedMessage() + ": [" + name + "].");
 			}
-			getProfileModule().addGroup(binderId, null, inputData, fileMap);
+			  catch (IllegalArgumentException iae) {
+				response.setRenderParameter(WebKeys.EXCEPTION, iae.getLocalizedMessage());
+			}
 			
 		} else if (formData.containsKey("applyBtn") || formData.containsKey("okBtn")) {
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
@@ -149,6 +163,8 @@ public class ManageGroupsController extends  SAbstractController {
 			model.put(WebKeys.USERS, getProfileModule().getUsers(ids));
 			model.put(WebKeys.GROUPS, getProfileModule().getGroups(ids));
 		}
+		
+		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_MANAGE_GROUPS, model);
 	}
