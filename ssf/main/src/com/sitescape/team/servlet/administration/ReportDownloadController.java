@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.servlet.administration;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 
 import java.text.DateFormat;
@@ -225,13 +227,13 @@ public class ReportDownloadController extends  SAbstractController {
 					break;
 				}
 			}
-			printReport(response.getWriter(), report, columns, hasUsers);
-			response.getWriter().flush();
+			printReport(response.getOutputStream(), report, columns, hasUsers);
+			response.getOutputStream().flush();
 		}
 		return null;
 	}
 	
-	protected void printReport(PrintWriter out, List<Map<String, Object>> report, String[] columns, boolean hasUsers)
+	protected void printReport(OutputStream out, List<Map<String, Object>> report, String[] columns, boolean hasUsers)
 	{
 		HashMap<Long,Principal> userMap = new HashMap<Long,Principal>();
 		HashMap<String,Definition> definitionMap = new HashMap<String, Definition>();
@@ -261,16 +263,17 @@ public class ReportDownloadController extends  SAbstractController {
 			}
 		}
 
+	try{
 		for(int i = 0; i < columns.length; i++) {
 			String name = columns[i];
 			if(!isUserColumn(name) || hasUsers) {
 				if(i > 0) {
-					out.print(",");
+					out.write(",".getBytes());
 				}
-				out.print(NLT.get(columnNames.get(name)));
+				out.write(NLT.get(columnNames.get(name)).getBytes("UTF-8"));
 			}
 		}
-		out.println();
+		out.write("\n".getBytes());
 
 		Definition definition;
 		for(Map<String, Object> row : report) {
@@ -285,28 +288,29 @@ public class ReportDownloadController extends  SAbstractController {
 				String name = columns[i];
 				if(!isUserColumn(name) || hasUsers) {
 					if(i > 0) {
-						out.print(",");
+						out.write(",".getBytes());
 					}
 				}
 				if(! isUserColumn(name)) {
 					if(row.containsKey(name)) {
 						if(row.get(name) instanceof Date) {
-							out.print("\"" + Validator.replaceDelimiter(dateFormat.format((Date) row.get(name))) +"\"");
+							out.write(("\"" + Validator.replaceDelimiter(dateFormat.format((Date) row.get(name))) +"\"").getBytes());
 						} else {
-							out.print(row.get(name));
+							out.write(row.get(name).toString().getBytes());
 						}
 					}
 				} else if(hasUsers) {
 					Long userId = (Long) row.get(name);
 					Principal user = userMap.get(userId);
 					if(user != null) {
-						out.print(Validator.replaceDelimiter(user.getTitle()) + " (" 
-								+ Validator.replaceDelimiter(user.getName()) + ")");
+						out.write((Validator.replaceDelimiter(user.getTitle()) + " (" 
+								+ Validator.replaceDelimiter(user.getName()) + ")").getBytes());
 					}
 				}
 			}
-			out.println();
+			out.write("\n".getBytes());
 		}
 		out.flush();
+	} catch (IOException ioe) {}
 	}
 }
