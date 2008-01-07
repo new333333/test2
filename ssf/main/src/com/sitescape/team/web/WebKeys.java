@@ -615,6 +615,8 @@ public class WebKeys {
     public static final String IS_ACCESSIBLE="ss_isAccessible";
     public static final String IS_REFRESH="ssRefresh";
     public static final String IS_SITE_ADMIN="ss_isSiteAdmin";
+    public static final String LAST_BINDER_VIEWED="ssLastBinderViewed";
+    public static final String LAST_BINDER_ENTITY_TYPE="ssLastBinderEntityType";
     public static final String LDAP_CONFIG="ssLdapConfig";
     public static final String LICENSE_DATA="ssLicenseData";
     public static final String LICENSE_KEY="ssLicenseKey";

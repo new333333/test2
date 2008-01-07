@@ -46,6 +46,7 @@ import javax.portlet.ActionRequest;
 import javax.portlet.PortletConfig;
 import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
+import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
@@ -71,9 +72,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -84,7 +83,6 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -126,7 +124,7 @@ public class BinderHelper {
 	public static final String WORKAREA_NAVIGATION_PORTLET="ss_workarea_navigation";
 
 	static public ModelAndView CommonPortletDispatch(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response) {
+			RenderResponse response) throws Exception {
 		Map<String,Object> model = new HashMap<String,Object>();
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
  		PortletPreferences prefs = null;
@@ -150,11 +148,13 @@ public class BinderHelper {
 		
 		//Set up the standard beans
 		//These have been documented, so don't delete any
+		String displayType = getDisplayType(request);
         User user = RequestContextHolder.getRequestContext().getUser();
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 		model.put(WebKeys.USER_PRINCIPAL, user);
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		model.put(WebKeys.DISPLAY_TYPE, displayType);
 
 		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
 		model.put(WebKeys.PRODUCT_TITLE, SPropsUtil.getString("product.title", ObjectKeys.PRODUCT_TITLE_DEFAULT));
@@ -162,7 +162,6 @@ public class BinderHelper {
 		model.put(WebKeys.PRODUCT_EDITION, SPropsUtil.getString("product.edition", ObjectKeys.PRODUCT_EDITION_DEFAULT));
 		model.put("releaseInfo", ReleaseInfo.getReleaseInfo());
 		
-		String displayType = getDisplayType(request);
 		if (prefs != null) displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, null);
 		if (Validator.isNull(displayType)) {
 			displayType = getDisplayType(request);
@@ -254,11 +253,11 @@ public class BinderHelper {
 		} else if (MOBILE_PORTLET.equals(displayType)) {
 			return setupMobilePortlet(bs, request, prefs, model, WebKeys.VIEW_MOBILE);		
 		} else if (WORKAREA_PORTLET.equals(displayType)) {
-			return setupWorkareaPortlet(bs, request, prefs, model, WebKeys.VIEW_WORKAREA);		
+			return setupWorkareaPortlet(bs, request, response, prefs, model, WebKeys.VIEW_WORKAREA);		
 		} else if (WORKAREA_ACCESSORIES_PORTLET.equals(displayType)) {
-			return setupWorkareaPortlet(bs, request, prefs, model, WebKeys.VIEW_WORKAREA_ACCESSORIES);		
+			return setupWorkareaPortlet(bs, request, response, prefs, model, WebKeys.VIEW_WORKAREA_ACCESSORIES);		
 		} else if (WORKAREA_CONTEXT_PORTLET.equals(displayType)) {
-			return setupWorkareaPortlet(bs, request, prefs, model, WebKeys.VIEW_WORKAREA_CONTEXT);		
+			return setupWorkareaPortlet(bs, request, response, prefs, model, WebKeys.VIEW_WORKAREA_CONTEXT);		
 		} else if (WORKAREA_NAVIGATION_PORTLET.equals(displayType)) {
 			return setupWorkareaNavigationPortlet(bs, request, prefs, model, WebKeys.VIEW_WORKAREA_NAVIGATION);		
 		}
@@ -313,8 +312,17 @@ public class BinderHelper {
 	}
 
 	protected static ModelAndView setupWorkareaPortlet(AllModulesInjected bs, RenderRequest request, 
-			PortletPreferences prefs, Map model, String view) {
-        User user = RequestContextHolder.getRequestContext().getUser();
+			RenderResponse response, PortletPreferences prefs, Map model, String view) throws Exception {
+		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+		Long binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED);
+		String entityType = (String) portletSession.getAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE);
+		if (binderId != null) {
+			if (entityType != null && entityType.equals(EntityType.folder.name()))
+				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId);
+			if (entityType != null && entityType.equals(EntityType.workspace.name()))
+				return WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderId, request, response);
+		}
+
 		//This is the workarea view.
 		//Set up the navigation beans
 		Binder binder = bs.getWorkspaceModule().getWorkspace();

@@ -44,7 +44,10 @@
 	</script>
 </c:if>
 
-<c:if test="${empty ssReloadUrl}">
+<span class="ss_bold">This portlet is no longer being used. </span><br/>
+<span class="ss_bold ss_error">Please delete it now (or your account will stop working)</span>
+
+<c:if test="${0 == 1 && empty ssReloadUrl}">
 	<script type="text/javascript">
 		var ss_reloadUrl = "${ss_reloadUrl}";
 	</script>

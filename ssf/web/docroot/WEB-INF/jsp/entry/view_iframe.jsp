@@ -39,7 +39,7 @@
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 
-<c:if test="${ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}">
+<c:if test="${ss_displayType == 'ss_workarea'}">
 <script type="text/javascript">
 function ss_workarea_showId(id, action) {
 	//Build a url to go to
@@ -56,7 +56,10 @@ function ss_workarea_showId(id, action) {
 
 <div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-<c:if test="${1 == 1 || ss_displayType != 'ss_workarea' || ss_windowState == 'maximized'}">
+<c:if test="${ss_displayType == 'ss_workarea'}">
+	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+</c:if>
+<c:if test="${ss_displayType != 'ss_workarea'}">
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
@@ -96,7 +99,7 @@ function ss_workarea_showId(id, action) {
 		</div>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
-<c:if test="${1 == 1 || ss_displayType != 'ss_workarea' || ss_windowState == 'maximized'}">
+<c:if test="${ss_displayType != 'ss_workarea'}">
 	</td>
 	</tr>
 	</tbody>
@@ -104,7 +107,7 @@ function ss_workarea_showId(id, action) {
 </c:if>
 </div>
 
-<c:if test="${0 == 1 && ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}">
+<c:if test="${0 == 1 && ss_displayType == 'ss_workarea'}">
 	<% // Folder Sidebar %>
 	<div id="ss_workareaContext_${renderResponse.namespace}" class="ss_style" style="display:none">
 	<div class="ss_style">
@@ -125,14 +128,14 @@ function ss_workarea_showId(id, action) {
     </div>
     </div>
 </c:if>
-<c:if test="${ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}">
+<c:if test="${0 == 1 && ss_displayType == 'ss_workarea'}">
 <script type="text/javascript">
 function ss_workareaMoveContext_${renderResponse.namespace}() {
 	var contextDiv = document.getElementById("ss_workareaContext");
 	if (contextDiv != null) {
 		var contextDivSource = document.getElementById("ss_workareaContext_${renderResponse.namespace}");
-		//dojo.dom.moveChildren(contextDivSource, contextDiv, false);
-		//return true;
+		dojo.dom.moveChildren(contextDivSource, contextDiv, false);
+		return true;
 	}
 	return false;
 }
