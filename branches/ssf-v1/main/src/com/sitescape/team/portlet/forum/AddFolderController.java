@@ -109,7 +109,7 @@ public class AddFolderController extends SAbstractController {
 				//Announce this new workspace?
 				if (formData.containsKey("announce")) {
 					String messageBody = "<a href=\"";
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL((PortletRequest)null, "ss_forum", true);
 					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, newId.toString());
 					adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, newBinder.getEntityType().toString());
