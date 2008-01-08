@@ -38,7 +38,7 @@
 
 <p><ssf:nlt tag="help.workspaceTreePortlet.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.workspaceTreePortlet.using"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.workspaceTreePortlet.using"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt> <ssf:nlt tag="help.workspaceTreePortlet.using.displayPlace"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 </div>
 

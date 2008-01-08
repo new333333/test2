@@ -42,7 +42,7 @@
 
 <p><ssf:nlt tag="help.workspaceTreePortlet.getStarted"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.getStartedProduct.content.workspaces.access"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.getStartedProduct.content.workspaces.defined" /></p>
 
 </div>
 
