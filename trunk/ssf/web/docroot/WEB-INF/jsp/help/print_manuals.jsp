@@ -70,6 +70,12 @@
 <p><ssf:nlt tag="help.viewBooks.content.installConfigGuide.explain"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 </li>
 
+<li><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Web Services Guide.pdf">
+  <span class="document_title"><ssf:nlt tag="help.viewBooks.content.listItem.webServicesGuide"
+    text="${ssProductName} Web Services Guide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></a> 
+  <ssf:nlt tag="help.globalStrings.englishOnly"/>
+</li>
+
 </ul>
 
 </div>
