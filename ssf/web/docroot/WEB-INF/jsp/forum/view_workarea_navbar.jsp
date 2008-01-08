@@ -41,6 +41,7 @@
 var	ss_savedSearchTitle = "<ssf:nlt tag="searchResult.savedSearchTitle"/>";
 var ssMyFavorites${renderResponse.namespace} = new ssFavorites('${renderResponse.namespace}');
 var ssMyTeams${renderResponse.namespace} = new ssTeams('${renderResponse.namespace}');
+var ss_displayType = "${ss_displayType}";
 </script>
 <c:if test="${ssUserProperties.debugMode}">
 <!-- Start of debug window -->
@@ -85,7 +86,7 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 	  </ssHelpSpot>
 	<a class="ss_linkButton" href="<portlet:renderURL 
-      	windowState="maximized"><portlet:param 
+		windowState="${ss_urlWindowState}"><portlet:param 
       	name="action" value="view_ws_listing"/><portlet:param 
       	name="binderId" value="${ssUser.parentBinder.id}"/><portlet:param 
       	name="entryId" value="${ssUser.id}"/><portlet:param 
@@ -97,7 +98,8 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 <td>
 
 <!-- Favorites -->
-	<a class="ss_linkButton" href="javascript:;" onClick="ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
+	<a class="ss_linkButton" href="javascript:;" 
+	  onClick="ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
 	  title="<ssf:nlt tag="navigation.favorites"/>"
     ><ssf:nlt tag="navigation.favorites"/></a>
       <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
@@ -364,8 +366,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 <div style="padding: 5px 10px 5px 10px;">
 
-<!-- Only show add a place in maximized view  -->
-<c:if test="${ss_navbar_style != 'portlet'}">
   <c:if test="${ssBinder != null && ssEntry.entityType != 'folderEntry'}">
   	<div class="ss_style_trans">
 		<a href="javascript: ;" 
@@ -378,7 +378,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			text="Add the current page to the favorites list..."/></span></a>
   	</div>
   </c:if>
-</c:if>
   <div class="ss_style_trans">
 		<a href="javascript: ;" 
 		 onClick="ssMyFavorites${renderResponse.namespace}.showhideFavoritesEditor()"

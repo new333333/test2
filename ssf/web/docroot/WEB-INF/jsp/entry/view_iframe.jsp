@@ -59,17 +59,18 @@ function ss_workarea_showId(id, action) {
 <c:if test="${ss_displayType == 'ss_workarea'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
-<c:if test="${ss_displayType != 'ss_workarea'}">
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
     <td valign="top" class="ss_view_sidebar">
 
+<c:if test="${ss_displayType != 'ss_workarea'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+</c:if>
 
 	<% // Folder Sidebar %>
     <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
@@ -88,7 +89,6 @@ function ss_workarea_showId(id, action) {
 
 	</td>
 	<td valign="top" class="ss_view_info">
-</c:if>
 	    <div class="ss_style_color" >
 			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
@@ -99,12 +99,10 @@ function ss_workarea_showId(id, action) {
 		</div>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
-<c:if test="${ss_displayType != 'ss_workarea'}">
 	</td>
 	</tr>
 	</tbody>
 	</table>
-</c:if>
 </div>
 
 <c:if test="${0 == 1 && ss_displayType == 'ss_workarea'}">

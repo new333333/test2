@@ -3502,7 +3502,13 @@ function ssFavorites(namespace) {
 			if (f.eletype != 'favorite') continue
 			t += '<li id ="ss_favorite_' + f.id + '">';
 			t += '<input type="checkbox" style="display: none;" />';
-			t += '<a href="javascript:;" onClick="ss_treeShowId(' + "'" + f.value + "', this";
+			t += '<a href="javascript:;" ';
+			if (typeof ss_displayType != "undefined" && ss_displayType == "ss_workarea") {
+				t += 'onClick="ss_treeShowIdNoWS(';
+			} else {
+				t += 'onClick="ss_treeShowId(';
+			}
+			t += "'" + f.value + "', this";
 			if (typeof f.action == "undefined") {
 				f.action = "view_ws_listing";
 			}
