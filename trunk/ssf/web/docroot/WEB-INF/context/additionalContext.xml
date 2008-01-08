@@ -3,9 +3,14 @@
 
 <beans>
 	<!-- Hibernate session factory -->
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+	<bean id="sessionFactory" class="com.sitescape.team.util.LocalSessionFactoryBean">
 		<property name="lobHandler"><ref bean="lobHandler"/></property>
-		<property name="configLocation"><value>classpath:config/hibernate.cfg.xml</value></property>
+		<property name="configFiles">
+			<list>
+				<value>config/hibernate.cfg.xml</value>
+				<value>optional:config/hibernate-ext.cfg.xml</value>
+			</list>
+		</property>
 		<property name="entityInterceptor"><ref bean="zoneInterceptor"/></property>
 		
 		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->

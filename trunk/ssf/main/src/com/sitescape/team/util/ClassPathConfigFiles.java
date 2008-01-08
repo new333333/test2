@@ -56,13 +56,9 @@ public class ClassPathConfigFiles {
     		if(cFile.startsWith("optional:")) {
     			cFile = cFile.substring(9);
     			resource = toResource(cFile);
-    			// The following method call is used to test whether or not
-    			// the specified file exists. 
-    			try {
-    				resource.getURL();
-    			}
-    			catch(Exception e) {
-    				continue; // cannot find it. proceed.
+    			if(!resource.exists()) {
+    				// The optional resource does not exist. Proceed.
+    				continue;
     			}
     		}
     		else {
@@ -122,6 +118,14 @@ public class ClassPathConfigFiles {
      */
     public InputStream getAsInputStream(int index) throws IOException {
     	return resources.get(index).getInputStream();
+    }
+    
+    /**
+     * Returns the resources.
+     * @return
+     */
+    public Resource[] getResources() {
+    	return resources.toArray(new Resource[resources.size()]);
     }
     
     private Resource toResource(String filePath) {
