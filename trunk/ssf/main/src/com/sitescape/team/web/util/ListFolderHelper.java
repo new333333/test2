@@ -459,7 +459,7 @@ public class ListFolderHelper {
 		}
 		if (Validator.isNotNull(strDate)) {
 			options.put(ObjectKeys.SEARCH_END_DATE, strDate);
-			model.put(WebKeys.FOLDER_END_DATE, strDate);
+			model.put(WebKeys.FOLDER_END_DATE, DateHelper.getDateFromDMY(day, month, year));
 			model.put(WebKeys.URL_DATE_END, strDate);
 			tabOptions.put(Tabs.END_DATE, strDate);
 			tabOptions.remove(Tabs.YEAR_MONTH);
