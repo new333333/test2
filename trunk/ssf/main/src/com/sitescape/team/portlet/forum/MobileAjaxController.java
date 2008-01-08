@@ -316,7 +316,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			return new ModelAndView("mobile/show_workspace", model);
 		}
 		//See if this is a user workspace
-		if (binder != null && Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType()) {
+		if (binder != null && binder.getDefinitionType() != null && 
+				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType()) {
 			Set wsUsers = new HashSet();
 			wsUsers.add(binder.getCreation().getPrincipal().getId());
 			SortedSet wsUsers2 = getProfileModule().getUsers(wsUsers);
