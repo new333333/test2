@@ -32,6 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/view_dashboard_canvas_js.jsp" %>
 <c:set var="ss_component_count" value="0" scope="request"/>
+<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
 
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">
