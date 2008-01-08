@@ -51,18 +51,37 @@
 </c:if>
     <c:if test="${!empty currentStyles}"> <input type="hidden" name="_subscribe_element_present" value="1"/> </c:if>
 	
+<c:set var="nothing" value="${true}"/>
+
+<c:forEach var="email" items="${ssUser.emailAddresses}"> 	
+	<c:set var="styleName" value="2${email.key}"/>
+	<c:if test="${!empty currentStyles[styleName]}"> 
+		<c:set var="nothing" value="${false}"/>
+	</c:if>
+</c:forEach>
+	
   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/><ssf:inlineHelp tag="ihelp.email.individual_notify_entry"/></span> 
   <select multiple="multiple" name="_subscribe2" >
-		<option value="" ><ssf:nlt tag="__none"/></option>
+		<option value=" " <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="2${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
 		>${email.value.address}</option>
 	</c:forEach>
    </select>
+   
+<c:set var="nothing" value="${true}"/>
+
+<c:forEach var="email" items="${ssUser.emailAddresses}"> 	
+	<c:set var="styleName" value="3${email.key}"/>
+	<c:if test="${!empty currentStyles[styleName]}"> 
+		<c:set var="nothing" value="${false}"/>
+	</c:if>
+</c:forEach>
+   
 	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.noattachments"/></span>
      <select multiple="multiple" name="_subscribe3">
-		<option value="" ><ssf:nlt tag="__none"/></option>
+		<option value=" " <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="3${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
@@ -70,9 +89,18 @@
 	</c:forEach>
    </select>
    
+<c:set var="nothing" value="${true}"/>
+
+<c:forEach var="email" items="${ssUser.emailAddresses}"> 	
+	<c:set var="styleName" value="5${email.key}"/>
+	<c:if test="${!empty currentStyles[styleName]}"> 
+		<c:set var="nothing" value="${false}"/>
+	</c:if>
+</c:forEach>
+   
  	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.text"/></span>
    <select multiple="multiple"  name="_subscribe5">
-		<option value="" ><ssf:nlt tag="__none"/></option>
+		<option value=" " <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="5${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
