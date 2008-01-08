@@ -45,7 +45,7 @@
 </div>
 
 <p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/>
-<a href="#skip_nav_titles" title="<ssf:nlt tag="helpTitle.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
+<a href="#skip_nav_titles" title="<ssf:nlt tag="helpTitleAlt.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
 </p>
 
 <div class="ss_help_moreinfo">
