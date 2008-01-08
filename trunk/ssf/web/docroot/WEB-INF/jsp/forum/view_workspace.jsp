@@ -56,17 +56,18 @@
 <c:if test="${ss_displayType == 'ss_workarea'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
-<c:if test="${ss_displayType != 'ss_workarea'}">
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
     <td valign="top" class="ss_view_sidebar">
 
+<c:if test="${ss_displayType != 'ss_workarea'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+</c:if>
 
 	<% // Folder Sidebar %>
 
@@ -78,7 +79,7 @@
 		<ssf:tree treeName="sidebarWsTree" 
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_treeShowId"
+		  showIdRoutine="ss_treeShowIdNoWS"
 		  rootOpen="true"
 		  nowrap="true"/>
 		</c:if>
@@ -86,7 +87,6 @@
 
 	</td>
 	<td valign="top" class="ss_view_info">
-</c:if>
 		<div class="ss_tab_canvas">
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 				<div class="ss_style_color">				
@@ -144,12 +144,10 @@
 			</c:if>
 
 		</div>
-<c:if test="${ss_displayType != 'ss_workarea'}">
 	</td>
 	</tr>
 	</tbody>
 	</table>
-</c:if>
   </div>
 	
 </c:if>
