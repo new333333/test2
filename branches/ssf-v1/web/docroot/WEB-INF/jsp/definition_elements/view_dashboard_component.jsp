@@ -32,5 +32,6 @@
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <c:set var="ssf_support_files_loaded" value="1" scope="request"/>
 
+<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
 <ssf:dashboard id="${ssDashboard.ssComponentId}"
   type="viewData" configuration="${ssDashboard}"/>

@@ -102,6 +102,7 @@
 				<span><ssf:nlt tag="dashboard.componentStyle.noBorder"/></span>
 			</div>
 			<!-- BEFORE DASHBOARD TAG -->
+			<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
 			<ssf:dashboard id="${id}" type="config" configuration="${ssDashboard}"/>
 			<!-- AFTER DASHBOARD TAG -->
 			<input type="hidden" name="_dashboardList" value="${ssDashboard.dashboardList}"/>
