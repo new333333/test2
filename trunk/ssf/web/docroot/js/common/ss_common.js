@@ -2898,7 +2898,7 @@ function ss_callDashboardEvent(componentId,
 	return true;
 }
 
-function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace) {
+function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace, scope) {
 	//ss_debug(obj.alt + ",    " + obj.src)
 	var formObj = ss_getContainingForm(obj);
 	var urlParams = {namespace:namespace,rn:ss_dbrn++};
@@ -2907,7 +2907,9 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 	if (formObj._dashboardList && formObj._dashboardList.value != "") {
 		urlParams._dashboardList=formObj._dashboardList.value;
 	}
-	if (formObj._scope && formObj._scope.value != "") {
+	if (scope != "") {
+		urlParams._scope = scope;
+	} else if (formObj._scope && formObj._scope.value != "") {
 		urlParams._scope=formObj._scope.value;
 	}
 	var callbackRoutine = ""
@@ -2973,7 +2975,7 @@ function ss_hideComponentCallback(s, data) {
 	// data = {"divId" : divId, "componentId" : componentId}
 	ss_callDashboardEvent(data.componentId, "onAfterHide");
 }
-function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr, namespace) {
+function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr, namespace, scope) {
 	var formObj = ss_getContainingForm(obj)
 	var confirmText = "";
 	if (formObj._scope.value == "local") {
@@ -2987,7 +2989,7 @@ function ss_confirmDeleteComponent(obj, componentId, divId, divId2, idStr, names
 	}
 	var confirmText2 = ss_dashboardConfirmDelete;
 	if (!confirm(confirmText + "\n" + confirmText2)) return false;
-	ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace)
+	ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace, scope)
 	if (divId2 && document.getElementById(divId2)) {
 		ss_hideDiv(divId2)
 	}

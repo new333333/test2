@@ -49,7 +49,7 @@
 			    src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.wide_top}">
 			  	  <c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-				  <c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+				  <c:if test="${empty ss_dashboard_scope}"><c:set var="ss_dashboard_scope" value="local" scope="request"/></c:if>
 				  <c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
 				  <c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
 				  <c:set var="ss_dashboard_dashboardList" value="wide_top" scope="request"/>
@@ -77,7 +77,7 @@
 			    <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.narrow_fixed}">
 				<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-				<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+				<c:if test="${empty ss_dashboard_scope}"><c:set var="ss_dashboard_scope" value="local" scope="request"/></c:if>
 				<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
 				<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
 				<c:set var="ss_dashboard_dashboardList" value="narrow_fixed" scope="request"/>
@@ -103,7 +103,7 @@
 			    <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.narrow_variable}">
 				<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-				<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+				<c:if test="${empty ss_dashboard_scope}"><c:set var="ss_dashboard_scope" value="local" scope="request"/></c:if>
 				<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
 				<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
 				<c:set var="ss_dashboard_dashboardList" value="narrow_variable" scope="request"/>
@@ -127,7 +127,7 @@
 			    <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif"></div>
 			  <c:forEach var="component" items="${ssDashboard.wide_bottom}">
 				<c:set var="ss_dashboard_id" value="${component.id}" scope="request"/>
-				<c:set var="ss_dashboard_scope" value="${ssDashboard.scope}" scope="request"/>
+				<c:if test="${empty ss_dashboard_scope}"><c:set var="ss_dashboard_scope" value="local" scope="request"/></c:if>
 				<c:set var="ss_dashboard_componentScope" value="${component.scope}" scope="request"/>
 				<c:set var="ss_dashboard_visible" value="${component.visible}" scope="request"/>
 				<c:set var="ss_dashboard_dashboardList" value="wide_bottom" scope="request"/>
