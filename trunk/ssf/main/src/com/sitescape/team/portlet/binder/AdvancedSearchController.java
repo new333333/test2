@@ -355,7 +355,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 			Iterator<Definition> it = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY).iterator();
 			while (it.hasNext()) {
 				Definition entry = it.next();
-				String title = NLT.get(entry.getTitle());
+				String title = NLT.getDef(entry.getTitle());
 				entries.put(title + "|" + entry.getId(), entry);
 			}
 		}
