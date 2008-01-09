@@ -465,6 +465,7 @@ public class SearchFilterToMapConverter {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		
 		SimpleDateFormat inputFormater = new SimpleDateFormat("yyyy-MM-dd");
+		if (!s.contains("-")) inputFormater = new SimpleDateFormat("yyyyMMdd");
 		inputFormater.setTimeZone(user.getTimeZone());
 		
 		Date result = null;
