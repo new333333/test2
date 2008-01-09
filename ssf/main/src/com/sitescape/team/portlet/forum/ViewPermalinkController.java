@@ -131,7 +131,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		}
 		if (!fileId.equals("") && !binderId.equals("") && !entityType.equals("")) {
 			url = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?" +
-				"&" + WebKeys.URL_BINDER_ID + "=" + binderId +
+				WebKeys.URL_BINDER_ID + "=" + binderId +
 				"&" + WebKeys.URL_ENTITY_TYPE + "=" + entityType;
 			if (!entryId.equals("")) url += "&" + WebKeys.URL_ENTRY_ID + "=" + entryId;
 			url += "&" + WebKeys.URL_FILE_ID + "=" + fileId;
