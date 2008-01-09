@@ -73,6 +73,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -301,6 +302,15 @@ public class BinderHelper {
 		Map unseenCounts = new HashMap();
 		unseenCounts = bs.getFolderModule().getUnseenCounts(binderIds);
 		model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
+
+		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
+		ProfileBinder profileBinder = null;
+		try {
+			profileBinder = bs.getProfileModule().getProfileBinder();
+		} catch(Exception e) {}
+		if (profileBinder != null) {
+			accessControlMap.put(WebKeys.CAN_VIEW_USER_PROFILES, true);
+		}
 
 		Map userQueries = new HashMap();
 		if (userProperties.containsKey(ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES)) {
