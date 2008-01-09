@@ -4,7 +4,7 @@
 <beans>
 
 	<bean id="propertyPlaceholderConfigurer" 
-		class="com.sitescape.team.util.PropertyPlaceholderConfigurer" 
+		class="com.sitescape.team.spring.beans.factory.config.PropertyPlaceholderConfigurer" 
 		depends-on="sPropsUtil">	
 		<property name="location"><value>config/ssf.properties</value></property>								
 	</bean>

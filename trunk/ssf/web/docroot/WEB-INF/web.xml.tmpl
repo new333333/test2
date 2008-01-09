@@ -24,7 +24,7 @@
 
 	<context-param>
 		<param-name>contextClass</param-name>
-		<param-value>com.sitescape.team.util.XmlWebApplicationContext</param-value>
+		<param-value>com.sitescape.team.spring.web.context.support.XmlWebApplicationContext</param-value>
 	</context-param>
 
 	<filter>
@@ -88,7 +88,7 @@
 	</listener>
 
 	<listener>
-		<listener-class>com.sitescape.team.web.util.Log4jConfigListener</listener-class>
+		<listener-class>com.sitescape.team.spring.web.util.Log4jConfigListener</listener-class>
 	</listener>
 
 	<listener>

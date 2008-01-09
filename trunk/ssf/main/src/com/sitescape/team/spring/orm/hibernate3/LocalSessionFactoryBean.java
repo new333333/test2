@@ -1,4 +1,6 @@
-package com.sitescape.team.util;
+package com.sitescape.team.spring.orm.hibernate3;
+
+import com.sitescape.team.util.ClassPathConfigFiles;
 
 public class LocalSessionFactoryBean extends org.springframework.orm.hibernate3.LocalSessionFactoryBean {
 	

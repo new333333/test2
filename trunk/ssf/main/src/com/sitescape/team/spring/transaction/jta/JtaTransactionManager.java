@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.util;
+package com.sitescape.team.spring.transaction.jta;
 
 import javax.transaction.SystemException;
 import org.springframework.transaction.InvalidIsolationLevelException;
