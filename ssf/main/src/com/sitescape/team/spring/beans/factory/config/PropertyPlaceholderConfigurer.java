@@ -26,44 +26,23 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.web.portlet;
+package com.sitescape.team.spring.beans.factory.config;
 
-import javax.portlet.PortletException;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
+import java.io.IOException;
+import java.util.Properties;
 
-import org.springframework.web.portlet.ViewRendererServlet;
-import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.View;
+import com.sitescape.team.util.SPropsUtil;
 
-public class DispatcherPortlet extends org.springframework.web.portlet.DispatcherPortlet {
-	protected void render(ModelAndView mv, RenderRequest request, RenderResponse response)
-	throws Exception {
+public class PropertyPlaceholderConfigurer 
+	extends org.springframework.beans.factory.config.PropertyPlaceholderConfigurer {
 
-		View view = null;
-		if (mv.isReference()) {
-			// We need to resolve the view name.
-			view = resolveViewName(mv.getViewName(), mv.getModel(), request);
-			if (view == null) {
-				throw new PortletException("Could not resolve view with name '" + mv.getViewName() +
-						"' in portlet with name '" + getPortletName() + "'");
-			}
-		}
-		else {
-			// No need to lookup: the ModelAndView object contains the actual View object.
-			view = mv.getView();
-			if (view == null) {
-				throw new PortletException("ModelAndView [" + mv + "] neither contains a view name nor a " +
-						"View object in portlet with name '" + getPortletName() + "'");
-			}
-		}
-		
-		// These attributes are required by the ViewRendererServlet
-		request.setAttribute(ViewRendererServlet.VIEW_ATTRIBUTE, view);
-		request.setAttribute(ViewRendererServlet.MODEL_ATTRIBUTE, mv.getModel());
-		request.setAttribute(ViewRendererServlet.DISPATCHER_PORTLET_APPLICATION_CONTEXT_ATTRIBUTE, getPortletApplicationContext());
-		
-		// include the content of the view in the render response
-		getPortletContext().getRequestDispatcher(getViewRendererServlet()).include(request, response);
+	/**
+	 * Overrides super class's method so that it obtains properties from
+	 * the ssf properties file(s) accessed through SPropsUtil class.
+	 * This effectively means that the properties files (if any) specified by
+	 * <code>setLocation</code> or <code>setLocations</code> method is ignored.
+	 */
+	protected Properties mergeProperties() throws IOException {
+		return SPropsUtil.getProperties();
 	}
 }

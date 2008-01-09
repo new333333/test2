@@ -26,29 +26,18 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.web.util;
+package com.sitescape.team.spring.jndi;
 
-import javax.servlet.ServletContextEvent;
-
-import com.sitescape.util.ServerDetector;
+import com.sitescape.team.util.PortabilityUtil;
 
 /**
  * 
  * @author jong
  *
  */
-public class Log4jConfigListener extends org.springframework.web.util.Log4jConfigListener {
-
-	public void contextInitialized(ServletContextEvent event) {
-		if(!ServerDetector.isJBoss()) {
-			super.contextInitialized(event);
-		}
+public class JndiObjectFactoryBean extends org.springframework.jndi.JndiObjectFactoryBean {
+	
+	public void setJndiName(String jndiName) {
+		super.setJndiName(PortabilityUtil.getJndiName(jndiName));
 	}
-
-	public void contextDestroyed(ServletContextEvent event) {
-		if(!ServerDetector.isJBoss()) {
-			super.contextDestroyed(event);
-		}
-	}
-
 }

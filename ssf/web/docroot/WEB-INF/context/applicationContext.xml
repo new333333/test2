@@ -8,7 +8,7 @@
 	<!-- Configurer that replaces ${...} placeholders with values from ssf 
 	     properties file(s) that are accessed through sPropsUtil bean. -->
 	<bean id="propertyPlaceholderConfigurer" 
-		class="com.sitescape.team.util.PropertyPlaceholderConfigurer" 
+		class="com.sitescape.team.spring.beans.factory.config.PropertyPlaceholderConfigurer" 
 		depends-on="sPropsUtil">	
 		<!-- As explained above, this custom configurer gets properties values
 		     from SpropsUtil, NOT from the properties file specified below.
@@ -93,7 +93,7 @@
 	
 	<bean id="springContextUtil" class="com.sitescape.team.util.SpringContextUtil" />
 
-	<bean id="dataSource" class="com.sitescape.team.util.JndiObjectFactoryBean">
+	<bean id="dataSource" class="com.sitescape.team.spring.jndi.JndiObjectFactoryBean">
 		<property name="jndiName"><value>java:comp/env/jdbc/SiteScapePool</value></property>
 	</bean>
   
@@ -127,7 +127,7 @@
 	</bean>
 
 	<!-- JTA transaction manager. If using local transaction, comment out this element -->	
-	<!--<bean id="transactionManager" class="com.sitescape.team.util.JtaTransactionManager" />-->
+	<!--<bean id="transactionManager" class="com.sitescape.team.spring.transaction.jta.JtaTransactionManager" />-->
 
 	<bean id="baseTransactionProxy" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean"
 			abstract="true">
