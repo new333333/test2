@@ -29,6 +29,9 @@
  */
 %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
+	<script type="text/javascript">
+		var ss_user_locale = "${ssUser.locale.language}";
+	</script>
 
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
