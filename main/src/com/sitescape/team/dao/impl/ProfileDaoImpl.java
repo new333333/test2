@@ -126,16 +126,18 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	    getHibernateTemplate().execute(
 	    	new HibernateCallback() {
 	       		public Object doInHibernate(Session session) throws HibernateException {
-    	   			Connection connect = session.connection();
+	       			Statement s = null;
        	   			try {
-       	   				Statement s = connect.createStatement();
+       	   				s = session.connection().createStatement();
       	   				s.executeUpdate("delete from SS_WorkAreaFunctionMembers where memberId in " + 
       	   						"(select p.id from SS_Principals p where  p.parentBinder=" + binder.getId() + ")");
       	   				s.executeUpdate("delete from SS_Notifications where principalId in " + 
       	   						"(select p.id from SS_Principals p where  p.parentBinder=" + binder.getId() + ")");
       	   			} catch (SQLException sq) {
        	   				throw new HibernateException(sq);
-       	   			}
+		   			} finally {
+		   				try {if (s != null) s.close();} catch (Exception ex) {};
+		   			}
 
  		   			session.createQuery("Delete com.sitescape.team.domain.SeenMap where principalId in " + 
  			   				"(select p.id from com.sitescape.team.domain.Principal p where " +
@@ -249,14 +251,16 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         	    	}
         			inList.deleteCharAt(inList.length()-1);
         			//these associations are link tables, no class exists to access them
-    	   			Connection connect = session.connection();
+      	   			Statement s = null;
        	   			try {
-       	   				Statement s = connect.createStatement();
+       	   				s = session.connection().createStatement();
       	   				s.executeUpdate("delete from SS_WorkAreaFunctionMembers where memberId in (" + inList.toString() + ")");
       	   				s.executeUpdate("delete from SS_Notifications where principalId in (" + inList.toString() + ")");
        	   			} catch (SQLException sq) {
        	   				throw new HibernateException(sq);
-       	   			}
+		   			} finally {
+		   				try {if (s != null) s.close();} catch (Exception ex) {};
+		   			}
         			//need to use ownerId, cause versionattachments/customattributeList sets not indexed by principal
 		   			getCoreDao().deleteEntityAssociations("ownerId in (" + inList.toString() + ") and (ownerType='" +
 		   					EntityType.user.name() + "' or ownerType='" + EntityType.group.name() + "')");
