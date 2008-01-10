@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreuserguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `12/11/2007 5:28:10 PM'>
+   <String `1/10/2008 3:25:16 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3137,6 +3137,12 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "Enable accessibility mode" link on a personal-workspace page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `features-accessories-across-pages-minimized-a.png'>
@@ -3406,7 +3412,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: Close icons for both the single accessory and for the accessory panel\q'>
+   <String `Description: \qDescription: Currently-displayed icons for accessories\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3556,7 +3562,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 76%, Indent: Current Indent'>
+   <String `Width: 70%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3869,6 +3875,12 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Width: 58%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The Subscriptions menu and the "Email notification" menu item.\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7021,7 +7033,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: The New menu and the "Blog entry" menu item\q'>
+   <String `Description: \qDescription: The "New: Blog entry" button\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7169,6 +7181,12 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: In the tools sidebar, the link to someone\qs personal blog\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `tasks_collapse_contact_info_a.png'>
@@ -7199,6 +7217,12 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Collapsed contact information on the personal-workspace page\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7625,6 +7649,12 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The modified personal-workspace page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `tasks_my_workspace_icon_a.png'>
@@ -7655,6 +7685,12 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Width: 70%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: The "My workspace" icon in the navigator portlet\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7961,6 +7997,12 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Width: 85%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Adding a Visitor role to the access-control table\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
