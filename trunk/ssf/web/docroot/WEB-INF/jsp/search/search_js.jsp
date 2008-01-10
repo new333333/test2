@@ -37,6 +37,7 @@ dojo.require('sitescape.widget.EntrySelect');
 dojo.require('sitescape.widget.FieldSelect');
 dojo.require('sitescape.widget.SelectPageable');
 dojo.require('sitescape.widget.DropdownDatePickerActivateByInput');
+dojo.require('sitescape.widget.DropdownTimePickerActivateByInput');
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_search.js"></script>
 <script type="text/javascript">

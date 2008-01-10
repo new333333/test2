@@ -434,10 +434,10 @@ public class SearchFilter {
 	
 	public void addEntryAttributeValues(String defId, String name, String[] value) {
 		checkCurrent();
-		addEntryAttributeValues(currentFilterTerms, defId, name, value);
+		addEntryAttributeValues(currentFilterTerms, defId, name, value, null);
 	}
 	
-	private void addEntryAttributeValues(Element parent, String defId, String name, String[] value) {
+	private void addEntryAttributeValuesAndType(Element parent, String defId, String name, String[] value, String valueType) {
 		if (defId != null && !defId.equals("") && name.equals(AllEntries)) {
 			Element filterTerm = parent.addElement(SearchFilterKeys.FilterTerm);
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
@@ -455,6 +455,9 @@ public class SearchFilter {
 				filterTerm.addAttribute(SearchFilterKeys.FilterElementName, name);
 				for (int j = 0; j < value.length; j++) {
 					Element newTerm = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
+					if (valueType != null) {
+						newTerm.addAttribute(SearchFilterKeys.FilterElementValueType, valueType);
+					}
 					newTerm.setText(value[j]);
 				}
 			}
@@ -470,19 +473,16 @@ public class SearchFilter {
 		if (valueType != null && valueType.equals("description")) {
 			attributeName="_desc";
 		}
-		if (fieldValues != null && valueType != null &&
-			(valueType.equals("date") || valueType.equals("event"))) {
-			for (int c = 0; c < fieldValues.length; c++) {
-				if (fieldValues[c] != null) {
-					fieldValues[c] = fieldValues[c].replaceAll("-", "");
-				}
-			}
-		}	
 		
-		if (valueType != null && valueType.equals("event")) {
+		if ("event".equals(valueType)) {
 			addEvent(parent, defId, attributeName, fieldValues);
 		} else {
-			addEntryAttributeValues(parent, defId, attributeName, fieldValues);
+			if ("date_time".equals(valueType)) {
+				if (fieldValues != null && fieldValues.length == 2) {
+					fieldValues = new String[] {fieldValues[0] + " " + fieldValues[1].substring(0, 5)};
+				}
+			}
+			addEntryAttributeValuesAndType(parent, defId, attributeName, fieldValues, valueType);
 		}
 	}
 

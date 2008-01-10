@@ -314,6 +314,9 @@ public class SearchFilterToMapConverter {
 				if (valueType.equals("date")) {
 					parsedValue = parseDate_from_yyyy_MM_dd(value);
 					formattedValue = value;
+				} else if (valueType.equals("date_time")) {
+					parsedValue = parseDateTime_from_yyyy_MM_dd_HH_mm(value);
+					formattedValue = value;					
 				} else if (valueType.equals("checkbox")) {
 					boolean valueObj = Boolean.parseBoolean(value);
 					if (valueObj) {
@@ -478,6 +481,26 @@ public class SearchFilterToMapConverter {
 		
 		return result;
 	}
+	
+	private Date parseDateTime_from_yyyy_MM_dd_HH_mm(String s) {
+		if (s == null || "".equals(s)) {
+			return null;
+		}
+		User user = RequestContextHolder.getRequestContext().getUser();
+		
+		SimpleDateFormat inputFormater = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+		inputFormater.setTimeZone(user.getTimeZone());
+		
+		Date result = null;
+		
+		try { 
+			result = inputFormater.parse(s);
+		} catch (ParseException e) {
+			result = parseDate_from_yyyy_MM_dd(s);
+		}
+		
+		return result;
+	}	
 
 	private Map prepareAdditionalFiltersData(Map convertedQuery) {
 		

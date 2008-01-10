@@ -81,16 +81,20 @@ dojo.widget.defineWidget(
 		nodeObj : null,
 		searchFieldIndex: "",
 		weekStartsOn: null,
-		nextNodeRef: null,
+		nextNodeRefs: new Array(),
 		widgetContainer: null,
 		dataProviderClass: "sitescape.widget.FieldSelectDataProvider",		
 		removeKids: function () {
-			if (this.nextNodeRef != null) 
+			for (var i = 0; i < this.nextNodeRefs.length; i++) {
 				try {
-					this.nextNodeRef.destroy();
+					this.nextNodeRefs[i].destroy();
 				} catch(e) {
-					this.nodeObj.removeChild(this.nextNodeRef);
+					try {
+						this.nodeObj.removeChild(this.nextNodeRefs[i]);
+					} catch (e) {}
 				}
+			}
+			this.nextNodeRefs = new Array();
 		},
 		destroy: function() {
 			this.removeKids();
@@ -101,6 +105,9 @@ dojo.widget.defineWidget(
 				case "date":
 					this.addDateField('');
 					break;
+				case "date_time":
+					this.addDateTimeField('');
+					break;					
 				case "event":
 					this.addEventField('');
 					break;
@@ -123,8 +130,11 @@ dojo.widget.defineWidget(
 		initializeKids: function(fieldType, userValue, userValueLabel) {
 			switch (fieldType) {
 				case "date":
-					this.addDateField(userValue);
+					this.addDateField(userValueLabel);
 					break;
+				case "date_time":
+					this.addDateTimeField(userValueLabel);
+					break;					
 				case "event":
 					this.addEventField(userValue);
 					break;
@@ -147,6 +157,7 @@ dojo.widget.defineWidget(
 		fillInTemplate: function(/*Object*/ args, /*Object*/ frag) {
 			sitescape.widget.FieldSelect.superclass.fillInTemplate.call(this, args, frag);
 			this.setValue("");
+			this.nextNodeRefs = new Array();
 		},
 		selectOption : function(/*Event*/ evt){
 			this.removeKids();
@@ -166,27 +177,58 @@ dojo.widget.defineWidget(
 			if (typeof this.weekStartsOn !== "undefined") {
 				prop.weekStartsOn = this.weekStartsOn;
 			}
-			this.nextNodeRef = dojo.widget.createWidget("DropdownDatePickerActivateByInput", prop, this.widgetContainer, "last");
+			this.nextNodeRefs.push(dojo.widget.createWidget("DropdownDatePickerActivateByInput", prop, this.widgetContainer, "last"));
 		},
 		
+		addDateTimeField: function(value) {
+			var dateValue = "";
+			var timeValue = "";
+			if (value && value.length >= 10) {
+				dateValue = value.substring(0, 10);
+				if (value.length > 10) {
+					timeValue = value.substring(11);
+				}
+			}
+			var prop = {value: dateValue, 
+						lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en", 
+						id: "elementValue" + this.searchFieldIndex, 
+						name: "elementValue" + this.searchFieldIndex, 
+						searchFieldIndex: this.searchFieldIndex, 
+						autoComplete: false, 
+						nodeObj: this.widgetContainer};
+			if (typeof this.weekStartsOn !== "undefined") {
+				prop.weekStartsOn = this.weekStartsOn;
+			}
+			this.nextNodeRefs.push(dojo.widget.createWidget("DropdownDatePickerActivateByInput", prop, this.widgetContainer, "last"));
+			prop = {value: timeValue, 
+					lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en", 
+					id: "elementValue" + this.searchFieldIndex + "0", 
+					name: "elementValue" + this.searchFieldIndex + "0", 
+					searchFieldIndex: this.searchFieldIndex, 
+					autoComplete: false, 
+					nodeObj: this.widgetContainer};
+			this.nextNodeRefs.push(dojo.widget.createWidget("DropdownTimePickerActivateByInput", prop, this.widgetContainer, "last"));
+		},		
+		
 		addEventField: function(value) {
-			var prop = {value: value, lang: ss_user_locale, id: "elementValue" + this.searchFieldIndex, 
+			var prop = {value: value, lang: djConfig&&djConfig["locale"]?djConfig["locale"]:"en", id: "elementValue" + this.searchFieldIndex, 
 						name: "elementValue" + this.searchFieldIndex, searchFieldIndex: this.searchFieldIndex, 
 						autoComplete: false, nodeObj: this.widgetContainer};
 			if (typeof this.weekStartsOn !== "undefined") {
 				prop.weekStartsOn = this.weekStartsOn;
 			}
-			this.nextNodeRef = dojo.widget.createWidget("DropdownDatePickerActivateByInput", prop, this.widgetContainer, "last");
+			this.nextNodeRefs.push(dojo.widget.createWidget("DropdownDatePickerActivateByInput", prop, this.widgetContainer, "last"));
 		},
 		
 		addUserListField: function(value, label) {
 			var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
 			var prop = {dataUrl:url, 
 						id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, maxListLength : 12, autoComplete: false};
-			this.nextNodeRef = dojo.widget.createWidget("SelectPageable", prop, this.widgetContainer, "last");
+			var userListWidgt = dojo.widget.createWidget("SelectPageable", prop, this.widgetContainer, "last");
+			this.nextNodeRefs.push(userListWidgt);
 			if (value && label) {
-				this.nextNodeRef.setValue(value);
-				this.nextNodeRef.setLabel(label);
+				userListWidgt.setValue(value);
+				userListWidgt.setLabel(label);
 			}
 		},
 
@@ -194,10 +236,11 @@ dojo.widget.defineWidget(
 			var localElementName="checkbox";
 			if (this.selectedResult && this.selectedResult[1]) localElementName=this.selectedResult[1];
 			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+localElementName, id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-			this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+			var widget = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+			this.nextNodeRefs.push(widget);
 			if (value && label) {
-				this.nextNodeRef.setValue(value);
-				this.nextNodeRef.setLabel(label);
+				widget.setValue(value);
+				widget.setLabel(label);
 			}			
 		},
 		
@@ -205,10 +248,11 @@ dojo.widget.defineWidget(
 			var localElementName="radio";
 			if (this.selectedResult && this.selectedResult[1]) localElementName=this.selectedResult[1];
 			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+localElementName, id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-			this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+			var widget = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+			this.nextNodeRefs.push(widget);
 			if (value && label) {
-				this.nextNodeRef.setValue(value);
-				this.nextNodeRef.setLabel(label);
+				widget.setValue(value);
+				widget.setLabel(label);
 			}
 		},
 		
@@ -216,22 +260,24 @@ dojo.widget.defineWidget(
 			var localElementName="selectbox";
 			if (this.selectedResult && this.selectedResult[1]) localElementName=this.selectedResult[1];
 			var prop = {dataUrl:this.nestedUrl+"&ss_entry_def_id="+this.entryTypeId+"&elementName="+localElementName, id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer};
-			this.nextNodeRef = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+			var widget = dojo.widget.createWidget("Select", prop, this.widgetContainer, "last");
+			this.nextNodeRefs.push(widget);
 			if (value && label) {
-				this.nextNodeRef.setValue(value);
-				this.nextNodeRef.setLabel(label);
+				widget.setValue(value);
+				widget.setLabel(label);
 			}
 		},
 		
 		addSimpleInputField: function(value) {
-			this.nextNodeRef = document.createElement('input');
-			this.nextNodeRef.type = "text";
-			this.nextNodeRef.id = "elementValue" + this.searchFieldIndex;
-			this.nextNodeRef.name = "elementValue" + this.searchFieldIndex;
+			var inpt = document.createElement('input');
+			inpt.type = "text";
+			inpt.id = "elementValue" + this.searchFieldIndex;
+			inpt.name = "elementValue" + this.searchFieldIndex;
 			if (value) {
-				this.nextNodeRef.value = value;
+				inpt.value = value;
 			}
-			this.nodeObj.appendChild(this.nextNodeRef);
+			this.nextNodeRefs.push(inpt);
+			this.nodeObj.appendChild(inpt);
 		}
 				
 	}
