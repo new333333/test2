@@ -32,19 +32,8 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_style" align="left">
 <form method="post" id="${ss_namespace}subscription_form${ssBinder.id}">
-<c:if test="${ssScheduleInfo.enabled}">
 <span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.type"/></span>
-</c:if>
-<c:if test="${!ssScheduleInfo.enabled}">
-<span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.disabled"/>
-<c:if test="${!empty ssBinder && !empty ssBinder.owner}">
-<br/><ssf:nlt tag="subscribe.contact.admin">
-<ssf:param name="value" value="${ssBinder.owner.emailAddress}"/>
-<ssf:param name="value" value="${ssBinder.owner.title}"/>
-</ssf:nlt>
-</c:if>
-</span>
-</c:if>
+
 <br/>
 <br/>
 <c:set var="styles" value="${ssSubscription.styles}"/>
@@ -67,7 +56,6 @@
 %>
 </c:if>
 <div class="ss_indent_medium">
-
 <c:set var="nothing" value="${true}"/>
 
 <c:forEach var="email" items="${ssUser.emailAddresses}"> 	
@@ -77,9 +65,19 @@
 	</c:if>
 </c:forEach>
 
-   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.digest"/><ssf:inlineHelp tag="ihelp.email.digest_notify"/></span> 
+   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.digest"/><ssf:inlineHelp tag="ihelp.email.digest_notify"/>
+<c:if test="${!ssScheduleInfo.enabled}">
+<br/>(<ssf:nlt tag="subscribe.select.disabled"/>
+<c:if test="${!empty ssBinder && !empty ssBinder.owner}">
+<br/><ssf:nlt tag="subscribe.contact.admin">
+<ssf:param name="value" value="${ssBinder.owner.emailAddress}"/>
+<ssf:param name="value" value="${ssBinder.owner.title}"/>
+</ssf:nlt>
+</c:if>
+)</c:if>
+</span> 
   <select multiple="multiple" name="_subscribe1">
-		<option value=" " <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
+		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}"> 	
 	<c:set var="styleName" value="1${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
@@ -98,7 +96,7 @@
 
    <span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/><ssf:inlineHelp tag="ihelp.email.individual_notify"/></span> 
   <select multiple="multiple" name="_subscribe2">
-		<option value=" " <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
+		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="2${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
@@ -117,7 +115,7 @@
 
 	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.noattachments"/></span>
     <select multiple="multiple" name="_subscribe3">
-		<option value=" " <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
+		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="3${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>
@@ -136,7 +134,7 @@
    
 	<span class="ss_labelAbove"><ssf:nlt tag="subscribe.text"/></span>
     <select multiple="multiple" name="_subscribe5">
-		<option value=" " <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
+		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">
 	<c:set var="styleName" value="5${email.key}"/>
 		<option value="${email.key}" <c:if test="${!empty currentStyles[styleName]}"> selected="selected" </c:if>

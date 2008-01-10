@@ -76,6 +76,7 @@ import com.sitescape.team.util.SessionUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.jobs.ZoneSchedule;
+import com.sitescape.team.jobs.ScheduleInfo;
 public abstract class AbstractZoneModule extends CommonDependencyInjection implements ZoneModule,InitializingBean {
 	protected DefinitionModule definitionModule;
 	/**
@@ -325,6 +326,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			if (query != null) query.close();
  			query=null;
  		}
+		ScheduleInfo info = getBinderModule().getNotificationConfig(zone.getId());
+		//create schedule first time through
+		if (!info.isEnabled()) {
+			info.getSchedule().setDaily(true);
+			info.getSchedule().setHours("0");
+			info.getSchedule().setMinutes("15");
+			info.setEnabled(true);
+			getBinderModule().setNotificationConfig(zone.getId(), info);
+			
+		}
   	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {

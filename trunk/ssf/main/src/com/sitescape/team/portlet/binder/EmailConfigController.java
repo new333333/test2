@@ -79,10 +79,10 @@ public class EmailConfigController extends  AbstractBinderController  {
 				Set userList = new HashSet();
 				if (formData.containsKey("users")) userList.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 				if (formData.containsKey("groups")) userList.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
-				ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
-				getScheduleData(request, config);
+//				ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
+//				getScheduleData(request, config);
 				getBinderModule().modifyNotification(folderId, getNotifyData(request), userList);
-				getBinderModule().setNotificationConfig(folderId, config);			
+//				getBinderModule().setNotificationConfig(folderId, config);			
 			}
 			if (formData.containsKey("alias")) {
 				String alias = PortletRequestUtils.getStringParameter(request, "alias", null);
@@ -112,11 +112,14 @@ public class EmailConfigController extends  AbstractBinderController  {
 		model.put(WebKeys.DEFINITION_ENTRY, folder);
 		//	Build the navigation beans
 		BinderHelper.buildNavigationLinkBeans(this, folder, model, new MailTreeHelper());
+		//get top level schedule
 
 		if (folder.isTop()) {
-			ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
+			ScheduleInfo config = getBinderModule().getNotificationConfig(folder.getZoneId());
 			model.put(WebKeys.SCHEDULE_INFO, config);
-			model.put(WebKeys.SCHEDULE, config.getSchedule());
+//			config = getBinderModule().getNotificationConfig(folderId);
+//			model.put(WebKeys.SCHEDULE_INFO, config);
+//			model.put(WebKeys.SCHEDULE, config.getSchedule());
 			List defaultDistribution = folder.getNotificationDef().getDistribution();
 			Set gList = new HashSet();
 			Set uList = new HashSet();
@@ -147,7 +150,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 	}
 	private void getScheduleData(PortletRequest request, ScheduleInfo config) {
 		config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));
-		config.setSchedule(ScheduleHelper.getSchedule(request));
+		config.setSchedule(ScheduleHelper.getSchedule(request, null));
 
 	}
 

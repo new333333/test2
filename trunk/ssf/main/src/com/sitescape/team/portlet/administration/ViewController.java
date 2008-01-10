@@ -275,10 +275,10 @@ public class ViewController extends  SAbstractController {
 			elements.put(element.attributeValue("title"), element);
 		}
 		
-		//Posting schedule
+		//email schedule
 		if (getAdminModule().testAccess(AdminOperation.managePosting)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.configure_posting_job"));
+			element.addAttribute("title", NLT.get("administration.configure_mail"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
 			url = response.createRenderURL();

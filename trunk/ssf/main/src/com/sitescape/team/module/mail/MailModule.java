@@ -48,7 +48,7 @@ public interface MailModule {
 	public static final String NOTIFY_SUBJECT="notify.subject";
     public static final String REPLY_SUBJECT="RE: DocId:";
     public static final String DEFAULT_TIMEZONE="notify.timezone";
-	public Date sendNotifications(Long folderId, Date start);
+	public Date sendNotifications(Long folderId, Date begin);
 	public Date fillSubscriptions(Date begin);
 	public void receivePostings();
 	public void sendMail(MimeMessage msg);

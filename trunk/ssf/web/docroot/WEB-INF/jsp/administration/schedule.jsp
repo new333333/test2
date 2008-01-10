@@ -29,58 +29,95 @@
  */
 %>
 <%@ page import="java.util.TimeZone" %>
+<c:if test="${scheduleStringOnly}">
+<c:if test="${schedule.daily}">
+<ssf:nlt tag="schedule.everyday"/>
+</c:if>
+<c:if test="${!schedule.daily}">
+<ssf:nlt tag="schedule.weekly"/>&nbsp;(
+<c:if test="${schedule.onSunday}"><ssf:nlt tag="calendar.day.abbrevs.su"/>&nbsp;</c:if>
+<c:if test="${schedule.onMonday}"><ssf:nlt tag="calendar.day.abbrevs.mo"/>&nbsp;</c:if>
+<c:if test="${schedule.onTuesday}"><ssf:nlt tag="calendar.day.abbrevs.tu"/>&nbsp;</c:if>
+<c:if test="${schedule.onWednesday}"><ssf:nlt tag="calendar.day.abbrevs.we"/>&nbsp;</c:if>
+<c:if test="${schedule.onThursday}"><ssf:nlt tag="calendar.day.abbrevs.th"/>&nbsp;</c:if>
+<c:if test="${schedule.onFriday}"><ssf:nlt tag="calendar.day.abbrevs.fr"/>&nbsp;</c:if>
+<c:if test="${schedule.onSaturday}"><ssf:nlt tag="calendar.day.abbrevs.sa"/>&nbsp;</c:if>
+)</c:if>
+,&nbsp;
+<c:if test="${!schedule.repeatMinutes && !schedule.repeatHours}">
+&nbsp;${schedule.hours}:${schedule.minutes}&nbsp;<%= TimeZone.getDefault().getID() %>
+</c:if>
+<c:if test="${schedule.repeatMinutes}">
+	<ssf:nlt tag="schedule.repeathours">
+   	<ssf:param name="value" useBody="true">
+	  <c:if test="${schedule.minutesRepeat == '15'}">0.25</c:if>
+	  <c:if test="${schedule.minutesRepeat == '30'}">0.5</c:if>
+	  <c:if test="${schedule.minutesRepeat == '45'}">0.75</c:if>
+	  </ssf:param>
+	  </ssf:nlt>
+</c:if>
+<c:if test="${schedule.repeatHours && !schedule.repeatMinutes}">
+	<ssf:nlt tag="schedule.repeathours">
+   	<ssf:param name="value" value="${schedule.hoursRepeat}"/>
+	  </ssf:nlt>
+	
+</c:if>
+
+</c:if>
+
+<c:if test="${!scheduleStringOnly}">
 <table class="ss_style" border ="0" cellspacing="0" cellpadding="0" width="100%">
 <tr><td valign="top"> 
    <table class="ss_style" border="0" cellpadding="0" cellspacing="0" width="100%">
    <tr>
    <td >
    <hr shade=noshade size=1/>
-   <input type="radio"  name="schedType" id="schedType" value="daily" <c:if test="${schedule.daily}">checked</c:if>/> 
+   <input type="radio"  name="${schedPrefix}schedType" id="${schedPrefix}schedType" value="daily" <c:if test="${schedule.daily}">checked</c:if>/> 
    <span class="ss_labelRight"><ssf:nlt tag="schedule.everyday"/></span>
    <br/>
-   <input type="radio"  name="schedType" id="schedType" value="weekly" <c:if test="${!schedule.daily}">checked</c:if>/> 
-   <span class="ss_labelRight"><ssf:nlt tag="schedule.weekly"/></span>
+   <input type="radio"  name="${schedPrefix}schedType" id="${schedPrefix}schedType" value="weekly" <c:if test="${!schedule.daily}">checked</c:if>/> 
+   <span class="ss_labelRight"><ssf:nlt tag="schedule.weekly"/>&nbsp;<ssf:nlt tag="schedule.weeklyWhen"/></span>
    <br/>
    <table class="ss_style" border="0" cellpadding="0" style="border-spacing: 2px;">
 	  <tr><td >&nbsp;&nbsp;&nbsp;&nbsp;</td>
 	<td ><label>
-	<input type="checkbox"  name="onday_sun" id="onday_sun"  <c:if test="${schedule.onSunday}">checked</c:if>/><br/>
+	<input type="checkbox"  name="${schedPrefix}onday_sun" id="${schedPrefix}onday_sun"  <c:if test="${schedule.onSunday}">checked</c:if>/><br/>
 	<ssf:nlt tag="calendar.day.abbrevs.su"/>
 	</label></td>
 	<td ><label>
-	<input type="checkbox"  name="onday_mon" id="onday_mon" <c:if test="${schedule.onMonday}">checked</c:if>/><br/>
+	<input type="checkbox"  name="${schedPrefix}onday_mon" id="${schedPrefix}onday_mon" <c:if test="${schedule.onMonday}">checked</c:if>/><br/>
 	<ssf:nlt tag="calendar.day.abbrevs.mo"/>
 	</label></td>
 	<td ><label>
-	<input type="checkbox"  name="onday_tue" id="onday_tue" <c:if test="${schedule.onTuesday}">checked</c:if>/><br/>
+	<input type="checkbox"  name="${schedPrefix}onday_tue" id="${schedPrefix}onday_tue" <c:if test="${schedule.onTuesday}">checked</c:if>/><br/>
 	<ssf:nlt tag="calendar.day.abbrevs.tu"/>
 	</label></td>
 	<td ><label>
-	<input type="checkbox"  name="onday_wed" id="onday_wed" <c:if test="${schedule.onWednesday}">checked</c:if>/><br/>
+	<input type="checkbox"  name="${schedPrefix}onday_wed" id="${schedPrefix}onday_wed" <c:if test="${schedule.onWednesday}">checked</c:if>/><br/>
 	<ssf:nlt tag="calendar.day.abbrevs.we"/>
 	</label></td>
 	<td ><label>
-	<input type="checkbox"  name="onday_thu" id="onday_thu" <c:if test="${schedule.onThursday}">checked</c:if>/><br/>
+	<input type="checkbox"  name="${schedPrefix}onday_thu" id="${schedPrefix}onday_thu" <c:if test="${schedule.onThursday}">checked</c:if>/><br/>
 	<ssf:nlt tag="calendar.day.abbrevs.th"/>
 	</label></td>
 	<td ><label>
-	<input type="checkbox"  name="onday_fri" id="onday_fri" <c:if test="${schedule.onFriday}">checked</c:if>/><br/>
+	<input type="checkbox"  name="${schedPrefix}onday_fri" id="${schedPrefix}onday_fri" <c:if test="${schedule.onFriday}">checked</c:if>/><br/>
 	<ssf:nlt tag="calendar.day.abbrevs.fr"/>
 	</label></td>
 	<td ><label>
-	<input type="checkbox"  name="onday_sat" id="onday_sat" <c:if test="${schedule.onSaturday}">checked</c:if>/><br/>
+	<input type="checkbox"  name="${schedPrefix}onday_sat" id="${schedPrefix}onday_sat" <c:if test="${schedule.onSaturday}">checked</c:if>/><br/>
 	<ssf:nlt tag="calendar.day.abbrevs.sa"/>
 	</label></td>
 	</tr>
 	</table>
 <hr shade=noshade size=1/>
 
-<input type="radio"  name="hourType" id="hourType" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>>
+<input type="radio"  name="${schedPrefix}hourType" id="${schedPrefix}hourType" value="absolute"   <c:if test="${!schedule.repeatHours}">checked</c:if>>
 	</input>
    
 	<span class="ss_labelRight"><ssf:nlt tag="schedule.attime"/></span>
    
-	<select name="schedHours" id="schedHours"<c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>>
+	<select name="${schedPrefix}schedHours" id="${schedPrefix}schedHours"<c:if test="${!schedule.repeatHours}">value="${schedule.hours}"</c:if>>
 		<option <c:if test="${schedule.hours == '0'}">selected="selected"</c:if> value="00">00
 		<option <c:if test="${schedule.hours == '1'}">selected="selected"</c:if> value="01">01
 		<option <c:if test="${schedule.hours == '2'}">selected="selected"</c:if> value="02">02
@@ -107,7 +144,7 @@
 		<option <c:if test="${schedule.hours == '23'}">selected="selected"</c:if> value="23">23
 	</select>
 		:
-	<select name="schedMinutes" id="schedMinutes" <c:if test="${!schedule.repeatMinutes}">value="${schedule.minutes}"</c:if>>
+	<select name="${schedPrefix}schedMinutes" id="${schedPrefix}schedMinutes" <c:if test="${!schedule.repeatMinutes}">value="${schedule.minutes}"</c:if>>
 		<option <c:if test="${schedule.minutes == '0'}">selected="selected"</c:if> value="00">00
 		<option <c:if test="${schedule.minutes == '5'}">selected="selected"</c:if> value="05">05
 		<option <c:if test="${schedule.minutes == '10'}">selected="selected"</c:if> value="10">10
@@ -125,7 +162,7 @@
 <br/>
 
 
-<input type="radio"  name="hourType" id="hourType" value="repeat"   
+<input type="radio"  name="${schedPrefix}hourType" id="${schedPrefix}hourType" value="repeat"   
   <c:if test="${schedule.repeatHours || schedule.repeatMinutes}">checked</c:if>>
 </input>
    
@@ -133,7 +170,7 @@
 	<ssf:nlt tag="schedule.repeathours">
    	<ssf:param name="value" useBody="true">
 
-	<select name="hoursRepeat" id="hoursRepeat" 
+	<select name="${schedPrefix}hoursRepeat" id="${schedPrefix}hoursRepeat" 
 	  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '15'}">value="0.25"</c:if>
 	  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '30'}">value="0.5"</c:if>
 	  <c:if test="${schedule.minutesRepeat && schedule.minutesRepeat == '45'}">value="0.75"</c:if>
@@ -161,3 +198,4 @@
    </td></tr>
 </table>
 </table>
+</c:if>

@@ -53,7 +53,7 @@ public class ConfigureLdapController extends  SAbstractController {
 		if (formData.containsKey("okBtn")) {
 			LdapConfig config = getLdapModule().getLdapConfig();
 			if (config != null) {
-				config.setSchedule(ScheduleHelper.getSchedule(request));
+				config.setSchedule(ScheduleHelper.getSchedule(request, null));
 				config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "enabled", false));	
 				config.setUserDelete(PortletRequestUtils.getBooleanParameter(request, "userDelete", false));
 				config.setUserWorkspaceDelete(PortletRequestUtils.getBooleanParameter(request, "userWorkspaceDelete", false));

@@ -161,10 +161,10 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				AccessUtils.readCheck(u, entry);
 				email = (Set)languageMap.get(u.getLocale());
 				if (email != null) {
-					addAddresses(email, u, me.getValue());
+					addAddresses(email, u, me.getValue(), style);
 				} else {
 					email = new HashSet();
-					addAddresses(email, u, me.getValue());
+					addAddresses(email, u, me.getValue(), style);
 					languageMap.put(u.getLocale(), email);
 				}
 			} catch (Exception ex) {};
@@ -192,9 +192,16 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		}
 		return languageMap;
 	}
-	private void addAddresses(Set email, User u, String[] types) {
-		if (types == null || types.length == 0) {
-			email.add(u.getEmailAddress());
+	private void addAddresses(Set email, User u, String[] types, int style) {
+		if (types == null) {  //this happens on a push from the folder
+			if (style == Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION) {
+				//see if there is a text address
+				String a = u.getTxtEmailAddress();
+				if (Validator.isNull(a)) a = u.getEmailAddress();
+				email.add(a);
+			} else {
+				email.add(u.getEmailAddress());
+			}
 		} else {
 			for (int i=0;i<types.length;++i) {
 				email.add(u.getEmailAddress(types[i]));
@@ -213,18 +220,19 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style) {
 		List result = new ArrayList();
 		Map<User, String[]> userMap = getUserList(folder, entries, subscriptions,  style);
-		if (userMap.isEmpty()) return result;
-		//check access to folder/entry and build lists of users to receive mail
-		List checkList = new ArrayList();
-		for (Map.Entry<User, String[]> me:userMap.entrySet()) {
-			AclChecker check = new AclChecker(me.getKey(), me.getValue());
-			check.checkEntries(entries);
-			checkList.add(check);
-		}
-		//get a map containing a list of users mapped to a list of entries
-		while (!checkList.isEmpty()) {
-			Object [] lists = mapEntries(checkList);
-			result.add(lists);
+		if (!userMap.isEmpty()) {
+			//check access to folder/entry and build lists of users to receive mail
+			List checkList = new ArrayList();
+			for (Map.Entry<User, String[]> me:userMap.entrySet()) {
+				AclChecker check = new AclChecker(me.getKey(), me.getValue());
+				check.checkEntries(entries);
+				checkList.add(check);
+			}
+			//	get a map containing a list of users mapped to a list of entries
+			while (!checkList.isEmpty()) {
+				Object [] lists = mapEntries(checkList, style);
+				result.add(lists);
+			}
 		}
 		if (folder.getNotificationDef().getStyle() == style) {
 			//add in email address only subscriptions
@@ -339,13 +347,13 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	 * @param checkList
 	 * @return List of users, list of entries they all have access to
 	 */
-	private Object[] mapEntries(List checkList) {
+	private Object[] mapEntries(List checkList, int style) {
 		
 		AclChecker check = (AclChecker)checkList.get(0);
 		checkList.remove(0);
 		Set email = new HashSet();
 		//separate into languages
-		addAddresses(email, check.getUser(), check.getEmails());
+		addAddresses(email, check.getUser(), check.getEmails(), style);
 		Map languageMap = new HashMap();
 		languageMap.put(check.getUser().getLocale(), email);
 		//make a copy so we can alter original
@@ -356,10 +364,10 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			if (check.compareEntries(c)) {
 				email = (Set)languageMap.get(c.getUser().getLocale());
 				if (email != null) {
-					addAddresses(email, c.getUser(), c.getEmails());
+					addAddresses(email, c.getUser(), c.getEmails(), style);
 				} else {
 					email = new HashSet();
-					addAddresses(email, c.getUser(), c.getEmails());
+					addAddresses(email, c.getUser(), c.getEmails(), style);
 					languageMap.put(c.getUser().getLocale(), email);
 				}
 				checkList.remove(c);

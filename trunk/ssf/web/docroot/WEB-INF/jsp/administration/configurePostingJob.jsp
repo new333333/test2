@@ -52,27 +52,42 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 }
 </script>
 <div class="ss_style ss_portlet">
+
 <form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
 	action="<portlet:actionURL windowState="maximized"><portlet:param 
 	name="action" value="configure_posting_job"/></portlet:actionURL>">
-
-<table class="ss_style"  border="1" cellspacing="0" cellpadding="3" width="100%">
+<div class="ss_buttonBarRight">
+<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="notify.header" /></legend>	
+<table class="ss_style" border="0" cellspacing="3" cellpadding="3">
 <tr>
-<th><ssf:nlt tag="incoming.job_title"/></th>
-<th><ssf:nlt tag="incoming.aliases"/> <ssf:inlineHelp tag="ihelp.email.incomingAddresses" /></th>
-</tr>
-<tr><td valign="top">
-<table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
-<tr><td> 
-<input type="checkbox" class="ss_labelRight" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if>/>
-<ssf:nlt tag="incoming.enable.all"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_enable_posting" />
+<td valign="top">
+<input type="checkbox" class="ss_style" id="notifyenabled" name="notifyenabled" <c:if test="${ssScheduleInfonotify.enabled}">checked</c:if> />
+<span class="ss_labelRight"><ssf:nlt tag="notify.schedule.enable"/> </span><ssf:inlineHelp tag="ihelp.email.enableCheckBox"/>
 <br/>
-
-<c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
+<c:set var="schedule" value="${ssScheduleInfonotify.schedule}"/>
+<c:set var="schedPrefix" value="notify"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
 </td></tr></table>
-</td><td valign="top">
- <br/>
+</fieldset>
+<fieldset class="ss_fieldset">
+  <legend class="ss_legend"><ssf:nlt tag="incoming.header" /></legend>	
+<table class="ss_style" border="0" cellspacing="3" cellpadding="3">
+<tr><td valign="top"> 
+<input type="checkbox" class="ss_style" id="postenabled" name="postenabled" <c:if test="${ssScheduleInfopost.enabled}">checked</c:if>/>
+<span class="ss_labelRight"><ssf:nlt tag="incoming.enable.all"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_enable_posting" /></span>
+<br/>
+<c:set var="schedule" value="${ssScheduleInfopost.schedule}"/>
+<c:set var="schedPrefix" value="post"/>
+<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+</td></tr>
+<c:if test="${!empty ssPostings}"> 
+<tr>
+<td valign="top">
+<span class="ss_labelAbove"> <ssf:nlt tag="incoming.aliases"/><ssf:inlineHelp tag="ihelp.email.incomingAddresses" /></span>
 <table border="0" cellspacing="0" cellpadding="0" class="ss_style ss_borderTable" >
   <tr class="ss_headerRow">
   <td class="ss_bold" align="center" width="5%" scope="col"><ssf:nlt tag="incoming.delete"/></td>
@@ -108,7 +123,10 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
 </td></tr>
 </c:forEach>
 </table>
+</td></tr>
+</c:if>
 </table>
+</fieldset>
 <br/>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">

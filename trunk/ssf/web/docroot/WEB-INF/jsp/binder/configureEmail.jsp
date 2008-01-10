@@ -95,70 +95,37 @@ function <%= wsTreeName %>_showId(id, obj, action) {
     	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
 
 <br/>
-<table class="ss_style" border ="0" cellspacing="0" cellpadding="3" width="100%">
-<tr><td> 
-<span class="ss_labelLeft"><ssf:nlt tag="incoming.select"/></span> 
-<c:if test="${mail_posting_use_aliases != 'false'}">
-<ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_alias" />
-</c:if>
-<br/>
-<input type="text" name="alias" value="${ssBinder.posting.emailAddress}" size="30"> 
-<c:if test="${mail_posting_use_aliases == 'false'}">
-<br/>
-<span class="ss_labelLeft"><ssf:nlt tag="incoming.password" text="Password"/></span> 
-<br/>
-<c:set var="emailPassword" value=""/>
-<c:if test="${!empty ssBinder.posting.emailAddress}"><c:set var="emailPassword" value="_____"/></c:if>
-<input type="password" name="password" value="${emailPassword}" size="30"> 
-</c:if>
-<c:if test="${!ssScheduleInfo2.enabled}"><br/>[<ssf:nlt tag="incoming.disabled"/>]</c:if>
-
-</td>
-<td class="ss_buttonBarRight">
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
-</td></tr></table>
-
 <c:if test="${!empty ssScheduleInfo}">
-
-<br/>
 
 <table class="ss_style"  border="0" cellspacing="0" cellpadding="3" width="100%">
 <tr>
-<td align="center"><span class="ss_bold"><ssf:nlt tag="notify.header"/></span></td>
-</tr>
-</table>
-
-<table class="ss_style"  border="1" cellspacing="0" cellpadding="3" width="100%">
-<tr>
-<th width="30%"><ssf:nlt tag="notify.schedule"/></th>
-<th width="70%" style="padding-left:15px;"><ssf:nlt tag="notify.distribution.list"/> <ssf:inlineHelp tag="ihelp.email.notification_list"/></th>
+<td align="left"><span class="ss_bold"><ssf:nlt tag="notify.header"/></span><ssf:inlineHelp tag="ihelp.email.notification_list"/>
 </tr>
 <tr>
-<td valign="top">
-<input type="checkbox" class="ss_style" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if> />
-<span class="ss_labelLeft"><ssf:nlt tag="notify.schedule.enable"/> <ssf:inlineHelp tag="ihelp.email.enableCheckBox"/></span>
-<br/>
-
-<c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
-<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-</td>
 <td style="padding-left:15px;">
-
-<table class="ss_style"  border ="0" cellspacing="0" cellpadding="3">
+<table class="ss_style" border ="0" cellspacing="0" cellpadding="3">
  <tr><td>
     <br/><span class="ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><br/>
 <div class="ss_indent_medium">
   <input type="radio" name="style" value="1" id="notifyType_1"
-  <c:if test="${ssBinder.notificationDef.style=='1'}"> checked="checked"</c:if>
-  /><label for="notifyType_1"><ssf:nlt tag="subscribe.digest"/></label> <ssf:inlineHelp tag="ihelp.email.digest_notify"/><br/>
+  <c:if test="${ssBinder.notificationDef.style=='1'}"> checked="checked"</c:if> 
+  /><label for="notifyType_1"><ssf:nlt tag="subscribe.digest"/></label>&nbsp;&nbsp;[<c:if test="${ssScheduleInfo.enabled}">
+<c:set var="scheduleStringOnly" value="true"/>
+<c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
+<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+</c:if>
+<c:if test="${!ssScheduleInfo.enabled}">
+<ssf:nlt tag="administration.notify.nodefault.schedule"/>
+</c:if>]<ssf:inlineHelp tag="ihelp.email.digest_notify"/><br/>
   <input type="radio" name="style" value="2" 
-  <c:if test="${ssBinder.notificationDef.style=='2'}"> checked="checked"</c:if>
+  <c:if test="${ssBinder.notificationDef.style=='2'}"> checked="checked"</c:if> 
   /><label for="notifyType_2"><ssf:nlt tag="subscribe.message"/></label> <ssf:inlineHelp tag="ihelp.email.individual_notify"/><br/>
   <input type="radio" name="style" value="3" 
-  <c:if test="${ssBinder.notificationDef.style=='3'}"> checked="checked"</c:if>
+  <c:if test="${ssBinder.notificationDef.style=='3'}"> checked="checked"</c:if> 
   /><label for="notifyType_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
-<br/>
+  <input type="radio" name="style" value="5" 
+  <c:if test="${ssBinder.notificationDef.style=='5'}"> checked="checked"</c:if> 
+  /><label for="notifyType_3"><ssf:nlt tag="subscribe.text"/></label><br/><br/>
 </div>
  </td></tr>
  <tr><td>
@@ -189,14 +156,48 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </td>
 </tr>
 </table>
-
+<hr/>
+</c:if>
+<table class="ss_style"  border="0" cellspacing="0" cellpadding="3" width="100%">
+<tr>
+<td align="left"><span class="ss_bold"><ssf:nlt tag="incoming.header" /></span> 
+<c:if test="${mail_posting_use_aliases != 'false'}">
+<ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_alias" />
+</c:if>
+<c:if test="${!ssScheduleInfo2.enabled}"><br/>[<ssf:nlt tag="incoming.disabled"/>]</c:if>
+<c:if test="${ssScheduleInfo2.enabled}"><br/>[
+<c:set var="scheduleStringOnly" value="true"/>
+<c:set var="schedule" value="${ssScheduleInfo2.schedule}"/>
+<%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
+]
+</c:if>
+</td>
+</tr>
+<tr>
+<td style="padding-left:15px;">
+<br/>
+<span class="ss_labelAbove">
+<c:if test="${mail_posting_use_aliases == 'false'}"><ssf:nlt tag="incoming.select.user"/></c:if>
+<c:if test="${mail_posting_use_aliases != 'false'}"><ssf:nlt tag="incoming.select.alias"/></c:if>
+</span>
+<input type="text" name="alias" value="${ssBinder.posting.emailAddress}" size="30"> 
+<c:if test="${mail_posting_use_aliases == 'false'}">
+<br/>
+<span class="ss_labelAbove"><ssf:nlt tag="incoming.password" text="Password"/></span> 
+<c:set var="emailPassword" value=""/>
+<c:if test="${!empty ssBinder.posting.emailAddress}"><c:set var="emailPassword" value="_____"/></c:if>
+<input type="password" name="password" value="${emailPassword}" size="30"> 
+</c:if>
+</td>
+</tr>
+</table>
 <br/>
 
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
-</c:if>
+
 </form>
 
 </c:otherwise>
