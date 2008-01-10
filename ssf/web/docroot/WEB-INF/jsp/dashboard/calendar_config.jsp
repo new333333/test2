@@ -97,7 +97,7 @@
 				<ssf:tree 
 				  treeName="${treeName}" 
 				  treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
-				  rootOpen="false" 
+				  rootOpen="true" 
 				  multiSelect="${ssDashboard.beans[ssComponentId].ssBinderIdList}" 
 				  multiSelectPrefix="ss_folder_id_"
 				/>
