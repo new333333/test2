@@ -255,16 +255,18 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	    				session.delete(def);
 	    			}
 	    			session.flush();
-	    			Connection connect = session.connection();
-		   			try {
-		   				Statement s = connect.createStatement();
+	    			Statement s = null;
+	    			try {
+		   				s = session.connection().createStatement();
 		   				s.executeUpdate("delete from SS_DefinitionMap where binder=" + binder.getId());
 		   				s.executeUpdate("delete from SS_WorkflowMap where binder=" + binder.getId());
 		   				s.executeUpdate("delete from SS_Notifications where binderId=" + binder.getId());
 		   			} catch (SQLException sq) {
 		   				throw new HibernateException(sq);
-		   			}
-	     	   		//delete user dashboards on this binder
+     	   			} finally {
+       	   				try {if (s != null) s.close();} catch (Exception ex) {};
+       	   			}
+    	   		//delete user dashboards on this binder
 	     	   		session.createQuery("Delete com.sitescape.team.domain.Dashboard where binderId=:binderId")
 		   				.setLong("binderId", binder.getId())
 	     	   			.executeUpdate();
