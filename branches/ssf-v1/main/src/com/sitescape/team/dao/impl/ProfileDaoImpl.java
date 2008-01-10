@@ -86,7 +86,7 @@ import com.sitescape.team.util.SPropsUtil;
  *
  */
 public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
-	protected int inClauseLimit=2000;
+	protected int inClauseLimit=1000;
 	protected Log logger = LogFactory.getLog(getClass());
 	private CoreDao coreDao;
 	Map reservedIds = new HashMap();
@@ -102,7 +102,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
      */
 	protected void initDao() throws Exception {
 		//some database limit the number of terms 
-		inClauseLimit=SPropsUtil.getInt("db.clause.limit", 2000);
+		inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
 	}
 	/*
 	 * In most cases this will be initialized at startup and won't change,
@@ -693,10 +693,21 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                     Set loopDectector = new HashSet(ids);
                     Set currentIds = new HashSet(ids);
                     while (!currentIds.isEmpty()) {
-                    	mems  = session.createCriteria(Membership.class)
-                    		.add(Expression.in("groupId", currentIds))
-                        	.list();
-                       	currentIds.clear();
+                    	if (currentIds.size() <= inClauseLimit) {
+                           	mems  = session.createCriteria(Membership.class)
+                           			.add(Expression.in("groupId", currentIds))
+                           			.list();                   		
+                    	} else {
+                    		List idsList = new ArrayList(currentIds);
+                    		mems = new ArrayList();
+                    		for (int i=0; i<idsList.size(); i+=inClauseLimit) {
+                    			List partial  = session.createCriteria(Membership.class)
+                    				.add(Expression.in("groupId", idsList.subList(i, Math.min(idsList.size(), i+inClauseLimit))))
+                    				.list();
+                    			mems.addAll(partial);
+                    		}
+           				}
+                      	currentIds.clear();
 						for (int i=0; i<mems.size(); ++i) {
 							Membership m = (Membership)mems.get(i);
 							result.remove(m.getGroupId());
