@@ -106,6 +106,8 @@ public interface CoreDao {
 	public EntityDashboard loadEntityDashboard(EntityIdentifier ownerId);
     public List<Tag> loadEntityTags(EntityIdentifier entityIdentifier, EntityIdentifier ownerIdentifier);
 	public NotifyStatus loadNotifyStatus(Binder binder, DefinableEntity entity);
+	public List<NotifyStatus> loadNotifyStatus(String sinceField, Date begin, Date end, int maxResults, Long zoneId);
+	public List<NotifyStatus> loadNotifyStatus(Binder binder, String sinceField, Date begin, Date end, int maxResults, Long zoneId);
 	public List loadObjects(ObjectControls objs, FilterControls filter, Long zoneId);
 	public List loadObjectsCacheable(ObjectControls objs, FilterControls filter, Long zoneId);
 	public List loadObjects(Class className, FilterControls filter, Long zoneId);
@@ -133,7 +135,6 @@ public interface CoreDao {
 	public Tag loadTag(String id, Long zoneId);
 	public TemplateBinder loadTemplate(Long templateId, Long zoneId);
 	public TemplateBinder loadTemplateByName(String name, Long zoneId);
-	public List<NotifyStatus> loadNotifyStatus(String sinceField, Date begin, int maxResults, Long zoneId);
 	public UserDashboard loadUserDashboard(EntityIdentifier ownerId, Long binderId);
 	public Object merge(Object obj); 
     public void move(Binder binder);

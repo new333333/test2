@@ -28,9 +28,9 @@
  */
 package com.sitescape.team.jobs;
 import java.util.Map;
-import java.util.HashMap;
+import java.util.TimeZone;
+import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
-
 public class Schedule {
 	private boolean daily=false,minutesRepeat=false,hoursRepeat=false;
 	private String hours="12";
@@ -173,7 +173,7 @@ public class Schedule {
 			hoursRepeat=true;
 		} else if ("*".equals(hours)) {
 			hoursRepeat = true;
-		}
+		} else hoursRepeat=false;
 	}
 	public boolean isRepeatMinutes() {
 		return minutesRepeat;
@@ -183,11 +183,12 @@ public class Schedule {
 	}
 	public void setMinutes(String minutes) {
 		this.minutes = minutes;
+		if (minutes.length() == 1) this.minutes="0" + minutes;
 		if (minutes.indexOf('/') != -1) {
 			minutesRepeat=true;
 		} else if ("*".equals(hours)) {
 			minutesRepeat = true;
-		}
+		} else minutesRepeat = false;
 	}
 	public String getMinutesRepeat() {
 		int index = minutes.indexOf('/');

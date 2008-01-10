@@ -525,7 +525,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			MimeHelper mHelper = null;
 			String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE);
 			//Will be sorted by owningBinderkey
-			List<NotifyStatus> uStatus = getCoreDao().loadNotifyStatus("lastFullSent", begin, 100, RequestContextHolder.getRequestContext().getZoneId());
+			List<NotifyStatus> uStatus = getCoreDao().loadNotifyStatus("lastFullSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
 			List ids = new ArrayList();
 			while (!uStatus.isEmpty()) {
 				//get Ids to log folderEntries
@@ -536,7 +536,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				params.put("ids", ids);
 				List<FolderEntry> entries = getCoreDao().loadObjects("from com.sitescape.team.domain.FolderEntry where id in (:ids)", params);
 				for (NotifyStatus eStatus:uStatus) {
-					//find corresponding folderEntry
+					//find corresponding folderEntry; attempting to keep in folder order
 					FolderEntry entry = null;
 					for (FolderEntry fEntry:entries) {
 						if (fEntry.getId().equals(eStatus.getOwnerId())) {
@@ -609,7 +609,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				}
 				getCoreDao().evict(uStatus);
 				getCoreDao().evict(entries);
-				uStatus = getCoreDao().loadNotifyStatus("lastFullSent", begin, 100, RequestContextHolder.getRequestContext().getZoneId());
+				uStatus = getCoreDao().loadNotifyStatus("lastFullSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
  			}
 
 		} catch (MailSendException sx) {
@@ -637,7 +637,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
 		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
 		   	} catch (Exception ex) {
-		   		//message gets throw away here
+		   		//message gets thrown away here
 	       		logger.error(ex.getLocalizedMessage());
 	    	} 
 		}
@@ -646,77 +646,119 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	/**
 	 * Send email notifications for recent changes.  Only used for digest style messages
 	 */
-    public Date sendNotifications(Long folderId, Date start) {
- 		Folder folder = (Folder)coreDao.loadBinder(folderId, RequestContextHolder.getRequestContext().getZoneId()); 
-		Date until = new Date();
-
-  		List entries = getFolderDao().loadFolderTreeUpdates(folder, start, until, new OrderBy("HKey.sortKey"), -1);
- 		if (entries.isEmpty()) {
-			return until;
-		}
-		//get folder specific helper to build message
-  		FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
- 		List subscriptions = getCoreDao().loadSubscriptionByEntity(folder.getEntityIdentifier());
-		List digestResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);		
-		if (digestResults.isEmpty()) return until;
-		JavaMailSender mailSender = getMailSender(folder);
-		MimeHelper mHelper = new MimeHelper(processor, folder, start);
-		mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
-		mHelper.setTimeZone(getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+    public Date sendNotifications(Long binderId, Date begin) {
+		Binder binder = coreDao.loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId()); 
+		final String updateString="update com.sitescape.team.domain.NotifyStatus set lastDigestSent=:p1 where ownerId in (:p2)";
+   		final Map values = new HashMap();
 		Object ctx = null;
+		Date end = new Date();
+		values.put("p1", end);
+		JavaMailSender mailSender = getMailSender(RequestContextHolder.getRequestContext().getZone());
+		Map params = new HashMap();
 		try {
 			ctx = mailSender.initializeConnection();
-			for (int i=0; i<digestResults.size(); ++i) {
-				Object row[] = (Object [])digestResults.get(i);
-				mHelper.setEntries((Collection)row[0]);
-				mHelper.setType(Notify.NotifyType.summary);
-				mHelper.setSendAttachments(false);
-				doSubscription(folder, mailSender, mHelper, (Map)row[1], ctx);
+			Folder currentFolder = null;
+			List<Subscription> folderSubscriptions = null;
+			FolderEmailFormatter processor=null;
+			MimeHelper mHelper = null;
+			String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE);
+			List ids = new ArrayList();
+			//Will be sorted by owningBinderkey
+			List<NotifyStatus> uStatus;
+			if (binder.isRoot()) {
+				uStatus = getCoreDao().loadNotifyStatus("lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
+			} else {
+				uStatus = getCoreDao().loadNotifyStatus(binder, "lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());				
 			}
+			while (!uStatus.isEmpty()) {
+				//get Ids to log folderEntries
+				ids.clear();
+				NotifyStatus current = uStatus.get(0);
+				uStatus.remove(0);
+				currentFolder = (Folder)coreDao.loadBinder(current.getOwningBinderId(), RequestContextHolder.getRequestContext().getZoneId()); 
+				currentFolder = currentFolder.getRootFolder();
+				//find other entries for same folder tree.  Ordered by owingBinderKey
+				List<NotifyStatus>currentStatus = new ArrayList();
+				currentStatus.add(current);
+				ids.add(current.getOwnerId());
+				for (NotifyStatus eStatus: uStatus) {
+					if (eStatus.getOwningBinderId().equals(current.getOwningBinderId()) ||
+							eStatus.getOwningBinderId().equals(currentFolder.getId())) {
+						currentStatus.add(eStatus);
+						ids.add(eStatus.getOwnerId());
+						continue;
+					}
+					Folder parent = (Folder)coreDao.loadBinder(eStatus.getOwningBinderId(), RequestContextHolder.getRequestContext().getZoneId()); 
+					if (parent.getRootFolder().equals(currentFolder)) {
+						currentStatus.add(eStatus);
+						ids.add(eStatus.getOwnerId());
+						continue;
+					}
+					break; //done with this folder tree				
+				}
+				//remove from pending list
+				uStatus.removeAll(currentStatus);
+				params.put("ids", ids);
+				List<FolderEntry> entries = getCoreDao().loadObjects("from com.sitescape.team.domain.FolderEntry where id in (:ids) order by HKey.sortKey", params);
+				if (!entries.isEmpty()) {
+	   				//Handle digest subscriptions and notifications 
+	   		 		//get folder specific helper to build message
+					processor = (FolderEmailFormatter)processorManager.getProcessor(currentFolder,FolderEmailFormatter.PROCESSOR_KEY);
+	   		  		folderSubscriptions = getCoreDao().loadSubscriptionByEntity(currentFolder.getEntityIdentifier());
+	   				List digestResults = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);		
+	   				mHelper = new MimeHelper(processor, currentFolder, begin);
+	   				mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
+	   				mHelper.setTimeZone(timeZone);
+   					for (int i=0; i<digestResults.size(); ++i) {
+   						Object row[] = (Object [])digestResults.get(i);
+   						mHelper.setEntries((Collection)row[0]);
+   						mHelper.setType(Notify.NotifyType.summary);
+   						mHelper.setSendAttachments(false);
+   						doSubscription(currentFolder, mailSender, mHelper, (Map)row[1], ctx);
+   					}
+	   				
+				}
+				values.put("p2", ids);
+				for (int count=0; count<10; ++count) {
+					try {
+						getTransactionTemplate().execute(new TransactionCallback() {
+							public Object doInTransaction(TransactionStatus status) {
+								getCoreDao().executeUpdate(updateString, values);
+								return null;
+							}});
+					} catch (org.springframework.orm.hibernate3.HibernateOptimisticLockingFailureException ol) {
+						continue;
+					} catch (org.springframework.dao.DataIntegrityViolationException di) {
+						continue;
+					} catch (StaleObjectStateException so) {
+						continue;
+					}
+					break;  //assume we got through
+				}
+				getCoreDao().evict(currentStatus);
+				getCoreDao().evict(entries);
+				if (uStatus.isEmpty()) {
+					if (binder.isRoot()) {
+						uStatus = getCoreDao().loadNotifyStatus("lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
+					} else {
+						uStatus = getCoreDao().loadNotifyStatus(binder, "lastDigestSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());				
+					}
+    			}
+			}
+
+		} catch (MailSendException sx) {
+    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
+    		throw sx;
+		} catch (MailAuthenticationException ax) {
+    		logger.error("Error sending mail:" + ax.getLocalizedMessage());
+    		throw ax;
 		} finally {
-			mailSender.releaseConnection(ctx);
+			if (ctx !=null) mailSender.releaseConnection(ctx);
 		}
-		
-/* now handled by fillsubscription
-  		// Users wanting individual, message style email with attachments
-		List messageResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_EMAIL_NOTIFICATION);
-		// Users wanting individual, message style email without attachments
-		List messageNoAttsResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION);
-		// Users wanting individual, text message email
-		List messageTxtResults = processor.buildDistributionList(folder, entries, subscriptions, Subscription.MESSAGE_STYLE_TXT_EMAIL_NOTIFICATION);
- 		mHelper.setEntries(null);
-		for (int i=0; i<messageTxtResults.size(); ++i) {
-			Object row[] = (Object [])messageTxtResults.get(i);
-			mHelper.setType(Notify.NotifyType.text);
-			mHelper.setSendAttachments(false);
-			for (Iterator iter=((Collection)row[0]).iterator(); iter.hasNext();) {
-				mHelper.setEntry(iter.next());
-				doSubscription(folder, mailSender, mHelper, (Map)row[1]);
-			}
-		}
+		return end;    
+    }
 
-		for (int i=0; i<messageNoAttsResults.size(); ++i) {
-			Object row[] = (Object [])messageNoAttsResults.get(i);
-			mHelper.setType(Notify.NotifyType.full);
-			mHelper.setSendAttachments(false);
-			for (Iterator iter=((Collection)row[0]).iterator(); iter.hasNext();) {
-				mHelper.setEntry(iter.next());
-				doSubscription(folder, mailSender, mHelper, (Map)row[1]);
-			}
-		}
-
-		for (int i=0; i<messageResults.size(); ++i) {
-			Object row[] = (Object [])messageResults.get(i);
-			mHelper.setType(Notify.NotifyType.full);
-			mHelper.setSendAttachments(true);
-			for (Iterator iter=((Collection)row[0]).iterator(); iter.hasNext();) {
-				mHelper.setEntry(iter.next());
-				doSubscription(folder, mailSender, mHelper, (Map)row[1]);
-			}
-		}
-*/
-		return until;
-	}
+ 
     //used for re-try mail.  MimeMessage has been serialized 
     public void sendMail(String mailSenderName, java.io.InputStream input) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);

@@ -1359,17 +1359,19 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         return status;       
 	}
 	/**
-     * Load folder entries that have been updated.
+     * Load status for entries that have been updated.
      * The begin date is really a performance optimization, cause it limits the number of records that are even checked since the key is hopefully ordered by modifyDate.
+     * End date is needed to exclude for updates that happen inbetween calls or get looping
      */
-    public List<NotifyStatus> loadNotifyStatus(final String sinceField, final Date begin, final int maxResults, final Long zoneId) {
+    public List<NotifyStatus> loadNotifyStatus(final String sinceField, final Date begin, final Date end, final int maxResults, final Long zoneId) {
        	List result = (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                     	Criteria crit = session.createCriteria(NotifyStatus.class)
                     	.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
                     	.add(Expression.ge("lastModified", begin))
-                    	.add(Expression.gtProperty("lastModified", sinceField))
+                    	.add(Expression.lt("lastModified", end))  
+                    	.add(Expression.geProperty("lastModified", sinceField))
                     	.addOrder(Order.asc("owningBinderKey"));
                     	
                     	if (maxResults > 0) {
@@ -1382,4 +1384,31 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
             );  
        return result;   	
     }
-}
+	/**
+     * Load status for entries that have been updated in a subtree
+     * The begin date is really a performance optimization, cause it limits the number of records that are even checked since the key is hopefully ordered by modifyDate.
+     * End date is needed to exclude for updates that happen inbetween calls or get looping
+    */
+    public List<NotifyStatus> loadNotifyStatus(final Binder binder, final String sinceField, final Date begin, final Date end, final int maxResults, final Long zoneId) {
+       	List result = (List)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	Criteria crit = session.createCriteria(NotifyStatus.class)
+                    	.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+                    	.add(Expression.ge("lastModified", begin))
+                    	.add(Expression.lt("lastModified", end))
+                    	.add(Expression.geProperty("lastModified", sinceField))
+                    	.add(Expression.like("owningBinderKey", binder.getBinderKey().getSortKey()))
+                    	.addOrder(Order.asc("owningBinderKey"));
+                    	
+                    	if (maxResults > 0) {
+                    		crit.setMaxResults(maxResults);
+						}
+                    	
+                       return crit.list();
+                    }
+                }
+            );  
+       return result;   	
+    }
+ }

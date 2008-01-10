@@ -46,8 +46,14 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
     	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		try {
-			Date end = mail.sendNotifications(new Long(jobDataMap.getLong("binder")), (Date)jobDataMap.get("lastNotification") );
-			jobDataMap.put("lastNotification", end);
+			Long binderId = new Long(jobDataMap.getLong("binder"));
+			Date end = mail.sendNotifications(binderId, (Date)jobDataMap.get("lastNotification") );
+			//In v1 top level folders had their own schedules.  In v.1.X they don't
+			if (!zoneId.equals(binderId)) {
+				removeJob(context);
+			} else {
+				jobDataMap.put("lastNotification", end);
+			}
 		} catch (NoBinderByTheIdException nf) {
 			removeJobOnError(context,nf);
 		} 
