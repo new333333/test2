@@ -876,6 +876,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
    //inside write transaction    
    protected void deleteBinder_postDelete(Binder binder, Map ctx) {
+	   //remove notification status so mail isn't sent
+	   getCoreDao().executeUpdate("delete from com.sitescape.team.domain.NotifyStatus where owningBinderId=" + binder.getId());
     }
 
    //inside write transaction    
