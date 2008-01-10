@@ -76,7 +76,7 @@ function ${treeName}_showId(forum, obj) {
 <ssf:tree 
   treeName="${treeName}"
   treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
-  rootOpen="false" 
+  rootOpen="true" 
   singleSelect="${ssDashboard.beans[ssComponentId].ssBinder.id}" 
   singleSelectName="data_topId"
 />
