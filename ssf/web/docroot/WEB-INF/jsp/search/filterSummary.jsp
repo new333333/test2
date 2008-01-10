@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 	<script type="text/javascript">
 	
@@ -106,7 +107,21 @@
 			<c:forEach var="block" items="${ss_filterMap.additionalFilters.entry}">
 				<input type="hidden" name="ss_entry_def_id_hidden" value="${block.entryType}" />
 				<input type="hidden" name="elementName_${block.entryType}_hidden" value="${block.entryElement}" />
-				<input type="hidden" name="elementValue_${block.entryType}_hidden" value="${block.entryValuesNotFormatted}" />
+				<c:choose>
+					<c:when test="${block.valueType == 'date' || block.valueType == 'event'}">
+						<input type="hidden" name="elementValue_${block.entryType}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" pattern="yyyy-MM-dd"/>" />
+					</c:when>
+					<c:when test="${block.valueType == 'date_time'}">
+						<input type="hidden" name="elementValue_${block.entryType}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" pattern="yyyy-MM-dd"/>" />
+						<c:if test="${fn:length(block.entryValues) > 10}">
+							<input type="hidden" name="elementValue0_${block.entryType}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" pattern="HH:mm"/>" />
+						</c:if>
+					</c:when>
+					<c:otherwise>
+						<input type="hidden" name="elementValue_${block.entryType}_hidden" value="${block.entryValuesNotFormatted}" />
+					</c:otherwise>
+				</c:choose>				
+				
 				
 				<p><ssf:nlt tag="searchForm.label.entry"/>:
 				<script type="text/javascript">
@@ -118,8 +133,18 @@
 				:
 				<c:choose>
 					<c:when test="${block.valueType == 'date' || block.valueType == 'event'}">
-						<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" type="date" />
-					</c:when>			
+						<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" type="date" dateStyle="medium"/>
+					</c:when>
+					<c:when test="${block.valueType == 'date_time'}">
+						<c:choose>
+							<c:when test="${fn:length(block.entryValues) > 10}">
+								<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" type="both" dateStyle="medium" timeStyle="short"/>
+							</c:when>
+							<c:otherwise>
+								<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" type="date" dateStyle="medium"/>
+							</c:otherwise>							
+						</c:choose>
+					</c:when>					
 					<c:otherwise>
 						${block.entryValues}
 					</c:otherwise>

@@ -42,6 +42,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
@@ -203,12 +204,39 @@ public class SearchFilterToSearchBooleanConverter {
 		while (itEventDate.hasNext()) {
 			String eventDate = ((Element) itEventDate.next()).getText();
 			if (!eventDate.equals("")) {
-				Element field2 = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
-				field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
-				Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-				child2.setText(eventDate);
+				Element range = orField2.addElement(QueryBuilder.RANGE_ELEMENT);
+				range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
+				range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
+				Element start = range.addElement(QueryBuilder.RANGE_START);
+				start.addText(formatStartDate(eventDate, DateTools.Resolution.MINUTE));
+				Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
+				finish.addText(formatEndDate(eventDate, DateTools.Resolution.MINUTE));				
 			}
 		}
+	}
+	
+	private static String formatDateTime(String dateOrDateTimeAsString) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Date d = null;
+		try {
+			DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+			DateTime date = fmt.parseDateTime(dateOrDateTimeAsString);
+			date = date.withMillisOfDay(0).withZone(DateTimeZone.UTC);
+			d = date.toDate();
+			return DateTools.dateToString(d, DateTools.Resolution.DAY) + "*";
+		} catch (Exception e) {
+			try {
+				DateTimeFormatter fmt = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm").withZone(DateTimeZone.forTimeZone(user.getTimeZone()));
+				DateTime date = fmt.parseDateTime(dateOrDateTimeAsString);
+				date = date.withZone(DateTimeZone.UTC);
+				d = date.toDate();
+				return DateTools.dateToString(d, DateTools.Resolution.SECOND);
+			} catch (Exception e1) {
+				// no correct value ignore
+			}
+		}
+		
+		return "";
 	}
    	
 	private static String formatStartDate(String dateAsString, Resolution timeResolution) {
@@ -578,7 +606,9 @@ public class SearchFilterToSearchBooleanConverter {
 		} else {
 			Iterator itTermValues = filterTerm.selectNodes(SearchFilterKeys.FilterElementValue).iterator();
 			while (itTermValues.hasNext()) {
-				String value = ((Element) itTermValues.next()).getText();
+				Element termValue = (Element) itTermValues.next();
+				String value = termValue.getText();
+				String valueType = termValue.attributeValue(SearchFilterKeys.FilterElementValueType);
 				if (!value.equals("")) {
 					Element field;
 					Element child;
@@ -593,7 +623,11 @@ public class SearchFilterToSearchBooleanConverter {
 	    			
 	    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
 	    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
-	    				    	    			
+	    				   
+    				if ("date".equals(valueType) || "date_time".equals(valueType)) {
+    					value = formatDateTime(value);
+    				}
+    				
 	    			if (value.contains("*")) {
 	    				field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "false");
 	    			} else {

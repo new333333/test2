@@ -184,6 +184,13 @@ public class SearchFilterRequestParser {
 				String entryTypeId = entryTypeIds[i];
 				String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat("_").concat(entryTypeId).concat("_hidden"), "");
 				String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat("_").concat(entryTypeId).concat("_hidden"));
+				String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat("0_").concat(entryTypeId).concat("_hidden"), null);
+				if (value != null && value2 != null) {
+					String[] allValues = new String[value.length + 1];
+					System.arraycopy(value, 0, allValues, 0, value.length);
+					allValues[allValues.length - 1] = value2;
+					value = allValues;
+				}				
 				String valueType = getEntryValueType(entryTypeId, entryFieldId);
 				if (!entryTypeId.equals("")) {
 					entries.add(new SearchFilter.Entry(entryTypeId, entryFieldId, value, valueType));
@@ -196,6 +203,13 @@ public class SearchFilterRequestParser {
 					
 					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat(numbers[i]), SearchFilter.AllEntries);
 					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]));
+					String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat(numbers[i]).concat("0"), null);
+					if (value != null && value2 != null) {
+						String[] allValues = new String[value.length + 1];
+						System.arraycopy(value, 0, allValues, 0, value.length);
+						allValues[allValues.length - 1] = value2;
+						value = allValues;
+					}
 					String valueType = getEntryValueType(entryTypeId, entryFieldId);
 					if (!entryTypeId.equals("")) {
 						entries.add(new SearchFilter.Entry(entryTypeId, entryFieldId, value, valueType));
