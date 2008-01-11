@@ -25,7 +25,7 @@
           <property name="required" value=""/>
         </properties>
       </item>
-      <item name="date_time" caption="__date" type="data" category="commonEntryData" id="23">
+      <item name="date_time" caption="__date_time" type="data" category="commonEntryData" id="23">
         <properties>
           <property name="name" value="due_date"/>
           <property name="caption" value="__due_date"/>

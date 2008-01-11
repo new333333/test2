@@ -74,7 +74,7 @@
           <property name="required" value="false"/>
         </properties>
       </item>
-      <item name="date_time" caption="__date" type="data" category="commonEntryData" id="11">
+      <item name="date_time" caption="__date_time" type="data" category="commonEntryData" id="11">
         <properties>
           <property name="name" value="due_date"/>
           <property name="caption" value="__project_due_date"/>
