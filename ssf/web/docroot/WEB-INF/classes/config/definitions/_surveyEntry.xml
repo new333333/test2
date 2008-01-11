@@ -36,7 +36,7 @@
         <property name="name" value="form1"/>
         <property name="type" value="survey"/>
       </properties>
-      <item name="date_time" caption="__due_date" type="data" id="23">
+      <item name="date_time" caption="__date_time" type="data" id="23">
         <properties>
           <property name="name" value="due_date"/>
           <property name="caption" value="__due_date"/>
