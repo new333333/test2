@@ -2869,14 +2869,13 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 	//ss_debug(obj.alt + ",    " + obj.src)
 	var formObj = ss_getContainingForm(obj)
 	var url = ss_dashboardAjaxUrl;
+	var scopeParam = scope;
 	if (componentId != "") {url += "\&operation2=" + componentId;}
 	if (formObj._dashboardList && formObj._dashboardList.value != "") {
 		url += "\&_dashboardList=" + formObj._dashboardList.value;
 	}
-	if (scope != "") {
-		urlParams._scope = scope;
-	} else if (formObj._scope && formObj._scope.value != "") {
-		urlParams._scope=formObj._scope.value;
+	if (scope == "" && formObj._scope && formObj._scope.value != "") {
+		scopeParam = formObj._scope.value;
 	}
 	var callbackRoutine = ""
 	var imgObj = obj.getElementsByTagName('img').item(0);
@@ -2922,6 +2921,7 @@ function ss_showHideDashboardComponent(obj, componentId, divId, idStr, namespace
 	}
 	url += "\&namespace="+namespace;
 	url += "\&" + idStr;
+	if (scopeParam != "") url += "\&_scope=" + scopeParam;
 	url += "\&rn=" + ss_dbrn++;
 	if (callbackRoutine != "") ss_fetch_url(url, callbackRoutine, {"divId" : divId, "componentId" : componentId});
 }
