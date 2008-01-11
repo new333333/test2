@@ -28,12 +28,14 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -43,6 +45,7 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.comparator.PrincipalComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
@@ -155,9 +158,10 @@ public class AddFolderController extends SAbstractController {
 		model.put(WebKeys.ENTRY, binder);
 
 		//Set the default the team members to the current user
-		Set memberIds = new HashSet();
-		memberIds.add(user.getId());
-		model.put(WebKeys.USERS, getProfileModule().getUsers(memberIds));
+        Comparator c = new PrincipalComparator(user.getLocale());
+       	TreeSet<User> memberIds = new TreeSet(c);
+		memberIds.add(user);
+		model.put(WebKeys.USERS, memberIds);
 		
 		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
 		if (binder instanceof Workspace) 

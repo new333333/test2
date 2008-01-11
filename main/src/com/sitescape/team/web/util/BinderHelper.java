@@ -31,6 +31,7 @@ package com.sitescape.team.web.util;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -39,6 +40,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.PortletConfig;
@@ -58,6 +60,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.PrincipalComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
@@ -183,7 +186,12 @@ public class BinderHelper {
  				ids.add(user.getId());
  			}
  			//This is the portlet view; get the configured list of principals to show
- 			SortedSet users = bs.getProfileModule().getUsersFromPrincipals(ids);
+ 	        Comparator c = new PrincipalComparator(user.getLocale());
+ 	       	SortedSet<User> users = new TreeSet(c);
+ 	       	users.add(user);
+ 			try {
+ 				users = bs.getProfileModule().getUsersFromPrincipals(ids);
+ 			} catch(Exception e) {}
  			model.put(WebKeys.USERS, users);
  			String strUsers = bs.getProfileModule().getUserIds(users, LongIdUtil.DEFAULT_SEPARATOR);
  			//if we list groups, then we have issues when a user appears in multiple groups??
