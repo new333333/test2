@@ -3768,7 +3768,7 @@ _35f=this.object[this.methodname].apply(this.object,args);
 }
 catch(e){
 if(!this.squelch){
-dojo.raise(e);
+dojo.debug(e);
 }
 }
 if((this["after"])&&(this.after.length>0)){
