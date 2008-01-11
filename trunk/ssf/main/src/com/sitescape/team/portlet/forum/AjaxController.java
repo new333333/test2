@@ -1014,7 +1014,11 @@ public class AjaxController  extends SAbstractControllerRetry {
 			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
 			Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_FOLDER_ID, -1);
 			if (folderId != -1) {
-				createdEntryIds = getIcalModule().parseToEntries(folderId, file.getInputStream());
+				try {
+					createdEntryIds = getIcalModule().parseToEntries(folderId, file.getInputStream());
+				} catch (net.fortuna.ical4j.data.ParserException e) {
+					response.setRenderParameter("ssICalendarParseException", Boolean.TRUE.toString());
+				}
 			}
 			WebHelper.releaseFileHandle(fileHandle);
 		}
@@ -1033,9 +1037,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxUploadICalendarFileStatus(RenderRequest request, RenderResponse response) {
 		int entriesAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryIdsSize", 0);
 		long[] entryIds = PortletRequestUtils.getLongParameters(request, "ssICalendarEntryIds");
+		boolean parseException = PortletRequestUtils.getBooleanParameter(request, "ssICalendarParseException", false);
+		
+		
 		Map model = new HashMap();
 		model.put("entriesAmount", entriesAmount);
 		model.put("entryIds", entryIds);
+		model.put("parseException", parseException);
 		
 		return new ModelAndView("forum/json/icalendar_upload", model);
 	}

@@ -2371,6 +2371,8 @@ if (!window.ss_calendar_import) {
 				load: function(type, data, evt) {
 					if (data && data.notLoggedIn) {
 						alert(ss_not_logged_in);
+					} else if (data && data.parseExceptionMsg) {
+						alert(data.parseExceptionMsg);						
 					} else if (data && data.entriesAmountMsg && data.entryIds) {
 						if (window["ss_calendar_" + prefix]) {
 							for (var i = 0; i < data.entryIds.length; i++) {

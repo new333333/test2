@@ -39,6 +39,9 @@
 		<c:when test="${ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 			notLoggedIn : ${ss_ajaxStatus.ss_ajaxNotLoggedIn} 
 		</c:when>
+		<c:when test="${parseException}">
+			parseExceptionMsg : "<ssf:nlt tag="calendar.import.status.parseException" />"
+		</c:when>
 		<c:otherwise>
 			entriesAmountMsg: "<c:choose><c:when test="${entriesAmount == 1}"><ssf:nlt tag="calendar.import.status.message.single" /></c:when><c:otherwise><ssf:nlt tag="calendar.import.status.message.plural">
 								<ssf:param name="value" value="${entriesAmount}"/>
