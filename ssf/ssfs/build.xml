@@ -49,7 +49,7 @@
 				<include name="com/sitescape/team/ssfs/ZoneMismatchException.class"/>
 	        	<include name="com/sitescape/team/web/util/AttributesAndParamsOnlyServletRequest.class"/>
 	        	<include name="com/sitescape/team/web/util/NullServletResponse.class"/>
-	        	<include name="com/sitescape/team/web/util/Log4jConfigListener.class"/>
+	        	<include name="com/sitescape/team/spring/web/util/Log4jConfigListener.class"/>
 			</fileset>
 		</jar>
 		<jar 
