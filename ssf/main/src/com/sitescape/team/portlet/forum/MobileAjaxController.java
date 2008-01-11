@@ -303,6 +303,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Workspace binder;
+		List wsList = new ArrayList();
 		List workspaces = new ArrayList();
 		List folders = new ArrayList();
 		try {
@@ -323,19 +324,33 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 			SortedSet wsUsers2 = getProfileModule().getUsers(wsUsers);
 			model.put(WebKeys.WORKSPACE_CREATOR, wsUsers2.first());
 		}
-        Comparator c = new BinderComparator(user.getLocale(),BinderComparator.SortByField.searchTitle);
-		TreeSet ws = new TreeSet(c);
-		ws.addAll(binder.getWorkspaces());
-      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
-     		Workspace w = (Workspace)iter.next();
-      		if (!w.isDeleted()) workspaces.add(w);
+		Map options = new HashMap();
+		Map binderMap = getBinderModule().getBinders(binder, options);
+		List binderMapList = (List)binderMap.get(ObjectKeys.SEARCH_ENTRIES); 
+		List binderIdList = new ArrayList();
+
+      	for (Iterator iter=binderMapList.iterator(); iter.hasNext();) {
+      		Map entryMap = (Map) iter.next();
+      		binderIdList.add(new Long((String)entryMap.get("_docId")));
+      	}
+      	SortedSet binderList = getBinderModule().getBinders(binderIdList);
+        for (Iterator iter=binderList.iterator(); iter.hasNext();) {
+     		Binder b = (Binder)iter.next();
+      		if (b.isDeleted()) continue;
+      		if (b.getEntityType().equals(EntityIdentifier.EntityType.workspace) || 
+      				b.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
+      			workspaces.add(b);
+      		} else if (b.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
+      			folders.add(b);
+      		}
 		}
+
       	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
       	if (pageNumber == null) pageNumber = 0;
       	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
       	int pageStart = pageNumber.intValue() * pageSize;
       	int pageEnd = pageStart + pageSize;
-      	List wsList;
+      	
       	String nextPage = "";
       	String prevPage = "";
       	if (workspaces.size() < pageStart) {
@@ -353,12 +368,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.PAGE_NUMBER, pageNumber.toString());
 		model.put(WebKeys.NEXT_PAGE, nextPage);
 		model.put(WebKeys.PREV_PAGE, prevPage);
-		ws.clear();
-		ws.addAll(binder.getFolders());
-      	for (Iterator iter=ws.iterator(); iter.hasNext();) {
-     		Binder f = (Binder)iter.next();
-      		if (!f.isDeleted()) folders.add(f);
-		}
 		model.put(WebKeys.FOLDERS, folders);
 		return new ModelAndView("mobile/show_workspace", model);
 	}
