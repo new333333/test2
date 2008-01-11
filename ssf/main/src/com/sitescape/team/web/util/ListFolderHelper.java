@@ -1639,7 +1639,9 @@ public class ListFolderHelper {
 		//Folder action menu
 		if (!userDisplayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
 				(viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
-						viewType.equals(Definition.VIEW_STYLE_TASK))) {
+						viewType.equals(Definition.VIEW_STYLE_TASK)) &&
+				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
+			
 			
 			qualifiers = new HashMap();
 			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
