@@ -54,6 +54,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.ssfs.util.SsfsUtil;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
 
@@ -480,5 +481,66 @@ public class DefinitionHelper {
     		result.add(node.getStringValue());
     	}
     	return result;
+	}
+	
+	public static String getCaptionsFromValues(Definition def, String eleName, String values) {
+		Document defDoc = def.getDefinition();
+		Element rootEle = defDoc.getRootElement();
+		String retVal = "";
+		Element itemEle = (Element) rootEle.selectSingleNode("//item[@type='form']//item/properties/property[@name='name' and @value='"+eleName+"']");
+		if (itemEle == null) return values;
+		itemEle = itemEle.getParent().getParent();
+		String itemType = itemEle.attributeValue("name");
+		if (itemType != null && itemType.equals("selectbox")) {
+			String[] valueList = values.split(",");
+			for (int i = 0; i < valueList.length; i++) {
+				String value = valueList[i].trim();
+				if (value.equals("")) continue;
+				//We have a value, now find the selectboxSelection item that corresponds to this value
+				Element selectboxSelectionEle = (Element) itemEle.selectSingleNode("./item[@name='selectboxSelection']/properties/property[@name='name' and @value='"+value+"']");
+				if (selectboxSelectionEle != null) {
+					selectboxSelectionEle = selectboxSelectionEle.getParent().getParent();
+					Element selectboxSelectionCaptionEle = (Element) selectboxSelectionEle.selectSingleNode("./properties/property[@name='caption']");
+					if (selectboxSelectionCaptionEle != null) {
+						value = selectboxSelectionCaptionEle.attributeValue("value", value);
+						if (!retVal.equals("")) retVal += ", ";
+						retVal += NLT.getDef(value);						
+					} else {
+						if (!retVal.equals("")) retVal += ", ";
+						retVal += value;
+					}
+				} else {
+					if (!retVal.equals("")) retVal += ", ";
+					retVal += value;
+				}
+			}
+				
+		} else if (itemType != null && itemType.equals("radio")) {
+			String value = values.trim();
+			if (value.equals("")) return values;
+			//We have a value, now find the radioSelection item that corresponds to this value
+			Element radioSelectionEle = (Element) itemEle.selectSingleNode("./item[@name='radioSelection']/properties/property[@name='name' and @value='"+value+"']");
+			if (radioSelectionEle != null) {
+				radioSelectionEle = radioSelectionEle.getParent().getParent();
+				Element radioSelectionCaptionEle = (Element) radioSelectionEle.selectSingleNode("./properties/property[@name='caption']");
+				if (radioSelectionCaptionEle != null) {
+					value = radioSelectionCaptionEle.attributeValue("value", value);
+					value = NLT.getDef(value);
+				}
+			}
+			retVal = value;
+			
+		} else if (itemType != null && itemType.equals("checkbox")) {
+			String value = values.trim();
+			if (value.equals("true")) {
+				retVal = NLT.get("button.Yes");
+			} else {
+				retVal = NLT.get("button.No");
+			}
+			
+		} else {
+			return values;
+		}
+		return retVal;
 	}
 }

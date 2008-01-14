@@ -553,16 +553,23 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
 	}
 	if (defId2 != null && !defId2.equals("")) {
 %>
+	  <c:set var="defId2" value="<%= defId2 %>"/>
 	  <c:set var="eleType2" value="<%= eleType2 %>"/>
 	  <c:set var="eleName2" value="<%= eleName2 %>"/>
 	  <c:set var="eleCaption2" value="<%= eleCaption2 %>"/>
+	  <c:set var="entryDef" value="${ssEntryDefinitionMap[defId2]}"/>
+	  <c:if test="${!empty entryDef}">
+	  <jsp:useBean id="entryDef" type="com.sitescape.team.domain.Definition"/>
 	  <ssf:slidingTableColumn>
          <span <%= seenStyle %>>
          <c:if test="${!empty eleName2 && !empty entry1[eleName2]}">
 	       <c:if test="${eleType2 == 'selectbox' || 
 	                     eleType2 == 'radio' || 
 	                     eleType2 == 'checkbox'}">
-	       	 <c:out value="${entry1[eleName2]}"/>
+	         <%
+	         	String eleValues = com.sitescape.team.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
+	         %>
+	         <%= eleValues %>
 	       </c:if>
 	       <c:if test="${eleType2 == 'date'}">
 	       	 <c:if test="${!empty entry1[eleName2]}">
@@ -599,6 +606,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
          </c:if>
          </span>
 	   </ssf:slidingTableColumn>
+	   </c:if>
 <%
 	}
 %>
