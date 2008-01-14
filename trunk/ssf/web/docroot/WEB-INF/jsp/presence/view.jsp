@@ -31,22 +31,24 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <div class="ss_portlet_style ss_portlet">
-<c:if test="${ss_windowState == 'maximized'}">
-<% // Navigation bar %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-</c:if>
 <div class="ss_style" style="padding:4px;">
 <ssHelpSpot helpId="portlets/buddy_list_portlet" offsetX="0" offsetY="-10" 
 			    title="<ssf:nlt tag="helpSpot.buddyListPortlet"/>"></ssHelpSpot>
-<table class="ss_style" width="100%"><tr><td>
+<table class="ss_style">
+<tr>
+<td>
 <div>
   <div>
     <div class="ss_content_window">
-<%@ include file="/WEB-INF/jsp/dashboard/buddy_list_view_init.jsp" %>
-<%@ include file="/WEB-INF/jsp/dashboard/buddy_list_view.jsp" %>
-
-</div></div></div>
-</td></tr></table>
+      <%@ include file="/WEB-INF/jsp/dashboard/buddy_list_view_init.jsp" %>
+      <%@ include file="/WEB-INF/jsp/dashboard/buddy_list_view.jsp" %>
+	</div>
+  </div>
+</div>
+</td>
+</tr>
+<tr>
+<td algin="right">
 <div align="right">
   <a class="ss_linkButton" href="<portlet:renderURL 
       portletMode="edit" 
@@ -54,6 +56,9 @@
     <span><ssf:nlt tag="presence.addBuddy"/></span>
   </a>
 </div>
+</td>
+</tr>
+</table>
 
 </div>
 </div>

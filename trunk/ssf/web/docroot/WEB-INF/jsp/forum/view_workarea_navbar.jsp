@@ -75,6 +75,18 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 </c:if>
 
 <!-- Start of global toolbar - MAXIMIZED PORTAL WINDOW MODE -->
+<script type="text/javascript">
+function ss_workarea_showId(id, action) {
+	//Build a url to go to
+	var url = "<portlet:renderURL><portlet:param 
+			name="action" value="ssActionPlaceHolder"/><portlet:param 
+			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+	self.location.href = url;
+	return false;
+}
+</script>
 <table class="ss_global_toolbar_maximized" width="100%" cellspacing="0" cellpadding="0" border="0">
 <tbody>
 <tr>

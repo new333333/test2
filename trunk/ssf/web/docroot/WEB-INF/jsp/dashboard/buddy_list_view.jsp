@@ -32,5 +32,4 @@
 
 <div id="${ss_divId}">
 <%@ include file="/WEB-INF/jsp/dashboard/buddy_list_view2.jsp" %>
-
 </div>

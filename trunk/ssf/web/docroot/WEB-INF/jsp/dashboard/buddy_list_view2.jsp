@@ -35,14 +35,14 @@
   </c:if>
 <c:if test="${!empty ssUsers || ss_windowState == 'maximized'}">
   <div class="ss_portlet_style ss_portlet">
-  <table cellpadding="3" style="width:100%;">
+  <table cellpadding="4">
   <tr>
   <td style="padding-bottom:10px;">
   <a class="ss_linkButton ss_bold ss_smallprint" href=""
     onClick="if (${ss_namespace}_${componentId}_presence) {${ss_namespace}_${componentId}_presence.getPresence()};return false;"
   ><ssf:nlt tag="general.Refresh"/></a>
   </td>
-  <td align="right">
+  <td align="right" style="padding-left:20px;">
   <span class="ss_smallprint ss_light"><ssf:nlt 
   tag="presence.last.refresh"/> <fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="<%= new java.util.Date() %>" 
   type="time" /></span>
@@ -51,7 +51,7 @@
   </table>
 
 
-  <table border="0" cellpadding="4" cellspacing="0" width="100%">
+  <table border="0" cellpadding="4" cellspacing="0">
   <tr>
 	<td>
 		<table border="0" cellpadding="0" cellspacing="0">
@@ -74,7 +74,9 @@
 					    binderId="${u1.parentBinder.id}"
 					    entryId="${u1.id}">
 					    <ssf:param name="entityType" value="workspace" />
-						</ssf:url>"><c:out value="${u1.title}"/></a>
+						</ssf:url>"
+					  	onClick="ss_openUrlInWorkarea(this.href, '${u1.workspaceId}', 'view_ws_listing');return false;"
+					  ><c:out value="${u1.title}"/></a>
 					  </ssf:ifadapter>
 					  <ssf:ifnotadapter>
 
@@ -84,8 +86,9 @@
 				<c:if test="${ssConfigJspStyle != 'template'}">
 					  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
 					  	name="action" value="view_ws_listing"/><portlet:param 
-					  	name="binderId" value="${u1.parentBinder.id}"/><portlet:param 
-					  	name="entryId" value="${u1.id}"/></portlet:renderURL>"><c:out value="${u1.title}"/></a>
+					  	name="binderId" value="${u1.workspaceId}"/></portlet:renderURL>"
+					  	onClick="ss_openUrlInWorkarea(this.href, '${u1.workspaceId}', 'view_ws_listing');return false;"
+					  ><c:out value="${u1.title}"/></a>
 				</c:if>
 					  </ssf:ifnotadapter>
 					  </td>							
