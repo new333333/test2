@@ -40,16 +40,6 @@ String wsTreeName = renderResponse.getNamespace() + "_wsTree";
 </ssf:ifadapter>
 
 <script type="text/javascript">
-function ss_workarea_showId(id, action) {
-	//Build a url to go to
-	var url = "<portlet:renderURL><portlet:param 
-			name="action" value="ssActionPlaceHolder"/><portlet:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
-	return false;
-}
 function <%= wsTreeName %>_showId(id, obj, action) {
 	if (typeof ss_workarea_showId !== "undefined") {
 		return ss_workarea_showId(id, action);

@@ -299,6 +299,15 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, u
 	return false;
 }
 
+//Routine to open a url in the workarea portlet if it exists
+function ss_openUrlInWorkarea(url, id, action) {
+	if (typeof ss_workarea_showId != "undefined") {
+		ss_workarea_showId(id, action);
+	} else {
+		self.location.href = url;
+	}
+}
+
 //Routine to navigate to a point on the navigation list
 function ss_navigation_goto(url) {
 	if (self.window != self.top) {
