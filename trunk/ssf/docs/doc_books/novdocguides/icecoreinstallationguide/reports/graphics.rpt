@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `11/1/2007 2:35:35 PM'>
+   <String `1/14/2008 6:56:09 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2440,7 +2440,7 @@
   <ParaLine 
    <String `xml_luceneserver_a.png'>
    <Char Tab> 
-   <String `2'>
+   <String `1'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3778,7 +3778,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 76%, Indent: Left Edge'>
+   <String `Width: 100%, Indent: Left Edge'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4391,39 +4391,6 @@
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `xml_luceneserver_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1158704'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `xml_luceneserver_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 01_installingicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 65%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Lucene section in installer.xml file\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
