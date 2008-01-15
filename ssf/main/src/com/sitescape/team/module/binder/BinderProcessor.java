@@ -59,7 +59,8 @@ public interface BinderProcessor {
 	public void indexBinder(Binder binder, boolean includeEntries);	
     public Collection indexTree(Binder binder, Collection exclusions);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket);
-   
+    public Collection indexTree(Binder top, Binder binder, Collection exclusions, StatusTicket statusTicket);
+      
  	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
 		throws AccessControlException, WriteFilesException;
     public void moveBinder(Binder source, Binder destination);

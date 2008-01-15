@@ -86,6 +86,9 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
 		return new ArrayList();
 	}
+	public Collection indexTree(Binder top, Binder binder, Collection exclusions, StatusTicket statusTicket) {
+		return new ArrayList();
+	}
 	//nothing to log
 	public ChangeLog processChangeLog(Binder binder, String operation) { 
 		return null;

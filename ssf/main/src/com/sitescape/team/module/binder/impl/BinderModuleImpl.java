@@ -242,6 +242,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     }
     //optimization so we can manage the deletion to the searchEngine
     public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket) {
+    	getCoreDao().flush(); //just incase
     	try {
     		//make list of binders we have access to first
 	    	boolean clearAll = false;

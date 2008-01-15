@@ -1043,7 +1043,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
 		//delete actual binder
 		IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
-    	indexTree(binder, null);
+    	indexTree(null, binder, null, StatusTicket.NULL_TICKET);
     }
     //somewhere up the parent chain we have a new parent
     //don't have to do all the work immediate parent had to do
@@ -1298,10 +1298,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //It is assumed that the index has been deleted for each binder to be index
     public Collection indexTree(Binder binder, Collection exclusions) {
-    	return indexTree(binder, exclusions, StatusTicket.NULL_TICKET);
+    	return indexTree(binder, binder, exclusions, StatusTicket.NULL_TICKET);
     }
-    public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
-       	TreeSet indexedIds = new TreeSet();
+   	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
+   		return indexTree(binder, binder, exclusions, statusTicket);
+   	}
+   	//if top is null, don't evict any binders
+   	public Collection indexTree(Binder top, Binder binder, Collection exclusions, StatusTicket statusTicket) {
+    	TreeSet indexedIds = new TreeSet();
        	if (exclusions == null) exclusions = new TreeSet();
    		String oldStatus = statusTicket.getStatus();
    		if(oldStatus != null) {
@@ -1320,8 +1324,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    	    	if (b.isDeleted()) continue;
    	    	//index children
    	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-   	    	indexedIds.addAll(processor.indexTree(b, exclusions, statusTicket));
+   	    	indexedIds.addAll(processor.indexTree(top, b, exclusions, statusTicket));
    	   	 }
+   		//evict the children, unless this index is being done by another module.
+   		//In other words, assume it is safe to evict if called from controller.
+   		if (top != null && !binder.equals(top)) {
+   			getCoreDao().evict(binders);
+   		}
    		//apply after we have gathered a few
    		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshhold", 100));
    		statusTicket.setStatus(oldStatus);
