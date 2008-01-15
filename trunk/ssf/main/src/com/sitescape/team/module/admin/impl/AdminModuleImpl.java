@@ -116,6 +116,7 @@ import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
@@ -928,7 +929,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, top.getId().toString()));
 		//delete actual binder
 		IndexSynchronizationManager.deleteDocument(top.getIndexDocumentUid());
-	 	loadBinderProcessor(top).indexTree(top, null);
+	 	loadBinderProcessor(top).indexTree(null, top, null, StatusTicket.NULL_TICKET);
 	 	//flush changes so we can use them to fix up dashboards
 		IndexSynchronizationManager.applyChanges();
 	 	//after children are added, resolve relative selections

@@ -512,7 +512,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		addMembership(top, adminRole, top, members);
     		//use module instead of processor directly so index synchronziation works correctly
     		//index flushes entries from session - don't make changes without reload
-    		getBinderModule().indexTree(top.getId());
+       		getBinderModule().indexTree(top.getId());
     		//this will force the Ids to be cached 
     		getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, top.getId());
     		getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, top.getId());
