@@ -93,7 +93,7 @@ import com.sitescape.team.util.SPropsUtil;
  *
  */
 public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
-	protected int inClauseLimit=2000;
+	protected int inClauseLimit=1000;
 	protected Log logger = LogFactory.getLog(getClass());
 	private CoreDao coreDao;
 	Map reservedIds = new HashMap();
@@ -621,6 +621,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
        return new SFQuery(query);
     }    
  	public void bulkLoadCollections(final Collection<Principal> entries) {
+ 		if (entries.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
   	    getHibernateTemplate().execute(
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
