@@ -520,6 +520,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		user = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
     		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
 
+    		ScheduleInfo info = getBinderModule().getNotificationConfig(top.getId());
+   			info.getSchedule().setDaily(true);
+   			info.getSchedule().setHours("0");
+   			info.getSchedule().setMinutes("15");
+   			info.setEnabled(true);
+   			getBinderModule().setNotificationConfig(top.getId(), info);
+ 
     		return top;
  	}
  	
