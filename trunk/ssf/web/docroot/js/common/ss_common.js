@@ -1586,20 +1586,45 @@ function ss_ShowHideDivXY(divName, x, y) {
     }
 }
 
+function ss_showBackgroundIFrame(divid, frmId) {
+	var div = document.getElementById(divid);
+	div.style.zIndex = 999;
+	var frm = document.createElement("iframe");
+	frm.frameBorder = 0;
+	frm.scrolling = "no";
+	document.body.appendChild(frm);
+	frm.id = frmId;
+	frm.className = "ss_background_iframe";
+
+    ss_setObjectTop(frm, dojo.html.getAbsolutePosition(div, true).y);
+    ss_setObjectLeft(frm, dojo.html.getAbsolutePosition(div, true).x);
+
+	frm.style.height = ss_getObjectHeight(div) + "px";
+	frm.style.width = ss_getObjectWidth(div) + "px";
+	frm.style.display = "block";
+}
+
+function ss_hideBackgroundIFrame(frmId) {
+	var frm = document.getElementById(frmId);
+	try {
+		frm.parentNode.removeChild(frm);
+	} catch (e) {}
+}
+
 function ss_showDivActivate(divName) {
     if (ss_divBeingShown != null) {
-        ss_hideDiv(ss_divBeingShown)
+        ss_hideDiv(ss_divBeingShown);
     }
     ss_divBeingShown = divName;
     ss_lastDivBeingShown = divName;
-    ss_showDiv(divName)
-	ss_HideDivOnSecondClick(divName)
+    ss_showDiv(divName);
+	ss_HideDivOnSecondClick(divName);
 }
 
 //General routine to show a div given its name
 function ss_HideDivIfActivated(divName) {
     if (ss_divBeingShown == divName) {
-        ss_hideDiv(ss_divBeingShown)
+        ss_hideDiv(ss_divBeingShown);
         ss_divBeingShown = null;
         ss_lastDivBeingShown = null;
     }
@@ -1631,7 +1656,7 @@ function ss_showDiv(divName) {
     if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
     	document.getElementById(divName).style.display = "block";
     }
-
+	ss_showBackgroundIFrame(divName, "ss_background_iframe");
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
 	    	document.getElementById(divName).style.position != "absolute") {
@@ -1645,7 +1670,7 @@ function ss_hideDiv(divName) {
 			document.getElementById(divName).style.visibility = "hidden";
     ss_divToBeDelayHidden[divName] = null
     ss_divBeingShown = null;
-    
+    ss_hideBackgroundIFrame("ss_background_iframe");
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
 	    	document.getElementById(divName).style.position != "absolute") {
@@ -1753,6 +1778,7 @@ function captureXY(e) {
 	        }
 	    }
 	    ss_divToBeHidden = new Array();
+		ss_hideBackgroundIFrame("ss_background_iframe");
     }
     if (ss_isNSN6 || ss_isMoz5) {
         ss_mousePosX = e.pageX
