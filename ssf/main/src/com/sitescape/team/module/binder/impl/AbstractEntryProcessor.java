@@ -930,8 +930,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	
         } finally {
         	//clear out anything remaining
-   	   		IndexSynchronizationManager.applyChanges();
-        	query.close();
         }
  
     }
