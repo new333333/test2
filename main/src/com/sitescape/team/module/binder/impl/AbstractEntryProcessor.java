@@ -854,8 +854,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void indexEntries(Binder binder, boolean deleteIndex) {
     	//may already have been handled with an optimized query
     	if (deleteIndex) indexEntries_preIndex(binder);
-  		//flush any changes so any exiting changes don't get lost on the evict
-    	getCoreDao().flush();
   		SFQuery query = indexEntries_getQuery(binder);
   		int threshhold = SPropsUtil.getInt("lucene.flush.threshhold", 100);
        	try {       
@@ -901,7 +899,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	
         } finally {
         	//clear out anything remaining
-   	   		IndexSynchronizationManager.applyChanges();
         	query.close();
         }
  
