@@ -94,7 +94,9 @@
 				    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
 				    </c:otherwise>
 				</c:choose>
-				value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
+				<c:if test="${!empty startDate}">
+					value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
+				</c:if>
 				startDateWidgetId="event_start_${prefix}"
 				startTimeWidgetId="event_start_time_${prefix}"
 				endDateWidgetId="event_end_${prefix}"
@@ -116,7 +118,9 @@
 							value="08:00:00"
 						</c:when>
 						<c:otherwise>
-							value="<fmt:formatDate value="${startDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+							<c:if test="${!empty startDate}">
+								value="<fmt:formatDate value="${startDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+							</c:if>
 						</c:otherwise>
 					</c:choose>
 					startDateWidgetId="event_start_${prefix}"
@@ -164,8 +168,10 @@
 					    <c:otherwise>
 					    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
 					    </c:otherwise>
-					</c:choose>					
-					value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
+					</c:choose>
+					<c:if test="${!empty endDate}">			
+						value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
+					</c:if>
 					startDateWidgetId="event_start_${prefix}"
 					startTimeWidgetId="event_start_time_${prefix}"
 					endDateWidgetId="event_end_${prefix}"
@@ -187,7 +193,9 @@
 								value="08:30:00"
 							</c:when>
 							<c:otherwise>
-								value="<fmt:formatDate value="${endDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+								<c:if test="${!empty endDate}">	
+									value="<fmt:formatDate value="${endDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+								</c:if>
 							</c:otherwise>
 						</c:choose>						
 						startDateWidgetId="event_start_${prefix}"
