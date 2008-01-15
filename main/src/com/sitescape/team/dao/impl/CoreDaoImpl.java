@@ -99,12 +99,22 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
 import com.sitescape.util.Validator;
+import com.sitescape.team.util.SPropsUtil;
 /**
  * @author Jong Kim
  *
  */
 public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
+	protected int inClauseLimit=1000;
 	protected Log logger = LogFactory.getLog(getClass());
+
+	  /**
+     * Called after bean is initialized.  
+     */
+	protected void initDao() throws Exception {
+		//some database limit the number of terms 
+		inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
+	}
 
 	public boolean isDirty() {
 		return getSession().isDirty();
@@ -375,8 +385,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                  			Map.Entry me = (Map.Entry)iter.next();
 	                  			Object val = me.getValue();
 	                  			if (val instanceof Collection) {
+	                  				if (((Collection)val).size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
 	                  				q.setParameterList((String)me.getKey(), (Collection)val);
 	                  			} else if (val instanceof Object[]) {
+	                  				if (((Object[])val).length > inClauseLimit) throw new IllegalArgumentException("Collection to large");
 	                  				q.setParameterList((String)me.getKey(), (Object[])val);
 	                  			} else {
 	                  				q.setParameter((String)me.getKey(), val);
@@ -407,15 +419,31 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
         if ((ids == null) || ids.isEmpty()) return new ArrayList();
         List result = (List)getHibernateTemplate().execute(
             new HibernateCallback() {
-                    public Object doInHibernate(Session session) throws HibernateException {
-                         Criteria crit = session.createCriteria(className)
+                public Object doInHibernate(Session session) throws HibernateException {
+                	if (ids.size() <= inClauseLimit) {
+                        Criteria crit = session.createCriteria(className)
                         	.add(Expression.in(Constants.ID, ids));
- 
+
                         if (zoneId != null)
-                        	crit.add(Expression.eq("zoneId", zoneId));
+                        	crit.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId));
                         return crit.list();
-                        
-                    }
+ 
+                	} 
+                	//break list into chunks
+                	List idList = new ArrayList(ids); // need list for sublist method
+                	List results = new ArrayList(); 
+    				for (int i=0; i<idList.size(); i+=inClauseLimit) {
+    					List subList = idList.subList(i, Math.min(idList.size(), i+inClauseLimit));
+    					Criteria crit = session.createCriteria(className)
+                    		.add(Expression.in(Constants.ID, subList));
+
+    					if (zoneId != null)
+    						crit.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId));
+    					results.addAll(crit.list());
+    				}
+    				return results;
+                    
+                }
             }
         );
         return result;
@@ -425,23 +453,28 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        if ((ids == null) || ids.isEmpty()) return new ArrayList();
        List result = (List)getHibernateTemplate().execute(
            new HibernateCallback() {
-                   public Object doInHibernate(Session session) throws HibernateException {
-                        Criteria crit = session.createCriteria(className)
-                       	.add(Expression.in(Constants.ID, ids));
+               public Object doInHibernate(Session session) throws HibernateException {
+                  	//break list into chunks
+                  	List idList = new ArrayList(ids); // need list for sublist method
+                  	Set results = new HashSet(); //fetch returns duplicates, so weed them out using a set
+      				for (int i=0; i<idList.size(); i+=inClauseLimit) {
+      					List subList = idList.subList(i, Math.min(idList.size(), i+inClauseLimit));
+      					Criteria crit = session.createCriteria(className)
+                      		.add(Expression.in(Constants.ID, subList));
 
-                        if (zoneId != null)
-                        	crit.add(Expression.eq("zoneId", zoneId));
-                       for (int i=0; i<collections.size(); ++i) {
-                    	   crit.setFetchMode((String)collections.get(i), FetchMode.JOIN);
+                       if (zoneId != null)
+                       	crit.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId));
+                       for (int j=0; j<collections.size(); ++j) {
+                   	   crit.setFetchMode((String)collections.get(j), FetchMode.JOIN);   
                        }
-                       List result = crit.list();
-                       //eagar select results in duplicates
-                       Set res = new HashSet(result);
-                       result.clear();
-                       result.addAll(res);
-                       return result;
                        
-                   }
+                      //eagar select results in duplicates
+                      results.addAll(crit.list());
+      				}
+      				idList.clear();
+      				idList.addAll(results);
+                   return idList;
+                  }
            }
        );
        return result;
@@ -911,6 +944,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	//The entries must be of the same type
 	public void bulkLoadCollections(Collection entries) {
 		if ((entries == null) || entries.isEmpty())  return;
+ 		if (entries.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
        	final TreeSet sorted = new TreeSet(new LongIdComparator());
        	sorted.addAll(entries);
 		getHibernateTemplate().execute(
@@ -1040,7 +1074,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	//Used by indexing bulk load
 	public Map<EntityIdentifier, List<Tag>> loadAllTagsByEntity(final Collection<EntityIdentifier> entityIds) {
 		if (entityIds.isEmpty()) return new HashMap();
-		
+		if (entityIds.size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");		
 		List<Tag> tags = (List)getHibernateTemplate().execute(
 	            new HibernateCallback() {
 	                public Object doInHibernate(Session session) throws HibernateException {
