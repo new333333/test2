@@ -2042,7 +2042,7 @@
    <String `Cross-Reference Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `11/1/2007 2:35:35 PM'>
+   <String `1/14/2008 6:56:09 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2066,7 +2066,7 @@
   <ParaLine 
    <String `XrefInt'>
    <Char Tab> 
-   <String `61'>
+   <String `71'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2076,7 +2076,7 @@
   <ParaLine 
    <String `XrefIntText'>
    <Char Tab> 
-   <String `59'>
+   <String `63'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2106,7 +2106,7 @@
   <ParaLine 
    <String `Ulink'>
    <Char Tab> 
-   <String `12'>
+   <String `9'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2116,7 +2116,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `132'>
+   <String `143'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2124,7 +2124,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `front.fm'>
+   <String `sitescape_preface.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2140,45 +2140,19 @@
  <Para 
   <PgfTag `CenterTab'>
   <ParaLine 
-   <String `Ulink'>
+   <String `XrefInt'>
    <Char Tab> 
-   <String `5'>
-   <Char Tab> 
-   <String `0'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `CenterTabBold'>
-  <ParaLine 
-   <String `Total'>
-   <Char Tab> 
-   <String `5'>
+   <String `10'>
    <Char Tab> 
    <String `0'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `preface.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `CenterTabBold'>
-  <ParaLine 
-   <String `Element'>
-   <Char Tab> 
-   <String `Total'>
-   <Char Tab> 
-   <String `Invalid'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `CenterTab'>
   <ParaLine 
-   <String `Ulink'>
+   <String `XrefIntText'>
    <Char Tab> 
-   <String `1'>
+   <String `4'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2188,7 +2162,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `1'>
+   <String `14'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2234,7 +2208,7 @@
   <ParaLine 
    <String `Ulink'>
    <Char Tab> 
-   <String `4'>
+   <String `7'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2244,7 +2218,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `50'>
+   <String `53'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
