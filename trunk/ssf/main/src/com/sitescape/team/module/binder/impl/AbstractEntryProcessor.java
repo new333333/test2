@@ -880,12 +880,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	if (includeEntries == false) return;
     	indexEntries(binder, deleteIndex);
     }
+    //If called from write transaction, make sure session is flushed cause this bypasses
+    //hibernate loading of collections and goes to database directly.
     protected void indexEntries(Binder binder, boolean deleteIndex) {
     	//may already have been handled with an optimized query
     	if (deleteIndex) indexEntries_preIndex(binder);
-  		//flush any changes so any exiting changes don't get lost on the evict
-    	getCoreDao().flush();
-  		SFQuery query = indexEntries_getQuery(binder);
+    	SFQuery query = indexEntries_getQuery(binder);
   		int threshhold = SPropsUtil.getInt("lucene.flush.threshhold", 100);
        	try {       
   			List batch = new ArrayList();
