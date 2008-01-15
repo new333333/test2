@@ -48,7 +48,7 @@ dojo.widget.defineWidget(
 			this.getWidgets();
 			try {			
 				if (this.startDateWidget && this.endDateWidget && this.startTimeWidget && this.endTimeWidget &&
-					this.endDateWidget.getDate()) {
+					this.endDateWidget.getDate() && this.startDateWidget.getDate()) {
 					var diff = dojo.date.compare(this.startDateWidget.getDate(), this.endDateWidget.getDate(), dojo.date.compareTypes.DATE);
 					if (diff == 0) {
 						var startTime = dojo.widget.TimePicker.util.fromRfcDateTime(this.startTimeWidget.getTime());

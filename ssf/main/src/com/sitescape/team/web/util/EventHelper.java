@@ -89,6 +89,10 @@ public class EventHelper {
         event.setDtStart(startc);
         
         if (end != null) {
+        	if (end.before(start)) {
+        		end = new Date(start.getTime());
+        	}
+        	
         	GregorianCalendar endc = new GregorianCalendar();
         	endc.setTime(end);
         	event.setDtEnd(endc);
