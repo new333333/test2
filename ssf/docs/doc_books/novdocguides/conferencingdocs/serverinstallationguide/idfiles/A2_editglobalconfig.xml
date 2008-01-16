@@ -20,9 +20,9 @@
 
  <target id="b9yfc2b" pid="b9yfbqw" name="Step" level="3" number="2"> <text>Configure XML router services:</text> </target>
 
- <target name="SubSteps" level="4"> <text>Set external_hname to the hostname used by ICEcore Conference clients to connect to XML router services.</text> </target>
+ <target name="SubSteps" level="4"> <text>Set external_hname to the hostname used by Conferencing clients to connect to XML router services.</text> </target>
 
- <target id="b9yffwx" pid="b9yfbqw" name="Step" level="5" number="2a"> <text>Set external_hname to the hostname used by ICEcore Conference clients to connect to XML router services.</text> </target>
+ <target id="b9yffwx" pid="b9yfbqw" name="Step" level="5" number="2a"> <text>Set external_hname to the hostname used by Conferencing clients to connect to XML router services.</text> </target>
 
  <target id="b9yffx4" pid="b9yfbqw" name="Step" level="5" number="2b"> <text>Set the lcl_xmlrouter and lcl_xmlrouter_ip arrays to specify the cluster hosts and IP addresses for the XML router services. More than 2 XML routers are not currently supported.</text> </target>
 

@@ -100,4 +100,10 @@
 
  <target id="b9yf4ch" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICMEETINGID&#62;</text> </target>
 
+ <target id="bdj2669" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICPRODNAME&#62; </text> </target>
+
+ <target id="bdj266a" pid="b9yeh9t" name="row" level="3"> <text>&#60;ZONLANG&#62;</text> </target>
+
+ <target id="bdj266b" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICPORTAL&#62; </text> </target>
+
 </targets>

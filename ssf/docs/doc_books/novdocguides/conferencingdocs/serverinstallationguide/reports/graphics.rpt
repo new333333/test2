@@ -2042,7 +2042,7 @@
    <String `Graphic Report for serverinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `10/31/2007 3:39:55 PM'>
+   <String `1/16/2008 11:37:02 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2184,7 +2184,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_nms_board_install.fm|1035931'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_novell_nms_board_install.fm|1035931'>
     <MCurrPage `1'>
    > # end of Marker
    <String `nms_01_a.png'>
@@ -2192,13 +2192,13 @@
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in A6_nms_board_install.fm'>
+   <String ` in A6_novell_nms_board_install.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
+   <String `Width: 90%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2217,7 +2217,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_nms_board_install.fm|1036148'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_novell_nms_board_install.fm|1036148'>
     <MCurrPage `1'>
    > # end of Marker
    <String `nms_02_a.png'>
@@ -2225,7 +2225,7 @@
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in A6_nms_board_install.fm'>
+   <String ` in A6_novell_nms_board_install.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2250,7 +2250,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_nms_board_install.fm|1036364'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_novell_nms_board_install.fm|1036364'>
     <MCurrPage `1'>
    > # end of Marker
    <String `nms_03_a.png'>
@@ -2258,7 +2258,7 @@
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in A6_nms_board_install.fm'>
+   <String ` in A6_novell_nms_board_install.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2283,7 +2283,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_nms_board_install.fm|1036443'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_novell_nms_board_install.fm|1036443'>
     <MCurrPage `1'>
    > # end of Marker
    <String `nms_04_a.png'>
@@ -2291,7 +2291,7 @@
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in A6_nms_board_install.fm'>
+   <String ` in A6_novell_nms_board_install.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 

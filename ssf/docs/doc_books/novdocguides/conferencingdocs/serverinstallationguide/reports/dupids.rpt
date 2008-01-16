@@ -2042,7 +2042,7 @@
    <String `Dupicate Id Report for serverinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `10/31/2007 3:39:55 PM'>
+   <String `1/16/2008 11:37:02 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2054,13 +2054,13 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `sitescape_front.fm has no duplicate id(s)'>
+   <String `front.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `sitescape_preface.fm has no duplicate id(s)'>
+   <String `preface.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2120,7 +2120,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `A6_nms_board_install.fm has no duplicate id(s)'>
+   <String `A6_novell_nms_board_install.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
 > # end of TextFlow
