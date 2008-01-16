@@ -38,7 +38,7 @@ public class XmlWebApplicationContext extends org.springframework.web.context.su
 				}
 				catch(BeansException e) {
 					if(optional[i])
-						logger.info("Cannot load optional config file " + configLocations[i]);
+						logger.debug("Cannot load optional config file " + configLocations[i]);
 					else
 						throw e;
 				}
