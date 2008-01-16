@@ -1586,28 +1586,50 @@ function ss_ShowHideDivXY(divName, x, y) {
     }
 }
 
+/* IE6 workaround - divs under selectboxes */
 function ss_showBackgroundIFrame(divid, frmId) {
+	if (!ss_isIE) {
+		return;
+	}
 	var div = document.getElementById(divid);
-	div.style.zIndex = 999;
+	if (!div) {
+		return;
+	}
+	if (!div.style.zIndex) {
+		div.style.zIndex = ssLightboxZ - 1;
+	}
 	var frm = document.createElement("iframe");
 	frm.frameBorder = 0;
 	frm.scrolling = "no";
 	document.body.appendChild(frm);
 	frm.id = frmId;
 	frm.className = "ss_background_iframe";
-
-    ss_setObjectTop(frm, dojo.html.getAbsolutePosition(div, true).y);
-    ss_setObjectLeft(frm, dojo.html.getAbsolutePosition(div, true).x);
+	if (div.style.zIndex) {
+		frm.style.zIndex = div.style.zIndex * 1 - 1;
+	} else {
+		frm.style.zIndex = ssLightboxZ - 2;
+	}
+	var top = dojo.html.getAbsolutePosition(div, true).y;
+	var left = dojo.html.getAbsolutePosition(div, true).x;
+    ss_setObjectTop(frm, top);
+    ss_setObjectLeft(frm, left);
 
 	frm.style.height = ss_getObjectHeight(div) + "px";
 	frm.style.width = ss_getObjectWidth(div) + "px";
+	
 	frm.style.display = "block";
 }
 
+/* IE6 workaround - divs under selectboxes */
 function ss_hideBackgroundIFrame(frmId) {
+	if (!ss_isIE) {
+		return;
+	}
 	var frm = document.getElementById(frmId);
 	try {
-		frm.parentNode.removeChild(frm);
+		if (frm) {
+			frm.parentNode.removeChild(frm);
+		}
 	} catch (e) {}
 }
 
