@@ -2,15 +2,15 @@
 
 <targets>
 
- <target id="b9vdb7o" pid="b9vdb7o" name="Chapter" level="0" number="2"> <text>Configuring ICEcore</text> </target>
+ <target id="b9vdb7o" pid="b9vdb7o" name="Chapter" level="0" number="2"> <text>Configuring Novell Teaming</text> </target>
 
  <target id="b9vde7e" pid="b9vde7e" name="Sect1" level="1" number="2.1"> <text>Log in as Liferay Site Manager</text> </target>
 
  <target id="b9vdfym" pid="b9vde7e" name="Sect2" level="2" number="2.1.1"> <text>To Log In Using the Administrator Account:</text> </target>
 
- <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type your company's fully qualified hostname for ICEcore into the browser window and press Enter.</text> </target>
+ <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type your company's fully qualified hostname for Novell Teaming into the browser window and press Enter.</text> </target>
 
- <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type your company's fully qualified hostname for ICEcore into the browser window and press Enter.</text> </target>
+ <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type your company's fully qualified hostname for Novell Teaming into the browser window and press Enter.</text> </target>
 
  <target id="b9vdg74" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the Login field, type:</text> </target>
 
@@ -18,17 +18,17 @@
 
  <target id="b9vdg79" pid="b9vde7e" name="Step" level="4" number="4"> <text>Click Login.</text> </target>
 
- <target id="b9vdjua" pid="b9vde7e" name="Sect2" level="2" number="2.1.2"> <text>Using the ICEcore Administration Portlet </text> </target>
+ <target id="b9vdjua" pid="b9vde7e" name="Sect2" level="2" number="2.1.2"> <text>Using the Teaming Administration Portlet </text> </target>
 
- <target id="banth8n" pid="b9vde7e" name="BridgeHead" level="3"> <text>To Add the ICEcore Administration Portlet to Your Home Page:</text> </target>
+ <target id="banth8n" pid="b9vde7e" name="BridgeHead" level="3"> <text>To Add the Teaming Administration Portlet to Your Home Page:</text> </target>
 
  <target id="bantho8" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Click Add Content in the upper-right corner.</text> </target>
 
  <target id="bantho9" pid="b9vde7e" name="Step" level="4" number="1"> <text>Click Add Content in the upper-right corner.</text> </target>
 
- <target id="bantifv" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the portlet access frame that appears in the upper-left corner, click ICEcore to view the available ICEcore portlets that you can add.</text> </target>
+ <target id="bantifv" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the portlet access frame that appears in the upper-left corner, click Teaming to view the available Teaming portlets that you can add.</text> </target>
 
- <target id="bantjt4" pid="b9vde7e" name="Step" level="4" number="3"> <text>Click the Add button next to ICEcore Administration to add this portlet to your Home Page.</text> </target>
+ <target id="bantjt4" pid="b9vde7e" name="Step" level="4" number="3"> <text>Click the Add button next to Teaming Administration to add this portlet to your Home Page.</text> </target>
 
  <target id="b9vchnc" pid="b9vchnc" name="Sect1" level="1" number="2.2"> <text>Initial Logon</text> </target>
 
@@ -78,11 +78,11 @@
 
  <target id="bbih8ol" pid="b9vchnd" name="Step" level="4" number="5"> <text>Click Save.</text> </target>
 
- <target id="bbihbki" pid="b9vchnd" name="Sect2" level="2" number="2.4.3"> <text>The ICEcore LDAP Configuration Form</text> </target>
+ <target id="bbihbki" pid="b9vchnd" name="Sect2" level="2" number="2.4.3"> <text>The Teaming LDAP Configuration Form</text> </target>
 
- <target id="bbih9rw" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>Using the ICEcore Administration portlet, click on "Configure LDAP."</text> </target>
+ <target id="bbih9rw" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>Using the Teaming Administration portlet, click on "Configure LDAP."</text> </target>
 
- <target id="bbih9rx" pid="b9vchnd" name="Step" level="4" number="1"> <text>Using the ICEcore Administration portlet, click on "Configure LDAP."</text> </target>
+ <target id="bbih9rx" pid="b9vchnd" name="Step" level="4" number="1"> <text>Using the Teaming Administration portlet, click on "Configure LDAP."</text> </target>
 
  <target id="bbiha6m" pid="b9vchnd" name="Step" level="4" number="2"> <text>Fill out the form using the corresponding values that were used to configure Liferay. (See below for details on this form). </text> </target>
 
@@ -122,9 +122,9 @@
 
  <target id="bano0o8" pid="b9vchne" name="BridgeHead" level="2"> <text>Setting up Incoming Mail schedule</text> </target>
 
- <target id="bc0jt3d" pid="b9vchne" name="Procedure" level="2" number="1"> <text>In the ICEcore Administration portlet, click on the Configure site incoming email schedule link.</text> </target>
+ <target id="bc0jt3d" pid="b9vchne" name="Procedure" level="2" number="1"> <text>In the Teaming Administration portlet, click on the Configure site incoming email schedule link.</text> </target>
 
- <target id="bc0jt3e" pid="b9vchne" name="Step" level="3" number="1"> <text>In the ICEcore Administration portlet, click on the Configure site incoming email schedule link.</text> </target>
+ <target id="bc0jt3e" pid="b9vchne" name="Step" level="3" number="1"> <text>In the Teaming Administration portlet, click on the Configure site incoming email schedule link.</text> </target>
 
  <target id="bc0jt4o" pid="b9vchne" name="Step" level="3" number="2"> <text>Select the Enable incoming mail option.</text> </target>
 
@@ -144,9 +144,9 @@
 
  <target id="b9ve155" pid="b9vdczx" name="Sect2" level="2" number="2.6.2"> <text>To Change a Default Role Definition:</text> </target>
 
- <target id="b9ve19v" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the ICEcore Administration portlet, click Configure Role Definitions.</text> </target>
+ <target id="b9ve19v" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the Teaming Administration portlet, click Configure Role Definitions.</text> </target>
 
- <target id="b9ve19w" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the ICEcore Administration portlet, click Configure Role Definitions.</text> </target>
+ <target id="b9ve19w" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the Teaming Administration portlet, click Configure Role Definitions.</text> </target>
 
  <target id="b9ve1f5" pid="b9vdczx" name="Step" level="4" number="2"> <text>Click Visitor.</text> </target>
 
@@ -158,9 +158,9 @@
 
  <target id="baprfmt" pid="b9vdczx" name="BridgeHead" level="3"> <text>Create the Team Creator Group:</text> </target>
 
- <target id="baprgjf" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the ICEcore Administration portlet, click Manage Groups.</text> </target>
+ <target id="baprgjf" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the Teaming Administration portlet, click Manage Groups.</text> </target>
 
- <target id="bapt97t" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the ICEcore Administration portlet, click Manage Groups.</text> </target>
+ <target id="bapt97t" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the Teaming Administration portlet, click Manage Groups.</text> </target>
 
  <target id="baprhy5" pid="b9vdczx" name="Step" level="4" number="2"> <text>In the Manage Groups window, click Add a New Group.</text> </target>
 
@@ -260,13 +260,13 @@
 
  <target id="bbn4oij" pid="bbn4ml9" name="Step" level="3" number="1"> <text>Add a "MirroredFolder" section to the installer.xml file. This creates a Mirrored Folder Resource Driver. (You may want to use one of the disabled samples as a template.)</text> </target>
 
- <target id="bbn50z6" pid="bbn4ml9" name="Step" level="3" number="2"> <text>Log into ICEcore as admin.</text> </target>
+ <target id="bbn50z6" pid="bbn4ml9" name="Step" level="3" number="2"> <text>Log into Novell Teaming as admin.</text> </target>
 
  <target id="bc4kufr" pid="bbn4ml9" name="Step" level="3" number="3"> <text>Create a custom entry type representing mirrored files:</text> </target>
 
- <target name="SubSteps" level="4"> <text>Go to ICEcore Administration portlet &#62; Form and view designers &#62; Entry designer.</text> </target>
+ <target name="SubSteps" level="4"> <text>Go to Teaming Administration portlet &#62; Form and view designers &#62; Entry designer.</text> </target>
 
- <target id="bc4kurs" pid="bbn4ml9" name="Step" level="5" number="3a"> <text>Go to ICEcore Administration portlet &#62; Form and view designers &#62; Entry designer.</text> </target>
+ <target id="bc4kurs" pid="bbn4ml9" name="Step" level="5" number="3a"> <text>Go to Teaming Administration portlet &#62; Form and view designers &#62; Entry designer.</text> </target>
 
  <target id="bc4kvyp" pid="bbn4ml9" name="Step" level="5" number="3b"> <text>Click Entry definitions.</text> </target>
 
@@ -294,9 +294,9 @@
 
  <target id="bdgzeuf" pid="bbn4ml9" name="Step" level="5" number="3n"> <text>Select the "Use file name as entry title" option, and then click OK.</text> </target>
 
- <target id="bc4lbep" pid="bbn4ml9" name="Step" level="5" number="3o"> <text>Exit the ICEcore Administration portlet.</text> </target>
+ <target id="bc4lbep" pid="bbn4ml9" name="Step" level="5" number="3o"> <text>Exit the Teaming Administration portlet.</text> </target>
 
- <target id="bbn548y" pid="bbn4ml9" name="Step" level="3" number="4"> <text>In ICEcore, create a folder of type File folder.</text> </target>
+ <target id="bbn548y" pid="bbn4ml9" name="Step" level="3" number="4"> <text>In Novell Teaming, create a folder of type File folder.</text> </target>
 
  <target id="bbn54nc" pid="bbn4ml9" name="Step" level="3" number="5"> <text>Within the folder, select the Manage &#62; Modify this folder menu item.</text> </target>
 
