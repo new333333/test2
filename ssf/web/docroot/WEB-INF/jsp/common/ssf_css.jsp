@@ -4901,7 +4901,6 @@ table.ssMeetingRecords .ssHeader {
 
 .ss_background_iframe {
 	position: absolute;
-	z-index: 998;
 	display: none;
 	border: none!important;
 	margin: 0;
