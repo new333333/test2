@@ -479,7 +479,8 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		} 
 		else {
 			//com.sitescape.team.domain.Folder topFolder = ((com.sitescape.team.domain.Folder)binder).getTopFolder();
-			tree = getFolderModule().getDomFolderTree(binder.getId(), new WsDomTreeBuilder(binder, false, this, new WebSvcTreeHelper(), page), levels);
+			tree = getBinderModule().getDomBinderTree(binder.getId(), 
+					new WsDomTreeBuilder(binder, false, this, new WebSvcTreeHelper(), page), levels);
 			
 			//if (topFolder == null) topFolder = (com.sitescape.team.domain.Folder)binder;
 			//tree = getFolderModule().getDomFolderTree(topFolder.getId(), new WsDomTreeBuilder(topFolder, false, this, treeKey));
