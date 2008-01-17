@@ -2199,6 +2199,7 @@
 			<option name="transitionOnEntryData" />
 			<option name="transitionOnElapsedTime" />
 			<option name="transitionOnVariable" />
+			<option name="transitionOnCondition" />
 			<option name="waitForParallelThread" />
 		</options>
 	</item>
@@ -2235,6 +2236,12 @@
 		</options>
 	</item>
 	
+	<item name="transitionOnCondition" caption="__transition_on_condition" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
+		<properties>
+			<property name="class" caption="__workflow_condition_class" type="text" />
+			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
+		</properties>
+	</item>
 	<item name="transitionOnReply" caption="__transition_on_reply" type="transition" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
 		<properties>
 			<property name="toState" caption="__toState" type="itemSelect" path="//item[@name='state']" />
