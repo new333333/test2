@@ -44,11 +44,14 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.InternalException;
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
@@ -78,12 +81,14 @@ import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Visits;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -97,12 +102,15 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.SearchUtils;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
@@ -408,46 +416,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
          
     }    
     
-
-    public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper) {
-    	return getDomFolderTree(folderId, domTreeHelper, -1);
-    }
-    public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels) {
-    	//access check in get Folder
-    	Folder top = getFolder(folderId);
-        
-        User user = RequestContextHolder.getRequestContext().getUser();
-    	Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
-    	    	
-    	org.dom4j.Document wsTree = DocumentHelper.createDocument();
-    	Element rootElement = wsTree.addElement(DomTreeBuilder.NODE_ROOT);
-    	      	
-  	    buildFolderDomTree(rootElement, top, c, domTreeHelper, levels);
-  	    return wsTree;
-  	}
-    
-    protected void buildFolderDomTree(Element current, Folder top, Comparator c, DomTreeBuilder domTreeHelper, int levels) {
-       	Element next; 
-       	Folder f;
-    	   	
-       	//callback to setup tree
-    	domTreeHelper.setupDomElement(DomTreeBuilder.TYPE_FOLDER, top, current);
- 		if (levels == 0) return;
-    	--levels;
-    	
-     	TreeSet folders = new TreeSet(c);
-    	folders.addAll(top.getFolders());
-       	for (Iterator iter=folders.iterator(); iter.hasNext();) {
-       		f = (Folder)iter.next();
-    		if (f.isDeleted()) continue;
-      	    // Check if the user has the privilege to view the folder 
-       		if(!getAccessControlManager().testOperation(f, WorkAreaOperation.READ_ENTRIES))
-       			continue;
-       		next = current.addElement(DomTreeBuilder.NODE_CHILD);
-       		buildFolderDomTree(next, f, c, domTreeHelper, levels);
-       	}
-    }
-   
     public Map getEntries(Long folderId) {
         return getEntries(folderId, new HashMap());
     }

@@ -156,7 +156,7 @@ public class ModifyBinderController extends AbstractBinderController {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
 			Workspace ws = getWorkspaceModule().getTopWorkspace();
-			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			Document wsTree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 			Element top = (Element)wsTree.getRootElement();
 			if (top != null) {
 				//cannot move to top

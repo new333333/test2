@@ -346,7 +346,7 @@ public class AddEntryController extends SAbstractController {
 				}
 			
 				Workspace ws = getWorkspaceModule().getWorkspace();
-				model.put(WebKeys.DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+				model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
 			
 				parseInitialCalendarEventData(model, request);
 			} else {

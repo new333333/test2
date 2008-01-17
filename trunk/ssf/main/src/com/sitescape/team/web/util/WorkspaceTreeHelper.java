@@ -264,9 +264,9 @@ public class WorkspaceTreeHelper {
 
 		Long top = PortletRequestUtils.getLongParameter(req, WebKeys.URL_OPERATION2);
 		if ((top != null) && (!ws.isRoot())) {
-			wsTree = bs.getWorkspaceModule().getDomWorkspaceTree(top, ws.getId(), new WsDomTreeBuilder(ws, true, bs));
+			wsTree = bs.getBinderModule().getDomBinderTree(top, ws.getId(), new WsDomTreeBuilder(ws, true, bs));
 		} else {
-			wsTree = bs.getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, bs),1);
+			wsTree = bs.getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, bs),1);
 		}
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 		

@@ -70,18 +70,6 @@ public interface WorkspaceModule {
   	 */
 	public Collection getWorkspaceTree(Long id) throws AccessControlException; 
    	public Set<String> getChildrenTitles(Workspace top);
-  	public Document getDomWorkspaceTree(DomTreeBuilder domTreeHelper) throws AccessControlException;
-    /**
-     * Traverse the workspace tree  returing a DOM structure containing workspaces and
-     * folders
-     * @param id
-     * @param domTreeHelper
-     * @param levels = depth to return.  -1 means all
-     * @return
-     * @throws AccessControlException
-     */
-  	public Document getDomWorkspaceTree(Long id, DomTreeBuilder domTreeHelper, int levels) throws AccessControlException;
- 	public Document getDomWorkspaceTree(Long topId, Long bottonId, DomTreeBuilder domTreeHelper) throws AccessControlException;
 
     public Long addWorkspace(Long folderId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException;

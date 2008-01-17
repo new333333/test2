@@ -205,7 +205,7 @@ public class AdvancedSearchController extends AbstractBinderController {
     	model.put(WebKeys.SHOW_SEARCH_RESULTS, true);
     	
 		Workspace ws = getWorkspaceModule().getWorkspace();
-		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 		model.put(WebKeys.DOM_TREE, tree);
 	}	
 

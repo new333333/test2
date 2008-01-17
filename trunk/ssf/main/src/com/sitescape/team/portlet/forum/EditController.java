@@ -177,7 +177,7 @@ public class EditController extends SAbstractController {
 			displayType = BinderHelper.getDisplayType(request);
 		}
 		if (ViewController.FORUM_PORTLET.equals(displayType)) {	
-	    	Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+	    	Document wsTree = getBinderModule().getDomBinderTree(RequestContextHolder.getRequestContext().getZoneId(), 
 					new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);	
@@ -195,7 +195,7 @@ public class EditController extends SAbstractController {
 			model.put(WebKeys.BINDER_ID_LIST, folderIds);
 			return new ModelAndView(WebKeys.VIEW_FORUM_EDIT, model);
 		} else if (ViewController.MOBILE_PORTLET.equals(displayType)) {	
-	    	Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+	    	Document wsTree = getBinderModule().getDomBinderTree(RequestContextHolder.getRequestContext().getZoneId(), 
 					new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);	
@@ -236,7 +236,7 @@ public class EditController extends SAbstractController {
 			return new ModelAndView(WebKeys.VIEW_PRESENCE_EDIT, model);
 		} else if (ViewController.WORKSPACE_PORTLET.equals(displayType)) {
 				
-			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+			Document wsTree = getBinderModule().getDomBinderTree(RequestContextHolder.getRequestContext().getZoneId(), 
 					new WsDomTreeBuilder(null, true, this, new WorkspaceConfigHelper()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		
