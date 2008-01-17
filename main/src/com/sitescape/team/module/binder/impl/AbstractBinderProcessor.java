@@ -1143,19 +1143,39 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     public void indexFunctionMembership(Binder binder, boolean cascade) {
 		String value = EntityIndexUtils.getFolderAclString(binder);
     	if (cascade) {
-        	List<Binder> notBinders = new ArrayList();
-    		List<Binder>candidates = new ArrayList(binder.getBinders());
-    		while (!candidates.isEmpty()) {
-    			Binder c = candidates.get(0);
-    			candidates.remove(0);
-       			if (c.isFunctionMembershipInherited()) {
-       				//keep looking for exceptions
-    				candidates.addAll(c.getBinders());
-    			} else {
-    				notBinders.add(c);
-    			}
-     		}
-    		doFieldUpdate(binder, notBinders, BasicIndexUtils.FOLDER_ACL_FIELD, value);
+    		Map params = new HashMap();
+    		params.put("functionTest", Boolean.FALSE);
+    		//this will return binders down the tree that may come after others that are not inheritting, 
+    		//but since the upper ancestor is in the tree it won't hurt to have extras in the not phrase
+    		List<Object[]> notBinders = getCoreDao().loadObjects("select x.id,x.binderKey.sortKey from com.sitescape.team.domain.Binder x where x.binderKey.sortKey like '" +
+    				binder.getBinderKey().getSortKey() + "%' and x.functionMembershipInherited=:functionTest order by x.binderKey.sortKey", params);
+       		List<Long>ids = pruneUpdateList(binder, notBinders);
+    		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
+    		if (ids.size() <= limit) {
+    			doFieldUpdate(binder, ids, BasicIndexUtils.FOLDER_ACL_FIELD, value);
+    		} else {
+    			//revert to walking the tree
+    	    	List<Binder> binders = new ArrayList();
+    	    	binders.add(binder);
+    	    	List<Binder>candidates = new ArrayList(binder.getBinders());
+    	    	while (!candidates.isEmpty()) {
+    	    		Binder c = candidates.get(0);
+    	    		candidates.remove(0);
+    	    		if (c.isFunctionMembershipInherited()) {
+    	    			binders.add(c);
+    	    			candidates.addAll(c.getBinders());
+    	    		}
+    	    		if (binders.size() >= limit) {
+    	    			doFieldUpdate(binders, BasicIndexUtils.FOLDER_ACL_FIELD, value);
+    	    			//evict used binders so don't fill session cache, but don't evict starting binder
+    	    			if (binders.get(0).equals(binder)) binders.remove(0);
+    	    			getCoreDao().evict(binders);					
+    	    			binders.clear();
+    	    		}
+    	    	}
+    	       	//finish list
+    			doFieldUpdate(binders, BasicIndexUtils.FOLDER_ACL_FIELD, value);    	    	
+    		}
     	} else {
        		doFieldUpdate(binder, BasicIndexUtils.FOLDER_ACL_FIELD, value);
        	    		
@@ -1165,33 +1185,78 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      public void indexTeamMembership(Binder binder, boolean cascade) {
     	String value = binder.getTeamMemberString();
     	if (cascade) {
-         	List<Binder> notBinders = new ArrayList();
-    		List<Binder>candidates = new ArrayList(binder.getBinders());
-    		while (!candidates.isEmpty()) {
-    			Binder c = candidates.get(0);
-    			candidates.remove(0);
-       			if (c.isTeamMembershipInherited()) {
-    				candidates.addAll(c.getBinders());
-       			} else {
-       				notBinders.add(c);
-       			}
-    		}
-    	   	//finish list
-    		doFieldUpdate(binder, notBinders, BasicIndexUtils.TEAM_ACL_FIELD, value);
+    		Map params = new HashMap();
+    		params.put("functionTest", Boolean.FALSE);
+    		//this will return binders down the tree that may come after others that are not inheritting
+    		//but since the upper ancestor is in the tree it won't hurt to have extras in the not phrase
+    		List<Object[]> notBinders = getCoreDao().loadObjects("select x.id,x.binderKey.sortKey from com.sitescape.team.domain.Binder x where x.binderKey.sortKey like '" +
+    				binder.getBinderKey().getSortKey() + "%' and x.teamMembershipInherited=:functionTest order by x.binderKey.sortKey", params);
+       		List<Long>ids = pruneUpdateList(binder, notBinders);
+       		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
+    		if (ids.size() <= limit) {
+          		doFieldUpdate(binder, ids, BasicIndexUtils.TEAM_ACL_FIELD, value);
+       		} else {
+       			List<Binder> binders = new ArrayList();
+       			binders.add(binder);
+        		List<Binder>candidates = new ArrayList(binder.getBinders());
+        		while (!candidates.isEmpty()) {
+        			Binder c = candidates.get(0);
+        			candidates.remove(0);
+           			if (c.isTeamMembershipInherited()) {
+        				binders.add(c);
+        				candidates.addAll(c.getBinders());
+           			} 
+       	    		if (binders.size() >= limit) {
+       	    			doFieldUpdate(binders, BasicIndexUtils.TEAM_ACL_FIELD, value);
+       	    			//evict used binders so don't fill session cache, but don't evict starting binder
+       	    			if (binders.get(0).equals(binder)) binders.remove(0);
+        				getCoreDao().evict(binders);					
+        				binders.clear();
+        			}
+        		}
+        		//finish list
+        		doFieldUpdate(binders, BasicIndexUtils.TEAM_ACL_FIELD, value);
+       		}
     	} else {
     		doFieldUpdate(binder, BasicIndexUtils.TEAM_ACL_FIELD, value);    		
     	}
     	
    }
-
+    //list must be sorted by sortKey ascending order 
+    private List<Long> pruneUpdateList(Binder binder, List<Object[]>notBinders) {
+    	 List<Long>ids = new ArrayList();
+    	 //if present this binder will be the first
+    	 if (!notBinders.isEmpty() && notBinders.get(0)[0].equals(binder.getId())) notBinders.remove(0);
+    	 String previousKey=null;
+    	 for (int i=0; i<notBinders.size(); ++i) {
+    		 Object[] row = notBinders.get(i);
+    		 if (i == 0) {
+    			 ids.add((Long)row[0]);
+    			 previousKey = (String)row[1];
+    		 } else {
+    			 String key = (String)row[1];
+    			 if (key.startsWith(previousKey)) {
+    				 //descendant that is redundant
+    				 continue;
+    			 } else {
+    				 //new branch
+    				 previousKey = key;
+    				 ids.add((Long)row[0]);   					
+    			 }
+    		 }
+    	 }
+    	 return ids;
+   
+     }
      public void indexOwner(Binder binder) {
   		String value = BasicIndexUtils.EMPTY_ACL_FIELD;
  		Long id = binder.getOwnerId();
  		if (id != null) value = id.toString();
  		doFieldUpdate(binder, BasicIndexUtils.BINDER_OWNER_ACL_FIELD, value);    		
      }
+     
      //this will update the binder, its attachments and entries, and subfolders and entries that inherit
-     private void doFieldUpdate(Binder binder, List<Binder>binders, String field, String value) {
+     private void doFieldUpdate(Binder binder, List<Long>binders, String field, String value) {
  		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index 
 		org.dom4j.Document qTree = buildQueryforUpdate(binder, binders);
@@ -1206,7 +1271,38 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    			luceneSession.close();
     	}    		   	
     }
-     //this will update just the binder, its attachments and entries only
+     //this will update the binder, its attachments and entries, and subfolders and entries that inherit
+     //this code assumes all doc_types have the field being updated
+  	private org.dom4j.Document buildQueryforUpdate(Binder binder, List<Long> notBinders) {
+		org.dom4j.Document qTree = DocumentHelper.createDocument();
+		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
+		//get all the entrys, replies, subBinders and their attachments
+		// __entryAncestry: and not __entryAncestry:{} 
+		Element ancestorElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
+	 
+		Element ancestors = ancestorElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		ancestors.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
+		Element child = ancestors.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		child.setText(binder.getId().toString());
+		if (!notBinders.isEmpty()) {	
+			Element notAncestors = ancestorElement.addElement(QueryBuilder.NOT_ELEMENT);
+			Element idsOrElement = notAncestors.addElement(QueryBuilder.OR_ELEMENT);
+			for (Long id:notBinders) {
+				Element fieldI = idsOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+				fieldI.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_ANCESTRY);
+				Element childI = fieldI.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+				childI.setText(id.toString());
+			}
+		}
+	   	//Get this binder which won't get captured by ancestor search
+	   	// Get the binder and its attachments
+		buildQueryForBinder(qTreeOrElement, binder);
+
+	   	return qTree;
+	}
+
+  	//this will update just the binder, its attachments and entries only
      private void doFieldUpdate(Binder binder, String field, String value) {
   		// Now, create a query which can be used by the index update method to modify all the
  		// entries, replies, attachments, and binders(workspaces) in the index 
@@ -1221,33 +1317,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		} finally {
     			luceneSession.close();
      	}    		   	
-     }
-     private void buildQueryForBinder(Element parent, Binder binder) {
-    	// Get the binder and its attachments
-     	// docId= AND (Doctype=binder OR (DocType=attachment and attType=binder)) 
-     	Element andElement = parent.addElement((QueryBuilder.AND_ELEMENT));
-     	Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
-    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-    	child.setText(binder.getId().toString());
-     	   	 
-     	Element bOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
-     	field = bOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
- 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
- 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
- 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
-
- 		Element aAndElement = bOrElement.addElement(QueryBuilder.AND_ELEMENT);
-     	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
- 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
- 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
- 		child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
- 		
-     	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
- 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
- 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
- 		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
- 		
      }
      //this will update just the binder, its attachments and entries only
      //this code assumes all doc_types have the field being updated
@@ -1267,37 +1336,23 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  
  	   	return qTree;
  	}
- 	     
-    //this will update the binder, its attachments and entries, and subfolders and entries that inherit
-     //this code assumes all doc_types have the field being updated
-  	private org.dom4j.Document buildQueryforUpdate(Binder binder, List<Binder> notBinders) {
-		org.dom4j.Document qTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
-		//get all the entrys, replies, subBinders and their attachments
-		// __entryAncestry: and not __entryAncestry:{} 
-		Element ancestorElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
-	 
-		Element ancestors = ancestorElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		ancestors.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
-		Element child = ancestors.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText(binder.getId().toString());
-		if (!notBinders.isEmpty()) {	
-			Element notAncestors = ancestorElement.addElement(QueryBuilder.NOT_ELEMENT);
-			Element idsOrElement = notAncestors.addElement(QueryBuilder.OR_ELEMENT);
-			for (Binder b:notBinders) {
-				Element fieldI = idsOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-				fieldI.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_ANCESTRY);
-				Element childI = fieldI.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-				childI.setText(b.getId().toString());
-			}
-		}
-	   	//Get this binder which won't get captured by ancestor search
-	   	// Get the binder and its attachments
-		buildQueryForBinder(qTreeOrElement, binder);
-
-	   	return qTree;
-	}
+    private void doFieldUpdate(List<Binder>binders, String field, String value) {
+     	if (binders.isEmpty()) return;
+ 		// Now, create a query which can be used by the index update method to modify all the
+ 		// entries, replies, attachments, and binders(workspaces) in the index 
+ 		org.dom4j.Document qTree = buildQueryforUpdate(binders);
+ 		//don't need to add access check to update of acls
+ 		//access to entries is not required to update the team acl
+ 		QueryBuilder qb = new QueryBuilder(null);
+ 		// add this query and list of ids to the lists we'll pass to updateDocs.
+    		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
+    		try {
+    			luceneSession.updateDocuments(qb.buildQuery(qTree, true).getQuery(), field, value);
+    		} finally {
+    			luceneSession.close();
+     	}    		
+     	
+     }
 	private org.dom4j.Document buildQueryforUpdate(List<Binder> binders) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
@@ -1350,6 +1405,34 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
 	   	return qTree;
 	}
+	
+	private void buildQueryForBinder(Element parent, Binder binder) {
+    	// Get the binder and its attachments
+     	// docId= AND (Doctype=binder OR (DocType=attachment and attType=binder)) 
+     	Element andElement = parent.addElement((QueryBuilder.AND_ELEMENT));
+     	Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
+    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
+    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	child.setText(binder.getId().toString());
+     	   	 
+     	Element bOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+     	field = bOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+ 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+ 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+ 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+
+ 		Element aAndElement = bOrElement.addElement(QueryBuilder.AND_ELEMENT);
+     	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+ 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+ 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+ 		child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+ 		
+     	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+ 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
+ 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+ 		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
+ 		
+     }
 
     //***********************************************************************************************************
     public void indexBinder(Binder binder, boolean includeEntries) {
