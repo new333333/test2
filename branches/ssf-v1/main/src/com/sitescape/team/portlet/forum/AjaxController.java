@@ -1471,8 +1471,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				tree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), 
 							new WsDomTreeBuilder(binder, true, this, treeKey, page),1);
 			} else {
-				tree = getFolderModule().getDomFolderTree(binder.getId(), 
-							new WsDomTreeBuilder(binder, true, this, treeKey), 1);
+				tree = getBinderModule().getDomBinderTree(binder.getId(), 
+						new WsDomTreeBuilder(binder, true, this, treeKey, page),1);
 			}
 			model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
 		}

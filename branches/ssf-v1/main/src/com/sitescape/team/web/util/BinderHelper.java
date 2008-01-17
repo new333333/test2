@@ -439,7 +439,7 @@ public class BinderHelper {
 				tree = bs.getWorkspaceModule().getDomWorkspaceTree(workspaceBinder.getId(), 
 						new WsDomTreeBuilder(null, true, bs, helper), 1);
 			} else if (workspaceBinder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-				tree = bs.getFolderModule().getDomFolderTree(workspaceBinder.getId(), 
+				tree = bs.getBinderModule().getDomBinderTree(workspaceBinder.getId(), 
 						new WsDomTreeBuilder(null, true, bs, helper), 1);
 			} else if (workspaceBinder.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
 				tree = bs.getWorkspaceModule().getDomWorkspaceTree(workspaceBinder.getId(), 
@@ -485,7 +485,8 @@ public class BinderHelper {
 						tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
 								new WsDomTreeBuilder(null, true, bs, helper),0);
 					} else if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-						tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new WsDomTreeBuilder(null, true, bs, helper), 0);
+						tree = bs.getBinderModule().getDomBinderTree(parentBinder.getId(), 
+								new WsDomTreeBuilder(null, true, bs, helper),0);
 					} else if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
 						tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
 								new WsDomTreeBuilder(null, true, bs, helper),0);

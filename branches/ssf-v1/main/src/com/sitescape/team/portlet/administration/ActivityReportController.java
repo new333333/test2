@@ -61,8 +61,8 @@ public class ActivityReportController extends  AbstractReportController {
 		accessControlMap.put("generateReport", getBinderModule().testAccess(binder, BinderOperation.report));
 		Document wsTree = null;
 		if(binder instanceof Folder) {
-			wsTree = getFolderModule().getDomFolderTree(binder.getId(), 
-				new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
+			wsTree = getBinderModule().getDomBinderTree(binder.getId(), 
+					new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
 		} else {
 			wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), 
 				new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
