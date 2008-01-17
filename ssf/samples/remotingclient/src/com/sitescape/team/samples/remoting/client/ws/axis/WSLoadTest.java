@@ -64,40 +64,62 @@ public class WSLoadTest
 		if(args.length < 3 || args.length > 4) {
 			System.err.println("Usage: WSLoadTest <count> <commaSeparatedFolderIdList> <definitionId> [<attachmentFilename>]");
 			System.err.println("           folder id's can be ranges, e.g. 3-15:4 is the same as 3,7,11,15");
+			System.err.println("           or you can specify 'auto:nnn:mmm' (without quotes), where 'nnn' is a folder number");
+			System.err.println("              and 'mmm' is a template id.  In this case, a new folder will be created for each");
+			System.err.println("              entry, with parent folder 'nnn' using template 'mmm'.  Also in this case, the count");
+			System.err.println("              can be of the form N:M, which will make M entries in each of the N folders created.");
 			return;
 		}
-		Integer count = Integer.parseInt(args[0]);
+		Integer count = null;
+		Integer repeat = new Integer(1);
 		Long[] folderIds = null;
 		String ids[] = null;
-		if(args[1].contains(",")) {
-			ids = args[1].split(",");
+		boolean autoFolder = false;
+		Long templateId = null;
+		if(args[1].startsWith("auto")) {
+			autoFolder = true;
+			ids = args[1].split(":");
+			folderIds = new Long[] {Long.parseLong(ids[1])};
+			templateId = Long.parseLong(ids[2]);
+			if(args[0].contains(":")) {
+				String[] foo = args[0].split(":");
+				count = Integer.parseInt(foo[0]);
+				repeat = Integer.parseInt(foo[1]);
+			} else {
+				count = Integer.parseInt(args[0]);
+			}
 		} else {
-			ids = new String[] {args[1]};
-		}
-		long startId, stopId, step;
-		LinkedList<Long> generatedIds = new LinkedList<Long>();
-		for(int i = 0; i < ids.length; i++) {
-			if(ids[i].contains("-")) {
-				String[] range = ids[i].split("-");
-				if(range[1].contains(":")) {
-					String parts[] = range[1].split(":");
-					range[1] = parts[0];
-					step = Long.parseLong(parts[1]);
+			count = Integer.parseInt(args[0]);
+			if(args[1].contains(",")) {
+				ids = args[1].split(",");
+			} else {
+				ids = new String[] {args[1]};
+			}
+			long startId, stopId, step;
+			LinkedList<Long> generatedIds = new LinkedList<Long>();
+			for(int i = 0; i < ids.length; i++) {
+				if(ids[i].contains("-")) {
+					String[] range = ids[i].split("-");
+					if(range[1].contains(":")) {
+						String parts[] = range[1].split(":");
+						range[1] = parts[0];
+						step = Long.parseLong(parts[1]);
+					} else {
+						step = 1;
+					}
+					startId = Long.parseLong(range[0]);
+					stopId = Long.parseLong(range[1]);
 				} else {
+					startId = stopId = Long.parseLong(ids[i]);
 					step = 1;
 				}
-				startId = Long.parseLong(range[0]);
-				stopId = Long.parseLong(range[1]);
-			} else {
-				startId = stopId = Long.parseLong(ids[i]);
-				step = 1;
+				for(long id = startId; id <= stopId; id += step) {
+					generatedIds.add(new Long(id));
+				}
 			}
-			for(long id = startId; id <= stopId; id += step) {
-				generatedIds.add(new Long(id));
-			}
+			folderIds = generatedIds.toArray(new Long[0]);
 		}
-		folderIds = generatedIds.toArray(new Long[0]);
-
+		
 		String definitionId = args[2];
 		String filename = null;
 		if(args.length == 4) { filename = args[3]; }
@@ -105,11 +127,18 @@ public class WSLoadTest
 		try {
 			for(int i = 0; i < count.intValue(); i++) {
 				for(int j = 0; j < folderIds.length; j++) {
-					String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><entry>  <attribute name=\"title\" type=\"title\">Load Test Entry " + j + "-" + i + " " + start.toString()  + "</attribute><attribute name=\"description\" type=\"description\">" + loremIpsum + "</attribute></entry>";
-					Long entryId = (Long) fetch("addFolderEntry", new Object[] {folderIds[j], definitionId, s, filename}, filename);
-					//				justDoIt("uploadFolderFile", new Object[] {folderId, entryId, "ss_attachFile1", "attachment" + i + ".txt"}, filename);
+					Long parentFolder = null;
+					if(autoFolder) {
+						parentFolder = (Long) fetch("addFolder", new Object[] {folderIds[j], templateId, "Generated folder " + (i+1)  + safeName(start.toString())}, null);
+					} else {
+						parentFolder = folderIds[j];
+					}
+					for(int k = 0; k < repeat.intValue(); k++) {
+						String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><entry>  <attribute name=\"title\" type=\"title\">Load Test Entry " + j + "-" + i + "-" + k + " " + start.toString()  + "</attribute><attribute name=\"description\" type=\"description\">" + loremIpsum + "</attribute></entry>";
+						Long entryId = (Long) fetch("addFolderEntry", new Object[] {parentFolder, definitionId, s, filename}, filename);
+					}
 				}
-				if((i+1)%10 == 0) {
+				if((i+1)%100 == 0) {
 					System.err.println(i+1);
 				}
 			}
@@ -119,7 +148,12 @@ public class WSLoadTest
 		}
 		System.err.println("Total time: " + ((new Date()).getTime() - start.getTime()) + "ms");
 	}
-	
+
+	static String safeName(String name)
+	{
+		return name.replaceAll("[\\p{Punct}\\p{Space}]", "_");
+	}
+
 	static Object fetch(String operation, Object[] args, String filename) throws Exception {
 		// Replace the hostname in the endpoint appropriately.
 		String endpoint = "http://localhost:8080/ssf/ws/Facade";
