@@ -1401,7 +1401,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		
         // Create an index document from the entry object.
 		org.apache.lucene.document.Document indexDoc;
-		if (tags == null) getCoreDao().loadAllTagsByEntity(binder.getEntityIdentifier());
+		if (tags == null) tags = getCoreDao().loadAllTagsByEntity(binder.getEntityIdentifier());
 		indexDoc = buildIndexDocumentFromBinder(binder, tags);
 
         // Register the index document for indexing.
