@@ -133,7 +133,7 @@ public class FilterController extends AbstractBinderController {
 		model.put(WebKeys.SEARCH_FILTER_MAP, searchFilterData);
 		
 		Workspace ws = getWorkspaceModule().getWorkspace();
-		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 		model.put(WebKeys.DOM_TREE, tree);
 
 		if (formData.containsKey("addBtn")) {

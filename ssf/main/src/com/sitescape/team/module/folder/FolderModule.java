@@ -116,13 +116,6 @@ public interface FolderModule {
     public void deleteSubscription(Long folderId, Long entryId);
     public void deleteTag(Long binderId, Long entryId, String tagId) throws AccessControlException;
     
-	  /**
-     * Return Dom tree of folders starting at the topFolder of the specified folder
-     * @param folderId
-     * @return
-     */
-	public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper);
-	public Document getDomFolderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels);
 	public Map getEntries(Long folderId) throws AccessControlException;
 	/**
 	 * Return entries

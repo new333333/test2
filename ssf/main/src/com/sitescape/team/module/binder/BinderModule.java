@@ -48,6 +48,7 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.StatusTicket;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 
 /**
  * @author Janet McCann
@@ -359,4 +360,18 @@ public interface BinderModule {
 	public boolean testAccess(Binder binder, BinderOperation operation);
 	public void checkAccess(Binder binder, BinderOperation operation) throws AccessControlException;
 	
+    /**
+     * Traverse the binder tree  returing a DOM structure containing workspaces and
+     * folders
+     * @param id
+     * @param domTreeHelper
+     * @param levels = depth to return.  -1 means all
+     * @return
+     * @throws AccessControlException
+     */
+	public Document getDomBinderTree(DomTreeBuilder domTreeHelper);
+	public Document getDomBinderTree(Long folderId, DomTreeBuilder domTreeHelper);
+	public Document getDomBinderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels);
+ 	public Document getDomBinderTree(Long topId, Long bottonId, DomTreeBuilder domTreeHelper) throws AccessControlException;
+
 }

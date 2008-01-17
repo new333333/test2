@@ -368,7 +368,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				model.put(WebKeys.OPERATION, operation);
 				String cfgType = PortletRequestUtils.getStringParameter(request, "cfgType", String.valueOf(Definition.FOLDER_VIEW));
 				if (cfgType.equals("-1")) {
-					Document wsTree = getWorkspaceModule().getDomWorkspaceTree(null, new WsDomTreeBuilder(null, true, this, new TemplateCopyHelper()), 1);									
+					Document wsTree = getBinderModule().getDomBinderTree(null, new WsDomTreeBuilder(null, true, this, new TemplateCopyHelper()), 1);									
 					model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 				}
 				model.put("cfgType", cfgType);

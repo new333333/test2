@@ -216,7 +216,7 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.BINDER, entry.getParentFolder());
 			Workspace ws = getWorkspaceModule().getTopWorkspace();
-			Document wsTree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1);
+			Document wsTree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			
 			PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
@@ -235,7 +235,7 @@ public class ModifyEntryController extends SAbstractController {
 			entry  = getFolderModule().getEntry(folderId, entryId);
 			
 			Workspace ws = getWorkspaceModule().getWorkspace();
-			model.put(WebKeys.DOM_TREE, getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
+			model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
 
 			model.put(WebKeys.ENTRY, entry);
 			Subscription sub = getFolderModule().getSubscription(entry);

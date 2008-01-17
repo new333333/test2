@@ -201,9 +201,9 @@ public class BinderHelper {
 			Document wsTree;
 			//when at the top, don't expand
 			if (request.getWindowState().equals(WindowState.NORMAL)) {
-				wsTree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(null, true, bs), 0);
+				wsTree = bs.getBinderModule().getDomBinderTree(binder.getId(), new WsDomTreeBuilder(null, true, bs), 0);
 			} else {
-				wsTree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, bs), 1);									
+				wsTree = bs.getBinderModule().getDomBinderTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, bs), 1);									
 			}
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
@@ -240,9 +240,9 @@ public class BinderHelper {
 			Workspace binder = bs.getWorkspaceModule().getWorkspace();
 			Document wsTree;
 			if (request.getWindowState().equals(WindowState.NORMAL)) {
-				wsTree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder(null, true, bs), 1);
+				wsTree = bs.getBinderModule().getDomBinderTree(binder.getId(), new WsDomTreeBuilder(null, true, bs), 1);
 			} else {
-				wsTree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, bs), 1);									
+				wsTree = bs.getBinderModule().getDomBinderTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, bs), 1);									
 			}
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
@@ -344,7 +344,7 @@ public class BinderHelper {
 		//This is the workarea view.
 		//Set up the navigation beans
 		Binder binder = bs.getWorkspaceModule().getWorkspace();
-		Document tree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), 
+		Document tree = bs.getBinderModule().getDomBinderTree(binder.getId(), 
 				new WsDomTreeBuilder(null, true, bs), 1);
 		model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
 
@@ -356,7 +356,7 @@ public class BinderHelper {
 			RenderRequest request, PortletPreferences prefs, Map model, String view) {
 		//This is the workarea navigation view
 		Binder binder = bs.getWorkspaceModule().getWorkspace();
-		Document tree = bs.getWorkspaceModule().getDomWorkspaceTree(binder.getId(), 
+		Document tree = bs.getBinderModule().getDomBinderTree(binder.getId(), 
 				new WsDomTreeBuilder(null, true, bs), 1);
 
 		model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
@@ -568,13 +568,13 @@ public class BinderHelper {
 		Document tree = null;
 		try {
 			if (workspaceBinder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-				tree = bs.getWorkspaceModule().getDomWorkspaceTree(workspaceBinder.getId(), 
+				tree = bs.getBinderModule().getDomBinderTree(workspaceBinder.getId(), 
 						new WsDomTreeBuilder(null, true, bs, helper), 1);
 			} else if (workspaceBinder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-				tree = bs.getFolderModule().getDomFolderTree(workspaceBinder.getId(), 
+				tree = bs.getBinderModule().getDomBinderTree(workspaceBinder.getId(), 
 						new WsDomTreeBuilder(null, true, bs, helper), 1);
 			} else if (workspaceBinder.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
-				tree = bs.getWorkspaceModule().getDomWorkspaceTree(workspaceBinder.getId(), 
+				tree = bs.getBinderModule().getDomBinderTree(workspaceBinder.getId(), 
 						new WsDomTreeBuilder(null, true, bs, helper), 0);
 			}
 		} catch (AccessControlException ac) {}
@@ -613,15 +613,8 @@ public class BinderHelper {
 			while (parentBinder != null) {
 				Document tree = null;
 				try {
-					if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.workspace)) {
-						tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-								new WsDomTreeBuilder(null, true, bs, helper),0);
-					} else if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.folder)) {
-						tree = bs.getFolderModule().getDomFolderTree(parentBinder.getId(), new WsDomTreeBuilder(null, true, bs, helper), 0);
-					} else if (parentBinder.getEntityType().equals(EntityIdentifier.EntityType.profiles)) {
-						tree = bs.getWorkspaceModule().getDomWorkspaceTree(parentBinder.getId(), 
-								new WsDomTreeBuilder(null, true, bs, helper),0);
-					}
+					tree = bs.getBinderModule().getDomBinderTree(parentBinder.getId(), 
+							new WsDomTreeBuilder(null, true, bs, helper),0);
 				} catch (AccessControlException ac) {
 					break;
 				}
@@ -1743,7 +1736,7 @@ public class BinderHelper {
 		model.putAll(prepareSavedQueries(bs));
 		
 		Workspace ws = bs.getWorkspaceModule().getWorkspace();
-		Document tree = bs.getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, bs),1);
+		Document tree = bs.getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, bs),1);
 		model.put(WebKeys.DOM_TREE, tree);
 		
 		return model;

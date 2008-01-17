@@ -31,6 +31,7 @@ package com.sitescape.team.module.binder.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -43,14 +44,17 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
+import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.sitescape.team.InternalException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.docconverter.ITextConverterManager;
 import com.sitescape.team.docconverter.TextConverter;
@@ -63,13 +67,16 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.exception.UncheckedCodedException;
 import com.sitescape.team.fi.connection.ResourceDriver;
 import com.sitescape.team.fi.connection.ResourceSession;
@@ -100,12 +107,14 @@ import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.StatusTicket;
+import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 
@@ -1832,4 +1841,5 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	protected String getEntryPrincipalField() {
     	return EntityIndexUtils.CREATORID_FIELD;
     }
+	
 }

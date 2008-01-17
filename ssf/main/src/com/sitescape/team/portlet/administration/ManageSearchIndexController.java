@@ -132,7 +132,7 @@ public class ManageSearchIndexController extends  SAbstractController {
 			users.addAttribute("imageClass", "ss_twIcon");
 		}
 		users.addAttribute("url", "");
-    	Document wsTree = getWorkspaceModule().getDomWorkspaceTree(RequestContextHolder.getRequestContext().getZoneId(), 
+    	Document wsTree = getBinderModule().getDomBinderTree(RequestContextHolder.getRequestContext().getZoneId(), 
 				new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
     	//merge the trees
     	rootElement.appendAttributes(wsTree.getRootElement());

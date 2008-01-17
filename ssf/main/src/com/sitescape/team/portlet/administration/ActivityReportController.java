@@ -59,14 +59,8 @@ public class ActivityReportController extends  AbstractReportController {
 		//Initialize the acl bean
 		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
 		accessControlMap.put("generateReport", getBinderModule().testAccess(binder, BinderOperation.report));
-		Document wsTree = null;
-		if(binder instanceof Folder) {
-			wsTree = getFolderModule().getDomFolderTree(binder.getId(), 
-				new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
-		} else {
-			wsTree = getWorkspaceModule().getDomWorkspaceTree(binder.getId(), 
-				new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
-		}
+		Document wsTree = getBinderModule().getDomBinderTree(binder.getId(), 
+			new WsDomTreeBuilder(null, true, this, new SearchTreeHelper()),1);
 
 		model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);		

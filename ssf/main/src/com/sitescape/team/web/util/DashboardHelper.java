@@ -629,9 +629,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
    			if (topWs == null) topWs = getWorkspaceModule().getTopWorkspace();
    			idData.put(Workspace_topId, topWs.getId());
    			if (isConfig)
-   				tree = getWorkspaceModule().getDomWorkspaceTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this, new WorkspaceConfigHelper()),1);
+   				tree = getBinderModule().getDomBinderTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this, new WorkspaceConfigHelper()),1);
    			else
-  				tree = getWorkspaceModule().getDomWorkspaceTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this),1);
+  				tree = getBinderModule().getDomBinderTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this),1);
    		   				
    		} else {
    			Binder topWs = null;
@@ -661,9 +661,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
    				tree = BinderHelper.buildTemplateTreeRoot(this, (TemplateBinder)topWs, new BinderHelper.ConfigHelper(WebKeys.ACTION_CONFIGURATION));
    			} else {
    				if (isConfig)
-   					tree = getWorkspaceModule().getDomWorkspaceTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this, new WorkspaceConfigHelper()),1);
+   					tree = getBinderModule().getDomBinderTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this, new WorkspaceConfigHelper()),1);
    				else
-  					tree = getWorkspaceModule().getDomWorkspaceTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this),1);
+  					tree = getBinderModule().getDomBinderTree(topWs.getId(), new WsDomTreeBuilder(topWs, true, this),1);
    			}
    		}
 		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
@@ -734,7 +734,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	}
     	if (isConfig) {
     		Workspace ws = getWorkspaceModule().getWorkspace();
-    		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()), 1);
+    		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()), 1);
     		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
     	}
 
@@ -810,7 +810,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		
 		
     	Workspace ws = getWorkspaceModule().getWorkspace();
-    	Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()), 1);
+    	Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()), 1);
     	idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
 
     }
@@ -852,7 +852,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
 		Workspace ws = getWorkspaceModule().getWorkspace();
-		Document tree = getWorkspaceModule().getDomWorkspaceTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 		model.put(WebKeys.DOM_TREE, tree);
 		
 		//Do the search and store the search results in the bean
