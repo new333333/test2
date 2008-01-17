@@ -199,7 +199,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					def.setInternalId(internalId);	
 					setDefinition(def, doc);
 				} else {
-					//try to create in this zone using existing GUID
+					//try to create in this zone using new GUID
 					def = new Definition();
 					def.setZoneId(zoneId);
 					def.setName(name);

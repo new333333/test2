@@ -2173,6 +2173,7 @@
 		</properties>
 		<options>
 			<option name="onEntry"/>
+			<option name="workflowAction"/>
 			<option name="transitions" initial="true" />
 			<option name="accessControls"/>
 			<option name="onExit"/>
@@ -2180,6 +2181,12 @@
 		</options>
 	</item>
 	
+	<item name="workflowAction" caption="__workflow_action">
+		<properties>
+			<property name="class" caption="__workflow_action_class" type="text" />
+		</properties>
+	</item>
+
 	<item name="transitions" caption="__transitions" canBeDeleted="true" unique="./item[@name='transitions']">
 		<operations>
 			<operation name="addOption" caption="__add" />
