@@ -1020,9 +1020,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 public Object doInHibernate(Session session) throws HibernateException {
                 	List ids = new ArrayList();
                 	List readObjs = new ArrayList();
-                	Entry entry=null;
+                	DefinableEntity entry=null;
                 	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
-                		entry = (Entry)iter.next();
+                		entry = (DefinableEntity)iter.next();
                 		//initialize collections
                 		entry.setIndexAttachments(new HashSet());
                 		entry.setIndexCustomAttributes(new HashMap());

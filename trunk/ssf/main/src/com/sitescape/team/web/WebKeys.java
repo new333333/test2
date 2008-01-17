@@ -190,6 +190,8 @@ public class WebKeys {
 
 	//session attributes
 	public static final String PORTLET_USER_SYNC="com.sitescape.portlet.user.sync";
+	//prefix to be used to name custom actions=>action= field in url
+	public static final String CUSTOM_ACTION_PREFIX="EXT_";
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ADMIN_ACTION_GET_LOG_FILES = "get_log_files";
