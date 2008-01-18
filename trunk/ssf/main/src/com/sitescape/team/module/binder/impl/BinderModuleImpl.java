@@ -1166,7 +1166,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			for (int i=0; i<searchBinders.size(); ++i) {
 				Map search = (Map)searchBinders.get(i);
 				String entityType = (String)search.get(EntityIndexUtils.ENTITY_FIELD);
-				if (!EntityType.workspace.name().equals(entityType)) {
+				if (EntityType.workspace.name().equals(entityType)) {
 					String sId = (String)search.get(EntityIndexUtils.DOCID_FIELD);
 					try {
 						Long id = Long.valueOf(sId);
