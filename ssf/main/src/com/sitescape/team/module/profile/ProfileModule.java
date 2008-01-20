@@ -134,5 +134,5 @@ public interface ProfileModule {
 	public boolean testAccess(Principal entry, ProfileOperation operation);
 	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException;
 
-
+	public void deleteUserByName(String zoneName, String userName);
 }

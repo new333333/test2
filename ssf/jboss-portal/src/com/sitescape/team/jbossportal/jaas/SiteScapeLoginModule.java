@@ -28,11 +28,10 @@
  */
 package com.sitescape.team.jbossportal.jaas;
 
-import java.lang.reflect.Method;
 import java.security.acl.Group;
 import java.util.Map;
 
-import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
+import com.sitescape.team.asmodule.bridge.BridgeClient;
 
 import org.jboss.security.SimpleGroup;
 import org.jboss.security.auth.spi.UsernamePasswordLoginModule;
@@ -50,30 +49,15 @@ public class SiteScapeLoginModule extends UsernamePasswordLoginModule {
 	private static final org.jboss.logging.Logger log = 
 		org.jboss.logging.Logger.getLogger(SiteScapeLoginModule.class);
 
-	private static final String CLASS_NAME =
-		"com.sitescape.team.util.SynchUser";
+	private static final String SERVICE_CLASS_NAME = "com.sitescape.team.bridge.AuthenticationBridge";
 	
-	private Object synchUser;
-	private Method synchMethod;
-
+	private static final String SERVICE_METHOD_NAME = "authenticateEasy";
+	
+	private static final Class[] SERVICE_METHOD_ARG_TYPES = 
+		new Class[] {String.class, String.class, String.class, Map.class, String.class};
+	
 	private String additionalRole;
 	private String synchronizeIdentity;
-
-	public SiteScapeLoginModule() {
-		try { 
-			// Instantiate a SynchUser. Assign it to a variable of Object
-			// rather than of SynchUser type to prevent current classloader 
-			// from attempting to load SynchUser class.
-			synchUser = SiteScapeBridgeUtil.newInstance(CLASS_NAME);
-			
-			// We use reflection to invoke the method later on.
-			synchMethod = SiteScapeBridgeUtil.getMethod
-			(CLASS_NAME, "synch", String.class, String.class, String.class, String.class);
-		}
-		catch (Exception e) {
-			log.error("Error instantiating SiteScapeLoginModule: ", e);
-		}	
-	}
 	
 	public void initialize(Subject subject, CallbackHandler callbackHandler, Map sharedState, Map options) {
 	      super.initialize(subject, callbackHandler, sharedState, options);
@@ -90,7 +74,9 @@ public class SiteScapeLoginModule extends UsernamePasswordLoginModule {
 			try {
 				// Since this same login module is used for logins by both browser-based
 				// client (ssf) and WebDAV client (ssfs) we can't really distinguish between them... 
-				SiteScapeBridgeUtil.invoke(synchMethod, synchUser, null, username, password, "jbossportal");
+				BridgeClient.invoke(null, null, SERVICE_CLASS_NAME, 
+						SERVICE_METHOD_NAME, SERVICE_METHOD_ARG_TYPES,
+						new Object[] {null, username, password, null, "jbossportal"});
 			}
 			catch(Exception e) {
 				log.warn("Failed to synchronize identity of user: " + getUsername(), e);

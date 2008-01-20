@@ -26,20 +26,21 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.portalmodule.web.security;
+package com.sitescape.team.portalmodule.security;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
 import java.util.Map;
 
-import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
-import com.sitescape.team.portal.CrossContextConstants;
-import com.sitescape.team.web.util.AttributesAndParamsOnlyServletRequest;
-import com.sitescape.team.web.util.NullServletResponse;
+import com.sitescape.team.asmodule.bridge.BridgeClient;
 
 public class AuthenticationManager {
 	
+	private static final String SERVICE_CLASS_NAME = "com.sitescape.team.bridge.AuthenticationBridge";
+	
+	private static final String SERVICE_METHOD_NAME = "authenticate";
+	
+	private static final Class[] SERVICE_METHOD_ARG_TYPES = 
+		new Class[] {String.class, String.class, String.class, Map.class, String.class};
+
 	/**
 	 * 
 	 * @param request
@@ -47,25 +48,11 @@ public class AuthenticationManager {
 	 * @param userName
 	 * @param password
 	 * @param updates may be null
-	 * @throws ServletException
-	 * @throws IOException
+	 * @throws Exception 
 	 */
-	public static void authenticate(String zoneName, String userName, String password, Map updates) 
-		throws ServletException, IOException {		
-		AttributesAndParamsOnlyServletRequest req = 
-			new AttributesAndParamsOnlyServletRequest(SiteScapeBridgeUtil.getSSFContextPath());
-
-		req.setParameter(CrossContextConstants.OPERATION, CrossContextConstants.OPERATION_AUTHENTICATE);
-		if(zoneName != null)
-			req.setParameter(CrossContextConstants.ZONE_NAME, zoneName);
-		req.setParameter(CrossContextConstants.USER_NAME, userName);
-		req.setParameter(CrossContextConstants.PASSWORD, password);
-		if(updates != null)
-			req.setAttribute(CrossContextConstants.USER_INFO, updates);
-		req.setParameter(CrossContextConstants.AUTHENTICATOR, "portal");
-		
-		NullServletResponse res = new NullServletResponse();
-		
-		SiteScapeBridgeUtil.include(req, res);
+	public static void authenticate(String zoneName, String userName, String password, Map updates) throws Exception {		
+		BridgeClient.invoke(zoneName, userName, SERVICE_CLASS_NAME, 
+				SERVICE_METHOD_NAME, SERVICE_METHOD_ARG_TYPES,
+				new Object[] {zoneName, userName, password, updates, "portal"});
 	}
 }

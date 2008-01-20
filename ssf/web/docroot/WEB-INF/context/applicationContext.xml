@@ -499,6 +499,7 @@
 				<prop key="deleteEntry">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
 				<prop key="set*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="deleteUserByName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 			</props>
 		</property>
 	</bean>
