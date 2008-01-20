@@ -20,7 +20,7 @@
  * SOFTWARE.
  */
 
-package com.liferay.portlet.myaccount.action;
+package com.sitescape.team.liferay.myaccount;
 
 import com.liferay.portal.model.User;
 import com.liferay.portal.util.PortalUtil;
@@ -37,14 +37,11 @@ import org.apache.struts.action.ActionForm;
 import org.apache.struts.action.ActionForward;
 import org.apache.struts.action.ActionMapping;
 
-/**
- * <a href="EditUserAction.java.html"><b><i>View Source</i></b></a>
- *
- * @author Brian Wing Shun Chan
- *
- */
-public class EditUserAction
-	extends com.liferay.portlet.enterpriseadmin.action.EditUserAction {
+public class EditUserAction extends com.sitescape.team.liferay.enterpriseadmin.EditUserAction {
+
+	public EditUserAction() throws Exception {
+		super();
+	}
 
 	public void processAction(
 			ActionMapping mapping, ActionForm form, PortletConfig config,
