@@ -918,5 +918,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	    	setProperties(props);	    	
 	    }
 	}
+
+    //RW transaction
+	public void deleteUserByName(String zoneName, String userName) {
+		User user = getProfileDao().findUserByName(userName, zoneName);
+		deleteEntry(user.getParentBinder().getId(), user.getId(), false);
+	}
 }
 

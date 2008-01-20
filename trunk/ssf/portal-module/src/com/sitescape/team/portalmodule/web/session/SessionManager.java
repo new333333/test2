@@ -30,13 +30,11 @@ package com.sitescape.team.portalmodule.web.session;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 
-import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
+import com.sitescape.team.asmodule.bridge.BridgeClient;
 import com.sitescape.team.portal.CrossContextConstants;
-import com.sitescape.team.web.util.AttributesAndParamsOnlyServletRequest;
 import com.sitescape.team.web.util.NullServletResponse;
 import com.sitescape.util.servlet.DynamicServletRequest;
 
@@ -74,6 +72,6 @@ public class SessionManager {
 		
 		NullServletResponse res = new NullServletResponse();
 		
-		SiteScapeBridgeUtil.include(req, res);
+		BridgeClient.include(req, res);
 	}
 }

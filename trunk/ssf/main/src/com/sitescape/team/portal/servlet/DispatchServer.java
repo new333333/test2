@@ -43,7 +43,7 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
+import com.sitescape.team.asmodule.bridge.BridgeUtil;
 import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.portal.CrossContextConstants;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
@@ -62,13 +62,13 @@ public class DispatchServer extends GenericServlet {
 	
 	public void init(ServletConfig config) throws ServletException {
 		RequestDispatcher rd = config.getServletContext().getNamedDispatcher(PORTAL_CC_DISPATCHER);
-		SiteScapeBridgeUtil.setCCDispatcher(rd);
+		BridgeUtil.setCCDispatcher(rd);
 		String cxt = config.getInitParameter("ssfContextPath");
 		if(cxt == null || cxt.length() == 0)
 			cxt = SSF_CONTEXT_PATH_DEFAULT;
-		SiteScapeBridgeUtil.setSSFContextPath(cxt);
+		BridgeUtil.setSSFContextPath(cxt);
 		try {
-			SiteScapeBridgeUtil.setClassLoader(Thread.currentThread().getContextClassLoader());
+			BridgeUtil.setClassLoader(Thread.currentThread().getContextClassLoader());
 		}
 		catch(Exception e) {
 			new ServletException(e);
@@ -77,55 +77,8 @@ public class DispatchServer extends GenericServlet {
 	
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
 		String operation = req.getParameter(CrossContextConstants.OPERATION);
-		
-		if(operation.equals(CrossContextConstants.OPERATION_AUTHENTICATE)) {
-			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
-			if(zoneName != null) {
-				if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()) ||
-						LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.zone.MultiZone")))
-					return; // don't allow it; simply return
-			}
-			else {
-				zoneName = SZoneConfig.getDefaultZoneName();
-			}
-			String userName = req.getParameter(CrossContextConstants.USER_NAME);
-			String password = req.getParameter(CrossContextConstants.PASSWORD);
-			Map updates = (Map)req.getAttribute(CrossContextConstants.USER_INFO);
-			String authenticator = req.getParameter(CrossContextConstants.AUTHENTICATOR);
 
-			// Authenticate the user against SSF user database.
-			try {
-				boolean passwordAutoSynch = 
-					SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
-				boolean ignorePassword = 
-					SPropsUtil.getBoolean("portal.password.ignore", false);
-				boolean createUser = 
-					SPropsUtil.getBoolean("portal.user.auto.create", false);
-				AuthenticationManagerUtil.authenticate(zoneName, userName, password, createUser, passwordAutoSynch, ignorePassword, updates, authenticator);
-			}
-			catch(UserDoesNotExistException e) {
-				logger.warn(e.getLocalizedMessage(), e);
-				// Throw ServletException with cause's error message rather
-				// then the cause itself. This is because the class loader
-			    // of the calling app does not have access to the class of 
-				// the cause exception. 
-				throw new ServletException(e.getLocalizedMessage());
-			}
-			catch(PasswordDoesNotMatchException e) {
-				logger.warn(e.getLocalizedMessage(), e);
-				throw new ServletException(e.getLocalizedMessage());
-			}	
-			catch(Exception e) {
-				logger.warn(e.getLocalizedMessage(), e);
-				if(e instanceof IOException)
-					throw (IOException) e;
-				else if(e instanceof ServletException)
-					throw (ServletException) e;
-				else
-					throw new ServletException(e.getLocalizedMessage());
-			}
-		}
-		else if(operation.equals(CrossContextConstants.OPERATION_SETUP_SESSION)) {
+		if(operation.equals(CrossContextConstants.OPERATION_SETUP_SESSION)) {
 			String zoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
 			if(zoneName != null) {
 				if(!(zoneName.equals(SZoneConfig.getDefaultZoneName()) ||
