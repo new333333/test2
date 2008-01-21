@@ -68,11 +68,11 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 		
 		String cmd = ParamUtil.getString(req, Constants.CMD);
 
-		String password = null;
+		String password = AdminUtil.getUpdateUserPassword(req, user.getUserId());
 		
-		if(cmd.equals(Constants.UPDATE))
-			password = AdminUtil.getUpdateUserPassword(req, user.getUserId());
-			
+		if(password == null)
+			password = ""; // temporary...only until user specifies real password
+					
 		synchAddOrUpdateUser(PortalUtil.getCompany(req).getWebId(), 
 				user.getScreenName(), password, Util.getUpdatesMap(user));
 		
@@ -129,11 +129,18 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 			}
 			else {
 				user = UserLocalServiceUtil.getUserById(deleteUserIds[i]);
+				
+				// In ideal world, software will never fail. Since that's not where
+				// we live, we need to think about damage control in the rare
+				// cases of failure. If we successfully delete an user from Liferay
+				// but fails to do it in ICEcore, we have an entry in ICEcore that
+				// we can never re-try to delete again (that's because the current
+				// version of Liferay provides no separate management UI for deleting 
+				// users - it can only be done through portal UI). So attempting to
+				// delete the user from ICEcore side first seems a bit more desirable.
+				synchDeleteUser(companyWebId, user.getScreenName());
+				
 				UserServiceUtil.deleteUser(deleteUserIds[i]);
-				try {
-					synchDeleteUser(companyWebId, user.getScreenName());
-				}
-				catch(Exception proceed) {}
 			}
 		}
 	}

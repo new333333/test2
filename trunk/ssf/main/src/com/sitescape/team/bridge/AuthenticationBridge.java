@@ -60,9 +60,9 @@ public class AuthenticationBridge {
 	
 		// runtime argument can temporarily override static config settings
 		boolean passwordAutoSynch = 
-			(password == null)? false : SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
+			SPropsUtil.getBoolean("portal.password.auto.synchronize", false);
 		boolean ignorePassword =
-			(password == null)? true : SPropsUtil.getBoolean("portal.password.ignore", false);
+			SPropsUtil.getBoolean("portal.password.ignore", false);
 		boolean createUser = 
 			SPropsUtil.getBoolean("portal.user.auto.create", false);
 		

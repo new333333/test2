@@ -68,6 +68,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
@@ -921,8 +922,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
     //RW transaction
 	public void deleteUserByName(String zoneName, String userName) {
-		User user = getProfileDao().findUserByName(userName, zoneName);
-		deleteEntry(user.getParentBinder().getId(), user.getId(), false);
+		try {
+			User user = getProfileDao().findUserByName(userName, zoneName);
+			deleteEntry(user.getParentBinder().getId(), user.getId(), false);
+		}
+		catch(NoUserByTheNameException thisIsOk) {}
 	}
 }
 
