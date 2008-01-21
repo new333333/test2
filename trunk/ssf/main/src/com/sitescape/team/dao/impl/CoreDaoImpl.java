@@ -1105,7 +1105,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                     }
                 	//Load customAttributes
                  	//Cannot criteria query, cause different order-by is specified in mapping files and it appears to take precedence
-                 	objs = session.createQuery("from com.sitescape.team.domain.CustomAttribute where " + key + "  in (:pList) order by " + key)
+                 	objs = session.createQuery("from com.sitescape.team.domain.CustomAttribute att left join fetch att.values where att." + key + "  in (:pList) order by att." + key)
        					.setParameterList("pList", sorted)
                    		.list();
                    	readObjs.addAll(objs);
@@ -1117,8 +1117,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                    			CustomAttribute obj = (CustomAttribute)objs.get(0);
                    			if (entry.equals(obj.getOwner().getEntity())) {
                    				if (obj instanceof CustomAttributeListElement) {
-                   					CustomAttributeListElement lEle = (CustomAttributeListElement)obj;
-                   					lEle.getParent().addIndexValue(lEle);
+                   					logger.error("CustomAttributeListElement not expected during index");
+//                   					CustomAttributeListElement lEle = (CustomAttributeListElement)obj;
+//                   					lEle.getParent().addIndexValue(lEle);
                    				} else {
                    					tMap.put(obj.getName(), obj);
                    				}
