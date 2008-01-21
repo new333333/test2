@@ -70,6 +70,7 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.util.Validator;
 
 /**
  * Index the fields common to all Entry types.
@@ -474,7 +475,8 @@ public class EntityIndexUtils {
    		String ids = LongIdUtil.getIdsAsString(binderIds);
        	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), BasicIndexUtils.READ_ACL_TEAM);
        	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), BasicIndexUtils.READ_ACL_BINDER_OWNER);
-        return ids;
+       	if (Validator.isNull(ids)) return BasicIndexUtils.EMPTY_ACL_FIELD;
+       	return ids;
     }
     
     //Add acl fields for binder for storage in search engine
