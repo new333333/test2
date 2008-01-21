@@ -1018,7 +1018,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		getHibernateTemplate().execute(
             new HibernateCallback() {
                 public Object doInHibernate(Session session) throws HibernateException {
-                	List ids = new ArrayList();
                 	List readObjs = new ArrayList();
                 	DefinableEntity entry=null;
                 	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
@@ -1027,9 +1026,18 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 		entry.setIndexAttachments(new HashSet());
                 		entry.setIndexCustomAttributes(new HashMap());
                 		entry.setIndexEvents(new HashSet());
-                 		ids.add(entry.getId());
-                	}
-         	   		EntityIdentifier id = entry.getEntityIdentifier();
+                 	}
+         	   		EntityIdentifier.EntityType type = entry.getEntityIdentifier().getEntityType();
+         	   		//Determine key to use based on type
+         	   		String key;
+         	   		if (type.equals(EntityIdentifier.EntityType.folderEntry)) {
+         	   			key = "owner.folderEntry";
+         	   		} else if (type.equals(EntityIdentifier.EntityType.user) || 
+         	   				type.equals(EntityIdentifier.EntityType.group)) {
+         	   			key = "owner.principal";
+         	   		} else {
+         	   			key = "owner.binder";
+         	   		}
          	   	 	List objs;
             		HashSet tSet;
             		if (entry instanceof WorkflowControlledEntry) {
@@ -1037,9 +1045,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 	
                 		//Load workflow states
                 		objs = session.createCriteria(WorkflowState.class)
-                    						.add(Expression.eq("owner.ownerType", id.getEntityType().name()))
-                    						.add(Expression.in("owner.ownerId", ids))
-                    						.addOrder(Order.asc("owner.ownerId"))
+                    						.add(Expression.in(key, sorted))
+                    						.addOrder(Order.asc(key))
                     						.list();
                    
                 		readObjs.addAll(objs);
@@ -1059,10 +1066,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 	//Load file attachments
             		//If there are every any others, will need to handle separately
                    	objs = session.createCriteria(FileAttachment.class)
-   						.add(Expression.eq("owner.ownerType", id.getEntityType().name()))
-                    	.add(Expression.in("owner.ownerId", ids))
-                  		.addOrder(Order.asc("owner.ownerId"))
-                  		.setFetchMode("fileVersions", FetchMode.JOIN) //needed during indexing when converted files missing
+                   		.add(Expression.in(key, sorted))
+                   		.addOrder(Order.asc(key))
+                   		.setFetchMode("fileVersions", FetchMode.JOIN) //needed during indexing when converted files missing
                   		.list();
                    	readObjs.addAll(objs);
                    	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
@@ -1081,10 +1087,9 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                      }
                 	//Load Events states
                   	objs = session.createCriteria(Event.class)
-                    	.add(Expression.eq("owner.ownerType", id.getEntityType().name()))
-                    	.add(Expression.in("owner.ownerId", ids))
-                 		.addOrder(Order.asc("owner.ownerId"))
-                  		.list();
+                  		.add(Expression.in(key, sorted))
+                  		.addOrder(Order.asc(key))
+                   		.list();
                    	readObjs.addAll(objs);
                  	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
                    		entry = (Entry)iter.next();
@@ -1100,9 +1105,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                     }
                 	//Load customAttributes
                  	//Cannot criteria query, cause different order-by is specified in mapping files and it appears to take precedence
-                 	objs = session.createQuery("from com.sitescape.team.domain.CustomAttribute  where owner.ownerType=:type and owner.ownerId in (:pList) order by owner.ownerId")
-                    	.setParameter("type", id.getEntityType().name())
-       					.setParameterList("pList", ids)
+                 	objs = session.createQuery("from com.sitescape.team.domain.CustomAttribute where " + key + "  in (:pList) order by " + key)
+       					.setParameterList("pList", sorted)
                    		.list();
                    	readObjs.addAll(objs);
                   	HashMap tMap;
