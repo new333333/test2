@@ -52,15 +52,12 @@
 
 <ssf:skipLink tag="<%= NLT.get("skip.navigation.links") %>" id="navigationLinks_${ss_nav_linksCount}_${renderResponse.namespace}">
 
-<%
-boolean isIE = BrowserSniffer.is_ie(request);
-%>
 <div class="ss_breadcrumb">
   <ssHelpSpot helpId="workspaces_folders/misc_tools/breadcrumbs" offsetX="0" 
-  <c:if test="<%= !isIE %>">
+  <c:if test="<%= !BrowserSniffer.is_ie(request) %>">
    offsetY="4"
   </c:if>
-  <c:if test="<%= isIE %>">
+  <c:if test="<%= BrowserSniffer.is_ie(request) %>">
    offsetY="2" xAlignment="center"
   </c:if>
     title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>

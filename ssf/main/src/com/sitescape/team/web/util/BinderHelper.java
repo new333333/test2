@@ -123,9 +123,6 @@ public class BinderHelper {
 	public static final String WIKI_PORTLET="ss_wiki";
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
 	public static final String WORKAREA_PORTLET="ss_workarea";
-	public static final String WORKAREA_ACCESSORIES_PORTLET="ss_workarea_accessories";
-	public static final String WORKAREA_CONTEXT_PORTLET="ss_workarea_context";
-	public static final String WORKAREA_NAVIGATION_PORTLET="ss_workarea_navigation";
 
 	static public ModelAndView CommonPortletDispatch(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -263,12 +260,6 @@ public class BinderHelper {
 			return setupMobilePortlet(bs, request, prefs, model, WebKeys.VIEW_MOBILE);		
 		} else if (WORKAREA_PORTLET.equals(displayType)) {
 			return setupWorkareaPortlet(bs, request, response, prefs, model, WebKeys.VIEW_WORKAREA);		
-		} else if (WORKAREA_ACCESSORIES_PORTLET.equals(displayType)) {
-			return setupWorkareaPortlet(bs, request, response, prefs, model, WebKeys.VIEW_WORKAREA_ACCESSORIES);		
-		} else if (WORKAREA_CONTEXT_PORTLET.equals(displayType)) {
-			return setupWorkareaPortlet(bs, request, response, prefs, model, WebKeys.VIEW_WORKAREA_CONTEXT);		
-		} else if (WORKAREA_NAVIGATION_PORTLET.equals(displayType)) {
-			return setupWorkareaNavigationPortlet(bs, request, prefs, model, WebKeys.VIEW_WORKAREA_NAVIGATION);		
 		}
 
 		return null;
@@ -392,12 +383,6 @@ public class BinderHelper {
 			return ViewController.WIKI_PORTLET;
 		else if (pName.contains(ViewController.MOBILE_PORTLET))
 			return ViewController.MOBILE_PORTLET;
-		else if (pName.contains(ViewController.WORKAREA_ACCESSORIES_PORTLET))
-			return ViewController.WORKAREA_ACCESSORIES_PORTLET;
-		else if (pName.contains(ViewController.WORKAREA_CONTEXT_PORTLET))
-			return ViewController.WORKAREA_CONTEXT_PORTLET;
-		else if (pName.contains(ViewController.WORKAREA_NAVIGATION_PORTLET))
-			return ViewController.WORKAREA_NAVIGATION_PORTLET;
 		else if (pName.contains(ViewController.WORKAREA_PORTLET))
 			return ViewController.WORKAREA_PORTLET;
 		return null;

@@ -153,9 +153,6 @@ function ss_showForumEntryInIframe_Popup(url) {
 
 </script>
   
-<div id="ss_workareaAccessories_${renderResponse.namespace}" class="ss_style"
-<c:if test="${0 == 1 && ss_displayType == 'ss_workarea'}"> style="display:none;" </c:if>
->
   <!-- Start of dashboard "Add penlet" form -->
   <c:if test="${empty ssBinderConfig && (!ssUser.shared || ssDashboard.sharedModificationAllowed)}">
   <div id="${renderResponse.namespace}_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
@@ -293,24 +290,4 @@ function ss_showForumEntryInIframe_Popup(url) {
 </c:if>
 <c:if test="${!empty ssDashboardToolbar}">
 </div>
-</c:if>
-</div>
-<c:if test="${0 == 1 && ss_displayType == 'ss_workarea' && ss_windowState != 'maximized'}">
-<script type="text/javascript">
-function ss_workareaMoveAccessories_${renderResponse.namespace}() {
-	var accessoriesDiv = document.getElementById("ss_workareaAccessories");
-	if (accessoriesDiv != null) {
-		var accessoriesDivSource = document.getElementById("ss_workareaAccessories_${renderResponse.namespace}");
-		if (accessoriesDivSource != null) {
-			dojo.dom.moveChildren(accessoriesDivSource, accessoriesDiv, false);
-			return true;
-		}
-	}
-	return false;
-}
-if (!ss_workareaMoveAccessories_${renderResponse.namespace}()) {
-	//Could not move them yet, so move the accessories after loading is done
-	ss_createOnLoadObj('ss_workareaMoveAccessories_${renderResponse.namespace}', ss_workareaMoveAccessories_${renderResponse.namespace});
-}
-</script>
 </c:if>

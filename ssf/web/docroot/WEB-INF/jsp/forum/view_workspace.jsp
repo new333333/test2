@@ -59,15 +59,14 @@
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
+<c:if test="${ss_displayType != 'ss_workarea'}">
     <td valign="top" class="ss_view_sidebar">
 
-<c:if test="${ss_displayType != 'ss_workarea'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-</c:if>
 
 	<% // Folder Sidebar %>
 
@@ -86,6 +85,7 @@
 	</ssf:sidebarPanel>
 
 	</td>
+</c:if>
 	<td valign="top" class="ss_view_info">
 		<div class="ss_tab_canvas">
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
@@ -97,8 +97,9 @@
 					  	<c:choose>
 					  		<c:when test="${ss_showTeamMembers}">
 								<% // Navigation links %>
+<c:if test="${ss_displayType != 'ss_workarea'}">
 								<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-								
+</c:if>								
 								<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
 								
 								<c:if test="${!empty ss_reloadUrl}">
@@ -108,8 +109,9 @@
 							</c:when>
 							<c:otherwise>
 								<% // Navigation links %>
+<c:if test="${ss_displayType != 'ss_workarea'}">
 								<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-								
+</c:if>								
 								<% // Show the workspace according to its definition %>
 								<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 								  processThisItem="true"

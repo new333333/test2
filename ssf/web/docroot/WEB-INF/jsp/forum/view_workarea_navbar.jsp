@@ -74,7 +74,7 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 <!-- End of debug window -->
 </c:if>
 
-<!-- Start of global toolbar - MAXIMIZED PORTAL WINDOW MODE -->
+<!-- Start of global toolbar -->
 <script type="text/javascript">
 function ss_workarea_showId(id, action) {
 	//Build a url to go to
@@ -87,10 +87,26 @@ function ss_workarea_showId(id, action) {
 	return false;
 }
 </script>
-<table class="ss_global_toolbar_maximized" width="100%" cellspacing="0" cellpadding="0" border="0">
+
+<table cellspacing="0" cellpadding="0" border="0">
 <tbody>
 <tr>
 <td>
+<table class="ss_global_toolbar_maximized" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+<tr>
+<td>
+	<!-- My portal -->
+	<div class="ss_global_toolbar_accessible" >
+	  <ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
+	      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
+	  </ssHelpSpot>
+	<a class="ss_linkButton" href="<portlet:renderURL windowState="normal"/>"
+    ><ssf:nlt tag="navigation.myPortal"/></a>
+	  </div>
+
+</td>
+<td style="padding-left:10px;">
 
 	<!-- My workspace -->
 	<div class="ss_global_toolbar_accessible" >
@@ -107,7 +123,7 @@ function ss_workarea_showId(id, action) {
 	  </div>
 
 </td>
-<td>
+<td style="padding-left:10px;">
 
 <!-- Favorites -->
 	<a class="ss_linkButton" href="javascript:;" 
@@ -121,7 +137,7 @@ function ss_workarea_showId(id, action) {
       style="visibility:hidden;margin:0px;padding:0px;"
     ></div>
 </td>
-<td>
+<td style="padding-left:10px;">
 
 <!-- My Teams -->
 	<a class="ss_linkButton" href="javascript:;" 
@@ -138,99 +154,35 @@ function ss_workarea_showId(id, action) {
 	      style="visibility:hidden;margin:0px;padding:0px;"></div>
 
 </td>
-
-<td>
-
-<%
-boolean isIE = BrowserSniffer.is_ie(request);
-%>
-	<!-- Search -->
+<td valign="top"style="padding-left:20px;"><!-- Help button -->
 <ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_quick">
-		<div >
-			<span class="ss_global_toolbar_label_text_quickSearch"><ssf:nlt tag="navigation.search"/></span>
-			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
-			  href="<portlet:actionURL windowState="${ss_urlWindowState}" portletMode="view"><portlet:param 
-			  	name="action" value="advanced_search"/><portlet:param 
-			  	name="binderId" value="${ssBinder.id}"/><portlet:param 
-			  	name="tabTitle" value="SEARCH FORM"/><portlet:param 
-			  	name="newTab" value="0"/></portlet:actionURL>"
-				><ssf:nlt tag="navigation.search.advanced"/></a></span>
-		</div>
-		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" 
-		  onMouseOver="this.style.cursor = 'pointer';">
-     		<form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
-		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
-		  		action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
-		  			name="action" value="advanced_search"/><portlet:param 
-		  			name="newTab" value="1"/></portlet:actionURL>">
-			  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
-                 <c:if test="<%= isIE %>">
-                   offsetX="159" 
-                 </c:if>
-                 <c:if test="<%= !isIE %>">
-                   offsetX="147" 
-                 </c:if>
-			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
-					<input name="searchText" style="width: 140px;" type="text" /> 
-					<a class="ss_searchButton" 
-					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
-					  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/1pix.gif" /></a>
-					<input type="hidden" name="searchBtn" value="searchBtn"/>
-					<input type="hidden" name="quickSearch" value="true"/>					
-					<input type="hidden" name="operation" value="ss_searchResults"/>
-			  </ssHelpSpot>
-				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
-				  title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
-				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
-				  '<portlet:actionURL windowState="${ss_urlWindowState}" portletMode="view"><portlet:param 
-				  name="action" value="advanced_search"/><portlet:param 
-				  name="newTab" value="1"/></portlet:actionURL>');"><img 
-				  src="<html:imagesPath/>pics/menudown.gif" /></a>
-				<div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
-			</form>
-     	</div>
+	<div class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();return false;"
+      onMouseOver="this.style.cursor = 'pointer';">
+        <img <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>pics/1pix.gif" />
+	    <div id="ss_navbarHelpButton">
+	      <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
+	    </div>
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
 	<div class="ss_global_toolbar_accessible">
-		<div >
-			<span class="ss_global_toolbar_label_text_quickSearch"><label for="ss_searchSearchText${renderResponse.namespace}"
-			  ><ssf:nlt tag="navigation.search"/></label></span>
-			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
-				  href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-				  name="action" value="advanced_search"/><portlet:param 
-				  name="tabTitle" value="SEARCH FORM"/><portlet:param 
-				  name="newTab" value="0"/></portlet:actionURL>"
-				><ssf:nlt tag="navigation.search.advanced"/></a></span>
-		</div>
-		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
-		  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
-                 <c:if test="<%= isIE %>">
-                   offsetX="159" 
-                 </c:if>
-                 <c:if test="<%= !isIE %>">
-                   offsetX="147" 
-                 </c:if>
-		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
-		  </ssHelpSpot>
-     		<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
-		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
-		  		action="<portlet:actionURL windowState="maximized"><portlet:param 
-		  			name="action" value="advanced_search"/><portlet:param 
-		  			name="newTab" value="1"/></portlet:actionURL>">
-					<input name="searchText" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
-					<a class="ss_searchButton" 
-					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
-					  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/search_icon.gif" /></a>
-					<input type="hidden" name="searchBtn" value="searchBtn"/>
-					<input type="hidden" name="quickSearch" value="true"/>					
-					<input type="hidden" name="operation" value="ss_searchResults"/>
-			</form>
-     	</div>
+	  <a href="javascript: ss_helpSystem.run();">
+	        <img <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" /></a>
+		    <div id="ss_navbarHelpButton">
+		      <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
+		    </div>
 	</div>
 </ssf:ifaccessible>
+  </td>
+</tr>
+</table>
 </td>
+</tr>
+<tr>
+<td>
+<table class="ss_global_toolbar_maximized" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+<tr>
 
 <td>
 <ssf:ifnotaccessible>
@@ -271,7 +223,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</div>
 </ssf:ifaccessible>
 </td>
-<td>
+<td style="padding-left:10px;">
 <ssf:ifnotaccessible>
 <span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findPlace"/></span>
 </ssf:ifnotaccessible>
@@ -314,7 +266,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</div>
 </ssf:ifaccessible>
 </td>
-<td>
+<td style="padding-left:10px;">
 <ssf:ifnotaccessible>
 <span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findTag"/></span>
 </ssf:ifnotaccessible>
@@ -358,6 +310,98 @@ boolean isIE = BrowserSniffer.is_ie(request);
 </ssf:ifaccessible>
 </td>
 
+<td style="padding-left:10px;">
+
+	<!-- Search -->
+<ssf:ifnotaccessible>
+	<div class="ss_global_toolbar_quick">
+		<div >
+			<span class="ss_global_toolbar_label_text_quickSearch"><ssf:nlt tag="navigation.search"/></span>
+			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
+			  href="<portlet:actionURL windowState="${ss_urlWindowState}" portletMode="view"><portlet:param 
+			  	name="action" value="advanced_search"/><portlet:param 
+			  	name="binderId" value="${ssBinder.id}"/><portlet:param 
+			  	name="tabTitle" value="SEARCH FORM"/><portlet:param 
+			  	name="newTab" value="0"/></portlet:actionURL>"
+				><ssf:nlt tag="navigation.search.advanced"/></a></span>
+		</div>
+		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" 
+		  onMouseOver="this.style.cursor = 'pointer';">
+     		<form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
+		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
+		  		action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
+		  			name="action" value="advanced_search"/><portlet:param 
+		  			name="newTab" value="1"/></portlet:actionURL>">
+			  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
+                 <c:if test="<%= BrowserSniffer.is_ie(request) %>">
+                   offsetX="159" 
+                 </c:if>
+                 <c:if test="<%= !BrowserSniffer.is_ie(request) %>">
+                   offsetX="147" 
+                 </c:if>
+			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
+					<input name="searchText" style="width: 140px;" type="text" /> 
+					<a class="ss_searchButton" 
+					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
+					  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/1pix.gif" /></a>
+					<input type="hidden" name="searchBtn" value="searchBtn"/>
+					<input type="hidden" name="quickSearch" value="true"/>					
+					<input type="hidden" name="operation" value="ss_searchResults"/>
+			  </ssHelpSpot>
+				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
+				  title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
+				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
+				  '<portlet:actionURL windowState="${ss_urlWindowState}" portletMode="view"><portlet:param 
+				  name="action" value="advanced_search"/><portlet:param 
+				  name="newTab" value="1"/></portlet:actionURL>');"><img 
+				  src="<html:imagesPath/>pics/menudown.gif" /></a>
+				<div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
+			</form>
+     	</div>
+	</div>
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+	<div class="ss_global_toolbar_accessible">
+		<div >
+			<span class="ss_global_toolbar_label_text_quickSearch"><label for="ss_searchSearchText${renderResponse.namespace}"
+			  ><ssf:nlt tag="navigation.search"/></label></span>
+			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
+				  href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
+				  name="action" value="advanced_search"/><portlet:param 
+				  name="tabTitle" value="SEARCH FORM"/><portlet:param 
+				  name="newTab" value="0"/></portlet:actionURL>"
+				><ssf:nlt tag="navigation.search.advanced"/></a></span>
+		</div>
+		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
+		  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
+                 <c:if test="<%= BrowserSniffer.is_ie(request) %>">
+                   offsetX="159" 
+                 </c:if>
+                 <c:if test="<%= !BrowserSniffer.is_ie(request) %>">
+                   offsetX="147" 
+                 </c:if>
+		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
+		  </ssHelpSpot>
+     		<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
+		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
+		  		action="<portlet:actionURL windowState="maximized"><portlet:param 
+		  			name="action" value="advanced_search"/><portlet:param 
+		  			name="newTab" value="1"/></portlet:actionURL>">
+					<input name="searchText" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
+					<a class="ss_searchButton" 
+					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
+					  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/search_icon.gif" /></a>
+					<input type="hidden" name="searchBtn" value="searchBtn"/>
+					<input type="hidden" name="quickSearch" value="true"/>					
+					<input type="hidden" name="operation" value="ss_searchResults"/>
+			</form>
+     	</div>
+	</div>
+</ssf:ifaccessible>
+</td>
+</tr>
+</table>
+</td>
 </tr>
 </table>
 
@@ -459,3 +503,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
 <!-- end of iframe div -->
 </c:if>
+<div style="padding-bottom:4px;"></div>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+<div style="padding-bottom:4px;"></div>
