@@ -85,22 +85,4 @@
          <portlet-ref>ss_workarea</portlet-ref>
       </instance>
    </deployment>
-   <deployment>
-      <instance>
-         <instance-id>ss_workarea_accessories-instance</instance-id>
-         <portlet-ref>ss_workarea_accessories</portlet-ref>
-      </instance>
-   </deployment>
-   <deployment>
-      <instance>
-         <instance-id>ss_workarea_context-instance</instance-id>
-         <portlet-ref>ss_workarea_context</portlet-ref>
-      </instance>
-   </deployment>
-   <deployment>
-      <instance>
-         <instance-id>ss_workarea_navigation-instance</instance-id>
-         <portlet-ref>ss_workarea_navigation</portlet-ref>
-      </instance>
-   </deployment>
 </deployments>

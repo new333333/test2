@@ -32,16 +32,14 @@
 <c:if test="${empty ss_portletInitialization}">
 <div class="ss_style ss_portlet_style ss_portlet">
 
-<c:if test="${ss_windowState == 'maximized'}">
-<% // Navigation bar %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-</c:if>
-
 <%
 String wsTreeName = renderResponse.getNamespace() + "_wsTree";
 %>
 <script type="text/javascript">
 function <%= wsTreeName %>_showId(id, obj, action) {
+	if (typeof ss_workarea_showId !== "undefined") {
+		return ss_workarea_showId(id, action);
+	}
 	//Build a url to go to
 	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
 			name="action" value="ssActionPlaceHolder"/><portlet:param 

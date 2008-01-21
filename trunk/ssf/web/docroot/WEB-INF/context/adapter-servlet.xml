@@ -71,9 +71,6 @@
 				<value>ss_task</value>
 				<value>ss_toolbar</value>
 				<value>ss_workarea</value>
-				<value>ss_workarea_accessories</value>
-				<value>ss_workarea_context</value>
-				<value>ss_workarea_navigation</value>
 			</list>
 		</property>
 	</bean>

@@ -91,8 +91,9 @@ function ss_workarea_showId(id, action) {
 	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color" >
 			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+<c:if test="${ss_displayType != 'ss_workarea'}">
 			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-		
+</c:if>		
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
 					  configJspStyle="${ssConfigJspStyle}" />
@@ -104,44 +105,6 @@ function ss_workarea_showId(id, action) {
 	</tbody>
 	</table>
 </div>
-
-<c:if test="${0 == 1 && ss_displayType == 'ss_workarea'}">
-	<% // Folder Sidebar %>
-	<div id="ss_workareaContext_${renderResponse.namespace}" class="ss_style" style="display:none">
-	<div class="ss_style">
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
-
-    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
-        initOpen="true" sticky="true">
-		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree" 
-		  treeDocument="${ssSidebarWsTree}" 
-		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_treeShowId"
-		  rootOpen="true"
-		  nowrap="true"/>
-		</c:if>
-	</ssf:sidebarPanel>
-
-    </div>
-    </div>
-</c:if>
-<c:if test="${0 == 1 && ss_displayType == 'ss_workarea'}">
-<script type="text/javascript">
-function ss_workareaMoveContext_${renderResponse.namespace}() {
-	var contextDiv = document.getElementById("ss_workareaContext");
-	if (contextDiv != null) {
-		var contextDivSource = document.getElementById("ss_workareaContext_${renderResponse.namespace}");
-		dojo.dom.moveChildren(contextDivSource, contextDiv, false);
-		return true;
-	}
-	return false;
-}
-if (!ss_workareaMoveContext_${renderResponse.namespace}()) {
-	ss_createOnLoadObj('ss_workareaMoveContext_${renderResponse.namespace}', ss_workareaMoveContext_${renderResponse.namespace});
-}
-</script>
-</c:if>
 
 <c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 	<script type="text/javascript">
