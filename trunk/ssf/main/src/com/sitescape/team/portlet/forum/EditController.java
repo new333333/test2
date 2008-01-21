@@ -200,17 +200,20 @@ public class EditController extends SAbstractController {
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, RequestContextHolder.getRequestContext().getZoneId().toString());
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);	
 		
-			String[] forumPrefIdList = PortletPreferencesUtil.getValues(prefs, WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
-		
-			//	Build the jsp bean (sorted by folder title)
-			List folderIds = new ArrayList();
-			for (int i = 0; i < forumPrefIdList.length; i++) {
-				folderIds.add(Long.valueOf(forumPrefIdList[i]));
+	        User user = RequestContextHolder.getRequestContext().getUser();
+			Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+			String[] mobileBinderIds = (String[])userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS);
+
+			//Build the jsp bean (sorted by folder title)
+			List<Long> binderIds = new ArrayList<Long>();
+			if (mobileBinderIds != null) {
+				for (int i = 0; i < mobileBinderIds.length; i++) {
+					binderIds.add(new Long(mobileBinderIds[i]));
+				}
 			}
-			Collection folders = getBinderModule().getBinders(folderIds);
-		
-			model.put(WebKeys.FOLDER_LIST, folders);
-			model.put(WebKeys.BINDER_ID_LIST, folderIds);
+			Collection binders = getBinderModule().getBinders(binderIds);
+			model.put(WebKeys.FOLDER_LIST, binders);
+			model.put(WebKeys.BINDER_ID_LIST, binderIds);
 			return new ModelAndView(WebKeys.VIEW_MOBILE_EDIT, model);
 		} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_BLOG_EDIT, "blog");
