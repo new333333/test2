@@ -35,6 +35,7 @@ import java.lang.reflect.Modifier;
 import com.sitescape.team.runas.RunasCallback;
 import com.sitescape.team.runas.RunasTemplate;
 import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SessionUtil;
 import com.sitescape.team.util.SpringContextUtil;
 
 public class BridgeServer {
@@ -91,18 +92,25 @@ public class BridgeServer {
 			contextZoneName = SZoneConfig.getDefaultZoneName();
 		
 		if(contextUserName == null)
-			contextUserName = SZoneConfig.getGuestUserName(contextZoneName);
+			contextUserName = SZoneConfig.getAdminUserName(contextZoneName);
 		
-		return RunasTemplate.runas(new RunasCallback() {
-			public Object doAs() {
-				try {
-					return methodObj.invoke(obj, methodArgs);
-				} catch (IllegalAccessException e) {
-					throw new RuntimeException(e);
-				} catch (InvocationTargetException e) {
-					throw new RuntimeException(e);
+		SessionUtil.sessionStartup();	
+		
+		try {
+			return RunasTemplate.runas(new RunasCallback() {
+				public Object doAs() {
+					try {
+						return methodObj.invoke(obj, methodArgs);
+					} catch (IllegalAccessException e) {
+						throw new RuntimeException(e);
+					} catch (InvocationTargetException e) {
+						throw new RuntimeException(e);
+					}
 				}
-			}
-		}, contextZoneName, contextUserName);	
+			}, contextZoneName, contextUserName);	
+		}
+		finally {
+			SessionUtil.sessionStop();
+		}
 	}
 }
