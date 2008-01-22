@@ -38,6 +38,7 @@ import com.liferay.portal.util.Constants;
 import com.liferay.portal.util.PortalUtil;
 import com.liferay.util.ParamUtil;
 import com.liferay.util.StringUtil;
+import com.liferay.util.Validator;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.service.UserServiceUtil;
 import com.liferay.portlet.admin.util.AdminUtil;
@@ -53,7 +54,6 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 	private static final Class[] UPDATE_SERVICE_METHOD_ARG_TYPES = 
 		new Class[] {String.class, String.class, String.class, Map.class, String.class};
 		
-	
 	private static final String DELETE_SERVICE_BEAN_NAME = "profileModule";
 	
 	private static final String DELETE_SERVICE_METHOD_NAME = "deleteUserByName";
@@ -61,13 +61,26 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 	private static final Class[] DELETE_SERVICE_METHOD_ARG_TYPES = 
 		new Class[] {String.class, String.class};
 	
+	private static final String MODIFY_SCREEN_NAME_CLASS_NAME = "com.sitescape.team.bridge.ProfileBridge";
+	
+	private static final String MODIFY_SCREEN_NAME_METHOD_NAME = "modifyScreenName";
+	
+	private static final Class[] MODIFY_SCREEN_NAME_METHOD_ARG_TYPES = 
+		new Class[] {String.class, String.class};
+	
 	protected Object[] updateUser(ActionRequest req) throws Exception {
 		Object[] returnValue = super.updateUser(req);
 		
 		User user = (User) returnValue[0];
+		String oldScreenName = ((String)returnValue[1]);
 		
-		String cmd = ParamUtil.getString(req, Constants.CMD);
+		if (Validator.isNotNull(oldScreenName)) {
+			// This means that the screen name has changed.
+			// Update user screen name first.
+			modifyScreenName(PortalUtil.getCompany(req).getWebId(), oldScreenName, user.getScreenName());
+		}
 
+		// Update user attributes.
 		String password = AdminUtil.getUpdateUserPassword(req, user.getUserId());
 		
 		if(password == null)
@@ -167,5 +180,12 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 		BridgeClient.invokeBean(contextCompanyWebId, null, DELETE_SERVICE_BEAN_NAME, 
 				DELETE_SERVICE_METHOD_NAME, DELETE_SERVICE_METHOD_ARG_TYPES,
 				new Object[] {contextCompanyWebId, userScreenName});
+	}
+	
+	protected void modifyScreenName(String contextCompanyWebId, 
+			String oldScreenName, String newScreenName) throws Exception {
+		BridgeClient.invoke(contextCompanyWebId, null, MODIFY_SCREEN_NAME_CLASS_NAME, 
+				MODIFY_SCREEN_NAME_METHOD_NAME, MODIFY_SCREEN_NAME_METHOD_ARG_TYPES,
+				new Object[] {oldScreenName, newScreenName});		
 	}
 }
