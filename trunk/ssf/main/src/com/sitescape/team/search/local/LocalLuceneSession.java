@@ -76,7 +76,7 @@ import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
-
+import com.sitescape.util.Validator;
 /**
  * This implementation provides access to local Lucene index.
  * 
@@ -666,7 +666,10 @@ public class LocalLuceneSession implements LuceneSession {
 			Directory indDir = FSDirectory.getDirectory(indexPath);
 			updater = new AclUpdater(indDir);
 			DocumentSelection docsel = updater.createDocSelection(q);
-			if (fieldvalue.equalsIgnoreCase("")) fieldvalue = "xx";
+			if (Validator.isNull(fieldvalue)) {
+				fieldvalue = "xx";
+				logger.error("Null acl value: " + q.toString());
+			}
 			if (docsel.size() != 0)
 				updater.addField(new Field(fieldname, fieldvalue,
 						Field.Store.NO, Field.Index.TOKENIZED),

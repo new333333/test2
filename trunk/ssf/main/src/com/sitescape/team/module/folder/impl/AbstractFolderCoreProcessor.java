@@ -578,6 +578,13 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	
 	}
 
+	   //inside write transaction    
+    public void copyBinder(Binder source, Binder destination, InputDataAccessor inputData) {
+    	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
+    		super.copyBinder(source, destination, inputData);
+    	else throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
+   	 
+    }
     //***********************************************************************************************************
     public Set getPrincipalIds(DefinableEntity entity) {
     	Set ids = super.getPrincipalIds(entity);
@@ -601,7 +608,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	return ids;
      }     
 
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	FolderEntry fEntry = (FolderEntry)entry;        
         // Add Doc number

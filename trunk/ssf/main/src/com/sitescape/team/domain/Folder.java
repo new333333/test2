@@ -48,6 +48,11 @@ public class Folder extends Binder {
     	setType(EntityIdentifier.EntityType.folder.name());
     	setLibrary(true);
     }
+    public Folder(Folder folder) {
+       	super(folder);
+       	setType(EntityIdentifier.EntityType.folder.name());
+       	owner = folder.owner;
+    }
  	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.folder;
 	}

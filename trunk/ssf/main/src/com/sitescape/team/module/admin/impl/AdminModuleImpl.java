@@ -421,7 +421,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					if (sfa == null) continue;
 					FileAttachment dfa = destination.getFileAttachment(sfa.getFileItem().getName());
 					//attach as custom attribute
-					if (dfa != null) source.addCustomAttribute(ca.getName(), dfa);
+					if (dfa != null) destination.addCustomAttribute(ca.getName(), dfa);
 					break;
 				}
 				case CustomAttribute.ORDEREDSET:
@@ -929,7 +929,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, top.getId().toString()));
 		//delete actual binder
 		IndexSynchronizationManager.deleteDocument(top.getIndexDocumentUid());
-	 	loadBinderProcessor(top).indexTree(null, top, null, StatusTicket.NULL_TICKET);
+	 	loadBinderProcessor(top).indexTree(top, null, StatusTicket.NULL_TICKET);
+	 	//top will be evicted, reread
+		getCoreDao().refresh(top);
+
 	 	//flush changes so we can use them to fix up dashboards
 		IndexSynchronizationManager.applyChanges();
 	 	//after children are added, resolve relative selections

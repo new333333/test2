@@ -143,6 +143,7 @@
 		<property name="transactionAttributes">
 			<props>
 				<prop key="add*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="copy*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
@@ -518,7 +519,7 @@
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
-		<!-- modifyBinder, setTeamMembers, setTeamMembershipInherited provide transaction semantics at a finer
+		<!-- modifyBinder, setTeamMembers, setTeamMembershipInherited, copyBinder provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>

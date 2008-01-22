@@ -37,7 +37,6 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.binder.impl.AbstractBinderProcessor;
 import com.sitescape.team.module.shared.InputDataAccessor;
-import com.sitescape.team.util.NLT;
 
 public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
     public void moveBinder(Binder source, Binder destination) {
@@ -46,6 +45,11 @@ public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
     	super.moveBinder(source, destination);
      }
  
+    public void copyBinder(Binder source, Binder destination, InputDataAccessor inputData) {
+    	if (!(destination instanceof Workspace))
+        	throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
+    	super.copyBinder(source, destination, inputData);
+     }
     /*******************************************************************/
     protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//User workspace - title change may come when userTitle changes,

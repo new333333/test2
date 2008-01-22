@@ -56,6 +56,7 @@ import com.sitescape.team.web.tree.DomTreeBuilder;
  */
 public interface BinderModule {
 	public enum BinderOperation {
+		copyBinder,
 		deleteBinder,
 		indexBinder,
 		indexTree,

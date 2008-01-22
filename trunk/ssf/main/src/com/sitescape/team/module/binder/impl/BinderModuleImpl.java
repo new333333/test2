@@ -156,6 +156,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	  			case indexTree:
 	  			case manageMail:
 	  			case moveBinder:
+	  			case copyBinder:
 	  			case modifyBinder:
 	  			case setProperty:
 	  			case manageDefinitions:
@@ -488,6 +489,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        	}
        	
      	loadBinderProcessor(source).moveBinder(source,destination);
+           	
+    }
+     //no transaction    
+     public void copyBinder(Long fromId, Long toId) {
+       	Binder source = loadBinder(fromId);
+		checkAccess(source, BinderOperation.copyBinder);
+       	Binder destination = loadBinder(toId);
+       	if (source.getEntityType().equals(EntityType.folder)) {
+       		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_FOLDERS);
+       	} else {
+       		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_WORKSPACES);
+       	}
+       	
+     	loadBinderProcessor(source).copyBinder(source,destination, null);
            	
     }
      //inside write transaction    
