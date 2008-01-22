@@ -77,11 +77,6 @@ public class WorkspaceTreeHelper {
         User user = RequestContextHolder.getRequestContext().getUser();
  		Map<String,Object> model = new HashMap<String,Object>();
 
- 		//Remember the last binder viewed
-		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-		portletSession.setAttribute(WebKeys.LAST_BINDER_VIEWED, binderId);
-		portletSession.setAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE, EntityType.workspace.name());
-
 		BinderHelper.setBinderPermaLink(bs, request, response);
 		try {
 			//won't work on adapter
@@ -144,6 +139,11 @@ public class WorkspaceTreeHelper {
 			binderId = workspaceId;
 			entryId = null;
 		}
+
+ 		//Remember the last binder viewed
+		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+		portletSession.setAttribute(WebKeys.LAST_BINDER_VIEWED, binderId);
+		portletSession.setAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE, EntityType.workspace.name());
 
 		
 		Map formData = request.getParameterMap();
