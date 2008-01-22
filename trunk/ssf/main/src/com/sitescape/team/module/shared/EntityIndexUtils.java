@@ -563,7 +563,7 @@ public class EntityIndexUtils {
     	}
 	}
  
-    public static void addTags(Document doc, DefinableEntity entry, Collection allTags, boolean fieldsOnly) {
+    public static void addTags(Document doc, DefinableEntity entry, List allTags, boolean fieldsOnly) {
     	String indexableTags = "";
     	String aclTags = "";
     	String tag = "";
