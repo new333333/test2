@@ -70,7 +70,7 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.util.DefinitionHelper;
-
+import com.sitescape.util.Validator;
 /**
  * Index the fields common to all Entry types.
  *
@@ -474,6 +474,7 @@ public class EntityIndexUtils {
    		String ids = LongIdUtil.getIdsAsString(binderIds);
        	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), BasicIndexUtils.READ_ACL_TEAM);
        	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), BasicIndexUtils.READ_ACL_BINDER_OWNER);
+       	if (Validator.isNull(ids)) return BasicIndexUtils.EMPTY_ACL_FIELD;
         return ids;
     }
     
@@ -562,7 +563,7 @@ public class EntityIndexUtils {
     	}
 	}
  
-    public static void addTags(Document doc, DefinableEntity entry, List allTags, boolean fieldsOnly) {
+    public static void addTags(Document doc, DefinableEntity entry, Collection allTags, boolean fieldsOnly) {
     	String indexableTags = "";
     	String aclTags = "";
     	String tag = "";
