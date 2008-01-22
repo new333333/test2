@@ -59,7 +59,7 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 	private static final String DELETE_SERVICE_METHOD_NAME = "deleteUserByName";
 	
 	private static final Class[] DELETE_SERVICE_METHOD_ARG_TYPES = 
-		new Class[] {String.class, String.class};
+		new Class[] {String.class};
 	
 	private static final String MODIFY_SCREEN_NAME_CLASS_NAME = "com.sitescape.team.bridge.ProfileBridge";
 	
@@ -179,7 +179,7 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 	throws Exception {
 		BridgeClient.invokeBean(contextCompanyWebId, null, DELETE_SERVICE_BEAN_NAME, 
 				DELETE_SERVICE_METHOD_NAME, DELETE_SERVICE_METHOD_ARG_TYPES,
-				new Object[] {contextCompanyWebId, userScreenName});
+				new Object[] {userScreenName});
 	}
 	
 	protected void modifyScreenName(String contextCompanyWebId, 
