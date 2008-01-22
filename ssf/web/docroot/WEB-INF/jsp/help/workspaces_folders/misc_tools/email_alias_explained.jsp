@@ -38,16 +38,11 @@
 
 <p><ssf:nlt tag="ihelp.email.from.moreInfo.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="ihelp.email.from.moreInfo.routing"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.from.moreInfo.aliases" /></p>
 
-<div class="example">
-<ssf:nlt tag="ihelp.email.from.moreInfo.example" />
-</div>
+<p><ssf:nlt tag="ihelp.email.from.moreInfo.aliases.example" /></p>
 
-<p><ssf:nlt tag="ihelp.email.from.moreInfo.explained"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
-
-
-<p><ssf:nlt tag="ihelp.email.from.moreInfo.consult"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.from.moreInfo.accounts"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="ihelp.email.from.moreInfo.deletedAfterRouting"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
