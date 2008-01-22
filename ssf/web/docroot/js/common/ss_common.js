@@ -294,7 +294,14 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, u
 			self.location.href = url;
 		}
 	} else {
-		self.location.href = url;
+		//See if this should be opened in ss_workarea
+		if (typeof ss_workarea_showId != "undefined" && entityType == "workspace") {
+			ss_workarea_showId(binderId, "view_ws_listing");
+		} else if (typeof ss_workarea_showId != "undefined" && entityType == "folder") {
+			ss_workarea_showId(binderId, "view_folder_listing");
+		} else {
+			self.location.href = url;
+		}
 	}
 	return false;
 }
