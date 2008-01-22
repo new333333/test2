@@ -34,6 +34,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.InitializingBean;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.LoginInfo;
@@ -44,6 +45,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
+import com.sitescape.team.module.zone.ZoneException;
 import com.sitescape.team.security.authentication.AuthenticationManager;
 import com.sitescape.team.security.authentication.DigestDoesNotMatchException;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
@@ -107,6 +109,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			boolean createUser, boolean passwordAutoSynch, boolean ignorePassword, 
 			Map updates, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
+		validateZone(zoneName);
 		User user=null;
 		boolean hadSession = SessionUtil.sessionActive();
 		try {
@@ -131,7 +134,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  					// This password should be ignored. Use username as password instead.
  					password = userName;
  				}
- 				user=getProfileModule().addUserFromPortal(zoneName, userName, password, updates);
+ 				user=getProfileModule().addUserFromPortal(userName, password, updates);
  				if(authenticatorName != null)
  					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
  			} 
@@ -145,6 +148,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	public User authenticate(String zoneName, String username, String password,
 			boolean passwordAutoSynch, boolean ignorePassword, String authenticatorName)
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
+		validateZone(zoneName);
 		User user=null;
 		boolean hadSession = SessionUtil.sessionActive();
 		try {
@@ -193,6 +197,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 
 	public User authenticate(String zoneName, Long userId, String binderId, String privateDigest, String authenticatorName) 
 		throws PasswordDoesNotMatchException, UserDoesNotExistException {
+		validateZone(zoneName);
 		User user = null;
 		boolean hadSession = SessionUtil.sessionActive();
 		try {
@@ -216,4 +221,8 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		return user;
 	}
 		
+	private void validateZone(String zoneName) throws ZoneException {
+		if(!zoneName.equals(RequestContextHolder.getRequestContext().getZoneName()))
+			throw new ZoneException("Authentication is permitted only against the context zone"); 
+	}
 }

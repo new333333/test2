@@ -67,13 +67,12 @@ public interface ProfileModule {
 	/**
 	 * Create an user from information from the portal.
 	 * 
-	 * @param zoneName 
 	 * @param userName 
 	 * @param password may be null
 	 * @param updates may be null
 	 * @return created user object
 	 */
-	public User addUserFromPortal(String zoneName, String userName, String password, Map updates);
+	public User addUserFromPortal(String userName, String password, Map updates);
 
 	public void deleteEntry(Long binderId, Long id, boolean deleteWS)
 		throws AccessControlException, WriteFilesException;
@@ -134,5 +133,5 @@ public interface ProfileModule {
 	public boolean testAccess(Principal entry, ProfileOperation operation);
 	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException;
 
-	public void deleteUserByName(String zoneName, String userName);
+	public void deleteUserByName(String userName);
 }

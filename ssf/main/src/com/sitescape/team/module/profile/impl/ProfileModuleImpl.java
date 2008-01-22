@@ -821,7 +821,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
     //NO transaction
-	public User addUserFromPortal(String zoneName, String userName, String password, Map updates) {
+	public User addUserFromPortal(String userName, String password, Map updates) {
 		if(updates == null)
 			updates = new HashMap();
 		
@@ -833,7 +833,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		
 		// build user
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
-		Binder top = getCoreDao().findTopWorkspace(zoneName);
+		Binder top = getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
 		RequestContextUtil.setThreadContext(getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getZoneId()));
 		try {
 			ProfileBinder profiles = getProfileDao().getProfileBinder(top.getZoneId());
@@ -921,9 +921,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 
     //RW transaction
-	public void deleteUserByName(String zoneName, String userName) {
+	public void deleteUserByName(String userName) {
 		try {
-			User user = getProfileDao().findUserByName(userName, zoneName);
+			User user = getProfileDao().findUserByName(userName, 
+					RequestContextHolder.getRequestContext().getZoneName());
 			deleteEntry(user.getParentBinder().getId(), user.getId(), false);
 		}
 		catch(NoUserByTheNameException thisIsOk) {}
