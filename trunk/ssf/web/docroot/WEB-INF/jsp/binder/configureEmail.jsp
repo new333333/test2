@@ -99,7 +99,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 <table class="ss_style"  border="0" cellspacing="0" cellpadding="3" width="100%">
 <tr>
-<td align="left"><span class="ss_bold"><ssf:nlt tag="notify.header"/></span><ssf:inlineHelp tag="ihelp.email.notification_list"/>
+<td align="left"><span class="ss_bold"><ssf:nlt tag="notify.header"/></span><ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_notifications_folder_settings"/>
 </tr>
 <tr>
 <td style="padding-left:15px;">
@@ -169,7 +169,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <c:set var="scheduleStringOnly" value="true"/>
 <c:set var="schedule" value="${ssScheduleInfo2.schedule}"/>
 <%@ include file="/WEB-INF/jsp/administration/schedule.jsp" %>
-]
+]<ssf:inlineHelp tag="ihelp.email.schedule.inFolder"/>
 </c:if>
 </td>
 </tr>
@@ -178,7 +178,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <br/>
 <span class="ss_labelAbove">
 <c:if test="${mail_posting_use_aliases == 'false'}"><ssf:nlt tag="incoming.select.user"/></c:if>
-<c:if test="${mail_posting_use_aliases != 'false'}"><ssf:nlt tag="incoming.select.alias"/></c:if>
+<c:if test="${mail_posting_use_aliases != 'false'}"><ssf:nlt tag="incoming.select.alias"/></c:if><ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_alias" />
 </span>
 <input type="text" name="alias" value="${ssBinder.posting.emailAddress}" size="30"> 
 <c:if test="${mail_posting_use_aliases == 'false'}">

@@ -32,9 +32,7 @@
 <div class="ss_style">
 <div class="ss_help_style">
 
-<p><ssf:nlt tag="ihelp.email.from"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="ihelp.email.from.moreInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.notification_list" /></p>
 
 </div>
 
@@ -43,7 +41,7 @@
 </p>
 
 <div class="ss_help_moreinfo">
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('workspaces_folders/misc_tools/email_alias_explained', 'ss_moreinfo_panel');"><ssf:nlt tag="ihelp.email.from.moreInfo.topic"/></a><a id="skip_nav_titles"/></p>
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('workspaces_folders/misc_tools/email_notifications_explained', 'ss_moreinfo_panel');"><ssf:nlt tag="ihelp.email.notify.understanding.topic"/></a><a id="skip_nav_titles"/></p>
 </div>
 
 </div>
