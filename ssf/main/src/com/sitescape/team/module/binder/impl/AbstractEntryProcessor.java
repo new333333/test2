@@ -875,7 +875,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     /**
      * Index binder and its entries
      */
-    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, List tags) {
+    public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
     	super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return;
     	indexEntries(binder, deleteIndex);
@@ -1110,7 +1110,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
     protected void indexEntry(Binder binder, Entry entry, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, boolean newEntry, List tags) {
+    		Collection<FileAttachment> filesToIndex, boolean newEntry, Collection tags) {
     	// Logically speaking, the only files we need to index are the ones
     	// that have been uploaded (fileUploadItems) and the ones explicitly
     	// specified (in the filesToIndex). In ideal world, indexing only
@@ -1144,7 +1144,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      * @param newEntry
      */
 	protected void indexEntryWithAttachments(Binder binder, Entry entry,
-			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, List tags) {
+			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags) {
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.
 			
@@ -1170,7 +1170,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
          }
  	}
 
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
         boolean fieldsOnly = false;
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, fieldsOnly);
@@ -1196,7 +1196,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         return indexDoc;
     }
     protected org.apache.lucene.document.Document buildIndexDocumentFromEntryFile
-	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui, List tags) {
+	(Binder binder, Entry entry, FileAttachment fa, FileUploadItem fui, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	//do common part first. Indexing a file overrides some values
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, true);

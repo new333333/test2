@@ -104,6 +104,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		 teamMembershipInherited=source.teamMembershipInherited;
 		 library=source.library;
 		 uniqueTitles = source.uniqueTitles;
+		 upgradeVersion = source.upgradeVersion;
 		 if (source.properties != null)
 			 properties = new HashMap(source.properties);
 		 //don't copy postingDef, notificationDef, internalId, binders, owner or pathName

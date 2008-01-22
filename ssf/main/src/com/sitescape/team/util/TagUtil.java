@@ -31,11 +31,11 @@ package com.sitescape.team.util;
 import java.text.Collator;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+import java.util.Collection;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -52,7 +52,7 @@ public class TagUtil {
      * @param allTags
      * @return
      */
-    public static Map<String, SortedSet<Tag>> uniqueTags(List<Tag> tags) {
+    public static Map<String, SortedSet<Tag>> uniqueTags(Collection<Tag> tags) {
         Map results = new HashMap();
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new TagComparator(user.getLocale());

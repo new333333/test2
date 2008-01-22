@@ -85,6 +85,9 @@ public class EntityIndexUtils {
     public final static String ENTRY_TYPE_REPLY = "reply";
     public final static String ENTRY_TYPE_USER = "user";
     public final static String ENTRY_TYPE_GROUP = "group";
+    public static final String ENTITY_FIELD="_entityType"; //correspondes to EntityIdentifier.EntityType
+    public static final String DOCID_FIELD = "_docId"; //id field
+    
     public final static String ENTRY_ANCESTRY = "_entryAncestry";
     public static final String CREATION_DATE_FIELD = "_creationDate";
     public static final String CREATION_DAY_FIELD = "_creationDay";
@@ -101,7 +104,6 @@ public class EntityIndexUtils {
     public static final String MODIFICATIONID_FIELD = "_modificationId";
     public static final String MODIFICATION_NAME_FIELD = "_modificationName";
     public static final String MODIFICATION_TITLE_FIELD = "_modificationTitle";
-    public static final String DOCID_FIELD = "_docId";
     public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
     public static final String TITLE_FIELD = "title";
     public static final String SORT_TITLE_FIELD = "_sortTitle";
@@ -136,8 +138,6 @@ public class EntityIndexUtils {
     public static final String FILE_TIME_FIELD = "_fileTime";
     public static final String FILE_UNIQUE_FIELD="_fileNameUnique";
     public static final String RATING_FIELD="_rating";
-    public static final String ENTITY_FIELD="_entityType";
-    public static final String ENTRY_FIELD="_entryType"; 
     public static final String DEFINITION_TYPE_FIELD="_definitionType"; 
     public static final String FAMILY_FIELD="_family"; 
     public static final String TEAM_MEMBERS_FIELD="_teamMembers";
@@ -563,7 +563,7 @@ public class EntityIndexUtils {
     	}
 	}
  
-    public static void addTags(Document doc, DefinableEntity entry, List allTags, boolean fieldsOnly) {
+    public static void addTags(Document doc, DefinableEntity entry, Collection allTags, boolean fieldsOnly) {
     	String indexableTags = "";
     	String aclTags = "";
     	String tag = "";

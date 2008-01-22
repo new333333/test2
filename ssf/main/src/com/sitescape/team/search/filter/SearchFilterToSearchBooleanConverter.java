@@ -426,7 +426,7 @@ public class SearchFilterToSearchBooleanConverter {
 		}
 
 		Element field2 = block.addElement(QueryBuilder.FIELD_ELEMENT);
-		field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_FIELD);
+		field2.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_TYPE_FIELD);
 		Element child2 = field2.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 		child2.setText(entryType);
    	}

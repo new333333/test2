@@ -50,16 +50,17 @@ public interface BinderProcessor {
 
     public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
-  	public void deleteBinder(Binder binder, boolean deleteMirroredSource) throws AccessControlException;
+    public void copyBinder(Binder source, Binder destination, InputDataAccessor inputData);
+    public void deleteBinder(Binder binder, boolean deleteMirroredSource) throws AccessControlException;
   	//return search results
   	public Map getBinders(Binder binder, Map options);
     public void indexFunctionMembership(Binder binder, boolean cascade);
     public void indexTeamMembership(Binder binder, boolean cascade);
     public void indexOwner(Binder binder);
 	public void indexBinder(Binder binder, boolean includeEntries);	
-    public Collection indexTree(Binder binder, Collection exclusions);
+	public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags);
+	public Collection indexTree(Binder binder, Collection exclusions);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket);
-    public Collection indexTree(Binder top, Binder binder, Collection exclusions, StatusTicket statusTicket);
       
  	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
 		throws AccessControlException, WriteFilesException;

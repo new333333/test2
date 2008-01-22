@@ -76,7 +76,7 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 		throw new NotSupportedException("Move", "TemplateBinder");
 	
 	}
-    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, List tags) {
+    public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
    		//nothing to do    	    	
     }
 	//nothing to index
@@ -84,9 +84,6 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 		return indexTree(binder, exclusions, StatusTicket.NULL_TICKET);
 	}
 	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
-		return new ArrayList();
-	}
-	public Collection indexTree(Binder top, Binder binder, Collection exclusions, StatusTicket statusTicket) {
 		return new ArrayList();
 	}
 	//nothing to log

@@ -31,30 +31,26 @@ package com.sitescape.team.module.binder.impl;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
+import java.lang.reflect.Constructor;
 
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.SortField;
-import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import com.sitescape.team.InternalException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.docconverter.ITextConverterManager;
 import com.sitescape.team.docconverter.TextConverter;
@@ -65,18 +61,16 @@ import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.exception.UncheckedCodedException;
 import com.sitescape.team.fi.connection.ResourceDriver;
 import com.sitescape.team.fi.connection.ResourceSession;
@@ -107,14 +101,12 @@ import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
-import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.StatusTicket;
-import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 
@@ -1053,7 +1045,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
 		//delete actual binder
 		IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
-    	indexTree(null, binder, null, StatusTicket.NULL_TICKET);
+		getCoreDao().flush(); //get updates out for optimized indexTree
+    	indexTree(binder, null);  //binder will be evicted on return
     }
     //somewhere up the parent chain we have a new parent
     //don't have to do all the work immediate parent had to do
@@ -1061,6 +1054,161 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	public void moveBinderFixup(Binder binder) {
 		getCoreDao().move(binder);
 	}
+
+    //***********************************************************************************************************
+    //inside write transaction    
+    public void copyBinder(final Binder source, final Binder destination, final InputDataAccessor inputData) {
+    	if (source.equals(destination)) return;
+    	if (source.isReserved() || source.isZone()) 
+    		throw new NotSupportedException(
+    				"errorcode.notsupported.copyBinder", new String[]{source.getPathName()});
+    	if (destination.isZone())
+      		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
+     	final Map ctx = copyBinder_setCtx(source, destination, null);
+     	final Binder binder = copyBinder_create(source, ctx);
+        // The following part requires update database transaction.
+        getTransactionTemplate().execute(new TransactionCallback() {
+        	public Object doInTransaction(TransactionStatus status) {
+                //need to set entry/binder information before generating file attachments
+                //Attachments/Events need binder info for AnyOwner
+        		copyBinder_fillIn(source, destination, binder, inputData, ctx);
+                
+ //               copyBinder_mirrored(source, binder, inputData, inputData, ctx);
+                
+ //               copyBinder_preSave(source, binder, inputData, inputData, ctx);      
+
+//                copyBinder_save(source, binder, inputData, inputData, ctx);      
+
+                
+ //               copyBinder_postSave(source, binder, inputData, inputData, ctx);
+                //register title for uniqueness for webdav; always ensure binder titles are unique in parent
+                getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
+                if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
+                return null;
+        	}
+        });
+ 		copyBinder_index(source, ctx);
+
+    }
+    //no transaction    
+    protected Map copyBinder_setCtx(Binder source, Binder destination, Map ctx) {
+    	if (ctx == null) ctx = new HashMap();
+    	return ctx;
+    }
+    //no transaction - should be overridden 
+   protected Binder copyBinder_create(Binder source, Map ctx) {
+	   Class params[] = new Class[] {source.getClass()};
+	   try {
+		   Constructor construct = source.getClass().getConstructor(params);
+		   return (Binder)construct.newInstance(new Object[]{source});
+	   } catch (Exception ex) {
+	   }
+	   try {
+		   return source.getClass().newInstance();
+	   } catch (Exception ex) {
+		   return null;
+	   }
+
+   }
+   //inside write transaction    
+   protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, InputDataAccessor inputData, Map ctx) {  
+       User user = RequestContextHolder.getRequestContext().getUser();
+       binder.setCreation(source.getCreation());
+       binder.setModification(source.getModification());
+       binder.setLogVersion(Long.valueOf(1));
+       binder.setOwner(source.getOwner());
+
+   	//force a lock so contention on the sortKey is reduced
+       if (Boolean.TRUE.equals(inputData.getSingleObject(ObjectKeys.INPUT_OPTION_FORCE_LOCK))) {
+           getCoreDao().lock(parent);
+       } 
+       parent.addBinder(binder);
+       
+   }
+
+    //inside write transaction    
+   protected boolean copyBinder_mirrored(Binder source, Binder destination, Map ctx) {
+    	// Post-operation condition: A binder representing a seed resource 
+    	// (ie, a top-level mirrored binder whose parent binder is not a
+    	// mirrored binder) must preserve that attribute after move.
+    	// Likewise, a mirrored binder that is not top-level can not be
+    	// a top-level binder after move. In other words, the characteristic
+    	// of being top-level or not must be preserved. 
+    	// Otherwise, the move is not allowed.
+    	boolean resourcePathAffected=false;
+    	if(source.isMirrored()) {
+    		if(source.getParentBinder().isMirrored()) { // mirrored but not top-level
+    			if(destination.isMirrored()) {
+    				if(source.getResourceDriverName().equals(destination.getResourceDriverName())) {
+    					ResourceDriver driver = getResourceDriverManager().getDriver(source.getResourceDriverName());
+    					
+    		    		if(driver.isReadonly()) {
+    						throw new NotSupportedException("errorcode.notsupported.renameMirroredBinder.readonly", 
+    								new String[] {source.getPathName(), driver.getTitle()});
+    		    		}
+    		    		else {
+        					// We can/must move the resource.
+	    					ResourceSession session = driver.openSession().setPath(source.getResourcePath()); 
+	    					try {
+	    						session.move(destination.getResourcePath(), source.getTitle());  	
+	    						// Do not yet update the resource path in the source, it will be done by callder.
+	    						resourcePathAffected=true;
+	    					}
+	    					finally {
+	    						session.close();
+	    					}	
+    		    		}
+    				}
+    				else {
+    					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+    							+ "] because the resource driver is different");
+    		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
+    				}
+    			}
+    			else {
+					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+							+ "] because the source is not top-level mirrored and the destination is not mirrored");
+		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});  				
+    			}
+    		}
+    		else { // top-level mirrored
+    			if(destination.isMirrored()) {
+					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+							+ "] because the source is top-level mirrored and the destination is already mirrored");
+		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
+    			}
+    			else {
+    				// Does not involve resource moving.
+    			}
+    		}
+    	}
+    	else { // not mirrored at all
+    		if(destination.isMirrored()) {
+				logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
+						+ "] because the source is not mirrored but the destination is");
+	      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
+    		}
+    		else {
+    			// Does not involve resource moving.
+    		}
+    	}
+    	return resourcePathAffected;
+    } 
+
+    //inside write transaction    
+    protected void copyBinder_log(Binder binder, HistoryStamp stamp) {
+    	binder.setModification(stamp);
+ 		binder.incrLogVersion();
+ 		ChangeLog changes = new ChangeLog(binder, ChangeLog.MOVEBINDER);
+    	changes.getEntityRoot();
+    	getCoreDao().save(changes);
+
+    }
+    //inside write transaction    
+    protected void copyBinder_index(Binder binder, Map ctx) {
+		getCoreDao().flush(); //get updates out for optimized indexTree
+    	indexTree(binder, null);  //binder will be evicted on return
+    }
 
     //********************************************************************************************************
     public Map getBinders(Binder binder, Map options) {
@@ -1173,7 +1321,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		List<Object[]> notBinders = getCoreDao().loadObjects("select x.id,x.binderKey.sortKey from com.sitescape.team.domain.Binder x where x.binderKey.sortKey like '" +
     				binder.getBinderKey().getSortKey() + "%' and x.functionMembershipInherited=:functionTest order by x.binderKey.sortKey", params);
        		List<Long>ids = pruneUpdateList(binder, notBinders);
-    		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
+    		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000)/2 - 10;  //account for others in search
     		if (ids.size() <= limit) {
     			doFieldUpdate(binder, ids, BasicIndexUtils.FOLDER_ACL_FIELD, value);
     		} else {
@@ -1215,7 +1363,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		List<Object[]> notBinders = getCoreDao().loadObjects("select x.id,x.binderKey.sortKey from com.sitescape.team.domain.Binder x where x.binderKey.sortKey like '" +
     				binder.getBinderKey().getSortKey() + "%' and x.teamMembershipInherited=:functionTest order by x.binderKey.sortKey", params);
        		List<Long>ids = pruneUpdateList(binder, notBinders);
-       		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
+       		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000)/2 - 10;  //account for others in search
     		if (ids.size() <= limit) {
           		doFieldUpdate(binder, ids, BasicIndexUtils.TEAM_ACL_FIELD, value);
        		} else {
@@ -1279,10 +1427,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      }
      
      //this will update the binder, its attachments and entries, and subfolders and entries that inherit
-     private void doFieldUpdate(Binder binder, List<Long>binders, String field, String value) {
+     private void doFieldUpdate(Binder binder, List<Long>notBinders, String field, String value) {
  		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index 
-		org.dom4j.Document qTree = buildQueryforUpdate(binder, binders);
+		org.dom4j.Document qTree = buildQueryforUpdate(binder, notBinders);
 		//don't need to add access check to update of acls
 		//access to entries is not required to update the team acl
 		QueryBuilder qb = new QueryBuilder(null);
@@ -1298,10 +1446,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      //this code assumes all doc_types have the field being updated
   	private org.dom4j.Document buildQueryforUpdate(Binder binder, List<Long> notBinders) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
+		//_docId:x and (docType=binder or attType=binder)
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
 		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
+	   	//Get this binder which won't get captured by ancestor search
+	   	// Get the binder and its attachments
+		buildQueryForBinder(qTreeOrElement, binder);
+
 		//get all the entrys, replies, subBinders and their attachments
-		// __entryAncestry: and not __entryAncestry:{} 
+		// or (__entryAncestry: and not __entryAncestry:{} and not (docId:{} and (docType=binder or attType=binder)))
 		Element ancestorElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
 	 
 		Element ancestors = ancestorElement.addElement(QueryBuilder.FIELD_ELEMENT);
@@ -1310,17 +1463,17 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		child.setText(binder.getId().toString());
 		if (!notBinders.isEmpty()) {	
 			Element notAncestors = ancestorElement.addElement(QueryBuilder.NOT_ELEMENT);
-			Element idsOrElement = notAncestors.addElement(QueryBuilder.OR_ELEMENT);
+			Element ancestorOrElement = notAncestors.addElement(QueryBuilder.OR_ELEMENT);
 			for (Long id:notBinders) {
-				Element fieldI = idsOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+				Element fieldI = ancestorOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
 				fieldI.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_ANCESTRY);
 				Element childI = fieldI.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 				childI.setText(id.toString());
 			}
+			notAncestors = ancestorElement.addElement(QueryBuilder.NOT_ELEMENT);
+			buildQueryForBinders(notAncestors, notBinders);
+			
 		}
-	   	//Get this binder which won't get captured by ancestor search
-	   	// Get the binder and its attachments
-		buildQueryForBinder(qTreeOrElement, binder);
 
 	   	return qTree;
 	}
@@ -1383,6 +1536,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	Element qTreeAndElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
  
     	Element idsOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
+    	List binderIds = new ArrayList();
     	//get all the entrys, replies and their attachments
     	// _binderId and doctypes:{entry, attachment}
     	for (Binder b:binders) {
@@ -1390,6 +1544,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
 			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 			child.setText(b.getId().toString());
+			binderIds.add(b.getId());
     	}
     	
     	Element typeOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
@@ -1400,38 +1555,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			child.setText(docTypes[i]);
     	}
     	// Get all the binder's themselves
-    	// (Doctype=binder OR (DocType=attachment and attType=binder)) and binder id's
-    	Element andElement = qTreeOrElement.addElement((QueryBuilder.AND_ELEMENT));
-    	Element bOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
-    	Element field = bOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
-
-		Element aAndElement = bOrElement.addElement(QueryBuilder.AND_ELEMENT);
-    	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
-		
-    	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
-		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
-		
-		Element orOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
-	   	for (Binder b:binders) {
-    		field = orOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
-			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-			child.setText(b.getId().toString());
-    	}
-	   	return qTree;
+     	// (_docType=binder OR _attType=binder) AND (_docId= OR _docId= OR ... ) 
+    	buildQueryForBinders(qTreeOrElement, binderIds);
+    	return qTree;
 	}
 	
 	private void buildQueryForBinder(Element parent, Binder binder) {
     	// Get the binder and its attachments
-     	// docId= AND (Doctype=binder OR (DocType=attachment and attType=binder)) 
+     	// _docId= AND (_docType=binder OR _attType=binder)) 
      	Element andElement = parent.addElement((QueryBuilder.AND_ELEMENT));
      	Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
     	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
@@ -1443,72 +1574,95 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
  		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
  		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
-
- 		Element aAndElement = bOrElement.addElement(QueryBuilder.AND_ELEMENT);
-     	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
- 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
- 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
- 		child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
- 		
-     	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		
+     	field = bOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
  		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
  		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
  		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
  		
      }
   	     
+	private void buildQueryForBinders(Element parent, Collection<Long> binderIds) {
+    	// Get the binder and its attachments
+     	// (_docType=binder OR _attType=binder) AND (_docId= OR _docId- OR  ... ) 
+     	Element andElement = parent.addElement((QueryBuilder.AND_ELEMENT));
+     	   	 
+     	Element typeOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+     	Element field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+ 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+ 		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+ 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+		
+     	field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+ 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
+ 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+ 		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
+ 
+ 		Element binderOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+	   	for (Long id:binderIds) {
+    		field = binderOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
+			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(id.toString());
+    	}
+
+     }
 
     //***********************************************************************************************************
     public void indexBinder(Binder binder, boolean includeEntries) {
     	//call overloaded methods
    		indexBinder(binder, includeEntries, true, null);    	
     }
-    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, List tags) {
+   public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
    		indexBinder(binder, null, null, !deleteIndex, tags);    	
     	
     }
     //***********************************************************************************************************
     //It is assumed that the index has been deleted for each binder to be index
     public Collection indexTree(Binder binder, Collection exclusions) {
-    	return indexTree(binder, binder, exclusions, StatusTicket.NULL_TICKET);
+    	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET);
     }
    	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
-   		return indexTree(binder, binder, exclusions, statusTicket);
+   		return loadIndexTree(binder, exclusions, statusTicket);
    	}
-   	//if top is null, don't evict any binders
-   	public Collection indexTree(Binder top, Binder binder, Collection exclusions, StatusTicket statusTicket) {
-    	TreeSet indexedIds = new TreeSet();
-       	if (exclusions == null) exclusions = new TreeSet();
+   	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
+   		//get all the ids of child binders. order for statusTicket to make some sense
+   		List<Long> ids = getCoreDao().loadObjects("select x.id from com.sitescape.team.domain.Binder x where x.binderKey.sortKey like '" +
+				binder.getBinderKey().getSortKey() + "%' order by x.binderKey.sortKey", null);
+		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
+		if (exclusions != null) ids.removeAll(exclusions);
    		String oldStatus = statusTicket.getStatus();
-   		if(oldStatus != null) {
-   			statusTicket.setStatus(oldStatus + " // " + binder.getTitle());
-   		} else {
-   			statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {binder.getTitle()}));
-   		}
-       	if (!exclusions.contains(binder.getId())) {
-        	//index self.
-       		indexBinder(binder, true, false, null);
-        	indexedIds.add(binder.getId());
-        }
-       	List binders = binder.getBinders();
-   		for (int i=0; i<binders.size(); ++i) {
-   	    	Binder b = (Binder)binders.get(i);
-   	    	if (b.isDeleted()) continue;
-   	    	//index children
-   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-   	    	indexedIds.addAll(processor.indexTree(top, b, exclusions, statusTicket));
-   	   	 }
-   		//evict the children, unless this index is being done by another module.
-   		//In other words, assume it is safe to evict if called from controller.
-   		if (top != null && !binder.equals(top)) {
-   			getCoreDao().evict(binders);
-   		}
-   		//apply after we have gathered a few
-   		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshhold", 100));
-   		statusTicket.setStatus(oldStatus);
+		for (int i=0; i<ids.size(); i+=inClauseLimit) {
+			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
+			List<Binder> binders = getCoreDao().loadObjects(subList, com.sitescape.team.domain.Binder.class, null);
+			getCoreDao().bulkLoadCollections(binders);
+			List<EntityIdentifier> entityIds = new ArrayList();
+			for (Binder e: binders) {
+				entityIds.add(e.getEntityIdentifier());
+			}
+			Map tagMap = getCoreDao().loadAllTagsByEntity(entityIds);
 
-   		return indexedIds;	
-    }
+			for (Binder b:binders) {
+				if (b.isDeleted()) continue;
+	   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+				
+	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
+	   	   		if(oldStatus != null) {
+	   	   			statusTicket.setStatus(oldStatus + " // " + b.getTitle());
+	   	   		} else {
+	   	   			statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {b.getTitle()}));
+	   	   		}
+	   	    	processor.indexBinder(b, true, false, tags);
+	   	    	getCoreDao().evict(tags);
+	   	    	getCoreDao().evict(b);
+			}
+	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshhold", 100));
+		}
+   		statusTicket.setStatus(oldStatus);
+   		return ids;
+
+   	}
+
     //***********************************************************************************************************
     protected Principal getPrincipal(List users, String userId) {
     	Principal p;
@@ -1530,7 +1684,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @param newEntry
      */
     protected void indexBinder(Binder binder, List fileUploadItems, 
-    		Collection<FileAttachment> filesToIndex, boolean newEntry, List tags) {
+    		Collection<FileAttachment> filesToIndex, boolean newEntry, Collection tags) {
     	// Logically speaking, the only files we need to index are the ones
     	// that have been uploaded (fileUploadItems) and the ones explicitly
     	// specified (in the filesToIndex). In ideal world, indexing only
@@ -1565,7 +1719,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @param newEntry
      */
 	protected void indexBinderWithAttachments(Binder binder,
-			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, List tags) {
+			Collection<FileAttachment> fileAttachments, List fileUploadItems, boolean newEntry, Collection tags) {
 		if(!newEntry) {
 			// This is modification. We must first delete existing document(s) from the index.
 			indexDeleteBinder(binder);	        
@@ -1592,7 +1746,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         }
 	}
 
-    protected org.apache.lucene.document.Document buildIndexDocumentFromBinder(Binder binder, List tags) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromBinder(Binder binder, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
         boolean fieldsOnly = false;
     	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder, false);
@@ -1622,7 +1776,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         return indexDoc;
     }   
     protected org.apache.lucene.document.Document buildIndexDocumentFromBinderFile
-		(Binder binder, FileAttachment fa, FileUploadItem fui, List tags) {
+		(Binder binder, FileAttachment fa, FileUploadItem fui, Collection tags) {
        	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
        	//do common part first.  Indexing a file will remove some of the items
        	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder, true);
@@ -1641,7 +1795,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      * @return
      */
     protected void buildIndexDocumentFromFile
-    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, List tags) {
+    	(org.apache.lucene.document.Document indexDoc, Binder binder, DefinableEntity entity, FileAttachment fa, FileUploadItem fui, Collection tags) {
     	TextConverter converter = null;
 		String text = "";
 		

@@ -178,6 +178,12 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	
 	}
     //*******************************************************************/
+  	//not supported
+	public void copyBinder(Binder source, Binder destination) {
+		throw new NotSupportedException("Copy", "ProfileBinder");
+	
+	}
+    //*******************************************************************/
     //inside write transaction    
     protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {
     	super.addBinder_fillIn(parent,binder, inputData, entryData, ctx);
@@ -472,7 +478,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************    
  
-    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, List tags) {
+    protected org.apache.lucene.document.Document buildIndexDocumentFromEntry(Binder binder, Entry entry, Collection tags) {
     	org.apache.lucene.document.Document indexDoc = super.buildIndexDocumentFromEntry(binder, entry, tags);
     	
 		if (entry instanceof User) {

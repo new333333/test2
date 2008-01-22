@@ -1066,7 +1066,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                   		.list();
                    	readObjs.addAll(objs);
                    	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
-                   		entry = (Entry)iter.next();
+                   		entry = (DefinableEntity)iter.next();
                    		tSet = new HashSet();
                    		while (objs.size() > 0) {
                    			Attachment obj = (Attachment)objs.get(0);
@@ -1087,7 +1087,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                   		.list();
                    	readObjs.addAll(objs);
                  	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
-                   		entry = (Entry)iter.next();
+                   		entry = (DefinableEntity)iter.next();
                    		tSet = new HashSet();
                    		for (int i=0; i<objs.size(); ++i) {
                    			Event obj = (Event)objs.get(i);
@@ -1107,7 +1107,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                    	readObjs.addAll(objs);
                   	HashMap tMap;
                    	for (Iterator iter=sorted.iterator(); iter.hasNext();) {
-                   		entry = (Entry)iter.next();
+                   		entry = (DefinableEntity)iter.next();
                    		tMap = new HashMap();
                    		while (objs.size() > 0) {
                    			CustomAttribute obj = (CustomAttribute)objs.get(0);
