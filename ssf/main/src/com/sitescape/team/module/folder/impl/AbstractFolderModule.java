@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.module.folder.impl;
 
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -49,6 +50,7 @@ import org.apache.lucene.search.SortField;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.InternalException;
@@ -100,6 +102,7 @@ import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.AccessUtils;
+import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.SearchUtils;
@@ -112,6 +115,7 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
 /**
@@ -416,6 +420,17 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
          
     }    
     
+    //no transaction
+    public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content)
+	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
+    	MultipartFile mf = new SimpleMultipartFile(fileName, content);
+    	Map<String, MultipartFile> fileItems = new HashMap<String, MultipartFile>();
+    	if(fileDataItemName == null)
+    		fileDataItemName = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER + "1";
+    	fileItems.put(fileDataItemName, mf);
+    	modifyEntry(folderId, entryId, new EmptyInputData(), fileItems, null, null);
+    }
+
     public Map getEntries(Long folderId) {
         return getEntries(folderId, new HashMap());
     }

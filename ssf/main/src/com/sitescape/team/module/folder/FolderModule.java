@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.module.folder;
 
+import java.io.InputStream;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -177,6 +178,27 @@ public interface FolderModule {
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
     	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
+    
+    /**
+     * Add a file to the entry.
+     * <p>
+     * The same can be achieved by calling {{@link #modifyEntry(Long, Long, InputDataAccessor, Map, Collection, Map)}.
+     * But this is more convenient to call when you have a single file to attach to an existing entry.
+     * 
+     * @param folderId ID of the folder
+     * @param entryId ID of the entry
+     * @param fileDataItemName name of the data item defined in the definition 
+     * object of the entry. Pass <code>null</code> to store the file through
+     * the default attachment element.
+     * @param fileName Name of the file
+     * @param content content of the file as an input stream
+     * @throws AccessControlException
+     * @throws WriteFilesException
+     * @throws ReservedByAnotherUserException
+     */
+    public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content)
+	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
+    
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
 
     public void moveEntry(Long folderId, Long entryId, Long destinationId) throws AccessControlException;
