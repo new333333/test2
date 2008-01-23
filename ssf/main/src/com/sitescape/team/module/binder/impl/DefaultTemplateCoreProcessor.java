@@ -38,7 +38,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.module.binder.BinderProcessor;
+import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;

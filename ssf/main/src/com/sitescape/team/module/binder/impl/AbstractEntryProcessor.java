@@ -64,7 +64,7 @@ import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.lucene.Hits;
-import com.sitescape.team.module.binder.EntryProcessor;
+import com.sitescape.team.module.binder.processor.EntryProcessor;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.FilterException;

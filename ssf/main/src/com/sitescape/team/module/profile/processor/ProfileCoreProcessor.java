@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.profile;
+package com.sitescape.team.module.profile.processor;
 
 import java.util.List;
 import java.util.Map;
@@ -34,7 +34,7 @@ import java.util.Map;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.module.binder.EntryProcessor;
+import com.sitescape.team.module.binder.processor.EntryProcessor;
 import com.sitescape.team.module.shared.InputDataAccessor;
 public interface ProfileCoreProcessor extends EntryProcessor {
 	public void syncEntry(Principal entry, InputDataAccessor inputData);
