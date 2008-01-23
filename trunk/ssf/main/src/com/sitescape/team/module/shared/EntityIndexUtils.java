@@ -64,7 +64,6 @@ import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.binder.AccessUtils;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.LongIdUtil;

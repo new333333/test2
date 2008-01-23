@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.binder;
+package com.sitescape.team.module.shared;
 
 import java.util.Collections;
 import java.util.Iterator;
