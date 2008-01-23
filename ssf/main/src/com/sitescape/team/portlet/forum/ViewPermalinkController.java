@@ -55,7 +55,7 @@ import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
-import com.sitescape.team.module.binder.AccessUtils;
+import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.runas.RunasCallback;
 import com.sitescape.team.runas.RunasTemplate;
 import com.sitescape.team.security.AccessControlException;
