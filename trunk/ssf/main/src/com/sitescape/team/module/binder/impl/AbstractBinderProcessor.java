@@ -75,7 +75,7 @@ import com.sitescape.team.exception.UncheckedCodedException;
 import com.sitescape.team.fi.connection.ResourceDriver;
 import com.sitescape.team.fi.connection.ResourceSession;
 import com.sitescape.team.lucene.Hits;
-import com.sitescape.team.module.binder.BinderProcessor;
+import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.index.FieldBuilderUtil;

@@ -26,46 +26,27 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.binder;
+package com.sitescape.team.module.folder.processor;
 
-import java.util.Collection;
 import java.util.Map;
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.ChangeLog;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.module.file.FilesErrors;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.module.binder.processor.EntryProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
 
 /**
- * <code>EntryProcessor</code> is used by model processors for binders that
- * support AclControlledEntries.
-  * 
+ * <code>ForumCoreProcessor</code> is a model processor for forum, which
+ * defines a set of core operations around forum. 
+ * 
  * @author Jong Kim
  */
-public interface EntryProcessor extends BinderProcessor {
- 
- 	public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) throws AccessControlException;
-    
-    public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems)
-    	throws WriteFilesException;
-    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition);  
-    public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource);
-    public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition);
-    public Entry getEntry(Binder binder, Long entryId);
-    public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
-    		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo)
-    	throws WriteFilesException;
-    public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
-    public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData);
-  	public void indexEntries(Collection entries);
-  	public void indexEntry(Entry entry);
-    public void moveEntry(Binder binder, Entry entry, Binder destination);
-	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
+public interface FolderCoreProcessor extends EntryProcessor {
 
+    public FolderEntry addReply(FolderEntry parent, Definition def, InputDataAccessor inputData, Map fileItems) 
+    	throws AccessControlException, WriteFilesException;
+    public Map getEntryTree(Folder parentFolderId, FolderEntry entry) throws AccessControlException;
 }

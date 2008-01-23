@@ -86,7 +86,7 @@ import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.jobs.SendEmail;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.binder.BinderProcessor;
+import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;

@@ -92,7 +92,7 @@ import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.binder.BinderProcessor;
+import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.EntityIndexUtils;
