@@ -540,7 +540,7 @@
 			</props>
 		</property>
 	</bean>
-	<bean id="binderAccessUtils" class="com.sitescape.team.module.binder.AccessUtils">
+	<bean id="binderAccessUtils" class="com.sitescape.team.module.shared.AccessUtils">
 		<property name="accessControlManager"><ref bean="accessControlManager"/> </property>
 		<property name="profileDao"><ref local="profileDao"/></property>
 	</bean>
