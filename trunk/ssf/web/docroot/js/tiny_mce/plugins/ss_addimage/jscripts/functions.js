@@ -1,4 +1,5 @@
 /* Functions for the ss_addimage plugin popup */
+/* The ss_addimage plugin was written by SiteScape. It is a modification of the standard advimage plugin. */
 
 var preloadImg = null;
 var orgImageWidth, orgImageHeight;
