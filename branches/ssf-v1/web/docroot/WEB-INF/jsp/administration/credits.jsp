@@ -1229,8 +1229,26 @@ a:hover {
 		purposes of reference only and shall not in any way limit or affect the meaning
 		or interpretation of any of the terms hereof.</span></h2>
 		
+		<h2><span style='font-size:11.0pt;font-family:Arial'>m.<span style='font:7.0pt 
+		"Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+		</span></span><b><span style='font-size:11.0pt;font-family:Arial'>Software Licensed From 
+		Third Parties</span></b><span style='font-size:11.0pt;font-family:Arial'>. 
+		The Software may contain modules or components licensed from third parties, as 
+		identified in the accompanying Documentation (collectively referred to herein 
+		as "Third Party Components"), the use of which must comply with the terms of the 
+		respective licenses listed for each such Third Party Component (the licenses 
+		applicable to the Third Party Components are collectively referred to herein 
+		as "Third Party Licenses").   The license granted pursuant to this Agreement 
+		does not limit your rights under, or grant you rights that supersede, the terms 
+		of the Third Party Licenses.  You agree to defend, indemnify and hold SiteScape, 
+		its affiliates and their respective officers, directors, employees, agents and 
+		representatives harmless from and against any liabilities, losses, expenses, 
+		costs or damages (including attorneys’ fees) arising from or in any manner relating 
+		to any claim or action based upon your breach of the terms and conditions of the 
+		Third Party Licenses associated with the Software licensed under this Agreement. </span></h2>
+
 		<p class=MsoNormal style='margin-top:6.0pt'><span style='font-size:8.0pt'>#
-		4771339_v1</span></p>
+		4771339_v1a</span></p>
 		
 		</div>
 </ssf:expandableArea><p style="padding-top:6px;"/>
@@ -1238,7 +1256,9 @@ a:hover {
 <br/>
 <br/>
 <span class="ss_bold">
-ICEcore makes use of the following licensing agreements:
+Portions of this software are subject to copyrights and licenses of third parties.
+<br/>
+The following are the licenses which may apply to the third party software:
 </span>
 <br/>
 <br/>
