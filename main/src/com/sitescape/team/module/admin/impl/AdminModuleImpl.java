@@ -429,7 +429,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 						if (ca.getValueType() == CustomAttribute.ORDEREDSET) newV = new LinkedHashSet(); 
 						else newV = new HashSet();
 						for (Iterator it=values.iterator(); it.hasNext();) {
-							Object val = iter.next();
+							Object val = it.next();
 							if (val == null) continue;
 							if (val instanceof Event) {
 								Event newE = (Event)((Event)val).clone();
