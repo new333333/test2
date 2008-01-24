@@ -99,6 +99,7 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
+import com.sitescape.team.util.DatedMultipartFile;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.FileStore;
@@ -798,8 +799,9 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		int type = FileUploadItem.TYPE_FILE;
     		if(Validator.isNull(name))
     			type = FileUploadItem.TYPE_ATTACHMENT;
-    		file = new SimpleMultipartFile(fa.getFileItem().getName(),
-    				readFile(binder, entity, fa));
+    		// Preserve modification time of the source for the target
+    		file = new DatedMultipartFile(fa.getFileItem().getName(),
+    				readFile(binder, entity, fa), fa.getModification().getDate());
     		fui = new FileUploadItem(type, name, file, fa.getRepositoryName());
     		fuis.add(fui);
     	}
