@@ -417,7 +417,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 					if (sfa == null) continue;
 					FileAttachment dfa = destination.getFileAttachment(sfa.getFileItem().getName());
 					//attach as custom attribute
-					if (dfa != null) source.addCustomAttribute(ca.getName(), dfa);
+					if (dfa != null) destination.addCustomAttribute(ca.getName(), dfa);
 					break;
 				}
 				case CustomAttribute.ORDEREDSET:
