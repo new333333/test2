@@ -1,3 +1,4 @@
+/* The ss_wikilink plugin was written by SiteScape using the TinyMCE plugin development documentation as a guide. */
 function init() {
 	//tinyMCEPopup.resizeToInnerSize();
 }
