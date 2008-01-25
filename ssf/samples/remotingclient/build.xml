@@ -17,6 +17,7 @@
 		<pathelement location="${project.dir}/lib/axis.jar" />
 		<pathelement location="${project.dir}/lib/axis-ant.jar" />
 		<pathelement location="${project.dir}/lib/jaxrpc.jar" />
+		<pathelement location="${project.dir}/lib/commons-httpclient.jar" />
 		<pathelement location="${project.dir}/lib/commons-logging.jar" />
 		<pathelement location="${project.dir}/lib/commons-discovery.jar" />
 		<pathelement location="${project.dir}/lib/saaj.jar" />
@@ -227,6 +228,7 @@
 				<include name="axis.jar" />
 				<include name="axis-ant.jar" />
 				<include name="jaxrpc.jar" />
+				<include name="commons-httpclient.jar" />
 				<include name="commons-logging.jar" />
 				<include name="commons-discovery.jar" />
 				<include name="saaj.jar" />
