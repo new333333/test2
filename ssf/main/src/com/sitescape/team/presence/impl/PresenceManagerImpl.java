@@ -40,9 +40,9 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
 import com.sitescape.team.domain.User;
-import com.sitescape.team.presence.PresenceService;
+import com.sitescape.team.presence.PresenceManager;
 
-public class PresenceServiceImpl implements PresenceService, PresenceServiceImplMBean, InitializingBean, DisposableBean {
+public class PresenceManagerImpl implements PresenceManager, PresenceManagerImplMBean, InitializingBean, DisposableBean {
 
 	protected String jabberServer;
 	protected String jabberServerPort;

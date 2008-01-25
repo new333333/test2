@@ -28,7 +28,7 @@
  */
 package com.sitescape.team.presence.impl;
 
-public interface PresenceServiceImplMBean {
+public interface PresenceManagerImplMBean {
 
 	public String getJabberServer();
 	
