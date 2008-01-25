@@ -17,6 +17,10 @@ package com.sitescape.team.lucene;
  * limitations under the License.
  */
 
+/*
+ * NOTICE: This file has been changed: the package has been changed.
+ */
+
 
 import java.io.Reader;
 import org.apache.lucene.analysis.*;
