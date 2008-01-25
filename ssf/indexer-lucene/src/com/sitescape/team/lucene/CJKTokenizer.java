@@ -16,7 +16,9 @@ package com.sitescape.team.lucene;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+/*
+ * NOTICE: This file has been changed: the package of this class has been changed.
+ */
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Tokenizer;
 
