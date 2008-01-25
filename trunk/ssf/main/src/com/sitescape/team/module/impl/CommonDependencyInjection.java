@@ -38,7 +38,7 @@ import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.fi.connection.ResourceDriverManager;
 import com.sitescape.team.license.LicenseManager;
 import com.sitescape.team.modelprocessor.ProcessorManager;
-import com.sitescape.team.presence.PresenceService;
+import com.sitescape.team.presence.PresenceManager;
 import com.sitescape.team.search.LuceneSessionFactory;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.security.acl.AclManager;
@@ -71,7 +71,7 @@ public abstract class CommonDependencyInjection {
 	protected ProcessorManager processorManager;
 	protected Scheduler scheduler;
 	protected LuceneSessionFactory luceneSessionFactory;
-	protected PresenceService presenceService;
+	protected PresenceManager presenceService;
 	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
 	protected ResourceDriverManager resourceDriverManager;
 	protected LicenseManager licenseManager;
@@ -103,7 +103,7 @@ public abstract class CommonDependencyInjection {
 	public void setLuceneSessionFactory(LuceneSessionFactory luceneSessionFactory) {
 		this.luceneSessionFactory = luceneSessionFactory;
 	}
-	public void setPresenceService(PresenceService presenceService) {
+	public void setPresenceService(PresenceManager presenceService) {
 		this.presenceService = presenceService;
 	}
 	public LuceneSessionFactory getLuceneSessionFactory() {
@@ -133,7 +133,7 @@ public abstract class CommonDependencyInjection {
 	public Scheduler getScheduler() {
 		return scheduler;
 	}
-	public PresenceService getPresenceService() {
+	public PresenceManager getPresenceService() {
 		return presenceService;
 	}
 	public void setWorkAreaFunctionMembershipManager(WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager) {
