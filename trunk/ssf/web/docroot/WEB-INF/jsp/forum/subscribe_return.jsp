@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div class="ss_style" align="left">
 <form method="post" id="${ss_namespace}subscription_form${ssBinder.id}">
-<span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.type"/></span>
+<span class="ss_largerprint ss_bold"><ssf:nlt tag="subscribe.select.type"/></span><ssf:inlineHelp jsp="workspaces_folders/misc_tools/email_notifications_explained"/>
 
 <br/>
 <br/>
@@ -65,7 +65,7 @@
 	</c:if>
 </c:forEach>
 
-   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.digest"/><ssf:inlineHelp tag="ihelp.email.digest_notify"/>
+   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.digest"/>
 <c:if test="${!ssScheduleInfo.enabled}">
 <br/>(<ssf:nlt tag="subscribe.select.disabled"/>
 <c:if test="${!empty ssBinder && !empty ssBinder.owner}">
@@ -94,7 +94,7 @@
 	</c:if>
 </c:forEach>
 
-   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/><ssf:inlineHelp tag="ihelp.email.individual_notify"/></span> 
+   <span class="ss_labelAbove"><ssf:nlt tag="subscribe.message"/></span> 
   <select multiple="multiple" name="_subscribe2">
 		<option value="" <c:if test="${nothing == 'true'}"> selected = "selected" </c:if>><ssf:nlt tag="definition.select_item_select"/></option>
 	<c:forEach var="email" items="${ssUser.emailAddresses}">

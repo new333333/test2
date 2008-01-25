@@ -863,6 +863,10 @@ DIV.ss_help_style P {
     margin-bottom: 10px;
 }
 
+P.ss_ihelp_para {
+    margin-top: 3px;
+}
+
 div.ss_help_style ul li, ul.ss_square li {
     margin-top: 3px;
     margin-bottom: 6px;
