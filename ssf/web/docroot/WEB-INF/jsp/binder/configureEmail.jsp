@@ -116,10 +116,10 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 </c:if>
 <c:if test="${!ssScheduleInfo.enabled}">
 <ssf:nlt tag="administration.notify.nodefault.schedule"/>
-</c:if>]<ssf:inlineHelp tag="ihelp.email.digest_notify"/><br/>
+</c:if>]<br/>
   <input type="radio" name="style" value="2" 
   <c:if test="${ssBinder.notificationDef.style=='2'}"> checked="checked"</c:if> 
-  /><label for="notifyType_2"><ssf:nlt tag="subscribe.message"/></label> <ssf:inlineHelp tag="ihelp.email.individual_notify"/><br/>
+  /><label for="notifyType_2"><ssf:nlt tag="subscribe.message"/></label> <br/>
   <input type="radio" name="style" value="3" 
   <c:if test="${ssBinder.notificationDef.style=='3'}"> checked="checked"</c:if> 
   /><label for="notifyType_3"><ssf:nlt tag="subscribe.noattachments"/></label><br/>
