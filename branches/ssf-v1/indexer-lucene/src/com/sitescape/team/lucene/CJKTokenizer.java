@@ -17,6 +17,10 @@ package com.sitescape.team.lucene;
  * limitations under the License.
  */
 
+/*
+ * NOTICE: This file has been changed: the package has been changed.
+ */
+
 import org.apache.lucene.analysis.Token;
 import org.apache.lucene.analysis.Tokenizer;
 
