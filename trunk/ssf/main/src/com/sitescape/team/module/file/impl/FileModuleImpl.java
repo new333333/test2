@@ -799,11 +799,20 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		int type = FileUploadItem.TYPE_FILE;
     		if(Validator.isNull(name))
     			type = FileUploadItem.TYPE_ATTACHMENT;
-    		// Preserve modification time of the source for the target
-    		file = new DatedMultipartFile(fa.getFileItem().getName(),
+    		try {
+    			
+    			// Preserve modification time of the source for the target
+  	  			file = new DatedMultipartFile(fa.getFileItem().getName(),
     				readFile(binder, entity, fa), fa.getModification().getDate());
-    		fui = new FileUploadItem(type, name, file, fa.getRepositoryName());
-    		fuis.add(fui);
+    			fui = new FileUploadItem(type, name, file, fa.getRepositoryName());
+  		   		if (destBinder.isLibrary() && !(destEntity instanceof Binder)) {
+		   			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
+		   			fui.setRegistered(true);
+		   		}
+    	   		fuis.add(fui);
+    		} catch (Exception ex) {
+    			logger.error("Error copying file:" +  ex.getLocalizedMessage());
+    		}
     	}
     	try {	
     		writeFiles(destBinder, destEntity, fuis, null);
@@ -1200,7 +1209,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         			// utilize the usual tactic of delaying update db 
         			// transaction to the very end of the operation.  
             		getCoreDao().save(fAtt);    		
-            	}
+        		}
             	if (fui.getType() == FileUploadItem.TYPE_FILE) {
         			// Find custom attribute by the attribute name. 
         			Set fAtts = null;

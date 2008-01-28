@@ -45,10 +45,12 @@ public class DefaultWorkspaceCoreProcessor extends AbstractBinderProcessor {
     	super.moveBinder(source, destination);
      }
  
-    public void copyBinder(Binder source, Binder destination, InputDataAccessor inputData) {
+    public Binder copyBinder(Binder source, Binder destination, InputDataAccessor inputData) {
     	if (!(destination instanceof Workspace))
         	throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
-    	super.copyBinder(source, destination, inputData);
+       	if (Integer.valueOf(Definition.USER_WORKSPACE_VIEW).equals(source.getDefinitionType()))
+        	throw new NotSupportedException("errorcode.notsupported.copyBinder", new String[] {source.getPathName()});
+    	return super.copyBinder(source, destination, inputData);
      }
     /*******************************************************************/
     protected void modifyBinder_postFillIn(Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {

@@ -365,7 +365,10 @@ public class ViewEntryController extends  SAbstractController {
 		if (getFolderModule().testAccess(entry, FolderOperation.modifyEntry)) {
 			if (isEntryReserved && !isLockedByAndLoginUserSame ) {
 				toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), nullPortletUrl, disabledQual);
-				toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), nullPortletUrl, disabledQual);
+				if (entry.isTop()) {
+					toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), nullPortletUrl, disabledQual);
+//					toolbar.addToolbarMenu("5_copy", NLT.get("toolbar.copy"), nullPortletUrl, disabledQual);
+				}
 			}
 			else {
 				accessControlEntryMap.put("modifyEntry", new Boolean(true));
@@ -378,13 +381,22 @@ public class ViewEntryController extends  SAbstractController {
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, entryDefId);
 				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 				toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), adapterUrl.toString(), qualifiers);
-				//The "Move" menu
-				url = response.createActionURL();
-				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
-				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
-				url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-				url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-				toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), url);
+				if (entry.isTop()) {
+					//The "Move" menu
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
+					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+					toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), url);
+					//The "Copy" menu
+//					url = response.createActionURL();
+//					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+//					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_COPY);
+//					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+//					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+//					toolbar.addToolbarMenu("5_copy", NLT.get("toolbar.copy"), url);
+				}
 			}
 			Iterator itWorkflows = entry.getParentBinder().getWorkflowDefinitions().iterator();
 			if (itWorkflows.hasNext()) {

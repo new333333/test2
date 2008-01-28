@@ -97,6 +97,7 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -487,24 +488,36 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        	} else {
        		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_WORKSPACES);
        	}
-       	
+       	//move whole tree at once
      	loadBinderProcessor(source).moveBinder(source,destination);
            	
     }
      //no transaction    
-     public void copyBinder(Long fromId, Long toId) {
+     public Long copyBinder(Long fromId, Long toId, boolean cascade) {
        	Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
-       	Binder destination = loadBinder(toId);
+       	Binder destinationParent = loadBinder(toId);
        	if (source.getEntityType().equals(EntityType.folder)) {
-       		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_FOLDERS);
+       		getAccessControlManager().checkOperation(destinationParent, WorkAreaOperation.CREATE_FOLDERS);
        	} else {
-       		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_WORKSPACES);
+       		getAccessControlManager().checkOperation(destinationParent, WorkAreaOperation.CREATE_WORKSPACES);
        	}
-       	
-     	loadBinderProcessor(source).copyBinder(source,destination, null);
-           	
-    }
+       	Map params = new HashMap();
+       	params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+   		Binder binder = loadBinderProcessor(source).copyBinder(source, destinationParent, new MapInputData(params));
+       	if (cascade) doCopyChildren(source, binder);
+       	return binder.getId();
+     }
+     private void doCopyChildren(Binder source, Binder destinationParent) {
+    	 Map params = new HashMap();
+    	 params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.FALSE);
+    	 InputDataAccessor input = new MapInputData(params);
+    	 List<Binder>children = source.getBinders();
+    	 for (Binder child:children) {
+    		 Binder binder = loadBinderProcessor(child).copyBinder(child, destinationParent, input);
+    		 doCopyChildren(child, binder);
+    	 }
+     }
      //inside write transaction    
 	public Binder setDefinitions(Long binderId, boolean inheritFromParent) {
 		Binder binder = loadBinder(binderId);

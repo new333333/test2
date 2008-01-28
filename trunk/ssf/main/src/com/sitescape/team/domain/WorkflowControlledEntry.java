@@ -46,8 +46,13 @@ public abstract class WorkflowControlledEntry extends Entry
     protected HistoryStamp workflowChange;//initialized by hiberate access=field  
     protected Set workflowResponses; //initialized by hiberate access=field  
 	protected ChangeLog changes=null;
-
-    /**
+	public WorkflowControlledEntry() {
+		super();
+	}
+	public WorkflowControlledEntry(WorkflowControlledEntry entry) {
+		super(entry);
+	}
+     /**
       * @hibernate.component class="com.sitescape.team.domain.HistoryStamp" prefix="wrk_" 
      */
     public HistoryStamp getWorkflowChange() {

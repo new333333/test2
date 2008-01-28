@@ -28,19 +28,16 @@
  */
 package com.sitescape.team.module.admin.impl;
 
+import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.LinkedHashSet;
-import java.io.InputStream;
 
 import javax.mail.internet.InternetAddress;
 
@@ -70,14 +67,11 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
-import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.PostingDef;
-import com.sitescape.team.domain.Statistics;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -90,7 +84,6 @@ import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.definition.DefinitionModule.DefinitionOperation;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
@@ -112,7 +105,6 @@ import com.sitescape.team.security.function.FunctionExistsException;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
@@ -381,6 +373,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			TemplateBinder newDef = new TemplateBinder(def);
 			newDef.setCreation(stamp);
 			newDef.setModification(stamp);
+			newDef.setOwner(null);
 			newDef.setFunctionMembershipInherited(true);
 			newDef.setPathName(config.getPathName() + "/" + newDef.getTitle());
 			getCoreDao().save(newDef);  //generateId for binderKey needed by custom attributes
@@ -399,72 +392,8 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		  }
 		//copy all file attachments
 		getFileModule().copyFiles(source, source, destination, destination);
-		Map catts = source.getCustomAttributes();
-		for (Iterator iter=catts.entrySet().iterator(); iter.hasNext();) {
-			Map.Entry me = (Map.Entry)iter.next();
-			CustomAttribute ca = (CustomAttribute)me.getValue();
-			if (Statistics.ATTRIBUTE_NAME.equals(ca.getName())) continue;
-			switch (ca.getValueType()) {
-				case CustomAttribute.EVENT: {
-					Event event = (Event)ca.getValue();
-					if (event != null) {
-						Event newE = (Event)event.clone();
-						newE.setId(null);
-						getCoreDao().save(newE);
-						destination.addCustomAttribute(newE.getName(), newE);
-					}
-					break;
-				}
-				case CustomAttribute.ATTACHMENT: {
-					//only support file attachments now
-					FileAttachment sfa = (FileAttachment)ca.getValue();
-					if (sfa == null) continue;
-					FileAttachment dfa = destination.getFileAttachment(sfa.getFileItem().getName());
-					//attach as custom attribute
-					if (dfa != null) destination.addCustomAttribute(ca.getName(), dfa);
-					break;
-				}
-				case CustomAttribute.ORDEREDSET:
-				case CustomAttribute.SET: {
-					//should be the same type
-					Set values = ca.getValueSet();
-					if (!values.isEmpty()) {
-						Set newV;
-						if (ca.getValueType() == CustomAttribute.ORDEREDSET) newV = new LinkedHashSet(); 
-						else newV = new HashSet();
-						for (Iterator it=values.iterator(); it.hasNext();) {
-							Object val = iter.next();
-							if (val == null) continue;
-							if (val instanceof Event) {
-								Event newE = (Event)((Event)val).clone();
-								newE.setId(null);
-								getCoreDao().save(newE);
-								newV.add(newE);
-							} else if (val instanceof FileAttachment) {
-								//only support file attachments now
-								FileAttachment sfa = (FileAttachment)val;
-								FileAttachment dfa = destination.getFileAttachment(sfa.getFileItem().getName());
-								//attach as custom attribute
-								if (dfa != null) newV.add(dfa);
-								
-							} else {
-								newV.add(val);
-							}
-						}
-						destination.addCustomAttribute(ca.getName(), newV);
-					}
-					break;
-				} 
-				default: {
-					destination.addCustomAttribute(ca.getName(), ca.getValue());
-					break;
-				}
-			}
-			
-		}
-		return destination;
-		
-		
+		EntryBuilder.copyAttributes(source, destination);
+		return destination;		
 	}
 	public void updateDefaultDefinitions(Long topId) {
 		Workspace top = (Workspace)getCoreDao().loadBinder(topId, topId);
@@ -665,6 +594,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		 TemplateBinder config = new TemplateBinder(srcConfig);
 		 config.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 		 config.setModification(config.getCreation());
+		 config.setOwner(null);
 		 if (Validator.isNull(config.getTitle())) config.setTitle(config.getTemplateTitle());
 		 config.setPathName(parentConfig.getPathName() + "/" + config.getTitle());
       	 getCoreDao().updateFileName(parentConfig, config, null, config.getTitle());
@@ -676,16 +606,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	 copyBinderAttributes(srcConfig, config);
 	     if (!config.isFunctionMembershipInherited()) {
 	    	 //copy to new template
-	    	 List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMemberships(srcConfig);
-	    	 for (WorkAreaFunctionMembership fm: wfms) {
-	    		WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
-		       	membership.setZoneId(fm.getZoneId());
-		       	membership.setWorkAreaId(config.getWorkAreaId());
-		       	membership.setWorkAreaType(config.getWorkAreaType());
-		       	membership.setFunctionId(fm.getFunctionId());
-		       	membership.setMemberIds(new HashSet(fm.getMemberIds()));
-		        getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
-	    	}	    
+	    	 getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(config.getZoneId(), srcConfig, config);
 	     }
 
 		 for (TemplateBinder c:children) {
@@ -728,6 +649,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			}
 			config.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
 			config.setModification(config.getCreation());
+			config.setOwner(null);
 			if (parent == null) {
 				config.setPathName("/" + config.getTitle());				
 			} else {
@@ -743,17 +665,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	      	}
 			copyBinderAttributes(binder, config);
 			if (!config.isFunctionMembershipInherited()) {
-				//copy binders memberships to new Template
-				List<WorkAreaFunctionMembership> wfms = getWorkAreaFunctionMemberships(binder);
-				for (WorkAreaFunctionMembership fm: wfms) {
-					WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
-					membership.setZoneId(fm.getZoneId());
-					membership.setWorkAreaId(config.getWorkAreaId());
-					membership.setWorkAreaType(config.getWorkAreaType());
-					membership.setFunctionId(fm.getFunctionId());
-					membership.setMemberIds(new HashSet(fm.getMemberIds()));
-					getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);	
-				}	    		
+				getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(binder.getZoneId(), binder, config);
 			}
 			List<Binder> children = binder.getBinders();    
 			for (Binder child: children) {
@@ -1215,17 +1127,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     		
         		} else if (workArea.isFunctionMembershipInherited() && !inherit) {
         			//copy parent values as beginning values
-        			List current = getWorkAreaFunctionMembershipsInherited(workArea);
-        			for (int i=0; i<current.size(); ++i) {
-        				WorkAreaFunctionMembership wf = (WorkAreaFunctionMembership)current.get(i);
-        				WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
-        				membership.setZoneId(wf.getZoneId());	
- 	          			membership.setWorkAreaId(workArea.getWorkAreaId());
- 	          			membership.setWorkAreaType(workArea.getWorkAreaType());
- 	          			membership.setFunctionId(wf.getFunctionId());
- 	          			membership.setMemberIds(new HashSet(wf.getMemberIds()));    		
- 	          			getWorkAreaFunctionMembershipManager().addWorkAreaFunctionMembership(membership);
-        			}
+        			getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(RequestContextHolder.getRequestContext().getZoneId(),getWorkAreaFunctionInheritance(workArea), workArea);
         		}
         	   	//see if there is a real change
             	if (workArea.isFunctionMembershipInherited()  != inherit) {

@@ -34,6 +34,7 @@ import java.util.Map;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
@@ -50,7 +51,7 @@ public interface BinderProcessor {
 
     public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
     	throws AccessControlException, WriteFilesException;
-    public void copyBinder(Binder source, Binder destination, InputDataAccessor inputData);
+    public Binder copyBinder(Binder source, Binder destination, InputDataAccessor inputData);
     public void deleteBinder(Binder binder, boolean deleteMirroredSource) throws AccessControlException;
   	//return search results
   	public Map getBinders(Binder binder, Map options);

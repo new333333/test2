@@ -28,9 +28,9 @@
  */
 package com.sitescape.team.module.folder.impl;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,12 +44,14 @@ import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.dao.util.OrderBy;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
@@ -59,6 +61,7 @@ import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.Statistics;
+import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
@@ -70,9 +73,11 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.folder.processor.FolderCoreProcessor;
 import com.sitescape.team.module.shared.ChangeLogUtils;
+import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
 /**
  *
@@ -386,8 +391,71 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  		   }
 	   }
    }
+   //***********************************************************************************************************
+   public Entry copyEntry(Binder binder, Entry source, Binder destination, InputDataAccessor inputData) {
+   	 
+	   if (destination.isZone() || 
+			   ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()) ||
+			   !(destination instanceof Folder))
+     		throw new NotSupportedException("errorcode.notsupported.copyEntryDestination", new String[] {destination.getPathName()});
+	   if (!source.isTop()) throw new NotSupportedException("errorcode.notsupported.copyReply");
 
-    //***********************************************************************************************************
+	   List<FolderEntry>children = getFolderDao().loadEntryDescendants((FolderEntry)source);
+	   children.add(0, (FolderEntry)source);
+	   getCoreDao().bulkLoadCollections(children);
+	   List<EntityIdentifier> ids = new ArrayList();
+	   for (FolderEntry e: children) {
+		   ids.add(e.getEntityIdentifier());
+	   }
+	   Map<EntityIdentifier, List<Tag>> tags = getCoreDao().loadAllTagsByEntity(ids);
+	   Map<FolderEntry, FolderEntry> sourceMap = new HashMap();
+       getCoreDao().lock(destination);
+	   //get ordered list of entries
+	   for (FolderEntry child:children) {
+		   FolderEntry entry = new FolderEntry(child);		   
+			if (child.isTop()) {
+				//docnumber will be different
+				((Folder)destination).addEntry(entry);
+  			} else {
+  				FolderEntry dParent = sourceMap.get(child.getParentEntry());
+  				dParent.addReply(entry, child.getHKey().getLastNumber());
+  			}
+			getCoreDao().save(entry); //need to generate id; do after sortkey is set
+			sourceMap.put(child, entry);
+		    List<Tag> entryTags = tags.get(child.getEntityIdentifier());
+			doCopy(child, entry, entryTags);
+	   }
+	   FolderEntry top = sourceMap.get(source);
+	   return top; 
+   }
+ 
+   protected void doCopy(FolderEntry source, FolderEntry entry, List<Tag> tags) {
+		getFileModule().copyFiles(source.getParentBinder(), source, entry.getParentBinder(), entry);
+		EntryBuilder.copyAttributes(source, entry);
+ 		//copy tags
+ 		List myTags = new ArrayList();
+ 		for (Tag t:tags) {
+ 			Tag tCopy = new Tag(t);
+ 			tCopy.setEntityIdentifier(entry.getEntityIdentifier());
+ 			if (source.getEntityIdentifier().equals(t.getOwnerIdentifier())) {
+ 				tCopy.setOwnerIdentifier(entry.getEntityIdentifier());
+ 			}
+ 			getCoreDao().save(tCopy);
+ 			myTags.add(tCopy);
+ 		}
+    	if (entry.isTop()) {
+    		if (entry.getParentFolder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, null, entry.getNormalTitle());
+    		Statistics statistics = getFolderStatistics(entry.getParentFolder());
+    		statistics.addStatistics(entry.getEntryDef(), entry.getCustomAttributes());
+    		setFolderStatistics(entry.getParentFolder(), statistics);
+    	}
+    	processChangeLog(entry, ChangeLog.ADDENTRY);
+		getCoreDao().evict(tags);
+		indexEntry(entry.getParentBinder(), entry, null, entry.getFileAttachments(), true, myTags);
+   	 
+   }
+ 
+   //***********************************************************************************************************
     //inside write transaction    
     public void moveEntry(Binder binder, Entry entry, Binder destination) {
        	if (binder.equals(destination)) return;
@@ -401,7 +469,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	HKey oldKey = fEntry.getHKey();
     	//get Children
     	List entries = getFolderDao().loadEntryDescendants(fEntry);
-    	//only log top leve titles
+    	//only log top level titles
    		if (from.isUniqueTitles()) getCoreDao().updateTitle(from, entry, entry.getNormalTitle(), null);		
    	    from.removeEntry(fEntry);
     	to.addEntry(fEntry);
@@ -577,14 +645,83 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 		getFolderDao().move(folder);
     	
 	}
-
-	   //inside write transaction    
-    public void copyBinder(Binder source, Binder destination, InputDataAccessor inputData) {
+    //***********************************************************************************************************
+    //no transaction
+    public Binder copyBinder(Binder source, Binder destination, InputDataAccessor inputData) {
     	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
-    		super.copyBinder(source, destination, inputData);
+    		return super.copyBinder(source, destination, inputData);
     	else throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
    	 
     }
+    //***********************************************************************************************************
+   //no transaction
+    public void copyEntries(final Binder source, Binder binder, final InputDataAccessor inputData) { 
+		//now copy entries
+		final Folder folder = (Folder)binder;
+		getTransactionTemplate().execute(new TransactionCallback() {
+			public Object doInTransaction(TransactionStatus status) {
+		    	Boolean preserverDocNum = (Boolean)inputData.getSingleObject(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER);
+		    	if (preserverDocNum == null) preserverDocNum=Boolean.FALSE;
+				getCoreDao().lock(folder);
+				FilterControls filter = new FilterControls();
+				filter.setOrderBy(new OrderBy("HKey.sortKey"));
+				SFQuery query = getFolderDao().queryEntries((Folder)source, filter);
+		      	try {       
+		  			List<FolderEntry> batch = new ArrayList();
+		  			int total=0;
+		  			Map<FolderEntry, FolderEntry> sourceMap = new HashMap();
+		      		while (query.hasNext()) {
+		       			int count=0;
+		       			batch.clear();
+		       			// get 1000 entries, then build collections by hand 
+		       			//for performance
+		       			while (query.hasNext() && (count < 1000)) {
+		       				Object obj = query.next();
+		       				if (obj instanceof Object[])
+		       					obj = ((Object [])obj)[0];
+		       				batch.add((FolderEntry)obj);
+		       				++count;
+		       			}
+		       			total += count;
+		       			//have 1000 entries, manually load their collections
+		       			getCoreDao().bulkLoadCollections(batch);
+		       			List<EntityIdentifier> ids = new ArrayList();
+		       			for (Entry e: batch) {
+		       				ids.add(e.getEntityIdentifier());
+		       			}
+		       			Map<EntityIdentifier, List<Tag>> tags = getCoreDao().loadAllTagsByEntity(ids);
+		       			for (int i=0; i<batch.size(); ++i) {
+		       				FolderEntry sEntry = (FolderEntry)batch.get(i);
+		       				FolderEntry dEntry = new FolderEntry(sEntry);
+		       				if (sEntry.isTop()) {
+		       					sourceMap.clear();
+		       					if (preserverDocNum) folder.addEntry(dEntry, sEntry.getHKey().getLastNumber());
+		       					else folder.addEntry(dEntry);
+		          			} else {
+		          				FolderEntry dParent = sourceMap.get(sEntry.getParentEntry());
+		          				dParent.addReply(dEntry, sEntry.getHKey().getLastNumber());
+		          			}
+		       				getCoreDao().save(dEntry); //need to generate id; do after sortkey is set
+		       				sourceMap.put(sEntry, dEntry);
+		      		    	List<Tag> entryTags = tags.get(sEntry.getEntityIdentifier());
+		       				doCopy(sEntry, dEntry, entryTags);
+		       			}
+		       			getCoreDao().flush();
+		       			//get rid of entries no longer needed
+		       			getCoreDao().evict(CollectionUtil.differences(batch, sourceMap.values()));
+		       	 	            	                  		
+		        	}
+			  		getCoreDao().flush();
+		      		getCoreDao().evict(sourceMap.values());
+		        } finally {
+		        	//clear out anything remaining
+		        	query.close();
+		        }
+		        return null;
+		}});
+
+    }
+
     //***********************************************************************************************************
     public Set getPrincipalIds(DefinableEntity entity) {
     	Set ids = super.getPrincipalIds(entity);

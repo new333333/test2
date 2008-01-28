@@ -52,7 +52,12 @@ public class Workspace extends Binder  {
     public Workspace() {
     	setType(EntityIdentifier.EntityType.workspace.name());
     }
-	public EntityIdentifier.EntityType getEntityType() {
+    public Workspace(Workspace workspace) {
+       	super(workspace);
+       	setType(EntityIdentifier.EntityType.workspace.name());
+       	searchTitle = workspace.searchTitle;
+    }
+    public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.workspace;
 	}
  
