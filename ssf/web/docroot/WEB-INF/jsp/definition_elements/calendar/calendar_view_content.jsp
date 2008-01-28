@@ -87,7 +87,7 @@
 
 
 <div style="width: 100%" id="ss_calendar_container${prefix}"><%-- IE needs this for some stupid reason --%>
-	<div class="ss_loading"><img <ssf:alt tag="Loading"/> src="<html:imagesPath/>pics/ajax-loader.gif" /></div>
+	<div class="ss_loading"><img <ssf:alt tag="Loading"/> src="<html:imagesPath/>pics/spinner_small.gif" /></div>
 </div>
 
 <c:if test="${!isDashboard}">
