@@ -5117,13 +5117,13 @@ function ss_toggleAjaxLoadingIndicator(obj, append) {
 	if (!divObj) return;
 			
 	var imgObj = document.createElement("img");
-	imgObj.setAttribute("src", ss_imagesPath + "pics/ajax-loader.gif");
+	imgObj.setAttribute("src", ss_imagesPath + "pics/spinner_small.gif");
 	imgObj.setAttribute("border", "0");
 	imgObj.setAttribute("style" , "vertical-align: middle; ");
 
 	var wasAjaxLoaderThere = false;
 	for (var i = divObj.childNodes.length; i > 0; --i) {
-		if (divObj.childNodes[i - 1] && divObj.childNodes[i - 1].src && divObj.childNodes[i - 1].src.indexOf("ajax-loader.gif") > -1) {
+		if (divObj.childNodes[i - 1] && divObj.childNodes[i - 1].src && divObj.childNodes[i - 1].src.indexOf("spinner_small.gif") > -1) {
 			divObj.removeChild(divObj.childNodes[i - 1]);
 			wasAjaxLoaderThere = true;
 		}

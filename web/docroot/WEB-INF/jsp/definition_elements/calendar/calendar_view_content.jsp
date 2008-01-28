@@ -146,4 +146,4 @@
 		
 	</script>
 </c:if>
-<div id="ss_loading${prefix}" class="ss_loading"><img <ssf:alt tag="Loading"/> src="<html:imagesPath/>pics/ajax-loader.gif" /></div>
+<div id="ss_loading${prefix}" class="ss_loading"><img <ssf:alt tag="Loading"/> src="<html:imagesPath/>pics/spinner_small.gif" /></div>
