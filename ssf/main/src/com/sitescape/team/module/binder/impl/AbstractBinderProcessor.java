@@ -15,7 +15,7 @@
  * 
  * 
  * Attribution Information
- * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Copyright Notice: right (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
  * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
  * Attribution URL: [www.icecore.com]
  * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
@@ -67,6 +67,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
@@ -285,7 +286,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     //inside write transaction    
    protected FilesErrors addBinder_filterFiles(Binder binder, List fileUploadItems, Map ctx) throws FilterException {
-    	return getFileModule().filterFiles(binder, fileUploadItems);
+  		FilesErrors nameErrors = new FilesErrors();
+   		
+   		checkInputFileNames(fileUploadItems, nameErrors);
+  		FilesErrors filterErrors = getFileModule().filterFiles(binder, fileUploadItems);
+    	filterErrors.getProblems().addAll(nameErrors.getProblems());
+    	return filterErrors;
     }
 
    //inside write transaction    
@@ -332,8 +338,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         binder.setLogVersion(Long.valueOf(1));
         binder.setOwner(user);
 
-    	//force a lock so contention on the sortKey is reduced
-        if (Boolean.TRUE.equals(inputData.getSingleObject(ObjectKeys.INPUT_OPTION_FORCE_LOCK))) {
+       	//force a lock so contention on the sortKey is reduced
+        Object lock = inputData.getSingleObject(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
+        if (Boolean.TRUE.equals(lock)) {
             getCoreDao().lock(parent);
         } 
         parent.addBinder(binder);
@@ -612,7 +619,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     //no transaction    
     protected FilesErrors modifyBinder_filterFiles(Binder binder, List fileUploadItems, Map ctx) throws FilterException {
-    	return getFileModule().filterFiles(binder, fileUploadItems);
+  		FilesErrors nameErrors = new FilesErrors();
+   		
+   		checkInputFileNames(fileUploadItems, nameErrors);
+  		FilesErrors filterErrors = getFileModule().filterFiles(binder, fileUploadItems);
+    	filterErrors.getProblems().addAll(nameErrors.getProblems());
+    	return filterErrors;
     }
 
     //no transaction    
@@ -1056,15 +1068,19 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 
     //***********************************************************************************************************
-    //inside write transaction    
-    public void copyBinder(final Binder source, final Binder destination, final InputDataAccessor inputData) {
-    	if (source.equals(destination)) return;
+    //no transaction    
+    public Binder copyBinder(final Binder source, final Binder destination, final InputDataAccessor inputData) {
+    	if (source.equals(destination))   
+    		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
+    	 
     	if (source.isReserved() || source.isZone()) 
     		throw new NotSupportedException(
     				"errorcode.notsupported.copyBinder", new String[]{source.getPathName()});
     	if (destination.isZone())
       		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
-     	final Map ctx = copyBinder_setCtx(source, destination, null);
+    	if (ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()))
+         		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
+    	final Map ctx = copyBinder_setCtx(source, destination, null);
      	final Binder binder = copyBinder_create(source, ctx);
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
@@ -1072,23 +1088,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
                 //need to set entry/binder information before generating file attachments
                 //Attachments/Events need binder info for AnyOwner
         		copyBinder_fillIn(source, destination, binder, inputData, ctx);
-                
- //               copyBinder_mirrored(source, binder, inputData, inputData, ctx);
-                
- //               copyBinder_preSave(source, binder, inputData, inputData, ctx);      
+                                
+                copyBinder_preSave(source, destination, binder, inputData, ctx);      
 
-//                copyBinder_save(source, binder, inputData, inputData, ctx);      
-
+                copyBinder_save(source, destination, binder, inputData, ctx);      
                 
- //               copyBinder_postSave(source, binder, inputData, inputData, ctx);
+                copyBinder_postSave(source, destination, binder, inputData, ctx);
                 //register title for uniqueness for webdav; always ensure binder titles are unique in parent
                 getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
                 if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
                 return null;
         	}
         });
- 		copyBinder_index(source, ctx);
-
+ 		copyBinder_index(binder, ctx);
+ 		return binder;
     }
     //no transaction    
     protected Map copyBinder_setCtx(Binder source, Binder destination, Map ctx) {
@@ -1112,102 +1125,49 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    }
    //inside write transaction    
    protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, InputDataAccessor inputData, Map ctx) {  
-       User user = RequestContextHolder.getRequestContext().getUser();
-       binder.setCreation(source.getCreation());
-       binder.setModification(source.getModification());
        binder.setLogVersion(Long.valueOf(1));
-       binder.setOwner(source.getOwner());
+       binder.setPathName(parent.getPathName() + "/" + binder.getTitle());
 
    	//force a lock so contention on the sortKey is reduced
-       if (Boolean.TRUE.equals(inputData.getSingleObject(ObjectKeys.INPUT_OPTION_FORCE_LOCK))) {
+       Object lock = inputData.getSingleObject(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
+       if (Boolean.TRUE.equals(lock)) {
            getCoreDao().lock(parent);
        } 
        parent.addBinder(binder);
+		if(binder.isMirrored())
+ 			binder.setLibrary(true);
+ 		
+ 		checkConstraintMirrored(parent, binder, binder.isLibrary(), inputData);
        
    }
-
-    //inside write transaction    
-   protected boolean copyBinder_mirrored(Binder source, Binder destination, Map ctx) {
-    	// Post-operation condition: A binder representing a seed resource 
-    	// (ie, a top-level mirrored binder whose parent binder is not a
-    	// mirrored binder) must preserve that attribute after move.
-    	// Likewise, a mirrored binder that is not top-level can not be
-    	// a top-level binder after move. In other words, the characteristic
-    	// of being top-level or not must be preserved. 
-    	// Otherwise, the move is not allowed.
-    	boolean resourcePathAffected=false;
-    	if(source.isMirrored()) {
-    		if(source.getParentBinder().isMirrored()) { // mirrored but not top-level
-    			if(destination.isMirrored()) {
-    				if(source.getResourceDriverName().equals(destination.getResourceDriverName())) {
-    					ResourceDriver driver = getResourceDriverManager().getDriver(source.getResourceDriverName());
-    					
-    		    		if(driver.isReadonly()) {
-    						throw new NotSupportedException("errorcode.notsupported.renameMirroredBinder.readonly", 
-    								new String[] {source.getPathName(), driver.getTitle()});
-    		    		}
-    		    		else {
-        					// We can/must move the resource.
-	    					ResourceSession session = driver.openSession().setPath(source.getResourcePath()); 
-	    					try {
-	    						session.move(destination.getResourcePath(), source.getTitle());  	
-	    						// Do not yet update the resource path in the source, it will be done by callder.
-	    						resourcePathAffected=true;
-	    					}
-	    					finally {
-	    						session.close();
-	    					}	
-    		    		}
-    				}
-    				else {
-    					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
-    							+ "] because the resource driver is different");
-    		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
-    				}
-    			}
-    			else {
-					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
-							+ "] because the source is not top-level mirrored and the destination is not mirrored");
-		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});  				
-    			}
-    		}
-    		else { // top-level mirrored
-    			if(destination.isMirrored()) {
-					logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
-							+ "] because the source is top-level mirrored and the destination is already mirrored");
-		      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
-    			}
-    			else {
-    				// Does not involve resource moving.
-    			}
-    		}
-    	}
-    	else { // not mirrored at all
-    		if(destination.isMirrored()) {
-				logger.warn("Cannot move binder [" + source.getPathName() + "] to [" + destination.getPathName()
-						+ "] because the source is not mirrored but the destination is");
-	      		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
-    		}
-    		else {
-    			// Does not involve resource moving.
-    		}
-    	}
-    	return resourcePathAffected;
-    } 
-
-    //inside write transaction    
-    protected void copyBinder_log(Binder binder, HistoryStamp stamp) {
-    	binder.setModification(stamp);
- 		binder.incrLogVersion();
- 		ChangeLog changes = new ChangeLog(binder, ChangeLog.MOVEBINDER);
-    	changes.getEntityRoot();
-    	getCoreDao().save(changes);
-
+   protected void copyBinder_preSave(Binder source, Binder parent, Binder binder, InputDataAccessor inputData, Map ctx) {  
+   }
+   protected void copyBinder_save(Binder source, Binder parent, Binder binder, InputDataAccessor inputData, Map ctx) {  
+	   getCoreDao().save(binder);
+   }
+   protected void copyBinder_postSave(Binder source, Binder parent, Binder binder, InputDataAccessor inputData, Map ctx) { 
+		//copy all file attachments; need to do first so custom file attributes have a real object to reference
+		getFileModule().copyFiles(source, source, binder, binder);
+		EntryBuilder.copyAttributes(source, binder);
+  		getWorkAreaFunctionMembershipManager().copyWorkAreaFunctionMemberships(binder.getZoneId(), source, binder);
+  		List<Tag> tags = getCoreDao().loadAllTagsByEntity(source.getEntityIdentifier());
+  		//copy tags
+  		for (Tag t:tags) {
+  			Tag tCopy = new Tag(t);
+  			tCopy.setEntityIdentifier(binder.getEntityIdentifier());
+  			if (source.getEntityIdentifier().equals(t.getOwnerIdentifier())) {
+  				tCopy.setOwnerIdentifier(binder.getEntityIdentifier());
+  			}
+  			getCoreDao().save(tCopy);
+  		}
+  		
     }
+   
     //inside write transaction    
     protected void copyBinder_index(Binder binder, Map ctx) {
-		getCoreDao().flush(); //get updates out for optimized indexTree
-    	indexTree(binder, null);  //binder will be evicted on return
+		getCoreDao().flush(); //get updates out 
+		//entries should be indexed already
+    	indexBinder(binder, false, false, null); 
     }
 
     //********************************************************************************************************
@@ -1631,10 +1591,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				binder.getBinderKey().getSortKey() + "%' order by x.binderKey.sortKey", null);
 		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
 		if (exclusions != null) ids.removeAll(exclusions);
-   		String oldStatus = statusTicket.getStatus();
+		Map params = new HashMap();
 		for (int i=0; i<ids.size(); i+=inClauseLimit) {
 			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
-			List<Binder> binders = getCoreDao().loadObjects(subList, com.sitescape.team.domain.Binder.class, null);
+			params.put("pList", subList);
+			List<Binder> binders = getCoreDao().loadObjects("from com.sitescape.team.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
 			getCoreDao().bulkLoadCollections(binders);
 			List<EntityIdentifier> entityIds = new ArrayList();
 			for (Binder e: binders) {
@@ -1647,18 +1608,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
 				
 	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
-	   	   		if(oldStatus != null) {
-	   	   			statusTicket.setStatus(oldStatus + " // " + b.getTitle());
-	   	   		} else {
-	   	   			statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {b.getTitle()}));
-	   	   		}
+	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {b.getPathName()}));
+	   	   		
 	   	    	processor.indexBinder(b, true, false, tags);
 	   	    	getCoreDao().evict(tags);
 	   	    	getCoreDao().evict(b);
 			}
 	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshhold", 100));
 		}
-   		statusTicket.setStatus(oldStatus);
    		return ids;
 
    	}
@@ -2081,4 +2038,19 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	return EntityIndexUtils.CREATORID_FIELD;
     }
 	
+	protected void checkInputFileNames(List fileUploadItems, FilesErrors errors) {
+		//name must be unique within DefinableEntity
+		for (int i=0; i<fileUploadItems.size(); ++i) {
+			FileUploadItem fui1 = (FileUploadItem)fileUploadItems.get(i);
+			for (int j=i+1; j<fileUploadItems.size(); ) {
+				FileUploadItem fui2 = (FileUploadItem)fileUploadItems.get(j);
+				if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
+						!fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
+					fileUploadItems.remove(j);
+					errors.addProblem(new FilesErrors.Problem(null, 
+							fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS));
+				} else ++j;
+			}
+		}
+	}
 }

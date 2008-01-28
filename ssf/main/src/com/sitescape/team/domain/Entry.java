@@ -38,6 +38,10 @@ public abstract class Entry extends DefinableEntity  {
     public Entry() {
     }
 
+    public Entry(Entry entry) {
+    	super(entry);
+    }
+
     public Definition getEntryDef() {
     	if (entryDef != null) return entryDef;
     	return getParentBinder().getDefaultEntryDef();

@@ -174,13 +174,13 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        //*******************************************************************/
   	//not supported
 	public void moveBinder(Binder source, Binder destination) {
-		throw new NotSupportedException("Move", "ProfileBinder");
+		throw new NotSupportedException("errorcode.notsupported.moveBinder");
 	
 	}
     //*******************************************************************/
   	//not supported
-	public void copyBinder(Binder source, Binder destination) {
-		throw new NotSupportedException("Copy", "ProfileBinder");
+	public Binder copyBinder(Binder source, Binder destination, InputDataAccessor inputData)  {
+		throw new NotSupportedException("errorcode.notsupported.copyBinder");
 	
 	}
     //*******************************************************************/
@@ -367,6 +367,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     		}
     		if (inputData.exists(ObjectKeys.FIELD_USER_PASSWORD) && !entryData.containsKey(ObjectKeys.FIELD_USER_PASSWORD)) {
     			entryData.put(ObjectKeys.FIELD_USER_PASSWORD, inputData.getSingleValue(ObjectKeys.FIELD_USER_PASSWORD));
+    		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_SKYPEID) && !entryData.containsKey(ObjectKeys.FIELD_USER_SKYPEID)) {
+    			entryData.put(ObjectKeys.FIELD_USER_SKYPEID, inputData.getSingleValue(ObjectKeys.FIELD_USER_SKYPEID));
     		}
     	} else {
     		//must be a group
@@ -696,6 +699,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL_MOBILE, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress(User.MOBILE_EMAIL));
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_ORGANIZATION, ObjectKeys.XTAG_TYPE_STRING, user.getOrganization());
 			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_PHONE, ObjectKeys.XTAG_TYPE_STRING, user.getPhone());
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_SKYPEID, ObjectKeys.XTAG_TYPE_STRING, user.getSkypeId());
 
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_DISPLAYSTYLE, user.getDisplayStyle());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOCALE, user.getLocale());

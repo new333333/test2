@@ -96,7 +96,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		 if (source.workflowAssociations != null)
   			 //can copy workflow associations since they are shared
   			 workflowAssociations = new HashMap(source.workflowAssociations);
-//don't copy names		 name = source.name;
+		 //don't copy names		 name = source.name;
 		 zoneId = source.zoneId;
 		 type = source.type;
 		 definitionsInherited=source.definitionsInherited;
@@ -105,9 +105,12 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		 library=source.library;
 		 uniqueTitles = source.uniqueTitles;
 		 upgradeVersion = source.upgradeVersion;
-		 if (source.properties != null)
-			 properties = new HashMap(source.properties);
-		 //don't copy postingDef, notificationDef, internalId, binders, owner or pathName
+		 if (source.properties != null) properties = new HashMap(source.properties);
+		 owner = source.owner;
+		 mirrored = source.mirrored;
+		 resourceDriverName = source.resourceDriverName;
+		 resourcePath = source.resourcePath;
+		 //don't copy postingDef, notificationDef, internalId, binders, or pathName
  
      }
     /**

@@ -48,8 +48,13 @@ public class Tag extends ZonedObject {
 	}
 	
 	public Tag(EntityIdentifier entityId) {
-		this.entityId = entityId;
-		
+		this.entityId = entityId;		
+	}
+	public Tag(Tag tag) {
+		name = tag.name;
+		ownerId = tag.ownerId;
+		entityId = tag.entityId;
+		isPublic = tag.isPublic;
 	}
 	/**
 	 * Artificial database primary key

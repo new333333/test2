@@ -107,7 +107,8 @@ public interface ObjectKeys {
 	public static final String SESSION_USERPROPERTIES="userProperties";
 	public static final String SESSION_TABS="userTabs";
 	public static final String SESSION_CLIPBOARD="userClipboard";
-	
+	public static final String SESSION_SAVE_LOCATION_ID="saveLocationId";
+
     //map keys returned from modules
     public static final String BINDER="binder";
     public static final String SEARCH_ENTRIES="search_entries";
@@ -244,6 +245,7 @@ public interface ObjectKeys {
 	public static final String INPUT_FIELD_WORKFLOWASSOCIATIONS="com.sitescape.team.workflows";
 	//Passed to processors to force a database lock.  Used to reduce optimistic lock exceptions
 	public static final String INPUT_OPTION_FORCE_LOCK="com.sitescape.team.options.lock";
+	public static final String INPUT_OPTION_PRESERVE_DOCNUMBER="com.sitescape.team.options.preserve.docnum";
 
 	//Reserved data field names
     public static final String FIELD_ID="id";
@@ -278,6 +280,7 @@ public interface ObjectKeys {
     public static final String FIELD_USER_EMAIL_TEXT="txtEmailAddress";
     public static final String FIELD_USER_EMAIL_MOBILE="mobileEmailAddress";
     public static final String FIELD_USER_LOCALE="locale";
+    public static final String FIELD_USER_SKYPEID="skypeId";
     public static final String FIELD_USER_TIMEZONE="timeZone";
     public static final String FIELD_USER_PASSWORD="password";
     public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
@@ -363,7 +366,8 @@ public interface ObjectKeys {
     public static final String XTAG_USER_ORGANIZATION="organization";
     public static final String XTAG_USER_LOGINDATE="loginDate";
     public static final String XTAG_USER_PHONE="phone";
-    
+    public static final String XTAG_USER_SKYPEID="skypeId";
+       
     public static final String XTAG_GROUP_MEMBERS="members";
     public static final String XTAG_GROUP_MEMBER_NAME="memberName";
     

@@ -76,6 +76,14 @@ public interface BinderModule {
 	 */
 	public void addSubscription(Long binderId, Map<Integer,String[]> styles) throws AccessControlException;
 	/**
+	 * Copy a binder to another location
+	 * @param sourceId
+	 * @param destinationId
+	 * @param cascade
+	 * @return
+	 */
+	public Long copyBinder(Long sourceId, Long destinationId, boolean cascade);
+	/**
 	 * Delete a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but
 	 * will continue deleting as much as possible.

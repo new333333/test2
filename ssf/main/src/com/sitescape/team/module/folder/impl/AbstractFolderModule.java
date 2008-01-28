@@ -249,6 +249,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case addEntryWorkflow:
 			case deleteEntryWorkflow:
 			case reserveEntry:
+			case copyEntry:
 			case moveEntry:
 				AccessUtils.modifyCheck(entry);   
 				break;
@@ -665,6 +666,17 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         Folder destination =  loadFolder(destinationId);
         checkAccess(destination, FolderOperation.addEntry);
         processor.moveEntry(folder, entry, destination);
+    }
+    //inside write transaction    
+    public void copyEntry(Long folderId, Long entryId, Long destinationId) {
+        Folder folder = loadFolder(folderId);
+        FolderCoreProcessor processor=loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        checkAccess(entry, FolderOperation.copyEntry);
+              
+        Folder destination =  loadFolder(destinationId);
+        checkAccess(destination, FolderOperation.addEntry);
+        processor.copyEntry(folder, entry, destination, null);
     }
     //inside write transaction    
     public void addSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {

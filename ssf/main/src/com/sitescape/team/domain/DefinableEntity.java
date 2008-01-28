@@ -69,6 +69,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     public DefinableEntity() {
     }
     public DefinableEntity(DefinableEntity source) {
+    	super(source);
     	title = source.title;
     	normalTitle = source.normalTitle;
     	description = new Description(source.description);

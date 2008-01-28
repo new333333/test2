@@ -28,9 +28,9 @@
  */
 package com.sitescape.team.security.function;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Iterator;
 
 import com.sitescape.team.security.dao.SecurityDao;
 
@@ -52,7 +52,18 @@ public class WorkAreaFunctionMembershipManagerImpl implements WorkAreaFunctionMe
     public void addWorkAreaFunctionMembership(WorkAreaFunctionMembership functionMembership) {
         getSecurityDao().save(functionMembership);
     }
-
+    public void copyWorkAreaFunctionMemberships(Long zoneId, WorkArea source, WorkArea destination) {
+		List<WorkAreaFunctionMembership> wfms = findWorkAreaFunctionMemberships(zoneId, source);
+		for (WorkAreaFunctionMembership fm: wfms) {
+			WorkAreaFunctionMembership membership = new WorkAreaFunctionMembership();
+			membership.setZoneId(zoneId);
+			membership.setWorkAreaId(destination.getWorkAreaId());
+			membership.setWorkAreaType(destination.getWorkAreaType());
+			membership.setFunctionId(fm.getFunctionId());
+			membership.setMemberIds(new HashSet(fm.getMemberIds()));
+			addWorkAreaFunctionMembership(membership);	
+		}
+	}
     public void deleteWorkAreaFunctionMemberships(Long zoneId, WorkArea workArea) {
     	getSecurityDao().deleteWorkAreaFunctionMemberships(zoneId, workArea.getWorkAreaId(), workArea.getWorkAreaType());
     }

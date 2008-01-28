@@ -47,11 +47,21 @@ function ${wsTreeName}_showId(id, obj, action) {
 
 <div class="ss_style ss_portlet">
 <div style="padding:4px;">
+<c:if test="${ssOperation == 'move'}">
 <c:if test="${ssBinder.entityType == 'folder'}">
   <span class="ss_bold ss_largerprint"><ssf:nlt tag="move.folder"/></span>
 </c:if>
 <c:if test="${ssBinder.entityType != 'folder'}">
   <span class="ss_bold ss_largerprint"><ssf:nlt tag="move.workspace"/></span>
+</c:if>
+</c:if>
+<c:if test="${ssOperation != 'move'}">
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <span class="ss_bold ss_largerprint"><ssf:nlt tag="copy.folder"/></span>
+</c:if>
+<c:if test="${ssBinder.entityType != 'folder'}">
+  <span class="ss_bold ss_largerprint"><ssf:nlt tag="copy.workspace"/></span>
+</c:if>
 </c:if>
 <br/>
 <br/>
@@ -66,7 +76,7 @@ function ${wsTreeName}_showId(id, obj, action) {
 <form class="ss_style ss_form" method="post" 
 		  action="<portlet:actionURL windowState="maximized"><portlet:param 
 		  name="action" value="modify_binder"/><portlet:param 
-		  name="operation" value="move"/><portlet:param 
+		  name="operation" value="${ssOperation}"/><portlet:param 
 		  name="binderId" value="${ssBinder.id}"/><portlet:param 
 		  name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>" 
 		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">

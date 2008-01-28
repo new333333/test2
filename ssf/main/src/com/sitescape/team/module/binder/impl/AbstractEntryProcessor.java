@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.module.binder.impl;
 
+import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -56,12 +57,15 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.processor.EntryProcessor;
@@ -188,21 +192,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	return ctx;
     }
 
-    private void checkInputFileNames(List fileUploadItems, FilesErrors errors) {
-   		//name must be unique within Entry
-   		for (int i=0; i<fileUploadItems.size(); ++i) {
-			FileUploadItem fui1 = (FileUploadItem)fileUploadItems.get(i);
-			for (int j=i+1; j<fileUploadItems.size(); ) {
-    			FileUploadItem fui2 = (FileUploadItem)fileUploadItems.get(j);
-    			if (fui1.getOriginalFilename().equalsIgnoreCase(fui2.getOriginalFilename()) &&
-    				!fui1.getRepositoryName().equals(fui2.getRepositoryName())) {
-    				fileUploadItems.remove(j);
-    				errors.addProblem(new FilesErrors.Problem(null, 
-       	   				fui1.getOriginalFilename(), FilesErrors.Problem.PROBLEM_FILE_EXISTS));
-    			} else ++j;
-			}
-   		}
-    }
     
     private void checkInputFilesForNonMirroredBinder(List fileUploadItems, FilesErrors errors) {
 		for (int i = 0; i < fileUploadItems.size();) {
@@ -641,6 +630,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void modifyEntry_done(Binder binder, Entry entry, InputDataAccessor inputData, Map ctx) {
     }
     //***********************************************************************************************************   
+    //inside write transaction    
+    public Entry copyEntry(Binder binder, Entry source, Binder destination, InputDataAccessor inputData) {
+		throw new NotSupportedException(
+				"errorcode.notsupported.copyEntry", new String[]{source.getTitle()});
+    }
+ 
+    //***********************************************************************************************************   
     //no transaction expected
     public void deleteEntry(final Binder parentBinder, final Entry entry, final boolean deleteMirroredSource) {
     	final Map ctx = deleteEntry_setCtx(entry, null);
@@ -742,7 +738,20 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		throw new NotSupportedException(
 				"errorcode.notsupported.moveEntry", new String[]{entry.getTitle()});
     }
-    
+    //***********************************************************************************************************
+    //no transaction
+    public Binder copyBinder(Binder source, Binder destination, InputDataAccessor inputData) {
+    	Binder binder = super.copyBinder(source, destination, inputData);
+    	copyEntries(source, binder, null);
+    	return binder;
+    }
+
+    //***********************************************************************************************************
+    //no transaction
+    public void copyEntries(Binder source, Binder destination, InputDataAccessor inputData) {
+		throw new NotSupportedException("errorcode.notsupported.copyEntry", "ALL");
+
+    }
     //***********************************************************************************************************
     /*
      * classes must provide code to delete files belonging to entries
@@ -911,17 +920,18 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			Map tags = indexEntries_loadTags(binder, batch);
        			for (int i=0; i<batch.size(); ++i) {
        				Entry entry = (Entry)batch.get(i);
+   					List entryTags = (List)tags.get(entry.getEntityIdentifier());
        				if (indexEntries_validate(binder, entry)) {
-       					List entryTags = (List)tags.get(entry.getEntityIdentifier());
        					// 	Create an index document from the entry object. 
        					// Entry already deleted from index, so pretend we are new
        				   	indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags);
        				   	indexEntries_postIndex(binder, entry);
        				}
+           			getCoreDao().evict(entryTags);
        				getCoreDao().evict(entry);
           	  		//apply after we have gathered a few
            	   		IndexSynchronizationManager.applyChanges(threshhold);
-           			}
+       			}
        	 	            	            
        			// Register the index document for indexing.
        			logger.info("Indexing done at " + total + "("+ binder.getPathName() + ")");
@@ -930,6 +940,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	
         } finally {
         	//clear out anything remaining
+        	query.close();
         }
  
     }

@@ -40,6 +40,13 @@ public class PersistentLongIdTimestampObject extends PersistentLongIdObject
 	implements PersistentLongIdTimestamp, Comparable {
     protected HistoryStamp creation;
     protected HistoryStamp modification;
+    
+    public PersistentLongIdTimestampObject() {
+    }
+    public PersistentLongIdTimestampObject(DefinableEntity source) {
+		 creation = new HistoryStamp(source.getCreation().getPrincipal(), source.getCreation().getDate());
+		 modification = new HistoryStamp(source.getModification().getPrincipal(), source.getModification().getDate());
+    }
     /**
      * @hibernate.component class="com.sitescape.team.domain.HistoryStamp" prefix="creation_" 
      */

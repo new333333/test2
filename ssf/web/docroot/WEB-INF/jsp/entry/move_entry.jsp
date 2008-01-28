@@ -49,7 +49,12 @@ function ${wsTreeName}_showId(id, obj, action) {
 
 <div class="ss_style ss_portlet">
 <div style="padding:4px;">
+<c:if test="${ssOperation == 'move'}">
 <span class="ss_bold ss_largerprint"><ssf:nlt tag="move.entry"/></span>
+</c:if>
+<c:if test="${ssOperation != 'move'}">
+<span class="ss_bold ss_largerprint"><ssf:nlt tag="copy.entry"/></span>
+</c:if>
 <br/>
 <br/>
 <span><ssf:nlt tag="move.currentEntry"/>: </span>
@@ -61,7 +66,7 @@ function ${wsTreeName}_showId(id, obj, action) {
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url
 	action="modify_folder_entry"
-	operation="move"
+	operation="${ssOperation}"
 	folderId="${ssBinder.id}"
 	entryId="${ssEntry.id}"/>" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
 <br/>

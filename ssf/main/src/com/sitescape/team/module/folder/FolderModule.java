@@ -68,6 +68,7 @@ public interface FolderModule {
 	   addFolder,
 	   addEntryWorkflow,
 	   addReply,
+	   copyEntry,
 	   deleteEntry,
 	   deleteEntryWorkflow,
 	   manageTag,
@@ -105,7 +106,8 @@ public interface FolderModule {
      *
      */
     public void cleanupFolders();
-    /**
+    public void copyEntry(Long folderId, Long entryId, Long destinationId) throws AccessControlException;
+   /**
      * Delete a FolderEntry and all of its replies
      * @param parentFolderId
      * @param entryId

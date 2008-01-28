@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.module.shared;
 
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Collection;
@@ -40,11 +42,16 @@ import org.apache.commons.logging.LogFactory;
 
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.Statistics;
 import com.sitescape.team.domain.UpdateAttributeSupport;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
+import com.sitescape.team.util.SpringContextUtil;
 
 /**
  * @author hurley
@@ -154,7 +161,77 @@ public class EntryBuilder {
 		return changed;
 
 	}	
-
+	private static CoreDao getCore() {
+		return (CoreDao) SpringContextUtil.getBean("coreDao");
+	}
+	public static void copyAttributes(DefinableEntity source, DefinableEntity destination) {
+		CoreDao coreDao = getCore();
+		//File attachments must already have been copied; need to do first so custom file attributes have a real object to reference
+		Map catts = source.getCustomAttributes();
+		for (Iterator iter=catts.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry me = (Map.Entry)iter.next();
+			CustomAttribute ca = (CustomAttribute)me.getValue();
+			if (Statistics.ATTRIBUTE_NAME.equals(ca.getName())) continue;
+			switch (ca.getValueType()) {
+				case CustomAttribute.EVENT: {
+					Event event = (Event)ca.getValue();
+					if (event != null) {
+						Event newE = (Event)event.clone();
+						newE.setId(null);
+						coreDao.save(newE);
+						destination.addCustomAttribute(newE.getName(), newE);
+					}
+					break;
+				}
+				case CustomAttribute.ATTACHMENT: {
+					//only support file attachments now
+					FileAttachment sfa = (FileAttachment)ca.getValue();
+					if (sfa == null) continue;
+					FileAttachment dfa = destination.getFileAttachment(sfa.getFileItem().getName());
+					//attach as custom attribute
+					if (dfa != null) destination.addCustomAttribute(ca.getName(), dfa);
+					break;
+				}
+				case CustomAttribute.ORDEREDSET:
+				case CustomAttribute.SET: {
+					//should be the same type
+					Set values = ca.getValueSet();
+					if (!values.isEmpty()) {
+						Set newV;
+						if (ca.getValueType() == CustomAttribute.ORDEREDSET) newV = new LinkedHashSet(); 
+						else newV = new HashSet();
+						for (Iterator it=values.iterator(); it.hasNext();) {
+							Object val = it.next();
+							if (val == null) continue;
+							if (val instanceof Event) {
+								Event newE = (Event)((Event)val).clone();
+								newE.setId(null);
+								coreDao.save(newE);
+								newV.add(newE);
+							} else if (val instanceof FileAttachment) {
+								//only support file attachments now
+								FileAttachment sfa = (FileAttachment)val;
+								FileAttachment dfa = destination.getFileAttachment(sfa.getFileItem().getName());
+								//attach as custom attribute
+								if (dfa != null) newV.add(dfa);
+								
+							} else {
+								newV.add(val);
+							}
+						}
+						destination.addCustomAttribute(ca.getName(), newV);
+					}
+					break;
+				} 
+				default: {
+					destination.addCustomAttribute(ca.getName(), ca.getValue());
+					break;
+				}
+			}
+			
+		}
+		
+	}
 }
 
 

@@ -51,7 +51,6 @@ public class Folder extends Binder {
     public Folder(Folder folder) {
        	super(folder);
        	setType(EntityIdentifier.EntityType.folder.name());
-       	owner = folder.owner;
     }
  	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.folder;
@@ -146,6 +145,17 @@ public class Folder extends Binder {
       entry.setParentBinder((Folder)this);
       entry.setOwningBinderKey(getBinderKey().getSortKey());
       entry.setHKey(new HKey(getEntryRootKey(), nextEntryNumber++));
+    }
+    /**
+     * Add a new entry into the folder at a fixed position
+     * The position must be greater than any current entries
+     * @param source
+     * @param entry
+     */
+    public void addEntry(FolderEntry entry, int docNumber) {
+    	if (docNumber < nextEntryNumber) throw new IllegalArgumentException("docNumber already exists");
+    	nextEntryNumber = docNumber;
+    	addEntry(entry);    	
     }
     /**
      * Removes the connection of this entry from the folder.  

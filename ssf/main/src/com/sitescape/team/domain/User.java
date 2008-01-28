@@ -69,7 +69,7 @@ public class User extends Principal {
     protected String displayStyle;
     protected String password; //set by hibernate access="field"
     protected Long digestSeed;
-    
+    protected String skypeId="";
     private Set principalIds; // set of Long; this field is computed 
     private SortedSet groupNames; // sorted set of group names; this field is computed
 	public User() {
@@ -246,6 +246,18 @@ public class User extends Principal {
 		this.zonName = zonName;
 	}
 
+	/**
+     * @hibernate.property length="64"
+     */
+	public String getSkypeId() {
+		return skypeId;
+	}
+	/**
+	 * @param skypeId The skypeId to set.
+	 */
+	public void setSkypeId(String skypeId) {
+		this.skypeId = skypeId;
+	}
 	/**
 	 * Returns encrypted password.
 	 * 

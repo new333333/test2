@@ -118,10 +118,17 @@ public class ModifyBinderController extends AbstractBinderController {
 		   			response.setRenderParameter(WebKeys.EXCEPTION, cf.getLocalizedMessage() != null ? cf.getLocalizedMessage() : cf.getMessage());
 		   		}
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
-				//must be a move
 				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
-				if (destinationId != null) getBinderModule().moveBinder(binderId, new Long(destinationId));
+				if (destinationId != null) getBinderModule().moveBinder(binderId, destinationId);
 				setupViewBinder(response, binderId, binderType);
+			} else if (op.equals(WebKeys.OPERATION_COPY)) {
+				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
+				if (destinationId != null) {
+					Long copyId = getBinderModule().copyBinder(binderId, destinationId, true);
+					setupViewBinder(response, copyId, binderType);
+				} else {
+					setupViewBinder(response, binderId, binderType);
+				}
 			} else if (op.equals(WebKeys.OPERATION_DELETE)) {
 				// The delete-mirrored-binder form was submitted.
 				//retrieve binder so we can return to parent
@@ -152,7 +159,7 @@ public class ModifyBinderController extends AbstractBinderController {
 		model.put(WebKeys.OPERATION, action);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		String path;
-		if (op.equals(WebKeys.OPERATION_MOVE)) {
+		if (op.equals(WebKeys.OPERATION_MOVE) || op.equals(WebKeys.OPERATION_COPY)) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
 			Workspace ws = getWorkspaceModule().getTopWorkspace();
@@ -163,6 +170,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				top.addAttribute("displayOnly", "true");
 			}
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			model.put(WebKeys.OPERATION, op);
 			path = WebKeys.VIEW_MOVE_BINDER;
 		} else if (op.equals(WebKeys.OPERATION_DELETE)) {
 			Binder binder = getBinderModule().getBinder(binderId);

@@ -67,6 +67,14 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
     public FolderEntry() {
         super();
     }
+    public FolderEntry(FolderEntry entry) {
+    	super(entry);
+    	//DO not copy reservation, replies, docHKey, replyCount, nextDescendant, topReplyCount
+    	// topEntry, parentEntry, owningBinderKey, lockedFileCount, subscribed
+    	lastActivity = entry.lastActivity;
+    	postedBy = entry.postedBy;
+    	
+    }
  	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.folderEntry;
 	}
@@ -234,6 +242,11 @@ public class FolderEntry extends WorkflowControlledEntry implements WorkflowSupp
         ++replyCount;
         addAncestor(child);
     }
+    public void addReply(FolderEntry child, int docNumber) {
+       	if (docNumber < nextDescendant) throw new IllegalArgumentException("docNumber already exists");
+       	nextDescendant = docNumber;
+       	addReply(child);
+   }
     public void removeReply(FolderEntry child) {
         if (!child.getParentEntry().getId().equals(this.getId())) {
             throw new NoFolderEntryByTheIdException(child.getId(),"Entry is not a child");
