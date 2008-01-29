@@ -87,10 +87,10 @@ function ss_setMobileIframeSize() {
 <div class="ss_portlet_style ss_portlet">
 
 <div class="ss_style" style="padding:4px;">
+<ssf:inlineHelp jsp="portlets/mobile_portlet"/>
 
 <ssHelpSpot helpId="portlets/mobile_portlet" offsetX="0" offsetY="-10" 
 			    title="<ssf:nlt tag="helpSpot.mobilePortlet"/>"></ssHelpSpot>
-
 <ssf:ifLoggedIn>
 <c:if test="${empty ss_mobileBinderList}">
 <div align="right">
