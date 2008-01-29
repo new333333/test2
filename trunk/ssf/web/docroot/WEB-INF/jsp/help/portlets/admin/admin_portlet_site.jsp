@@ -42,11 +42,13 @@
 
 <ul>
 
-<li><ssf:nlt tag="help.adminPortletSite.listItem.roleDefs" /></li>
-
 <li><ssf:nlt tag="help.adminPortletSite.listItem.configEmail"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
 
+<li><ssf:nlt tag="help.adminPortletSite.listItem.roleDefs" /></li>
+
 <li><ssf:nlt tag="help.adminPortletSite.listItem.exportImport" /></li>
+
+<li><ssf:nlt tag="help.adminPortletSite.listItem.importProfiles" /></li>
 
 <li><ssf:nlt tag="help.adminPortletSite.listItem.templates" /></li>
 
