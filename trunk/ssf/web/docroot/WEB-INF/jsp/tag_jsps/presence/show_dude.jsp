@@ -38,7 +38,7 @@
 
 <c:if test="${empty ss_presence_user && !ss_presence_show_options_inline}">
 <a href="javascript: ;"
- onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
+ onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
 </c:if>
@@ -58,6 +58,12 @@
 <c:if test="${!empty ss_presence_user.emailAddress}">
 <c:set var="presence_user_emailAddress" value="${ss_presence_user.emailAddress}"/>
 </c:if>
+<c:set var="presence_user_skypeId" value=""/>
+<c:if test="${!empty ss_presence_user.skypeId}">  
+	<c:set var="presence_user_skypeId" value="${ss_presence_user.skypeId}"/>  	
+</c:if>
+<jsp:useBean id="presence_user_skypeId" type="java.lang.String" />
+
 <jsp:useBean id="presence_user_title" type="java.lang.String" />
 <jsp:useBean id="presence_user_zonName" type="java.lang.String" />
 <jsp:useBean id="presence_user_emailAddress" type="java.lang.String" />
@@ -69,6 +75,8 @@
 	presenceUserZonName.replaceAll("'", "\\\\'");
 	String presenceUserEmailAddress = presence_user_emailAddress;
 	presenceUserEmailAddress.replaceAll("'", "\\\\'");
+	String presenceUserSkypeId = presence_user_skypeId;
+	presenceUserSkypeId.replaceAll("'", "\\\\'");
 %>
 <c:set var="current" value=""/>
 <c:if test="${ssUser.zonName == ss_presence_user.zonName}">
@@ -85,7 +93,8 @@
     '<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ss_presence_sweep_time}" type="both" timeStyle="short" dateStyle="medium" />', 
     '<%= presenceUserEmailAddress %>', 
     '${ss_presence_vcard}', 
-    '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}');return false;"
+    '${current}', '${ss_presence_component_id}', '${ss_presence_zonBridge}',
+    '<%= presenceUserSkypeId %>');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
   <c:if test="${ss_presence_show_title}">
@@ -126,7 +135,8 @@ function ss_showPresenceInline_${ss_presence_div_id}() {
 	    '${ss_presence_vcard}', 
 	    '${current}', 
 	    '${ss_presence_component_id}', 
-	    '${ss_presence_zonBridge}');
+	    '${ss_presence_zonBridge}',
+	    '<%= presenceUserSkypeId %>');
 }
 ss_createOnLoadObj("ss_showPresenceInline_${ss_presence_div_id}", ss_showPresenceInline_${ss_presence_div_id});
 

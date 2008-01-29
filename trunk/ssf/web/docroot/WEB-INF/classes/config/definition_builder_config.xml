@@ -767,6 +767,7 @@
 			<option name="profileMobileEmailAddress" initial="true" />
 			<option name="profileTxtEmailAddress" initial="true" />
 			<option name="profileZonName" initial="true" />
+			<option name="profileSkypeId" initial="false" />
 			<option name="entryFormButtons" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
@@ -950,6 +951,23 @@
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
+	<item name="profileSkypeId" caption="__skypeId" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__skypeId"/>
+			<property name="name" caption="__data_name" type="text" value="skypeId" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+	</item>
 	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false"
 		category="profileEntryData">
 		<properties>
@@ -1066,6 +1084,7 @@
 				<option name="mobileEmailAddress" caption="__mobileEmailAddress" />
 				<option name="txtEmailAddress" caption="__txtEmailAddress" />
 				<option name="zonName" caption="__zonName" />
+				<option name="skypeId" caption="__skypeId" />
 		    </property>
 			<property name="maxWidth" caption="__max_profile_picture_width" type="text"
 				characterMask="^[0-9]*$" default="200">
@@ -1099,6 +1118,7 @@
 				<option name="mobileEmailAddress" caption="__mobileEmailAddress" initial="true"/>
 				<option name="txtEmailAddress" caption="__txtEmailAddress" initial="true"/>
 				<option name="zonName" caption="__zonName" initial="true"/>
+				<option name="skypeId" caption="__skypeId" initial="true"/>
 		    </property>
 		</properties>
 

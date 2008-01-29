@@ -3984,7 +3984,7 @@ function ss_savePenletLayout() {
 
 
 //Presence support
-function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge) {
+function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId) {
     obj = self.document.getElementById('ss_presencePopUp'+ssNamespace)
     if (obj == null) {
 		obj = document.createElement("div");
@@ -3995,10 +3995,10 @@ function ss_popupPresenceMenu(x, userId, userTitle, status, screenName, sweepTim
     	document.getElementsByTagName("body").item(0).appendChild(obj);
     }
     ss_moveObjectToBody(obj)
-	ss_presenceMenu('', x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge);
+	ss_presenceMenu('', x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId);
 }
 
-function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge) {
+function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepTime, email, vcard, current, ssNamespace, ssPresenceZonBridge, skypeId) {
     var obj;
     var objId = divId;
     if (objId == '') objId = 'ss_presencePopUp'+ssNamespace;
@@ -4083,6 +4083,12 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
         m += '<td id="addToClipboardTD' + screenName + '"><a class="ss_graymenu" href="javascript: // ;" onclick="ss_muster.addUsersToClipboard([' + userId + ']' + (divId != ''?', function () {$(\'addToClipboardTD'+screenName+'\').innerHTML=\'OK\'}':'') + ');return false;">'+ss_ostatus_clipboard+'</a></td></tr>';
 	}	
 	
+    if (skypeId != '') {
+        m += '<tr>';
+        m += '<td class="ss_bglightgray"><img border="0" alt="" id="ppgskype' +ssNamespace+'"></td>';
+        m += '<td id="skypeId' + screenName + '"><a class="ss_graymenu" href="skype:' + skypeId + '?call">' +ss_ostatus_skype+'</a></td></tr>';
+    }
+
     m += '</table>'
 
 	if (divId == '') {
@@ -4124,6 +4130,9 @@ function ss_presenceMenu(divId, x, userId, userTitle, status, screenName, sweepT
     }
     if (self.document.images["ppgclipboard"+ssNamespace]) {
         self.document.images["ppgclipboard"+ssNamespace].src = ss_presencePopupGraphics["clipboard"].src;
+    }	
+    if (self.document.images["ppgskype"+ssNamespace]) {
+        self.document.images["ppgskype"+ssNamespace].src = ss_presencePopupGraphics["skype"].src;
     }	
     if (divId == '') {
 	    // move the div up if it scrolls off the bottom
