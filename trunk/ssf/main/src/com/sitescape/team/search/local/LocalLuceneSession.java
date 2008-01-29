@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.TreeSet;
 
@@ -50,8 +51,6 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.index.TermDocs;
 import org.apache.lucene.index.TermEnum;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.HitCollector;
 import org.apache.lucene.search.Hits;
 import org.apache.lucene.search.IndexSearcher;
@@ -67,7 +66,6 @@ import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.lucene.LuceneHelper;
 import com.sitescape.team.lucene.NullAnalyzer;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
-import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneException;
@@ -93,6 +91,10 @@ public class LocalLuceneSession implements LuceneSession {
 
 	private static boolean debugEnabled = logger.isDebugEnabled();
 	
+	private static HashMap<String, Object> rwLockTable = new HashMap<String, Object>();
+	
+	private static HashMap<String, Object> searchLockTable = new HashMap<String, Object>();
+	
 	private String indexPath;
 	
 	public LocalLuceneSession(String indexPath) {
@@ -111,7 +113,7 @@ public class LocalLuceneSession implements LuceneSession {
 					"Document must contain a UID with field name "
 							+ BasicIndexUtils.UID_FIELD);
 		// block until updateDocs is completed
-		synchronized (LocalLuceneSession.class) {
+		synchronized (getRWLockObject()) {
 			indexWriter = null;
 			String tastingText = getTastingText(doc);
 			try {
@@ -161,7 +163,7 @@ public class LocalLuceneSession implements LuceneSession {
     	//System.out.println("adddoc START Heap size( " + docs.size() + " docs): " + (rt.totalMemory() - rt.freeMemory()));
 
 		// block until updateDocs is completed
-		synchronized (LocalLuceneSession.class) {
+		synchronized (getRWLockObject()) {
 			indexWriter = null;
 			
 			try {
@@ -223,7 +225,7 @@ public class LocalLuceneSession implements LuceneSession {
 		long startTime = System.currentTimeMillis();
 
 		// block until updateDocs is completed
-		synchronized (LocalLuceneSession.class) {
+		synchronized (getRWLockObject()) {
 			indexWriter = null;
 
 			try {
@@ -269,7 +271,7 @@ public class LocalLuceneSession implements LuceneSession {
 
 		long startTime = System.currentTimeMillis();
 		// block until updateDocs is completed
-		synchronized (LocalLuceneSession.class) {
+		synchronized (getRWLockObject ()) {
 			indexSearcher = null;
 
 			try {
@@ -326,7 +328,7 @@ public class LocalLuceneSession implements LuceneSession {
 		IndexSearcher indexSearcher = null;
 		long startTime = System.currentTimeMillis();
 
-		synchronized (SearchLock.class) {
+		synchronized (getSearchLockObject()) {
 			try {
 				indexSearcher = LuceneHelper.getSearcher(indexPath);
 			} catch (IOException e) {
@@ -371,7 +373,7 @@ public class LocalLuceneSession implements LuceneSession {
 		Hits hits = null;
 		IndexSearcher indexSearcher = null;
 
-		synchronized (SearchLock.class) {
+		synchronized (getSearchLockObject()) {
 			try {
 
 				indexSearcher = LuceneHelper.getSearcher(indexPath);
@@ -434,7 +436,7 @@ public class LocalLuceneSession implements LuceneSession {
 		tag = tag.toLowerCase();
 		// block until updateDocs is completed
 		try {
-			synchronized (LocalLuceneSession.class) {
+			synchronized (getRWLockObject()) {
 
 				try {
 					indexReader = LuceneHelper.getReader(indexPath);
@@ -612,7 +614,7 @@ public class LocalLuceneSession implements LuceneSession {
 	private void updateDocs(Query q, String fieldname, String fieldvalue) {
 		long start = 0L;
 		// block every read/write while updateDocs is in progress
-		synchronized (LocalLuceneSession.class) {
+		synchronized (getRWLockObject()) {
 			// first Optimize the index.
 			IndexWriter indexWriter = null;
 
@@ -674,7 +676,7 @@ public class LocalLuceneSession implements LuceneSession {
 				updater.addField(new Field(fieldname, fieldvalue,
 						Field.Store.NO, Field.Index.TOKENIZED),
 						new SsfIndexAnalyzer(), docsel);
-			synchronized (SearchLock.class) {
+			synchronized (getSearchLockObject()) {
 				LuceneHelper.closeSearcher();
 				updater.close();
 			}
@@ -724,7 +726,7 @@ public class LocalLuceneSession implements LuceneSession {
 
 		// block until updateDocs is completed
 		try {
-			synchronized (LocalLuceneSession.class) {
+			synchronized (getRWLockObject()) {
 
 				try {
 					indexReader = LuceneHelper.getReader(indexPath);
@@ -908,7 +910,7 @@ public class LocalLuceneSession implements LuceneSession {
 			backupDir = bDir;
 		}
 		
-		synchronized (LocalLuceneSession.class) {
+		synchronized (getRWLockObject()) {
 			LuceneHelper.closeAll();
 			// create a name for the copy directory
 			SimpleDateFormat formatter =
@@ -943,5 +945,28 @@ public class LocalLuceneSession implements LuceneSession {
 			}
 		}
 	}
+
+	private Object getRWLockObject() {
+		synchronized(RWLock.class) {
+			Object obj = rwLockTable.get(indexPath);
+			if (obj == null) {
+				obj = new Object();
+				rwLockTable.put(indexPath, obj);
+			}
+			return obj;
+		}
+	}
+	
+	private Object getSearchLockObject () {
+		synchronized(SearchLock.class) {
+			Object obj = searchLockTable.get(indexPath);
+			if (obj == null) {
+				obj = new Object();
+				searchLockTable.put(indexPath, obj);
+			}
+			return obj;
+		}
+	}
 }
+class RWLock {}
 class SearchLock {}
