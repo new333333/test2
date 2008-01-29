@@ -629,39 +629,6 @@
 		</property>
 	</bean>
 	
-	<bean id="wsFacade" class="org.springframework.aop.framework.ProxyFactoryBean">
-		<property name="target">
-			<bean class="com.sitescape.team.remoting.ws.FacadeImpl" parent="dependOnAllModulesTemplate">
-				<property name="profileDao"><ref local="profileDao"/></property>
-			</bean>
-		</property>
-		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.Facade</value>
-		</property>
-		<property name="interceptorNames">
-			<list>
-				<value>checkEnabledInterceptor</value>
-				<value>aopallianceLoggingInterceptor</value>
-				<!-- When a user request is served, typically one of the very first 
-				     interceptors we define is one that sets up request context for 
-				     the serving thread. In the case of Web request, typically this
-				     information comes from either the request object or the session
-				     and the interceptor sets up thread context using the user 
-				     information. However, in the case Web Service, neither request
-				     object nor session is relevant. The same piece of information
-				     (i.e., zone and user names) must come from the WS framework. 
-				     Specifically, when used in conjunction with WS-Security compliant
-				     tool such as WSS4J, the hook is provided via a callback routine
-				     that the framework invokes to obtain password information for
-				     the user making the request. That's where we set up our request 
-				     context as well. -->
-				<value>aopallianceOpenSessionInViewInterceptor</value>
-				<value>aopallianceUserPreloadInterceptor</value>
-				<value>loginInfoInterceptor</value>
-			</list>
-		</property>
-	</bean>
-	
 	<bean id="aopallianceLoggingInterceptor" class="com.sitescape.team.util.aopalliance.LoggingInterceptor"/>
 	
 	<bean id="aopallianceOpenSessionInViewInterceptor" class="com.sitescape.team.util.aopalliance.OpenSessionInViewInterceptor">
@@ -673,12 +640,6 @@
 	</bean>
 	
 	<bean id="aopallianceMethodInvocationTraceInterceptor" class="com.sitescape.team.util.aopalliance.MethodInvocationTraceInterceptor"/>
-	
-	<bean id="loginInfoInterceptor" class="com.sitescape.team.remoting.interceptor.LoginInfoInterceptor">
-		<property name="reportModule"><ref local="reportModule"/></property>
-	</bean>
-	
-	<bean id="checkEnabledInterceptor" class="com.sitescape.team.remoting.ws.interceptor.CheckEnabledInterceptor" />
 	
 	<!-- referenced internally when viewing files and sending mail -->
 	<bean id="mimeTypes" class="org.springframework.mail.javamail.ConfigurableMimeFileTypeMap">
@@ -783,6 +744,7 @@ text/calendar											  ics
 		<property name="defaultCommunityId"><value>${presence.broker.default.community.id}</value></property>
 		<property name="enabled"><value>${presence.service.enable}</value></property>
 	</bean>
+	
 	<!-- ================================  Mail Support =============================== -->
 	<!-- this bean is only used to allow setting of initial context properties -->
 	<bean id="mailJndiAccessor" class="org.springframework.jndi.JndiAccessor"/>
@@ -800,6 +762,141 @@ text/calendar											  ics
 		<property name="icalModule"><ref local="icalModule"/></property>
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 	</bean>	
+	
+	<!-- ============================== Web Services Components ============================ -->
+	
+	<bean id="loginInfoInterceptor" class="com.sitescape.team.remoting.ws.interceptor.LoginInfoInterceptor">
+		<property name="reportModule"><ref local="reportModule"/></property>
+	</bean>
+	
+	<bean id="checkEnabledInterceptor" class="com.sitescape.team.remoting.ws.interceptor.CheckEnabledInterceptor" />
+	
+	<bean id="wsProxyTemplate" class="org.springframework.aop.framework.ProxyFactoryBean" abstract="true">
+		<property name="interceptorNames">
+			<list>
+				<value>checkEnabledInterceptor</value>
+				<value>aopallianceLoggingInterceptor</value>
+				<!-- When a user request is served, typically one of the very first 
+				     interceptors we define is one that sets up request context for 
+				     the serving thread. In the case of Web request, typically this
+				     information comes from either the request object or the session
+				     and the interceptor sets up thread context using the user 
+				     information. However, in the case of Web Services that rely on
+				     WS-Security for message-level authentication, neither request
+				     object nor session is relevant. The user credential must come
+				     from the WS framework. 
+				     Specifically, when used in conjunction with WS-Security compliant
+				     tool such as WSS4J, the hook is provided via a callback routine
+				     that the framework invokes to obtain password information for
+				     the user making the request. That's where we set up our request 
+				     context and that's why we do not have here in the interceptor
+				     chain the usual interceptor that sets up request context. -->
+				<value>aopallianceOpenSessionInViewInterceptor</value>
+				<value>aopallianceUserPreloadInterceptor</value>
+				<value>loginInfoInterceptor</value>
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="adminService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.admin.remoting.ws.AdminServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.admin.remoting.ws.AdminService</value>
+		</property>
+	</bean>
+	
+	<bean id="binderService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.binder.remoting.ws.BinderServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.binder.remoting.ws.BinderService</value>
+		</property>
+	</bean>
+	
+	<bean id="definitionService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.definition.remoting.ws.DefinitionServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.definition.remoting.ws.DefinitionService</value>
+		</property>
+	</bean>
+	
+	<bean id="folderService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.folder.remoting.ws.FolderServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.folder.remoting.ws.FolderService</value>
+		</property>
+	</bean>
+	
+	<bean id="icalService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.ical.remoting.ws.IcalServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.ical.remoting.ws.IcalService</value>
+		</property>
+	</bean>
+	
+	<bean id="ldapService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.ldap.remoting.ws.LdapServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.ldap.remoting.ws.LdapService</value>
+		</property>
+	</bean>
+	
+	<bean id="licenseService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.license.remoting.ws.LicenseServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.license.remoting.ws.LicenseService</value>
+		</property>
+	</bean>
+	
+	<bean id="profileService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.profile.remoting.ws.ProfileServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.profile.remoting.ws.ProfileService</value>
+		</property>
+	</bean>
+	
+	<bean id="workflowService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.workflow.remoting.ws.WorkflowServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.workflow.remoting.ws.WorkflowService</value>
+		</property>
+	</bean>
+	
+	<bean id="zoneService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.zone.remoting.ws.ZoneServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.zone.remoting.ws.ZoneService</value>
+		</property>
+	</bean>
 	
 	<!-- ================================  JMX/MBean Support =============================== -->
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">

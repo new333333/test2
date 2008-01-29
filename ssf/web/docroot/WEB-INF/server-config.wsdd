@@ -40,13 +40,171 @@
 		<parameter name="scope" value="application"/>
   		<!--<parameter name="wsdlTargetNamespace" value="urn:SSF" />-->
 		<!-- The host name portion must be substituted appropriately. -->
-		<endpointURL>http://localhost:8080/ssf/ws/Facade</endpointURL>
+		<!--<endpointURL>http://localhost:8080/ssf/ws/Facade</endpointURL>-->
 		<!--<namespace>http://localhost:8080/ssf/ws/</namespace>-->
+		<!--<parameter name="wsdlServicePort" value="Facade"/>-->
 	</service>
-	<!--<service name="Version" provider="java:RPC">
-		<parameter name="allowedMethods" value="getVersion"/>
-		<parameter name="className" value="org.apache.axis.Version"/>
-	</service>-->
+	<service name="AdminService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.admin.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="AdminSoapService"/>
+		<parameter name="wsdlServicePort" value="AdminService"/>
+		<parameter name="className" value="com.sitescape.team.module.admin.remoting.ws.JaxRpcAdminService"/>
+		<parameter name="wsdlPortType" value="AdminServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="BinderService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.binder.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="BinderSoapService"/>
+		<parameter name="wsdlServicePort" value="BinderService"/>
+		<parameter name="className" value="com.sitescape.team.module.binder.remoting.ws.JaxRpcBinderService"/>
+		<parameter name="wsdlPortType" value="BinderServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="DefinitionService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.definition.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="DefinitionSoapService"/>
+		<parameter name="wsdlServicePort" value="DefinitionService"/>
+		<parameter name="className" value="com.sitescape.team.module.definition.remoting.ws.JaxRpcDefinitionService"/>
+		<parameter name="wsdlPortType" value="DefinitionServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="FolderService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.folder.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="FolderSoapService"/>
+		<parameter name="wsdlServicePort" value="FolderService"/>
+		<parameter name="className" value="com.sitescape.team.module.folder.remoting.ws.JaxRpcFolderService"/>
+		<parameter name="wsdlPortType" value="FolderServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="IcalService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.ical.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="IcalSoapService"/>
+		<parameter name="wsdlServicePort" value="IcalService"/>
+		<parameter name="className" value="com.sitescape.team.module.ical.remoting.ws.JaxRpcIcalService"/>
+		<parameter name="wsdlPortType" value="IcalServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="LdapService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.ldap.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="LdapSoapService"/>
+		<parameter name="wsdlServicePort" value="LdapService"/>
+		<parameter name="className" value="com.sitescape.team.module.ldap.remoting.ws.JaxRpcLdapService"/>
+		<parameter name="wsdlPortType" value="LdapServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="LicenseService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.license.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="LicenseSoapService"/>
+		<parameter name="wsdlServicePort" value="LicenseService"/>
+		<parameter name="className" value="com.sitescape.team.module.license.remoting.ws.JaxRpcLicenseService"/>
+		<parameter name="wsdlPortType" value="LicenseServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="ProfileService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.profile.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="ProfileSoapService"/>
+		<parameter name="wsdlServicePort" value="ProfileService"/>
+		<parameter name="className" value="com.sitescape.team.module.profile.remoting.ws.JaxRpcProfileService"/>
+		<parameter name="wsdlPortType" value="ProfileServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="WorkflowService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.workflow.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="WorkflowSoapService"/>
+		<parameter name="wsdlServicePort" value="WorkflowService"/>
+		<parameter name="className" value="com.sitescape.team.module.workflow.remoting.ws.JaxRpcWorkflowService"/>
+		<parameter name="wsdlPortType" value="WorkflowServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="ZoneService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.zone.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="ZoneSoapService"/>
+		<parameter name="wsdlServicePort" value="ZoneService"/>
+		<parameter name="className" value="com.sitescape.team.module.zone.remoting.ws.JaxRpcZoneService"/>
+		<parameter name="wsdlPortType" value="ZoneServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+
 	<transport name="http">
 		<requestFlow>
 			<handler type="URLMapper"/>
