@@ -134,4 +134,6 @@ public interface ProfileModule {
 	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException;
 
 	public void deleteUserByName(String userName);
+	
+	public void addUserToGroup(long userId, String username, long groupId);
 }

@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.remoting.impl;
+package com.sitescape.team.remoting.ws.util;
 
 import java.io.IOException;
 import java.io.StringReader;
