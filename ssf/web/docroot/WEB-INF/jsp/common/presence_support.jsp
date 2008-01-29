@@ -56,6 +56,9 @@ ss_presencePopupGraphics["sched"] = new Image();
 ss_presencePopupGraphics["sched"].src = '<html:imagesPath/>pics/sym_s_sched.gif';
 ss_presencePopupGraphics["clipboard"] = new Image();
 ss_presencePopupGraphics["clipboard"].src = '<html:imagesPath/>pics/sym_s_clipboard.gif';
+ss_presencePopupGraphics["skype"] = new Image();
+ss_presencePopupGraphics["skype"].src = '<html:imagesPath/>pics/SkypeBlue_16x16.png';
+
 
 var ss_ostatus_none = ' <ssf:nlt tag="presence.none"/>'
 var ss_ostatus_away = ' <ssf:nlt tag="presence.isAway" text="is away"/>';
@@ -72,6 +75,8 @@ var ss_ostatus_sendMail = '<ssf:nlt tag="presence.sendMail" text="Send mail"/>';
 
 var ss_ostatus_outlook = '<ssf:nlt tag="presence.addToOutlook" text="Add to Outlook contacts..."/>';
 var ss_ostatus_clipboard = '<ssf:nlt tag="presence.addToClipboard" text="Add to clipboard"/>';
+
+var ss_ostatus_skype = '<ssf:nlt tag="presence.callUsingSkype" text="Call using Skype"/>';
 
 </script>
 <c:set var="ss_presence_support_loaded" value="1" scope="request"/>
