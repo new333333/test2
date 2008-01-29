@@ -26,19 +26,28 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.remoting.impl;
+package com.sitescape.team.module.definition.remoting.ws;
 
-public class RemotingException extends RuntimeException {
-    public RemotingException() {
-        super();
-    }
-    public RemotingException(String message) {
-        super(message);
-    }
-    public RemotingException(String message, Throwable cause) {
-        super(message, cause);
-    }
-    public RemotingException(Throwable cause) {
-        super(cause);
-    }
+import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
+
+public class JaxRpcDefinitionService extends ServletEndpointSupport implements DefinitionService {
+
+	private DefinitionService definitionService;
+	
+	protected void onInit() {
+		this.definitionService = (DefinitionService) getWebApplicationContext().getBean("definitionService");
+	}
+	
+	protected DefinitionService getDefinitionService() {
+		return definitionService;
+	}
+
+	public String getDefinitionAsXML(String definitionId) {
+		return getDefinitionService().getDefinitionAsXML(definitionId);
+	}
+
+	public String getDefinitionConfigAsXML() {
+		return getDefinitionService().getDefinitionConfigAsXML();
+	}
+
 }

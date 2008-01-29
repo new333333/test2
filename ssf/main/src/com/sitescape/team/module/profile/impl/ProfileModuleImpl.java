@@ -37,6 +37,7 @@ import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -928,6 +929,27 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			deleteEntry(user.getParentBinder().getId(), user.getId(), false);
 		}
 		catch(NoUserByTheNameException thisIsOk) {}
+	}
+	
+	public void addUserToGroup(long userId, String username, long groupId) {
+		if(username != null) {			
+			userId = getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneName()).getId().longValue();
+		}
+		HashSet<Long> userIds = new HashSet<Long>();
+		userIds.add(userId);
+		Set<Principal> principals = getPrincipals(userIds, RequestContextHolder.getRequestContext().getZoneId());
+		Long profileBinderId = getProfileBinder().getId();
+		Group group = (Group)getEntry(profileBinderId, groupId);		
+		List memberList = group.getMembers();
+		memberList.addAll(principals);
+		Map updates = new HashMap();
+		updates.put(ObjectKeys.FIELD_GROUP_MEMBERS, memberList);
+		try {
+			modifyEntry(profileBinderId, groupId, new MapInputData(updates));
+		} catch(WriteFilesException e) {
+			// We have no files, so this can't actually happen
+   			logger.error("Error adding user to group: ", e);
+		}
 	}
 }
 

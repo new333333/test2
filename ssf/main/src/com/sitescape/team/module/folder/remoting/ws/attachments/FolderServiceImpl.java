@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.remoting.ws;
+package com.sitescape.team.module.folder.remoting.ws.attachments;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +35,6 @@ import java.io.OutputStream;
 import java.io.StringBufferInputStream;
 import java.io.StringWriter;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 import javax.activation.DataHandler;
@@ -51,7 +50,6 @@ import org.apache.axis.AxisFault;
 import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
 import org.apache.axis.attachments.AttachmentPart;
-import org.apache.axis.attachments.Attachments;
 
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
@@ -59,20 +57,14 @@ import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.EmptyInputData;
-import com.sitescape.team.remoting.impl.AbstractFacade;
-import com.sitescape.team.remoting.impl.RemotingException;
+import com.sitescape.team.remoting.RemotingException;
+import com.sitescape.team.remoting.ws.util.AxisMultipartFile;
+import com.sitescape.team.remoting.ws.util.attachments.AttachmentsHelper;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.util.FileUtil;
 
-/**
- * This class extends protocol-neutral <code>AbstractFacade</code> class with
- * SOAP specific features (specifically file upload capability using SOAP
- * attachment). The additional feature is implemented using Axis library.
- * @author jong
- *
- */
-public class FacadeImpl extends AbstractFacade {
+public class FolderServiceImpl extends com.sitescape.team.module.folder.remoting.ws.FolderServiceImpl {
 
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
@@ -83,7 +75,7 @@ public class FacadeImpl extends AbstractFacade {
 		// Get all the attachments
 		AttachmentPart[] attachments;
 		try {
-			attachments = getMessageAttachments();
+			attachments = AttachmentsHelper.getMessageAttachments();
 		} catch (AxisFault e) {
 			throw new RemotingException(e);
 		}
@@ -113,12 +105,12 @@ public class FacadeImpl extends AbstractFacade {
 		}
 	}
 	
-	public Map getFileAttachments(String fileUploadDataItemName, String[] fileNames) {
+	protected Map getFileAttachments(String fileUploadDataItemName, String[] fileNames) {
 
 		// Get all the attachments
 		AttachmentPart[] attachments;
 		try {
-			attachments = getMessageAttachments();
+			attachments = AttachmentsHelper.getMessageAttachments();
 		} catch (AxisFault e) {
 			throw new RemotingException(e);
 		}
@@ -148,48 +140,6 @@ public class FacadeImpl extends AbstractFacade {
 		}
 		
 		return fileItems;
-	}
-
-	/**
-	 * Extend basic support in AbstractFacade to include importing calendar entries
-	 *  from attachments.
-	 */
-	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
-	{
-		iCalDataAsXML = StringCheckUtil.check(iCalDataAsXML);
-		
-		super.uploadCalendarEntries(folderId, iCalDataAsXML);
-		try {
-			for(AttachmentPart part : getMessageAttachments()) {
-				getIcalModule().parseToEntries(folderId, part.getDataHandler().getInputStream());
-			}
-		} catch (Exception e) {
-			throw new RemotingException(e);
-		}
-	}
-
-	/**
-	* Extract attachments from the current request
-	* @return a list of attachmentparts or an empty array for no attachments 
-	* support in this axis buid/runtime
-	*/
-	private AttachmentPart[] getMessageAttachments() throws AxisFault {
-		MessageContext msgContext = MessageContext.getCurrentContext();
-		Message reqMsg = msgContext.getRequestMessage();
-		Attachments messageAttachments = reqMsg.getAttachmentsImpl();
-		if (null == messageAttachments) {
-			logger.warn("No attachment support");
-			return new AttachmentPart[0];
-		}
-		int attachmentCount = messageAttachments.getAttachmentCount();
-		AttachmentPart attachments[] = new AttachmentPart[attachmentCount];
-		Iterator it = messageAttachments.getAttachments().iterator();
-		int count = 0;
-		while (it.hasNext()) {
-			AttachmentPart part = (AttachmentPart) it.next();
-			attachments[count++] = part;
-		}
-		return attachments;
 	}
 
 	private static class CalendarDataSource implements DataSource
@@ -264,4 +214,5 @@ public class FacadeImpl extends AbstractFacade {
 
 		return xml;
 	}
+
 }

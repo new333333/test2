@@ -32,6 +32,8 @@ package com.sitescape.team.remoting;
  * WS facade for business tier.
  * 
  * @author jong
+ * @deprecated As of ICEcore version 1.1,
+ * replaced by individual module service interfaces
  *
  */
 public interface Facade {

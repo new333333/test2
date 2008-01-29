@@ -26,35 +26,15 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.remoting.interceptor;
+package com.sitescape.team.module.binder.remoting.ws;
 
-import org.aopalliance.intercept.MethodInterceptor;
-import org.aopalliance.intercept.MethodInvocation;
+public interface BinderService {
 
-import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.LoginInfo;
-import com.sitescape.team.module.report.ReportModule;
+	public String search(String query, int offset, int maxResults);
 
-public class LoginInfoInterceptor implements MethodInterceptor {
+	public String getWorkspaceTreeAsXML(long binderId, int levels, String page);
 	
-	private ReportModule reportModule;
-
-	protected ReportModule getReportModule() {
-		return reportModule;
-	}
-
-	public void setReportModule(ReportModule reportModule) {
-		this.reportModule = reportModule;
-	}
-
-	public Object invoke(MethodInvocation invocation) throws Throwable {
-		getReportModule().addLoginInfo(new LoginInfo(LoginInfo.AUTHENTICATOR_WS,
-				RequestContextHolder.getRequestContext().getUserId()));		
-		
-		return invocation.proceed();
-	}
-
+	public String getTeamMembersAsXML(long binderId);
+	
+	public String getTeamsAsXML();
 }
-
-
-
