@@ -32,7 +32,6 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
-import com.sitescape.team.domain.Workspace;
 
 public interface WorkflowModule {
 	   // Defines variable names
