@@ -322,6 +322,7 @@ public class BinderHelper {
 
 	protected static ModelAndView setupWorkareaPortlet(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, PortletPreferences prefs, Map model, String view) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 		Long binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED);
 		String entityType = (String) portletSession.getAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE);
@@ -332,9 +333,20 @@ public class BinderHelper {
 				return WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderId, request, response);
 		}
 
-		//This is the workarea view.
+		//This is the default workarea view. Show the user's workspace
 		//Set up the navigation beans
-		Binder binder = bs.getWorkspaceModule().getWorkspace();
+		binderId = user.getWorkspaceId();
+		Binder binder = null;
+		if (binderId != null) {
+			binder = bs.getBinderModule().getBinder(binderId);
+		}
+		if (binder != null) {
+			if (binder.getEntityType().name().equals(EntityType.folder.name()))
+				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId);
+			if (binder.getEntityType().name().equals(EntityType.workspace.name()))
+				return WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderId, request, response);
+		}
+		binder = bs.getWorkspaceModule().getWorkspace();
 		Document tree = bs.getBinderModule().getDomBinderTree(binder.getId(), 
 				new WsDomTreeBuilder(null, true, bs), 1);
 		model.put(WebKeys.WORKSPACE_DOM_TREE, tree);

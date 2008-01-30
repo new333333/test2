@@ -53,6 +53,7 @@
 		  indentKey="${ss_tree_indentKey}"
 		  rootOpen="true" 
 		  showIdRoutine="${ss_tree_showIdRoutine}"
+		  namespace="${ss_namespace}"
 		/>
 	</c:when>
 	<c:when test="${ss_tree_select_type == '1'}">
@@ -63,6 +64,7 @@
 		  indentKey="${ss_tree_indentKey}"
 		  rootOpen="true" 
 		  showIdRoutine="${ss_tree_showIdRoutine}"
+		  namespace="${ss_namespace}"
 		  singleSelect="${ss_tree_select}"
 		  singleSelectName="${ss_tree_select_id}"
 		/>
@@ -76,6 +78,7 @@
 		  indentKey="${ss_tree_indentKey}"
 		  rootOpen="true" 
 		  showIdRoutine="${ss_tree_showIdRoutine}"
+		  namespace="${ss_namespace}"
 		  multiSelect="<%= ss_tree_select %>"
 		  multiSelectPrefix="${ss_tree_select_id}"
 		  fixedMultiSelectParamsMode="${ss_tree_fixedMultiSelectParamsMode}" 		  

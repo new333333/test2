@@ -82,6 +82,7 @@ function ss_workarea_showId(id, action) {
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
 		  showIdRoutine="ss_treeShowIdNoWS"
+		  namespace="${renderResponse.namespace}"
 		  rootOpen="true"
 		  nowrap="true"/>
 		</c:if>

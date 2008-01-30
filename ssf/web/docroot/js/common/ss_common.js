@@ -464,7 +464,8 @@ function ss_treeShowId(id, obj, action) {
 	return false;
 }
 
-function ss_treeShowIdNoWS(id, obj, action) {
+function ss_treeShowIdNoWS(id, obj, action, namespace) {
+	if (typeof namespace == "undefined" || namespace == null) namespace = "";
 	var binderId = id;
 	//See if the id is formatted (e.g., "ss_favorites_xxx")
 	if (binderId.indexOf("_") >= 0) {
@@ -472,8 +473,14 @@ function ss_treeShowIdNoWS(id, obj, action) {
 		binderId = binderData[binderData.length - 1];
 	}
 
+	//Try to find the base urls from this namespace 
+	var url = "";
+	try {
+		eval("url = ss_baseBinderUrlNoWS" + namespace)
+	} catch(e) {}
+	
 	//Build a url to go to
-	var url = ss_baseBinderUrlNoWS;
+	if (url == "") url = ss_baseBinderUrlNoWS;
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	//console.log(url);

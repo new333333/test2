@@ -907,6 +907,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String op2 = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String selectType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TREE_SELECT_TYPE, "0");
 		String selectId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TREE_SELECT_ID, "");
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+		model.put(WebKeys.NAMESPACE, namespace);
 		String binderIdText = PortletRequestUtils.getStringParameter(request, "binderId", "");
 		Long binderId = null;
 		if (!binderIdText.equals("")) {

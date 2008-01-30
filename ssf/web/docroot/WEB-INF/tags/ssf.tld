@@ -1641,6 +1641,11 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>		
 		<attribute>
+			<name>namespace</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
 			<name>initOnly</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>

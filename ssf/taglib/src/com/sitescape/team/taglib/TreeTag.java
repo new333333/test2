@@ -97,6 +97,7 @@ public class TreeTag extends TagSupport {
 	private boolean finished = false;
 	private String lastListStyle = "";
 	private String showIdRoutine = "";
+	private String namespace = "";
 	
 	/**
 	 * <code>false</code> checkboxes (multiSelect) name = multiSelectPrefix + binderId, value = null
@@ -119,6 +120,7 @@ public class TreeTag extends TagSupport {
 	    if (this.displayStyle == null) this.displayStyle = "";
 	    if (this.multiSelectPrefix == null) this.multiSelectPrefix = "";
 	    if (this.showIdRoutine.equals("")) this.showIdRoutine = this.treeName + "_showId";
+	    if (this.namespace == null) this.namespace = "";
 		try {
 			HttpServletRequest req = (HttpServletRequest) pageContext.getRequest();
 
@@ -134,6 +136,7 @@ public class TreeTag extends TagSupport {
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, "ss_forum", Boolean.parseBoolean("true"));
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_WORKSPACE_TREE);
+			if (!namespace.equals("")) adapterUrl.setParameter(WebKeys.URL_NAMESPACE, namespace);
 			if (multiSelect != null) {
 				//This request is displaying the checkboxes. Remember that in the url
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_TYPE, "2");
@@ -337,6 +340,7 @@ public class TreeTag extends TagSupport {
 	    	topId="";
 	    	indentKey = "";
 	    	showIdRoutine="";
+	    	namespace="";
 	    	initOnly=false;
 	    	noInit=false;
 	    	flat=false;
@@ -602,11 +606,8 @@ public class TreeTag extends TagSupport {
 					}
 					jspOut.print("<a "+classField+" "+targetField+" href=\"" + ((s_url == null || "".equals(s_url))?"javascript: //;":s_url) + "\" ");
 					if (s_id != null && !s_id.equals("")) {
-						if (action.equals(""))
-							jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this);}\" ");
-						else
-							jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"');}\" ");
-										}
+						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"', '"+namespace+"');}\" ");
+					}
 					jspOut.print(">");
 				}
 				jspOut.print("<span " + titleClass + ">");
@@ -819,11 +820,7 @@ public class TreeTag extends TagSupport {
 				if (!className.equals("")) classField = "class=\"ss_twA " + className + "\"";
 				jspOut.print("<a "+classField+" "+targetField+" href=\"" + s_url + "\" ");
 				if (s_id != null && !s_id.equals("")) {
-					if (action.equals("")) {
-						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this);}\" ");
-					} else {
-						jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"');}\" ");
-					}
+					jspOut.print("onClick=\"if (self."+s_showIdRoutine+") {return "+s_showIdRoutine+"('"+s_binderId+"', this,'"+action+"','"+namespace+"');}\" ");
 				}
 				jspOut.print(">");
 			}
@@ -922,6 +919,10 @@ public class TreeTag extends TagSupport {
 	
 	public void setShowIdRoutine(String showIdRoutine) {
 	    this.showIdRoutine = showIdRoutine;
+	}
+	
+	public void setNamespace(String namespace) {
+	    this.namespace = namespace;
 	}
 	
 	public void setNowrap(boolean nowrap) {

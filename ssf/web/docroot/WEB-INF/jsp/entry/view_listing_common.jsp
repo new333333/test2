@@ -190,6 +190,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
 		  showIdRoutine="ss_treeShowId"
+		  namespace="${renderResponse.namespace}"
 		  rootOpen="true"
 		  nowrap="true"/>
 		</c:if>
