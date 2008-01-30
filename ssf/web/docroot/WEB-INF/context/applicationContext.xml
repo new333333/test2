@@ -878,16 +878,6 @@ text/calendar											  ics
 		</property>
 	</bean>
 	
-	<bean id="workflowService" parent="wsProxyTemplate">
-		<property name="target">
-			<bean class="com.sitescape.team.module.workflow.remoting.ws.WorkflowServiceImpl" parent="dependOnAllModulesTemplate">
-			</bean>
-		</property>
-		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.workflow.remoting.ws.WorkflowService</value>
-		</property>
-	</bean>
-	
 	<bean id="zoneService" parent="wsProxyTemplate">
 		<property name="target">
 			<bean class="com.sitescape.team.module.zone.remoting.ws.ZoneServiceImpl" parent="dependOnAllModulesTemplate">
