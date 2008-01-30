@@ -81,6 +81,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 	  treeDocument="<%= ssWsDomTree %>"  
 	  rootOpen="true"
 	  showIdRoutine="<%= wsTreeName + "_showId" %>"
+	  namespace="${renderResponse.namespace}"
 	  />
 </div>	
 </c:if>

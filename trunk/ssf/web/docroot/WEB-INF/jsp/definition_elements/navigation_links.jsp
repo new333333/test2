@@ -107,7 +107,8 @@
 <ssf:tree treeName="${ss_breadcrumbsTreeName}${nextBinder.id}${renderResponse.namespace}" 
   treeDocument="${ssNavigationLinkTree[nextBinder.id]}" 
   topId="${nextBinder.id}" rootOpen="false" showImages="false" 
-  showIdRoutine="${ss_breadcrumbsShowIdRoutine}" />
+  showIdRoutine="${ss_breadcrumbsShowIdRoutine}"
+  namespace="${renderResponse.namespace}" />
 </div>
 </c:if>
 </li>
@@ -183,6 +184,7 @@
   treeDocument="${ssNavigationLinkTree[ssDefinitionEntry.id]}" 
   topId="${ssDefinitionEntry.id}" rootOpen="false" 
   showImages="false" showIdRoutine="${ss_breadcrumbsShowIdRoutine}" 
+  namespace="${renderResponse.namespace}"
   highlightNode="${ssDefinitionEntry.id}" />
 </div>
 </c:if>

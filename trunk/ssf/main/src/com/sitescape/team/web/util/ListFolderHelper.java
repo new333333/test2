@@ -518,13 +518,12 @@ public class ListFolderHelper {
 	}
 
 	private static Map findCalendarEvents(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response, Map model) throws PortletRequestBindingException {
+			RenderResponse response, Binder binder, Map model) throws PortletRequestBindingException {
 		Map folderEntries = new HashMap();
 		Map options = new HashMap();
 		
 		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
-		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		Binder binder = bs.getBinderModule().getBinder(binderId);
+		Long binderId = binder.getId();
 		
 		int year = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_YEAR, -1);
 		int month = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_MONTH, -1);
@@ -732,9 +731,9 @@ public class ListFolderHelper {
 			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 				// do it with ajax
 			} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
-				folderEntries = findTaskEntries(bs, req, response, model, options);
+				folderEntries = findTaskEntries(bs, req, response, (Binder) folder, model, options);
 			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
-				folderEntries = findCalendarEvents(bs, req, response, model);
+				folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);
 			}
 			else {
 				folderEntries = bs.getFolderModule().getEntries(folderId, options);
@@ -1869,10 +1868,9 @@ public class ListFolderHelper {
 	}
 
 	private static Map findTaskEntries(AllModulesInjected bs, RenderRequest request, 
-			RenderResponse response, Map model, Map options) throws PortletRequestBindingException {
+			RenderResponse response, Binder binder, Map model, Map options) throws PortletRequestBindingException {
 		model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
-		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-		Binder binder = bs.getBinderModule().getBinder(binderId);
+		Long binderId = binder.getId();
 		
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 

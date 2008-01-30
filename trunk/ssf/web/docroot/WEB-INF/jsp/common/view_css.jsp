@@ -104,11 +104,11 @@ var ss_baseBinderUrl = '<portlet:renderURL windowState="maximized"><portlet:para
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
 var ss_baseBinderUrl<portlet:namespace/> = ss_baseBinderUrl;
-var ss_baseBinderUrlNoWS = '<portlet:renderURL><portlet:param 
+var ss_baseBinderUrlNoWS<portlet:namespace/> = '<portlet:renderURL><portlet:param 
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
-var ss_baseBinderUrlNoWS<portlet:namespace/> = ss_baseBinderUrlNoWS;
+var ss_baseBinderUrlNoWS = ss_baseBinderUrlNoWS<portlet:namespace/>;
 
 </c:if>
 
