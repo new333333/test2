@@ -129,6 +129,18 @@ public class DisplayConfiguration extends TagSupport {
 								}
 							}
 							if (Validator.isNull(jsp)) {
+								Element jsps = (Element)nextItem.selectSingleNode("jsps");
+								if (jsps != null) {
+									Element jspEle= (Element)jsps.selectSingleNode("./jsp[@name='" + this.configJspStyle + "']");
+									if (jspEle != null) jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
+									else if (!"default".equals(this.configJspStyle)) {
+										jspEle= (Element)jsps.selectSingleNode("./jsp[@name='view']");
+										if (jspEle != null) jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");										
+									}
+									
+								}
+							}
+							if (Validator.isNull(jsp)) {
 								jsp = configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
 							}
 							if (!Validator.isNull(jsp)) {

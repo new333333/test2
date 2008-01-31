@@ -68,6 +68,8 @@ public interface BinderProcessor {
     public void moveBinder(Binder source, Binder destination);
     /**
      * Fix up a binder after its parent have been moved
+     * Needs to be public, since calls cross binders and may be
+     * implemented by different processors.
      * @param binder
      */
     public void moveBinderFixup(Binder binder);

@@ -407,7 +407,7 @@
 		</properties>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_description.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
 	</item>
 	
@@ -1673,7 +1673,6 @@
 		</properties>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/survey_form.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_entry_data_survey.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSurvey" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSurvey" />
@@ -1721,7 +1720,6 @@
 		</options>
 		<jsps>
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
 		</jsps>
 	</item>
 		

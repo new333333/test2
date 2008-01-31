@@ -772,16 +772,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					
 					//Process the properties (if any)
 					processProperties(defId, itemEleToAdd, newItem, inputData);
-					
-					//Copy the jsps (if any)
-					//(rsordillo) Don't copy JSP tags
-/*
-					Element configJsps = itemEleToAdd.element("jsps");
-					if (configJsps != null) {
-						Element newJspsEle = configJsps.createCopy();
-						newItem.add(newJspsEle);
-					}
-*/										
+					processJsps(item, inputData);
 					//See if this is a "dataView" type
 					if (newItem.attributeValue("type", "").equals("dataView")) {
 						checkDataView(root, newItem);
@@ -933,6 +924,27 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			}
 		}		
 	}
+	private void processJsps(Element item, InputDataAccessor inputData) {
+		String jspNames[] = new String[] {"form", "view", "mobile", "mail", "template"};
+		Element jsps = (Element)item.selectSingleNode("./jsps");
+		for (int i=0; i<jspNames.length; ++i) {
+			String value = inputData.getSingleValue("jspName_" + jspNames[i]);
+			Element jsp = null;
+			if (jsps != null) jsp = (Element)jsps.selectSingleNode("./jsp[@name='" + jspNames[i] + "']");
+			if (Validator.isNull(value)) {
+				if (jsp != null) jsps.remove(jsp);
+			} else {
+				if (jsp == null) {
+					if (jsps == null) jsps = item.addElement("jsps");
+					jsp = jsps.addElement("jsp");
+					jsp.addAttribute("name", jspNames[i]);
+					jsp.addAttribute("value", value);
+				} else {
+					jsp.addAttribute("value", value);
+				}
+			}			
+		}
+	}
 	
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
@@ -1004,7 +1016,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				if (itemTypeEle != null) {
 					//Set the values of each property from the form data
 					processProperties(defId, itemTypeEle, item, inputData);
-										
+					processJsps(item, inputData);
 					//See if this is a "dataView" type
 					if ("dataView".equals(item.attributeValue("type"))) {
 						checkDataView(root, item);

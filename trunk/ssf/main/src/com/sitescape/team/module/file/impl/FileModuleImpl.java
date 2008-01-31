@@ -781,9 +781,22 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 			Binder destBinder, DefinableEntity destEntity)
 	throws UncheckedIOException, RepositoryServiceException {
     	Collection<FileAttachment> atts = entity.getFileAttachments();
-    	for(FileAttachment fa :atts) {
-    		moveFile(binder, entity, fa, destBinder, destEntity);
-    	}
+    	//first register file names, so if one fails, files are not copied
+    	for(FileAttachment fa :atts) {    			
+   			if (binder.isLibrary() && !binder.equals(entity))
+   				getCoreDao().unRegisterFileName(binder, fa.getFileItem().getName());
+    		if (destBinder.isLibrary() && !destBinder.equals(destEntity))
+    			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
+    		}
+		// Rename the file in the repository
+       	for(FileAttachment fa :atts) {    			
+       	 		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
+				fa.getFileItem().getName(), destBinder, destEntity, 
+				fa.getFileItem().getName());
+   			ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
+			ChangeLogUtils.buildLog(changes, fa);
+			getCoreDao().save(changes);
+       	}
 	}
 
 	public void copyFiles(Binder binder, DefinableEntity entity, 
@@ -799,20 +812,23 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     		int type = FileUploadItem.TYPE_FILE;
     		if(Validator.isNull(name))
     			type = FileUploadItem.TYPE_ATTACHMENT;
-    		try {
+ //   		try {
     			
     			// Preserve modification time of the source for the target
   	  			file = new DatedMultipartFile(fa.getFileItem().getName(),
     				readFile(binder, entity, fa), fa.getModification().getDate());
     			fui = new FileUploadItem(type, name, file, fa.getRepositoryName());
+    			//register here so entire copy fails if any one file is an issue
   		   		if (destBinder.isLibrary() && !(destEntity instanceof Binder)) {
 		   			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
 		   			fui.setRegistered(true);
 		   		}
     	   		fuis.add(fui);
-    		} catch (Exception ex) {
-    			logger.error("Error copying file:" +  ex.getLocalizedMessage());
-    		}
+  //     		} catch (TitleException tx) {
+  //     			throw tx;
+  //  		} catch (Exception ex) {
+  //  			logger.error("Error copying file:" +  ex.getLocalizedMessage());
+  //  		}
     	}
     	try {	
     		writeFiles(destBinder, destEntity, fuis, null);
@@ -945,24 +961,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         return result;
 	}
 
-	private void moveFile(Binder binder, DefinableEntity entity, 
-			FileAttachment fa, Binder destBinder, DefinableEntity destEntity) 
-	throws UncheckedIOException, RepositoryServiceException {
-		// Rename the file in the repository
-		RepositoryUtil.move(fa.getRepositoryName(), binder, entity, 
-				fa.getFileItem().getName(), destBinder, destEntity, 
-				fa.getFileItem().getName());
-		
-		if (binder.isLibrary() && !binder.equals(entity))
-			getCoreDao().unRegisterFileName(binder, fa.getFileItem().getName());
-		if (destBinder.isLibrary() && !destBinder.equals(destEntity))
-			getCoreDao().registerFileName(destBinder, destEntity, fa.getFileItem().getName());
 
-
-		ChangeLog changes = new ChangeLog(entity, ChangeLog.FILEMOVE);
-		ChangeLogUtils.buildLog(changes, fa);
-		getCoreDao().save(changes);
-	}
 	
 	private void triggerUpdateTransaction() {
         getTransactionTemplate().execute(new TransactionCallback() {

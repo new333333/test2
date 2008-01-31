@@ -1015,14 +1015,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			(source.getResourceDriverName(), source.getParentBinder().getResourcePath(), source.getTitle());
 			source.setResourcePath(newPath);
 		}
-	}
-	
-    //inside write transaction    
+ 	}
+   //inside write transaction    
 	protected void moveBinder_postMove(Binder source, Binder destination, boolean resourcePathAffected, Map ctx) {
      	//create history - using timestamp and version from fillIn
         HistoryStamp stamp = new HistoryStamp(RequestContextHolder.getRequestContext().getUser());
         moveBinder_log(source, stamp);
         moveBinderFixup(source);
+        
         List<Binder>children = new ArrayList(source.getBinders());
         while (!children.isEmpty()) {
         	Binder b = children.get(0);
@@ -1065,8 +1065,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //inside write transaction    
 	public void moveBinderFixup(Binder binder) {
 		getCoreDao().move(binder);
+		
 	}
-
     //***********************************************************************************************************
     //no transaction    
     public Binder copyBinder(final Binder source, final Binder destination, final InputDataAccessor inputData) {

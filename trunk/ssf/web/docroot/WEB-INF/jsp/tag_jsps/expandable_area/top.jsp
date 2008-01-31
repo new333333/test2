@@ -52,38 +52,11 @@ boolean initOpen = ParamUtil.getBoolean(request, "initOpen", false);
 %>
 <jsp:useBean id="ss_expandable_area_name_count" type="java.lang.Integer" scope="request" />
 <div class="ss_expandable_area_title">${openAction}
-<script type="text/javascript">
-function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_toggleExpandableArea(divName, imgName) {
-    var _divName = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>' + divName
-    var _imgName = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>' + imgName
-    var openAction = '<%= openAction %>';
-    if (openAction == 'wipe') {
-	    if (self.document.getElementById(_divName).style.display == 'none' || 
-	    		self.document.getElementById(_divName).style.visibility == 'hidden' || 
-	    		self.document.getElementById(_divName).style.display == '') {
-		    ss_replaceImage(_imgName, '<html:imagesPath />pics/sym_s_collapse.gif');
-        	ss_showDivWipe(_divName);
-		} else {
-        	ss_hideDivWipe(_divName);
-		    ss_replaceImage(_imgName, '<html:imagesPath />pics/sym_s_expand.gif');
-	    }
-    } else {        
-	    if (self.document.getElementById(_divName).style.display == 'none' || 
-	    		self.document.getElementById(_divName).style.visibility == 'hidden' || 
-	    		self.document.getElementById(_divName).style.display == '') {
-		    ss_showHideObj(_divName, 'visible', 'block');
-		    ss_replaceImage(_imgName, '<html:imagesPath />pics/sym_s_collapse.gif');
-		} else {
-		    ss_showHideObj(_divName, 'hidden', 'none');
-		    ss_replaceImage(_imgName, '<html:imagesPath />pics/sym_s_expand.gif');
-	    }
-	}
-}
-</script>
+
 <table class="ss_style" cellspacing="0" cellpadding="2">
 <tr>
 <td valign="middle"><a href="javascript: ;" 
-onClick="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_toggleExpandableArea('<%= name %>', 'img_<%= name %>'); return false;"><img 
+onClick="ss_toggleExpandableArea('${renderResponse.namespace}<%= name %>', '${renderResponse.namespace}img_<%= name %>', '<%= openAction %>'); return false;"><img 
 border="0" 
 <%
 	if (initOpen) {
@@ -96,14 +69,14 @@ border="0"
 <%
 	}
 %>
-id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>img_<%= name %>" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>img_<%= name %>" /></td>
+id="${renderResponse.namespace}img_<%= name %>" name="${renderResponse.namespace}img_<%= name %>" /></td>
 <td valign="middle"><a href="javascript: ;" 
-  onClick="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_toggleExpandableArea('<%= name %>', 'img_<%= name %>'); return false;"
+  onClick="ss_toggleExpandableArea('${renderResponse.namespace}<%= name %>', '${renderResponse.namespace}img_<%= name %>', '<%= openAction %>'); return false;"
 ><span class="<%= titleClass %>"><%= title %></span></a></td>
 </tr>
 </table>
 </div>
-<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter><%= name %>" class="ss_expandable_area_content"
+<div id="${renderResponse.namespace}<%= name %>" class="ss_expandable_area_content"
 <%
 	if (initOpen) {
 %>
