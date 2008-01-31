@@ -32,10 +32,6 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 
 <div class="ss_portlet_style ss_portlet">
-<c:if test="${ss_windowState == 'maximized'}">
-<% // Navigation bar %>
-<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-</c:if>
 <div class="ss_style" style="padding:4px;">
 <table class="ss_style" width="100%"><tr><td>
 <div>

@@ -35,8 +35,6 @@
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 
 <%
-String iframeBoxId = renderResponse.getNamespace() + "_dashboard_iframe_box_div";
-
 String displayStyle = ssUser.getDisplayStyle();
 if (displayStyle == null) displayStyle = "";
 
@@ -66,7 +64,7 @@ request.setAttribute("ss_entryWindowHeight", new Integer(entryWindowHeight));
 
 <script type="text/javascript">
 //Define the variables needed by the javascript routines
-var ss_iframe_box_div_name = '${renderResponse.namespace}_iframe_box_div';
+var ss_iframe_box_div_name = 'ss_iframe_box_div';
 
 <c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
 	var ss_entryWindowTopOriginal = ${ss_entryWindowTop};

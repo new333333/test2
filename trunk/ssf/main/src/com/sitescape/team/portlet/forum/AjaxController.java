@@ -1213,6 +1213,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 	if (entry != null) {
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 	}
+	String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+	model.put(WebKeys.NAMESPACE, namespace);
 	response.setContentType("text/xml");
 	return new ModelAndView("forum/rating_return", model);
 }

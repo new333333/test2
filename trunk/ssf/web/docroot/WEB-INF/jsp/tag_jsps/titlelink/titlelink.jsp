@@ -76,10 +76,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
   </c:if>
   title="<ssf:nlt tag="helpSpot.displayEntryControl"/>"></ssHelpSpot></c:if><c:set 
   var="ss_menuLinkHelpShown" value="1" scope="request"/><a class="<%= hrefClass %>" href="<%= url %>" 
-<% if ( useBinderFunction.equals("no") && !dashboardType.equals("portlet") ) {  %>
+<% if ( useBinderFunction.equals("no") ) {  %>
 	onClick="ss_loadEntryFromMenu(this,  '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= namespace %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 
-<% } else if ( useBinderFunction.equals("no") && dashboardType.equals("portlet") ) { %>
-	onClick="return ss_loadEntryFromMenuSearchPortlet(this, '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= namespace %>', '<%= isDashboard %>');" 
 <% } else if (useBinderFunction.equals("permalink")) { %>
 	onClick="ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');" 
 <% //if useBinderFunction == yes, just use href

@@ -45,8 +45,7 @@
 
 <script type="text/javascript">
 	//Define the variables needed by the javascript routines
-	//var ss_iframe_box_div_name = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_iframe_box_div';
-	//var ss_iframe_box_div_name = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_iframe_box_div';
+	//var ss_iframe_box_div_name = 'ss_iframe_box_div';
 	//var ss_box_iframe_name = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_box_iframe';	
 	
 	<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
@@ -72,9 +71,8 @@
 <script type="text/javascript" src="<html:rootPath/>js/forum/view_portlet_iframe.js"></script>
 
 
-<div id="ss_showfolder"></div>
-
-<div id="<%= portletOverlayDiv %>" name="<%= portletOverlayDiv %>" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
+<div id="<%= portletOverlayDiv %>" name="<%= portletOverlayDiv %>" 
+  onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
   style="position:absolute; visibility:hidden;
   width:600px; height:80%; display:none;">
   <ssf:box>
@@ -96,7 +94,8 @@
     <ssf:param name="box_show_move_routine" value="<%= strDivMoveFunction %>" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="<%= strDivCloseFunction %>" />
-  <iframe id="<%= portletOverlayInnerIframe %>" name="<%= portletOverlayInnerIframe %>" class="ss_class_showentryframe" style="width:100%; 
+  <iframe id="<%= portletOverlayInnerIframe %>" name="<%= portletOverlayInnerIframe %>" 
+    class="ss_class_showentryframe" style="width:100%; 
     display:block; position:relative; left:5px;"
     src="<html:rootPath/>js/forum/null.html" 
     height="95%" width="100%" 

@@ -61,7 +61,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
 		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree" 
+		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
 		  showIdRoutine="ss_treeShowId"
@@ -97,6 +97,9 @@ function ss_showForumEntryInIframe(url) {
     ss_debug('popup width = ' + ss_viewEntryPopupWidth)
     ss_debug('popup height = ' + ss_viewEntryPopupHeight)
     var wObj = self.document.getElementById('ss_showfolder')
+    if (wObj == null) {
+    	wObj = document.getElementsByTagName("body").item(0);
+    }
 	if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
 	if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
     self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');

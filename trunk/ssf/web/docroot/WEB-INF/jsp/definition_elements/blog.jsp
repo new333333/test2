@@ -36,12 +36,12 @@
 <script type="text/javascript">
 
 var rn = Math.round(Math.random()*999999)
-function ss_blog_sidebar_date_callback() {
+function ss_blog_sidebar_date_callback${renderResponse.namespace}() {
 	var url = "<ssf:url 
     folderId="${ssDefinitionEntry.id}" 
     action="view_folder_listing" >
     </ssf:url>";
-	var formObj = document.ss_blog_sidebar_date_form
+	var formObj = document.ss_blog_sidebar_date_form${renderResponse.namespace}
 	url += "\&year=" + formObj.ss_blog_sidebar_date_year.value;
 	url += "\&month=" + formObj.ss_blog_sidebar_date_month.value;
 	url += "\&day=" + formObj.ss_blog_sidebar_date_date.value;
@@ -122,7 +122,7 @@ function ss_hideBlogReplyIframe(blogNamespace, binderId, entryId, count) {
 <div class="ss_clear"></div>
 </div>
 <%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
-<div class="ss_folder" id="ss_blog_folder_div">
+<div class="ss_folder">
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/blog/blog_folder_listing.jsp" %>
 </div>

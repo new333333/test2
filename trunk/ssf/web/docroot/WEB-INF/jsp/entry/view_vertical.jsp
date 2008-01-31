@@ -32,7 +32,6 @@
 
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 <%
-	String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
 	//int sliderDivHeight = 18;
 	int sliderDivHeight = 7;
 	String sliderDivOffset = "-20";
@@ -60,7 +59,7 @@
 			<ssf:param name="binderId" value="${ssFolder.id}" />
 			</ssf:url>";
 		var ss_folderTableId = 'ss_folder_table';
-		var ss_iframe_box_div_name = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_iframe_box_div';
+		var ss_iframe_box_div_name = 'ss_iframe_box_div';
 	</script>
 	<script type="text/javascript" src="<html:rootPath/>js/forum/view_vertical.js"></script>
 
@@ -82,7 +81,7 @@
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
 		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree" 
+		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
 		  showIdRoutine="ss_treeShowId"
@@ -123,7 +122,7 @@
 			  style="position:relative; padding:0px 0px 20px 2px; width: 99.5%;
 			    top:<%= sliderDivOffset %>px;">
 			  <ssf:box>
-			    <ssf:param name="box_id" value="<%= iframeBoxId %>" />
+			    <ssf:param name="box_id" value="${renderResponse.namespace}_iframe_box_div" />
 			    <ssf:param name="box_class" value="ss_style" />
 			    <ssf:param name="box_style" value="margin:0px;" />
 			    <ssf:param name="box_color" value="${ss_folder_border_color}" />

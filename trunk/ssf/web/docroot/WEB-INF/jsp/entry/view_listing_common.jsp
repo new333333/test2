@@ -186,7 +186,7 @@ var ss_reloadUrl = "${ss_reloadUrl}";
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
 		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree" 
+		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
 		  showIdRoutine="ss_treeShowId"
