@@ -141,7 +141,7 @@ public class ConfigureController extends AbstractBinderController {
 	protected void setupDefinitions(Binder binder, Map model) {
 
 		model.put(WebKeys.BINDER, binder);
-		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
 		EntityType binderType = binder.getEntityType();
 		if (binderType.equals(EntityType.workspace)) {
 			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {

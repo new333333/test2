@@ -29,11 +29,8 @@
  */
 %><%--
 --%><% //Entry signature view %><%--
---%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %><%--
---%><c:if test="${!empty ss_showMobileView}"><%--
---%><jsp:forward page="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature.jsp" /><%--
---%></c:if><%--
---%><table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
+--%><%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
  <tr>
   <td valign="top" style="padding-left:10px;">
     <%@ include file="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" %>

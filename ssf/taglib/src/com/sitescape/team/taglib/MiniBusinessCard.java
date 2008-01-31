@@ -40,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.SpringContextUtil;
@@ -91,7 +92,7 @@ public class MiniBusinessCard extends BodyTagSupport {
 			httpReq.setAttribute(WebKeys.PROFILE_CONFIG_ELEMENT, profileDef
 					.getRootElement().selectSingleNode(
 							"//item[@name='profileEntryMiniBusinessCard']"));
-			httpReq.setAttribute(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
+			httpReq.setAttribute(WebKeys.PROFILE_CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
 			httpReq.setAttribute(WebKeys.PROFILE_CONFIG_ENTRY, user);		
 			
 

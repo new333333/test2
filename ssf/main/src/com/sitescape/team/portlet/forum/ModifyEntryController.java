@@ -255,7 +255,7 @@ public class ModifyEntryController extends SAbstractController {
 			model.put(WebKeys.SUBSCRIPTION, sub);
 			
 			model.put(WebKeys.FOLDER, entry.getParentFolder());
-			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
+			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
 			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
 			if (elementToEdit.equals("")) {
 				path = WebKeys.VIEW_MODIFY_ENTRY;

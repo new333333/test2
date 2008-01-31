@@ -43,7 +43,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
-
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.util.NLT;
@@ -94,8 +94,8 @@ public class DisplayConfiguration extends TagSupport {
 						//get Item from main config document
 						Element itemDefinition = configBuilder.getItem(configDefinition, itemType);
 						if (itemDefinition != null) {
-							// Jsps are contained in the configDefaultDefinition only
 							String jsp = null;
+							String defaultJsp=configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
 							if (itemType.equals("customJsp")) {
 								Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='formJsp']");
 								jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
@@ -117,32 +117,25 @@ public class DisplayConfiguration extends TagSupport {
 									}
 								}
 							} else if (itemType.equals("customJspView")) {
-								if (configJspStyle.equals("view")) {
+								if (configJspStyle.equals(Definition.JSP_STYLE_DEFAULT)) {
 									Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='viewJsp']");
 									jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
-								} else if (configJspStyle.equals("mobile")) {
+								} else if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) {
 									Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='mobileJsp']");
 									jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
-								} else if (configJspStyle.equals("mail")) {
+								} else if (configJspStyle.equals(Definition.JSP_STYLE_MAIL)) {
 									Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='mailJsp']");
 									jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
 								}
 							}
 							if (Validator.isNull(jsp)) {
-								Element jsps = (Element)nextItem.selectSingleNode("jsps");
-								if (jsps != null) {
-									Element jspEle= (Element)jsps.selectSingleNode("./jsp[@name='" + this.configJspStyle + "']");
-									if (jspEle != null) jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
-									else if (!"default".equals(this.configJspStyle)) {
-										jspEle= (Element)jsps.selectSingleNode("./jsp[@name='view']");
-										if (jspEle != null) jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");										
-									}
-									
+								Element jspEle= (Element)nextItem.selectSingleNode("./jsps/jsp[@name='custom']");
+								if (jspEle != null) {
+									jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value");
 								}
 							}
-							if (Validator.isNull(jsp)) {
-								jsp = configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
-							}
+							if (Validator.isNull(jsp)) jsp = defaultJsp;
+							
 							if (!Validator.isNull(jsp)) {
 								RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 									
@@ -154,7 +147,7 @@ public class DisplayConfiguration extends TagSupport {
 								req.setAttribute(WebKeys.CONFIG_DEFINITION, this.configDefinition);
 								req.setAttribute(WebKeys.CONFIG_ELEMENT, this.configElement);
 								req.setAttribute(WebKeys.CONFIG_JSP_STYLE, this.configJspStyle);
-									
+								req.setAttribute(WebKeys.CONFIG_FALLBACK_JSP, defaultJsp);  //pass to any custom jsps if they cannot handle configStyle
 								//Each item property that has a value is added as a "request attribute". 
 								//  The key name is "property_xxx" where xxx is the property name.
 								//At a minimum, make sure the name and caption variables are defined

@@ -33,9 +33,7 @@
 <%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
 
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${!empty ss_showMobileView}">
-<jsp:forward page="/WEB-INF/jsp/definition_elements/mobile/view_entry_attachments.jsp" />
-</c:if>
+
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
 <%

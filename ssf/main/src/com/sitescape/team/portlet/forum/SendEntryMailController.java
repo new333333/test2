@@ -46,6 +46,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.WorkflowState;
@@ -130,7 +131,7 @@ public class SendEntryMailController extends SAbstractController {
 		model.put(WebKeys.ENTRY, entry);
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.BINDER, folder);
-		model.put(WebKeys.CONFIG_JSP_STYLE, "mail");
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MAIL);
 		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 			DefinitionHelper.getDefaultEntryView(entry, model);
 		}

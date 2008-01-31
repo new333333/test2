@@ -468,6 +468,7 @@ public class WebKeys {
 	public static final String CONFIG_ELEMENT="ssConfigElement";
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
+    public static final String CONFIG_FALLBACK_JSP="ssConfigJsp";
     public static final String CSS_THEME="ssCssTheme";
     public static final String DASHBOARD="ssDashboard";
     public static final String DASHBOARD_BEAN_MAP="beans";
@@ -744,7 +745,6 @@ public class WebKeys {
     public static final String SEEN_MAP="ssSeenMap";
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";
-    public static final String SHOW_MOBILE_VIEW="ss_showMobileView";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SHOW_USER_SHOW_PRESENCE="ss_showUserShowPresence";
     public static final String SHOW_USER_TITLE_STYLE="ss_showUserTitleStyle";
