@@ -85,25 +85,25 @@ var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized"
 	name="searchItemType" value="user"/><portlet:param 
 	name="searchItemType" value="entry"/><portlet:param 
 	name="searchItemType" value="reply"/></portlet:actionURL>";
-var ss_baseEntryUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
+var ss_baseEntryUrl<portlet:namespace/> = '<portlet:renderURL windowState="maximized"><portlet:param 
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 	name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
-var ss_baseEntryUrl<portlet:namespace/> = ss_baseEntryUrl;
+var ss_baseEntryUrl = ss_baseEntryUrl<portlet:namespace/>;
 	
-var ss_baseEntryUrlNoWS = '<portlet:renderURL><portlet:param 
+var ss_baseEntryUrlNoWS<portlet:namespace/> = '<portlet:renderURL><portlet:param 
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 	name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
-var ss_baseEntryUrlNoWS<portlet:namespace/> = ss_baseEntryUrlNoWS;
+var ss_baseEntryUrlNoWS = ss_baseEntryUrlNoWS<portlet:namespace/>;
 	
-var ss_baseBinderUrl = '<portlet:renderURL windowState="maximized"><portlet:param 
+var ss_baseBinderUrl<portlet:namespace/> = '<portlet:renderURL windowState="maximized"><portlet:param 
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
 	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
-var ss_baseBinderUrl<portlet:namespace/> = ss_baseBinderUrl;
+var ss_baseBinderUrl = ss_baseBinderUrl<portlet:namespace/>;
 var ss_baseBinderUrlNoWS<portlet:namespace/> = '<portlet:renderURL><portlet:param 
 	name="action" value="ssActionPlaceHolder"/><portlet:param 
 	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 

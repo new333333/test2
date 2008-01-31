@@ -161,7 +161,11 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-		model.put(WebKeys.NAMESPACE, namespace);
+		if (!namespace.equals("")) {
+			model.put(WebKeys.NAMESPACE, namespace);
+		} else {
+			model.put(WebKeys.NAMESPACE, response.getNamespace());
+		}
 		
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
  		//BinderHelper.getViewType requires read access to the binder.  

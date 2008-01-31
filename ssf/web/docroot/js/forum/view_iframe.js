@@ -78,8 +78,9 @@ function ss_positionEntryDiv() {
 	var maxEntryWidth = parseInt(ss_getWindowWidth() - ss_scrollbarWidth);
 	
     var wObj = self.document.getElementById('ss_showfolder')
-    if (wObj == null) return;
-
+    if (wObj == null) {
+    	wObj = document.getElementsByTagName("body").item(0);
+    }
     var width = ss_getObjectWidth(wObj);
     if (ss_entryWindowWidth == 0) {ss_entryWindowWidth = parseInt((width * 3) / 4);}
     //Make sure the entry width is within the window
@@ -336,9 +337,10 @@ function ss_saveEntryWidth(entryWidth, entryTop, entryLeft) {
 	ss_lastEntryWidth = entryWidth;
 	ss_lastEntryTop = entryTop;
 	ss_lastEntryLeft = entryLeft;
-    self.document.forms['ss_saveEntryWidthForm'].entry_width.value = entryWidth;
-    self.document.forms['ss_saveEntryWidthForm'].entry_top.value = entryTop;
-    self.document.forms['ss_saveEntryWidthForm'].entry_left.value = entryLeft;
+	formObj = document.getElementById('ss_saveEntryWidthForm');
+    formObj.entry_width.value = entryWidth;
+    formObj.entry_top.value = entryTop;
+    formObj.entry_left.value = entryLeft;
  	    
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_entry_width"});
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object

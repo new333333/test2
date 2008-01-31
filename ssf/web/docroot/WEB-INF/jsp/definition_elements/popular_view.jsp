@@ -46,15 +46,15 @@ ss_ratings_info[4] = "<ssf:nlt tag="popularity.rating.4stars" />"
 ss_ratings_info[5] = "<ssf:nlt tag="popularity.rating.5stars" />"
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/forum/ss_entry.js"></script>
-<div id="ss_rating_info_div" 
+<div id="ss_rating_info_div${renderResponse.namespace}" 
   style="position:absolute; display:none; visibility:hidden;
   border:1px solid black; padding:4px; background-color:#ffffff;">
 <span><ssf:nlt tag="popularity.rating.register"/></span>:
-<span id="ss_rating_info"></span>
+<span id="ss_rating_info${renderResponse.namespace}"></span>
 </div>
 <c:set var="ss_ratingSupportLoaded" value="1" scope="request"/>
 </c:if>
-<c:set var="ss_ratingDivId" value="ss_rating_div_${ssDefinitionEntry.id}" 
+<c:set var="ss_ratingDivId" value="ss_rating_div_${renderResponse.namespace}${ssDefinitionEntry.id}" 
   scope="request"/>
 <table cellspacing="0" cellpadding="0">
 <tr>

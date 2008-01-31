@@ -3378,16 +3378,21 @@ function ss_loadEntryFromMenu(obj, id, binderId, entityType, namespace, isDashbo
 	return false;
 }
 
-function ss_loadEntryFromMenuSearchPortlet(obj, id, binderId, entityType, namespace, isDashboard) {
-	ss_highlightLine(id, namespace);
-	
-	if (ss_userDisplayStyle == "popup") {
-		ss_showPortletEntryInPopup(obj.href, entityType, namespace);
-	} else {
-		ss_showPortletEntryInIframe(obj.href, entityType, namespace);	
-	}
-
-	return false;
+//Initialize the floating div for viewing entries
+function ss_showEntryDivInitialization(namespace) {
+	var divObj = self.document.getElementById("ss_showentrydiv");
+	if (divObj != null) return;
+	//It hasn't been set up yet, use this prototype div
+	divObj = self.document.getElementById("ss_showentrydiv"+namespace);
+	var iframeObj = self.document.getElementById("ss_showentryframe"+namespace);
+	var boxObj = self.document.getElementById("ss_iframe_box_div"+namespace);
+	var formObj = self.document.getElementById("ss_saveEntryWidthForm"+namespace);
+	if (divObj == null || iframeObj == null) return;
+	iframeObj.id = "ss_showentryframe";
+	iframeObj.name = "ss_showentryframe";
+	divObj.id = "ss_showentrydiv";
+	formObj.id = "ss_saveEntryWidthForm";
+	boxObj.id = "ss_iframe_box_div";
 }
 
 function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
@@ -3417,55 +3422,6 @@ function ss_showForumEntry(url, isDashboard) {
 		return ss_showForumEntryInIframe(url);
 	}
 }
-function ss_showPortletEntryInIframe(url, entityType, namespace) {
-	//Close a pre-existing div, this may be some div that is showing up from someother portlet
-	if (typeof(ss_selectedDiv) != "undefined" && ss_selectedDiv != null) {
-    	ss_selectedDiv.style.visibility = "hidden";
-    	ss_selectedDiv.style.display = "none";
-	    ss_showSpannedAreas();
-	}
-
-	var portletOverlayDiv = document.getElementById(namespace + "_portlet_overlay_div");
-	var portletOverlayInnerDiv = document.getElementById(namespace + "_portlet_overlay_inner_div");
-	var portletOverlayInnerIframe = document.getElementById(namespace + "_portlet_overlay_inner_iframe");
-	ss_box_iframe_name = namespace + "_portlet_overlay_inner_iframe";
-	ss_selectedIframeForm = namespace + "_ss_saveEntryWidthForm";
-	ss_selectedPortletNamespace = namespace;
-	
-	ss_selectedDiv = portletOverlayDiv;
-	ss_selectedInternalDiv = portletOverlayInnerDiv;
-	ss_selectedIframe = portletOverlayInnerIframe;
-
-    var wObj = ss_selectedIframe;
-    var wObj1 = ss_selectedDiv;
-     
-	if (wObj1 == null){
-		ss_showPortletEntryInPopup(obj.href, entityType, namespace);
-		return true;
-	}
-	
-    ss_hideSpannedAreas();
-    wObj1.style.display = "block";
-    wObj1.style.zIndex = ssEntryZ;
-    wObj1.style.visibility = "visible";
-
-    if (wObj.src && wObj.src == url) {
-    	ss_nextUrl = url
-    	wObj.src = ss_forumRefreshUrl;
-    } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
-    	wObj.src = ss_forumRefreshUrl;
-    } else {
-    	wObj.src = url
-    }
-
-	if (self.ss_positionEntryDiv) ss_positionEntryDiv();
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
-
-    return false;
-}
-
-
 function ss_dummyMethodCall() {
 }
 

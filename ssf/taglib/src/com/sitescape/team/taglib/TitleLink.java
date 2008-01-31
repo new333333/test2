@@ -66,7 +66,33 @@ public class TitleLink extends BodyTagSupport implements ParamAncestorTag {
 	private String hrefClass = "";
 	
 	private Map _params;
-    
+
+	public TitleLink() {
+		setup();
+	}
+	/** 
+	 * Initalize params at end of call and creation
+	 * 
+	 *
+	 */
+	protected void setup() {
+		_bodyContent = null;
+		action = "";
+		entryId = "";
+		binderId = "";
+		entityType = "";
+		seenStyle = "";
+		seenStyleFine = "";
+		namespace = "";
+		isDashboard = "";
+		useBinderFunction = "";
+		dashboardType = "";
+		isFile = "";
+		if (_params != null) {
+			_params.clear();
+		}
+	}
+	
 	public int doStartTag() {
 		return EVAL_BODY_BUFFERED;
 	}
@@ -126,21 +152,7 @@ public class TitleLink extends BodyTagSupport implements ParamAncestorTag {
 	        throw new JspException(e);
 	    }
 		finally {
-			_bodyContent = null;
-			action = "";
-			entryId = "";
-			binderId = "";
-			entityType = "";
-			seenStyle = "";
-			seenStyleFine = "";
-			namespace = "";
-			isDashboard = "";
-			useBinderFunction = "";
-			dashboardType = "";
-			isFile = "";
-			if (_params != null) {
-				_params.clear();
-			}
+			setup();
 		}
 	}
 

@@ -119,7 +119,9 @@ function ss_changePageEntriesCount_<ssf:ifadapter><portletadapter:namespace/></s
 				<div class="ss_results_pro_page">
 				<span class="ss_light ss_fineprint">
 	
-				<ssf:menu title="${ssPageMenuControlTitle}" titleId="ss_selectEntriesTitle" titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
+				<ssf:menu title="${ssPageMenuControlTitle}" 
+				  titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
+				  titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
 				
 				<ssf:ifnotaccessible>
 				

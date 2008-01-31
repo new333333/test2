@@ -43,13 +43,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 		<div class="ss_blog_sidebar_hole">
 			<ssf:ifnotaccessible>
-				<div id="ss_blog_sidebar_date_popup"></div>
-		 		<form name="ss_blog_sidebar_date_form" style="display:inline;">
+				<div id="ss_blog_sidebar_date_popup${renderResponse.namespace}"></div>
+		 		<form name="ss_blog_sidebar_date_form${renderResponse.namespace}" style="display:inline;">
 					<ssf:datepicker id="ss_blog_sidebar_date" 
-		            	calendarDivId="ss_blog_sidebar_date_popup"
-		            	formName="ss_blog_sidebar_date_form"
+		            	calendarDivId="ss_blog_sidebar_date_popup${renderResponse.namespace}"
+		            	formName="ss_blog_sidebar_date_form${renderResponse.namespace}"
 		            	immediateMode="true" initDate="${ssFolderEndDate}"
-						callbackRoutine="ss_blog_sidebar_date_callback" />
+						callbackRoutine="ss_blog_sidebar_date_callback${renderResponse.namespace}" />
 		      	</form>
 			</ssf:ifnotaccessible>
         </div>

@@ -42,9 +42,9 @@
 		<c:forEach var="i" begin="0" end="${i_rating - 1}" step="1">
 	
 		  <td><a style="text-decoration: none;" 
-		    onMouseover="ss_showRating('${i + 1}', '${ssDefinitionEntry.id}');" 
-		    onMouseout="ss_clearRating('${i + 1}', '${ssDefinitionEntry.id}');"
-		    onClick="ss_saveRating('${i + 1}', '${ssDefinitionEntry.id}');return false;"
+		    onMouseover="ss_showRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');" 
+		    onMouseout="ss_clearRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');"
+		    onClick="ss_saveRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');return false;"
 		  ><img border="0" id="ss_rating_img_${ssDefinitionEntry.id}_${i + 1}" 
 		    <ssf:alt tag="alt.goldStar"/> src="<html:imagesPath/>pics/star_gold.gif"/></a></td>
 			<script type="text/javascript">ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = "<html:imagesPath/>pics/star_gold.gif";</script>
@@ -55,9 +55,9 @@
 	<c:if test="${i_rating < 5}">
 		<c:forEach var="i" begin="${i_rating}" end="4" step="1">
 		  <td><a style="text-decoration: none;" 
-			    onMouseover="ss_showRating('${i + 1}', '${ssDefinitionEntry.id}');" 
-			    onMouseout="ss_clearRating('${i + 1}', '${ssDefinitionEntry.id}');"
-			    onClick="ss_saveRating('${i + 1}', '${ssDefinitionEntry.id}');return false;"
+			    onMouseover="ss_showRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');" 
+			    onMouseout="ss_clearRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');"
+			    onClick="ss_saveRating('${i + 1}', '${ssDefinitionEntry.id}', '${ss_namespace}');return false;"
 			  ><img <ssf:alt tag="alt.grayStar"/> border="0" id="ss_rating_img_${ssDefinitionEntry.id}_${i + 1}" 
 			    src="<html:imagesPath/>pics/star_gray.gif"/></a></td>
 			<script type="text/javascript">ss_ratingImages['ss_rating_img_${ssDefinitionEntry.id}_${i + 1}'] = "<html:imagesPath/>pics/star_gray.gif";</script>

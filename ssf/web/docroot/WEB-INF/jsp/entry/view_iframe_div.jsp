@@ -30,12 +30,9 @@
 %>
 <% //view a folder entry in an iframe %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<%
-	String iframeBoxId = renderResponse.getNamespace() + "_iframe_box_div";
-%>
 <script type="text/javascript">
 	//Define the variables needed by the javascript routines
-	var ss_iframe_box_div_name = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_iframe_box_div';
+	var ss_iframe_box_div_name = 'ss_iframe_box_div';
 	
 	<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
 		var ss_entryWindowTopOriginal = ${ss_entryWindowTop};
@@ -60,11 +57,12 @@
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/forum/view_iframe.js"></script>
 
-<div id="ss_showentrydiv" onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
+<div id="ss_showentrydiv${renderResponse.namespace}" 
+  onMouseover="if (self.ss_clearMouseOverInfo) {ss_clearMouseOverInfo(null);}"
   style="position:absolute; visibility:hidden;
   width:600px; height:80%; display:none;">
   <ssf:box>
-    <ssf:param name="box_id" value="<%= iframeBoxId %>" />
+    <ssf:param name="box_id" value="ss_iframe_box_div${renderResponse.namespace}" />
     <ssf:param name="box_width" value="400" />
     <ssf:param name="box_color" value="${ss_entry_border_color}" />
     <ssf:param name="box_canvas_color" value="${ss_style_background_color}" />
@@ -81,16 +79,25 @@
     <ssf:param name="box_show_move_routine" value="ss_startDragDiv('move')" />
     <ssf:param name="box_show_close_icon" value="true" />
     <ssf:param name="box_show_close_routine" value="ss_hideEntryDiv()" />
-  <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 
+  <iframe id="ss_showentryframe${renderResponse.namespace}" 
+    name="ss_showentryframe${renderResponse.namespace}" style="width:100%; 
     display:block; position:relative; left:5px;"
     src="<html:rootPath/>js/forum/null.html" 
     height="95%" width="100%" 
-    onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" frameBorder="0" >xxx</iframe>
+    onLoad="if (self.ss_setEntryDivHeight && self.document.getElementById('ss_showentrydiv') && self.document.getElementById('ss_showentrydiv').style.display != 'none') ss_setEntryDivHeight();" 
+    frameBorder="0" >xxx</iframe>
   </ssf:box>
 </div>
 
-<form class="ss_style ss_form" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
+<form class="ss_style ss_form" name="ss_saveEntryWidthForm" 
+  id="ss_saveEntryWidthForm${renderResponse.namespace}" >
 	<input type="hidden" name="entry_width">
 	<input type="hidden" name="entry_top">
 	<input type="hidden" name="entry_left">
 </form>
+<script type="text/javascript">
+ss_createOnLoadObj("${renderResponse.namespace}_showEntryDivInitialization", ss_showEntryDivInitialization${renderResponse.namespace});
+function ss_showEntryDivInitialization${renderResponse.namespace}() {
+	ss_showEntryDivInitialization('${renderResponse.namespace}');
+}
+</script>

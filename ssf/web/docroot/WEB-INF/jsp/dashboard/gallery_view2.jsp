@@ -162,7 +162,7 @@
 	        href="javascript:;" ><ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</a>
 	    </span>
 	  </c:if>
-	  <c:if test="${(ss_pageNumber * ss_pageSize + resultCount) >= ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
+	  <c:if test="${hitCount > 0 && (ss_pageNumber * ss_pageSize + resultCount) >= ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchCount}">
 	    <span class="ss_light">&nbsp;&nbsp;<ssf:nlt tag="general.nextPage"/>&nbsp;&gt;&gt;&gt;</span>
 	  </c:if>
     </td>
