@@ -3237,6 +3237,7 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 }
 
 function ss_showAttachMeetingRecords(binderId, entryId, namespace, held) {
+	ss_setupStatusMessageDiv();
 	ss_hideAddAttachmentDropbox(entryId, namespace);
 	ss_hideAddAttachmentBrowse(entryId, namespace);
 	

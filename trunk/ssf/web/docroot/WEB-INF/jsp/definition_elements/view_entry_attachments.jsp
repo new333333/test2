@@ -115,7 +115,6 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 	    href="javascript: ;" 
 	    onClick="ss_showAttachMeetingRecords('${ssDefinitionEntry.parentBinder.id}', '${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;"
 	    ><img class="ss_icon_link"  src="<html:imagesPath/>icons/upload_meeting.gif"/></a>
-	  <div style="display: none; " id="ss_status_message"></div>
 	
 	  <div id="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 	    name="ss_div_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
