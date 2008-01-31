@@ -182,7 +182,7 @@ public class WorkspaceTreeHelper {
 						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
 						model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
 								profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
-						model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
+						model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
 						model.put(WebKeys.USER_WORKSPACE, true);
 					} catch (Exception ex) {} //user may have been deleted, but ws left around
 				}
