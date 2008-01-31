@@ -1300,31 +1300,30 @@ public class BuildDefinitionDivs extends TagSupport {
 			
 			sb.append("<br/>");
 			sb.append("<input type=\"hidden\" name=\"definitionType_"+rootElementId+"\" value=\""+ rootElement.attributeValue("definitionType", "") +"\"/>\n");
+
+			//Presence determines if jsps are allowed
 			Element jspRootConfig = rootConfigElement.element("jsps");
 	
 			if (!"customJspView".equals(rootElementName) && jspRootConfig != null) {
-				HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
-				HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
-				RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/definition_builder/custom_jsp.jsp");
-				
-				ServletRequest req = null;
-				req = new DynamicServletRequest(httpReq);
+				String value = "";
 				if (rootConfigElement != rootElement) { //if adding new item, don't copy system jsps
-					Element rootJsps = rootElement.element("jsps");
-					req.setAttribute("jspElement", rootJsps);
+					Element custom = (Element)rootElement.selectSingleNode("./jsps/jsp[@name='custom']");
+					if (custom != null) value = custom.attributeValue("value", ""); 
 				}
-				//if there is a form item, only ask for form jsps
-				if (jspRootConfig.selectSingleNode("./jsp[@name='form']") != null) {
-					req.setAttribute("jspFormOnly", Boolean.TRUE);
+				String display=rootConfigElement.attributeValue("display");
+				if ("form".equals(display)) {
+					sb.append(NLT.get("__custom_form_jsp")); 					
 				} else {
-					req.setAttribute("jspFormOnly", Boolean.FALSE);					
+					sb.append(NLT.get("__custom_view_jsp")); 
 				}
-					
-				StringServletResponse res = new StringServletResponse(httpRes);
-				try {
-					rd.include(req, res);
-					sb.append(res.getString().replaceAll("&", "&amp;"));
-				} catch(Exception e) {}
+				sb.append("<br/> <input type=\"text\" size=\"40\" name=\"jspName_custom\" value=\"" +
+						value + "\"/>");
+				if ("form".equals(display)) {
+					sb.append("<a name=\"help_div_customFormJsp_a\" onClick=\"ss_activateMenuLayerMove('help_div_customFormJsp');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
+				} else {
+					sb.append("<a name=\"help_div_customViewJsp_a\" onClick=\"ss_activateMenuLayerMove('help_div_customViewJsp');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");					
+				}
+
 			}
 		}
 	}
@@ -1369,6 +1368,16 @@ public class BuildDefinitionDivs extends TagSupport {
 			//sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");
 			//sb.append("</script>\n");
 		}
+		hb.append("<div align=\"left\" id=\"help_div_customFormJsp");
+		hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
+		hb.append("<span>");
+		hb.append(NLT.get("__custom_form_jsp_help"));
+		hb.append("</span>\n</div>\n");
+		hb.append("<div align=\"left\" id=\"help_div_customViewJsp");
+		hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
+		hb.append("<span>");
+		hb.append(NLT.get("__custom_view_jsp_help"));
+		hb.append("</span>\n</div>\n");
 
 	}
 	

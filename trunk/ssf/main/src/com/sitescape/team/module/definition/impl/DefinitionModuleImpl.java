@@ -925,23 +925,20 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}		
 	}
 	private void processJsps(Element item, InputDataAccessor inputData) {
-		String jspNames[] = new String[] {"form", "view", "mobile", "mail", "template"};
 		Element jsps = (Element)item.selectSingleNode("./jsps");
-		for (int i=0; i<jspNames.length; ++i) {
-			String value = inputData.getSingleValue("jspName_" + jspNames[i]);
-			Element jsp = null;
-			if (jsps != null) jsp = (Element)jsps.selectSingleNode("./jsp[@name='" + jspNames[i] + "']");
-			if (Validator.isNull(value)) {
-				if (jsp != null) jsps.remove(jsp);
+		String value = inputData.getSingleValue("jspName_custom");
+		Element jsp = null;
+		if (jsps != null) jsp = (Element)jsps.selectSingleNode("./jsp[@name='custom']");
+		if (Validator.isNull(value)) {
+			if (jsp != null) jsps.remove(jsp);
+		} else {
+			if (jsp == null) {
+				if (jsps == null) jsps = item.addElement("jsps");
+				jsp = jsps.addElement("jsp");
+				jsp.addAttribute("name", "custom");
+				jsp.addAttribute("value", value);
 			} else {
-				if (jsp == null) {
-					if (jsps == null) jsps = item.addElement("jsps");
-					jsp = jsps.addElement("jsp");
-					jsp.addAttribute("name", jspNames[i]);
-					jsp.addAttribute("value", value);
-				} else {
-					jsp.addAttribute("value", value);
-				}
+				jsp.addAttribute("value", value);
 			}			
 		}
 	}

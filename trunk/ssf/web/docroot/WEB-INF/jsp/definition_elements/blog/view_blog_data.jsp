@@ -35,9 +35,7 @@
 <jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <jsp:useBean id="ssDefinitionEntry" type="com.sitescape.team.domain.DefinableEntity" scope="request" />
 
-<c:if test="${!empty ss_showMobileView}">
-<jsp:forward page="/WEB-INF/jsp/definition_elements/mobile/view_entry_data.jsp" />
-</c:if>
+
 <%
 	//Get the item being displayed
 	Element item = (Element) request.getAttribute("item");

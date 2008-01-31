@@ -64,7 +64,7 @@
 	
 <!-- Items -->
 	<item name="title" caption="__title" type="data" canBeDeleted="false" 
-		multipleAllowed="false" >
+		multipleAllowed="false" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 			<property name="name" caption="__data_name" type="text" value="title" 
@@ -82,7 +82,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/title_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.title_field</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTitle" />
@@ -92,7 +92,7 @@
 <!-- shared view items ie)no category -->
 	
 	
-	<item name="entrySignatureView" caption="__entry_signature" category="commonEntryViewData" >
+	<item name="entrySignatureView" caption="__entry_signature" category="commonEntryViewData" display="view">
 		<properties>
 <!-- don't want caption by default -->
 			<property name="caption" caption="__caption" type="text" value=""/>
@@ -103,7 +103,7 @@
 		</jsps>
 	</item>
 	
-	<item name="entryCreatorView" caption="__entry_creator" category="commonEntryViewData" >
+	<item name="entryCreatorView" caption="__entry_creator" category="commonEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_creator"/>
 		</properties>
@@ -113,7 +113,7 @@
 		</jsps>
 	</item>
 	
-	<item name="entryDateView" caption="__entry_date" category="commonEntryViewData" >
+	<item name="entryDateView" caption="__entry_date" category="commonEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_date"/>
 		</properties>
@@ -123,7 +123,7 @@
 		</jsps>
 	</item>
 	
-	<item name="descriptionView" caption="__description" category="commonEntryViewData">
+	<item name="descriptionView" caption="__description" category="commonEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__description"/>
 		</properties>
@@ -132,7 +132,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
 	</item>
-	<item name="entryAttachments" caption="__entry_attachments" category="commonEntryViewData">
+	<item name="entryAttachments" caption="__entry_attachments" category="commonEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_attachments"/>
 		</properties>
@@ -143,7 +143,7 @@
 		</jsps>
 	</item>
 	
-	<item name="dashboardCanvas" caption="__dashboard_canvas" multipleAllowed="false">
+	<item name="dashboardCanvas" caption="__dashboard_canvas" multipleAllowed="false" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__dashboard_canvas"/>
 		</properties>
@@ -178,7 +178,7 @@
 		</options>
 	</item>
 	
-	<item name="entryForm" caption="__entry_form_definition" type="form" canBeDeleted="false" multipleAllowed="false">
+	<item name="entryForm" caption="__entry_form_definition" type="form" canBeDeleted="false" multipleAllowed="false" display="form">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -189,10 +189,10 @@
 		</options>
 		
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
 		</jsps>
 	</item>
-	<item name="entryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false">
+	<item name="entryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false" display="form">
 		<properties>
 			<property name="name" caption="__form_name" type="text" characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" 
 				value="form1" setAttribute="formName"/>
@@ -215,11 +215,11 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
 		</jsps>
 	</item>
 <!-- folder entry form data items -->
-	<item name="entryIcon" caption="__icon" type="data" multipleAllowed="false" category="entryData">
+	<item name="entryIcon" caption="__icon" type="data" multipleAllowed="false" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__icon"/>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
@@ -227,14 +227,14 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_entry.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/icon_form_entry.jsp" />
 		</jsps>
 		<help>ihelp.designers.icon</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
 	</item>
 	
-	<item name="event" caption="__event" type="data" category="entryData">
+	<item name="event" caption="__event" type="data" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -250,7 +250,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/event_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.event</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderEvent" />
@@ -259,28 +259,28 @@
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent" />
 	</item>
 
-	<item name="subscribe" caption="__subscribe" multipleAllowed="false" category="entryData">
+	<item name="subscribe" caption="__subscribe" multipleAllowed="false" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__subscribe" />
 			<property name="name" caption="__name" type="text" value="_subscribe" readonly="true" />
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/subscribe_form_entry.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/subscribe_form_entry.jsp" />
 		</jsps>
 	</item>
 	
-	<item name="sendMail" caption="__sendMail" multipleAllowed="false" category="entryData">
+	<item name="sendMail" caption="__sendMail" multipleAllowed="false" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__sendMail" />
 			<property name="name" caption="__name" type="text" value="_sendMail" readonly="true" />
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/send_mail_form_entry.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/send_mail_form_entry.jsp" />
 		</jsps>
 	</item>
 	
 <!-- folder entry view -->
-	<item name="entryView" caption="__entry_view_definition" canBeDeleted="false" multipleAllowed="false">
+	<item name="entryView" caption="__entry_view_definition" canBeDeleted="false" multipleAllowed="false" display="view">
 		<properties>
 			<property name="type" caption="__type" type="selectbox" 
 				  default="entryView" value="entryView">
@@ -303,13 +303,13 @@
 		</options>
 		
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/entry_view.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/entry_view.jsp" />
 		</jsps>
 	</item>
 <!-- folder entry view items -->
-		<item name="titleView" caption="__title" category="entryViewData" >
+		<item name="titleView" caption="__title" category="entryViewData"  display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 		</properties>
@@ -321,7 +321,7 @@
 	</item>
 	
 	
-	<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData">
+	<item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
@@ -340,7 +340,7 @@
 		
 	
 		
-	<item name="entryReplies" caption="__entry_replies" category="entryViewData">
+	<item name="entryReplies" caption="__entry_replies" category="entryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_replies"/>
 		</properties>
@@ -350,7 +350,7 @@
 		</jsps>
 	</item>
 		
-	<item name="entryWorkflow" caption="__entry_workflow" category="entryViewData">
+	<item name="entryWorkflow" caption="__entry_workflow" category="entryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_workflow"/>
 		</properties>
@@ -364,7 +364,7 @@
 			
 
 <!-- Blog entry view items -->
-	<item name="entryBlogView" caption="__entry_blog_view_definition" canBeDeleted="false" multipleAllowed="false">
+	<item name="entryBlogView" caption="__entry_blog_view_definition" canBeDeleted="false" multipleAllowed="false" display="view">
 		<properties>
 			<property name="type" caption="__type" type="selectbox" 
 				  default="blog" value="blog">
@@ -385,33 +385,33 @@
 		</options>
 		
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/blog_view.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/blog/blog_view.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry.jsp" />
 		</jsps>
 	</item>
 
 
-	<item name="titleBlogView" caption="__title" category="blogEntryViewData" >
+	<item name="titleBlogView" caption="__title" category="blogEntryViewData"  display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_title.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/blog/view_blog_title.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_title.jsp" />
 		</jsps>
 	</item>
 	
-	<item name="descriptionBlogView" caption="__description" category="blogEntryViewData">
+	<item name="descriptionBlogView" caption="__description" category="blogEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__description"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_description.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/blog/view_blog_description.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
 	</item>
 	
-	<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData">
+	<item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
@@ -423,42 +423,42 @@
 				<exclude name="attachFiles" />
 		</option_entry_data>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_data.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/blog/view_blog_data.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_data.jsp" />
 		</jsps>
 	</item>
 		
-	<item name="entryBlogAttachments"  caption="__entry_attachments" category="blogEntryViewData">
+	<item name="entryBlogAttachments"  caption="__entry_attachments" category="blogEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_attachments"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_attachments.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/blog/view_blog_attachments.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_attachments.jsp" />
 		</jsps>
 	</item>
 		
-	<item name="entryBlogReplies" caption="__entry_replies" category="blogEntryViewData">
+	<item name="entryBlogReplies" caption="__entry_replies" category="blogEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_replies"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_replies.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/blog/view_blog_replies.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_replies.jsp" />
 		</jsps>
 	</item>
 		
-	<item name="entryBlogWorkflow" caption="__entry_workflow" category="blogEntryViewData">
+	<item name="entryBlogWorkflow" caption="__entry_workflow" category="blogEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__entry_workflow"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/blog/view_blog_workflow.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/blog/view_blog_workflow.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_workflow.jsp" />
 		</jsps>
 	</item>
 <!-- Folder items -->
-	<item name="forumViewType" definitionType="5" caption="__folder_view_definition">		
+	<item name="forumViewType" definitionType="5" caption="__folder_view_definition">
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
@@ -482,7 +482,7 @@
 	</item>
 <!-- Folder form -->	
 	<item name="folderForm" caption="__folder_form" type="form" canBeDeleted="false" 
-		multipleAllowed="false" >		
+		multipleAllowed="false" display="form">	
 		<options optionCaption="__standard_entry_options">
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
@@ -496,12 +496,12 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/folder_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/folder_form.jsp" />
 		</jsps>
 	</item>
 	
 <!-- Folder form items	-->
-	<item name="folderIcon" caption="__icon" type="data" multipleAllowed="false" category="folderData">
+	<item name="folderIcon" caption="__icon" type="data" multipleAllowed="false" category="folderData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__icon"/>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
@@ -509,7 +509,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_folder.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/icon_form_folder.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
@@ -517,7 +517,7 @@
 <!-- Folder view	-->
 	
 	<item name="forumView" caption="__folder_view" 
-		canBeDeleted="false" multipleAllowed="false" >		
+		canBeDeleted="false" multipleAllowed="false">		
 		<properties>
 			<property name="type" caption="__type" type="selectbox" 
 				  default="folder" value="folder">
@@ -548,7 +548,7 @@
 	</item>
 <!-- Folder view items	-->
 	
-	<item name="folderTitleView" caption="__title" category="folderViewData">
+	<item name="folderTitleView" caption="__title" category="folderViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 		</properties>
@@ -557,7 +557,7 @@
 		</jsps>
 	</item>
 	
-	<item name="folderDataItem" type="dataView"  caption="__folder_data_item" category="folderViewData">
+	<item name="folderDataItem" type="dataView"  caption="__folder_data_item" category="folderViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
@@ -574,7 +574,7 @@
 		</jsps>
 	</item>
 	
-	<item name="folderList" caption="__folder_listing" category="folderViewData" >
+	<item name="folderList" caption="__folder_listing" category="folderViewData"  display="view">
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/folder_list.jsp" />
 			<jsp name="template" value="/WEB-INF/jsp/definition_elements/template_list.jsp" />
@@ -599,7 +599,7 @@
 <!-- Profile form -->
 	
 	<item name="profileForm" caption="__profile_form" type="form" 
-		canBeDeleted="false" multipleAllowed="false" >		
+		canBeDeleted="false" multipleAllowed="false"  display="form">	
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -616,12 +616,12 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form.jsp" />
 		</jsps>
 	</item>
 
 <!-- Profile view -->	
-	<item name="profileView" caption="__profile_view" canBeDeleted="false" multipleAllowed="false" >		
+	<item name="profileView" caption="__profile_view" canBeDeleted="false" multipleAllowed="false">		
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -639,7 +639,7 @@
 <!-- Profile view items -->	
 <!-- this jsp handles title and description -->
 	<item name="profileDataItem" type="dataView" 
-		caption="__profile_data_item" category="profileViewData">
+		caption="__profile_data_item" category="profileViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
@@ -652,13 +652,13 @@
 			<exclude name="workspaceIcon" />
 		</option_entry_data>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_data.jsp" />
 		</jsps>
 	</item>
 		
-	<item name="profileList" caption="__profile_listing" category="profileView" >
+	<item name="profileList" caption="__profile_listing" category="profileView"  display="view">
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_list.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_list.jsp" />
 		</jsps>
 	</item>
 
@@ -676,20 +676,20 @@
 	</item>
 
 	<item name="groupEntryForm" caption="__group_entry_form_definition" type="form" 
-		canBeDeleted="false" multipleAllowed="false">
+		canBeDeleted="false" multipleAllowed="false" display="form">
 
 		<options>
 			<option name="groupEntryFormForm" initial="true" />
 		</options>
 		
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
 		</jsps>
 	</item>
 	
 
 	<item name="groupEntryFormForm" caption="__form" canBeDeleted="false" 
-		  multipleAllowed="false">
+		  multipleAllowed="false" display="form">
 		<properties>
 			<property name="name" caption="__form_name" type="text" 
 				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" setAttribute="formName" value="form1"/>
@@ -699,22 +699,22 @@
 			<option name="description" initial="true" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
 		</jsps>
 	</item>
-	<item name="groupEntryView" caption="__group_entry_view_definition" canBeDeleted="false" multipleAllowed="false">
+	<item name="groupEntryView" caption="__group_entry_view_definition" canBeDeleted="false" multipleAllowed="false" display="view">
 		<options optionCaption="__standard_entry_options">
 			<option name="titleView" initial="true"/>
 			<option name="descriptionView" initial="true" />
 		</options>
 		
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_view.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_view.jsp" />
 		</jsps>
 	</item>
 	
 <!-- Profile entry items -->
-	<item name="profileEntryViewType" definitionType="7" caption="__profile_entry_view_definition">		
+	<item name="profileEntryViewType" definitionType="7" caption="__profile_entry_view_definition" >
 		<properties>
 			<property name="caption" caption="__caption" type="text" />
 			<property name="name" caption="__name" type="text" />
@@ -729,7 +729,7 @@
 	</item>
 	
 	<item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" 
-		canBeDeleted="false" multipleAllowed="false">
+		canBeDeleted="false" multipleAllowed="false" display="form">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -740,14 +740,14 @@
 		</options>
 		
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
 		</jsps>
 	</item>
 	
 <!-- Profile entry form -->
 
 	<item name="profileEntryFormForm" caption="__form" canBeDeleted="false" 
-		  multipleAllowed="false">
+		  multipleAllowed="false" display="form">
 		<properties>
 			<property name="name" caption="__form_name" type="text" 
 				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" setAttribute="formName" value="form1"/>
@@ -774,13 +774,13 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
 		</jsps>
 	</item>
 		
 <!-- Profile entry form items-->
 	<item name="profileName" caption="__profile_name" type="data" 
-		canBeDeleted="false" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="false" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__profile_name"/>
 			<property name="name" caption="__data_name" type="text" value="name" 
@@ -790,14 +790,14 @@
 			<property name="width" caption="__textboxWidth" type="text" default="60"/>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_name_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_name_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderName" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderName" />
 	</item>
 	
 	<item name="profileFirstName" caption="__firstName" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__firstName"/>
 			<property name="name" caption="__data_name" type="text" value="firstName" 
@@ -808,14 +808,14 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 
 	<item name="profileLastName" caption="__lastName" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__lastName"/>
 			<property name="name" caption="__data_name" type="text" value="lastName" 
@@ -826,13 +826,13 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileMiddleName" caption="__middleName" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__middleName"/>
 			<property name="name" caption="__data_name" type="text" value="middleName" 
@@ -843,14 +843,14 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	
 	<item name="profileOrganization" caption="__organization" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__organization"/>
 			<property name="name" caption="__data_name" type="text" value="organization" 
@@ -861,13 +861,13 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileEmailAddress" caption="__emailAddress" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__emailAddress"/>
 			<property name="name" caption="__data_name" type="text" value="emailAddress" 
@@ -878,13 +878,13 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__mobileEmailAddress"/>
 			<property name="name" caption="__data_name" type="text" value="mobileEmailAddress" 
@@ -895,13 +895,13 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__txtEmailAddress"/>
 			<property name="name" caption="__data_name" type="text" value="txtEmailAddress" 
@@ -912,13 +912,13 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileZonName" caption="__zonName" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__zonName"/>
 			<property name="name" caption="__data_name" type="text" value="zonName" 
@@ -929,13 +929,13 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profilePhone" caption="__phone" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__phone"/>
 			<property name="name" caption="__data_name" type="text" value="phone" 
@@ -946,13 +946,13 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileSkypeId" caption="__skypeId" type="data" 
-		canBeDeleted="true" multipleAllowed="false" category="profileEntryData">
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__skypeId"/>
 			<property name="name" caption="__data_name" type="text" value="skypeId" 
@@ -963,13 +963,13 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
 	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false"
-		category="profileEntryData">
+		category="profileEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__profile_entry_picture" />
 			<property name="name" caption="__data_name" type="text" 
@@ -987,14 +987,14 @@
 				default="simpleFileRepository"><help>ihelp.designers.storage_media</help></property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/profile_entry_graphic_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_graphic_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />
 	</item>
 
 <!-- Profile entry view-->
-	<item name="profileEntryView" caption="__profile_entry_view_definition" multipleAllowed="false">
+	<item name="profileEntryView" caption="__profile_entry_view_definition" multipleAllowed="false" display="view">
 		<operations>
 			<operation name="addOption" caption="__add" />
 		</operations>
@@ -1007,23 +1007,23 @@
 		</options>
 		
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_view.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_view.jsp" />
 		</jsps>
 	</item>
 	
 <!-- Profile entry view items-->
 	<item name="profileTitle" caption="__profile_title" 
-		    multipleAllowed="true" category="profileEntryViewData">
+		    multipleAllowed="true" category="profileEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__profile_title"/>
 		</properties>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_data_title.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_profile_data_title.jsp" />
 		</jsps>
 	</item>
 	
 	<item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" 
-		    category="profileEntryViewData">
+		    category="profileEntryViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
@@ -1034,14 +1034,14 @@
 			<exclude name="description"/>
 		</option_entry_data>
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/view_profile_data.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_profile_data.jsp" />
 		</jsps>
 	</item>
 		
 	
 <!-- Profile entry business card view -->
 	<item name="profileEntryBusinessCard" caption="__profile_entry_business_card_definition" 
-		  canBeDeleted="false" multipleAllowed="false">
+		  canBeDeleted="false" multipleAllowed="false" display="view">
 		<options>
 			<option name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
 				definitionType="7" initial="true" />
@@ -1051,13 +1051,13 @@
 		</options>
 		
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_business_card.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_business_card.jsp" />
 		</jsps>
 	</item>
 	
 <!-- Profile entry business card view -->
 	<item name="profileEntryMiniBusinessCard" caption="__profile_entry_mini_business_card_definition" 
-		  canBeDeleted="false" multipleAllowed="false">
+		  canBeDeleted="false" multipleAllowed="false" display="view">
 		<options>
 			<option name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
 				definitionType="7" initial="true" />
@@ -1067,12 +1067,12 @@
 		</options>
 		
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_mini_business_card.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_mini_business_card.jsp" />
 		</jsps>
 	</item>	
 	
 	<item name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" 
-		  canBeDeleted="false" multipleAllowed="false">
+		  canBeDeleted="false" multipleAllowed="false" display="view">
 		<properties>
 		    <property name="_elements" caption="__profile_elements_to_show" 
 				  type="selectbox" multipleAllowed="true">
@@ -1101,12 +1101,12 @@
 		</options>
 		
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_business_card_elements.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_business_card_elements.jsp" />
 		</jsps>
 	</item>
 	
 	<item name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" 
-		  canBeDeleted="false" multipleAllowed="false">
+		  canBeDeleted="false" multipleAllowed="false" display="view">
 		<properties>
 		    <property name="_elements" caption="__profile_elements_to_show" 
 				  type="selectbox" multipleAllowed="true">
@@ -1127,7 +1127,7 @@
 		</options>
 		
 		<jsps>
-			<jsp name="view" value="/WEB-INF/jsp/definition_elements/profile_entry_mini_business_card_elements.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_mini_business_card_elements.jsp" />
 		</jsps>
 	</item>	
 	
@@ -1157,7 +1157,7 @@
 	
 <!-- Workspace form -->
 	<item name="workspaceForm" caption="__workspace_form" type="form" canBeDeleted="false" 
-		multipleAllowed="false" >		
+		multipleAllowed="false"  display="form">	
 		<options optionCaption="__standard_entry_options">
 		<!-- no title modifications on user workspaces -->
 			<option name="title" initial="true" definitionType="8"/>
@@ -1171,25 +1171,25 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/workspace_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/workspace_form.jsp" />
 		</jsps>
 	</item>
 	
-	<item name="workspaceIcon" caption="__icon" type="data" multipleAllowed="false" category="workspaceData">
+	<item name="workspaceIcon" caption="__icon" type="data" multipleAllowed="false" category="workspaceData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__icon"/>
 			<property name="name" caption="__data_name" type="text" value="iconName" 
 			  readonly="true" unique="//item[@type='data']"/>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/icon_form_workspace.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/icon_form_workspace.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
 	</item>
 	
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
-		multipleAllowed="false" >		
+		multipleAllowed="false"  display="view">		
 		<properties>
 			<property name="type" caption="__type" type="selectbox" 
 				  default="folder" value="folder">
@@ -1216,14 +1216,14 @@
 	</item>
 	
 	<item name="workspaceTitleView" caption="__title" canBeDeleted="true" 
-		multipleAllowed="true" category="workspaceViewData">
+		multipleAllowed="true" category="workspaceViewData" display="view">
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_workspace_title.jsp" />
 		</jsps>
 	</item>
 	
 	<item name="workspaceDataItem" type="dataView" 
-		caption="__workspace_data_item" category="workspaceViewData">
+		caption="__workspace_data_item" category="workspaceViewData" display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_item_name" type="text" readonly="true" value=""/>
@@ -1240,7 +1240,7 @@
 		</jsps>
 	</item>
 	
-	<item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceViewData">
+	<item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceViewData" display="view">
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/workspace_binder_list.jsp" />
 		</jsps>
@@ -1266,7 +1266,7 @@
 	
 <!-- User Workspace view -->
 	<item name="userWorkspaceForm" caption="__workspace_form" type="form" canBeDeleted="false" 
-		multipleAllowed="false" >		
+		multipleAllowed="false"  display="form">	
 		<options optionCaption="__standard_entry_options">
 		<!-- no title modifications on user workspaces -->
 			<option name="description" initial="true" />
@@ -1279,13 +1279,13 @@
 			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/workspace_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/workspace_form.jsp" />
 		</jsps>
 	</item>
 
 <!-- User Workspace view -->
 	<item name="userWorkspaceView" caption="__user_workspace_view" canBeDeleted="false" 
-		multipleAllowed="false" >		
+		multipleAllowed="false"  display="view">
 		<options optionCaption="__standard_entry_options">
 			<option name="workspaceTitleView"/>
 			<option name="userWorkspaceBusinessCard" initial="true"/>
@@ -1304,7 +1304,7 @@
 		</jsps>
 	</item>
 	
-	<item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" category="userWorkspaceViewData">		
+	<item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" category="userWorkspaceViewData" display="view">	
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__user_workspace_businessCard"/>
 		</properties>
@@ -1314,7 +1314,7 @@
 	</item>
 			
 <!-- Common entry form items -->
-	<item name="text" caption="__text" type="data" category="commonEntryData">
+	<item name="text" caption="__text" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1327,14 +1327,14 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/text_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderText" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderText" />
 	</item>
 	
-	<item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="commonEntryData">
+	<item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1347,14 +1347,14 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
 	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
-	<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData">
+	<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1371,7 +1371,7 @@
 			<option name="selectboxSelection" caption="__selectbox_option" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/selectbox_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.selectbox</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
@@ -1379,7 +1379,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
 	</item>
 
-	<item name="selectboxSelection" caption="__selection">
+	<item name="selectboxSelection" caption="__selection" display="form">
 		<properties>
 			<property name="caption" caption="__selection_string" type="text">
 				<help>ihelp.designers.selection_string</help>
@@ -1389,11 +1389,11 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/selectbox_selection_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/selectbox_selection_form.jsp" />
 		</jsps>
 	</item>
 
-	<item name="userListSelectbox" caption="__userListSelectbox" type="data" category="commonEntryData">
+	<item name="userListSelectbox" caption="__userListSelectbox" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text"
@@ -1411,7 +1411,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/user_list_selectbox_form.jsp"/>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/user_list_selectbox_form.jsp"/>
 		</jsps>
 		<index apply="true"
 			fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserListSelect"/>
@@ -1421,7 +1421,7 @@
 			notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserListSelect"/>
 	</item>
 
-	<item name="radio" caption="__radio_buttons" type="data" category="commonEntryData">
+	<item name="radio" caption="__radio_buttons" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1441,7 +1441,7 @@
 			<option name="radioSelection" caption="__radio_button_option" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/radio_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.radio_buttons</help>		
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
@@ -1449,7 +1449,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
 	</item>
 	
-	<item name="radioSelection" caption="__radio_button">
+	<item name="radioSelection" caption="__radio_button" display="form">
 		<properties>
 			<property name="caption" caption="__selection_string" type="text">
 				<help>ihelp.designers.radio_string</help>
@@ -1460,11 +1460,11 @@
 			<property name="selected" caption="__selected" type="boolean" default="false"></property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/radio_selection_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/radio_selection_form.jsp" />
 		</jsps>
 	</item>
 	
-	<item name="places" caption="__places" type="data" category="entryData">
+	<item name="places" caption="__places" type="data" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1477,7 +1477,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/places_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/places_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.places</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderPlaces" />
@@ -1485,7 +1485,7 @@
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPlaces" />
 	</item>
 
-	<item name="checkbox" caption="__checkbox" type="data" category="commonEntryData">
+	<item name="checkbox" caption="__checkbox" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1497,14 +1497,14 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderCheck" />
 	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderCheck" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderCheck" />
 	</item>
 
-	<item name="hidden" caption="__hidden" type="data" category="commonEntryData">
+	<item name="hidden" caption="__hidden" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
@@ -1513,12 +1513,12 @@
 			<property name="value" caption="__value" type="text"/>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/hidden_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/hidden_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderHidden" />
 	</item>
 	
-	<item name="graphic" caption="__graphic" type="data" category="commonEntryData">
+	<item name="graphic" caption="__graphic" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1538,14 +1538,14 @@
 				default="simpleFileRepository"><help>ihelp.designers.storage_media</help></property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />
 	</item>
 
 	<item name="attachFiles" caption="__attach_files" type="data" canBeDeleted="false"
-			multipleAllowed="false" category="commonEntryData">
+			multipleAllowed="false" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__attach_files"/>
 			<property name="name" caption="__data_name" type="text" value="ss_attachFile" readonly="true"/>
@@ -1556,13 +1556,13 @@
 			<property name="hide" caption="__hideFormElement" type="boolean" default="false"/>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderAttachments" />
 <!-- summary=true for attachments will include all graphic and file elements.  This just means the attachments are processed.  Won't be sent unless asked for -->
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderAttachments" />
 	</item>
-	<item name="description" caption="__description" type="data" multipleAllowed="false" category="commonEntryData">
+	<item name="description" caption="__description" type="data" multipleAllowed="false" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__description"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1575,14 +1575,14 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
 	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
 		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
-	<item name="file" caption="__file_upload" type="data" category="commonEntryData">
+	<item name="file" caption="__file_upload" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1597,13 +1597,13 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderFile" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile" />
 	</item>
 	
-	<item name="date" caption="__date" type="data" category="commonEntryData">
+	<item name="date" caption="__date" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1615,14 +1615,14 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/date_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/date_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDate" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDate" />
 	</item>
 	
-	<item name="date_time" caption="__date_time" type="data" category="commonEntryData">
+	<item name="date_time" caption="__date_time" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1634,14 +1634,14 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/date_time_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/date_time_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDateTime" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDate" />
 	</item>
 	
-	<item name="user_list" caption="__user_list" type="data" category="commonEntryData">
+	<item name="user_list" caption="__user_list" type="data" category="commonEntryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1653,14 +1653,14 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/userlist_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/userlist_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserlist" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserlist" />
 		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserlist" />
 	</item>
 
-	<item name="survey" caption="__survey_queries" type="data" category="entryData">
+	<item name="survey" caption="__survey_queries" type="data" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1672,7 +1672,7 @@
 			</property>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/survey_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/survey_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSurvey" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSurvey" />
@@ -1680,7 +1680,7 @@
 	</item>
 
 <!-- Entry layout items -->
-	<item name="form" caption="__form" category="entryLayout">
+	<item name="form" caption="__form" category="entryLayout" display="form">
 		<properties>
 			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" setAttribute="formName"/>
 		</properties>
@@ -1702,11 +1702,11 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
 		</jsps>
 	</item>
 		
-	<item name="entryFormButtons" caption="__form_buttons" category="entryLayout">
+	<item name="entryFormButtons" caption="__form_buttons" category="entryLayout" display="form">
 		<properties>
 		    <property name="alignment" caption="__alignment" type="selectbox" default="left">
 				<option name="left" caption="__left" />
@@ -1719,33 +1719,34 @@
 			<option name="cancelButton" caption="__cancel_button" initial="true" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/form_buttons_form.jsp" />
 		</jsps>
 	</item>
 		
-	<item name="okButton" caption="__ok_button" category="entryLayout">
+	<item name="okButton" caption="__ok_button" category="entryLayout" display="form">
 		<properties>
 			<property name="caption" caption="__button_text" type="text" value="__ok"/>
 			<property name="onClick" caption="__onclick_routine" type="text"/>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/ok_button_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/ok_button_form.jsp" />
 		</jsps>
 	</item>
 		
-	<item name="cancelButton" caption="__cancel_button" category="entryLayout">
+	<item name="cancelButton" caption="__cancel_button" category="entryLayout" display="form">
 		<properties>
 			<property name="caption" caption="__button_text" type="text" value="__cancel"/>
 			<property name="onClick" caption="__onclick_routine" type="text"/>
 		</properties>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/cancel_button_form.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/cancel_button_form.jsp" />
 		</jsps>
 	</item>
-<!-- General layout form items -->
-	<item name="box" caption="__box" category="generalLayout">
+<!-- General layout items -->
+	<item name="box" caption="__box" category="generalLayout" display="form">
 		<properties>
 			<property name="style" caption="__box" type="selectbox" default="square">
+				<option name="rounded" caption="__box_rounded" />
 				<option name="square" caption="__box_square" />
 				<option name="squareNoBorder" caption="__box_square_no_border" />
 			</property>
@@ -1768,12 +1769,39 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/box.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/box.jsp" />
 		</jsps>
 	</item>
 		
+	<item name="boxView" caption="__box" category="generalViewLayout" display="view">
+		<properties>
+			<property name="style" caption="__box_style" type="selectbox" default="rounded">
+				<option name="rounded" caption="__box_rounded" />
+				<option name="square" caption="__box_square" />
+				<option name="squareNoBorder" caption="__box_square_no_border" />
+			</property>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select definitionType="1" path="//item[@category='entryViewData']" />
+			<option_select definitionType="5" path="//item[@category='folderViewData']" />
+			<option_select definitionType="6" path="//item[@category='profileViewData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
+			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
+			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/box.jsp" />
+		</jsps>
+	</item>
 		
-	<item name="expandableDiv" caption="__expandable_div" category="generalLayout">
+	<item name="expandableDiv" caption="__expandable_div" category="generalLayout" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="style" caption="__expandable_div_style" type="selectbox" default="rounded">
@@ -1800,12 +1828,42 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 		</jsps>
 		<help>ihelp.designers.expand_area</help>
 	</item>
 		
-	<item name="fieldset" caption="__fieldset" category="generalLayout">
+	<item name="expandableDivView" caption="__expandable_div" category="generalViewLayout" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="style" caption="__expandable_div_style" type="selectbox" default="rounded">
+				<option name="rounded" caption="__box_rounded" />
+				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
+				<option name="square" caption="__box_square" />
+			</property>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select definitionType="1" path="//item[@category='entryViewData']" />
+			<option_select definitionType="5" path="//item[@category='folderViewData']" />
+			<option_select definitionType="6" path="//item[@category='profileViewData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
+			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
+			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
+			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/expandable_div.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="fieldset" caption="__fieldset" category="generalLayout" display="form">
 		<properties>
 			<property name="legend" caption="__legend" type="text"/>
 		</properties>
@@ -1827,48 +1885,47 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
 		</jsps>
 	</item>
 		
-	<item name="divider" caption="__divider" category="generalLayout">
+	<item name="fieldsetView" caption="__fieldset" category="generalViewLayout" display="view">
+		<properties>
+			<property name="legend" caption="__legend" type="text"/>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select definitionType="1" path="//item[@category='entryViewData']" />
+			<option_select definitionType="5" path="//item[@category='folderViewData']" />
+			<option_select definitionType="6" path="//item[@category='profileViewData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
+			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
+			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="divider" caption="__divider" category="generalLayout" display="form">
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
 		<help>ihelp.designers.divider</help>
 	</item>
-		
-	<item name="table2" caption="__two_column_table" category="generalLayout">
-		<properties>
-			<property name="caption" caption="__caption" type="text"/>
-			<property name="name" caption="__name" type="text"/>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option name="title" definitionType="1" caption="__title" />
-			<option name="title" definitionType="5" caption="__title" />
-			<option name="title" definitionType="6" caption="__title" />
-			<option name="title" definitionType="8" caption="__title" />
-			<option name="title" definitionType="12" caption="__title" />
-			<option_select path="//item[@category='commonEntryData']" />
-			<option_select definitionType="1" path="//item[@category='entryData']"  />
-			<option_select definitionType="5" path="//item[@category='folderData']"  />
-			<option_select definitionType="6" path="//item[@category='profileData']"  />
-			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
-			<option_select definitionType="8" path="//item[@category='workspaceData']" />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceData']"  />
-			<option_select definitionType="12" path="//item[@category='workspaceData']" />
-			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
+	<item name="dividerView" caption="__divider" category="generalViewLayout" display="view">
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
 	</item>
 		
-	<item name="table3" caption="__three_column_table" category="generalLayout">
+	<item name="table2" caption="__two_column_table" category="generalLayout" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
@@ -1894,11 +1951,96 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
+		</jsps>
+	</item>
+		
+	<item name="table2View" caption="__two_column_table" category="generalViewLayout" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__name" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select definitionType="1" path="//item[@category='entryViewData']" />
+			<option_select definitionType="5" path="//item[@category='folderViewData']" />
+			<option_select definitionType="6" path="//item[@category='profileViewData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
+			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
+			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
+	
+		</jsps>
+	</item>
+	<item name="table3" caption="__three_column_table" category="generalLayout" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__name" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="title" definitionType="1" caption="__title" />
+			<option name="title" definitionType="5" caption="__title" />
+			<option name="title" definitionType="6" caption="__title" />
+			<option name="title" definitionType="8" caption="__title" />
+			<option name="title" definitionType="12" caption="__title" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']"  />
+			<option_select definitionType="5" path="//item[@category='folderData']"  />
+			<option_select definitionType="6" path="//item[@category='profileData']"  />
+			<option_select definitionType="7" path="//item[@category='profileEntryData']" />
+			<option_select definitionType="8" path="//item[@category='workspaceData']" />
+			<option_select definitionType="12" path="//item[@category='userWorkspaceData']"  />
+			<option_select definitionType="12" path="//item[@category='workspaceData']" />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
 		</jsps>
 	</item>
 
-	<item name="html" caption="__html" category="generalLayout">
+	<item name="table3View" caption="__three_column_table" category="generalViewLayout" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__name" type="text"/>
+			<property name="required" caption="__required" type="boolean" default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select definitionType="1" path="//item[@category='entryViewData']" />
+			<option_select definitionType="5" path="//item[@category='folderViewData']" />
+			<option_select definitionType="6" path="//item[@category='profileViewData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
+			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
+			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
+		</jsps>
+	</item>
+	<item name="html" caption="__html" category="generalLayout" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__name" type="text"/>
@@ -1923,11 +2065,37 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 		<jsps>
-			<jsp name="form" value="/WEB-INF/jsp/definition_elements/html.jsp" />
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
 	</item>
 		
-	<item name="customJsp" caption="__custom_jsp" type="data" category="generalLayout">
+	<item name="htmlView" caption="__html" category="generalViewLayout" display="view">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__name" type="text"/>
+			<property name="htmlTop" caption="__html_top" type="textarea"/>
+			<property name="htmlBottom" caption="__html_bottom" type="textarea"/>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
+			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select definitionType="1" path="//item[@category='entryViewData']" />
+			<option_select definitionType="5" path="//item[@category='folderViewData']" />
+			<option_select definitionType="6" path="//item[@category='profileViewData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
+			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
+			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
+		</jsps>
+	</item>
+	<item name="customJsp" caption="__custom_jsp" type="data" category="generalLayout" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
@@ -1958,179 +2126,8 @@
 		</options>
 		<help>ihelp.designers.custom_jsp</help>
 	</item>
-<!-- General layout views -->	
-	<item name="boxView" caption="__box" category="generalViewLayout">
-		<properties>
-			<property name="style" caption="__box_style" type="selectbox" default="rounded">
-				<option name="rounded" caption="__box_rounded" />
-				<option name="square" caption="__box_square" />
-				<option name="squareNoBorder" caption="__box_square_no_border" />
-			</property>
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
-			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select definitionType="5" path="//item[@category='folderViewData']" />
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/box.jsp" />
-		</jsps>
-	</item>
-	<item name="expandableDivView" caption="__expandable_div" category="generalViewLayout">
-		<properties>
-			<property name="caption" caption="__caption" type="text"/>
-			<property name="style" caption="__expandable_div_style" type="selectbox" default="rounded">
-				<option name="rounded" caption="__box_rounded" />
-				<option name="rounded_shadow" caption="__box_rounded_with_shadow" />
-				<option name="square" caption="__box_square" />
-			</property>
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
-			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select definitionType="5" path="//item[@category='folderViewData']" />
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
-			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/expandable_div.jsp" />
-		</jsps>
-	</item>
 		
-	<item name="fieldsetView" caption="__fieldset" category="generalViewLayout">
-		<properties>
-			<property name="legend" caption="__legend" type="text"/>
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
-			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select definitionType="5" path="//item[@category='folderViewData']" />
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="dividerView" caption="__divider" category="generalViewLayout">
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="table2View" caption="__two_column_table" category="generalViewLayout">
-		<properties>
-			<property name="caption" caption="__caption" type="text"/>
-			<property name="name" caption="__name" type="text"/>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
-			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select definitionType="5" path="//item[@category='folderViewData']" />
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
-	
-		</jsps>
-	</item>
-		
-	<item name="table3View" caption="__three_column_table" category="generalViewLayout">
-		<properties>
-			<property name="caption" caption="__caption" type="text"/>
-			<property name="name" caption="__name" type="text"/>
-			<property name="required" caption="__required" type="boolean" default="false">
-				<help>ihelp.designers.required</help>
-			</property>
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
-			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select definitionType="5" path="//item[@category='folderViewData']" />
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
-		</jsps>
-	</item>
-
-	<item name="htmlView" caption="__html" category="generalViewLayout">
-		<properties>
-			<property name="caption" caption="__caption" type="text"/>
-			<property name="name" caption="__name" type="text"/>
-			<property name="htmlTop" caption="__html_top" type="textarea"/>
-			<property name="htmlBottom" caption="__html_bottom" type="textarea"/>
-		</properties>
-		<options optionCaption="__standard_entry_options">
-			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="6" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="8" caption="__dashboard_canvas" />
-			<option name="dashboardCanvas" definitionType="12" caption="__dashboard_canvas" />
-			<option_select path="//item[@category='commonEntryViewData']" />
-			<option_select definitionType="1" path="//item[@category='entryViewData']" />
-			<option_select definitionType="5" path="//item[@category='folderViewData']" />
-			<option_select definitionType="6" path="//item[@category='profileViewData']" />
-			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
-			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
-			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
-			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
-			<option_select definitionType="1" path="//item[@category='entryLayout']" />
-		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
-		</jsps>
-	</item>
-		
-	<item name="customJspView" caption="__custom_jsp" category="generalViewLayout">
+	<item name="customJspView" caption="__custom_jsp" category="generalViewLayout" display="view">
 		<properties>
 			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
 			<property name="mobileJsp" caption="__mobile_jsp_name" type="text"/>
@@ -2155,6 +2152,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/custom.jsp" />
 		</jsps>
 	</item>
+		
 <!-- Workflow items -->
 	<item name="workflowProcessType" definitionType="2" caption="__workflow_process">
 		<properties>

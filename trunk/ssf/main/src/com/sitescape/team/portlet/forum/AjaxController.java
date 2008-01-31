@@ -630,7 +630,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			binderAccessMap.put(BinderOperation.modifyBinder.toString(), true);
 		}
 		accessControlMap.put(binderId, binderAccessMap);
-		if (binder instanceof TemplateBinder) model.put(WebKeys.CONFIG_JSP_STYLE, "template");
+		if (binder instanceof TemplateBinder) model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_TEMPLATE);
 		UserProperties userProperties;
 		Map columns = null;
 		if (binderId == null) {

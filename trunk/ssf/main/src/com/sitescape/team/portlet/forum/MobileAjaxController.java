@@ -375,7 +375,6 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 	private ModelAndView ajaxMobileShowEntry(RenderRequest request, 
 				RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		model.put(WebKeys.SHOW_MOBILE_VIEW, true);
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Binder binder = getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, binder);
@@ -387,7 +386,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		folderEntries  = getFolderModule().getEntryTree(binderId, entryId);
 		if (folderEntries != null) {
 			entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
-			model.put(WebKeys.CONFIG_JSP_STYLE, "view");
+			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MOBILE);
 			if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 				DefinitionHelper.getDefaultEntryView(entry, model);
 			}

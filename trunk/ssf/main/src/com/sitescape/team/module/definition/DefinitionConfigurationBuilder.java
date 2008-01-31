@@ -34,6 +34,8 @@ import java.util.HashMap;
 
 import org.dom4j.Element;
 import org.dom4j.Document;
+
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles;
 
@@ -88,14 +90,10 @@ public class DefinitionConfigurationBuilder extends
        		if (jspsObj != null) {
        			String jsp = (String)jspsObj.get(style);
        			if (jsp != null) return jsp;
-       			return (String)jspsObj.get("default");
+       			return (String)jspsObj.get(Definition.JSP_STYLE_DEFAULT);
        		}
     	
        		return null;
-
-//       	Element jsp = (Element)item.selectSingleNode("jsps/jsp[@name='" + style + "']");
-//       	if (jsp == null) return null;
-//       	return jsp.attributeValue("value");
        	
     }
     public Element getItem(Document config, String item) {

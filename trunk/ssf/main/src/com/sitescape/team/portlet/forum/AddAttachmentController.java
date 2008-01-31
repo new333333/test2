@@ -44,6 +44,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.MapInputData;
@@ -190,7 +191,7 @@ public class AddAttachmentController extends SAbstractController {
 				
 			model.put(WebKeys.ENTRY, entry);
 			model.put(WebKeys.FOLDER, entry.getParentFolder());
-			model.put(WebKeys.CONFIG_JSP_STYLE, "form");
+			model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
 			DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@type='form']");
 			path = WebKeys.VIEW_MODIFY_ENTRY;
 		}
