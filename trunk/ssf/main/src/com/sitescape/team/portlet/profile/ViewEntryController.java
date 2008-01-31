@@ -88,7 +88,7 @@ public class ViewEntryController extends SAbstractController {
 		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.FOLDER, entry.getParentBinder());
 		model.put(WebKeys.BINDER, entry.getParentBinder());
-		model.put(WebKeys.CONFIG_JSP_STYLE, "view");
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(null).getProperties());
 		//Get the definition used to view this entry
 		Definition entryDef = entry.getEntryDef();
