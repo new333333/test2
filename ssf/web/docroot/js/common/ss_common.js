@@ -786,7 +786,30 @@ function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
 	}
 }
 
-
+function ss_toggleExpandableArea(divName, imgName, action) {
+	var divObj = self.document.getElementById(divName);
+    if (action == 'wipe') {
+	    if (divObj.style.display == 'none' || 
+	    		divObj.style.visibility == 'hidden' || 
+	    		divObj.style.display == '') {
+		    ss_replaceImage(imgName, ss_imagesPath + 'pics/sym_s_collapse.gif');
+        	ss_showDivWipe(divName);
+		} else {
+        	ss_hideDivWipe(divName);
+		    ss_replaceImage(imgName, ss_imagesPath + 'pics/sym_s_expand.gif');
+	    }
+    } else {        
+	    if (divObj.style.display == 'none' || 
+	    		divObj.style.visibility == 'hidden' || 
+	    		divObj.style.display == '') {
+		    ss_showHideObj(divName, 'visible', 'block');
+		    ss_replaceImage(imgName, ss_imagesPath + 'pics/sym_s_collapse.gif');
+		} else {
+		    ss_showHideObj(divName, 'hidden', 'none');
+		    ss_replaceImage(imgName, ss_imagesPath + 'pics/sym_s_expand.gif');
+	    }
+	}
+}
 function ss_showHideBusinessCard(op, scope) {
 	var urlParams = {scope:scope};
 	if (op == "show") {

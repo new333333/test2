@@ -973,17 +973,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    			indexEntry(entry);
    		}
    	}
-   	public void moveFiles(Binder binder, Collection entries, Binder destination) {
+   	protected void moveFiles(Binder binder, Collection entries, Binder destination) {
    		for (Iterator iter=entries.iterator(); iter.hasNext();) {
    			Entry entry = (Entry)iter.next();
-   			moveFiles(binder, entry, destination);
+   		   	getFileModule().moveFiles(binder, entry, destination, entry);
    		}
    	}
-   	
-    protected void moveFiles(Binder binder, Entry entry, Binder destination) {
-    	getFileModule().moveFiles(binder, entry, destination, entry);
-    }
-   	
+   	   	
     //***********************************************************************************************************
     public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) {
         //search engine will only return entries you have access to

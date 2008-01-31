@@ -664,21 +664,21 @@ public class BuildDefinitionDivs extends TagSupport {
 		if ((this.option.equals("properties")) && 
 				!this.divNames.containsKey("properties_"+rootElementId)) {
 			this.divNames.put("properties_"+rootElementId, "1");
-
+			
 			//Add the list of properties
 			Element propertiesConfig = rootConfigElement.element("properties");
 			if (propertiesConfig == null) return;
-				String  itemType = rootConfigElement.attributeValue("type");
-				//	see if we are adding a "dataView" element
-				Element properties=null;
-				//if adding a new dataView item, see if we have a reference to the data item
-				if (Validator.isNotNull(this.refItemId) && "dataView".equals(itemType)) {
-					Element refItem = (Element)sourceRoot.selectSingleNode("//item[@id='"+this.refItemId+"'] ");
-					if (refItem != null) properties = refItem.element("properties");
-				}	 
+			String  itemType = rootConfigElement.attributeValue("type");
+			//	see if we are adding a "dataView" element
+			Element properties=null;
+			//if adding a new dataView item, see if we have a reference to the data item
+			if (Validator.isNotNull(this.refItemId) && "dataView".equals(itemType)) {
+				Element refItem = (Element)sourceRoot.selectSingleNode("//item[@id='"+this.refItemId+"'] ");
+				if (refItem != null) properties = refItem.element("properties");
+			}	 
 				
-				if (properties == null) properties = rootElement.element("properties");
-				Iterator itProperties = propertiesConfig.elementIterator("property");
+			if (properties == null) properties = rootElement.element("properties");
+			Iterator itProperties = propertiesConfig.elementIterator("property");
 				while (itProperties.hasNext()) {
 					//Get the next property from the base config file
 					Element propertyConfig = (Element) itProperties.next();
@@ -1300,10 +1300,35 @@ public class BuildDefinitionDivs extends TagSupport {
 			
 			sb.append("<br/>");
 			sb.append("<input type=\"hidden\" name=\"definitionType_"+rootElementId+"\" value=\""+ rootElement.attributeValue("definitionType", "") +"\"/>\n");
-
+			Element jspRootConfig = rootConfigElement.element("jsps");
+	
+			if (!"customJspView".equals(rootElementName) && jspRootConfig != null) {
+				HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
+				HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
+				RequestDispatcher rd = httpReq.getRequestDispatcher("/WEB-INF/jsp/definition_builder/custom_jsp.jsp");
+				
+				ServletRequest req = null;
+				req = new DynamicServletRequest(httpReq);
+				if (rootConfigElement != rootElement) { //if adding new item, don't copy system jsps
+					Element rootJsps = rootElement.element("jsps");
+					req.setAttribute("jspElement", rootJsps);
+				}
+				//if there is a form item, only ask for form jsps
+				if (jspRootConfig.selectSingleNode("./jsp[@name='form']") != null) {
+					req.setAttribute("jspFormOnly", Boolean.TRUE);
+				} else {
+					req.setAttribute("jspFormOnly", Boolean.FALSE);					
+				}
+					
+				StringServletResponse res = new StringServletResponse(httpRes);
+				try {
+					rd.include(req, res);
+					sb.append(res.getString().replaceAll("&", "&amp;"));
+				} catch(Exception e) {}
+			}
 		}
 	}
-	
+
 	private void buildDefaultDivs(StringBuffer sb, StringBuffer hb) {
 		if (!this.divNames.containsKey("delete_item")) {
 			this.divNames.put("delete_item", "1");
