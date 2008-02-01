@@ -72,6 +72,4 @@
 </table>
 </c:forEach>
 
-</table>
-
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>
