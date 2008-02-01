@@ -38,9 +38,11 @@
 
 <%
 	String slidingTableStyle = "sliding";
+/** Vertical mode has been removed
 	if (ObjectKeys.USER_DISPLAY_STYLE_VERTICAL.equals(ssUser.getDisplayStyle())) {
 		slidingTableStyle = "sliding_scrolled";
 	}
+*/
 	String ssFolderTableHeight = "";
 	Map ssFolderPropertiesMap = ssUserFolderProperties.getProperties();
 	if (ssFolderPropertiesMap != null && ssFolderPropertiesMap.containsKey("folderEntryHeight")) {

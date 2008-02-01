@@ -140,24 +140,28 @@ public class ListFolderController extends  SAbstractController {
 			//Saves the folder page informaton when the user clicks on the page link			
 			String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
 			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
-			Map tabData = tab.getData();
-			tabData.put(Tabs.PAGE, new Integer(pageStartIndex));			
-			tab.setData(tabData);
-			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
+			if (tab != null) {
+				Map tabData = tab.getData();
+				tabData.put(Tabs.PAGE, new Integer(pageStartIndex));			
+				tab.setData(tabData);
+				response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
+			}
 		} else if (op.equals(WebKeys.OPERATION_SAVE_FOLDER_GOTOPAGE_INFO)) {
 			//Saves the folder page informaton when the user enters the page number in the go to page field
 			String pageGoToIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_GOTOPAGE_INDEX, "");
 			
 			Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
-			Map tabData = tab.getData();
-			Integer recordsPerPage = (Integer) tabData.get(Tabs.RECORDS_IN_PAGE);
-					
-			int intGoToPageIndex = new Integer(pageGoToIndex).intValue();
-			int intRecordsPerPage = recordsPerPage.intValue();
-			int intPageStartIndex = (intGoToPageIndex - 1) * intRecordsPerPage;
-			tabData.put(Tabs.PAGE, new Integer(intPageStartIndex));			
-			tab.setData(tabData);
-			response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
+			if (tab != null) {
+				Map tabData = tab.getData();
+				Integer recordsPerPage = (Integer) tabData.get(Tabs.RECORDS_IN_PAGE);
+						
+				int intGoToPageIndex = new Integer(pageGoToIndex).intValue();
+				int intRecordsPerPage = recordsPerPage.intValue();
+				int intPageStartIndex = (intGoToPageIndex - 1) * intRecordsPerPage;
+				tabData.put(Tabs.PAGE, new Integer(intPageStartIndex));			
+				tab.setData(tabData);
+				response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
+			}
 		} else if (op.equals(WebKeys.OPERATION_CHANGE_ENTRIES_ON_PAGE)) {
 			//Changes the number or records to be displayed in a page
 			//Getting the new entries per page

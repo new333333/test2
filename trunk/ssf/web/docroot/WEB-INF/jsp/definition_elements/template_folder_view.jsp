@@ -51,9 +51,11 @@
 <%
 	
 	String slidingTableStyle = "sliding";
+/** Vertical mode has been removed
 	if (ObjectKeys.USER_DISPLAY_STYLE_VERTICAL.equals(ssUser.getDisplayStyle())) {
 		slidingTableStyle = "sliding_scrolled";
 	}
+*/
 	boolean useAdaptor = true;
 	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle())) {
 		useAdaptor = false;

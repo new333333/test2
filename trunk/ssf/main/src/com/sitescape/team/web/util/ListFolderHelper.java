@@ -284,6 +284,7 @@ public class ListFolderHelper {
 			if (viewType == null) viewType = "";
 		}
 
+		/** Vertical mode has been removed
 		//If the Folder View is anything other than Table and if the Folder Action happens to be  
 		//vertical (view at the bottom), then we need to display the entry in the iframe view
 		if (!viewType.equals(Definition.VIEW_STYLE_TABLE)) {
@@ -292,6 +293,7 @@ public class ListFolderHelper {
 				model.put(WebKeys.FOLDER_ACTION_VERTICAL_OVERRIDE, "yes");
 			}
 		}
+		*/
 		
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//In Blog style we only want to show this entry
@@ -1607,6 +1609,7 @@ public class ListFolderHelper {
 			//Only show these options if in the folder table style and not in accessible mode
 			entryToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
 			
+			/** Vertical mode has been removed
 			//Hemanth: Display Show entries at bottom folder action option only for the Table view
 			if (viewType.equals(Definition.VIEW_STYLE_TABLE)) {
 				//vertical
@@ -1621,6 +1624,7 @@ public class ListFolderHelper {
 				entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 						NLT.get("toolbar.menu.display_style_vertical"), url, qualifiers);
 			}
+			*/
 			
 			//iframe
 			qualifiers = new HashMap();
