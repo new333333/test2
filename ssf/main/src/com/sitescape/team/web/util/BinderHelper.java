@@ -453,6 +453,7 @@ public class BinderHelper {
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+				/** Vertical mode has been removed
 				//Hemanth: if the the displayStyle has been set to vertical[view at bottom], it must be applied
 				//only to the table folder view. For all other folder views we need to use the iframe view.
 				if (displayDefinition != null && displayDefinition.equals(Definition.VIEW_STYLE_TABLE)) {
@@ -460,6 +461,8 @@ public class BinderHelper {
 				} else {
 					viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
 				}
+				*/
+				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
 			} else {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
 			}
@@ -470,6 +473,7 @@ public class BinderHelper {
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+			/** Vertical mode has been removed
 			//Hemanth: if the the displayStyle has been set to vertical[view at bottom], it must be applied
 			//only to the table folder view. For all other folder views we need to use the iframe view.
 			if (displayDefinition != null && displayDefinition.equals(Definition.VIEW_STYLE_TABLE)) {
@@ -477,6 +481,8 @@ public class BinderHelper {
 			} else {
 				viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 			}
+			*/
+			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 		} else {
 			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 		}
