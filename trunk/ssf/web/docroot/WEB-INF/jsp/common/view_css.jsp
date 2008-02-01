@@ -122,12 +122,14 @@ var ss_baseBinderUrlNoWS = ss_baseBinderUrlNoWS<portlet:namespace/>;
 		--%>
 <script type="text/javascript">
 // Dojo configuration
-djConfig = { 
-	isDebug: false,
-	locale: '<ssf:convertLocaleToDojoStyle />',
-	parseWidgets: false,
-	searchIds: []
-};
+if (typeof djConfig == "undefined") {
+	djConfig = { 
+		isDebug: false,
+		locale: '<ssf:convertLocaleToDojoStyle />',
+		parseWidgets: false,
+		searchIds: []
+	};
+}
 </script>
 <script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
 <script type="text/javascript">
