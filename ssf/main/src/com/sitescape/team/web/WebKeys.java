@@ -813,6 +813,7 @@ public class WebKeys {
     public static final String WORKSPACES="ssWorkspaces";
     public static final String WORKSPACE_CREATOR="ssWorkspaceCreator";
     public static final String ZONE_NAME = "com.sitescape.zonename";
+    public static final String ZONE_ID = "com.sitescape.zoneId";
     public static final String SERVER_NAME = "com.sitescape.server.name";
     public static final String SERVER_PORT = "com.sitescape.server.port";
     

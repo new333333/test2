@@ -61,18 +61,18 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FileUploadItem;
-import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.TempFileUtil;
@@ -107,95 +107,62 @@ public class WebHelper {
 	
 	public static String getRequiredUserName(HttpServletRequest request) 
 	throws IllegalStateException {
-		//System.out.println("*** Servlet: USER NAME = " + request.getRemoteUser()); // TODO TBR
-		//System.out.println("*** Servlet: USER PRINCIPAL = " + request.getUserPrincipal()); // TODO TBR
-		
-		String username = getRemoteUserName(request);
-			
-		if(username != null)
-			return username;
-		
-		HttpSession ses = request.getSession(false);
-		
-		if(ses == null)
-			throw new IllegalStateException("No user session");
-		
-		if(ses.getAttribute(WebKeys.USER_NAME) == null)
-			throw new IllegalStateException("No user name in the session");
-			
+		HttpSession ses = getRequiredSession(request);			
 		return (String) ses.getAttribute(WebKeys.USER_NAME);
 	}
 	
 	public static String getRequiredUserName(PortletRequest request) 
 	throws IllegalStateException {
-		//System.out.println("*** Portlet: USERNAME = " + request.getRemoteUser()); // TODO TBR
-		//System.out.println("*** Portlet: USER PRINCIPAL = " + request.getUserPrincipal()); // TODO TBR
-		
-		String username = getRemoteUserName(request);
-		if(username != null)
-			return username;
-		
-		PortletSession ses = request.getPortletSession(false);
-		
-		if(ses == null)
-			throw new IllegalStateException("No user session");
-		
-    	// Due to bugs in some portlet containers (eg. Liferay) as well as in 
-    	// our own portlet adapter, when a user's session is invalidated or
-    	// expired, the associated PortletSession if any may not be properly 
-    	// notified of the change in the state of the underlying HttpSession.
-    	// When this occurs, application may still be able to call getAttribute
-    	// method on the PortletSession without incurring an exception. 
-    	// To work around that problem, I had to add the following checking 
-    	// (hack) as a way of indirectly detecting whether or not the user 
-    	// session has indeed expired. Yuck, but it works. 
-		if(ses.getAttribute(WebKeys.USER_NAME, PortletSession.APPLICATION_SCOPE) == null)
-			throw new IllegalStateException("No user name in the session");
-			
+		PortletSession ses = getRequiredPortletSession(request);			
 		return (String) ses.getAttribute(WebKeys.USER_NAME, PortletSession.APPLICATION_SCOPE);		
+	}
+	
+	public static Long getRequiredUserId(HttpServletRequest request) 
+	throws IllegalStateException {
+		HttpSession ses = getRequiredSession(request);			
+		return (Long) ses.getAttribute(WebKeys.USER_ID);
+	}
+	
+	public static Long getRequiredUserId(PortletRequest request) 
+	throws IllegalStateException {
+		PortletSession ses = getRequiredPortletSession(request);			
+		return (Long) ses.getAttribute(WebKeys.USER_ID, PortletSession.APPLICATION_SCOPE);		
 	}
 	
 	public static String getRequiredZoneName(HttpServletRequest request) 
 	throws IllegalStateException {
-		String zoneName = null;
-		
-		HttpSession ses = request.getSession(false);
-		
-		if(ses != null)
-			zoneName = (String) ses.getAttribute(WebKeys.ZONE_NAME);
-		
-		if(zoneName == null)
-			zoneName = SZoneConfig.getDefaultZoneName();
-		
-		return zoneName;
+		HttpSession ses = getRequiredSession(request);			
+		return (String) ses.getAttribute(WebKeys.ZONE_NAME);
 	}
 	
 	public static String getRequiredZoneName(PortletRequest request) 
 	throws IllegalStateException {
-		String zoneName = null;
-		
-		PortletSession ses = request.getPortletSession(false);
-		
-		if(ses != null)
-			zoneName = (String) ses.getAttribute(WebKeys.ZONE_NAME, PortletSession.APPLICATION_SCOPE);
-		
-		if(zoneName == null)
-			zoneName = SZoneConfig.getDefaultZoneName();
-			
-		return zoneName;
+		PortletSession ses = getRequiredPortletSession(request);			
+		return (String) ses.getAttribute(WebKeys.ZONE_NAME, PortletSession.APPLICATION_SCOPE);		
+	}
+	
+	public static Long getRequiredZoneId(HttpServletRequest request) 
+	throws IllegalStateException {
+		HttpSession ses = getRequiredSession(request);			
+		return (Long) ses.getAttribute(WebKeys.ZONE_ID);
+	}
+	
+	public static Long getRequiredZoneId(PortletRequest request) 
+	throws IllegalStateException {
+		PortletSession ses = getRequiredPortletSession(request);			
+		return (Long) ses.getAttribute(WebKeys.ZONE_ID, PortletSession.APPLICATION_SCOPE);		
 	}
 	
 	public static PortletSession getRequiredPortletSession(PortletRequest request) 
 	throws IllegalStateException {
-		String username = getRemoteUserName(request);
-
 		PortletSession ses = request.getPortletSession(false);
 		
 		if(ses != null) { // session already exists
 			if(ses.getAttribute(WebKeys.USER_NAME, PortletSession.APPLICATION_SCOPE) == null) {
+				String username = getRemoteUserName(request);
 				if(username != null) {
-					// store the username into the existing session
-					ses.setAttribute(WebKeys.USER_NAME, username, PortletSession.APPLICATION_SCOPE);
+					// put the context into the existing session
+					putContext(ses, getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request)));
 				}
 				else {
 					// Neither the session nor the request contains username.
@@ -208,10 +175,11 @@ public class WebHelper {
 			}
 		}
 		else { // session doesn't exist
+			String username = getRemoteUserName(request);
 			if(username != null) {
-				// we can create a new session and put the username into it
+				// we can create a new session and put the context into it
 				ses = request.getPortletSession();
-				ses.setAttribute(WebKeys.USER_NAME, username, PortletSession.APPLICATION_SCOPE);
+				putContext(ses, getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request)));
 			}
 			else {
 				// since we don't have username we must not create a new session here
@@ -224,15 +192,14 @@ public class WebHelper {
 	
 	public static HttpSession getRequiredSession(HttpServletRequest request) 
 	throws IllegalStateException {
-		String username = getRemoteUserName(request);
-
 		HttpSession ses = request.getSession(false);
 		
 		if(ses != null) { // session already exists
 			if(ses.getAttribute(WebKeys.USER_NAME) == null) {
+				String username = getRemoteUserName(request);
 				if(username != null) {
-					// store the username into the existing session
-					ses.setAttribute(WebKeys.USER_NAME, username);
+					// put the context into the existing session
+					putContext(ses, getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request)));
 				}
 				else {
 					// Neither the session nor the request contains username.
@@ -245,10 +212,11 @@ public class WebHelper {
 			}
 		}
 		else { // session doesn't exist
+			String username = getRemoteUserName(request);
 			if(username != null) {
-				// we can create a new session and put the username into it
+				// we can create a new session and put context in it
 				ses = request.getSession();
-				ses.setAttribute(WebKeys.USER_NAME, username);
+				putContext(ses, getProfileDao().findUserByName(username, getZoneIdByVirtualHost(request)));
 			}
 			else {
 				// since we don't have username we must not create a new session here
@@ -257,6 +225,22 @@ public class WebHelper {
 		}
 		
 		return ses;
+	}
+	
+	public static void putContext(HttpSession ses, User user) {
+		// Do NOT store user object itself
+		ses.setAttribute(WebKeys.ZONE_NAME, user.getParentBinder().getRoot().getName());
+		ses.setAttribute(WebKeys.ZONE_ID, user.getZoneId());
+		ses.setAttribute(WebKeys.USER_NAME, user.getName());
+		ses.setAttribute(WebKeys.USER_ID, user.getId());
+	}
+	
+	private static void putContext(PortletSession ses, User user) {
+		// Do NOT store user object itself, only its attributes!
+		ses.setAttribute(WebKeys.ZONE_NAME, user.getParentBinder().getRoot().getName(), PortletSession.APPLICATION_SCOPE);
+		ses.setAttribute(WebKeys.ZONE_ID, user.getZoneId(), PortletSession.APPLICATION_SCOPE);
+		ses.setAttribute(WebKeys.USER_NAME, user.getName(), PortletSession.APPLICATION_SCOPE);
+		ses.setAttribute(WebKeys.USER_ID, user.getId(), PortletSession.APPLICATION_SCOPE);
 	}
 	
 	/**
@@ -914,6 +898,9 @@ public class WebHelper {
 
 	private static ZoneModule getZoneModule() {
 		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
+	}
+	private static ProfileDao getProfileDao() {
+		return (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}
 
 }

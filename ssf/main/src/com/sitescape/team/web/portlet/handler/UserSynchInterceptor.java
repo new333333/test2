@@ -44,9 +44,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.InternalException;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.ProfileDao;
-import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
@@ -55,7 +53,7 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 
-public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBean {
+public class UserSynchInterceptor implements HandlerInterceptor,InitializingBean {
 
 	private ProfileDao profileDao;
 	private ProfileModule profileModule;
@@ -87,15 +85,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 		if(requestContext == null)
 			return true; // unauthenticated request
 		
-		// Load user only if it hasn't already been done for the current
-		// requesting thread. Since this handler is called once per SSF portlet, 
-		// it's possible that we end up loading the same user object multiple 
-		// times when the single user interaction involves invocation of 
-		// multiple SSF portlets (e.g. re-drawing of a portal page). 
-		// This checking will prevent the inefficiency from happening. 
-		if(requestContext.getUser() == null) {
-			loadUser(request, requestContext);
-		}
+		synchUser(request, requestContext);
 		
 		return true;
 	}
@@ -110,22 +100,7 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 			throws Exception {
 	}
 
-	private void loadUser(PortletRequest request, RequestContext reqCxt) {
-    	User user;
-		PortletSession ses = WebHelper.getRequiredPortletSession(request);
-    	Long userId = (Long)ses.getAttribute(WebKeys.USER_ID, PortletSession.APPLICATION_SCOPE);
-		if (userId == null) { 
-			user = RequestContextUtil.resolveToUser();
-			
-			ses.setAttribute(WebKeys.USER_ID, user.getId(), PortletSession.APPLICATION_SCOPE);
-		} 
-		else {
-			reqCxt.setUserId(userId);
-			user = RequestContextUtil.resolveToUser();
-		}
-		
-		Boolean sync = (Boolean)ses.getAttribute(WebKeys.PORTLET_USER_SYNC, PortletSession.APPLICATION_SCOPE);
-		
+	private void synchUser(PortletRequest request, RequestContext reqCxt) {
 		// If all of the following conditions hold, we update the user in Aspen
 		// with the information from the portal.
 		// 1. System is configured to permit such update
@@ -137,16 +112,23 @@ public class UserPreloadInterceptor implements HandlerInterceptor,InitializingBe
 		
 		boolean isRunByAdapter = PortletAdapterUtil.isRunByAdapter(request);
 
-		if (!isRunByAdapter && !Boolean.TRUE.equals(sync)) { 
-			Map updates = getStandardUserInfoFromPortal(request, user);
+		if (!isRunByAdapter) {
+			PortletSession ses = WebHelper.getRequiredPortletSession(request);
 			
-			updates = filterUpdates(updates);
+	 		Boolean sync = (Boolean)ses.getAttribute(WebKeys.PORTLET_USER_SYNC, PortletSession.APPLICATION_SCOPE);
 			
-			if(!updates.isEmpty()) {
-				getProfileModule().modifyUserFromPortal(user, updates);				
-			}
-			
-			ses.setAttribute(WebKeys.PORTLET_USER_SYNC, Boolean.TRUE, PortletSession.APPLICATION_SCOPE);
+	 		if(!Boolean.TRUE.equals(sync)) { 
+				User user = RequestContextHolder.getRequestContext().getUser();
+				Map updates = getStandardUserInfoFromPortal(request, user);
+				
+				updates = filterUpdates(updates);
+				
+				if(!updates.isEmpty()) {
+					getProfileModule().modifyUserFromPortal(user, updates);				
+				}
+				
+				ses.setAttribute(WebKeys.PORTLET_USER_SYNC, Boolean.TRUE, PortletSession.APPLICATION_SCOPE);
+	 		}
 		}
 	}
 	

@@ -65,7 +65,6 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
-import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
@@ -179,6 +178,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		RequestContextHolder.clear();
  		
  	}
+ 	
+	public Long getZoneIdByZoneName(String zoneName) {
+		Workspace top = getCoreDao().findTopWorkspace(zoneName);
+		return top.getId();
+	}
+	
  	protected void upgradeZoneTx(Workspace zone) {
 		String superName = SZoneConfig.getAdminUserName(zone.getName());
 		//	get super user from config file - must exist or throws and error
@@ -534,19 +539,13 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		final String adminName = SZoneConfig.getAdminUserName(name);
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(name, adminName);
-    	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
-    	try {
-    		luceneSession.clearIndex();
-    	} finally {
-    		luceneSession.close();
-    	}
 		try {
   	        getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	    			IndexSynchronizationManager.begin();
 
 	        		Workspace zone = addZoneTx(name, adminName, virtualHost);
-	        		
+	        			        		
 	        		//do now, with request context set - won't have one if here on zone startup
 	        		IndexSynchronizationManager.applyChanges();
 					for (ZoneSchedule zoneM:startupModules) {

@@ -71,8 +71,8 @@ public class DigestBasedSoftAuthenticationFilter implements Filter {
 		
 		try {
 			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, binderId, privateDigest, LoginInfo.AUTHENTICATOR_RSS);
-			//don't set user, session is not currently active
-			RequestContextUtil.setThreadContext(user.getZoneId(), user.getId());
+
+			RequestContextUtil.setThreadContext(user);
 		}
 		catch(UserDoesNotExistException e) {
 			logger.info(e.getLocalizedMessage());

@@ -29,7 +29,6 @@
 package com.sitescape.team.portal.servlet;
 
 import java.io.IOException;
-import java.util.Map;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.RequestDispatcher;
@@ -44,14 +43,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.asmodule.bridge.BridgeUtil;
+import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.portal.CrossContextConstants;
-import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
-import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
-import com.sitescape.team.security.authentication.UserDoesNotExistException;
-import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.WebHelper;
 
 public class DispatchServer extends GenericServlet {
 
@@ -59,6 +58,8 @@ public class DispatchServer extends GenericServlet {
 	
 	private static final String PORTAL_CC_DISPATCHER = "portalCCDispatcher";
 	private static final String SSF_CONTEXT_PATH_DEFAULT = "/ssf";
+	
+	private ProfileDao profileDao;
 	
 	public void init(ServletConfig config) throws ServletException {
 		RequestDispatcher rd = config.getServletContext().getNamedDispatcher(PORTAL_CC_DISPATCHER);
@@ -73,6 +74,7 @@ public class DispatchServer extends GenericServlet {
 		catch(Exception e) {
 			new ServletException(e);
 		}
+		profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}
 	
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
@@ -95,8 +97,9 @@ public class DispatchServer extends GenericServlet {
 			if(userName == null)
 				userName = SZoneConfig.getGuestUserName(zoneName);
 			
-			ses.setAttribute(WebKeys.ZONE_NAME, zoneName);
-			ses.setAttribute(WebKeys.USER_NAME, userName);
+			User user = profileDao.findUserByName(userName, zoneName);
+			
+			WebHelper.putContext(ses, user);
 
 			if(ses.getAttribute(WebKeys.SERVER_NAME) == null) {		
 				ses.setAttribute(WebKeys.SERVER_NAME, req.getServerName().toLowerCase());
@@ -109,4 +112,5 @@ public class DispatchServer extends GenericServlet {
 			logger.error("Unrecognized operation [" + operation + "]");
 		}
 	}
+	
 }

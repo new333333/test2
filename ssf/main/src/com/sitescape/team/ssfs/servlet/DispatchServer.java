@@ -116,7 +116,7 @@ public class DispatchServer extends GenericServlet {
 			// Retrieve zone info corresponding to the specified server name.
 			Long zoneId = getZoneModule().getZoneIdByVirtualHost(serverName);
 			
-			// Setup request context.
+			// Setup request context. Do not resolve it yet.
 			RequestContextUtil.setThreadContext(zoneId, userName);
 			
 			try {

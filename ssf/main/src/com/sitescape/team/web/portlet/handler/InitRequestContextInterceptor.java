@@ -37,11 +37,18 @@ import org.springframework.web.portlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.PortletSessionContext;
+import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.web.util.WebHelper;
 
 public class InitRequestContextInterceptor implements HandlerInterceptor {
+	
+	private boolean resolve = false;
+	
+	public void setResolve(boolean resolve) {
+		this.resolve = resolve;
+	}
 	
 	public boolean preHandle(PortletRequest request, PortletResponse response, 
 			Object handler) throws Exception {
@@ -60,10 +67,11 @@ public class InitRequestContextInterceptor implements HandlerInterceptor {
 			throw new UnauthenticatedAccessException();
 		*/
 		
-		String userName = WebHelper.getRequiredUserName(request);
-		String zoneName = WebHelper.getRequiredZoneName(request);
-
-		RequestContextUtil.setThreadContext(zoneName, userName, new PortletSessionContext(request.getPortletSession(false)));
+		RequestContext rc = RequestContextUtil.setThreadContext(request, 
+				new PortletSessionContext(request.getPortletSession(false)));
+		
+		if(resolve)
+			rc.resolve();
     	
 	    return true;
 	}
