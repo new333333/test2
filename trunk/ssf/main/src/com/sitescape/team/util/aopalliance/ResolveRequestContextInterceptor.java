@@ -30,26 +30,18 @@ package com.sitescape.team.util.aopalliance;
 
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.team.context.request.RequestContextUtil;
-import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.context.request.RequestContextHolder;
 
-public class UserPreloadInterceptor implements MethodInterceptor {
-	
-	private ProfileDao profileDao;
-	
-	protected ProfileDao getProfileDao() {
-		return profileDao;
-	}
+public class ResolveRequestContextInterceptor implements MethodInterceptor {
 
-	public void setProfileDao(ProfileDao profileDao) {
-		this.profileDao = profileDao;
-	}
+	protected Log logger = LogFactory.getLog(getClass());
 
 	public Object invoke(MethodInvocation invocation) throws Throwable {
-		RequestContextUtil.resolveToUser();
+		RequestContextHolder.getRequestContext().resolve();
 		
 		return invocation.proceed();
 	}
-
 }

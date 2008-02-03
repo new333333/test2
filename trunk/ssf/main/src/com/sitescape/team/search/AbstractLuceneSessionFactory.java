@@ -28,7 +28,7 @@
  */
 package com.sitescape.team.search;
 
-import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.util.Utils;
 
 /**
  *
@@ -37,7 +37,16 @@ import com.sitescape.team.context.request.RequestContextHolder;
 public abstract class AbstractLuceneSessionFactory implements LuceneSessionFactory {
 
     public LuceneSession openSession() throws LuceneException {
-        String indexName = RequestContextHolder.getRequestContext().getZoneName();
-        return openSession(indexName);
-    }
+    	// We use zone key as the index name
+        return openSession(Utils.getZoneKey());
+    }    
+    
+    /**
+     * Open a <code>LuceneSession</code>.
+     * 
+     * @param indexName
+     * @return
+     * @throws LuceneException
+     */
+    protected abstract LuceneSession openSession(String indexName) throws LuceneException;
 }

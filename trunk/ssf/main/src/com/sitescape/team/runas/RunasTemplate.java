@@ -71,11 +71,9 @@ public class RunasTemplate {
 	protected static Object doRunas(RunasCallback action, RequestContext runasRC) {
 		RequestContext origContext = RequestContextHolder.getRequestContext(); 
 		
-       	RequestContextHolder.setRequestContext(runasRC);
+       	RequestContextHolder.setRequestContext(runasRC.resolve());
        	
        	try {
-       		RequestContextUtil.resolveToUser();
-       		
        		return action.doAs();
        	}
        	finally {

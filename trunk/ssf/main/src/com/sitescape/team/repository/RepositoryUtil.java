@@ -46,6 +46,7 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.repository.impl.SessionWrappedInputStream;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.Utils;
 
 /**
  * Convenience methods for repository service. 
@@ -292,9 +293,7 @@ public class RepositoryUtil {
 	 * @return
 	 */
 	public static String getBinderPath(Binder binder, String separator) {
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		
-		return new StringBuffer(zoneName).
+		return new StringBuffer(Utils.getZoneKey()).
 			append(separator).
 			append(binder.getId()).
 			append(separator).toString();
@@ -310,9 +309,7 @@ public class RepositoryUtil {
 	 * @return
 	 */
 	public static String getEntityPath(Binder binder, DefinableEntity entry, String separator) {
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		
-		return new StringBuffer(zoneName).
+		return new StringBuffer(Utils.getZoneKey()).
 			append(separator).
 			append(binder.getId()).
 			append(separator).

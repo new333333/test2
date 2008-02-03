@@ -30,6 +30,7 @@ package com.sitescape.team.util;
 
 import java.io.File;
 
+import com.sitescape.team.InternalException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
@@ -150,8 +151,6 @@ public class FilePathUtil {
 	}
 	
 	private static StringBuilder getBinderDirPathInternal(Binder binder) {
-		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		
 		Long binderId = binder.getId();
 		if(binderId == null)
 			throw new IllegalStateException("Binder must have an id");
@@ -159,7 +158,7 @@ public class FilePathUtil {
 		// For better scalability, each binder is represented as two-level 
 		// directories on the file system, where the binders are grouped
 		// into chunks of size 1000.
-		return new StringBuilder(zoneName).
+		return new StringBuilder(Utils.getZoneKey()).
 			append(File.separator).
 			append(binderId.longValue()/1000).		
 			append(File.separator).

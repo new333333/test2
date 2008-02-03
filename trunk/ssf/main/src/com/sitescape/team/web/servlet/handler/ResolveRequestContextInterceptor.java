@@ -30,62 +30,17 @@ package com.sitescape.team.web.servlet.handler;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
-import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.context.request.RequestContextUtil;
-import com.sitescape.team.dao.ProfileDao;
-import com.sitescape.team.domain.User;
-import com.sitescape.team.module.profile.ProfileModule;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebHelper;
 
-public class UserPreloadInterceptor extends HandlerInterceptorAdapter {
-	private ProfileDao profileDao;
-	private ProfileModule profileModule;
-	
-	protected ProfileDao getProfileDao() {
-		return profileDao;
-	}
+public class ResolveRequestContextInterceptor extends HandlerInterceptorAdapter {
 
-	public void setProfileDao(ProfileDao profileDao) {
-		this.profileDao = profileDao;
-	}
-	
-	protected ProfileModule getProfileModule() {
-		return profileModule;
-	}
-	public void setProfileModule(ProfileModule profileModule) {
-		this.profileModule = profileModule;
-	}
-
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-		RequestContext requestContext = RequestContextHolder.getRequestContext();
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, 
+			Object handler) throws Exception {
+		RequestContextHolder.getRequestContext().resolve();
 		
-		if(requestContext.getUser() == null) {
-			loadUser(request, requestContext);
-		}
-
 		return true;
 	}
-	    
-	private void loadUser(HttpServletRequest request, RequestContext reqCxt) {
-		User user;
-		HttpSession ses = WebHelper.getRequiredSession(request);
-		
-	   	Long userId = (Long)ses.getAttribute(WebKeys.USER_ID);
-		if (userId == null) { 
-			user = RequestContextUtil.resolveToUser();
-			
-			ses.setAttribute(WebKeys.USER_ID, user.getId());
-		} else {
-			reqCxt.setUserId(userId);
-			
-			user = RequestContextUtil.resolveToUser();
-		}
-	}
-
 }

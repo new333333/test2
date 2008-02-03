@@ -109,8 +109,7 @@ public class PWCallback implements CallbackHandler {
         			// meaning the false user object will not be utilized errorneously.
         			// This is our only chance to get at that piece of info (ie, user 
         			// identify) when invoked by WS runtime (as opposed to web framework).
-        			// One caveat - don't set user, session is not currently active
-        			RequestContextUtil.setThreadContext(zoneId, user.getId());
+        			RequestContextUtil.setThreadContext(user);
         		}
             	catch(NoUserByTheNameException e) {
             		// With wsse:PasswordDigest, all we need to do here is not to

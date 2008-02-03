@@ -31,6 +31,9 @@ package com.sitescape.team.util;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.sitescape.team.InternalException;
+import com.sitescape.team.context.request.RequestContextHolder;
+
 public class Utils {
 
 	public static String toStringML(Map map) {
@@ -59,5 +62,24 @@ public class Utils {
 
 		buf.append("}");
 		return buf.toString();
+	}
+	
+	public static String getZoneKey() {
+		// If default zone
+		//		zoneKey = zoneName
+		// else
+		//		zoneKey = zoneName + "_" + zoneId
+		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
+		String zoneKey;
+		if(!zoneName.equals(SZoneConfig.getDefaultZoneName())) {
+			Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			if(zoneId == null)
+				throw new InternalException("Zone id is missing from the request context");
+			zoneKey = zoneName + "_" + zoneId;
+		}
+		else {
+			zoneKey = zoneName;
+		}
+		return zoneKey;
 	}
 }

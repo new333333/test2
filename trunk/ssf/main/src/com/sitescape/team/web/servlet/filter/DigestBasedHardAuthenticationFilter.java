@@ -70,8 +70,8 @@ public class DigestBasedHardAuthenticationFilter implements Filter {
 		
 		try {
 			User user = AuthenticationManagerUtil.authenticate(zoneName, userId, binderId, privateDigest, LoginInfo.AUTHENTICATOR_ICAL);
-			//don't set user, session is not currently active
-			RequestContextUtil.setThreadContext(user.getZoneId(), user.getId());
+
+			RequestContextUtil.setThreadContext(user);
 			
 			chain.doFilter(request, response); // Proceed
 			
