@@ -40,7 +40,7 @@
 		<property name="interceptors">
 			<list>
 				<!-- Do not add InitRequestContextInterceptor, OpenSessionInViewInterceptor 
-					 or UserPreloadInterceptor here since the same functionality is provided 
+					 or UserSynchInterceptor here since the same functionality is provided 
 					 by the Spring's PortletMVC framework and we designed adapter framework 
 					 to work with it transparently (rather than reinventing the wheel). -->
 			</list>
