@@ -13,12 +13,10 @@
 				     for initializing request context here. Of course, the same
 				     functionality could have been implemented as easily with
 				     an interceptor. No real difference. -->
-				<!-- Enable Open-Session-In-View pattern for Hibernate ORM.
-				     This must come before userPreloadInterceptor since it
-				     might need to perform DB lookup -->
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM. -->
 				<ref bean="openSessionInViewInterceptor"/>
-				<!-- Preload user object for the duration of each request -->
-				<ref bean="userPreloadInterceptor"/>
+				<!-- This must come after open-session-in-view -->
+				<ref bean="resolveRequestContextInterceptor"/>
 			</list>
 		</property>
 		<property name="urlMap">
@@ -37,10 +35,8 @@
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
-	
-	<bean id="userPreloadInterceptor" class="com.sitescape.team.web.servlet.handler.DigestBasedUserPreloadInterceptor">
-		<property name="profileDao"><ref bean="profileDao"/></property>
-	</bean>	
+
+	<bean id="resolveRequestContextInterceptor" class="com.sitescape.team.web.servlet.handler.ResolveRequestContextInterceptor"/>
 
 	<!-- Controllers -->
 	<bean id="getController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.ical.GetController">
