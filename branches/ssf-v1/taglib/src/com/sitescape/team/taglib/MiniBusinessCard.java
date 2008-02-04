@@ -82,9 +82,10 @@ public class MiniBusinessCard extends BodyTagSupport {
 				try {
 					user1 = profileDao.loadUser(user.getId(), user.getZoneId());
 				} catch (Exception e) {
-					logger.error(e);
+					return EVAL_PAGE; //user probably deleted
 				}
-			}
+			} else return EVAL_PAGE; 
+
 
 			Document profileDef = user1.getEntryDef().getDefinition();
 			httpReq.setAttribute(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
@@ -92,7 +93,7 @@ public class MiniBusinessCard extends BodyTagSupport {
 					.getRootElement().selectSingleNode(
 							"//item[@name='profileEntryMiniBusinessCard']"));
 			httpReq.setAttribute(WebKeys.PROFILE_CONFIG_JSP_STYLE, "view");
-			httpReq.setAttribute(WebKeys.PROFILE_CONFIG_ENTRY, user);		
+			httpReq.setAttribute(WebKeys.PROFILE_CONFIG_ENTRY, user1);		
 			
 
 			// Output the presence info
