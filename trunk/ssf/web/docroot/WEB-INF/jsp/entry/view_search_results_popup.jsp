@@ -39,12 +39,15 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 
 
-<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer" style="display:block; margin:2px;">
+<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
+  style="display:block; margin:2px;">
 
 	<%@ include file="/WEB-INF/jsp/search/search_result.jsp" %>
 
 </div>
-</div>
+<script type="text/javascript">
+ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
+</script>
 
 <script type="text/javascript">
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";

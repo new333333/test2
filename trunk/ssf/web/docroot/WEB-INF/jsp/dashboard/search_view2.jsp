@@ -43,6 +43,9 @@
 <c:set var="ssPageEndIndex" value="${ss_pageNumber * ss_pageSize + ssDashboard.beans[componentId].ssSearchFormData.ssEntrySearchRecordReturned}" />
 <c:set var="ssPageStartIndex" value="${ss_pageNumber * ss_pageSize + 1}" />
 <c:set var="isDashboard" value="yes"/>
+<c:if test="${ssDashboard.scope == 'portlet'}">
+  <c:set var="isDashboard" value="no"/>
+</c:if>
 
 		<div class="ss_searchResult_dashboardHeader">
 			

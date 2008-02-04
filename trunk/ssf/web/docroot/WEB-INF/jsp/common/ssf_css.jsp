@@ -1551,6 +1551,7 @@ div.ss_dashboardProtoDropTarget {
 .ss_dashboard_menu {
   position: absolute;
   visibility: hidden;
+  display: none;
   background-color: ${ss_style_background_color_opaque}; 
   color: ${ss_style_text_color};
   border: 1px ${ss_style_border_color} solid;
@@ -1844,7 +1845,7 @@ div.ss_box_top_rounded {
 /* -------------------Skins-------------------- */
 div.ss_content_outer {
     position: relative;
-	padding-bottom:20px;
+	padding-bottom:10px;
 	margin-top:1px;
 }
 .ss_content_inner {

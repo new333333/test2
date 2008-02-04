@@ -35,13 +35,11 @@
 <p class="ss_tags_cloud">
 <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
 	<span class="${tag.searchResultsRatingCSS}">
-		<a href="<portlet:actionURL windowState="maximized" 
-				portletMode="view"><portlet:param 
-				name="action" value="advanced_search"/><portlet:param 
-				name="searchCommunityTags_hidden" value="${tag.ssTag}"/><portlet:param 
-				name="operation" value="ss_searchResults"/><portlet:param 
-				name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
-				name="newTab" value="1"/></portlet:actionURL>">${tag.ssTag}</a>
+		<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+				name="searchCommunityTags_hidden" value="${tag.ssTag}"/><ssf:param 
+				name="operation" value="ss_searchResults"/><ssf:param 
+				name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
+				name="newTab" value="1"/></ssf:url>">${tag.ssTag}</a>
 	</span>
 </c:forEach>
 </p>
@@ -50,13 +48,11 @@
 <p class="ss_tags_cloud">
 <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
 	<span class="${tag.searchResultsRatingCSS}"><a 
-			href="<portlet:actionURL windowState="maximized" 
-			portletMode="view"><portlet:param 
-			name="action" value="advanced_search"/><portlet:param 
-			name="searchPersonalTags_hidden" value="${tag.ssTag}"/><portlet:param 
-			name="operation" value="ss_searchResults"/><portlet:param 
-			name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
-			name="newTab" value="1"/></portlet:actionURL>">${tag.ssTag}</a></span>
+			href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+			name="searchPersonalTags_hidden" value="${tag.ssTag}"/><ssf:param 
+			name="operation" value="ss_searchResults"/><ssf:param 
+			name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
+			name="newTab" value="1"/></ssf:url>">${tag.ssTag}</a></span>
 </c:forEach>
 </p>
 </ssf:sidebarPanel>

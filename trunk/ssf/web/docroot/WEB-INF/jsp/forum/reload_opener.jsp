@@ -50,9 +50,10 @@ if (self.ssScope && self.ssScope.refreshView) {
 if (ssScope.refreshViewRoutine) {
 	ssScope.refreshViewRoutine("${ssEntryId}");
 }
-
 if (self.opener && self.opener.ss_reloadUrl) {
 	var url = self.opener.ss_reloadUrl;
+	if (typeof self.opener.ss_reloadUrl${ssBinderId} != "undefined") 
+		url = self.opener.ss_reloadUrl${ssBinderId};
 	ss_random++;
 	url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
 	url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)
@@ -63,6 +64,8 @@ if (self.opener && self.opener.ss_reloadUrl) {
 	self.opener.focus();
 } else if (self.parent && self.parent.ss_reloadUrl) {
 	var url = self.parent.ss_reloadUrl;
+	if (typeof self.parent.ss_reloadUrl${ssBinderId} != "undefined") 
+		url = self.parent.ss_reloadUrl${ssBinderId};
 	ss_random++;
 	url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
 	url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)

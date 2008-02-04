@@ -93,7 +93,6 @@ function ss_showForumEntryInIframe_Overlay(url) {
 //	ss_positionEntryDiv();
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
-     
 	if (wObj1 == null){
 		ss_showForumEntryInIframe_Popup(url);
 		return true;
@@ -154,9 +153,8 @@ function ss_showForumEntryInIframe_Popup(url) {
   <!-- Start of dashboard "Add penlet" form -->
   <c:if test="${empty ssBinderConfig && (!ssUser.shared || ssDashboard.sharedModificationAllowed)}">
   <div id="${renderResponse.namespace}_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
-    <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
-    	name="action" value="modify_dashboard"/><portlet:param 
-    	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
+    <form method="post" action="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
+    	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 	  <div class="ss_style" style="margin:10px;">
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentScope"/></span><br>
  		<c:if test="${!ssUser.shared}">
@@ -191,9 +189,8 @@ function ss_showForumEntryInIframe_Popup(url) {
   </c:if>
   <c:if test="${!empty ssBinderConfig}">
   <div id="${renderResponse.namespace}_dashboardAddContentPanel" class="ss_dashboard_menu" align="left">
-    <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
-    	name="action" value="modify_dashboard"/><portlet:param 
-    	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
+    <form method="post" action="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
+    	name="binderId" value="${ssBinder.id}"/></ssf:url>">
          <input type="hidden" name="_scope" value="binder"/>
  	  <div class="ss_style" style="margin:10px;">
         <span class="ss_bold"><ssf:nlt tag="dashboard.componentType"/></span><br>
@@ -229,22 +226,19 @@ function ss_showForumEntryInIframe_Popup(url) {
   <div id="${renderResponse.namespace}_dashboardConfigurationMenu" class="ss_dashboard_menu" align="left">
 	<ul class="ss_dropdownmenu" 
 	  style="list-style: outside; margin:2px 2px 2px 18px; padding:2px;">
-	  <li><a href="<portlet:renderURL windowState="maximized"><portlet:param 
-	  	    name="action" value="modify_dashboard"/><portlet:param 
-	  	    name="binderId" value="${ssBinder.id}"/><portlet:param 
-	  	    name="_scope" value="local"/><portlet:param 
-	  	    name="operation" value="set_dashboard_title"/></portlet:renderURL>"
+	  <li><a href="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
+	  	    name="binderId" value="${ssBinder.id}"/><ssf:param 
+	  	    name="_scope" value="local"/><ssf:param 
+	  	    name="operation" value="set_dashboard_title"/></ssf:url>"
 	      ><ssf:nlt tag="dashboard.setTitle"/></a></li>
-	  <li><a href="<portlet:actionURL windowState="maximized"><portlet:param 
-	  	name="action" value="modify_dashboard"/><portlet:param 
-	  	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	  	name="_scope" value="global"/></portlet:actionURL>"><ssf:nlt 
+	  <li><a href="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
+	  	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	  	name="_scope" value="global"/></ssf:url>"><ssf:nlt 
 	  	tag="dashboard.configure.global"/></a></li>
 	  <c:if test="${ssDashboard.sharedModificationAllowed}">
-	    <li><a href="<portlet:actionURL windowState="maximized"><portlet:param 
-	    	name="action" value="modify_dashboard"/><portlet:param 
-	    	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	    	name="_scope" value="binder"/></portlet:actionURL>"><ssf:nlt 
+	    <li><a href="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
+	    	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	    	name="_scope" value="binder"/></ssf:url>"><ssf:nlt 
 	    	tag="dashboard.configure.binder"/></a></li>
 	  </c:if>
 	</ul>

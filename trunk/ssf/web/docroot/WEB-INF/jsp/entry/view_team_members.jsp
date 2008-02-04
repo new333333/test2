@@ -38,7 +38,7 @@
 	if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
-<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
@@ -108,6 +108,9 @@
 	</tbody>
 	</table>
 </div>
+<script type="text/javascript">
+ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
+</script>
 
 <form class="ss_style ss_form" name="ss_saveEntryWidthForm" id="ss_saveEntryWidthForm" >
 	<input type="hidden" name="entry_width">
