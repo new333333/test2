@@ -457,7 +457,7 @@ public class LocalLuceneSession implements LuceneSession {
 					} else {
 						userDocIds.set(0, userDocIds.size());
 					}
-					LuceneHelper.closeSearcher();
+					LuceneHelper.closeSearcher(indexPath);
 					String[] fields = null;
 					if (type != null
 							&& type
@@ -528,7 +528,7 @@ public class LocalLuceneSession implements LuceneSession {
 				return resultTags;
 			}
 		} finally {
-			LuceneHelper.closeSearcher();
+			LuceneHelper.closeSearcher(indexPath);
 		}
 	}
 	
@@ -619,8 +619,8 @@ public class LocalLuceneSession implements LuceneSession {
 			IndexWriter indexWriter = null;
 
 			//LuceneHelper.closeAll();
-			LuceneHelper.closeWriter();
-			LuceneHelper.closeReader();
+			LuceneHelper.closeWriter(indexPath);
+			LuceneHelper.closeReader(indexPath);
 			try {
 				// need this writer to check for segment count and optimization of the index.
 				// This allows searchers to remain open during optimize
@@ -677,7 +677,7 @@ public class LocalLuceneSession implements LuceneSession {
 						Field.Store.NO, Field.Index.TOKENIZED),
 						new SsfIndexAnalyzer(), docsel);
 			synchronized (getSearchLockObject()) {
-				LuceneHelper.closeSearcher();
+				LuceneHelper.closeSearcher(indexPath);
 				updater.close();
 			}
 			updater = null;
@@ -744,7 +744,7 @@ public class LocalLuceneSession implements LuceneSession {
 							userDocIds.set(doc);
 						}
 					});
-					LuceneHelper.closeSearcher();
+					LuceneHelper.closeSearcher(indexPath);
 					String field = EntityIndexUtils.NORM_TITLE;
 						TermEnum enumerator = indexReader.terms(new Term(
 								field, start));
@@ -814,7 +814,7 @@ public class LocalLuceneSession implements LuceneSession {
 				return resultTitles;
 			}
 		} finally {
-			LuceneHelper.closeSearcher();
+			LuceneHelper.closeSearcher(indexPath);
 		}
 	}
 	
@@ -827,7 +827,7 @@ public class LocalLuceneSession implements LuceneSession {
 	public void clearIndex() {
 		long startTime = System.currentTimeMillis();
 
-		LuceneHelper.closeAll();
+		LuceneHelper.closeAll(indexPath);
 		
 		try {
 			LuceneHelper.getWriter(indexPath, true, false);
@@ -911,7 +911,7 @@ public class LocalLuceneSession implements LuceneSession {
 		}
 		
 		synchronized (getRWLockObject()) {
-			LuceneHelper.closeAll();
+			LuceneHelper.closeAll(indexPath);
 			// create a name for the copy directory
 			SimpleDateFormat formatter =
 			new SimpleDateFormat (".yyyy.MM.dd.HH.mm.ss");

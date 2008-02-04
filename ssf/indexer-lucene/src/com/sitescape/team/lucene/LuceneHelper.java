@@ -30,6 +30,7 @@ package com.sitescape.team.lucene;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,28 +64,66 @@ public class LuceneHelper {
 
 	private static int prevState = SEARCH;
 
-	private static IndexWriter indexWriter = null;
-	private static IndexReader indexReader = null;
-	private static IndexSearcher indexSearcher = null;
+	private static HashMap<String, Object> readers = new HashMap<String, Object>();
+	private static HashMap<String, Object> writers = new HashMap<String, Object>();
+	private static HashMap<String, Object> searchers = new HashMap<String, Object>();
+	
+	
+	private static IndexReader getZonedReader(String indexPath) {
+		synchronized(readers) {
+			IndexReader reader = (IndexReader)readers.get(indexPath);
+			return reader;
+		}
+	}
 
+	private static void putZonedReader(IndexReader reader, String indexPath) {
+		synchronized(readers) {
+			readers.put(indexPath, reader);
+		}
+	}
+	
+	private static IndexSearcher getZonedSearcher(String indexPath) {
+		synchronized(searchers) {
+			IndexSearcher searcher = (IndexSearcher)searchers.get(indexPath);
+			return searcher;
+		}
+	}
+	private static void putZonedSearcher(IndexSearcher searcher, String indexPath) {
+		synchronized(searchers) {
+			searchers.put(indexPath, searcher);
+		}
+	}
+	
+	private static IndexWriter getZonedWriter(String indexPath) {
+		synchronized(writers) {
+			IndexWriter writer = (IndexWriter)writers.get(indexPath);
+			return writer;
+		}
+	}
+
+	private static void putZonedWriter(IndexWriter writer, String indexPath) {
+		synchronized(writers) {
+			writers.put(indexPath, writer);
+		}
+	}
 	
 	public static IndexReader getReader(String indexPath) throws IOException {
 		synchronized (LuceneHelper.class) {
 			switch (prevState) {
 			case (READ):
-				if (indexReader != null)
-					return indexReader;
+				if (getZonedReader(indexPath) != null)
+					return (IndexReader)getZonedReader(indexPath);
 			case (SEARCH):
-				indexReader = getNewReader(indexPath);
+				putZonedReader(getNewReader(indexPath), indexPath);
 				break;
 			case (WRITE):
-				closeWriter();
-				closeReader();
-				indexReader = getNewReader(indexPath);
+				closeWriter(indexPath);
+				closeReader(indexPath);
+				putZonedReader(getNewReader(indexPath), indexPath);
 			}
 			prevState = READ;
 		}
-		return indexReader;
+		return (IndexReader)getZonedReader(indexPath);
 	}
 
 	public static IndexSearcher getSearcher(String indexPath)
@@ -92,24 +131,24 @@ public class LuceneHelper {
 		synchronized (LuceneHelper.class) {
 			switch (prevState) {
 			case (SEARCH):
-				if (indexSearcher != null)
-					return indexSearcher;
-				indexSearcher = getNewSearcher(indexPath);
+				if (getZonedSearcher(indexPath) != null)
+					return getZonedSearcher(indexPath);
+				putZonedSearcher(getNewSearcher(indexPath), indexPath);
 				break;
 			case (READ):
-				closeReader();
+				closeReader(indexPath);
 				prevState = SEARCH;
-				indexSearcher = getNewSearcher(indexPath);
+				putZonedSearcher(getNewSearcher(indexPath), indexPath);
 				break;
 			case (WRITE):
-				if (indexWriter != null) indexWriter.flush();
-				if (indexSearcher != null) {
-					indexSearcher.close();
+				if (getZonedWriter(indexPath) != null) getZonedWriter(indexPath).flush();
+				if (getZonedSearcher(indexPath) != null) {
+					getZonedSearcher(indexPath).close();
 				}
-				indexSearcher = getNewSearcher(indexPath);
+				putZonedSearcher(getNewSearcher(indexPath), indexPath);
 			}
 		}
-		return indexSearcher;
+		return getZonedSearcher(indexPath);
 	}
 
 	public static IndexWriter getWriter(String indexPath, boolean create,
@@ -117,17 +156,17 @@ public class LuceneHelper {
 		synchronized (LuceneHelper.class) {
 			switch (prevState) {
 			case (WRITE):
-				if (indexWriter != null && !create)
+				if (getZonedWriter(indexPath) != null && !create)
 					break;
 			case (SEARCH):
-				if (indexWriter != null) {
-					indexWriter.close();
+				if (getZonedWriter(indexPath) != null) {
+					getZonedWriter(indexPath).close();
 				}
-				indexWriter = getNewWriter(indexPath, create);
+				putZonedWriter(getNewWriter(indexPath, create), indexPath);
 				break;
 			case (READ):
-				closeReader();
-				indexWriter = getNewWriter(indexPath, create);
+				closeReader(indexPath);
+			putZonedWriter(getNewWriter(indexPath, create), indexPath);
 			}
 			if (forOptimize) {
 				prevState = SEARCH;
@@ -135,11 +174,12 @@ public class LuceneHelper {
 				prevState = WRITE;
 			}
 		}
-		return indexWriter;
+		return getZonedWriter(indexPath);
 	}
 
 	private static IndexReader getNewReader(String indexPath)
 			throws IOException {
+		IndexReader indexReader = null;
 		try {
 			indexReader = IndexReader.open(indexPath);
 		} catch (IOException ioe) {
@@ -190,6 +230,7 @@ public class LuceneHelper {
 
 	private static IndexWriter getNewWriter(String indexPath, boolean create)
 			throws IOException {
+		IndexWriter indexWriter = null;
 		try {
 			indexWriter = new IndexWriter(indexPath, new SsfIndexAnalyzer(),
 					create);
@@ -210,6 +251,7 @@ public class LuceneHelper {
 	}
 
 	public static IndexSearcher getSearcher(IndexReader reader) {
+		IndexSearcher indexSearcher = null;
 		synchronized (LuceneHelper.class) {
 			indexSearcher = new IndexSearcher(reader);
 			// prevState = READSEARCH;
@@ -233,7 +275,7 @@ public class LuceneHelper {
 				return false;
 			} else {
 				// No index exists at the specified directory. Create a new one.
-				getWriter(indexPath, true, false);
+				IndexWriter indexWriter = getWriter(indexPath, true, false);
 				indexWriter.close();
 				indexWriter = null;
 				return true;
@@ -248,44 +290,44 @@ public class LuceneHelper {
 			return false;
 	}
 
-	public static void closeAll() {
+	public static void closeAll(String indexPath) {
 		synchronized (LuceneHelper.class) {
-			closeWriter();
-			closeReader();
-			closeSearcher();
+			closeWriter(indexPath);
+			closeReader(indexPath);
+			closeSearcher(indexPath);
 			prevState = WRITE;
 		}
 	}
 
 	// needed for searchers that are opened on existing readers.
-	public static void closeSearcher() {
+	public static void closeSearcher(String indexPath) {
 		try {
-			indexSearcher.close();
+			getZonedSearcher(indexPath).close();
 		} catch (Exception se) {
 		}
-		indexSearcher = null;
+		putZonedSearcher(null,indexPath);
 	}
 
-	public static void closeReader() {
+	public static void closeReader(String indexPath) {
 		try {
-			indexReader.close();
+			getZonedReader(indexPath).close();
 		} catch (Exception se) {
 		}
-		indexReader = null;
+		putZonedReader(null,indexPath);
 	}
 
-	public static void closeWriter() {
+	public static void closeWriter(String indexPath) {
 		try {
-			indexWriter.close();
+			getZonedWriter(indexPath).close();
 		} catch (Exception se) {
 		}
-		indexWriter = null;
+		putZonedWriter(null,indexPath);
 	}
 
 	// unlock the index
 	public static void unlock(String indexPath) {
 		try {
-			closeAll();
+			closeAll(indexPath);
 		} catch (Exception e) {
 		}
 		try {
