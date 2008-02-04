@@ -1382,31 +1382,6 @@ public class BuildDefinitionDivs extends TagSupport {
 	}
 	
 	private void buildHelpDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		//Build the properties div first so helpDivCount lines up with buildPropertiesDivs calls
-		if (Validator.isNull(this.option) && !this.divNames.containsKey("helpPropertiesDivs_"+rootElementId)) {
-			this.divNames.put("helpPropertiesDivs_"+rootElementId, "1");
-			//Get the list of properties
-			Element propertiesConfig = rootConfigElement.element("properties");
-			if (propertiesConfig != null) {
-				Iterator itProperties = propertiesConfig.elementIterator("property");
-				while (itProperties.hasNext()) {
-					//Get the next property from the base config file
-					Element propertyConfig = (Element) itProperties.next();
-					//Get the name and id (if any) from the config file
-					//See if this property has any help
-					Element help = (Element) propertyConfig.selectSingleNode("./help");
-					if (help != null) {
-						helpDivCount++;
-						hb.append("<div id=\"help_div_" + rootElementId);
-						hb.append(Integer.toString(helpDivCount));
-						hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
-						hb.append("<span>");
-						hb.append(NLT.get(help.getText()));
-						hb.append("</span>\n</div>\n");
-					}
-				}
-			}
-		}
 		if (this.option.equals("") && !this.divNames.containsKey("helpOptionsDivs_"+rootElementId)) {
 			this.divNames.put("helpOptionsDivs_"+rootElementId, "1");
 
@@ -1492,7 +1467,31 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 		}
 
-
+		//Build the properties div
+		if (Validator.isNull(this.option) && !this.divNames.containsKey("helpPropertiesDivs_"+rootElementId)) {
+			this.divNames.put("helpPropertiesDivs_"+rootElementId, "1");
+			//Get the list of properties
+			Element propertiesConfig = rootConfigElement.element("properties");
+			if (propertiesConfig != null) {
+				Iterator itProperties = propertiesConfig.elementIterator("property");
+				while (itProperties.hasNext()) {
+					//Get the next property from the base config file
+					Element propertyConfig = (Element) itProperties.next();
+					//Get the name and id (if any) from the config file
+					//See if this property has any help
+					Element help = (Element) propertyConfig.selectSingleNode("./help");
+					if (help != null) {
+						helpDivCount++;
+						hb.append("<div id=\"help_div_" + rootElementId);
+						hb.append(Integer.toString(helpDivCount));
+						hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
+						hb.append("<span>");
+						hb.append(NLT.get(help.getText()));
+						hb.append("</span>\n</div>\n");
+					}
+				}
+			}
+		}
 	}
 
 	public int doEndTag() throws JspException {
