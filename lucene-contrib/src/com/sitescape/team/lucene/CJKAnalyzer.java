@@ -17,10 +17,6 @@ package com.sitescape.team.lucene;
  * limitations under the License.
  */
 
-/*
- * NOTICE: This file has been changed: the package has been changed.
- */
-
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
