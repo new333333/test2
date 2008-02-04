@@ -88,7 +88,7 @@ implements DisposableBean, LocalLuceneSessionFactoryMBean {
 		Iterator iter = indexNameMap.keySet().iterator();
 		while (iter.hasNext()) {
 			indexDirPath = indexNameMap.get(iter.next());
-			LuceneHelper.closeAll();
+			LuceneHelper.closeAll(indexDirPath);
 			LuceneHelper.unlock(indexDirPath);
 		}
 		
