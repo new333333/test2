@@ -185,162 +185,166 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	}
 	
  	protected void upgradeZoneTx(Workspace zone) {
-		String superName = SZoneConfig.getAdminUserName(zone.getName());
-		//	get super user from config file - must exist or throws and error
-		User superU = getProfileDao().findUserByName(superName, zone.getName());
-		RequestContextUtil.setThreadContext(superU);
- 		//TODO: setZoneId as non=null, only do on based on version
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.AuditTrail set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.Tag set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.WorkflowState set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.Event set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.Visits set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.Subscription set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.LibraryEntry set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.Dashboard set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.Attachment set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.SeenMap set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.WorkflowResponse set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.UserProperties set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.CustomAttribute set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.PostingDef set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.Rating set zoneId=" + zone.getId() + 
-			" where zoneId is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.TemplateBinder set name=templateTitle where parentBinder is null and (name is null or name='')");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set subscribed=false where subscribed is null");
-		getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set subscribed=true where id in (select id.entityId from com.sitescape.team.domain.Subscription where id.entityType=6)");
-		//fixup user emails
- 		SFQuery query=null;
- 		List batch = new ArrayList();
- 		// Load processor class
- 		try {
- 			Class processorClass = ReflectHelper.classForName(Principal.class.getName());
- 			Field fld = processorClass.getDeclaredField("emailAddress");
- 			fld.setAccessible(true);
- 			query = getProfileDao().queryAllPrincipals(new FilterControls(), zone.getId());
-      		while (query.hasNext()) {
-       			int count=0;
-       			batch.clear();
-       			// process 1000 entries
-       			while (query.hasNext() && (count < 1000)) {
-       				Object obj = query.next();
-       				if (obj instanceof Object[])
-       					obj = ((Object [])obj)[0];
-       				Principal principal = (Principal)obj;
-       		        String email = (String)fld.get(principal);
-       		        if (Validator.isNotNull(email)) {
-       					principal.setEmailAddress(Principal.PRIMARY_EMAIL, email);
-          		        fld.set(principal, null);
-       		        }
-       				++count;
-       				batch.add(principal);
-       			}
-       			//flush updates
-       			getCoreDao().flush();
-       			//flush cache
-       			for (int i=0; i<batch.size(); ++i) {
-       				getCoreDao().evict(batch.get(i));
-       			}
-      		}
-   			//flush updates
-   			getCoreDao().flush();
-   			//flush cache
-   			for (int i=0; i<batch.size(); ++i) {
-   				getCoreDao().evict(batch.get(i));
-   			}
-
-		} catch (ClassNotFoundException cn) {
- 			//this cannot happen, can it?
-			logger.error(cn);
-		} catch (NoSuchFieldException nf) {
- 			//this cannot happen, can it?
-			logger.error(nf);
-		} catch (IllegalAccessException ia) {
- 			//this cannot happen, can it?
-			logger.error(ia);
- 		} finally {
- 			if (query != null) query.close();
- 			query=null;
- 		}
-		
-
-		//fixup styles
- 		try {
-			Class processorClass = ReflectHelper.classForName(Subscription.class.getName());
-			Field fld = processorClass.getDeclaredField("style");
-			fld.setAccessible(true);
-			String [] styles = new String[] {Principal.PRIMARY_EMAIL};
- 			query = getCoreDao().queryObjects(new ObjectControls(Subscription.class), null, zone.getId());
-      		while (query.hasNext()) {
-       			int count=0;
-       			batch.clear();
-       			// process 1000 entries
-       			while (query.hasNext() && (count < 1000)) {
-       				Object obj = query.next();
-       				if (obj instanceof Object[])
-       					obj = ((Object [])obj)[0];
-       				Subscription sub = (Subscription)obj;
-     				int style = fld.getInt(sub);
-       				if (style != 0) {
-           				fld.setInt(sub, 0);
-       					sub.addStyle(style, styles);
-       				}
-       				++count;
-       				batch.add(sub);
-       			}
-       			//flush updates
-       			getCoreDao().flush();
-       			//flush cache
-       			for (int i=0; i<batch.size(); ++i) {
-       				getCoreDao().evict(batch.get(i));
-       			}
-      		}
-   			//flush updates
-   			getCoreDao().flush();
-   			//flush cache
-   			for (int i=0; i<batch.size(); ++i) {
-   				getCoreDao().evict(batch.get(i));
-   			}
-
-		} catch (ClassNotFoundException cn) {
- 			//this cannot happen, can it?
-			logger.error(cn);
-		} catch (NoSuchFieldException nf) {
- 			//this cannot happen, can it?
-			logger.error(nf);
-		} catch (IllegalAccessException ia) {
- 			//this cannot happen, can it?
-			logger.error(ia);
-		} finally {
- 			if (query != null) query.close();
- 			query=null;
- 		}
-		ScheduleInfo info = getBinderModule().getNotificationConfig(zone.getId());
-		//create schedule first time through
-		if (!info.isEnabled()) {
-			info.getSchedule().setDaily(true);
-			info.getSchedule().setHours("0");
-			info.getSchedule().setMinutes("15");
-			info.setEnabled(true);
-			getBinderModule().setNotificationConfig(zone.getId(), info);
+ 		Integer version = zone.getUpgradeVersion();
+ 		if ((version == null) || version.intValue() <= 1) {
+ 			String superName = SZoneConfig.getAdminUserName(zone.getName());
+ 			//	get super user from config file - must exist or throws and error
+ 			User superU = getProfileDao().findUserByName(superName, zone.getName());
+ 			RequestContextUtil.setThreadContext(superU);
+ 			//TODO: setZoneId as non=null, only do on based on version
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.AuditTrail set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.Tag set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.WorkflowState set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.Event set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.Visits set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.Subscription set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.LibraryEntry set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.Dashboard set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.Attachment set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.SeenMap set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.WorkflowResponse set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.UserProperties set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.CustomAttribute set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.PostingDef set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.Rating set zoneId=" + zone.getId() + 
+				" where zoneId is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.TemplateBinder set name=templateTitle where parentBinder is null and (name is null or name='')");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set subscribed=false where subscribed is null");
+			getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set subscribed=true where id in (select id.entityId from com.sitescape.team.domain.Subscription where id.entityType=6)");
+			//fixup user emails
+	 		SFQuery query=null;
+	 		List batch = new ArrayList();
+	 		// Load processor class
+	 		try {
+	 			Class processorClass = ReflectHelper.classForName(Principal.class.getName());
+	 			Field fld = processorClass.getDeclaredField("emailAddress");
+	 			fld.setAccessible(true);
+	 			query = getProfileDao().queryAllPrincipals(new FilterControls(), zone.getId());
+	      		while (query.hasNext()) {
+	       			int count=0;
+	       			batch.clear();
+	       			// process 1000 entries
+	       			while (query.hasNext() && (count < 1000)) {
+	       				Object obj = query.next();
+	       				if (obj instanceof Object[])
+	       					obj = ((Object [])obj)[0];
+	       				Principal principal = (Principal)obj;
+	       		        String email = (String)fld.get(principal);
+	       		        if (Validator.isNotNull(email)) {
+	       					principal.setEmailAddress(Principal.PRIMARY_EMAIL, email);
+	          		        fld.set(principal, null);
+	       		        }
+	       				++count;
+	       				batch.add(principal);
+	       			}
+	       			//flush updates
+	       			getCoreDao().flush();
+	       			//flush cache
+	       			for (int i=0; i<batch.size(); ++i) {
+	       				getCoreDao().evict(batch.get(i));
+	       			}
+	      		}
+	   			//flush updates
+	   			getCoreDao().flush();
+	   			//flush cache
+	   			for (int i=0; i<batch.size(); ++i) {
+	   				getCoreDao().evict(batch.get(i));
+	   			}
+	
+			} catch (ClassNotFoundException cn) {
+	 			//this cannot happen, can it?
+				logger.error(cn);
+			} catch (NoSuchFieldException nf) {
+	 			//this cannot happen, can it?
+				logger.error(nf);
+			} catch (IllegalAccessException ia) {
+	 			//this cannot happen, can it?
+				logger.error(ia);
+	 		} finally {
+	 			if (query != null) query.close();
+	 			query=null;
+	 		}
 			
-		}
+	
+			//fixup styles
+	 		try {
+				Class processorClass = ReflectHelper.classForName(Subscription.class.getName());
+				Field fld = processorClass.getDeclaredField("style");
+				fld.setAccessible(true);
+				String [] styles = new String[] {Principal.PRIMARY_EMAIL};
+	 			query = getCoreDao().queryObjects(new ObjectControls(Subscription.class), null, zone.getId());
+	      		while (query.hasNext()) {
+	       			int count=0;
+	       			batch.clear();
+	       			// process 1000 entries
+	       			while (query.hasNext() && (count < 1000)) {
+	       				Object obj = query.next();
+	       				if (obj instanceof Object[])
+	       					obj = ((Object [])obj)[0];
+	       				Subscription sub = (Subscription)obj;
+	     				int style = fld.getInt(sub);
+	       				if (style != 0) {
+	           				fld.setInt(sub, 0);
+	       					sub.addStyle(style, styles);
+	       				}
+	       				++count;
+	       				batch.add(sub);
+	       			}
+	       			//flush updates
+	       			getCoreDao().flush();
+	       			//flush cache
+	       			for (int i=0; i<batch.size(); ++i) {
+	       				getCoreDao().evict(batch.get(i));
+	       			}
+	      		}
+	   			//flush updates
+	   			getCoreDao().flush();
+	   			//flush cache
+	   			for (int i=0; i<batch.size(); ++i) {
+	   				getCoreDao().evict(batch.get(i));
+	   			}
+	
+			} catch (ClassNotFoundException cn) {
+	 			//this cannot happen, can it?
+				logger.error(cn);
+			} catch (NoSuchFieldException nf) {
+	 			//this cannot happen, can it?
+				logger.error(nf);
+			} catch (IllegalAccessException ia) {
+	 			//this cannot happen, can it?
+				logger.error(ia);
+			} finally {
+	 			if (query != null) query.close();
+	 			query=null;
+	 		}
+			ScheduleInfo info = getBinderModule().getNotificationConfig(zone.getId());
+			//create schedule first time through
+			if (!info.isEnabled()) {
+				info.getSchedule().setDaily(true);
+				info.getSchedule().setHours("0");
+				info.getSchedule().setMinutes("15");
+				info.setEnabled(true);
+				getBinderModule().setNotificationConfig(zone.getId(), info);
+				
+			}
+			zone.setUpgradeVersion(2);
+ 		}
   	}
  	// Must be running inside a transaction set up by the caller 
  	protected void validateZoneTx(Workspace zone) {
