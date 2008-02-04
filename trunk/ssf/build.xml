@@ -65,12 +65,15 @@
 		<delete dir="${docs.api.dir}" />
 		
 		<ant dir="util" target="clean" />
+		<ant dir="commons-httpclient-contrib" target="clean" />
+		<ant dir="lucene-contrib" target="clean" />
 		<ant dir="indexer-lucene" target="clean" />
 		<ant dir="as-module" target="clean" />
 
 		<ant dir="applets" target="clean" />
 
 		<ant dir="main" target="clean" />
+		<ant dir="slide-webdavclient" target="clean" />
 		<ant dir="portal-module" target="clean" />
 		<ant dir="liferay" target="clean" />
 		<ant dir="jboss-portal" target="clean" />
@@ -87,6 +90,8 @@
 
 	<target name="compile">
 		<ant dir="util" target="compile" />
+		<ant dir="commons-httpclient-contrib" target="compile" />
+		<ant dir="lucene-contrib" target="compile" />
 		<ant dir="indexer-lucene" target="compile" />			
 		<ant dir="as-module" target="compile" />
 
@@ -95,6 +100,7 @@
 		<ant dir="applets" target="compile" />
 
 		<ant dir="main" target="compile" />
+		<ant dir="slide-webdavclient" target="compile" />
 
 		<ant dir="portal-module" target="compile" />
 		<ant dir="liferay" target="compile" />
@@ -108,6 +114,8 @@
 
 	<target name="jar">
 		<ant dir="util" target="jar" />
+		<ant dir="commons-httpclient-contrib" target="jar" />
+		<ant dir="lucene-contrib" target="jar" />
 		<ant dir="indexer-lucene" target="jar" />
 		<ant dir="as-module" target="jar" />
 
@@ -115,6 +123,7 @@
 
 		<ant dir="main" target="compile-common" />
 		<ant dir="main" target="jar" />
+		<ant dir="slide-webdavclient" target="jar" />
 		<ant dir="portal-module" target="jar" />
 		<ant dir="liferay" target="jar" />
 		<ant dir="jboss-portal" target="jar" />
@@ -131,12 +140,15 @@
 
 	<target name="deploy">
 		<ant dir="util" target="deploy" />
+		<ant dir="commons-httpclient-contrib" target="deploy" />
+		<ant dir="lucene-contrib" target="deploy" />
 		<ant dir="indexer-lucene" target="deploy" />
 		<ant dir="as-module" target="deploy" />
 
 		<ant dir="applets" target="deploy" />
 
 		<ant dir="main" target="deploy" />
+		<ant dir="slide-webdavclient" target="deploy" />
 		<ant dir="portal-module" target="deploy" />
 		<ant dir="liferay" target="deploy" />
 		<ant dir="jboss-portal" target="deploy" />
@@ -154,12 +166,15 @@
 		<delete dir="${docs.api.dir}" />
 
 		<ant dir="util" target="java2html" />
+		<ant dir="commons-httpclient-contrib" target="java2html" />
+		<ant dir="lucene-contrib" target="java2html" />
 		<ant dir="indexer-lucene" target="java2html" />
 		<ant dir="as-module" target="java2html" />
 
 		<ant dir="applets" target="java2html" />
 
 		<ant dir="main" target="java2html" />
+		<ant dir="slide-webdavclient" target="java2html" />
 		<ant dir="portal-module" target="java2html" />
 		<ant dir="liferay" target="java2html" />
 		<ant dir="jboss-portal" target="java2html" />
@@ -171,12 +186,15 @@
 		<delete dir="${javadoc.combined.dir}" />
 
 		<ant dir="util" target="javadoc" />
+		<ant dir="commons-httpclient-contrib" target="javadoc" />
+		<ant dir="lucene-contrib" target="javadoc" />
 		<ant dir="indexer-lucene" target="javadoc" />
 		<ant dir="as-module" target="javadoc" />
 		
 		<ant dir="applets" target="javadoc" />
 
 		<ant dir="main" target="javadoc" />
+		<ant dir="slide-webdavclient" target="javadoc" />
 		<ant dir="portal-module" target="javadoc" />
 		<ant dir="liferay" target="javadoc" />
 		<ant dir="jboss-portal" target="javadoc" />
