@@ -297,6 +297,8 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, u
 		//See if this should be opened in ss_workarea
 		if (typeof ss_workarea_showId != "undefined" && entityType == "workspace") {
 			ss_workarea_showId(binderId, "view_ws_listing");
+		} else if (typeof ss_workarea_showId != "undefined" && entityType == "user") {
+			ss_workarea_showId(binderId, "view_ws_listing", entryId);
 		} else if (typeof ss_workarea_showId != "undefined" && entityType == "folder") {
 			ss_workarea_showId(binderId, "view_folder_listing");
 		} else {
@@ -3379,6 +3381,16 @@ function ss_loadEntryFromMenu(obj, id, binderId, entityType, namespace, isDashbo
 	return false;
 }
 
+//Initialize the ss_folder div
+function ss_initShowFolderDiv(namespace) {
+	var divObj = self.document.getElementById("ss_showfolder");
+	if (divObj != null) return;
+	//It hasn't been set up yet, use this first div to be defined
+	divObj = self.document.getElementById("ss_showfolder"+namespace);
+	if (divObj == null) return;
+	divObj.id = "ss_showfolder";
+}
+
 //Initialize the floating div for viewing entries
 function ss_showEntryDivInitialization(namespace) {
 	var divObj = self.document.getElementById("ss_showentrydiv");
@@ -3392,7 +3404,7 @@ function ss_showEntryDivInitialization(namespace) {
 	iframeObj.id = "ss_showentryframe";
 	iframeObj.name = "ss_showentryframe";
 	divObj.id = "ss_showentrydiv";
-	formObj.id = "ss_saveEntryWidthForm";
+	if (formObj != null) formObj.id = "ss_saveEntryWidthForm";
 	boxObj.id = "ss_iframe_box_div";
 }
 

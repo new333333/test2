@@ -65,7 +65,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <c:if test="${empty ssReloadUrl}">
 
 <script type="text/javascript">
-	var ss_reloadUrl = "${ss_reloadUrl}";
+var ss_reloadUrl${ssBinder.id} = "${ss_reloadUrl}";
+var ss_reloadUrl = ss_reloadUrl${ssBinder.id};
 </script>
 
 <c:if test="${empty ssBinder}">

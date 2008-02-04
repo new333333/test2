@@ -39,35 +39,15 @@
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 
-<c:if test="${ss_displayType == 'ss_workarea'}">
-<script type="text/javascript">
-function ss_workarea_showId(id, action) {
-	//Build a url to go to
-	var url = "<portlet:renderURL><portlet:param 
-			name="action" value="ssActionPlaceHolder"/><portlet:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
-	return false;
-}
-</script>
-</c:if>
-
-<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-<c:if test="${ss_displayType == 'ss_workarea'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
-</c:if>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
     <td valign="top" class="ss_view_sidebar">
 
 <c:if test="${ss_displayType != 'ss_workarea'}">
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 </c:if>
@@ -106,10 +86,13 @@ function ss_workarea_showId(id, action) {
 	</tbody>
 	</table>
 </div>
+<script type="text/javascript">
+ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
+</script>
 
 <c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 	<script type="text/javascript">
-		function ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
+		function ss_showEntryToBeShown${renderResponse.namespace}() {
 		    var url = "<ssf:url     
 				adapter="true" 
 				portletName="ss_forum" 
@@ -119,7 +102,7 @@ function ss_workarea_showId(id, action) {
 				actionUrl="true" />" 
 			ss_showForumEntryInIframe(url);
 		}
-		ss_createOnLoadObj('ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
+		ss_createOnLoadObj('ss_showEntryToBeShown${renderResponse.namespace}', ss_showEntryToBeShown${renderResponse.namespace});
 	</script>
 </c:if>
 

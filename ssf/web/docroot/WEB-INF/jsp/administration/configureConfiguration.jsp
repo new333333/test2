@@ -192,7 +192,8 @@ document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 <ssf:nlt tag="${ssBinderConfig.templateTitle}" checkIfTag="true"/></span>
 <br/>
 <script type="text/javascript">
-var ss_reloadUrl = "${ss_reloadUrl}";
+var ss_reloadUrl${ssBinder.id} = "${ss_reloadUrl}";
+var ss_reloadUrl = ss_reloadUrl${ssBinder.id};
 
 function <%=cTreeName%>_showId(id, obj, action) {
 	//Build a url to go to
@@ -213,7 +214,7 @@ function ss_confirmDeleteConfig() {
 }
 </script>
 
-<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
@@ -287,7 +288,9 @@ function ss_confirmDeleteConfig() {
 	</tr></tbody></table>
 
 </div>
-
+<script type="text/javascript">
+ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
+</script>
 <div class="ss_formBreak" align="left"/>
 <form method="post" action="<portlet:renderURL><portlet:param 
 		name="action" value="configure_configuration"/></portlet:renderURL>" >

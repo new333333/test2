@@ -34,6 +34,8 @@
 //Reload the opener parent
 if (self.opener && self.opener.parent && self.opener.parent.ss_reloadUrl) {
 	var url = self.opener.parent.ss_reloadUrl;
+	if (typeof self.opener.parent.ss_reloadUrl${ssBinderId} != "undefined") 
+		url = self.opener.parent.ss_reloadUrl${ssBinderId};
 	ss_random++;
 	url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
 	url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)
@@ -47,6 +49,8 @@ if (self.opener && self.opener.parent && self.opener.parent.ss_reloadUrl) {
 	self.opener.focus();
 } else if (self.parent && self.parent.ss_reloadUrl) {
 	var url = self.parent.ss_reloadUrl;
+	if (typeof self.parent.ss_reloadUrl${ssBinderId} != "undefined") 
+		url = self.parent.ss_reloadUrl${ssBinderId};
 	ss_random++;
 	url = ss_replaceSubStr(url, "ss_entry_id_place_holder", "${ssEntryId}")
 	url = ss_replaceSubStr(url, "ss_randomPlaceholder", ss_random)

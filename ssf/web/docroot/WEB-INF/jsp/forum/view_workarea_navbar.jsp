@@ -78,9 +78,9 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 <script type="text/javascript">
 function ss_workarea_showId(id, action) {
 	//Build a url to go to
-	var url = "<portlet:renderURL><portlet:param 
-			name="action" value="ssActionPlaceHolder"/><portlet:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
+	var url = "<ssf:url 
+	             action="ssActionPlaceHolder"
+			     binderId="ssBinderIdPlaceHolder"/>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	self.location.href = url;
@@ -101,7 +101,22 @@ function ss_workarea_showId(id, action) {
 	  <ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
 	      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
 	  </ssHelpSpot>
-	<a class="ss_linkButton" href="<portlet:renderURL windowState="normal"/>"
+	<a class="ss_linkButton" 
+	  <c:if test="${ssBinder.entityType == 'folder'}">
+	    href="<ssf:url windowState="normal"
+		    action="view_folder_listing"
+		    binderId="${ssBinder.id}"/>"
+	  </c:if>
+	  <c:if test="${ssBinder.entityType == 'workspace'}">
+	    href="<ssf:url windowState="normal"
+		    action="view_workspace"
+		    binderId="${ssBinder.id}"/>"
+	  </c:if>
+	  <c:if test="${ssBinder.entityType == 'profiles'}">
+	    href="<ssf:url windowState="normal"
+		    action="view_profile_listing"
+		    binderId="${ssBinder.id}"/>"
+	  </c:if>
     ><ssf:nlt tag="navigation.myPortal"/></a>
 	  </div>
 
@@ -113,12 +128,11 @@ function ss_workarea_showId(id, action) {
 	  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 	  </ssHelpSpot>
-	<a class="ss_linkButton" href="<portlet:renderURL 
-		windowState="${ss_urlWindowState}"><portlet:param 
-      	name="action" value="view_ws_listing"/><portlet:param 
-      	name="binderId" value="${ssUser.parentBinder.id}"/><portlet:param 
-      	name="entryId" value="${ssUser.id}"/><portlet:param 
-      	name="newTab" value="1"/></portlet:renderURL>"
+	<a class="ss_linkButton" 
+	  href="<ssf:url 
+	    windowState="${ss_urlWindowState}"
+      	action="view_ws_listing"
+      	binderId="${ssUser.workspaceId}"/>"
     ><ssf:nlt tag="navigation.myWorkspace"/></a>
 	  </div>
 
@@ -194,8 +208,7 @@ function ss_workarea_showId(id, action) {
      onMouseOver="this.style.cursor = 'pointer';">
 			<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
 			  name="ss_findUserForm${renderResponse.namespace}" 
-			  action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
-			  	name="action" value="findUser"/></portlet:actionURL>">
+			  action="<ssf:url action="findUser" actionUrl="true"/>">
 				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 				    formElement="searchText" 
 				    type="user"
@@ -208,8 +221,7 @@ function ss_workarea_showId(id, action) {
 		<div>
 			<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
 			  name="ss_findUserForm${renderResponse.namespace}" 
-			  action="<portlet:actionURL windowState="maximized"><portlet:param 
-			  	name="action" value="findUser"/></portlet:actionURL>">
+			  action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
 				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 				    formElement="searchText" 
 				    type="user"
@@ -234,8 +246,7 @@ function ss_workarea_showId(id, action) {
 		<div>
 			<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
 			  name="ss_findPlacesForm${renderResponse.namespace}" 
-			  action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
-			  	name="action" value="findUser"/></portlet:actionURL>">
+			  action="<ssf:url action="findUser" actionUrl="true"/>">
 				  <ssf:find 
 				    formName="ss_findPlacesForm${renderResponse.namespace}" 
 				    formElement="searchText" 
@@ -250,8 +261,7 @@ function ss_workarea_showId(id, action) {
 		<div>
 			<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
 			  name="ss_findPlacesForm${renderResponse.namespace}" 
-			  action="<portlet:actionURL windowState="maximized"><portlet:param 
-			  	name="action" value="findUser"/></portlet:actionURL>">
+			  action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
 				  <ssf:find 
 				    formName="ss_findPlacesForm${renderResponse.namespace}" 
 				    formElement="searchText" 
@@ -277,8 +287,7 @@ function ss_workarea_showId(id, action) {
 		<div>
 			<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
 			  name="ss_findTagsForm${renderResponse.namespace}" 
-			  action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
-			  	name="action" value="findUser"/></portlet:actionURL>">
+			  action="<ssf:url action="findUser" actionUrl="true"/>">
 				  <ssf:find 
 				    formName="ss_findTagsForm${renderResponse.namespace}" 
 				    formElement="searchText" 
@@ -293,8 +302,7 @@ function ss_workarea_showId(id, action) {
 		<div>
 			<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
 			  name="ss_findTagsForm${renderResponse.namespace}" 
-			  action="<portlet:actionURL windowState="maximized"><portlet:param 
-			  	name="action" value="findUser"/></portlet:actionURL>">
+			  action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
 				  <ssf:find 
 				    formName="ss_findTagsForm${renderResponse.namespace}" 
 				    formElement="searchText" 
@@ -318,20 +326,18 @@ function ss_workarea_showId(id, action) {
 		<div >
 			<span class="ss_global_toolbar_label_text_quickSearch"><ssf:nlt tag="navigation.search"/></span>
 			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
-			  href="<portlet:actionURL windowState="${ss_urlWindowState}" portletMode="view"><portlet:param 
-			  	name="action" value="advanced_search"/><portlet:param 
-			  	name="binderId" value="${ssBinder.id}"/><portlet:param 
-			  	name="tabTitle" value="SEARCH FORM"/><portlet:param 
-			  	name="newTab" value="0"/></portlet:actionURL>"
+			  href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+			  	name="binderId" value="${ssBinder.id}"/><ssf:param 
+			  	name="tabTitle" value="SEARCH FORM"/><ssf:param 
+			  	name="newTab" value="0"/></ssf:url>"
 				><ssf:nlt tag="navigation.search.advanced"/></a></span>
 		</div>
 		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" 
 		  onMouseOver="this.style.cursor = 'pointer';">
      		<form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
 		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
-		  		action="<portlet:actionURL windowState="${ss_urlWindowState}"><portlet:param 
-		  			name="action" value="advanced_search"/><portlet:param 
-		  			name="newTab" value="1"/></portlet:actionURL>">
+		  		action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+		  			name="newTab" value="1"/></ssf:url>">
 			  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
                  <c:if test="<%= BrowserSniffer.is_ie(request) %>">
                    offsetX="159" 
@@ -351,9 +357,8 @@ function ss_workarea_showId(id, action) {
 				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
 				  title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
 				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
-				  '<portlet:actionURL windowState="${ss_urlWindowState}" portletMode="view"><portlet:param 
-				  name="action" value="advanced_search"/><portlet:param 
-				  name="newTab" value="1"/></portlet:actionURL>');"><img 
+				  '<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+				  name="newTab" value="1"/></ssf:url>');"><img 
 				  src="<html:imagesPath/>pics/menudown.gif" /></a>
 				<div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
 			</form>
@@ -366,10 +371,10 @@ function ss_workarea_showId(id, action) {
 			<span class="ss_global_toolbar_label_text_quickSearch"><label for="ss_searchSearchText${renderResponse.namespace}"
 			  ><ssf:nlt tag="navigation.search"/></label></span>
 			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
-				  href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-				  name="action" value="advanced_search"/><portlet:param 
-				  name="tabTitle" value="SEARCH FORM"/><portlet:param 
-				  name="newTab" value="0"/></portlet:actionURL>"
+				  href="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
+				  name="action" value="advanced_search"/><ssf:param 
+				  name="tabTitle" value="SEARCH FORM"/><ssf:param 
+				  name="newTab" value="0"/></ssf:url>"
 				><ssf:nlt tag="navigation.search.advanced"/></a></span>
 		</div>
 		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
@@ -384,9 +389,9 @@ function ss_workarea_showId(id, action) {
 		  </ssHelpSpot>
      		<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
 		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
-		  		action="<portlet:actionURL windowState="maximized"><portlet:param 
-		  			name="action" value="advanced_search"/><portlet:param 
-		  			name="newTab" value="1"/></portlet:actionURL>">
+		  		action="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
+		  			name="action" value="advanced_search"/><ssf:param 
+		  			name="newTab" value="1"/></ssf:url>">
 					<input name="searchText" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
 					<a class="ss_searchButton" 
 					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
@@ -425,7 +430,8 @@ function ss_workarea_showId(id, action) {
   <c:if test="${ssBinder != null && ssEntry.entityType != 'folderEntry'}">
   	<div class="ss_style_trans">
 		<a href="javascript: ;" 
-		 onClick="ssMyFavorites${renderResponse.namespace}.addBinderToFavorites('<ssf:url adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" >
+		 onClick="ssMyFavorites${renderResponse.namespace}.addBinderToFavorites('<ssf:url 
+		    adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" >
 			<ssf:param name="operation" value="add_favorite_binder" />
 			<ssf:param name="binderId" value="${ssBinder.id}" />
 			<ssf:param name="viewAction" value="${action}" /></ssf:url>');return false;"

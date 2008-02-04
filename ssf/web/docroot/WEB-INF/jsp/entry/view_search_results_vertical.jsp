@@ -44,9 +44,12 @@
 
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <a name="ss_top_of_folder"></a>
-<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 	<%@ include file="/WEB-INF/jsp/search/search_result.jsp" %>
 </div>
+<script type="text/javascript">
+ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
+</script>
 
 <c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 <script type="text/javascript">

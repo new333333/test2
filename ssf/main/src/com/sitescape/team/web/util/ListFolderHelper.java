@@ -105,6 +105,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
@@ -196,45 +197,16 @@ public class ListFolderHelper {
 			request.setAttribute(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
 			return new ModelAndView(BinderHelper.getViewListingJsp(bs, BinderHelper.getViewType(bs, binderId)));
 		}
-		Binder binder = null;
-		try {
-			binder = bs.getBinderModule().getBinder(binderId);
-		} catch(NoBinderByTheIdException e) {
-		}
-		if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
-			String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-			if (!entryId.equals("")) {
-				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-				adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-				request.setAttribute("ssLoadEntryUrl", adapterUrl.toString());			
-				request.setAttribute("ssLoadEntryId", entryId);			
-			}
-		} else {
-	     	if (binder != null) bs.getReportModule().addAuditTrail(AuditType.view, binder);
-
-		}
-
-		request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-
-		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
-		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
-
-		Map<String,Object> model = new HashMap<String,Object>();
 		
+		Map<String,Object> model = new HashMap<String,Object>();
+		String view = BinderHelper.getViewListingJsp(bs, null);;
 		//Set up the standard beans
 		//These have been documented, so don't delete any
 		model.put(WebKeys.USER_PRINCIPAL, user);
-		model.put(WebKeys.BINDER, binder);
-		model.put(WebKeys.FOLDER, binder);
-		model.put(WebKeys.DEFINITION_ENTRY, binder);
-		model.put(WebKeys.ENTRY, binder);
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
 
 		model.put(WebKeys.DISPLAY_TYPE, displayType);
+		model.put(WebKeys.BINDER_ID, binderId.toString());
 
 		//See if the entry to be shown is also included
 		String entryIdToBeShown = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
@@ -252,90 +224,135 @@ public class ListFolderHelper {
 		}
 		model.put(WebKeys.ENTRY_ID_TO_BE_SHOWN, entryIdToBeShown);
 
-		//Build a reload url
-		PortletURL reloadUrl = response.createRenderURL();
-		reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
-		reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
-		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
+		//See if showing the workarea portlet or the actual folder in the adapter
+		if (PortletAdapterUtil.isRunByAdapter(request) || 
+				!BinderHelper.WORKAREA_PORTLET.equals(displayType)) {
+			Binder binder = null;
+			try {
+				binder = bs.getBinderModule().getBinder(binderId);
+			} catch(NoBinderByTheIdException e) {
+			}
+			if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
+				String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+				if (!entryId.equals("")) {
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+					request.setAttribute("ssLoadEntryUrl", adapterUrl.toString());			
+					request.setAttribute("ssLoadEntryId", entryId);			
+				}
+			} else {
+		     	if (binder != null) bs.getReportModule().addAuditTrail(AuditType.view, binder);
 	
-		model.put(WebKeys.SEEN_MAP, bs.getProfileModule().getUserSeenMap(user.getId()));
-		if(binder != null) {
-			DashboardHelper.getDashboardMap(binder, userProperties, model);
-			//See if the user has selected a specific view to use
-			DefinitionHelper.getDefinitions(binder, model, (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
-		}
-
-		Tabs.TabEntry tab= BinderHelper.initTabs(request, binder);
-		model.put(WebKeys.TABS, tab.getTabs());		
-		//check tabs based on operation
-		
-		Map options = new HashMap();				
-		options.putAll(getSearchFilter(bs, request, userFolderProperties));
-		
-		//determine page starts/ counts
-		initPageCounts(bs, request, userProperties, tab, options);
-
-		String viewType = "";
-		Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		if (configElement != null) {
-			viewType = DefinitionUtils.getPropertyValue(configElement, "type");
-			if (viewType == null) viewType = "";
-		}
-
-		/** Vertical mode has been removed
-		//If the Folder View is anything other than Table and if the Folder Action happens to be  
-		//vertical (view at the bottom), then we need to display the entry in the iframe view
-		if (!viewType.equals(Definition.VIEW_STYLE_TABLE)) {
-			String displayStyle = user.getDisplayStyle();
-			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
-				model.put(WebKeys.FOLDER_ACTION_VERTICAL_OVERRIDE, "yes");
 			}
-		}
-		*/
+	
+			request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+	
+			Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+				
+			//Set up the standard beans
+			//These have been documented, so don't delete any
+			model.put(WebKeys.USER_PRINCIPAL, user);
+			model.put(WebKeys.BINDER, binder);
+			model.put(WebKeys.FOLDER, binder);
+			model.put(WebKeys.DEFINITION_ENTRY, binder);
+			model.put(WebKeys.ENTRY, binder);
+	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+			model.put(WebKeys.USER_PROPERTIES, userProperties);
+			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+	
+			model.put(WebKeys.DISPLAY_TYPE, displayType);
+	
+			//Build a reload url
+			PortletURL reloadUrl = response.createRenderURL();
+			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
+			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
+			reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
+			model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 		
-		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
-			//In Blog style we only want to show this entry
-			if (!entryIdToBeShown.equals("")) {
-				//options.put(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN, entryIdToBeShown);
-				model.put(WebKeys.FOLDER_VIEW_TYPE, viewType);
+			model.put(WebKeys.SEEN_MAP, bs.getProfileModule().getUserSeenMap(user.getId()));
+			if(binder != null) {
+				DashboardHelper.getDashboardMap(binder, userProperties, model);
+				//See if the user has selected a specific view to use
+				DefinitionHelper.getDefinitions(binder, model, (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
 			}
-		}
+	
+			Tabs.TabEntry tab= BinderHelper.initTabs(request, binder);
+			model.put(WebKeys.TABS, tab.getTabs());		
+			//check tabs based on operation
+			
+			Map options = new HashMap();				
+			options.putAll(getSearchFilter(bs, request, userFolderProperties));
+			
+			//determine page starts/ counts
+			initPageCounts(bs, request, userProperties, tab, options);
+	
+			String viewType = "";
+			Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
+			if (configElement != null) {
+				viewType = DefinitionUtils.getPropertyValue(configElement, "type");
+				if (viewType == null) viewType = "";
+			}
+	
+			/** Vertical mode has been removed
+			//If the Folder View is anything other than Table and if the Folder Action happens to be  
+			//vertical (view at the bottom), then we need to display the entry in the iframe view
+			if (!viewType.equals(Definition.VIEW_STYLE_TABLE)) {
+				String displayStyle = user.getDisplayStyle();
+				if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
+					model.put(WebKeys.FOLDER_ACTION_VERTICAL_OVERRIDE, "yes");
+				}
+			}
+			*/
+			
+			if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
+				//In Blog style we only want to show this entry
+				if (!entryIdToBeShown.equals("")) {
+					//options.put(ObjectKeys.FOLDER_ENTRY_TO_BE_SHOWN, entryIdToBeShown);
+					model.put(WebKeys.FOLDER_VIEW_TYPE, viewType);
+				}
+			}
+	
+			//Checking the Sort Order that has been set. If not using the Default Sort Order
+			initSortOrder(bs, request, userFolderProperties, tab, options, viewType);
+	
+			setupUrlOptions(bs, request, tab, options, model);
+	
+			if (binder== null) {
+				view = "binder/deleted_binder";
+			} else if(configElement == null) {
+				view = WebKeys.VIEW_NO_DEFINITION;
+			} else if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
+				model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
+				view = getTeamMembers(bs, formData, request, response, (Folder)binder, options, model, viewType);
+			} else {
+				view = getShowFolder(bs, formData, request, response, (Folder)binder, options, model, viewType);
+			}
+			
+			model.put(WebKeys.URL_TAB_ID, String.valueOf(tab.getTabId()));
+			model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
+			model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
+	
+			if(binder != null) {
+				Map tagResults = TagUtil.uniqueTags(bs.getBinderModule().getTags(binder));
+				model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
+				model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
+			}
+	
+			try {
+				//won't work on adapter
+				response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
+			} catch (UnsupportedOperationException us) {}
 
-		//Checking the Sort Order that has been set. If not using the Default Sort Order
-		initSortOrder(bs, request, userFolderProperties, tab, options, viewType);
-
-		setupUrlOptions(bs, request, tab, options, model);
-
-		String view = null;
-		if(binder== null) {
-			view = "binder/deleted_binder";
-		} else if(configElement == null) {
-			view = WebKeys.VIEW_NO_DEFINITION;
-		} else if (op.equals(WebKeys.OPERATION_SHOW_TEAM_MEMBERS)) {
-			model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
-			view = getTeamMembers(bs, formData, request, response, (Folder)binder, options, model, viewType);
+			return new ModelAndView(view, model);
+			
 		} else {
-			view = getShowFolder(bs, formData, request, response, (Folder)binder, options, model, viewType);
+			return new ModelAndView(view, model);
 		}
-		
-		model.put(WebKeys.URL_TAB_ID, String.valueOf(tab.getTabId()));
-		model.put(WebKeys.PAGE_ENTRIES_PER_PAGE, (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS));
-		model.put(WebKeys.PAGE_MENU_CONTROL_TITLE, NLT.get("folder.Page", new Object[]{options.get(ObjectKeys.SEARCH_MAX_HITS)}));
-
-		if(binder != null) {
-			Map tagResults = TagUtil.uniqueTags(bs.getBinderModule().getTags(binder));
-			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
-			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
-		}
-
-		try {
-			//won't work on adapter
-			response.setProperty(RenderResponse.EXPIRATION_CACHE,"0");
-		} catch (UnsupportedOperationException us) {}
-		
-		return new ModelAndView(view, model);
+			
 	}
 	
 	public static Map getSearchFilter(AllModulesInjected bs, RenderRequest request, 

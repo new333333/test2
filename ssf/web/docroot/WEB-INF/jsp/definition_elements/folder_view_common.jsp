@@ -62,10 +62,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
 <script type="text/javascript">
-var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="${action}"/><portlet:param 
-		name="binderId" value="${ssFolder.id}"/><portlet:param 
-		name="operation" value="save_folder_columns"/></portlet:actionURL>";
+var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
+		binderId="${ssFolder.id}"><ssf:param 
+		name="operation" value="save_folder_columns"/></ssf:url>";
 </script>
 
 <div id="ss_folder_table_parent" class="ss_folder">
@@ -82,8 +81,8 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
 <div align="left" class="ssPageNavi">
  <table border="0" cellspacing="0px" cellpadding="0px">
   <tr>
-	<td><%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %></td>   
-    <td style="padding-left: 20px;"><%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %></td>
+	<td><%// @ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %></td>   
+    <td style="padding-left: 20px;"><%// @ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %></td>
 	<td align="right" width="20%">
 		  <a href="<ssf:url
 			adapter="true" 
@@ -107,15 +106,12 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
   <c:if test="${!empty ssFolderColumns['number']}">
     <ssf:slidingTableColumn width="12%">
 
-    <a href="<portlet:actionURL windowState="maximized" 
-    	portletMode="view"><portlet:param 
-    	name="action" value="${action}"/><portlet:param 
-    	name="operation" value="save_folder_sort_info"/><portlet:param 
-    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+    <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
+    	name="operation" value="save_folder_sort_info"/><ssf:param 
     	name="ssFolderSortBy" value="_sortNum"/><c:choose><c:when 
-    	test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}"><portlet:param 
-    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><portlet:param 
-    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></portlet:actionURL>"
+    	test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}"><ssf:param 
+    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><ssf:param 
+    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></ssf:url>"
 
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_sortNum' && ssFolderSortDescend == 'true'}">
@@ -144,15 +140,12 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
   <c:if test="${!empty ssFolderColumns['title']}">
     <ssf:slidingTableColumn width="28%">
     
-    <a href="<portlet:actionURL windowState="maximized" 
-    	portletMode="view"><portlet:param 
-    	name="action" value="${action}"/><portlet:param 
-    	name="operation" value="save_folder_sort_info"/><portlet:param 
-    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+    <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
+    	name="operation" value="save_folder_sort_info"/><ssf:param 
     	name="ssFolderSortBy" value="_sortTitle"/><c:choose><c:when 
-    	test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}"><portlet:param 
-    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
+    	test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}"><ssf:param 
+    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
 	
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
@@ -188,14 +181,12 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
   <c:if test="${!empty ssFolderColumns['size']}">
     <ssf:slidingTableColumn width="12%">
 
-    <a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-	    	name="action" value="${action}"/><portlet:param 
-	    	name="operation" value="save_folder_sort_info"/><portlet:param 
-	    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+    <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
+	    	name="operation" value="save_folder_sort_info"/><ssf:param 
 	    	name="ssFolderSortBy" value="_fileSize"/><c:choose><c:when 
-	    	test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}"><portlet:param 
-	    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><portlet:param 
-	    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></portlet:actionURL>">
+	    	test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}"><ssf:param 
+	    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><ssf:param 
+	    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></ssf:url>">
 	    <ssf:nlt tag="folder.column.Size"/>
 	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}">
 			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
@@ -222,14 +213,13 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
   <c:if test="${!empty ssFolderColumns['state']}">
     <ssf:slidingTableColumn width="20%">
 
-    <a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-    	name="action" value="${action}"/><portlet:param 
-    	name="operation" value="save_folder_sort_info"/><portlet:param 
-    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+    	name="operation" value="save_folder_sort_info"/><ssf:param 
+    	name="binderId" value="${ssFolder.id}"/><ssf:param 
     	name="ssFolderSortBy" value="_workflowState"/><c:choose><c:when 
-    	test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}"><portlet:param 
-    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
+    	test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}"><ssf:param 
+    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
 	
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
@@ -258,14 +248,13 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
   <c:if test="${!empty ssFolderColumns['author']}">
     <ssf:slidingTableColumn width="20%">
 
-    <a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-    	name="action" value="${action}"/><portlet:param 
-    	name="operation" value="save_folder_sort_info"/><portlet:param 
-    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+    	name="operation" value="save_folder_sort_info"/><ssf:param 
+    	name="binderId" value="${ssFolder.id}"/><ssf:param 
     	name="ssFolderSortBy" value="_creatorTitle"/><c:choose><c:when 
-    	test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}"><portlet:param 
-    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
+    	test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}"><ssf:param 
+    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
 	
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
@@ -294,14 +283,13 @@ var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portl
   <c:if test="${!empty ssFolderColumns['date']}">
     <ssf:slidingTableColumn width="20%">
     
-    <a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-    	name="action" value="${action}"/><portlet:param 
-    	name="operation" value="save_folder_sort_info"/><portlet:param 
-    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+    	name="operation" value="save_folder_sort_info"/><ssf:param 
+    	name="binderId" value="${ssFolder.id}"/><ssf:param 
     	name="ssFolderSortBy" value="_lastActivity"/><c:choose><c:when 
-    	test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}"><portlet:param 
-    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><portlet:param 
-    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></portlet:actionURL>"
+    	test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}"><ssf:param 
+    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><ssf:param 
+    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></ssf:url>"
 	
 	<c:choose>
 	  <c:when test="${ ssFolderSortBy == '_lastActivity' && ssFolderSortDescend == 'true'}">

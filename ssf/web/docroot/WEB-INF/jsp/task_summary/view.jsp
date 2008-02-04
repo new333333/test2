@@ -39,7 +39,8 @@
 
 <script type="text/javascript">
 //Define the url of this page in case the "add entry" operation needs to reload this page
-var ss_reloadUrl = "<portlet:renderURL />";
+var ss_reloadUrl${ssBinder.id} = "<portlet:renderURL />";
+var ss_reloadUrl = ss_reloadUrl${ssBinder.id};
 </script>
 <table class="ss_style" width="100%"><tr><td>
 <div>

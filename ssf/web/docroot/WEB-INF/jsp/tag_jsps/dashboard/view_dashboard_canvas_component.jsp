@@ -60,17 +60,15 @@
  <c:if test="${!empty ssBinder}">
     <form 
       method="post" 
-  	  action="<portlet:actionURL windowState="maximized"><portlet:param 
-  		name="action" value="modify_dashboard"/><portlet:param 
-  		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
+  	  action="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
+  		name="binderId" value="${ssBinder.id}"/></ssf:url>">
      <c:set var="myId" value="binderId=${ssBinder.id}"/> 
 </c:if>
 <c:if test="${empty ssBinder}">
     <form 
       method="post" 
-  	  action="<portlet:actionURL windowState="maximized"><portlet:param 
-  	  	name="action" value="modify_dashboard_portlet"/><portlet:param 
-  	  	name="dashboardId" value="${ssDashboardId}"/></portlet:actionURL>">
+  	  action="<ssf:url action="modify_dashboard_portlet" actionUrl="true"><ssf:param 
+  	  	name="dashboardId" value="${ssDashboardId}"/></ssf:url>">
      <c:set var="myId" value="dashboardId=${ssDashboardId}"/> 
 </c:if>
 	  <input type="hidden" name="_dashboardList" value="${ss_dashboard_dashboardList}"/>

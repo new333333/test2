@@ -47,72 +47,69 @@ var ss_isAdapter="true";
 <c:if test="${empty ss_notAdapter}">
 <ssf:ifnotadapter>
 ss_isAdapter="false";
+</ssf:ifnotadapter>
 <c:if test="${empty ss_portletType || ss_portletType != 'ss_portletTypeAdmin'}">
-var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" 
-	portletMode="view"><portlet:param 
-	name="action" value="advanced_search"/><portlet:param 
-	name="searchTags" value="ss_tagPlaceHolder"/><portlet:param 
-	name="operation" value="ss_searchResults"/><portlet:param 
-	name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
-	name="newTab" value="1"/><portlet:param 
-	name="searchItemType" value="workspace"/><portlet:param 
-	name="searchItemType" value="folder"/><portlet:param 
-	name="searchItemType" value="user"/><portlet:param 
-	name="searchItemType" value="entry"/><portlet:param 
-	name="searchItemType" value="reply"/></portlet:actionURL>";
-var ss_tagSearchResultUrlNoWS = "<portlet:actionURL 
-	portletMode="view"><portlet:param 
-	name="action" value="advanced_search"/><portlet:param 
-	name="searchTags" value="ss_tagPlaceHolder"/><portlet:param 
-	name="operation" value="ss_searchResults"/><portlet:param 
-	name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
-	name="newTab" value="1"/><portlet:param 
-	name="searchItemType" value="workspace"/><portlet:param 
-	name="searchItemType" value="folder"/><portlet:param 
-	name="searchItemType" value="user"/><portlet:param 
-	name="searchItemType" value="entry"/><portlet:param 
-	name="searchItemType" value="reply"/></portlet:actionURL>";
+var ss_tagSearchResultUrl = "<ssf:url windowState="maximized" 
+    action="advanced_search" actionUrl="true"><ssf:param 
+	name="searchTags" value="ss_tagPlaceHolder"/><ssf:param 
+	name="operation" value="ss_searchResults"/><ssf:param 
+	name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
+	name="newTab" value="1"/><ssf:param 
+	name="searchItemType" value="workspace"/><ssf:param 
+	name="searchItemType" value="folder"/><ssf:param 
+	name="searchItemType" value="user"/><ssf:param 
+	name="searchItemType" value="entry"/><ssf:param 
+	name="searchItemType" value="reply"/></ssf:url>";
+var ss_tagSearchResultUrlNoWS = "<ssf:url action="advanced_search" 
+	actionUrl="true"><ssf:param 
+	name="searchTags" value="ss_tagPlaceHolder"/><ssf:param 
+	name="operation" value="ss_searchResults"/><ssf:param 
+	name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
+	name="newTab" value="1"/><ssf:param 
+	name="searchItemType" value="workspace"/><ssf:param 
+	name="searchItemType" value="folder"/><ssf:param 
+	name="searchItemType" value="user"/><ssf:param 
+	name="searchItemType" value="entry"/><ssf:param 
+	name="searchItemType" value="reply"/></ssf:url>";
 
-var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" 
-	portletMode="view"><portlet:param 
-	name="action" value="advanced_search"/><portlet:param 
-	name="searchTags" value="ss_tagPlaceHolder"/><portlet:param 
-	name="operation" value="ss_searchResults"/><portlet:param 
-	name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
-	name="newTab" value="1"/><portlet:param 
-	name="searchItemType" value="workspace"/><portlet:param 
-	name="searchItemType" value="folder"/><portlet:param 
-	name="searchItemType" value="user"/><portlet:param 
-	name="searchItemType" value="entry"/><portlet:param 
-	name="searchItemType" value="reply"/></portlet:actionURL>";
-var ss_baseEntryUrl<portlet:namespace/> = '<portlet:renderURL windowState="maximized"><portlet:param 
-	name="action" value="ssActionPlaceHolder"/><portlet:param 
-	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-	name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
-var ss_baseEntryUrl = ss_baseEntryUrl<portlet:namespace/>;
+var ss_tagSearchResultUrl = "<ssf:url windowState="maximized" 
+	action="advanced_search" actionUrl="true"><ssf:param 
+	name="searchTags" value="ss_tagPlaceHolder"/><ssf:param 
+	name="operation" value="ss_searchResults"/><ssf:param 
+	name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
+	name="newTab" value="1"/><ssf:param 
+	name="searchItemType" value="workspace"/><ssf:param 
+	name="searchItemType" value="folder"/><ssf:param 
+	name="searchItemType" value="user"/><ssf:param 
+	name="searchItemType" value="entry"/><ssf:param 
+	name="searchItemType" value="reply"/></ssf:url>";
+var ss_baseEntryUrl${renderResponse.namespace} = '<ssf:url windowState="maximized" 
+	action="ssActionPlaceHolder"><ssf:param 
+	name="binderId" value="ssBinderIdPlaceHolder"/><ssf:param 
+	name="entryId" value="ssEntryIdPlaceHolder"/><ssf:param 
+	name="newTab" value="ssNewTabPlaceHolder"/></ssf:url>';
+var ss_baseEntryUrl = ss_baseEntryUrl${renderResponse.namespace};
 	
-var ss_baseEntryUrlNoWS<portlet:namespace/> = '<portlet:renderURL><portlet:param 
-	name="action" value="ssActionPlaceHolder"/><portlet:param 
-	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-	name="entryId" value="ssEntryIdPlaceHolder"/><portlet:param 
-	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
-var ss_baseEntryUrlNoWS = ss_baseEntryUrlNoWS<portlet:namespace/>;
+var ss_baseEntryUrlNoWS${renderResponse.namespace} = '<ssf:url><ssf:param 
+	name="action" value="ssActionPlaceHolder"/><ssf:param 
+	name="binderId" value="ssBinderIdPlaceHolder"/><ssf:param 
+	name="entryId" value="ssEntryIdPlaceHolder"/><ssf:param 
+	name="newTab" value="ssNewTabPlaceHolder"/></ssf:url>';
+var ss_baseEntryUrlNoWS = ss_baseEntryUrlNoWS${renderResponse.namespace};
 	
-var ss_baseBinderUrl<portlet:namespace/> = '<portlet:renderURL windowState="maximized"><portlet:param 
-	name="action" value="ssActionPlaceHolder"/><portlet:param 
-	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
-var ss_baseBinderUrl = ss_baseBinderUrl<portlet:namespace/>;
-var ss_baseBinderUrlNoWS<portlet:namespace/> = '<portlet:renderURL><portlet:param 
-	name="action" value="ssActionPlaceHolder"/><portlet:param 
-	name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-	name="newTab" value="ssNewTabPlaceHolder"/></portlet:renderURL>';
-var ss_baseBinderUrlNoWS = ss_baseBinderUrlNoWS<portlet:namespace/>;
+var ss_baseBinderUrl${renderResponse.namespace} = '<ssf:url windowState="maximized"><ssf:param 
+	name="action" value="ssActionPlaceHolder"/><ssf:param 
+	name="binderId" value="ssBinderIdPlaceHolder"/><ssf:param 
+	name="newTab" value="ssNewTabPlaceHolder"/></ssf:url>';
+var ss_baseBinderUrl = ss_baseBinderUrl${renderResponse.namespace};
+var ss_baseBinderUrlNoWS${renderResponse.namespace} = '<ssf:url><ssf:param 
+	name="action" value="ssActionPlaceHolder"/><ssf:param 
+	name="binderId" value="ssBinderIdPlaceHolder"/><ssf:param 
+	name="newTab" value="ssNewTabPlaceHolder"/></ssf:url>';
+var ss_baseBinderUrlNoWS = ss_baseBinderUrlNoWS${renderResponse.namespace};
 
 </c:if>
 
-</ssf:ifnotadapter>
 </c:if>
 </script>
 		<%

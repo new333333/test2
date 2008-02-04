@@ -49,11 +49,11 @@ if (com.sitescape.team.context.request.RequestContextHolder.getRequestContext() 
 --%><ssf:ifadapter><%--
 	--%><c:if test="${empty ssf_support_files_loaded}"><%--
 	    --%><c:set var="ssf_support_files_loaded_flag" value="1"/><%--
-	    --%><c:if test="${empty ssf_snippet}"><%--
-            --%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><%--
-	        --%><html><%--
-	        --%><head><%--
-	    --%></c:if><%--
+--%><c:if test="${empty ssf_snippet}"><%--
+    --%><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+</c:if><%--
 	--%></c:if><%--
 	--%><portletadapter:defineObjects2/><%--
 --%></ssf:ifadapter><%--

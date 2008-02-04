@@ -32,6 +32,12 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:set var="showWorkspacePage" value="true"/>
+<c:if test="${ss_displayType == 'ss_workarea'}">
+  <ssf:ifnotadapter>
+    <c:set var="showWorkspacePage" value="false"/>
+  </ssf:ifnotadapter>
+</c:if>
 
 <ssf:ifadapter>
 <body class="ss_style_body">
@@ -45,14 +51,81 @@
 </c:if>
 
 <c:if test="${empty ssReloadUrl}">
+<c:if test="${ss_displayType == 'ss_workarea'}">
+<script type="text/javascript">
+function ss_workarea_showId(id, action, entryId) {
+	if (typeof entryId == "undefined") entryId = "";
+	//Build a url to go to
+	var url = "<ssf:url     
+	    		  adapter="true" 
+	    		  portletName="ss_workarea" 
+	    		  binderId="ssBinderIdPlaceHolder" 
+    			  entryId="ssEntryIdPlaceHolder" 
+	    		  action="ssActionPlaceHolder" 
+	    		  actionUrl="false" >
+	           </ssf:url>"
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
+	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+<ssf:ifnotadapter>
+	var iframeDivObj = document.getElementById('ss_viewListingIframe${renderResponse.namespace}')
+	if (iframeDivObj != null) {
+		iframeDivObj.src = url;
+	} else {
+		return true;
+	}
+</ssf:ifnotadapter>
+<ssf:ifadapter>
+	self.location.href = url;
+</ssf:ifadapter>
+	return false;
+}
+</script>
+<ssf:ifnotadapter>
+<script type="text/javascript">
+var ss_workareaIframeOffset = 50;
+function ss_setWorkareaIframeSize${renderResponse.namespace}() {
+	var iframeDiv = document.getElementById('ss_viewListingIframe${renderResponse.namespace}')
+	if (window.frames['ss_viewListingIframe${renderResponse.namespace}'] != null) {
+		eval("var iframeHeight = parseInt(window.ss_viewListingIframe${renderResponse.namespace}" + ".document.body.scrollHeight);")
+		if (iframeHeight > 0) {
+			iframeDiv.style.height = iframeHeight + ss_workareaIframeOffset + "px"
+		}
+	}
+}
+ss_createOnResizeObj('ss_setWorkareaIframeSize${renderResponse.namespace}', ss_setWorkareaIframeSize${renderResponse.namespace});
+ss_createOnLayoutChangeObj('ss_setWorkareaIframeSize${renderResponse.namespace}', ss_setWorkareaIframeSize${renderResponse.namespace});
+</script>
+<iframe id="ss_viewListingIframe${renderResponse.namespace}" 
+    name="ss_viewListingIframe${renderResponse.namespace}" 
+    style="width:100%; height:400px; display:block; position:relative;"
+	src="<ssf:url     
+    		adapter="true" 
+    		portletName="ss_workarea" 
+    		binderId="${ssBinder.id}" 
+    		action="view_ws_listing" 
+    		actionUrl="false" >
+        </ssf:url>" 
+	onLoad="ss_setWorkareaIframeSize${renderResponse.namespace}();" 
+	frameBorder="0" >xxx</iframe>
+
+<!-- portlet iframe div -->
+<%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
+<!-- portlet iframe div -->	
+
+</ssf:ifnotadapter>
+</c:if>
+
+<c:if test="${showWorkspacePage}">
 	<jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 	<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 
 	<script type="text/javascript">
-		var ss_reloadUrl = "${ss_reloadUrl}";
+		var ss_reloadUrl${ssBinder.id} = "${ss_reloadUrl}";
+		var ss_reloadUrl = ss_reloadUrl${ssBinder.id};
 	</script>
 
-	<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
+	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 <c:if test="${ss_displayType == 'ss_workarea'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
@@ -152,6 +225,10 @@
 	</tbody>
 	</table>
   </div>
+<script type="text/javascript">
+ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
+</script>
+</c:if>
 	
 </c:if>
 
