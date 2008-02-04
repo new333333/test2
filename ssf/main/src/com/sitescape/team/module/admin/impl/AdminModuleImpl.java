@@ -839,8 +839,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		IndexSynchronizationManager.discardChanges();
 	 	//need to reindex binder tree, cause of copy Attributes code
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, top.getId().toString()));
-		//delete actual binder
-		IndexSynchronizationManager.deleteDocument(top.getIndexDocumentUid());
 	 	loadBinderProcessor(top).indexTree(top, null, StatusTicket.NULL_TICKET);
 	 	//top will be evicted, reread
 		getCoreDao().refresh(top);
