@@ -281,8 +281,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				// 	and delete all the entries under each folderid.
 				for (Binder binder:checked) {
 					IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
-					//delete actual binder
-					IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
 				}
 			}
 		   	for (Binder binder:checked) {

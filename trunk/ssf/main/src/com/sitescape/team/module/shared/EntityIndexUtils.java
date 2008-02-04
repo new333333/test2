@@ -700,8 +700,13 @@ public class EntityIndexUtils {
     }
 
     public static void addAncestry(Document doc, DefinableEntity entry, boolean fieldsOnly) {
-    	
-    	Binder parentBinder = entry.getParentBinder();
+    	Binder parentBinder;
+    	if (entry instanceof Binder) {
+    		parentBinder = (Binder)entry;  //include self in ancestor list - needed for update of acls on binder
+    	} else {
+    		parentBinder = entry.getParentBinder();
+    		
+    	}
     	
     	while (parentBinder != null) {	
     		Field ancestry = new Field(ENTRY_ANCESTRY, parentBinder.getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);

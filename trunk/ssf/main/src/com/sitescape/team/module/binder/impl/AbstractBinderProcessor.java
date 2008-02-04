@@ -1055,8 +1055,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void moveBinder_index(Binder binder, Map ctx) {
     	//delete tree first
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
-		//delete actual binder
-		IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
 		getCoreDao().flush(); //get updates out for optimized indexTree
     	indexTree(binder, null);  //binder will be evicted on return
     }
@@ -1281,7 +1279,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		List<Object[]> notBinders = getCoreDao().loadObjects("select x.id,x.binderKey.sortKey from com.sitescape.team.domain.Binder x where x.binderKey.sortKey like '" +
     				binder.getBinderKey().getSortKey() + "%' and x.functionMembershipInherited=:functionTest order by x.binderKey.sortKey", params);
        		List<Long>ids = pruneUpdateList(binder, notBinders);
-    		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000)/2 - 10;  //account for others in search
+    		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
     			doFieldUpdate(binder, ids, BasicIndexUtils.FOLDER_ACL_FIELD, value);
     		} else {
@@ -1323,7 +1321,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		List<Object[]> notBinders = getCoreDao().loadObjects("select x.id,x.binderKey.sortKey from com.sitescape.team.domain.Binder x where x.binderKey.sortKey like '" +
     				binder.getBinderKey().getSortKey() + "%' and x.teamMembershipInherited=:functionTest order by x.binderKey.sortKey", params);
        		List<Long>ids = pruneUpdateList(binder, notBinders);
-       		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000)/2 - 10;  //account for others in search
+       		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
           		doFieldUpdate(binder, ids, BasicIndexUtils.TEAM_ACL_FIELD, value);
        		} else {
@@ -1406,16 +1404,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      //this code assumes all doc_types have the field being updated
   	private org.dom4j.Document buildQueryforUpdate(Binder binder, List<Long> notBinders) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
-		//_docId:x and (docType=binder or attType=binder)
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
-	   	//Get this binder which won't get captured by ancestor search
-	   	// Get the binder and its attachments
-		buildQueryForBinder(qTreeOrElement, binder);
-
-		//get all the entrys, replies, subBinders and their attachments
-		// or (__entryAncestry: and not __entryAncestry:{} and not (docId:{} and (docType=binder or attType=binder)))
-		Element ancestorElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
+		//get the binder and all the entrys, replies, subBinders and their attachments
+		// or (__entryAncestry: and not __entryAncestry:{} )
+		Element ancestorElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
 	 
 		Element ancestors = ancestorElement.addElement(QueryBuilder.FIELD_ELEMENT);
 		ancestors.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
@@ -1430,8 +1422,6 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 				Element childI = fieldI.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 				childI.setText(id.toString());
 			}
-			notAncestors = ancestorElement.addElement(QueryBuilder.NOT_ELEMENT);
-			buildQueryForBinders(notAncestors, notBinders);
 			
 		}
 
