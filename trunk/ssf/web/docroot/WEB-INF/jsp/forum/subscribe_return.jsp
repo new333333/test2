@@ -68,12 +68,7 @@
    <span class="ss_labelAbove"><ssf:nlt tag="subscribe.digest"/>
 <c:if test="${!ssScheduleInfo.enabled}">
 <br/>(<ssf:nlt tag="subscribe.select.disabled"/>
-<c:if test="${!empty ssBinder && !empty ssBinder.owner}">
-<br/><ssf:nlt tag="subscribe.contact.admin">
-<ssf:param name="value" value="${ssBinder.owner.emailAddress}"/>
-<ssf:param name="value" value="${ssBinder.owner.title}"/>
-</ssf:nlt>
-</c:if>
+<br/><ssf:nlt tag="administration.notify.nodefault.schedule"/>
 )</c:if>
 </span> 
   <select multiple="multiple" name="_subscribe1">
