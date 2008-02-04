@@ -781,7 +781,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
   		//set up version for all loggin
   		entry.incrLogVersion();
   		getWorkflowModule().addEntryWorkflow(wEntry, entry.getEntityIdentifier(), definition);
-  		processChangeLog(entry, ChangeLog.STARTWORKFLOW);
+  		if (wEntry.getWorkflowChange() != null) processChangeLog(entry, ChangeLog.STARTWORKFLOW);
   		indexEntry(entry);
      }
      //***********************************************************************************************************
