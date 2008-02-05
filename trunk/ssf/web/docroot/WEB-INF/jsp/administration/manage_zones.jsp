@@ -39,7 +39,18 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 	}
 	return true;
 }
+
+var ss_confirmDeleteZoneText = "<ssf:nlt tag="zone.confirmDeleteZone"/>";
+function ss_confirmDeleteZone() {
+	if (confirm(ss_confirmDeleteZoneText)) {
+		return true
+	} else {
+		return false
+	}
+}
+
 </script>
+
 <div class="ss_style ss_portlet">
 <div style="padding:10px;" id="ss_manageZones">
 <span class="ss_titlebold"><ssf:nlt tag="administration.manage.zones" /></span>
@@ -93,7 +104,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 	</td>	
 	
     <td align="left" valign="middle">
-	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>">
+	<input type="submit" class="ss_submit" name="deleteBtn" value="<ssf:nlt tag="button.delete" text="Delete"/>" onClick="return ss_confirmDeleteZone();" />
 	</td>	
 	</c:if>
 	</form>
