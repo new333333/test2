@@ -133,7 +133,7 @@ public interface ProfileModule {
 	public boolean testAccess(Principal entry, ProfileOperation operation);
 	public void checkAccess(Principal entry, ProfileOperation operation) throws AccessControlException;
 
-	public void deleteUserByName(String userName);
+	public void deleteUserByName(String userName,  boolean deleteWS);
 	
 	public void addUserToGroup(long userId, String username, long groupId);
 }

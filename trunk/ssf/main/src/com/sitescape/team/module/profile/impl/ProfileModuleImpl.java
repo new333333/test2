@@ -922,11 +922,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 
     //RW transaction
-	public void deleteUserByName(String userName) {
+	public void deleteUserByName(String userName,  boolean deleteWS) {
 		try {
 			User user = getProfileDao().findUserByName(userName, 
 					RequestContextHolder.getRequestContext().getZoneName());
-			deleteEntry(user.getParentBinder().getId(), user.getId(), false);
+			deleteEntry(user.getParentBinder().getId(), user.getId(), deleteWS);
 		}
 		catch(NoUserByTheNameException thisIsOk) {}
 	}

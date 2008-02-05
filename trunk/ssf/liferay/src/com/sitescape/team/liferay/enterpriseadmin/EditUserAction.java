@@ -54,13 +54,22 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 	private static final Class[] UPDATE_SERVICE_METHOD_ARG_TYPES = 
 		new Class[] {String.class, String.class, String.class, Map.class, String.class};
 		
+	/*
 	private static final String DELETE_SERVICE_BEAN_NAME = "profileModule";
 	
 	private static final String DELETE_SERVICE_METHOD_NAME = "deleteUserByName";
 	
 	private static final Class[] DELETE_SERVICE_METHOD_ARG_TYPES = 
 		new Class[] {String.class};
+	*/
 	
+	private static final String DELETE_USER_CLASS_NAME = "com.sitescape.team.bridge.ProfileBridge";
+	
+	private static final String DELETE_USER_METHOD_NAME = "deleteUserByName";
+	
+	private static final Class[] DELETE_USER_METHOD_ARG_TYPES = 
+		new Class[] {String.class};
+
 	private static final String MODIFY_SCREEN_NAME_CLASS_NAME = "com.sitescape.team.bridge.ProfileBridge";
 	
 	private static final String MODIFY_SCREEN_NAME_METHOD_NAME = "modifyScreenName";
@@ -175,10 +184,18 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 
 	}
 	
+	/*
 	protected void synchDeleteUser(String contextCompanyWebId, String userScreenName)
 	throws Exception {
 		BridgeClient.invokeBean(contextCompanyWebId, null, DELETE_SERVICE_BEAN_NAME, 
 				DELETE_SERVICE_METHOD_NAME, DELETE_SERVICE_METHOD_ARG_TYPES,
+				new Object[] {userScreenName});
+	}*/
+	
+	protected void synchDeleteUser(String contextCompanyWebId, String userScreenName)
+	throws Exception {
+		BridgeClient.invoke(contextCompanyWebId, null, DELETE_USER_CLASS_NAME, 
+				DELETE_USER_METHOD_NAME, DELETE_USER_METHOD_ARG_TYPES,
 				new Object[] {userScreenName});
 	}
 	
