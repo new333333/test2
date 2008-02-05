@@ -75,18 +75,16 @@
 	<img src="<html:imagesPath/>pics/1pix.gif" <ssf:alt/>
 			onload="ss_confFindTagSearchVariables('${prefix}', '<%= clickRoutine %>', 
 			<ssf:ifnotadapter>
-			'<portlet:actionURL windowState="maximized" 
-		portletMode="view"><portlet:param 
-		name="action" value="advanced_search"/><portlet:param 
-		name="searchTags" value="ss_tagPlaceHolder"/><portlet:param 
-		name="operation" value="ss_searchResults"/><portlet:param 
-		name="tabTitle" value="ss_tagPlaceHolder"/><portlet:param 
-		name="newTab" value="1"/><portlet:param 
-		name="searchItemType" value="workspace"/><portlet:param 
-		name="searchItemType" value="folder"/><portlet:param 
-		name="searchItemType" value="user"/><portlet:param 
-		name="searchItemType" value="entry"/><portlet:param 
-		name="searchItemType" value="reply"/></portlet:actionURL>'
+			'<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+		name="searchTags" value="ss_tagPlaceHolder"/><ssf:param 
+		name="operation" value="ss_searchResults"/><ssf:param 
+		name="tabTitle" value="ss_tagPlaceHolder"/><ssf:param 
+		name="newTab" value="1"/><ssf:param 
+		name="searchItemType" value="workspace"/><ssf:param 
+		name="searchItemType" value="folder"/><ssf:param 
+		name="searchItemType" value="user"/><ssf:param 
+		name="searchItemType" value="entry"/><ssf:param 
+		name="searchItemType" value="reply"/></ssf:url>'
 		</ssf:ifnotadapter>
 		<ssf:ifadapter>
 		window.ss_tagSearchResultUrl?window.ss_tagSearchResultUrl:''

@@ -38,11 +38,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 		  <div style="margin-top: 15px;">
 		  <c:if test="${ssConfigJspStyle != 'template'}">
-		  <a class="ss_linkButton" href="<portlet:actionURL windowState="maximized" portletMode="view">
-			<portlet:param name="action" value="${action}"/>
-			<portlet:param name="operation" value="view_folder_listing"/>
-			<portlet:param name="binderId" value="${ssBinder.id}"/>
-			</portlet:actionURL>"
+		  <a class="ss_linkButton" href="<ssf:url action="${action}" actionUrl="true">
+			<ssf:param name="operation" value="view_folder_listing"/>
+			<ssf:param name="binderId" value="${ssBinder.id}"/>
+			</ssf:url>"
 		  ><ssf:nlt tag="photo.showAll"/></a>
 		  </c:if>
 		  <c:if test="${ssConfigJspStyle == 'template'}">
@@ -52,10 +51,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="photo.findPage"/></div>
 	    <form method="post" name="ss_findWikiPageForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
-	    	action="<portlet:actionURL 
-	                windowState="maximized" portletMode="view"><portlet:param 
-					name="action" value="view_folder_listing"/><portlet:param 
-					name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
+	    	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssBinder.id}"/></ssf:url>">
 		 <ssf:find formName="ss_findWikiPageForm${renderResponse.namespace}" 
 		    formElement="searchTitle" 
 		    type="entries"
@@ -85,10 +82,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
         <div class="ss_blog_sidebar_box">		
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
-			   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-					name="action" value="view_folder_listing"/><portlet:param 
-					name="binderId" value="${ssBinder.id}"/><portlet:param 
-					name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
+			   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssBinder.id}"/><ssf:param 
+					name="cTag" value="${tag.ssTag}"/></ssf:url>" 
 					class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;
 		   </c:forEach>
         </div>		
@@ -97,10 +93,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.personal"/></div>
         <div class="ss_blog_sidebar_box">		
 		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">		
-		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-				name="action" value="view_folder_listing"/><portlet:param 
-				name="binderId" value="${ssBinder.id}"/><portlet:param 
-				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
+		   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssBinder.id}"/><ssf:param 
+				name="pTag" value="${tag.ssTag}"/></ssf:url>" 
 				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>">${tag.ssTag}</a>&nbsp;&nbsp;						
 		   </c:forEach>
 		</div>

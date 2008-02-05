@@ -63,10 +63,9 @@
 	
 		<form class="ss_style" style="display: inline;"  
 		    name="ss_filterSelect" 
-			action="<portlet:actionURL windowState="maximized"><portlet:param 
-				name="action" value="${action}"/><portlet:param 
-				name="binderId" value="${ssFolder.id}"/><portlet:param 
-				name="operation" value="select_filter"/></portlet:actionURL>" 
+			action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssFolder.id}"/><ssf:param 
+				name="operation" value="select_filter"/></ssf:url>" 
 			method="post" >
 			
 			
@@ -89,10 +88,10 @@
 			 				
 		</form>
 		<c:if test="${ssConfigJspStyle != 'template'}">
-		<a class="ss_actions_bar_inline" href="<portlet:renderURL windowState="maximized"><portlet:param 
-			name="action" value="build_filter"/><portlet:param 
-			name="binderId" value="${ssBinder.id}"/><portlet:param 
-			name="binderType" value="${ssBinder.entityType}"/></portlet:renderURL>"
+		<a class="ss_actions_bar_inline" href="<ssf:url ><ssf:param 
+			name="action" value="build_filter"/><ssf:param 
+			name="binderId" value="${ssBinder.id}"/><ssf:param 
+			name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
 		><ssf:nlt tag="Edit" text="Edit"/></a>
 		</c:if>
 		<c:if test="${ssConfigJspStyle == 'template'}">

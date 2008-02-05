@@ -148,6 +148,7 @@
 								     href="<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
 						  					<ssf:param name="newTab" value="1"/>
 	    	  							</ssf:url>" 
+	    	  						  onClick="ss_openUrlInWorkarea(this.href, '${entry._binderId}', 'view_folder_listing');return false;"
 	    	  						</c:if>
 									class="ss_parentPointer">
 									${entryBinderTitle}
@@ -218,9 +219,13 @@
 										onClick="return ss_gotoPermalink('${entry._binderId}','${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 									</c:if>
 									<c:if test="${empty isDashboard || isDashboard == 'no'}">
-								     href="<ssf:url adapter="false" portletName="ss_forum" binderId="${entry._binderId}" action="view_folder_listing" actionUrl="false" >
+								     href="<ssf:url adapter="false" 
+								       portletName="ss_forum" 
+								       binderId="${entry._binderId}" 
+								       action="view_folder_listing" actionUrl="false" >
 	    	  							<ssf:param name="newTab" value="1"/>
 	    	  							</ssf:url>" 
+	    	  						  onClick="ss_openUrlInWorkarea(this.href, '${entry._binderId}', 'view_folder_listing');return false;"
 	    	  						</c:if>
 									class="ss_parentPointer">
 									${entryBinderTitle}
