@@ -43,17 +43,15 @@
 		<ul>
 			<li>
 				<a class="gamma" 
-				  href="<portlet:renderURL windowState="maximized"><portlet:param 
-				  	name="action" value="configure_forum" /><portlet:param 
-				  	name="binderId" value="${ssBinder.id}" /><portlet:param 
-				  	name="binderType" value="${ssBinder.entityType}"/></portlet:renderURL>">Configure</a>
+				  href="<ssf:url action="configure_forum" ><ssf:param 
+				  	name="binderId" value="${ssBinder.id}" /><ssf:param 
+				  	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">Configure</a>
 			</li>
 			<li>
 				<a class="gamma" 
-				  href="<portlet:actionURL windowState="maximized"><portlet:param 
-				  	name="action" value="definition_builder" /><portlet:param 
-				  	name="binderId" value="${ssBinder.id}"/><portlet:param 
-				  	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>"
+				  href="<ssf:url action="definition_builder"  actionUrl="true"><ssf:param 
+				  	name="binderId" value="${ssBinder.id}"/><ssf:param 
+				  	name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
 				>Definition builder</a>
 			</li>
 		</ul>

@@ -84,9 +84,8 @@
 					<c:out value="${u1.title}"/>
 				</c:if>
 				<c:if test="${ssConfigJspStyle != 'template'}">
-					  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-					  	name="action" value="view_ws_listing"/><portlet:param 
-					  	name="binderId" value="${u1.workspaceId}"/></portlet:renderURL>"
+					  <a href="<ssf:url action="view_ws_listing"><ssf:param 
+					  	name="binderId" value="${u1.workspaceId}"/></ssf:url>"
 					  	onClick="ss_openUrlInWorkarea(this.href, '${u1.workspaceId}', 'view_ws_listing');return false;"
 					  ><c:out value="${u1.title}"/></a>
 				</c:if>

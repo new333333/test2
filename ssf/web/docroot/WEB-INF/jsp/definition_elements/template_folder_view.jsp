@@ -65,10 +65,9 @@
 %>
 <script type="text/javascript">
 
-var ss_saveFolderColumnsUrl = "<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="view_folder_listing"/><portlet:param 
-		name="binderId" value="${ssBinder.id}"/><portlet:param 
-		name="operation" value="save_folder_columns"/></portlet:actionURL>";
+var ss_saveFolderColumnsUrl = "<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+		name="binderId" value="${ssBinder.id}"/><ssf:param 
+		name="operation" value="save_folder_columns"/></ssf:url>";
 
 </script>
 <div id="ss_folder_table_parent" class="ss_folder">

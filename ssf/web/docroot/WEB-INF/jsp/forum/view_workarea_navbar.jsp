@@ -76,16 +76,21 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 
 <!-- Start of global toolbar -->
 <script type="text/javascript">
-function ss_workarea_showId(id, action) {
+function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
+	if (typeof entryId == "undefined") entryId = "";
 	//Build a url to go to
 	var url = "<ssf:url 
 	             action="ssActionPlaceHolder"
-			     binderId="ssBinderIdPlaceHolder"/>"
+			     binderId="ssBinderIdPlaceHolder"
+			     entryId="ssEntryIdPlaceHolder"/>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
+	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	self.location.href = url;
 	return false;
 }
+if (typeof ss_workarea_showId == "undefined") 
+	ss_workarea_showId = ss_workarea_showId${renderResponse.namespace};
 </script>
 
 <table cellspacing="0" cellpadding="0" border="0">

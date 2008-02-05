@@ -29,11 +29,9 @@
  */
 %>
 
-<form action="<portlet:actionURL windowState="maximized" 
-	portletMode="view"><portlet:param 
-	name="action" value="advanced_search"/><portlet:param 
-	name="tabTitle" value=""/><portlet:param 
-	name="newTab" value="0"/></portlet:actionURL>" 
+<form action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+	name="tabTitle" value=""/><ssf:param 
+	name="newTab" value="0"/></ssf:url>" 
 	method="post" onSubmit="return ss_prepareAdditionalSearchOptions();" id="ss_advSearchForm">
 
 	<%@ include file="/WEB-INF/jsp/search/advanced_search_form_common.jsp" %>
