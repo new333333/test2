@@ -33,12 +33,9 @@
 <script type="text/javascript">
 function ss_folderTree_showId(id, obj, action) {
 	//Build a url to go to
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
+	var url = "<ssf:url binderId="ssBinderIdPlaceHolder"/>"
 	if (action != null && action != "") {
-		url = "<portlet:renderURL windowState="maximized"><portlet:param 
-			name="action" value="ssActionPlaceHolder"/><portlet:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
+		url = "<ssf:url action="ssActionPlaceHolder" binderId="ssBinderIdPlaceHolder"/>"
 		url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	}
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);

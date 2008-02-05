@@ -35,14 +35,13 @@
 	<tr>
 		<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
-			    <a href="<portlet:actionURL windowState="maximized" 
-			    	portletMode="view"><portlet:param name="action" value="${action}"/><portlet:param 
-			    	name="operation" value="save_folder_sort_info"/><portlet:param 
-			    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+			    	name="operation" value="save_folder_sort_info"/><ssf:param 
+			    	name="binderId" value="${ssFolder.id}"/><ssf:param 
 			    	name="ssFolderSortBy" value="_sortTitle"/><c:choose><c:when 
-			    	test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}"><portlet:param 
-			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
+			    	test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}"><ssf:param 
+			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
 			
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == '_sortTitle' && ssFolderSortDescend == 'false'}">
@@ -71,14 +70,13 @@
 		</th>
 		<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
-			    <a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-			    	name="action" value="${action}"/><portlet:param 
-			    	name="operation" value="save_folder_sort_info"/><portlet:param 
-			    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+			    	name="operation" value="save_folder_sort_info"/><ssf:param 
+			    	name="binderId" value="${ssFolder.id}"/><ssf:param 
 			    	name="ssFolderSortBy" value="_principal"/><c:choose><c:when 
-			    	test="${ ssFolderSortBy == '_principal' && ssFolderSortDescend == 'false'}"><portlet:param 
-			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
+			    	test="${ ssFolderSortBy == '_principal' && ssFolderSortDescend == 'false'}"><ssf:param 
+			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
 			
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == '_principal' && ssFolderSortDescend == 'false'}">
@@ -108,14 +106,13 @@
 		</th>
 		<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
-			    <a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-			    	name="action" value="${action}"/><portlet:param 
-			    	name="operation" value="save_folder_sort_info"/><portlet:param 
-			    	name="binderId" value="${ssFolder.id}"/><portlet:param 
+			    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+			    	name="operation" value="save_folder_sort_info"/><ssf:param 
+			    	name="binderId" value="${ssFolder.id}"/><ssf:param 
 			    	name="ssFolderSortBy" value="start_end#EndDate"/><c:choose><c:when 
-			    	test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}"><portlet:param 
-			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><portlet:param 
-			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></portlet:actionURL>"
+			    	test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}"><ssf:param 
+			    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+			    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
 				
 				<c:choose>
 				  <c:when test="${ ssFolderSortBy == 'start_end#EndDate' && ssFolderSortDescend == 'false'}">

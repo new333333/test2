@@ -75,10 +75,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<div class="ss_blog_sidebar_subhead"><ssf:nlt tag="tags.community"/></div>
         <div class="ss_blog_sidebar_box">				
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
-			   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-					name="action" value="view_folder_listing"/><portlet:param 
-					name="binderId" value="${ssBinder.id}"/><portlet:param 
-					name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
+			   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssBinder.id}"/><ssf:param 
+					name="cTag" value="${tag.ssTag}"/></ssf:url>" 
 					class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>"
 					  <ssf:title tag="title.search.entries.in.folder.for.community.tag">
 					  	<ssf:param name="value" value="${tag.ssTag}" />
@@ -92,10 +91,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
         <div class="ss_blog_sidebar_box">		
 		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
 		
-		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-				name="action" value="view_folder_listing"/><portlet:param 
-				name="binderId" value="${ssBinder.id}"/><portlet:param 
-				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
+		   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssBinder.id}"/><ssf:param 
+				name="pTag" value="${tag.ssTag}"/></ssf:url>" 
 				class="ss_displaytag ${tag.searchResultsRatingCSS} <c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>"
 				  <ssf:title tag="title.search.entries.in.folder.for.personal.tag">
 				  	<ssf:param name="value" value="${tag.ssTag}" />

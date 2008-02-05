@@ -77,10 +77,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
         <div class="ss_blog_sidebar_subhead"><ssf:nlt tag="wiki.findPage"/></div>
 	    <c:if test="${ssConfigJspStyle != 'template'}">
 	    <form method="post" name="ss_findWikiPageForm<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>"
-	    	action="<portlet:actionURL 
-	                windowState="maximized" portletMode="view"><portlet:param 
-					name="action" value="view_folder_listing"/><portlet:param 
-					name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
+	    	action="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssBinder.id}"/></ssf:url>">
 		 <ssf:find formName="ss_findWikiPageForm${renderResponse.namespace}" 
 		    formElement="searchTitle" 
 		    type="entries"
@@ -147,16 +145,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<c:choose>
 		  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}"></c:when>
 		  <c:otherwise>
-			<a href="<portlet:actionURL windowState="maximized" 
-				portletMode="view"><portlet:param 
-				name="action" value="${action}"/><portlet:param 
-				name="operation" value="save_folder_page_info"/><portlet:param 
-				name="binderId" value="${ssFolder.id}"/><portlet:param 
-				name="ssPageStartIndex" value="${ssPagePrevious.ssPageInternalValue}"/><c:if test="${!empty cTag}"><portlet:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><portlet:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><portlet:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><portlet:param 
-				name="endDate" value="${endDate}"/></c:if></portlet:actionURL>" 
+			<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+				name="operation" value="save_folder_page_info"/><ssf:param 
+				name="binderId" value="${ssFolder.id}"/><ssf:param 
+				name="ssPageStartIndex" value="${ssPagePrevious.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
+				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+				name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 				<ssf:title tag="title.goto.prev.page" /> >&lt;&lt;
 			</a>
 		  </c:otherwise>
@@ -167,16 +163,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			
 		  </c:when>
 		  <c:otherwise>
-			<a href="<portlet:actionURL windowState="maximized" 
-				portletMode="view"><portlet:param 
-				name="action" value="${action}"/><portlet:param 
-				name="operation" value="save_folder_page_info"/><portlet:param 
-				name="binderId" value="${ssFolder.id}"/><portlet:param 
-				name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/><c:if test="${!empty cTag}"><portlet:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><portlet:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><portlet:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><portlet:param 
-				name="endDate" value="${endDate}"/></c:if></portlet:actionURL>" 
+			<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+				name="operation" value="save_folder_page_info"/><ssf:param 
+				name="binderId" value="${ssFolder.id}"/><ssf:param 
+				name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
+				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+				name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 				<ssf:title tag="title.goto.next.page" />>&gt;&gt;
 			</a>
 		  </c:otherwise>
@@ -192,10 +186,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     <div class="ss_blog_sidebar_box">		
 		   <c:if test="${!empty ssFolderEntryCommunityTags}">
 		   <c:forEach var="tag" items="${ssFolderEntryCommunityTags}">
-			   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-					name="action" value="view_folder_listing"/><portlet:param 
-					name="binderId" value="${ssBinder.id}"/><portlet:param 
-					name="cTag" value="${tag.ssTag}"/></portlet:actionURL>" 
+			   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssBinder.id}"/><ssf:param 
+					name="cTag" value="${tag.ssTag}"/></ssf:url>" 
 					class="ss_displaytag  ${tag.searchResultsRatingCSS} 
 					<c:if test="${!empty cTag && cTag == tag.ssTag}">ss_bold</c:if>
 					<c:if test="${empty cTag || cTag != tag.ssTag}">ss_normal</c:if>"
@@ -212,10 +205,9 @@ boolean isIE = BrowserSniffer.is_ie(request);
     <div class="ss_blog_sidebar_box">		
 		   <c:if test="${!empty ssFolderEntryPersonalTags}">
 		   <c:forEach var="tag" items="${ssFolderEntryPersonalTags}">
-		   	<a href="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-				name="action" value="view_folder_listing"/><portlet:param 
-				name="binderId" value="${ssBinder.id}"/><portlet:param 
-				name="pTag" value="${tag.ssTag}"/></portlet:actionURL>" 
+		   	<a href="<ssf:url action="view_folder_listing" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssBinder.id}"/><ssf:param 
+				name="pTag" value="${tag.ssTag}"/></ssf:url>" 
 				class="ss_displaytag  ${tag.searchResultsRatingCSS} 
 				<c:if test="${!empty pTag && pTag == tag.ssTag}">ss_bold</c:if>
 				<c:if test="${empty pTag || pTag != tag.ssTag}">ss_normal</c:if>"
