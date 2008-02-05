@@ -37,9 +37,13 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
 
 public class ProfileBridge {
+	
+	private static final String PORTAL_PROFILE_DELETE_USER_WORKSPACE = "portal.profile.deleteUserWorkspace";
+	private static final boolean PORTAL_PROFILE_DELETE_USER_WORKSPACE_DEFAULT_VALUE = false;
 	
 	public static void modifyScreenName(String oldScreenName, String newScreenName) 
 	throws AccessControlException, WriteFilesException {
@@ -53,6 +57,14 @@ public class ProfileBridge {
 		
 		getProfileModule().modifyEntry(user.getParentBinder().getId(), 
 				user.getId(), new MapInputData(map));
+	}
+	
+	public static void deleteUserByName(String userName) {
+		boolean deleteWS = 
+			SPropsUtil.getBoolean(PORTAL_PROFILE_DELETE_USER_WORKSPACE, 
+				PORTAL_PROFILE_DELETE_USER_WORKSPACE_DEFAULT_VALUE);
+		
+		getProfileModule().deleteUserByName(userName, deleteWS);
 	}
 	
 	private static ProfileModule getProfileModule() {
