@@ -34,16 +34,23 @@
 </ssf:ifadapter>
 <c:set var="wsTreeName" value="${renderResponse.namespace}_wsTree"/>
 <script type="text/javascript">
-function ${wsTreeName}_showId(id, obj, action) {
-	var formObj = ss_getContainingForm(obj);
-	var r = formObj.destination;
-	for (var i = 0; i < r.length; i++) {
-		r[i].checked = false;
-		if (r[i].value == id) {
-			r[i].checked = true;
+function ${wsTreeName}_showId(forum, obj, action) {
+	if (obj.ownerDocument) {
+		var cDocument = obj.ownerDocument;
+	} else if (obj.document) {
+		cDocument = obj.document;
+	}
+	if (cDocument) {
+		var r = cDocument.getElementById("ss_tree_radio${wsTreeName}destination" + forum);
+		if (r) {
+			if (r.checked !== undefined) {
+				r.checked = true;
+			}
+			if (r.onclick !== undefined) {
+				r.onclick();
+			}
 		}
 	}
-	return false;
 }
 </script>
 

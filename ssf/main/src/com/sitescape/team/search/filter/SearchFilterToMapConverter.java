@@ -511,7 +511,9 @@ public class SearchFilterToMapConverter {
 			List<Long> idLs = new ArrayList();
 			while (it.hasNext()) {
 				String ids = it.next();
-				idLs.add(Long.parseLong(ids));
+				try {
+					idLs.add(Long.parseLong(ids.trim()));
+				} catch (NumberFormatException e) {}
 			}
 			result.put(WebKeys.FOLDER_LIST, binderModule.getBinders(idLs));
 		}

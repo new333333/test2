@@ -912,59 +912,73 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String binderIdText = PortletRequestUtils.getStringParameter(request, "binderId", "");
 		Long binderId = null;
 		if (!binderIdText.equals("")) {
-			int i = binderIdText.indexOf(".");
-			if (i >= 0) {
-				binderId = Long.valueOf(binderIdText.substring(0, i));
-			} else {
-				binderId = Long.valueOf(binderIdText);
+			try {
+				int i = binderIdText.indexOf(".");
+				if (i >= 0) {
+					binderId = Long.valueOf(binderIdText.substring(0, i));
+				} else {
+					binderId = Long.valueOf(binderIdText);
+				}
+			} catch (NumberFormatException e) {
+				// it's not id
 			}
 		}
+		
+		String indentKey = PortletRequestUtils.getStringParameter(request, "indentKey", "");
+		String page = PortletRequestUtils.getStringParameter(request, "page", "");
+		String pageNumber = "";
+		int i = page.indexOf(DomTreeBuilder.PAGE_DELIMITER);
+    	if (!page.equals("") && i >= 0) {
+    		pageNumber = "." + page.substring(0, i);
+    	}
+		String treeName = PortletRequestUtils.getStringParameter(request, "treeName", "");
+		String treeKey = PortletRequestUtils.getStringParameter(request, "treeKey", "");
+		
 		if (binderId != null) {
-			String indentKey = PortletRequestUtils.getStringParameter(request, "indentKey", "");
-			String page = PortletRequestUtils.getStringParameter(request, "page", "");
-			String pageNumber = "";
-			int i = page.indexOf(DomTreeBuilder.PAGE_DELIMITER);
-	    	if (!page.equals("") && i >= 0) {
-	    		pageNumber = "." + page.substring(0, i);
-	    	}
-			String treeName = PortletRequestUtils.getStringParameter(request, "treeName", "");
-			String treeKey = PortletRequestUtils.getStringParameter(request, "treeKey", "");
-			model.put("ss_tree_treeName", treeName);
-			model.put("ss_tree_showIdRoutine", PortletRequestUtils.getStringParameter(request, "showIdRoutine", ""));
-			model.put("ss_tree_parentId", PortletRequestUtils.getStringParameter(request, "parentId", ""));
-			model.put("ss_tree_bottom", PortletRequestUtils.getStringParameter(request, "bottom", ""));
-			model.put("ss_tree_type", PortletRequestUtils.getStringParameter(request, "type", ""));
 			model.put("ss_tree_binderId", binderId.toString());
 			model.put("ss_tree_id", binderId.toString() + pageNumber);
-			model.put("ss_tree_indentKey", indentKey);
-			model.put("ss_tree_topId", op2);
-			model.put("ss_tree_select_id", "");
-			model.put("ss_tree_select_type", selectType);
-			model.put("ss_tree_fixedMultiSelectParamsMode", false);
-			if (selectType.equals("2")) {
-				//multi select
-				String joinedMultiSelect = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TREE_MULTI_SELECT, "");
-				
-				List multiSelect = new ArrayList();
-				if (!joinedMultiSelect.equals("")) {
-					multiSelect = Arrays.asList(joinedMultiSelect.split(","));
+		}
+		
+		model.put("ss_tree_treeName", treeName);
+		model.put("ss_tree_showIdRoutine", PortletRequestUtils.getStringParameter(request, "showIdRoutine", ""));
+		model.put("ss_tree_parentId", PortletRequestUtils.getStringParameter(request, "parentId", ""));
+		model.put("ss_tree_bottom", PortletRequestUtils.getStringParameter(request, "bottom", ""));
+		model.put("ss_tree_type", PortletRequestUtils.getStringParameter(request, "type", ""));
+
+		model.put("ss_tree_indentKey", indentKey);
+		model.put("ss_tree_topId", op2);
+		model.put("ss_tree_select_id", "");
+		model.put("ss_tree_select_type", selectType);
+		if (selectType.equals("2")) {
+			//multi select
+			String[] joinedMultiSelect = PortletRequestUtils.getStringParameters(request, WebKeys.URL_TREE_MULTI_SELECT);
+			
+			List multiSelect = new ArrayList();
+			
+			if (joinedMultiSelect != null) {
+				for (int j = 0; j < joinedMultiSelect.length; j++) {
+					if (joinedMultiSelect[j] != null && !joinedMultiSelect[j].equals("")) {
+						multiSelect.addAll(Arrays.asList(joinedMultiSelect[j].split(",")));
+					}
 				}
-				model.put("ss_tree_select", multiSelect);
-				model.put("ss_tree_select_id", selectId);
-				
-				boolean fixedMultiSelectParamsMode = PortletRequestUtils.getBooleanParameter(request, "fixedMultiSelectParamsMode", false);
-				model.put("ss_tree_fixedMultiSelectParamsMode", fixedMultiSelectParamsMode);
-			} else if (selectType.equals("1")) {
-				//single select, get name and selectedId
-				model.put("ss_tree_select_id", selectId);				
-				model.put("ss_tree_select", PortletRequestUtils.getStringParameter(request, "select", ""));
-			} 
+			}
+			model.put("ss_tree_select", multiSelect);
+			model.put("ss_tree_select_id", selectId);
+			
+		} else if (selectType.equals("1")) {
+			//single select, get name and selectedId
+			model.put("ss_tree_select_id", selectId);				
+			model.put("ss_tree_select", PortletRequestUtils.getStringParameter(request, "select", ""));
+		} 
+		
+		if (binderId != null) {
 			Binder binder = getBinderModule().getBinder(binderId);
 			Document tree;
 			tree = getBinderModule().getDomBinderTree(binder.getId(), 
 						new WsDomTreeBuilder(binder, true, this, treeKey, page),1);
 			model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
 		}
+		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String view = "tag_jsps/tree/get_tree_div";
 		if (user.getDisplayStyle() != null && 

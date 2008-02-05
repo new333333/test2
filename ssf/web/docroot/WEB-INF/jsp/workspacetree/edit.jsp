@@ -49,13 +49,22 @@ String wsTreeName = renderResponse.getNamespace();
 <br>
 <script type="text/javascript">
 function <%= wsTreeName %>_showId(forum, obj) {
-	var r = self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.topWorkspace;
-    for (var b = 0; b < r.length; b++) {
-      if (r[b].value == forum) 	r[b].checked=true;
+	if (obj.ownerDocument) {
+		var cDocument = obj.ownerDocument;
+	} else if (obj.document) {
+		cDocument = obj.document;
 	}
-	ss_clearSingleSelect('<%= wsTreeName %>');
-	
-	return false;
+	if (cDocument) {
+		var r = cDocument.getElementById("ss_tree_radio<%= wsTreeName %>topWorkspace" + forum);
+		if (r) {
+			if (r.checked !== undefined) {
+				r.checked = true;
+			}
+			if (r.onclick !== undefined) {
+				r.onclick();
+			}
+		}
+	}
 }
 </script>
 <c:set var="singleSelect" value=""/>

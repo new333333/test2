@@ -41,6 +41,7 @@ import javax.portlet.PortletRequest;
 import org.dom4j.Document;
 
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.PortletRequestUtils;
 
 public class SearchFilterRequestParser {
@@ -385,9 +386,17 @@ public class SearchFilterRequestParser {
 			while (itFormData.hasNext()) {
 				Map.Entry me = (Map.Entry) itFormData.next();
 				String key = (String)me.getKey();
-				if (key.startsWith(SearchFilterKeys.SearchFolders)) {
-					String folderId = key.replaceFirst(SearchFilterKeys.SearchFolders + "_", "");
-					folderIds.add(folderId);
+				String[] values = (String[])me.getValue();
+				if (key.equals(WebKeys.URL_ID_CHOICES) && values != null) {
+					for (int i = 0; i < values.length; i++) {
+						String[] valueSplited = values[i].split("\\s");
+						for (int j = 0; j < valueSplited.length; j++) {
+							if (valueSplited[j] != null && valueSplited[j].indexOf(SearchFilterKeys.SearchFolders) > -1) {
+								String folderId = valueSplited[j].replaceFirst(SearchFilterKeys.SearchFolders, "");
+								folderIds.add(folderId);
+							}
+						}
+					}
 				}
 			}
 

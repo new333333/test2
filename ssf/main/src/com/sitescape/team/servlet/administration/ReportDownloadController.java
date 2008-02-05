@@ -140,12 +140,22 @@ public class ReportDownloadController extends  SAbstractController {
 				while (itFormData.hasNext()) {
 					Map.Entry me = (Map.Entry) itFormData.next();
 					String key = (String)me.getKey();
-					if (key.startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
-						String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + "_", "");
-						ids.add(Long.valueOf(binderId));
-					} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
-						String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + "_", "");
-						ids.add(Long.valueOf(binderId));
+					if (WebKeys.URL_ID_CHOICES.equals(key)) {
+						String[] values = (String[])me.getValue();
+						for (int i = 0; i < values.length; i++) {
+							String[] valueSplited = values[i].split("\\s");
+							for (int j = 0; j < valueSplited.length; j++) {
+								if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
+									if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
+										String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER, "");
+										ids.add(Long.valueOf(binderId));
+									} else if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
+										String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE, "");
+										ids.add(Long.valueOf(binderId));
+									}							
+								}
+							}
+						}
 					}
 				}
 

@@ -1094,21 +1094,21 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					Iterator itFormData = formData.keySet().iterator();
 					while (itFormData.hasNext()) {
 						String key = (String)itFormData.next();
-						if (key.matches("^ss_folder_id_[0-9]+$")) {
-							folderIds.add(key.replaceFirst("^ss_folder_id_", ""));
+						if (key.matches("^ss_folder_id[0-9]+$")) {
+							folderIds.add(key.replaceFirst("^ss_folder_id", ""));
 						} else if (key.equals("ss_folder_id")) {
 							String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
 							//single select
 							if ((id != null) && !folderIds.contains(id)) folderIds.add(id); 
 						}
 					}
-					if (formData.containsKey("idChoices")) {
+					if (formData.containsKey(WebKeys.URL_ID_CHOICES)) {
 						//If this is accessibile mode, the list isin idChoices
-						String idChoices = PortletRequestUtils.getStringParameter(request, "idChoices", "");
+						String idChoices = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 						String[] idChoices2 = idChoices.split(" ");
 						for (int i = 0; i < idChoices2.length; i++) {
-							if (idChoices2[i].matches("^ss_folder_id_[0-9]+$")) {
-								folderIds.add(idChoices2[i].replaceFirst("^ss_folder_id_", ""));
+							if (idChoices2[i].matches("^ss_folder_id[0-9]+$")) {
+								folderIds.add(idChoices2[i].replaceFirst("^ss_folder_id", ""));
 							}
 						}
 					}
@@ -1175,11 +1175,11 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						}
 					} else {
 						String id = PortletRequestUtils.getStringParameter(request, "ss_folder_id", null);
-						String idChoices = PortletRequestUtils.getStringParameter(request, "idChoices", "");
+						String idChoices = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 						if (!idChoices.equals("")) {
 							//If this is accessibile mode, the id is in idChoices
-							if (idChoices.matches("^ss_folder_id_[0-9]+$")) {
-								folderIds.add(idChoices.replaceFirst("^ss_folder_id_", ""));
+							if (idChoices.matches("^ss_folder_id[0-9]+$")) {
+								folderIds.add(idChoices.replaceFirst("^ss_folder_id", ""));
 							}
 						} else if (id != null) {
 							folderIds.add(id); 
@@ -1203,6 +1203,21 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					String groups = LongIdUtil.getIdsAsString(request.getParameterValues(DashboardHelper.ElementNamePrefix+"groups"));
 					if (users != null && !users.equals("")) componentData.put("users", users);
 					if (groups != null && !groups.equals("")) componentData.put("groups", groups);
+				} else if (ObjectKeys.DASHBOARD_COMPONENT_WORKSPACE_TREE.equals(cName)) {
+					// in accessible mode topId commes as idChoices 
+					Long topId = null;
+					String idChoices = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
+					if (!idChoices.equals("")) {
+						//If this is accessibile mode, the id is in idChoices
+						if (idChoices.matches("^data_topId[0-9]+$")) {
+							try {
+								topId = Long.parseLong(idChoices.replaceFirst("^data_topId", ""));
+							} catch (NumberFormatException e) {}
+						}
+					}
+					if (topId != null) {
+						componentData.put("topId", topId.toString());
+					}
 				}
 				//Save the title and data map
 				componentMap.put(Dashboard.COMPONENT_TITLE, componentTitle);

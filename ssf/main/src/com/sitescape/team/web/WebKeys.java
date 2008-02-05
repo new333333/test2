@@ -174,6 +174,7 @@ public class WebKeys {
 	public static final String URL_DASHBOARD_REQUEST="ssDashboardRequest";
 	public static final String URL_ZONE_NAME = "zoneName";
 	public static final String URL_VIRTUAL_HOST = "virtualHost";
+	public static final String URL_ID_CHOICES = "idChoices";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";

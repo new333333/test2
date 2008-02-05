@@ -37,14 +37,23 @@
 	dojo.require('sitescape.widget.SelectPageable');
 
 	function ${treeName}_showId(forum, obj) {
-		var formObj = ss_getContainingForm(obj);
-		var r = formObj["ss_folder_id_" + forum];
-		if (r && r.checked) {
-			r.checked=false
-		} else {
-			r.checked=true
+		if (obj.ownerDocument) {
+			var cDocument = obj.ownerDocument;
+		} else if (obj.document) {
+			cDocument = obj.document;
 		}
-		return false
+		if (cDocument) {
+			var r = cDocument.getElementById("ss_tree_checkbox${treeName}ss_folder_id" + forum);
+			if (r) {
+				if (r.checked !== undefined) {
+					r.checked = !r.checked;
+				}
+				if (r.onclick !== undefined) {
+					r.onclick();
+				}
+			}
+		}
+		return false;		
 	}
 
 </script>
@@ -99,7 +108,7 @@
 				  treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
 				  rootOpen="true" 
 				  multiSelect="${ssDashboard.beans[ssComponentId].ssBinderIdList}" 
-				  multiSelectPrefix="ss_folder_id_"
+				  multiSelectPrefix="ss_folder_id"
 				/>
 			</div>
 </td></tr></table>

@@ -83,6 +83,7 @@ import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.SimpleProfiler;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
@@ -1514,9 +1515,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							entryData.put(nameValue, v);
 						}
 					} else if (itemName.equals("places")) {
-						if (inputData.exists("idChoices")) {
+						if (inputData.exists(WebKeys.URL_ID_CHOICES)) {
 							ArrayList ids = new ArrayList();
-							String[] idChoices = inputData.getValues("idChoices");
+							String[] idChoices = inputData.getValues(WebKeys.URL_ID_CHOICES);
 							for (int i = 0; i < idChoices.length; i++) {
 								String[] idc = idChoices[i].split(" ");
 								for (int j = 0; j < idc.length; j++) {

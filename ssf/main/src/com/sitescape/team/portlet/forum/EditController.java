@@ -29,6 +29,7 @@
 package com.sitescape.team.portlet.forum;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -116,9 +117,17 @@ public class EditController extends SAbstractController {
 				itFormData = formData.entrySet().iterator();
 				while (itFormData.hasNext()) {
 					Map.Entry me = (Map.Entry) itFormData.next();
-					if (((String)me.getKey()).startsWith("id_")) {
-						String forumId = ((String)me.getKey()).substring(3);
-						if (!forumPrefIdList.contains(forumId) && !forumDelIdList.contains(forumId)) forumPrefIdList.add(forumId);
+					if (WebKeys.URL_ID_CHOICES.equals((String)me.getKey())) {
+						String[] values = (String[])me.getValue();
+						for (int i = 0; i < values.length; i++) {
+							String[] valueSplited = values[i].split("\\s");
+							for (int j = 0; j < valueSplited.length; j++) {
+								if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
+									String forumId = valueSplited[j].substring(2);
+									if (!forumPrefIdList.contains(forumId) && !forumDelIdList.contains(forumId)) forumPrefIdList.add(forumId);
+								}
+							}
+						}
 					}
 				}
 				if (ViewController.FORUM_PORTLET.equals(displayType)) {
@@ -158,7 +167,8 @@ public class EditController extends SAbstractController {
 				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, LongIdUtil.getIdsAsString(request.getParameterValues("users")));
 				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, LongIdUtil.getIdsAsString(request.getParameterValues("groups"))); 			
 			} else if (ViewController.WORKSPACE_PORTLET.equals(displayType)) {
-				String id = PortletRequestUtils.getStringParameter(request, "topWorkspace"); 
+				String id = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
+				id = id.replaceAll("topWorkspace", "").trim();
 				if (Validator.isNotNull(id)) {
 					prefs.setValue(WebKeys.WORKSPACE_PREF_ID, id);
 				}
@@ -192,7 +202,7 @@ public class EditController extends SAbstractController {
 			Collection folders = getBinderModule().getBinders(folderIds);
 		
 			model.put(WebKeys.FOLDER_LIST, folders);
-			model.put(WebKeys.BINDER_ID_LIST, folderIds);
+			model.put(WebKeys.BINDER_ID_LIST, Arrays.asList(forumPrefIdList));
 			return new ModelAndView(WebKeys.VIEW_FORUM_EDIT, model);
 		} else if (ViewController.MOBILE_PORTLET.equals(displayType)) {	
 	    	Document wsTree = getBinderModule().getDomBinderTree(RequestContextHolder.getRequestContext().getZoneId(), 

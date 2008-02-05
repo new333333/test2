@@ -33,13 +33,32 @@
 <c:set var="treeName" value="${ssComponentId}${renderResponse.namespace}"/>
 <script type="text/javascript">
 function ${treeName}_showId(forum, obj) {
+/*
 	var formObj = ss_getContainingForm(obj);
-	if (formObj["ss_folder_id_"+forum] && formObj["ss_folder_id_"+forum].checked) {
-		formObj["ss_folder_id_"+forum].checked=false
+	if (formObj["ss_folder_id"+forum] && formObj["ss_folder_id"+forum].checked) {
+		formObj["ss_folder_id"+forum].checked=false
 	} else {
-		formObj["ss_folder_id_"+forum].checked=true
+		formObj["ss_folder_id"+forum].checked=true
 	}
 	return false
+*/
+	if (obj.ownerDocument) {
+		var cDocument = obj.ownerDocument;
+	} else if (obj.document) {
+		cDocument = obj.document;
+	}
+	if (cDocument) {
+		var r = cDocument.getElementById("ss_tree_checkbox${treeName}ss_folder_id" + forum);
+		if (r) {
+			if (r.checked !== undefined) {
+				r.checked = !r.checked;
+			}
+			if (r.onclick !== undefined) {
+				r.onclick();
+			}
+		}
+	}
+	return false;	
 }
 </script>
 <br/>
@@ -100,7 +119,7 @@ function ${treeName}_showId(forum, obj) {
   treeDocument="${ssDashboard.beans[ssComponentId].workspaceTree}"  
   rootOpen="true" 
   multiSelect="${ssDashboard.beans[ssComponentId].ssBinderIdList}" 
-  multiSelectPrefix="ss_folder_id_"
+  multiSelectPrefix="ss_folder_id"
 />
 </div>
 </td></tr>

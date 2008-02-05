@@ -34,17 +34,22 @@
 <c:set var="treeName" value="wsTree${ssComponentId}${renderResponse.namespace}"/>
 <script type="text/javascript">
 function ${treeName}_showId(forum, obj) {
-	var formObj = ss_getContainingForm(obj);
-	var r = formObj.data_topId;
-    for (var b = 0; b < r.length; b++) {
-      if (r[b].value == forum) 	{
-      	r[b].checked=true;
-      } else {
-      	r[b].checked=false;
-      }
+	if (obj.ownerDocument) {
+		var cDocument = obj.ownerDocument;
+	} else if (obj.document) {
+		cDocument = obj.document;
 	}
-	ss_clearSingleSelect('${treeName}');
-	
+	if (cDocument) {
+		var r = cDocument.getElementById("ss_tree_radio${treeName}data_topId" + forum);
+		if (r) {
+			if (r.checked !== undefined) {
+				r.checked = true;
+			}
+			if (r.onclick !== undefined) {
+				r.onclick();
+			}
+		}
+	}
 	return false;
 }
 </script>
