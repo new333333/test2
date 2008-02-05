@@ -30,7 +30,7 @@ package com.sitescape.team.module.profile.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-public class JaxRpcProfileService extends ServletEndpointSupport implements ProfileService {
+public class ProfileServiceEndpoint extends ServletEndpointSupport implements ProfileService {
 
 	private ProfileService profileService;
 	

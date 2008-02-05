@@ -26,32 +26,36 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.zone.remoting.ws;
+package com.sitescape.team.module.binder.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-public class JaxRpcZoneService extends ServletEndpointSupport implements ZoneService {
+public class BinderServiceEndpoint extends ServletEndpointSupport implements BinderService {
 
-	private ZoneService zoneService;
+	private BinderService binderService;
 	
 	protected void onInit() {
-		this.zoneService = (ZoneService) getWebApplicationContext().getBean("zoneService");
+		this.binderService = (BinderService) getWebApplicationContext().getBean("binderService");
 	}
 	
-	protected ZoneService getZoneService() {
-		return zoneService;
+	protected BinderService getBinderService() {
+		return binderService;
 	}
-
-	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
-		getZoneService().addZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	
+	public String getTeamMembersAsXML(long binderId) {
+		return getBinderService().getTeamMembersAsXML(binderId);
 	}
-
-	public void deleteZoneUnderPortal(String zoneName) {
-		getZoneService().deleteZoneUnderPortal(zoneName);
+	
+	public String getTeamsAsXML() {
+		return getBinderService().getTeamsAsXML();
 	}
-
-	public void modifyZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
-		getZoneService().modifyZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	
+	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
+		return getBinderService().getWorkspaceTreeAsXML(binderId, levels, page);
 	}
-
+	
+	public String search(String query, int offset, int maxResults) {
+		return getBinderService().search(query, offset, maxResults);
+	}
+	
 }

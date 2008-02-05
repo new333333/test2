@@ -26,23 +26,28 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.ical.remoting.ws;
+package com.sitescape.team.module.definition.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-public class JaxRpcIcalService extends ServletEndpointSupport implements IcalService {
+public class DefinitionServiceEndpoint extends ServletEndpointSupport implements DefinitionService {
 
-	private IcalService icalService;
+	private DefinitionService definitionService;
 	
 	protected void onInit() {
-		this.icalService = (IcalService) getWebApplicationContext().getBean("icalService");
+		this.definitionService = (DefinitionService) getWebApplicationContext().getBean("definitionService");
 	}
-	protected IcalService getIcalService() {
-		return icalService;
+	
+	protected DefinitionService getDefinitionService() {
+		return definitionService;
 	}
 
-	public void uploadCalendarEntries(long folderId, String iCalDataAsXML) {
-		getIcalService().uploadCalendarEntries(folderId, iCalDataAsXML);
+	public String getDefinitionAsXML(String definitionId) {
+		return getDefinitionService().getDefinitionAsXML(definitionId);
+	}
+
+	public String getDefinitionConfigAsXML() {
+		return getDefinitionService().getDefinitionConfigAsXML();
 	}
 
 }

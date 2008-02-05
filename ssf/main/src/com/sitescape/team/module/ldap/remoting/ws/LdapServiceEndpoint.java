@@ -26,23 +26,24 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.admin.remoting.ws;
+package com.sitescape.team.module.ldap.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-public class JaxRpcAdminService extends ServletEndpointSupport implements AdminService {
+public class LdapServiceEndpoint extends ServletEndpointSupport implements LdapService {
 
-	private AdminService adminService;
+	private LdapService ldapService;
 	
 	protected void onInit() {
-		this.adminService = (AdminService) getWebApplicationContext().getBean("adminService");
-	}
-	protected AdminService getAdminService() {
-		return adminService;
+		this.ldapService = (LdapService) getWebApplicationContext().getBean("ldapService");
 	}
 	
-	public long addBinder(long parentBinderId, long binderConfigId, String title) {
-		return getAdminService().addBinder(parentBinderId, binderConfigId, title);
+	protected LdapService getLdapService() {
+		return ldapService;
+	}
+
+	public void syncUser(Long userId) {
+		getLdapService().syncUser(userId);
 	}
 
 }

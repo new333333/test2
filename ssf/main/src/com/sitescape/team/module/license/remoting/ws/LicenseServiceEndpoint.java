@@ -26,43 +26,39 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.folder.remoting.ws;
+package com.sitescape.team.module.license.remoting.ws;
 
+import java.util.Collection;
+
+import org.dom4j.Document;
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-public class JaxRpcFolderService extends ServletEndpointSupport implements FolderService {
+public class LicenseServiceEndpoint extends ServletEndpointSupport implements LicenseService {
 
-	private FolderService folderService;
+	private LicenseService licenseService;
 	
 	protected void onInit() {
-		this.folderService = (FolderService) getWebApplicationContext().getBean("folderService");
-	}
-	protected FolderService getFolderService() {
-		return folderService;
+		this.licenseService = (LicenseService) getWebApplicationContext().getBean("licenseService");
 	}
 	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
-		return getFolderService().addFolderEntry(binderId, definitionId, inputDataAsXML, attachedFileName);
+	protected LicenseService getLicenseService() {
+		return licenseService;
 	}
 
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML) {
-		return getFolderService().addReply(binderId, parentId, definitionId, inputDataAsXML);
+	public long getExternalUsers() {
+		return getLicenseService().getExternalUsers();
 	}
 
-	public String getFolderEntriesAsXML(long binderId) {
-		return getFolderService().getFolderEntriesAsXML(binderId);
+	public Collection<Document> getLicenses() {
+		return getLicenseService().getLicenses();
 	}
 
-	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments) {
-		return getFolderService().getFolderEntryAsXML(binderId, entryId, includeAttachments);
+	public long getRegisteredUsers() {
+		return getLicenseService().getRegisteredUsers();
 	}
 
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
-		getFolderService().modifyFolderEntry(binderId, entryId, inputDataAsXML);
-	}
-	
-	public void uploadFolderFile(long binderId, long entryId, String fileUploadDataItemName, String fileName) {
-		getFolderService().uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
+	public void updateLicense() {
+		getLicenseService().updateLicense();
 	}
 
 }

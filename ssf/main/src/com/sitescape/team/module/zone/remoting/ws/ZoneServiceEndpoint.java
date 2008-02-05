@@ -26,39 +26,32 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.license.remoting.ws;
+package com.sitescape.team.module.zone.remoting.ws;
 
-import java.util.Collection;
-
-import org.dom4j.Document;
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-public class JaxRpcLicenseService extends ServletEndpointSupport implements LicenseService {
+public class ZoneServiceEndpoint extends ServletEndpointSupport implements ZoneService {
 
-	private LicenseService licenseService;
+	private ZoneService zoneService;
 	
 	protected void onInit() {
-		this.licenseService = (LicenseService) getWebApplicationContext().getBean("licenseService");
+		this.zoneService = (ZoneService) getWebApplicationContext().getBean("zoneService");
 	}
 	
-	protected LicenseService getLicenseService() {
-		return licenseService;
+	protected ZoneService getZoneService() {
+		return zoneService;
 	}
 
-	public long getExternalUsers() {
-		return getLicenseService().getExternalUsers();
+	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
+		getZoneService().addZoneUnderPortal(zoneName, virtualHost, mailDomain);
 	}
 
-	public Collection<Document> getLicenses() {
-		return getLicenseService().getLicenses();
+	public void deleteZoneUnderPortal(String zoneName) {
+		getZoneService().deleteZoneUnderPortal(zoneName);
 	}
 
-	public long getRegisteredUsers() {
-		return getLicenseService().getRegisteredUsers();
-	}
-
-	public void updateLicense() {
-		getLicenseService().updateLicense();
+	public void modifyZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
+		getZoneService().modifyZoneUnderPortal(zoneName, virtualHost, mailDomain);
 	}
 
 }
