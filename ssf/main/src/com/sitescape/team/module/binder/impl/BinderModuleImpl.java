@@ -697,7 +697,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	SortField[] fields = SearchUtils.getSortFields(options); 
 	   	so.setSortBy(fields);
 
-	   	if(logger.isDebugEnabled()) {
+	   	if(logger.isDebugEnabled() && searchQuery != null) {
 	   		logger.debug("Query is in executeSearchQuery: " + searchQuery.asXML());
 	   	}
 
