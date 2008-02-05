@@ -81,8 +81,8 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 <div align="left" class="ssPageNavi">
  <table border="0" cellspacing="0px" cellpadding="0px">
   <tr>
-	<td><%// @ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %></td>   
-    <td style="padding-left: 20px;"><%// @ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %></td>
+	<td><%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %></td>   
+    <td style="padding-left: 20px;"><%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %></td>
 	<td align="right" width="20%">
 		  <a href="<ssf:url
 			adapter="true" 

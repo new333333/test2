@@ -36,10 +36,9 @@
 <div class="ss_style ss_portlet">
 	<div style="margin:10px;">
 		<form name="filterData" id="filterData" method="post" 
-		    action="<portlet:actionURL windowState="maximized"><portlet:param 
-		    name="action" value="build_filter"/><portlet:param 
-		    name="binderId" value="${ssBinder.id}"/><portlet:param 
-		    name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>"
+		    action="<ssf:url action="build_filter" actionUrl="true"><ssf:param 
+		    name="binderId" value="${ssBinder.id}"/><ssf:param 
+		    name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
 		    onSubmit="return ss_onSubmit(this);">
 
 			<div class="ss_buttonBarRight">

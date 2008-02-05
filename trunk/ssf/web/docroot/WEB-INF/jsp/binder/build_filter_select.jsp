@@ -51,10 +51,9 @@ function checkFilterForm(obj) {
 </script>
 
 <form name="filterData" id="filterData" method="post" 
-    action="<portlet:actionURL windowState="maximized"><portlet:param 
-    	name="action" value="build_filter"/><portlet:param 
-    	name="binderId" value="${ssBinder.id}"/><portlet:param 
-    	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>" 
+    action="<ssf:url action="build_filter" actionUrl="true"><ssf:param 
+    	name="binderId" value="${ssBinder.id}"/><ssf:param 
+    	name="binderType" value="${ssBinder.entityType}"/></ssf:url>" 
 	onSubmit="return(checkFilterForm(this))"
 >
 

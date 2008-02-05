@@ -53,7 +53,7 @@
 <c:if test="${empty ssReloadUrl}">
 <c:if test="${ss_displayType == 'ss_workarea'}">
 <script type="text/javascript">
-function ss_workarea_showId(id, action, entryId) {
+function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 	if (typeof entryId == "undefined") entryId = "";
 	//Build a url to go to
 	var url = "<ssf:url     
@@ -80,6 +80,8 @@ function ss_workarea_showId(id, action, entryId) {
 </ssf:ifadapter>
 	return false;
 }
+if (typeof ss_workarea_showId == "undefined") 
+	ss_workarea_showId = ss_workarea_showId${renderResponse.namespace};
 </script>
 <ssf:ifnotadapter>
 <script type="text/javascript">

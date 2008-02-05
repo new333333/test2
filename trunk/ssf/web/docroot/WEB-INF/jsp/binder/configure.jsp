@@ -31,7 +31,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
-function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id, obj, action) {
+function ss_treeShowIdConfig$renderResponse.namespace}(id, obj, action) {
 	var binderId = id;
 	//See if the id is formatted (e.g., "ss_favorites_xxx")
 	if (binderId.indexOf("_") >= 0) {
@@ -40,9 +40,8 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 	}
 
 	//Build a url to go to
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="configure_definitions"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>";
+	var url = "<ssf:url action="configure_definitions"><ssf:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>";
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	self.location.href = url;
 	return false;
@@ -69,10 +68,9 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 </td>
 <td align="right" valign="top">
 <form class="ss_form" method="post" style="display:inline;" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="configure_definitions"/><portlet:param 
-	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
+	action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
@@ -109,10 +107,9 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 
 <form name="inheritanceForm" method="post" 
   onSubmit="return ss_onSubmit(this);"
-  action="<portlet:actionURL windowState="maximized"><portlet:param 
-  		name="action" value="configure_definitions"/><portlet:param 
-  		name="binderId" value="${ssBinder.id}"/><portlet:param 
-  		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></portlet:actionURL>">
+  action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+  		name="binderId" value="${ssBinder.id}"/><ssf:param 
+  		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/></ssf:url>">
 <ssf:nlt tag="binder.configure.definitions.inherit"
  text="Inherit definitions :"/>
 <br>
@@ -126,10 +123,9 @@ function ss_treeShowIdConfig<ssf:ifadapter><portletadapter:namespace/></ssf:ifad
 </fieldset>
 <br>
 </c:if>
-<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="configure_definitions"/><portlet:param 
-		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><portlet:param 
-		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" >
+<form method="post" action="<ssf:url action="configure_definitions" actionUrl="true"><ssf:param 
+		name="binderType" value="${ssBinder.entityIdentifier.entityType}"/><ssf:param 
+		name="binderId" value="${ssBinder.id}"/></ssf:url>" >
 
 
 <c:if test="${ssBinder.entityType == 'workspace'}">

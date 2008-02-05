@@ -62,7 +62,7 @@ var ss_checkTitleUrl = "<ssf:url
 	</ssf:url>";
 ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 
-function ss_treeShowIdAddBinder<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(id, obj, action) {
+function ss_treeShowIdAddBinder$renderResponse.namespace}(id, obj, action) {
 	var binderId = id;
 	//See if the id is formatted (e.g., "ss_favorites_xxx")
 	if (binderId.indexOf("_") >= 0) {
@@ -71,10 +71,9 @@ function ss_treeShowIdAddBinder<ssf:ifadapter><portletadapter:namespace/></ssf:i
 	}
 
 	//Build a url to go to
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="add_binder"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/><portlet:param 
-		name="operation" value="add_workspace"/></portlet:renderURL>";
+	var url = "<ssf:url action="add_binder" actionUrl="true"><ssf:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/><ssf:param 
+		name="operation" value="add_workspace"/></ssf:url>";
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	self.location.href = url;
 	return false;
@@ -92,7 +91,7 @@ ss_addBinderConfigInternalIds['${binderConfigId}'] = ss_teamWorkspaceInternalId;
 </c:if>
 
 function ss_showAddBinderOptions() {
-	var formObj = self.document.getElementById('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm');
+	var formObj = self.document.getElementById('$renderResponse.namespace}fm');
 	if (document.getElementById('folderConfigIdTitle') == null) return;
 	
 	//Default to inheriting from parent
@@ -164,12 +163,11 @@ function ss_checkForm(obj) {
 <br/>
 
 <form class="ss_style ss_form" 
-  action="<portlet:actionURL windowState="maximized"><portlet:param 
-  		name="action" value="add_binder"/><portlet:param 
-  		name="binderId" value="${ssBinder.id}"/><portlet:param 
-  		name="operation" value="${ssOperation}"/></portlet:actionURL>"
-  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
-  id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
+  action="<ssf:url action="add_binder" actionUrl="true"><ssf:param 
+  		name="binderId" value="${ssBinder.id}"/><ssf:param 
+  		name="operation" value="${ssOperation}"/></ssf:url>"
+  name="$renderResponse.namespace}fm" 
+  id="$renderResponse.namespace}fm" 
   method="post" onSubmit="return ss_checkForm(this);">
 <span class="ss_bold">
   <c:if test="${ssOperation == 'add_workspace'}">

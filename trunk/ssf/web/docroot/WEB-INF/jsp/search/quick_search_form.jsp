@@ -28,21 +28,18 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<form action="<portlet:actionURL windowState="maximized" portletMode="view"><portlet:param 
-		name="action" value="advanced_search"/><portlet:param 
-		name="tabTitle" value=""/><portlet:param 
-		name="newTab" value="1"/></portlet:actionURL>" method="post" id="advSearchForm">
+<form action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+		name="tabTitle" value=""/><ssf:param 
+		name="newTab" value="1"/></ssf:url>" method="post" id="advSearchForm">
 	<div id="ss_searchForm_container">
 		<div id="ss_searchForm">
 			<div id="ss_searchForm_main">
 				<h4><ssf:nlt tag="searchForm.quicksearch.Title"/></h4>
-				<a href="<portlet:actionURL windowState="maximized" 
-					portletMode="view"><portlet:param 
-					name="action" value="advanced_search"/><portlet:param 
-					name="tabTitle" value=""/><portlet:param 
-					name="newTab" value="1"/><portlet:param 
-					name="searchText" value="${ss_filterMap.searchText}"/><portlet:param 
-					name="operation" value="ss_searchResults"/></portlet:actionURL>" 
+				<a href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+					name="tabTitle" value=""/><ssf:param 
+					name="newTab" value="1"/><ssf:param 
+					name="searchText" value="${ss_filterMap.searchText}"/><ssf:param 
+					name="operation" value="ss_searchResults"/></ssf:url>" 
 					class="ss_advanced"><ssf:nlt tag="navigation.search.advanced"/></a>
 				<div class="ss_clear"></div>
 								

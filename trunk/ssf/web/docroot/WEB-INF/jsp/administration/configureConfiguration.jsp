@@ -42,9 +42,8 @@ String cTreeName = renderResponse.getNamespace() + "_cTree";
 
 function <%=cTreeName%>_showId(id, obj, action) {
 	//Build a url to go to
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-			name="action" value="ssActionPlaceHolder"/><portlet:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
+	var url = "<ssf:url action="ssActionPlaceHolder"><ssf:param 
+			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	self.location.href = url;
@@ -57,10 +56,9 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br/>
 <br/>
 <h3><ssf:nlt tag="administration.configure_cfg.add"/></h3>
-<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>add" method="post" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="configure_configuration"/><portlet:param 
-	name="operation" value="add"/></portlet:actionURL>" >
+<form class="ss_style ss_form" name="$renderResponse.namespace}add" method="post" 
+	action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
+	name="operation" value="add"/></ssf:url>" >
 		
 	 <input type="radio" name="cfgType" value="8"><ssf:nlt tag="general.type.workspace"/><br/>
 	 <input type="radio" name="cfgType" value="5" checked><ssf:nlt tag="general.type.folder"/><br/>
@@ -85,10 +83,9 @@ function <%=cTreeName%>_showId(id, obj, action) {
 		    name="cfgType" value="-2"/></ssf:url>"><ssf:nlt tag="administration.configure_cfg.import"/></a> 
 <ssf:inlineHelp tag="ihelp.designers.import_definitions"/>
 </li>
-<li><a href="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="configure_configuration"/><portlet:param 
-	name="operation" value="add"/><portlet:param 
-	name="cfgType" value="-3"/></portlet:actionURL>"><ssf:nlt tag="administration.configure_cfg.reload"/></a> 
+<li><a href="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
+	name="operation" value="add"/><ssf:param 
+	name="cfgType" value="-3"/></ssf:url>"><ssf:nlt tag="administration.configure_cfg.reload"/></a> 
 </li>
 </ul>
 </div> 
@@ -96,10 +93,9 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br>
 <hr>
 <br/>
-<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>export" method="post" 
-	action="<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="configure_configuration"/><portlet:param 
-		name="operation" value="export"/></portlet:renderURL>" >
+<form class="ss_style ss_form" name="$renderResponse.namespace}export" method="post" 
+	action="<ssf:url action="configure_configuration"><ssf:param 
+		name="operation" value="export"/></ssf:url>" >
 <h3><ssf:nlt tag="administration.export.templates"/></h3>
 <br>
 	<input type="submit" class="ss_submit" name="exportBtn" value="<ssf:nlt tag="button.export" text="Export"/>">
@@ -140,7 +136,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br/>
 
 <form class="ss_style ss_form" method="post" 
-	action="<portlet:renderURL windowState="normal" portletMode="view"></portlet:renderURL>">
+	action="<ssf:url />">
 
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
@@ -150,26 +146,25 @@ function <%=cTreeName%>_showId(id, obj, action) {
 
 <c:if test="${ssOperation == 'export'}">
 <script type="text/javascript">
-var ssExportURL="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="configure_configuration"/></portlet:actionURL>";
+var ssExportURL="<ssf:url action="configure_configuration" actionUrl="true"/>";
 </script>
 
 <table class="ss_style" width="100%"><tr><td>
 
 <form class="ss_style ss_form" action="<ssf:url webPath="templateDownload"/>" 
-	method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+	method="post" name="$renderResponse.namespace}fm">
 
 <br>
 <br>
 <span class="ss_bold"><ssf:nlt tag="administration.export.templates.select"/></span>
 <%@include file="/WEB-INF/jsp/administration/commonSelectTree.jsp" %>
 <script type="text/javascript">
-document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.cancelBtn.onclick=function () {
-	document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.action=ssExportURL;
-	document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.onsubmit=function() { return true; };
+document.$renderResponse.namespace}fm.cancelBtn.onclick=function () {
+	document.$renderResponse.namespace}fm.action=ssExportURL;
+	document.$renderResponse.namespace}fm.onsubmit=function() { return true; };
 	return true;
 };
-document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
+document.$renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
 </script>
 
 </form>
@@ -197,9 +192,8 @@ var ss_reloadUrl = ss_reloadUrl${ssBinder.id};
 
 function <%=cTreeName%>_showId(id, obj, action) {
 	//Build a url to go to
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-			name="action" value="ssActionPlaceHolder"/><portlet:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
+	var url = "<ssf:url action="ssActionPlaceHolder" actionUrl="true"><ssf:param 
+			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	self.location.href = url;
@@ -292,8 +286,8 @@ function ss_confirmDeleteConfig() {
 ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));
 </script>
 <div class="ss_formBreak" align="left"/>
-<form method="post" action="<portlet:renderURL><portlet:param 
-		name="action" value="configure_configuration"/></portlet:renderURL>" >
+<form method="post" action="<ssf:url><ssf:param 
+		name="action" value="configure_configuration"/></ssf:url>" >
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </div>
@@ -304,10 +298,9 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 <c:if test="${ssOperation == 'add_folder' or ssOperation == 'add_workspace'}">
 <div class="ss_form" style="margin:6px;">
 <div style="margin:6px;">
-<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="configure_configuration"/><portlet:param 
-		name="operation" value="${ssOperation}"/><portlet:param 
-		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" >
+<form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
+		name="operation" value="${ssOperation}"/><ssf:param 
+		name="binderId" value="${ssBinderConfig.id}"/></ssf:url>" >
 
 <h3><ssf:nlt tag="administration.configure_cfg.existing"/></h3>
   <c:forEach var="config" items="${ssBinderConfigs}" varStatus="status">

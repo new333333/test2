@@ -36,9 +36,8 @@ String wsTreeName = "email_" + renderResponse.getNamespace();
 <script type="text/javascript">
 function <%= wsTreeName %>_showId(id, obj, action) {
 	//Build a url to go to
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-			name="action" value="ssActionPlaceHolder"/><portlet:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>"
+	var url = "<ssf:url action="ssActionPlaceHolder"><ssf:param 
+			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 	self.location.href = url;
@@ -50,10 +49,9 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <c:when test="${!empty ssWsDomTree}">
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
-    id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
-    action="<portlet:actionURL windowState="maximized"><portlet:param 
-    	name="action" value="config_email"/></portlet:actionURL>">
+<form class="ss_style ss_form" name="$renderResponse.namespace}fm" 
+    id="$renderResponse.namespace}fm" method="post" 
+    action="<ssf:url action="config_email" actionUrl="true"/>">
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </div>
@@ -90,9 +88,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
   onSubmit="return ss_onSubmit(this);"
 
-    action="<portlet:actionURL windowState="maximized"><portlet:param 
-    	name="action" value="config_email"/><portlet:param 
-    	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
+    action="<ssf:url action="config_email" actionUrl="true"><ssf:param 
+    	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 
 <br/>
 <c:if test="${!empty ssScheduleInfo}">
