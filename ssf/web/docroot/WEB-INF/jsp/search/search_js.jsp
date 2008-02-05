@@ -49,10 +49,8 @@ var ss_nlt_tagsPersonalTags = "<ssf:nlt tag="tags.personalTags"/>";
 var ss_searchFormLabelAuthor = "<ssf:nlt tag="searchForm.label.author"/>";
 var ss_searchFormLabelDate = "<ssf:nlt tag="searchForm.label.date"/>";
 var ss_searchFormLabelLastActivity = "<ssf:nlt tag="searchForm.label.lastActivity"/>";
-var ss_AdvancedSearchURLNoOperation = "<portlet:actionURL windowState="maximized" 
-		portletMode="view"><portlet:param 
-		name="action" value="advanced_search"/><portlet:param 
-		name="tabId" value="${tabId}"/></portlet:actionURL>";
+var ss_AdvancedSearchURLNoOperation = "<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+		name="tabId" value="${tabId}"/></ssf:url>";
 var ss_AdvancedSearchURL = ss_AdvancedSearchURLNoOperation + "&operation=viewPage";
 var ss_currentTabId = "${tabId}";
 

@@ -86,68 +86,8 @@ var ss_entryWindowWidth = 0;
 var ss_entryWindowWidth = "${ss_entryWindowWidth}";
 </c:if>
 var ss_entryBackgroundColor = "${ss_style_background_color}";
-
-
-function ss_showForumEntryInIframe_Overlay(url) {
-	//ss_debug('show url in frame = '+url)
-//	ss_positionEntryDiv();
-    var wObj = self.document.getElementById('ss_showentryframe')
-    var wObj1 = self.document.getElementById('ss_showentrydiv')
-	if (wObj1 == null){
-		ss_showForumEntryInIframe_Popup(url);
-		return true;
-	}
-	
-    ss_hideSpannedAreas();
-    wObj1.style.display = "block";
-    wObj1.style.zIndex = ssEntryZ;
-    wObj1.style.visibility = "visible";
-    //wObj.style.height = parseInt(wObj1.style.height) - ss_entryDivBottomDelta + "px";
-
-    if (wObj.src && wObj.src == url) {
-    	ss_nextUrl = url
-    	wObj.src = ss_forumRefreshUrl;
-    } else if (wObj.src && wObj.src == ss_forumRefreshUrl && ss_nextUrl == url) {
-    	wObj.src = ss_forumRefreshUrl;
-    } else {
-    	wObj.src = url
-    }
-
-	if (self.ss_positionEntryDiv) ss_positionEntryDiv();
-    
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
-
-    return false;
-}
-
-
 var ss_viewEntryPopupWidth = "<c:out value="${ss_entryWindowWidth}"/>px";
 var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
-function ss_showForumEntryInIframe_Popup(url) {
-
-    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
-    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
-    var wObj = self.document.getElementById('ss_showfolder')
-
-	if (!wObj) {
-		if (self.parent) {
-			wObj = self.parent.document.getElementById('ss_showfolder')
-		}
-	}
-	
-	if (!wObj) {
-		ss_viewEntryPopupWidth = 700;
-		ss_viewEntryPopupHeight = 350;
-	} else {
-		if (ss_viewEntryPopupWidth == "0px") ss_viewEntryPopupWidth = ss_getObjectWidth(wObj);
-		if (ss_viewEntryPopupHeight == "0px") ss_viewEntryPopupHeight = parseInt(ss_getWindowHeight()) - 50;
-	}
-	
-    self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
-    return false;
-}
-
 </script>
   
   <!-- Start of dashboard "Add penlet" form -->
