@@ -106,6 +106,7 @@ import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -227,6 +228,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     }
     //optimization so we can manage the deletion to the searchEngine
     public Set<Long> indexTree(Collection binderIds, StatusTicket statusTicket) {
+    	SimpleProfiler sp = new SimpleProfiler(true);
+       	sp.start("indexTree");
     	try {
     		//make list of binders we have access to first
 	    	boolean clearAll = false;
@@ -259,8 +262,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				// 	and delete all the entries under each folderid.
 				for (Binder binder:checked) {
 					IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
-					//delete actual binder
-					IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
 				}
 			}
 		   	for (Binder binder:checked) {
@@ -272,7 +273,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			// It is important to call this at the end of the processing no matter how it went.
 			if (statusTicket != null)
 				statusTicket.done();
+	       	sp.stop("indexTree");
+			if(debugEnabled)
+				logger.debug(sp.toString());
 		}
+
 	} 
     public void indexBinder(Long binderId) {
     	indexBinder(binderId, false);
@@ -649,7 +654,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	   	SortField[] fields = SearchUtils.getSortFields(options); 
 	   	so.setSortBy(fields);
 
-	   	if(logger.isDebugEnabled()) {
+	   	if(logger.isDebugEnabled() && searchQuery != null) {
 	   		logger.debug("Query is in executeSearchQuery: " + searchQuery.asXML());
 	   	}
 
