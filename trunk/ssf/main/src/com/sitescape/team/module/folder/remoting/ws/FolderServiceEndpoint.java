@@ -26,36 +26,43 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.binder.remoting.ws;
+package com.sitescape.team.module.folder.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-public class JaxRpcBinderService extends ServletEndpointSupport implements BinderService {
+public class FolderServiceEndpoint extends ServletEndpointSupport implements FolderService {
 
-	private BinderService binderService;
+	private FolderService folderService;
 	
 	protected void onInit() {
-		this.binderService = (BinderService) getWebApplicationContext().getBean("binderService");
+		this.folderService = (FolderService) getWebApplicationContext().getBean("folderService");
+	}
+	protected FolderService getFolderService() {
+		return folderService;
 	}
 	
-	protected BinderService getBinderService() {
-		return binderService;
+	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
+		return getFolderService().addFolderEntry(binderId, definitionId, inputDataAsXML, attachedFileName);
+	}
+
+	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML) {
+		return getFolderService().addReply(binderId, parentId, definitionId, inputDataAsXML);
+	}
+
+	public String getFolderEntriesAsXML(long binderId) {
+		return getFolderService().getFolderEntriesAsXML(binderId);
+	}
+
+	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments) {
+		return getFolderService().getFolderEntryAsXML(binderId, entryId, includeAttachments);
+	}
+
+	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
+		getFolderService().modifyFolderEntry(binderId, entryId, inputDataAsXML);
 	}
 	
-	public String getTeamMembersAsXML(long binderId) {
-		return getBinderService().getTeamMembersAsXML(binderId);
+	public void uploadFolderFile(long binderId, long entryId, String fileUploadDataItemName, String fileName) {
+		getFolderService().uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
-	
-	public String getTeamsAsXML() {
-		return getBinderService().getTeamsAsXML();
-	}
-	
-	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
-		return getBinderService().getWorkspaceTreeAsXML(binderId, levels, page);
-	}
-	
-	public String search(String query, int offset, int maxResults) {
-		return getBinderService().search(query, offset, maxResults);
-	}
-	
+
 }

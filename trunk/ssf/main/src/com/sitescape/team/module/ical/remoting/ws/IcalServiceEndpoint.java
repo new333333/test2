@@ -26,24 +26,23 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.ldap.remoting.ws;
+package com.sitescape.team.module.ical.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-public class JaxRpcLdapService extends ServletEndpointSupport implements LdapService {
+public class IcalServiceEndpoint extends ServletEndpointSupport implements IcalService {
 
-	private LdapService ldapService;
+	private IcalService icalService;
 	
 	protected void onInit() {
-		this.ldapService = (LdapService) getWebApplicationContext().getBean("ldapService");
+		this.icalService = (IcalService) getWebApplicationContext().getBean("icalService");
 	}
-	
-	protected LdapService getLdapService() {
-		return ldapService;
+	protected IcalService getIcalService() {
+		return icalService;
 	}
 
-	public void syncUser(Long userId) {
-		getLdapService().syncUser(userId);
+	public void uploadCalendarEntries(long folderId, String iCalDataAsXML) {
+		getIcalService().uploadCalendarEntries(folderId, iCalDataAsXML);
 	}
 
 }

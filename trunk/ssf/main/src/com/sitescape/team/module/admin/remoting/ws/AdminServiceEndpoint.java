@@ -26,28 +26,23 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.definition.remoting.ws;
+package com.sitescape.team.module.admin.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-public class JaxRpcDefinitionService extends ServletEndpointSupport implements DefinitionService {
+public class AdminServiceEndpoint extends ServletEndpointSupport implements AdminService {
 
-	private DefinitionService definitionService;
+	private AdminService adminService;
 	
 	protected void onInit() {
-		this.definitionService = (DefinitionService) getWebApplicationContext().getBean("definitionService");
+		this.adminService = (AdminService) getWebApplicationContext().getBean("adminService");
+	}
+	protected AdminService getAdminService() {
+		return adminService;
 	}
 	
-	protected DefinitionService getDefinitionService() {
-		return definitionService;
-	}
-
-	public String getDefinitionAsXML(String definitionId) {
-		return getDefinitionService().getDefinitionAsXML(definitionId);
-	}
-
-	public String getDefinitionConfigAsXML() {
-		return getDefinitionService().getDefinitionConfigAsXML();
+	public long addBinder(long parentBinderId, long binderConfigId, String title) {
+		return getAdminService().addBinder(parentBinderId, binderConfigId, title);
 	}
 
 }

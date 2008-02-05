@@ -43,7 +43,7 @@
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.admin.module.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="AdminSoapService"/>
 		<parameter name="wsdlServicePort" value="AdminService"/>
-		<parameter name="className" value="com.sitescape.team.module.admin.remoting.ws.JaxRpcAdminService"/>
+		<parameter name="className" value="com.sitescape.team.module.admin.remoting.ws.AdminServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="AdminServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
@@ -59,7 +59,7 @@
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.binder.module.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="BinderSoapService"/>
 		<parameter name="wsdlServicePort" value="BinderService"/>
-		<parameter name="className" value="com.sitescape.team.module.binder.remoting.ws.JaxRpcBinderService"/>
+		<parameter name="className" value="com.sitescape.team.module.binder.remoting.ws.BinderServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="BinderServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
@@ -75,7 +75,7 @@
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.definition.module.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="DefinitionSoapService"/>
 		<parameter name="wsdlServicePort" value="DefinitionService"/>
-		<parameter name="className" value="com.sitescape.team.module.definition.remoting.ws.JaxRpcDefinitionService"/>
+		<parameter name="className" value="com.sitescape.team.module.definition.remoting.ws.DefinitionServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="DefinitionServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
@@ -91,7 +91,7 @@
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.folder.module.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="FolderSoapService"/>
 		<parameter name="wsdlServicePort" value="FolderService"/>
-		<parameter name="className" value="com.sitescape.team.module.folder.remoting.ws.JaxRpcFolderService"/>
+		<parameter name="className" value="com.sitescape.team.module.folder.remoting.ws.FolderServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="FolderServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
@@ -107,7 +107,7 @@
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.ical.module.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="IcalSoapService"/>
 		<parameter name="wsdlServicePort" value="IcalService"/>
-		<parameter name="className" value="com.sitescape.team.module.ical.remoting.ws.JaxRpcIcalService"/>
+		<parameter name="className" value="com.sitescape.team.module.ical.remoting.ws.IcalServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="IcalServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
@@ -123,7 +123,7 @@
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.ldap.module.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="LdapSoapService"/>
 		<parameter name="wsdlServicePort" value="LdapService"/>
-		<parameter name="className" value="com.sitescape.team.module.ldap.remoting.ws.JaxRpcLdapService"/>
+		<parameter name="className" value="com.sitescape.team.module.ldap.remoting.ws.LdapServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="LdapServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
@@ -139,7 +139,7 @@
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.license.module.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="LicenseSoapService"/>
 		<parameter name="wsdlServicePort" value="LicenseService"/>
-		<parameter name="className" value="com.sitescape.team.module.license.remoting.ws.JaxRpcLicenseService"/>
+		<parameter name="className" value="com.sitescape.team.module.license.remoting.ws.LicenseServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="LicenseServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
@@ -155,7 +155,7 @@
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.profile.module.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="ProfileSoapService"/>
 		<parameter name="wsdlServicePort" value="ProfileService"/>
-		<parameter name="className" value="com.sitescape.team.module.profile.remoting.ws.JaxRpcProfileService"/>
+		<parameter name="className" value="com.sitescape.team.module.profile.remoting.ws.ProfileServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="ProfileServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
@@ -171,7 +171,7 @@
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.zone.module.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="ZoneSoapService"/>
 		<parameter name="wsdlServicePort" value="ZoneService"/>
-		<parameter name="className" value="com.sitescape.team.module.zone.remoting.ws.JaxRpcZoneService"/>
+		<parameter name="className" value="com.sitescape.team.module.zone.remoting.ws.ZoneServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="ZoneServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
