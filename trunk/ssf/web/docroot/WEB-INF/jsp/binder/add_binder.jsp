@@ -62,7 +62,7 @@ var ss_checkTitleUrl = "<ssf:url
 	</ssf:url>";
 ss_addValidator("ss_titleCheck", ss_ajax_result_validator);
 
-function ss_treeShowIdAddBinder$renderResponse.namespace}(id, obj, action) {
+function ss_treeShowIdAddBinder${renderResponse.namespace}(id, obj, action) {
 	var binderId = id;
 	//See if the id is formatted (e.g., "ss_favorites_xxx")
 	if (binderId.indexOf("_") >= 0) {
