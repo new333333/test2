@@ -103,29 +103,29 @@ function ss_indexingDone() {
 
 
 function <%= wsTreeName %>_showId(forum, obj, action) {
-	var prefix = action+"_";
-	ss_createTreeCheckbox("<%= wsTreeName %>", prefix, forum);
-	var name = prefix + forum;
-	if (self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm[name] && self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm[name].checked) {
-		self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm[name].checked=false;
-		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
-			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
-			cbObj.checked = false;
-		}
-	} else {
-		self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm[name].checked=true
-		if (self.ss_treeIframeDiv && self.ss_treeIframeDiv.document) {
-			var cbObj = self.ss_treeIframeDiv.document.getElementById("ss_tree_checkbox" + "<%= wsTreeName %>" + name)
-			cbObj.checked = true;
+	if (obj.ownerDocument) {
+		var cDocument = obj.ownerDocument;
+	} else if (obj.document) {
+		cDocument = obj.document;
+	}
+	if (cDocument) {
+		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>" + action + forum);
+		if (r) {
+			if (r.checked !== undefined) {
+				r.checked = !r.checked;
+			}
+			if (r.onclick !== undefined) {
+				r.onclick();
+			}
 		}
 	}
-	return false
+	return false;
 }
 
 </script>
 <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
   rootOpen="true" topId="${ssWsDomTreeBinderId}" 
-  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type_" />
+  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type" />
 
 <br>
 <br>

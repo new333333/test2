@@ -47,6 +47,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.StatusTicket;
@@ -68,23 +69,27 @@ public class ManageSearchIndexController extends  SAbstractController {
 			List<Long> ids = new ArrayList();
 			Long profileId = null;
 			//Get the binders to be indexed
-			Iterator itFormData = formData.entrySet().iterator();
-			while (itFormData.hasNext()) {
-				Map.Entry me = (Map.Entry) itFormData.next();
-				String key = (String)me.getKey();
-				if (key.startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
-					String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + "_", "");
-					ids.add(Long.valueOf(binderId));
-				} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
-					String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + "_", "");
-					ids.add(Long.valueOf(binderId));
-				} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_PEOPLE)) {
-					//people are handled separetly, so we can reindex users without reindex their
-					//the entire workspace tree.
-					String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_PEOPLE + "_", "");
-					profileId = Long.valueOf(binderId);
+			String[] values = (String[])formData.get(WebKeys.URL_ID_CHOICES);
+			for (int i = 0; i < values.length; i++) {
+				String[] valueSplited = values[i].split("\\s");
+				for (int j = 0; j < valueSplited.length; j++) {
+					if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
+						if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
+							String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER, "");
+							ids.add(Long.valueOf(binderId));
+						} else if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
+							String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE, "");
+							ids.add(Long.valueOf(binderId));
+						} else if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_PEOPLE)) {
+							//people are handled separetly, so we can reindex users without reindex their
+							//the entire workspace tree.
+							String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_PEOPLE, "");
+							profileId = Long.valueOf(binderId);
+						}								
+					}
 				}
 			}
+
 			
 			// Create a new status ticket
 			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);

@@ -81,7 +81,6 @@
 		  namespace="${ss_namespace}"
 		  multiSelect="<%= ss_tree_select %>"
 		  multiSelectPrefix="${ss_tree_select_id}"
-		  fixedMultiSelectParamsMode="${ss_tree_fixedMultiSelectParamsMode}" 		  
 		/>
 	</c:when>
 	</c:choose>

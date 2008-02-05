@@ -140,11 +140,34 @@ public class ModifyEntryController extends SAbstractController {
 				
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be move entry
-				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
+				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
+				Long destinationId = null;
+				try {
+					destinationId = Long.valueOf(destinationIdString.replaceAll("destination", "").trim()); 
+				} catch (NumberFormatException e) {
+					// nothing to do
+				}				
 				if (destinationId != null) {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
 					getFolderModule().moveEntry(folderId, entryId, destinationId);
+					setupViewFolder(response, folderId);		
+				} else {
+					setupViewEntry(response, folderId, entryId);
+				}
+			} else if (op.equals(WebKeys.OPERATION_COPY)) {
+				//must be move entry
+				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
+				Long destinationId = null;
+				try {
+					destinationId = Long.valueOf(destinationIdString.replaceAll("destination", "").trim()); 
+				} catch (NumberFormatException e) {
+					// nothing to do
+				}
+				if (destinationId != null) {
+					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
+					getFolderModule().copyEntry(folderId, entryId, destinationId);
 					setupViewFolder(response, folderId);		
 				} else {
 					setupViewEntry(response, folderId, entryId);

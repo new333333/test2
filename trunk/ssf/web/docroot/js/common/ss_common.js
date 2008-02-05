@@ -5178,20 +5178,20 @@ if (ss_treeIds == null) ss_treeIds = new Array();
 function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey) {
 	ss_hideBucketText()
 	if (page == null) page = "";
-	if (ss_treeDisplayStyle && ss_treeDisplayStyle == 'accessible') {
+	if (window["ss_treeDisplayStyle"] && ss_treeDisplayStyle == 'accessible') {
 		return ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, indentKey);
 	}
 	ss_setupStatusMessageDiv()
     var tObj = self.document.getElementById(treeName + "div" + id);
     var jObj = self.document.getElementById(treeName + "join" + id);
     var iObj = self.document.getElementById(treeName + "icon" + id);
-    eval("var showTreeIdRoutine = ss_treeShowIdRoutine_"+treeName+";");
+    var showTreeIdRoutine = window["ss_treeShowIdRoutine_"+treeName];
     if (tObj == null) {
         //See if the tree is in the process of being loaded
         if (ss_treeIds[treeName + "div" + id] != null) return;
         ss_treeIds[treeName + "div" + id] = "1";
         //The div hasn't been loaded yet. Go get the div via ajax
-		eval("var url = ss_treeAjaxUrl_" + treeName);
+		var url = window["ss_treeAjaxUrl_" + treeName];
 		url = ss_replaceSubStrAll(url, "&amp;", "&");
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.addKeyValue("binderId", id)
@@ -5199,10 +5199,10 @@ function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey) {
 		ajaxRequest.addKeyValue("page", page)
 		ajaxRequest.addKeyValue("indentKey", indentKey)
 		ajaxRequest.addKeyValue("showIdRoutine", showTreeIdRoutine)
- 		eval("var treeKey = ss_treeKey_"+treeName);
+ 		var treeKey = window["ss_treeKey_"+treeName];
 		if (treeKey != null)
 			ajaxRequest.addKeyValue("treeKey", treeKey);
-	    eval("var seObj = ss_treeSelected_"+treeName); 	    
+	    var seObj = window["ss_treeSelected_"+treeName];
 	    //add single select id
 	    if (seObj != null) {
 	    	ajaxRequest.addKeyValue("select", seObj);
@@ -5284,7 +5284,7 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
     var iframeObjParent = self.parent.document.getElementById("ss_treeIframe");
     var jObj = self.document.getElementById(treeName + "join" + id);
     var iObj = self.document.getElementById(treeName + "icon" + id);
-    eval("var showTreeIdRoutine = ss_treeShowIdRoutine_"+treeName+";");
+    var showTreeIdRoutine = window["ss_treeShowIdRoutine_"+treeName];
     if (iframeDivObjParent == null && iframeDivObj == null) {
 	    iframeDivObj = self.document.createElement("div");
 	    iframeDivObjParent = iframeDivObj;
@@ -5317,7 +5317,7 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
 	    ss_setObjectLeft(iframeDivObj, x + "px");
 	}
 	ss_showDiv("ss_treeIframeDiv");
-	eval("var url = ss_treeAjaxUrl_" + treeName);
+	var url = window["ss_treeAjaxUrl_" + treeName];
 	url = ss_replaceSubStrAll(url, "&amp;", "&");
 	url += "&binderId=" + id;
 	url += "&treeName=" + treeName;
@@ -5327,15 +5327,27 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
 	url += "&type=" + type;
 	url += "&page=" + page;
 	url += "&indentKey=" + indentKey;
-	eval("var seObj = ss_treeSelected_"+treeName); 	    
+	var seObj = window["ss_treeSelected_"+treeName];
+	if (parent) {
+		var selectedIds = parent.window["ss_treeCurrentChoosen_" + treeName];
+	}
 	//add single select id
-	if (seObj != null) {
+	if (seObj != null && !selectedIds) {
 	   	url += "&select=" + seObj;
 	}
-	eval("var treeKey = ss_treeKey_"+treeName);
+
+	if (selectedIds && selectedIds.constructor.toString().indexOf("Array") > -1) {
+		for (var i = 0; i < selectedIds.length; i++) {
+			url += "&ss_tree_select=" + selectedIds[i];
+		}
+	} else if (selectedIds) {// it's single id
+		url += "&select=" + selectedIds;
+	}
+	var treeKey = window["ss_treeKey_"+treeName];
 	if (treeKey != null) {
 		url += "&treeKey=" + treeKey;
 	}
+	
     if (iframeDivObjParent != null && iframeDivObjParent != iframeDivObj) {
 		self.location.href = url;
 	} else {
@@ -5514,10 +5526,34 @@ function ss_hideBucketText() {
 	}
 }
 
-function ss_clearSingleSelect(treeName) {
-	eval("ss_treeSelected_" + treeName + "=null;");
-	
+function ss_clearSingleSelect(treeName, idChoicesInputId) {
+	window["ss_treeSelected_" + treeName] = null;
+	if (parent) {
+		// in accessible mode
+		parent.window["ss_treeSelected_" + treeName] = null;
+	}
 	var inputHiddenObj = document.getElementById(treeName + "_lastChoice");
+	if (!inputHiddenObj && parent) {
+		inputHiddenObj = parent.document.getElementById(treeName + "_lastChoice");
+	}
+	
+	if (parent) {
+		// in accessible mode only - unselect radio
+		if (inputHiddenObj) {
+			var selected = parent.document.getElementById("ss_tree_radio" + treeName + inputHiddenObj.name + inputHiddenObj.value);
+			if (!selected) {
+				var treeIframe = document.getElementById("ss_treeIframe");
+				if (treeIframe) {
+					var doc = treeIframe.document ? treeIframe.document : treeIframe.contentDocument;
+					var selected = doc.getElementById("ss_tree_radio" + treeName + inputHiddenObj.name + inputHiddenObj.value);
+				}
+			}
+			if (selected && selected.checked) {
+				selected.checked = false;
+			}			
+		}
+	}
+		
 	if (inputHiddenObj) {
 		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
 	}
@@ -5527,45 +5563,106 @@ function ss_clearSingleSelect(treeName) {
 
 function ss_clearMultiSelect(id) {
 	var inputHiddenObj = document.getElementById(id + "_lastChoice");
+	if (!inputHiddenObj && parent) {
+		// in accessible mode
+		inputHiddenObj = parent.document.getElementById(id + "_lastChoice");
+	}
 	if (inputHiddenObj) {
 		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
 	}
 }
 
-function ss_saveTreeId(obj) {
-	var formObj = null;
+function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
+	var idChoices = null;
+	var choicesAreFromParent = false;
+
+	idChoices = document.getElementById(idChoicesInputId);
+	if (!idChoices) {
+		idChoices = parent.document.getElementById(idChoicesInputId);
+		choicesAreFromParent = true;
+	}
+		
+	// var formObj = null;
 	if (obj.type == 'radio') {
-		//Strip off the leading "ss_tree_radio"
-		var prefix = obj.id.substr(13)
-		prefix = ss_replaceSubStr(prefix, obj.name + obj.value, "");
-		for (var i = 0; i < parent.document.forms.length; i++) {
-			if (parent.document.forms[i].name && parent.document.forms[i].name.indexOf(prefix) >= 0) {
-				formObj = parent.document.forms[i];
-				break;
+		if (idChoices != null && typeof idChoices !== "undefined") {
+			if (idChoices.value && idChoices.value != (obj.name + obj.value)) {
+				selected = parent.document.getElementById("ss_tree_radio" + treeName + idChoices.value);
+				if (selected && selected.checked) {
+					selected.checked = false;
+				}
 			}
-		}
-		if (formObj != null && typeof formObj.idChoices !== "undefined") {
-			formObj.idChoices.value = obj.name + "_" + obj.value;
-		}
-	} else {
-		var idChoices = null;
-		//Look for the idChoices element
-		nodes = document.getElementsByTagName("input");
-		var node1 = null;
-		for (var i = 0; i < nodes.length; i++) {
-			if (nodes[i].name && nodes[i].name == 'idChoices') {
-				if (idChoices == null) {
-					idChoices = nodes[i];
-					if (typeof idChoices.value === "undefined")  idChoices.value = "";
-				} else if (nodes[i].value != null && nodes[i].value != "") {
-					idChoices.value += " " + nodes[i].value;
-					nodes[i].value = "";
+		
+			idChoices.value = obj.name + obj.value;
+			if (treeName) {
+
+				// accessible mode only - unselect last choice if visible 
+				var treeIframe = document.getElementById("ss_treeIframe");
+				if (treeIframe && window["ss_treeCurrentChoosen_" + treeName] && 
+					window["ss_treeCurrentChoosen_" + treeName] != placeId &&
+					window["ss_treeSelectId"]) {
+					var doc = treeIframe.document ? treeIframe.document : treeIframe.contentDocument;
+					var selected = doc.getElementById("ss_tree_radio" + treeName + window["ss_treeSelectId"] + window["ss_treeCurrentChoosen_" + treeName]);
+					if (selected && selected.checked) {
+						selected.checked = false;
+					}
+				}
+
+				if (choicesAreFromParent) {
+					parent.window["ss_treeCurrentChoosen_" + treeName] = placeId;
+				} else {
+					window["ss_treeCurrentChoosen_" + treeName] = placeId;
 				}
 			}
 		}
+	} else {
 		if (idChoices != null && typeof idChoices !== "undefined") {
-			idChoices.value = ss_replaceSubStrAll(idChoices.value, " " + obj.name, "");
-			if (obj.checked) idChoices.value += " " + obj.name;
+			var re = new RegExp(" " + obj.name + " ", "g");
+			idChoices.value = idChoices.value.replace(re, " ");
+			re = new RegExp(" " + obj.name + "$", "g");
+			idChoices.value = idChoices.value.replace(re, "");
+			
+			if (!obj.checked) {
+				var uncheckIdsInUrl = function(urlToFix) {
+					var partFirst = urlToFix.substring(0, urlToFix.indexOf("ss_tree_select=") + 15);
+					var partToFix = urlToFix.substring(urlToFix.indexOf("ss_tree_select=") + 15);
+					var partLast = partToFix.substring(partToFix.indexOf("&amp;"));
+					partToFix = partToFix.substring(0, partToFix.indexOf("&amp;"));
+					
+					var re = new RegExp(placeId + "%2C", "");
+					partToFix = partToFix.replace(re, "");
+					re = new RegExp(placeId + "$", "");
+					partToFix = partToFix.replace(re, "");
+					re = new RegExp("%2C$", "");
+					partToFix = partToFix.replace(re, "");					
+					return partFirst + partToFix + partLast;
+				}
+				window["ss_treeAjaxUrl_" + treeName] = uncheckIdsInUrl(window["ss_treeAjaxUrl_" + treeName]);
+				if (parent.window["ss_treeAjaxUrl_" + treeName]) {
+					parent.window["ss_treeAjaxUrl_" + treeName] = uncheckIdsInUrl(parent.window["ss_treeAjaxUrl_" + treeName]);
+				}
+	  		}
+	  
+			if (obj.checked) {
+				idChoices.value += " " + obj.name;
+			}
+			if (treeName && choicesAreFromParent) {
+				if (typeof parent.window["ss_treeCurrentChoosen_" + treeName] === "undefined") {
+					parent.window["ss_treeCurrentChoosen_" + treeName] = new Array();
+				}
+				
+				var idsList = parent.window["ss_treeCurrentChoosen_" + treeName];
+				if (obj.checked) {
+						// add new id to list							
+					idsList.push(placeId);
+				} else {
+						// remove id from list
+			    	for (var i = 0; i < idsList.length; i++) {
+			    		if (idsList[i] == placeId) {
+			    			idsList.splice(i, 1);
+			    		}
+			    	}					
+				}
+			}
 		}
 	}
 }

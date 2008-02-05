@@ -43,11 +43,11 @@ String wsTreeName = "editForum_" + renderResponse.getNamespace();
 <c:forEach var="folder" items="${ssFolderList}">
 <tr>
   <td>
-    <input type="checkbox" name="del_${folder.id}"/>
-    <c:if test="${!empty folder.parentBinder}">
+    <input type="checkbox" name="del_${folder.id}" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>del_${folder.id}"/>
+    <label for="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>del_${folder.id}"><c:if test="${!empty folder.parentBinder}">
     	${folder.parentBinder.title} // 
     </c:if>
-    ${folder.title}
+    ${folder.title}</label>
   </td>
 </tr>
 </c:forEach>
@@ -64,17 +64,28 @@ String wsTreeName = "editForum_" + renderResponse.getNamespace();
 <br>
 <script type="text/javascript">
 function <%= wsTreeName %>_showId(forum, obj) {
-	if (self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum] && self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum].checked) {
-		self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum].checked=false
-	} else {
-		self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm["id_"+forum].checked=true
+	if (obj.ownerDocument) {
+		var cDocument = obj.ownerDocument;
+	} else if (obj.document) {
+		cDocument = obj.document;
 	}
-	return false
+	if (cDocument) {
+		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>id" + forum);
+		if (r) {
+			if (r.checked !== undefined) {
+				r.checked = !r.checked;
+			}
+			if (r.onclick !== undefined) {
+				r.onclick();
+			}
+		}
+	}
+	return false;
 }
 </script>
 <ssf:tree treeName="<%= wsTreeName %>"  treeDocument="${ssWsDomTree}" 
  	topId="${ssWsDomTreeBinderId}" rootOpen="true" 
-	  multiSelect="${ssBinderIdList}" multiSelectPrefix="id_" />
+	  multiSelect="${ssBinderIdList}" multiSelectPrefix="id" />
 
 <br>
 <input type="submit" class="ss_submit" name="applyBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>">

@@ -98,14 +98,7 @@ public class TreeTag extends TagSupport {
 	private String lastListStyle = "";
 	private String showIdRoutine = "";
 	private String namespace = "";
-	
-	/**
-	 * <code>false</code> checkboxes (multiSelect) name = multiSelectPrefix + binderId, value = null
-	 * <code>true</code> checkboxes (multiSelect) name = multiSelectPrefix, value = binderId
-	 */
-	private boolean fixedMultiSelectParamsMode = false;
-    
-    
+	    
 	public int doStartTag() throws JspException {
 	    if(treeName == null)
 	        throw new JspException("Tree name must be specified");
@@ -141,13 +134,12 @@ public class TreeTag extends TagSupport {
 				//This request is displaying the checkboxes. Remember that in the url
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_TYPE, "2");
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_ID, multiSelectPrefix);
-				adapterUrl.setParameter(WebKeys.URL_TREE_MULTI_SELECT, join(multiSelect, ","));
+				if (this.multiSelect.size() > 0) {
+					adapterUrl.setParameter(WebKeys.URL_TREE_MULTI_SELECT, join(multiSelect, ","));
+				}
 			} else if (singleSelectName != null) {
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_TYPE, "1");
 				adapterUrl.setParameter(WebKeys.URL_TREE_SELECT_ID, singleSelectName);
-			}
-			if (fixedMultiSelectParamsMode) {
-				adapterUrl.setParameter("fixedMultiSelectParamsMode", "true");
 			}
 			if (!this.topId.equals("")) {
 				//adapterUrl.setParameter(WebKeys.URL_OPERATION2, this.topId);
@@ -183,6 +175,13 @@ public class TreeTag extends TagSupport {
 				if (displayStyle == null) displayStyle = "";
 				sb.append("var ss_treeDisplayStyle = '" + displayStyle + "';\n");
 				sb.append("var ss_treeButtonClose = '" + NLT.get("button.close") + "';\n");
+				sb.append("var ss_treeSelectId = '");
+				if (multiSelectPrefix != null && !"".equals(multiSelectPrefix)) {
+					sb.append(multiSelectPrefix);
+				} else if (singleSelectName != null && !"".equals(singleSelectName)) {
+					sb.append(singleSelectName);
+				}
+				sb.append("';\n");
 				sb.append("</script>\n\n\n");
 				sb.append("<div id=\"ss_hiddenTreeDiv"+treeName+"\" style=\"visibility:hidden;\"></div>\n");
 			}
@@ -269,7 +268,6 @@ public class TreeTag extends TagSupport {
 					if (this.nowrap) sb.append(" ss_nowrap");
 					sb.append("\">\n");
 					
-					String mPrefix=this.multiSelectPrefix;
 					// hope it's not in use here because type attribute is now unknown
 //					if (mPrefix.startsWith("$type")) {
 //						mPrefix = mPrefix.replaceFirst("\\$type", e.attributeValue("type", "$type"));
@@ -280,27 +278,19 @@ public class TreeTag extends TagSupport {
 						Iterator multiSelectIt = this.multiSelect.iterator();
 						while (multiSelectIt.hasNext()) {
 							String id = multiSelectIt.next().toString();
-							String name = "";
-							String value = "";
-							if (this.fixedMultiSelectParamsMode) {
-								name = " name=\"" + mPrefix + "\"";
-								value = " value=\"" + id + "\"";
-							} else {
-								name = " name=\"" + mPrefix + id + "\"";
-								value = "";
-							}
-							sb.append("<input type=\"hidden\" id=\"" + treeName + mPrefix + id + "_lastChoice\"" + name + value + "/>\n");
-							idChoices += " " + mPrefix + id;
+							String name = " name=\"" + this.multiSelectPrefix + id + "\"";
+							sb.append("<input type=\"hidden\" id=\"" + treeName + this.multiSelectPrefix + id + "_lastChoice\"" + name + "/>\n");
+							idChoices += " " + this.multiSelectPrefix + id;
 						}
 					}
-					if (this.multiSelect != null && !mPrefix.equals("")) {
-						sb.append("<input type=\"hidden\" id=\"" + treeName + mPrefix + "_idChoices\" name=\"idChoices\" value=\"" + idChoices + "\" />\n");
+					if (this.multiSelect != null && !this.multiSelectPrefix.equals("")) {
+						sb.append("<input type=\"hidden\" id=\"" + getIdChoicesInputId() + "\" name=\"" + WebKeys.URL_ID_CHOICES + "\" value=\"" + idChoices + "\" />\n");
 					}
 					if (this.singleSelect != null && !this.singleSelect.equals("")) {
 						sb.append("<input type=\"hidden\" id=\"" + treeName + "_lastChoice\" name=\"" + this.singleSelectName + "\" value=\"" + this.singleSelect + "\" />\n");
 					}
 					if (this.singleSelectName != null && !this.singleSelectName.equals("")) {
-						sb.append("<input type=\"hidden\" id=\"" + treeName + this.singleSelectName + "_idChoices\" name=\"idChoices\" />\n");
+						sb.append("<input type=\"hidden\" id=\"" + getIdChoicesInputId() + "\" name=\"" + WebKeys.URL_ID_CHOICES + "\" value=\"" + (this.singleSelect != null?(this.singleSelectName+this.singleSelect):"") + "\"/>\n");
 					}
 					
 				}
@@ -345,7 +335,6 @@ public class TreeTag extends TagSupport {
 	    	noInit=false;
 	    	flat=false;
 	    	className="";
-	    	fixedMultiSelectParamsMode = false;
 	    }
 	    
 		return SKIP_BODY;
@@ -455,24 +444,15 @@ public class TreeTag extends TagSupport {
 						}
 						jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
 						jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\"");
-						String name = "";
-						String value = "";
-						if (this.fixedMultiSelectParamsMode) {
-							name = " name=\"" + mPrefix + "\"";
-							value = " value=\"" + s_id + "\"";
-						} else {
-							name = " name=\"" + mPrefix + s_id + "\"";
-							value = "";
-						}
+						String name = " name=\"" + mPrefix + s_id + "\"";
 						jspOut.print(name);
-						jspOut.print(value);
 						jspOut.print(" id=\"");
 						jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
 						jspOut.print(checked);
 						if (this.multiSelect.contains(s_binderId)) {
-							jspOut.print(" onclick=\"ss_saveTreeId(this); ss_clearMultiSelect('" + treeName + mPrefix + s_id + "')\"");
+							jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "'); ss_clearMultiSelect('" + treeName + mPrefix + s_id + "')\"");
 						} else {
-							jspOut.print(" onclick=\"ss_saveTreeId(this);\"");
+							jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "');\"");
 							
 						}
 						jspOut.print("/>");
@@ -490,7 +470,7 @@ public class TreeTag extends TagSupport {
 						jspOut.print(singleSelectName + "\" value=\""+s_binderId + "\" " + checked);
 						jspOut.print(" id=\"");
 						jspOut.print("ss_tree_radio" + treeName + this.singleSelectName + s_id + "\" ");
-						jspOut.print(" onclick=\"ss_saveTreeId(this);return ss_clearSingleSelect('" + treeName +"');\"/>");
+						jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "'); ss_clearSingleSelect('" + treeName +"');\"/>");
 					}
 					
 				}
@@ -1025,9 +1005,14 @@ public class TreeTag extends TagSupport {
         }
         return buffer.toString();
     }
-
-	public void setFixedMultiSelectParamsMode(boolean fixedMultiSelectParamsMode) {
-		this.fixedMultiSelectParamsMode = fixedMultiSelectParamsMode;
+	
+	private String getIdChoicesInputId() {
+		if (this.multiSelect != null && !this.multiSelectPrefix.equals("")) {
+			return treeName + this.multiSelectPrefix + "_idChoices";
+		} else if (this.singleSelectName != null && !this.singleSelectName.equals("")) {
+			return treeName + this.singleSelectName + "_idChoices";
+		}
+		return null;
 	}
 
 }

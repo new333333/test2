@@ -34,6 +34,12 @@
 	String propertyName = (String)request.getAttribute("property_name");
 	java.util.List propertyValues = (java.util.List)request.getAttribute("propertyValues_"+propertyName);
 	java.util.Set folderIds = new java.util.HashSet();
+	String multiple = (String) request.getAttribute("property_multipleAllowed");
+	boolean multipleAllowed = false;
+	if (multiple != null && "true".equals(multiple)) {
+		multipleAllowed = true;
+	}
+	String folderId = null;
 %>
 
 
@@ -47,9 +53,17 @@
 		if (folderIds == null) {
 			folderIds = new java.util.HashSet();
 		}
+		if (!multipleAllowed && folderIds.iterator().hasNext()) {
+			folderId = (String)folderIds.iterator().next();
+		}
+		if (folderId == null) {
+			folderId = "-1";
+		}
 	%>
 </c:if>
 <c:set var="propertyName" value="<%= propertyName %>"/>
+<c:set var="multipleAllowed" value="<%= multipleAllowed %>"/>
+<c:set var="folderId" value="<%= folderId %>"/>
 <div class="ss_entryContent">
 	<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
   
@@ -59,23 +73,67 @@
 			<script type="text/javascript">
 				/* check/uncheck checkboxes in tree on click place name */
 				function ${treeName}_showId(forum, obj) {
-					var r = document.getElementById("ss_tree_checkbox${treeName}${propertyName}" + forum);
+				/*
+					var r = document.getElementById("ss_tree_checkbox${treeName}" + forum);
 					if (r != null) {
 						r.click();
+					}
+					return false;
+				*/
+					if (obj.ownerDocument) {
+						var cDocument = obj.ownerDocument;
+					} else if (obj.document) {
+						cDocument = obj.document;
+					}
+					if (cDocument) {
+				<c:choose>
+					<c:when test="${multipleAllowed}">
+						var r = cDocument.getElementById("ss_tree_checkbox${treeName}${propertyName}" + forum);
+					</c:when>
+					<c:otherwise>
+						var r = cDocument.getElementById("ss_tree_radio${treeName}${propertyName}" + forum);
+					</c:otherwise>
+				</c:choose>
+						if (r) {
+							if (r.checked !== undefined) {
+								<c:choose>
+									<c:when test="${multipleAllowed}">
+										r.checked = !r.checked;
+									</c:when>
+									<c:otherwise>
+										r.checked = true;
+									</c:otherwise>
+								</c:choose>							
+							}
+							if (r.onclick !== undefined) {
+								r.onclick();
+							}
+						}
 					}
 					return false;
 				}
 			</script>
 
-			<ssf:tree 
-				  treeName="${treeName}"
-				  treeDocument="${ssDomTree}"  
-				  rootOpen="false" 
-				  multiSelect="<%= folderIds %>" 
-				  multiSelectPrefix="${propertyName}"
-				  fixedMultiSelectParamsMode="false"/>
-				  
-			
+			<c:choose>
+				<c:when test="${multipleAllowed}">
+					<ssf:tree 
+						  treeName="${treeName}"
+						  treeDocument="${ssDomTree}"  
+						  rootOpen="false" 
+						  multiSelect="<%= folderIds %>" 
+						  multiSelectPrefix="${propertyName}"/>				
+				</c:when>
+				<c:otherwise>
+					<ssf:tree 
+						  treeName="${treeName}"
+						  treeDocument="${ssDomTree}"  
+						  rootOpen="false" 
+							singleSelect="<%= folderId %>"
+			  				singleSelectName="${propertyName}"/>
+				</c:otherwise>
+			</c:choose>
+
+  
 		</c:when>
 		<c:otherwise>
 			<ssf:nlt tag="milestone.entryDesigner.tree.placeholder"/>

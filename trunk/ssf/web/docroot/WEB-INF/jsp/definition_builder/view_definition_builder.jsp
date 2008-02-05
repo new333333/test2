@@ -636,10 +636,19 @@ function ss_saveUserGroupResults(s) {
 	<tr>
 		<td width="50%" valign="top">
 			<div id="definitionbuilder_tree" style="visibility:hidden;">
-				<ssf:tree treeName="definitionTree" 
-				 treeDocument="<%= definitionTree %>" 
-				 rootOpen="true" 
-				 nodeOpen="<%= nodeOpen %>" />
+				<ssf:ifnotaccessible>
+					<ssf:tree treeName="definitionTree" 
+					 treeDocument="<%= definitionTree %>" 
+					 rootOpen="true" 
+					 nodeOpen="<%= nodeOpen %>" />
+				</ssf:ifnotaccessible>
+				<ssf:ifaccessible>
+					<ssf:tree treeName="definitionTree" 
+					 treeDocument="<%= definitionTree %>" 
+					 rootOpen="true" 
+					 flat="true"
+					 nodeOpen="<%= nodeOpen %>" />				
+				</ssf:ifaccessible>
 			</div>
 		</td>
 		<td width="50%" valign="top">

@@ -34,6 +34,7 @@
 <c:set var="treeName" value="${ssComponentId}${renderResponse.namespace}"/>
 <script type="text/javascript">
 function ${treeName}_showId(forum, obj) {
+/*
 	var formObj = ss_getContainingForm(obj);
 	var r = formObj.ss_folder_id;
     for (var b = 0; b < r.length; b++) {
@@ -42,6 +43,23 @@ function ${treeName}_showId(forum, obj) {
 	ss_clearSingleSelect('${treeName}');
 	
 	return false;
+	*/
+		if (obj.ownerDocument) {
+		var cDocument = obj.ownerDocument;
+	} else if (obj.document) {
+		cDocument = obj.document;
+	}
+	if (cDocument) {
+		var r = cDocument.getElementById("ss_tree_radio${treeName}ss_folder_id" + forum);
+		if (r) {
+			if (r.checked !== undefined) {
+				r.checked = true;
+			}
+			if (r.onclick !== undefined) {
+				r.onclick();
+			}
+		}
+	}
 }
 </script>
 <table class="ss_style" width="100%"><tr><td>

@@ -2109,6 +2109,9 @@ public class BinderHelper {
 		for (int i = 0; i < entries.size(); i++) {
 			Map entry = (Map)entries.get(i);
 			Principal user = (Principal)entry.get(WebKeys.PRINCIPAL);
+			if (user == null) {
+				continue;
+			}
 			if (userMap.get(user.getId()) == null) {
 				userMap.put(user.getId(), new Person(user.getId(),user,1));
 			} else {

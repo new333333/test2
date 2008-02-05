@@ -76,8 +76,10 @@
 						<tr>
 							<th><ssf:nlt tag="searchForm.searchFolders"/>:</th>
 							<td colspan="2">
-							
 								<ul>
+									<c:if test="${empty ssFolderList && not empty ssDashboard.beans[ssComponentId].ssSearchFormData.ssFolderList}">
+										<c:set var="ssFolderList" value="${ssDashboard.beans[ssComponentId].ssSearchFormData.ssFolderList}" />
+									</c:if>
 									<c:forEach var="folder" items="${ssFolderList}">
 									    <li>${folder.parentBinder.title} // <span class="ss_bold">${folder.title}</span></li>
 									</c:forEach>
@@ -104,7 +106,7 @@
 								
 								<c:if test="${!activateDashboardFolder && !empty ssBinder}">
 								  <div style="padding-bottom:2px;">
-								 	<input type="checkbox" name="searchFolders_${ssBinder.id}" id="search_currentAndSubfolders" 
+								 	<input type="checkbox" name="searchFolders${ssBinder.id}" id="search_currentAndSubfolders" 
 								 	  style="width: 19px; margin: 0; padding: 0; " 
 								 	  onClick="ss_searchSetCheckbox(this, 'search_subfolders');"
 								 		<c:if test="${ss_filterMap.search_currentAndSubfolders}">
@@ -135,7 +137,7 @@
 									  treeDocument="${ssDomTree}"  
 									  rootOpen="false" 
 									  multiSelect="${folderIds}" 
-									  multiSelectPrefix="searchFolders_"
+									  multiSelectPrefix="searchFolders"
 									 showIdRoutine="t_advSearchForm_wsTree_showId"/>
 								
 								<c:if test="${activateDashboardFolder}">

@@ -118,11 +118,24 @@ public class ModifyBinderController extends AbstractBinderController {
 		   			response.setRenderParameter(WebKeys.EXCEPTION, cf.getLocalizedMessage() != null ? cf.getLocalizedMessage() : cf.getMessage());
 		   		}
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
-				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
+				//must be a move
+				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
+				Long destinationId = null;
+				try {
+					destinationId = Long.valueOf(destinationIdString.replaceAll("destination", "").trim()); 
+				} catch (NumberFormatException e) {
+					// nothing to do
+				}
 				if (destinationId != null) getBinderModule().moveBinder(binderId, destinationId);
 				setupViewBinder(response, binderId, binderType);
 			} else if (op.equals(WebKeys.OPERATION_COPY)) {
-				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
+				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
+				Long destinationId = null;
+				try {
+					destinationId = Long.valueOf(destinationIdString.replaceAll("destination", "").trim()); 
+				} catch (NumberFormatException e) {
+					// nothing to do
+				}
 				if (destinationId != null) {
 					Long copyId = getBinderModule().copyBinder(binderId, destinationId, true);
 					setupViewBinder(response, copyId, binderType);
