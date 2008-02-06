@@ -64,6 +64,7 @@ ss_ratings_info[5] = "<ssf:nlt tag="popularity.rating.5stars" />"
 <%@ include file="/WEB-INF/jsp/forum/rating.jsp" %>
 </td>
 <td>&nbsp;&nbsp;&nbsp;</td>
+<c:if test="${ssDefinitionEntry.top}">
 <td valign="middle" nowrap>
 <c:if test="${!empty ssDefinitionEntry.popularity}">
 <span class="ss_muted_label_small">
@@ -79,6 +80,7 @@ ss_ratings_info[5] = "<ssf:nlt tag="popularity.rating.5stars" />"
 <span class="ss_muted_label_small"><ssf:nlt tag="popularity.visits.none" /></span>
 </c:if>
 </td>
+</c:if>
 <td>&nbsp;&nbsp;&nbsp;</td>
 <td valign="middle" nowrap>
 <c:if test="${!empty ssDefinitionEntry.totalReplyCount}">
