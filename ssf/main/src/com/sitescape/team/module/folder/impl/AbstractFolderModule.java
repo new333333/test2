@@ -811,19 +811,31 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		//assume already have access
 		EntityIdentifier id = entry.getEntityIdentifier();
 		//set user visit
+	
         User user = RequestContextHolder.getRequestContext().getUser();
        	Visits visit = getProfileDao().loadVisit(user.getId(), id);
        	if (visit == null) {
        		visit = new Visits(user.getId(), id);
-       		getCoreDao().save(visit);
+       		try {
+       			getCoreDao().saveNewSession(visit);
+       		} catch (Exception ex) {
+       			//probably hit button 2X
+       			visit = getProfileDao().loadVisit(user.getId(), id);
+       		}
        	}
-        visit.incrReadCount();   	
-       	//update entry average
-     	Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
-    	// see if title exists for this folder
-     	long result = getCoreDao().sumColumn(Visits.class, "readCount", new FilterControls(ratingAttrs, cfValues), user.getZoneId());
-     	entry.setPopularity(Long.valueOf(result));
-     	getReportModule().addAuditTrail(AuditTrail.AuditType.view, entry);
+       	if (visit != null) {
+       		//visits don't use optimistic locking and the popularity field on an entry does not use optimistic locking
+       		//This allows us not to worry about contention, although the counts may be slightly off.
+       		//The only other choice is a retry loop by the controller
+       		visit.incrReadCount();   	
+       		//this takes to long and is only trying to readjust if users are deleted, which it probably shouldn't anyway
+       		//Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
+       		//long result = getCoreDao().sumColumn(Visits.class, "readCount", new FilterControls(ratingAttrs, cfValues), user.getZoneId());
+       		Long pop = entry.getPopularity();
+       		if (pop == null) pop = 0L;
+       		entry.setPopularity(++pop);
+       	}
+       	getReportModule().addAuditTrail(AuditTrail.AuditType.view, entry);
 	}
 	
 
