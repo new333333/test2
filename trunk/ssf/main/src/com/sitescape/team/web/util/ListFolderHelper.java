@@ -171,10 +171,14 @@ public class ListFolderHelper {
 		Map formData = request.getParameterMap();
 		BinderHelper.setBinderPermaLink(bs, request, response);
 
+		String namespace = response.getNamespace();
+        if (PortletAdapterUtil.isRunByAdapter(request)) {
+        	namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+        }
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-		portletSession.setAttribute(WebKeys.LAST_BINDER_VIEWED, binderId);
-		portletSession.setAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE, EntityType.folder.name());
-		
+		portletSession.setAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, binderId, PortletSession.APPLICATION_SCOPE);
+		portletSession.setAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE + namespace, EntityType.folder.name(), PortletSession.APPLICATION_SCOPE);
+        
 		//Check special options in the URL
 		String[] debug = (String[])formData.get(WebKeys.URL_DEBUG);
 		if (debug != null && (debug[0].equals(WebKeys.DEBUG_ON) || debug[0].equals(WebKeys.DEBUG_OFF))) {
