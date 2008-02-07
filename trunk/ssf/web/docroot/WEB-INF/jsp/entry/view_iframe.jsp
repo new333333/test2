@@ -41,13 +41,18 @@
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<c:if test="${ss_displayType == 'ss_workarea'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+</c:if>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
     <td valign="top" class="ss_view_sidebar">
 
 <c:if test="${ss_displayType != 'ss_workarea'}">
+	<% // Navigation bar %>
+	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 </c:if>
