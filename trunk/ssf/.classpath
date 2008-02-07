@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="slide-webdavclient/src"/>
+	<classpathentry kind="src" path="commons-httpclient-contrib/src"/>
+	<classpathentry kind="src" path="lucene-contrib/src"/>
 	<classpathentry kind="src" path="jboss-portal/src"/>
 	<classpathentry kind="src" path="as-module/src"/>
 	<classpathentry kind="src" path="tools/src"/>
