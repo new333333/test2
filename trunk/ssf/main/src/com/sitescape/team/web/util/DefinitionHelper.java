@@ -224,7 +224,7 @@ public class DefinitionHelper {
 		Map defaultEntryDefinitions = getEntryDefsAsMap(binder);
 		model.put(WebKeys.ENTRY_DEFINITION_MAP, defaultEntryDefinitions);
 		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, getWorkflowDefsAsMap(binder)); 
-		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 	}
 	public static Map getBinderDefsAsMap(Binder binder) {
 		Map defaultFolderDefinitions = new HashMap();

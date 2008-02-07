@@ -100,7 +100,7 @@ public class DisplayConfiguration extends TagSupport {
 								Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='formJsp']");
 								jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
 							} else if (formItem.equals("customJsp") && itemType.equals("entryDataItem")) {
-								Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
+								Element entryFormItem = (Element)configBuilder.getItem(configDefinition, "form");
 								if (entryFormItem != null) {
 									//see if item is generated and save source
 									Element nameEle = (Element) nextItem.selectSingleNode("properties/property[@name='name']");
@@ -117,7 +117,7 @@ public class DisplayConfiguration extends TagSupport {
 									}
 								}
 							} else if (itemType.equals("customJspView")) {
-								if (configJspStyle.equals(Definition.JSP_STYLE_DEFAULT)) {
+								if (configJspStyle.equals(Definition.JSP_STYLE_VIEW)) {
 									Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='viewJsp']");
 									jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
 								} else if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) {

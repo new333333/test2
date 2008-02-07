@@ -52,6 +52,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
@@ -249,7 +250,11 @@ public class ViewEntryController extends  SAbstractController {
 			//only want to update visits when first enter.  Don't want cancels on modifies
 			//to increment count
 			if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
-				getFolderModule().setUserVisit(fe);
+				//doesn't make sense on replies unless we update the visits when replies are show with the entry
+				//that seems wasteful, so don't bother at all
+				if (fe.isTop()) getFolderModule().setUserVisit(fe);  
+		       	getReportModule().addAuditTrail(AuditTrail.AuditType.view, fe);
+
 			}
 		} catch(NoFolderEntryByTheIdException e) {
 		}
@@ -371,7 +376,7 @@ public class ViewEntryController extends  SAbstractController {
 				toolbar.addToolbarMenu("2_modify", NLT.get("toolbar.modify"), nullPortletUrl, disabledQual);
 				if (entry.isTop()) {
 					toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), nullPortletUrl, disabledQual);
-//					toolbar.addToolbarMenu("5_copy", NLT.get("toolbar.copy"), nullPortletUrl, disabledQual);
+					toolbar.addToolbarMenu("5_copy", NLT.get("toolbar.copy"), nullPortletUrl, disabledQual);
 				}
 			}
 			else {
@@ -394,13 +399,13 @@ public class ViewEntryController extends  SAbstractController {
 					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 					toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), url);
 					//The "Copy" menu
-//					url = response.createActionURL();
-//					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
-//					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_COPY);
-//					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
-//					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
-//					toolbar.addToolbarMenu("5_copy", NLT.get("toolbar.copy"), url);
-				}
+/*					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_COPY);
+					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
+					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+					toolbar.addToolbarMenu("5_copy", NLT.get("toolbar.copy"), url);
+*/				}
 			}
 			Iterator itWorkflows = entry.getParentBinder().getWorkflowDefinitions().iterator();
 			if (itWorkflows.hasNext()) {
@@ -684,7 +689,7 @@ public class ViewEntryController extends  SAbstractController {
 		Map tagResults = TagUtil.uniqueTags(getFolderModule().getTags(entry));
 		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
-		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
 			DefinitionHelper.getDefaultEntryView(entry, model);
 		}

@@ -85,10 +85,13 @@ public class Definition extends PersistentTimestampObject  {
 	public static final int LOCAL=2;
 	public static final int PERSONAL=3;
 	//Values for jsp types
-	public static final String JSP_STYLE_DEFAULT="default";
+	public static final String JSP_STYLE_FORM="form";
+	public static final String JSP_STYLE_VIEW="view";
 	public static final String JSP_STYLE_TEMPLATE="template";
 	public static final String JSP_STYLE_MAIL="mail";
 	public static final String JSP_STYLE_MOBILE="mobile";
+	
+	public static final String JSP_STYLE_DEFAULT="default"; //used only in definition_config file
 
 	protected static final Log logger = LogFactory.getLog(Definition.class);
 

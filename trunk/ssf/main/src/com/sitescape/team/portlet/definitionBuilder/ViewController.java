@@ -173,7 +173,7 @@ public class ViewController extends SAbstractController {
 		//See if there is a definition type requested
 		String definitionType = PortletRequestUtils.getStringParameter(request, WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, "");
 
-		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
+		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 		Document definitionConfig = getDefinitionModule().getDefinitionConfig();
 		model.put(WebKeys.CONFIG_DEFINITION, definitionConfig);
 			

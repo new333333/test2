@@ -289,15 +289,17 @@ public class BinderHelper {
 	protected static ModelAndView setupMobilePortlet(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
 		//This is the portlet view; get the configured list of folders to show
 		Map userProperties = (Map) model.get(WebKeys.USER_PROPERTIES);
-		String[] mobileBinderIds = (String[])userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS);
-
-		//Build the jsp bean (sorted by folder title)
-		List<Long> binderIds = new ArrayList<Long>();
-		if (mobileBinderIds != null) {
-			for (int i = 0; i < mobileBinderIds.length; i++) {
-				binderIds.add(new Long(mobileBinderIds[i]));
-			}
+		//where stored as string[] which causes unnecessary sql updates cause arrays always appear dirty to hibernate
+		Object mobileBinderIds = userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS);
+		Set<Long>binderIds = null;
+		if (mobileBinderIds instanceof String) {
+			binderIds = LongIdUtil.getIdsAsLongSet((String)mobileBinderIds);
+		} else if (mobileBinderIds instanceof String[]) {
+			binderIds = LongIdUtil.getIdsAsLongSet((String[])mobileBinderIds);
+		} else {
+			binderIds = new HashSet();
 		}
+
 		model.put(WebKeys.MOBILE_BINDER_LIST, bs.getBinderModule().getBinders(binderIds));
 		Map unseenCounts = new HashMap();
 		unseenCounts = bs.getFolderModule().getUnseenCounts(binderIds);

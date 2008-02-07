@@ -87,6 +87,7 @@ import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.team.util.LongIdUtil;
 /**
  * @author Peter Hurley
  *
@@ -146,15 +147,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
 		Map model = new HashMap();
 		//This is the portlet view; get the configured list of folders to show
-		String[] mobileBinderIds = (String[])userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS);
+		Set<Long>binderIds = LongIdUtil.getIdsAsLongSet((String)userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS));
 
-		//Build the jsp bean (sorted by folder title)
-		List<Long> binderIds = new ArrayList<Long>();
-		if (mobileBinderIds != null) {
-			for (int i = 0; i < mobileBinderIds.length; i++) {
-				binderIds.add(new Long(mobileBinderIds[i]));
-			}
-		}
 		model.put(WebKeys.MOBILE_BINDER_LIST, getBinderModule().getBinders(binderIds));
 		
 		Map unseenCounts = new HashMap();
