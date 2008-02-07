@@ -775,7 +775,9 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		for (int i=0; i<count; ++i ) {
 			BodyPart part = content.getBodyPart(i);
 			String disposition = part.getDisposition();
-			if ((disposition != null) && (disposition.compareToIgnoreCase(Part.ATTACHMENT) == 0)) {
+			if ((disposition != null) && (
+					(disposition.compareToIgnoreCase(Part.ATTACHMENT) == 0) ||
+					(disposition.compareToIgnoreCase(Part.INLINE) == 0))) {
 				fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
 			} else if (part.isMimeType("text/html")) {
 				processHTML(part.getContent(), inputData);
