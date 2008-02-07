@@ -35,7 +35,7 @@
 <h1 class="ss_entryTitle">
 
 <c:if test="${empty ssDefinitionEntry.title}">
-    <span class="ss_light">--no title--</span>
+    <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
 </c:if>
 <c:if test="${!empty ssDefinitionEntry.title}">
 <c:out value="${ssDefinitionEntry.title}"/>

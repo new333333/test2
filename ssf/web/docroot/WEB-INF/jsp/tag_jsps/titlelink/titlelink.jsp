@@ -39,6 +39,7 @@
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 <%@ taglib prefix="html" tagdir="/WEB-INF/tags/html" %>
 <%@ page import="com.sitescape.util.ParamUtil" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <%
 // General variables
 String title = ParamUtil.get(request, "title", "");
@@ -88,10 +89,24 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <% } else { %>
 <a class="<%= hrefClass %>" 
 	<% if ("yes".equals(isFile)) { %>
-		<ssf:titleForEntityType entityType="file" text="<%= title %>" />
+		<c:choose>
+			<c:when test="<%= !com.sitescape.util.Validator.isNull(title) %>">
+				<ssf:titleForEntityType entityType="file" text="<%= title %>" />
+			</c:when>
+			<c:otherwise>
+				<ssf:titleForEntityType entityType="file" text="<%= "--" + NLT.get("entry.noTitle") + "--" %>" />
+			</c:otherwise>
+		</c:choose>
 		href="<%= url %>" target="_blank"
 	<% } else { %>
-		<ssf:titleForEntityType entityType="<%= entityType %>" text="<%= title %>" />
+		<c:choose>
+			<c:when test="<%= !com.sitescape.util.Validator.isNull(title) %>">
+				<ssf:titleForEntityType entityType="<%= entityType %>" text="<%= title %>" />
+			</c:when>
+			<c:otherwise>
+				<ssf:titleForEntityType entityType="<%= entityType %>" text="<%= "--" + NLT.get("entry.noTitle") + "--" %>" />
+			</c:otherwise>
+		</c:choose>
 		href="javascript:;" onClick="ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');"
 	<% } %>
 ><c:if test="<%= (title == null || title.equals("")) %>">
