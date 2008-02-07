@@ -927,20 +927,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 	private void processJsps(Element item, InputDataAccessor inputData) {
 		Element jsps = (Element)item.selectSingleNode("./jsps");
+		if (jsps != null) item.remove(jsps); //keep it lean
 		String value = inputData.getSingleValue("jspName_custom");
-		Element jsp = null;
-		if (jsps != null) jsp = (Element)jsps.selectSingleNode("./jsp[@name='custom']");
-		if (Validator.isNull(value)) {
-			if (jsp != null) jsps.remove(jsp);
+		Boolean inherit = Boolean.FALSE;
+		if ("on".equals(inputData.getSingleValue("jspName_custom_inherit"))) inherit=Boolean.TRUE;
+		if (Validator.isNull(value) && !inherit) return;
+		jsps = item.addElement("jsps");
+		Element jsp = jsps.addElement("jsp");
+		jsp.addAttribute("name", "custom");
+		if (inherit) {
+			jsp.addAttribute("inherit", inherit.toString());
 		} else {
-			if (jsp == null) {
-				if (jsps == null) jsps = item.addElement("jsps");
-				jsp = jsps.addElement("jsp");
-				jsp.addAttribute("name", "custom");
-				jsp.addAttribute("value", value);
-			} else {
-				jsp.addAttribute("value", value);
-			}			
+			jsp.addAttribute("value", value);			
 		}
 	}
 	

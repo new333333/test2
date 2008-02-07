@@ -2148,9 +2148,6 @@
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/custom.jsp" />
-		</jsps>
 	</item>
 		
 <!-- Workflow items -->
