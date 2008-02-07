@@ -89,6 +89,7 @@ import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
@@ -323,9 +324,14 @@ public class BinderHelper {
 	protected static ModelAndView setupWorkareaPortlet(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, PortletPreferences prefs, Map model, String view) throws Exception {
         User user = RequestContextHolder.getRequestContext().getUser();
+		String namespace = response.getNamespace();
+        if (PortletAdapterUtil.isRunByAdapter(request)) {
+        	namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+        }
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-		Long binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED);
-		String entityType = (String) portletSession.getAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE);
+		Long binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, PortletSession.APPLICATION_SCOPE);
+		String entityType = (String) portletSession.getAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE + namespace, PortletSession.APPLICATION_SCOPE);
+		
 		if (binderId != null) {
 			if (entityType != null && entityType.equals(EntityType.folder.name()))
 				return ListFolderHelper.BuildFolderBeans(bs, request, response, binderId);

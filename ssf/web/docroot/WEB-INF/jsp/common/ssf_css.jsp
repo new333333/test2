@@ -4912,5 +4912,104 @@ table.ssMeetingRecords .ssHeader {
 	padding: 0;
 }
 
+/* CSS Document - container for navigation and search*/
+
+#ss_top_nav_wrapper{
+	position: relative;
+	width: 100%;
+	height: 74px;
+	width: auto;
+	background-image: url(<html:imagesPath/>pics/subbanner.png);
+	display: table;
+}
+	
+	/*grey buttons for portal-expanded view*/	
+#ss_top_nav_button{
+	position:relative;
+	display:block;
+	height:20px;
+	background-color:#333;
+	border:solid
+	font-family:"Lucida Sans", Arial, sans-serif;
+}
+
+#ss_top_nav_buttontwo a {
+	font-family: "Lucida Sans", Arial, sans-serif;
+	font-size: 10px;
+	background-color: #999999;
+	display: block;
+	font-weight: bold;
+	letter-spacing: 0px;
+}
+
+#ss_top_nav_buttontwo ul{
+	margin:0px;
+	padding:0px;
+	list-style-type:none;
+	width:auto;
+	}
+
+#ss_top_nav_buttontwo ul li{
+	display:block;
+	float:left;
+	margin:0px 2px 0px 0px;
+	}
+
+#ss_top_nav_buttontwo ul li a{
+	display:block;
+	float:left;
+	color:#333;
+	text-decoration:none;
+	padding:6px 20px 0px 20px;
+	height:20px;
+	}
+
+#ss_top_nav_buttontwo ul li a:hover{
+	color:#333;
+	background-color: #E1E1E1;
+	
+	/*blue buttons for navigation*/
+	}
+#ss_top_nav_buttontwo ul li a.current{	
+	color:#333;
+	background-color: #E1E1E1;
+}
+#ss_top_nav_buttonthree a {
+	font-family: "Lucida Sans", Arial, sans-serif;
+	font-size: 10px;
+	background-color: #7986A1;
+	display: block;
+	font-weight: bold;
+	letter-spacing: 1px;
+}
+
+#ss_top_nav_buttonthree ul{
+	margin:0px;
+	padding:0px;
+	list-style-type:none;
+	width:auto;}
+
+#ss_top_nav_buttonthree ul li{
+	display:block;
+	float:left;
+	margin:0px 2px 0px 0px;
+	}
+
+#ss_top_nav_buttonthree ul li a{
+	display:block;
+	float:left;
+	color:#fff;
+	text-decoration:none;
+	padding:6px 20px 0px 20px;
+	height:20px;
+	}
+
+#ss_top_nav_buttonthree ul li a:hover{
+	color:#333;
+	background-color: #8B9BBA;
+	}
+	
+
+
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>

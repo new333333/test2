@@ -92,6 +92,7 @@ import com.sitescape.team.module.ic.RecordType;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.OperationAccessControlException;
@@ -205,6 +206,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_MODIFY_GROUP)) {
 				return new ModelAndView("forum/fetch_url_return", model);
+			} else if (op.equals(WebKeys.OPERATION_SET_LAST_VIEWED_BINDER)) {
 			} else if (op.equals(WebKeys.OPERATION_SHOW_MY_TEAMS)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_SHOW_HELP_CPANEL) || 
@@ -279,6 +281,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				op.equals(WebKeys.OPERATION_GET_FAVORITES_TREE) ||
 				op.equals(WebKeys.OPERATION_SAVE_FAVORITES)) {
 			return ajaxGetFavoritesTree(request, response);
+		} else if (op.equals(WebKeys.OPERATION_SET_LAST_VIEWED_BINDER)) {
+			return ajaxSetLastViewedBinder(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SAVE_COLUMN_POSITIONS)) {
 			return new ModelAndView("forum/save_column_positions_return");
 			
@@ -553,7 +557,19 @@ public class AjaxController  extends SAbstractControllerRetry {
 					ObjectKeys.USER_PROPERTY_BUSINESS_CARD_PREFIX + scope, showBC);
 	}
 
-
+	private ModelAndView ajaxSetLastViewedBinder(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		String entityType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_TYPE, "");
+		if (binderId != null && !entityType.equals("") && !namespace.equals("")) {
+			PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
+			portletSession.setAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, binderId, PortletSession.APPLICATION_SCOPE);
+			portletSession.setAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE + namespace, entityType, PortletSession.APPLICATION_SCOPE);
+		}
+		Map model = new HashMap();
+		return new ModelAndView("forum/blank_return", model);
+	}
 	
 	private ModelAndView ajaxGetFavoritesTree(RenderRequest request, 
 							RenderResponse response) throws Exception {

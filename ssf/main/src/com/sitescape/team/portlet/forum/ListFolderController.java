@@ -48,6 +48,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
@@ -185,7 +186,12 @@ public class ListFolderController extends  SAbstractController {
 		
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-		if (binderId == null) binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED);
+		String namespace = response.getNamespace();
+        if (PortletAdapterUtil.isRunByAdapter(request)) {
+        	namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+        }
+		if (binderId == null) 
+			binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, PortletSession.APPLICATION_SCOPE);
 
 		return ListFolderHelper.BuildFolderBeans(this, request, response, binderId);
 		
