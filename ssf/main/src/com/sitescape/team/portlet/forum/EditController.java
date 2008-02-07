@@ -67,7 +67,7 @@ import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
-
+import com.sitescape.team.util.LongIdUtil;
 /**
  * @author Peter Hurley
  *
@@ -135,10 +135,8 @@ public class EditController extends SAbstractController {
 							(String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
 				} else if (ViewController.MOBILE_PORTLET.equals(displayType)) {
 					User user = RequestContextHolder.getRequestContext().getUser();
-					Map values = new HashMap();
-					values.put(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS, 
-							(String[]) forumPrefIdList.toArray(new String[forumPrefIdList.size()]));
-					getProfileModule().setUserProperties(user.getId(), values);
+					//don't store arrays in properties
+					getProfileModule().setUserProperty(user.getId(), ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS, LongIdUtil.getIdsAsString(forumPrefIdList));
 				}
 
 			} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType) ||
@@ -212,15 +210,8 @@ public class EditController extends SAbstractController {
 		
 	        User user = RequestContextHolder.getRequestContext().getUser();
 			Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-			String[] mobileBinderIds = (String[])userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS);
-
-			//Build the jsp bean (sorted by folder title)
-			List<Long> binderIds = new ArrayList<Long>();
-			if (mobileBinderIds != null) {
-				for (int i = 0; i < mobileBinderIds.length; i++) {
-					binderIds.add(new Long(mobileBinderIds[i]));
-				}
-			}
+			String mobileBinderIds = (String)userProperties.get(ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS);
+			Set<Long> binderIds = LongIdUtil.getIdsAsLongSet(mobileBinderIds);
 			Collection binders = getBinderModule().getBinders(binderIds);
 			model.put(WebKeys.FOLDER_LIST, binders);
 			model.put(WebKeys.BINDER_ID_LIST, binderIds);

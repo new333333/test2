@@ -308,7 +308,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 						model.put(WebKeys.PROFILE_CONFIG_DEFINITION, profileDef);
 						model.put(WebKeys.PROFILE_CONFIG_ELEMENT, 
 								profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
-						model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
+						model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 						model.put(WebKeys.PROFILE_CONFIG_ENTRY, user);
 					} 
 				} else {
@@ -341,7 +341,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				// just added the template, now configure the target, treat as a modify
 				Binder binder = getBinderModule().getBinder(configId);				
 				model.put(WebKeys.BINDER, binder);
-				model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_DEFAULT);
+				model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 				Definition binderDef = binder.getEntryDef();
 				if (binderDef == null) {
 					DefinitionHelper.getDefaultBinderDefinition(binder, model, "//item[@type='form']");

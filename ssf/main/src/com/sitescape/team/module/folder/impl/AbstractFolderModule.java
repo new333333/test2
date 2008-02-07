@@ -45,15 +45,11 @@ import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.SortField;
-import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.ConfigurationException;
-import com.sitescape.team.InternalException;
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
@@ -61,7 +57,6 @@ import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
-import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.AverageRating;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
@@ -83,13 +78,11 @@ import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Visits;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.jobs.FolderDelete;
+import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -98,25 +91,19 @@ import com.sitescape.team.module.folder.FilesLockedByOtherUsersException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.folder.processor.FolderCoreProcessor;
-import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
-import com.sitescape.team.module.shared.SearchUtils;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.ReflectHelper;
-import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleMultipartFile;
-import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
 /**
  *
@@ -128,7 +115,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	protected String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
-    protected ReportModule reportModule;
     protected BinderModule binderModule;
     
     AtomicInteger aeCount = new AtomicInteger();
@@ -138,12 +124,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     AtomicInteger afCount = new AtomicInteger();
 
 
-    protected ReportModule getReportModule() {
-		return reportModule;
-	}
-	public void setReportModule(ReportModule reportModule) {
-		this.reportModule = reportModule;
-	}
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
@@ -808,38 +788,33 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	}
     //inside write transaction    
 	public void setUserVisit(FolderEntry entry) {
-		//don't store visits of replies.  Doesn't make sense cause they are viewed through the top entry 
-		//and we don't record that.
-		if (entry.isTop()) {
-			//assume already have access
-			EntityIdentifier id = entry.getEntityIdentifier();
-			//set user visit
+		//assume already have access
+		EntityIdentifier id = entry.getEntityIdentifier();
+		//set user visit
 		
-	        User user = RequestContextHolder.getRequestContext().getUser();
-	       	Visits visit = getProfileDao().loadVisit(user.getId(), id);
-	       	if (visit == null) {
-	       		visit = new Visits(user.getId(), id);
-	       		try {
-	       			getCoreDao().saveNewSession(visit);
-	       		} catch (Exception ex) {
-	       			//probably hit button 2X
-	       			visit = getProfileDao().loadVisit(user.getId(), id);
-	       		}
-	       	}
-	       	if (visit != null) {
-	       		//visits don't use optimistic locking and the popularity field on an entry does not use optimistic locking
-	       		//This allows us not to worry about contention, although the counts may be slightly off.
-	       		//The only other choice is a retry loop by the controller
-	       		visit.incrReadCount();   	
-	       		//this takes to long and is only trying to readjust if users are deleted, which it probably shouldn't anyway
-	       		//Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
-	       		//long result = getCoreDao().sumColumn(Visits.class, "readCount", new FilterControls(ratingAttrs, cfValues), user.getZoneId());
-	       		Long pop = entry.getPopularity();
-	       		if (pop == null) pop = 0L;
-	       		entry.setPopularity(++pop);
-	       	}
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Visits visit = getProfileDao().loadVisit(user.getId(), id);
+		if (visit == null) {
+			visit = new Visits(user.getId(), id);
+			try {
+				getCoreDao().saveNewSession(visit);
+			} catch (Exception ex) {
+				//probably hit button 2X
+				visit = getProfileDao().loadVisit(user.getId(), id);
+			}
 		}
-       	getReportModule().addAuditTrail(AuditTrail.AuditType.view, entry);
+		if (visit != null) {
+			//visits don't use optimistic locking and the popularity field on an entry does not use optimistic locking
+			//This allows us not to worry about contention, although the counts may be slightly off.
+			//The only other choice is a retry loop by the controller
+			visit.incrReadCount();   	
+			//this takes to long and is only trying to readjust if users are deleted, which it probably shouldn't anyway
+			//Object[] cfValues = new Object[]{id.getEntityId(), id.getEntityType().getValue()};
+			//long result = getCoreDao().sumColumn(Visits.class, "readCount", new FilterControls(ratingAttrs, cfValues), user.getZoneId());
+			Long pop = entry.getPopularity();
+			if (pop == null) pop = 0L;
+			entry.setPopularity(++pop);
+		}
 	}
 	
 

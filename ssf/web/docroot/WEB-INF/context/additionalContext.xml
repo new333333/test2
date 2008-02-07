@@ -30,7 +30,6 @@
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="fileModule"><ref bean="fileModule"/></property>
     	<property name="binderModule"><ref bean="binderModule"/></property>
-		<property name="reportModule"><ref bean="reportModule"/></property>
 	</bean>
 
 	<bean id="licenseModuleTarget" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.license.impl.BaseLicenseModule">

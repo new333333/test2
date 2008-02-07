@@ -61,6 +61,7 @@ import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
@@ -1144,6 +1145,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	   getCoreDao().save(binder);
    }
    protected void copyBinder_postSave(Binder source, Binder parent, Binder binder, InputDataAccessor inputData, Map ctx) { 
+		EntityDashboard dashboard = getCoreDao().loadEntityDashboard(source.getEntityIdentifier());
+		if (dashboard != null) {
+			EntityDashboard myDashboard = new EntityDashboard(dashboard);
+			myDashboard.setOwnerIdentifier(binder.getEntityIdentifier());
+			getCoreDao().save(myDashboard);
+		  }
 		//copy all file attachments; need to do first so custom file attributes have a real object to reference
 		getFileModule().copyFiles(source, source, binder, binder);
 		EntryBuilder.copyAttributes(source, binder);
