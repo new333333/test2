@@ -49,6 +49,7 @@ import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.util.Validator;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -91,49 +92,59 @@ public class DisplayConfiguration extends TagSupport {
 						//Get the item type of the current item being processed 
 						String itemType = nextItem.attributeValue("name", "");
 						String formItem = nextItem.attributeValue("formItem", "");
+						String customJsp = null; 
+						Boolean inherit=Boolean.FALSE;
+						Element jspEle= (Element)nextItem.selectSingleNode("./jsps/jsp[@name='custom']");
+						if (jspEle != null) {
+							String jspName = jspEle.attributeValue("value");
+							if ("true".equals(jspEle.attributeValue("inherit"))) inherit=Boolean.TRUE;							
+							if (!inherit && Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+						}
+
 						//get Item from main config document
 						Element itemDefinition = configBuilder.getItem(configDefinition, itemType);
 						if (itemDefinition != null) {
-							String jsp = null;
+							String jspName;
 							String defaultJsp=configBuilder.getItemJspByStyle(itemDefinition, itemType, this.configJspStyle);
 							if (itemType.equals("customJsp")) {
-								Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='formJsp']");
-								jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
-							} else if (formItem.equals("customJsp") && itemType.equals("entryDataItem")) {
-								Element entryFormItem = (Element)configBuilder.getItem(configDefinition, "form");
+								jspName = DefinitionUtils.getPropertyValue(nextItem, "formJsp");
+								if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+							} else if (customJsp == null && "dataView".equals(nextItem.attributeValue("type")) &&
+									(inherit || formItem.equals("customJsp"))) { //wraps a form element
+								Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
 								if (entryFormItem != null) {
 									//see if item is generated and save source
-									Element nameEle = (Element) nextItem.selectSingleNode("properties/property[@name='name']");
-									if (nameEle != null) {
-										String nameValue = nameEle.attributeValue("value", "");
+									String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+									if (Validator.isNotNull(nameValue)) {
 										Element itemEle = (Element)entryFormItem.selectSingleNode(".//item/properties/property[@name='name' and @value='" + nameValue + "']");
 										if (itemEle != null) {
-											String jspName = "viewJsp";
-											if (configJspStyle.equals("mail")) jspName = "mailJsp";
-											else if (configJspStyle.equals("mobile")) jspName = "mobileJsp";
-											Element jspEle = (Element) itemEle.getParent().getParent().selectSingleNode("properties/property[@name='"+jspName+"']");
-											if (jspEle != null) jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
+											itemEle = itemEle.getParent().getParent();
+											if (formItem.equals("customJsp")) {
+												String jspType = "viewJsp";
+												if (configJspStyle.equals(Definition.JSP_STYLE_MAIL)) jspType = "mailJsp";
+												else if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
+												jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
+												if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+											}
+											if (Validator.isNull(customJsp)) {
+												jspEle= (Element)itemEle.selectSingleNode("./jsps/jsp[@name='custom']");
+												if (jspEle != null) {
+													jspName = jspEle.attributeValue("value");
+													if (Validator.isNotNull(jspName) ) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
+												}
+												
+											}
 										}
 									}
 								}
 							} else if (itemType.equals("customJspView")) {
-								if (configJspStyle.equals(Definition.JSP_STYLE_VIEW)) {
-									Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='viewJsp']");
-									jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
-								} else if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) {
-									Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='mobileJsp']");
-									jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
-								} else if (configJspStyle.equals(Definition.JSP_STYLE_MAIL)) {
-									Element jspEle = (Element) nextItem.selectSingleNode("properties/property[@name='mailJsp']");
-									jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value", "");
-								}
+								String jspType = "viewJsp";
+								if (configJspStyle.equals(Definition.JSP_STYLE_MAIL)) jspType = "mailJsp";
+								else if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
+								jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
+								if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
 							}
-							if (Validator.isNull(jsp)) {
-								Element jspEle= (Element)nextItem.selectSingleNode("./jsps/jsp[@name='custom']");
-								if (jspEle != null) {
-									jsp = "/WEB-INF/jsp/custom_jsps/" + jspEle.attributeValue("value");
-								}
-							}
+							String jsp = customJsp;
 							if (Validator.isNull(jsp)) jsp = defaultJsp;
 							
 							if (!Validator.isNull(jsp)) {

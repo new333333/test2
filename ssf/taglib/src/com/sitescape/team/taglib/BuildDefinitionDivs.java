@@ -1306,9 +1306,13 @@ public class BuildDefinitionDivs extends TagSupport {
 	
 			if (!"customJspView".equals(rootElementName) && jspRootConfig != null) {
 				String value = "";
+				String inherit="on";
 				if (rootConfigElement != rootElement) { //if adding new item, don't copy system jsps
 					Element custom = (Element)rootElement.selectSingleNode("./jsps/jsp[@name='custom']");
-					if (custom != null) value = custom.attributeValue("value", ""); 
+					if (custom != null) {
+						value = custom.attributeValue("value", "");
+						if ("false".equals(custom.attributeValue("inherit"))) inherit="off";
+					}
 				}
 				String display=rootConfigElement.attributeValue("display");
 				if ("form".equals(display)) {
@@ -1322,8 +1326,11 @@ public class BuildDefinitionDivs extends TagSupport {
 					sb.append("<a name=\"help_div_customFormJsp_a\" onClick=\"ss_activateMenuLayerMove('help_div_customFormJsp');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
 				} else {
 					sb.append("<a name=\"help_div_customViewJsp_a\" onClick=\"ss_activateMenuLayerMove('help_div_customViewJsp');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");					
+					if ("dataView".equals(rootElement.attributeValue("type")) ) { //wraps a form element
+						sb.append("<br/><input type=\"checkbox\" name=\"jspName_custom_inherit\" checked=\""  +
+								inherit + "\"/> " + NLT.get("__custom_view_jsp_inherit") );
+					}
 				}
-
 			}
 		}
 	}
