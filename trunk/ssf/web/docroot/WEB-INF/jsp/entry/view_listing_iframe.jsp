@@ -34,7 +34,7 @@
 <c:set var="showFolderPage" value="true"/>
 <c:if test="${ss_displayType == 'ss_workarea'}">
   <ssf:ifnotadapter>
-    <c:set var="showWorkspacePage" value="false"/>
+    <c:set var="showFolderPage" value="false"/>
   </ssf:ifnotadapter>
 </c:if>
 <ssf:ifadapter>
@@ -50,9 +50,43 @@
 <c:if test="${empty ssReloadUrl}">
 <c:if test="${ss_displayType == 'ss_workarea'}">
 <script type="text/javascript">
+if (self != self.parent) {
+	//We are in an iframe inside a portlet (maybe?)
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_viewListingIframe") == 0) {
+		//We are running inside an iframe, get the namespace name of that iframe's owning portlet
+		var namespace = windowName.substr("ss_viewListingIframe".length)
+		//alert('namespace = '+namespace+', binderId = ${ssBinder.id}, entityType = ${ssBinder.entityType}')
+		var url = "<ssf:url
+					adapter="true"
+					portletName="ss_forum" 
+					action="__ajax_request" 
+					binderId="${ssBinder.id}">
+				  <ssf:param name="entityType" value="${ssBinder.entityType}"/>
+				  <ssf:param name="namespace" value="ss_namespacePlaceholder" />
+				  <ssf:param name="operation" value="set_last_viewed_binder" />
+				  <ssf:param name="rn" value="ss_randomNumberPlaceholder"/>
+				  </ssf:url>"
+		url = ss_replaceSubStr(url, 'ss_namespacePlaceholder', namespace);
+		url = ss_replaceSubStr(url, 'ss_randomNumberPlaceholder', ss_random++);
+		ss_fetch_url(url);
+	}
+}
 function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 	if (typeof entryId == "undefined") entryId = "";
 	//Build a url to go to
+<ssf:ifnotadapter>
+	var url = "<ssf:url     
+	    		  adapter="true" 
+	    		  portletName="ss_workarea" 
+	    		  binderId="ssBinderIdPlaceHolder" 
+    			  entryId="ssEntryIdPlaceHolder" 
+	    		  action="ssActionPlaceHolder" 
+	    		  actionUrl="false" >
+	    	   <ssf:param name="namespace" value="${renderResponse.namespace}"/>
+	           </ssf:url>"
+</ssf:ifnotadapter>
+<ssf:ifadapter>
 	var url = "<ssf:url     
 	    		  adapter="true" 
 	    		  portletName="ss_workarea" 
@@ -61,6 +95,7 @@ function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 	    		  action="ssActionPlaceHolder" 
 	    		  actionUrl="false" >
 	           </ssf:url>"
+</ssf:ifadapter>
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
@@ -93,6 +128,7 @@ function ss_setWorkareaIframeSize${renderResponse.namespace}() {
 	}
 }
 </script>
+<div id="${renderResponse.namespace}">
 <iframe id="ss_viewListingIframe${renderResponse.namespace}" 
     name="ss_viewListingIframe${renderResponse.namespace}" 
     style="width:100%; height:400px; display:block; position:relative;"
@@ -103,9 +139,11 @@ function ss_setWorkareaIframeSize${renderResponse.namespace}() {
     		action="view_folder_listing" 
     		entryId="${ssEntryIdToBeShown}" 
     		actionUrl="false" >
+        <ssf:param name="namespace" value="${renderResponse.namespace}"/>
         </ssf:url>" 
 	onLoad="ss_setWorkareaIframeSize${renderResponse.namespace}();" 
 	frameBorder="0" >xxx</iframe>
+</div>
 
 <!-- portlet iframe div -->
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>

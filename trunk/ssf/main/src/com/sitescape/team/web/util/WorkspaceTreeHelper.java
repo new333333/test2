@@ -62,6 +62,7 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.module.workspace.WorkspaceModule.WorkspaceOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
@@ -141,10 +142,13 @@ public class WorkspaceTreeHelper {
 		}
 
  		//Remember the last binder viewed
+		String namespace = response.getNamespace();
+        if (PortletAdapterUtil.isRunByAdapter(request)) {
+        	namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+        }
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-		portletSession.setAttribute(WebKeys.LAST_BINDER_VIEWED, binderId);
-		portletSession.setAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE, EntityType.workspace.name());
-
+		portletSession.setAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, binderId, PortletSession.APPLICATION_SCOPE);
+		portletSession.setAttribute(WebKeys.LAST_BINDER_ENTITY_TYPE + namespace, EntityType.workspace.name(), PortletSession.APPLICATION_SCOPE);
 		
 		Map formData = request.getParameterMap();
 		try {

@@ -77,12 +77,20 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 <!-- Start of global toolbar -->
 <script type="text/javascript">
 function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
+	if (self != self.parent) {
+		//We are in an iframe inside a portlet (maybe?)
+		var bodyObj = document.getElementsByTagName("body").item(0);
+		var iframeObj = bodyObj.parentNode().parentNode();
+		alert(iframeObj.id)
+	}
 	if (typeof entryId == "undefined") entryId = "";
 	//Build a url to go to
 	var url = "<ssf:url 
 	             action="ssActionPlaceHolder"
 			     binderId="ssBinderIdPlaceHolder"
-			     entryId="ssEntryIdPlaceHolder"/>"
+			     entryId="ssEntryIdPlaceHolder" >
+	    	   <ssf:param name="namespace" value="${renderResponse.namespace}"/>
+			   </ssf:url>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
@@ -93,112 +101,102 @@ if (typeof ss_workarea_showId == "undefined")
 	ss_workarea_showId = ss_workarea_showId${renderResponse.namespace};
 </script>
 
-<table cellspacing="0" cellpadding="0" border="0">
+<div id="ss_top_nav_wrapper" style="width:100%;">
+<table width="100%" align="center" cellspacing="0" cellpadding="0" border="0" 
+  style="background-image: url(<html:rootPath/>images/pics/subbanner.png);">
 <tbody>
 <tr>
-<td>
-<table class="ss_global_toolbar_maximized" cellspacing="0" cellpadding="0" border="0">
-<tbody>
-<tr>
-<td>
-	<!-- My portal -->
-	<div class="ss_global_toolbar_accessible" >
-	  <ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
-	      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
-	  </ssHelpSpot>
-	<a class="ss_linkButton" 
-	  <c:if test="${ssBinder.entityType == 'folder'}">
-	    href="<ssf:url windowState="normal"
-		    action="view_folder_listing"
-		    binderId="${ssBinder.id}"/>"
-	  </c:if>
-	  <c:if test="${ssBinder.entityType == 'workspace'}">
-	    href="<ssf:url windowState="normal"
-		    action="view_workspace"
-		    binderId="${ssBinder.id}"/>"
-	  </c:if>
-	  <c:if test="${ssBinder.entityType == 'profiles'}">
-	    href="<ssf:url windowState="normal"
-		    action="view_profile_listing"
-		    binderId="${ssBinder.id}"/>"
-	  </c:if>
-    ><ssf:nlt tag="navigation.myPortal"/></a>
-	  </div>
+<td align="center">
+<table border="0" cellpadding="0" cellspacing="0" >
+  <tr>
+    <td align="center" valign="top">
+      <div id="ss_top_nav_buttontwo">
+        <ul>
+          <li>
+			  <ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
+			      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
+			  </ssHelpSpot>
+	          <a 
+			  <c:if test="${ssBinder.entityType == 'folder'}">
+			    href="<ssf:url windowState="normal"
+				    action="view_folder_listing"
+				    binderId="${ssBinder.id}"/>"
+			  </c:if>
+			  <c:if test="${ssBinder.entityType == 'workspace'}">
+			    href="<ssf:url windowState="normal"
+				    action="view_workspace"
+				    binderId="${ssBinder.id}"/>"
+			  </c:if>
+			  <c:if test="${ssBinder.entityType == 'profiles'}">
+			    href="<ssf:url windowState="normal"
+				    action="view_profile_listing"
+				    binderId="${ssBinder.id}"/>"
+			  </c:if>
+	          <c:if test="${ss_windowState == 'normal'}">
+	            class="current"
+	          </c:if>
+	          title="<ssf:nlt tag="navigation.portalView"/>"
+	          ><ssf:nlt tag="navigation.portalView"/></a></li>
+          <li>
+ 			  <a title="<ssf:nlt tag="navigation.expandedView"/>"
+				href="<ssf:url windowState="maximized"/>"
+	            <c:if test="${ss_windowState == 'normal'}">
+	              class="current"
+	            </c:if>
+              ><ssf:nlt tag="navigation.expandedView"/></a>
+          </li>
+        </ul>
+      </div>
+      <div id="ss_top_nav_buttonthree">
+        <ul>
+          <li>
+			  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
+			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
+			  </ssHelpSpot>
+              <a title="<ssf:nlt tag="navigation.myWorkspace"/>"
+				  href="<ssf:url 
+				    windowState="${ss_urlWindowState}"
+			      	action="view_ws_listing"
+			      	binderId="${ssUser.workspaceId}"/>"
+              ><ssf:nlt tag="navigation.myWorkspace"/> </a>
+          </li>
+          <li><a title="<ssf:nlt tag="navigation.myTeams"/>"
+			  href="javascript:;" 
+			  onClick="ssMyTeams${renderResponse.namespace}.show();"
+              ><ssf:nlt tag="navigation.myTeams"/> <img border="0" 
+              src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
+		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
+		          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
+			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}">
+			      	    <img src="<html:imagesPath/>pics/1pix.gif"/>
+			    </div>
+			  </ssHelpSpot>
+			  <div id="ss_navbar_myteams${renderResponse.namespace}"
+			      style="visibility:hidden;margin:20px 0px 0px -40px;padding:0px;"></div>
 
-</td>
-<td style="padding-left:10px;">
-
-	<!-- My workspace -->
-	<div class="ss_global_toolbar_accessible" >
-	  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
-	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
-	  </ssHelpSpot>
-	<a class="ss_linkButton" 
-	  href="<ssf:url 
-	    windowState="${ss_urlWindowState}"
-      	action="view_ws_listing"
-      	binderId="${ssUser.workspaceId}"/>"
-    ><ssf:nlt tag="navigation.myWorkspace"/></a>
-	  </div>
-
-</td>
-<td style="padding-left:10px;">
-
-<!-- Favorites -->
-	<a class="ss_linkButton" href="javascript:;" 
-	  onClick="ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
-	  title="<ssf:nlt tag="navigation.favorites"/>"
-    ><ssf:nlt tag="navigation.favorites"/></a>
-      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
-          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-	  </ssHelpSpot>
-    <div id="ss_navbar_favorites${renderResponse.namespace}" 
-      style="visibility:hidden;margin:0px;padding:0px;"
-    ></div>
-</td>
-<td style="padding-left:10px;">
-
-<!-- My Teams -->
-	<a class="ss_linkButton" href="javascript:;" 
-	  onClick="ssMyTeams${renderResponse.namespace}.show();"
-	  title="<ssf:nlt tag="navigation.myTeams"/>"
-    ><ssf:nlt tag="navigation.myTeams"/></a>
-      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
-          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
-	    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}">
-	      	    <img src="<html:imagesPath/>pics/1pix.gif"/>
-	    </div>
-	  </ssHelpSpot>
-	<div id="ss_navbar_myteams${renderResponse.namespace}"
-	      style="visibility:hidden;margin:0px;padding:0px;"></div>
-
-</td>
-<td valign="top"style="padding-left:20px;"><!-- Help button -->
-<ssf:ifnotaccessible>
-	<div class="ss_global_toolbar_help"  onClick="ss_helpSystem.run();return false;"
-      onMouseOver="this.style.cursor = 'pointer';">
-        <img <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>pics/1pix.gif" />
-	    <div id="ss_navbarHelpButton">
-	      <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
-	    </div>
-	</div>
-</ssf:ifnotaccessible>
-<ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible">
-	  <a href="javascript: ss_helpSystem.run();">
-	        <img <ssf:alt tag="navigation.help"/> src="<html:imagesPath/>icons/help.png" /></a>
-		    <div id="ss_navbarHelpButton">
-		      <span class="ss_fineprint"><ssf:nlt tag="navigation.help" text="Help"/></span>
-		    </div>
-	</div>
-</ssf:ifaccessible>
-  </td>
-</tr>
+          </li>
+          <li><a title="<ssf:nlt tag="navigation.favorites"/>"
+	  			href="javascript: ;" 
+	  			onClick="ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
+              ><ssf:nlt tag="navigation.favorites"/> <img border="0" 
+              src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
+		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
+		          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
+			  </ssHelpSpot>
+		      <div align="right" id="ss_navbar_favorites${renderResponse.namespace}" 
+		      style="visibility:hidden;margin:20px 0px 0px -70px;padding:0px;"
+		      ></div>
+          </li>
+        </ul>
+      </div>
+    </td>
+  </tr>
 </table>
+
 </td>
 </tr>
 <tr>
-<td>
+<td align="center" style="padding:5px 0px 5px 0px;">
 <table class="ss_global_toolbar_maximized" cellspacing="0" cellpadding="0" border="0">
 <tbody>
 <tr>
@@ -414,6 +412,7 @@ if (typeof ss_workarea_showId == "undefined")
 </td>
 </tr>
 </table>
+</div>
 
 <c:if test="${empty ss_navbarBottomSeen}">
 <c:set var="ss_navbarBottomSeen" value="1"/>
