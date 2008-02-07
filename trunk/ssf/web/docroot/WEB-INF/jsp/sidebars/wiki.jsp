@@ -120,7 +120,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		    name="namespace" value="${renderResponse.namespace}"/><ssf:ifaccessible><ssf:param name="newTab" value="1" /></ssf:ifaccessible></ssf:url>" 
 
 		    <ssf:title tag="title.open.folderEntry">
-			    <ssf:param name="value" value="${entry1.title}" />
+			    <ssf:param name="value" useBody="true"><c:choose><c:when test="${!empty entry1.title}">${entry1.title}</c:when><c:otherwise>--<ssf:nlt tag="entry.noTitle"/>--</c:otherwise></c:choose></ssf:param>
 		    </ssf:title>
 
 		    <ssf:ifnotaccessible>

@@ -35,6 +35,6 @@
     folderId="${ssDefinitionEntry.id}" 
     action="view_workspace"/>">
 <c:if test="${empty ssDefinitionEntry.title}">
-    <span class="ss_light">--no title--</span>
+    <span class="ss_light">--<ssf:nlt tag="entry.noTitle" />--</span>
     </c:if><c:out value="${ssDefinitionEntry.title}"/></a>
 </span></p>

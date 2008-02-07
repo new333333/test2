@@ -56,7 +56,7 @@
 			onClick="return ss_gotoPermalink('${fileEntry._binderId}','${fileEntry._docId}', '${fileEntry._entityType}', '', 'yes');">
 
      <c:if test="${empty fileEntry.title}">
-    <span class="ss_fineprint"><i>(no title)</i></span>
+    <span class="ss_fineprint"><i>(<ssf:nlt tag="entry.noTitle" />)</i></span>
     </c:if>
     <span class="ss_bold ss_underline"><c:out value="${fileEntry.title}"/></span></a>
 	</td>

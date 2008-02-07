@@ -65,7 +65,7 @@
     </c:when>
  	</c:choose>
     <c:if test="${empty fileEntry.title}">
-    <span class="ss_fineprint"><i>(no title)</i></span>
+    <span class="ss_fineprint"><i>(<ssf:nlt tag="entry.noTitle" />)</i></span>
     </c:if>
     <c:out value="${fileEntry.title}"/></a>
   </td>
