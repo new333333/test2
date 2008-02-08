@@ -126,7 +126,7 @@ public class DisplayConfiguration extends TagSupport {
 												jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
 												if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
 											}
-											if (Validator.isNull(customJsp)) {
+											if (Validator.isNull(customJsp) && inherit) {
 												jspEle= (Element)itemEle.selectSingleNode("./jsps/jsp[@name='custom']");
 												if (jspEle != null) {
 													jspName = jspEle.attributeValue("value");
