@@ -3966,12 +3966,29 @@ ul.ss_calendarNaviBar li.ss_taskViewOptions {
 
 /* EVENT EDITOR */
 
+.ss_event_editor {
+  font-family: ${ss_style_folder_view_font_family};
+  font-size: 12px; 
+}
+
 .ss_event_editor .ss_requrency_row_active {
 	border: 1px solid #CCCCCC;
 }
 
 .ss_event_editor .ss_requrency_row_unactive {
 	border: 1px solid transparent;
+}
+
+.ss_event_editor .ss_event_recurences {
+	padding: 7px 0 0 0;
+}
+
+.ss_event_editor .ss_event_repeat {
+	padding: 7px 0 7px 30px;
+}
+
+.ss_event_editor .ss_event_range {
+	padding-left: 30px;
 }
 
 /* TEAM BUDDIES LIST */

@@ -28,9 +28,39 @@
  */
 
 
-function ssEventEditor(prefix) {
+function ssEventEditor(prefix, frequency, interval, weekDays, monthDays) {
 	
 	var prefix = prefix;
+	
+	var that = this;
+	
+	var interval = typeof interval !== undefined?interval:1;
+	
+	var frequency = typeof frequency !== undefined?frequency:"none";
+	
+	var weekDays = typeof weekDays !== undefined?weekDays:{};
+	
+	var monthDays = typeof monthDays !== undefined?monthDays:{};
+	
+	this.locale = {
+		every: "Every",
+		days: "day(s)",
+		weeks: "week(s)",
+		weeksOccurson: "on",
+		months: "month(s)",
+		years: "year(s)",
+		dayNamesShort: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+		monthOnWeeksTitle : "select which week in the month on which this calendar entry will occur",
+		monthOnDaysTitle: "select the day of the week on which the repeated entry will occur",
+		pleaseSelect: "--select one--",
+		weekFirst: "first", 
+		weekSecond: "second", 
+		weekThird: "third", 
+		weekFourth: "fourth", 
+		weekLast: "last",
+		weekday: "weekday",
+		weekendday: "weekend day"
+	}
 	
 	this.toggleAllDay = function (checkboxObj, timeFormObjIds) {
 		if (!checkboxObj.checked) {
@@ -55,6 +85,168 @@ function ssEventEditor(prefix) {
 				}
 			}
 		}
+	}
+
+	this.setFrequency = function (selectObj) {
+		if (!document.getElementById) {
+			return;
+		}
+		var frequencyContainer = document.getElementById(prefix + "RequrencyDefinitions");
+		if (!frequencyContainer) {
+			return;
+		}
+		if (selectObj) {
+			frequency = selectObj.options[selectObj.selectedIndex].value;
+		}
+		var rangesId = prefix + "Range";
+		if (frequency == "none") {
+			ss_hide(prefix + "RequrencyDefinitions");
+			dispayNoneMask(frequencyContainer);
+			ss_hide(rangesId);
+		} else if (frequency == "day") {
+			ss_show(prefix + "RequrencyDefinitions");
+			dispayDayMask(frequencyContainer);
+			ss_show(rangesId);
+		} else if (frequency == "week") {
+			ss_show(prefix + "RequrencyDefinitions");
+			dispayWeekMask(frequencyContainer);
+			ss_show(rangesId);
+		} else if (frequency == "month") {
+			ss_show(prefix + "RequrencyDefinitions");
+			dispayMonthMask(frequencyContainer);
+			ss_show(rangesId);
+		} else if (frequency == "year") {
+			ss_show(prefix + "RequrencyDefinitions");
+			dispayYearMask(frequencyContainer);
+			ss_show(rangesId);
+		}
+	}
+	
+	function dispayNoneMask(frequencyContainer) {
+		frequencyContainer.innerHTML = "";
+	}	
+	
+	function dispayDayMask(frequencyContainer) {
+		frequencyContainer.innerHTML = "" +
+			"<label for=\"" +  prefix + "_everyNday" + "\">" + that.locale.every + "</label> " +
+			"<input type=\"text\"" + 
+			"       class=\"ss_text\"" + 
+			"       name=\"" + prefix + "_everyN" + "\"" +
+			"       size=\"2\""+
+			"       value=\"" + interval + "\"" +  
+			"       id=\"" + prefix + "_everyNday" + "\" /> " +
+			"<label for=\"" +  prefix + "_everyNday" + "\">" + that.locale.days + "</label>" +
+			"";
+	}
+	
+	function dispayWeekMask(frequencyContainer) {
+		var html = "" +
+			"<label for=\"" + prefix + "_everyNweek\">" + that.locale.every + "</label> " +
+			"<input type=\"text\" class=\"ss_text\" name=\"" + prefix + "_everyN\" id=\"" + prefix + "_everyNweek\" size=\"2\"" + 
+			"       value=\"" + interval + "\" /> " +
+			"<label for=\"" + prefix + "_everyNweek\">" + that.locale.weeks + " " + that.locale.weeksOccurson + "</label> ";
+		
+		for (var i = 0; i <= 6; i++) {
+			html += " <input type=\"checkbox\" name=\"" + prefix + "_day" + i + "\" id=\"" + prefix + "_day" + i + "\"" +
+			(weekDays[i]?" checked=\"checked\" ":"") + " />" +
+			"<label for=\"" + prefix + "_day" + i + "\"><span class=\"ss_week_day\">" + that.locale.dayNamesShort[i] + "</span></label> ";
+		}
+			
+		frequencyContainer.innerHTML = html;
+	}
+	
+	function dispayMonthMask(frequencyContainer) {
+		var html = "" + 
+					"<label for=\"" + prefix + "_everyNmonth\">" + that.locale.every + "</label> " + 
+					"<input type=\"text\" class=\"ss_text\" size=\"2\" " +
+					"       name=\"" + prefix + "_everyN\" value=\"" + interval + "\" " +
+					"       id=\"" + prefix + "_everyNmonth\" /> " + 
+					"<label for=\"" + prefix + "_everyNmonth\">" + that.locale.months + "</label> " +
+					
+					"<select name=\"" + prefix + "_onDayCard\" title=\"" + that.locale.monthOnWeeksTitle + "\">" +  
+	   				
+					"     <option  value=\"none\" " +
+					(monthDays.dayPosition == 'none'?" selected=\"selected\" ":"") + ">" + 
+					that.locale.pleaseSelect + "</option>" +
+					
+					"     <option  value=\"first\" " +
+					(monthDays.dayPosition == 'first'?" selected=\"selected\" ":"") + ">" + 
+					that.locale.weekFirst + "</option>" +
+					
+					"     <option  value=\"second\" " +
+					(monthDays.dayPosition == 'second'?" selected=\"selected\" ":"") + ">" + 
+					that.locale.weekSecond + "</option>" +
+					
+					"     <option  value=\"third\" " +
+					(monthDays.dayPosition == 'third'?" selected=\"selected\" ":"") + ">" + 
+					that.locale.weekThird + "</option>" +
+					
+					"     <option  value=\"fourth\" " +
+					(monthDays.dayPosition == 'fourth'?" selected=\"selected\" ":"") + ">" + 
+					that.locale.weekFourth + "</option>" +
+					
+					"     <option  value=\"last\" " +
+					(monthDays.dayPosition == 'last'?" selected=\"selected\" ":"") + ">" + 
+					that.locale.weekLast + "</option>" +
+																								
+					"</select> " + 
+					
+					"<select name=\"" + prefix + "_dow\" title=\"" + that.locale.monthOnDaysTitle + "\">" +  
+					
+					"<option  value=\"none\" " + 
+					(monthDays.dayOfWeek == 'none'?" selected=\"selected\" ":"" ) + ">" + 
+					that.locale.pleaseSelect + "</option>" +
+					
+					"<option  value=\"Sunday\" " +
+					(monthDays.dayOfWeek == 'Sunday'?" selected=\"selected\" ":"" ) + ">" + 
+					that.locale.dayNamesShort[0] + "</option>" +
+					
+					"<option  value=\"Monday\" " +
+					(monthDays.dayOfWeek == 'Monday'?" selected=\"selected\" ":"" ) + ">" + 
+					that.locale.dayNamesShort[1] + "</option>" +
+					
+					"<option  value=\"Tuesday\" " +
+					(monthDays.dayOfWeek == 'Tuesday'?" selected=\"selected\" ":"" ) + ">" + 
+					that.locale.dayNamesShort[2] + "</option>" +
+					
+					"<option  value=\"Wednesday\" " +
+					(monthDays.dayOfWeek == 'Wednesday'?" selected=\"selected\" ":"" ) + ">" + 
+					that.locale.dayNamesShort[3] + "</option>" +
+					
+					"<option  value=\"Thursday\" " +
+					(monthDays.dayOfWeek == 'Thursday'?" selected=\"selected\" ":"" ) + ">" + 
+					that.locale.dayNamesShort[4] + "</option>" +
+					
+					"<option  value=\"Friday\" " +
+					(monthDays.dayOfWeek == 'Friday'?" selected=\"selected\" ":"" ) + ">" + 
+					that.locale.dayNamesShort[5] + "</option>" +
+					
+					"<option  value=\"Saturday\" " +
+					(monthDays.dayOfWeek == 'Saturday'?" selected=\"selected\" ":"" ) + ">" + 
+					that.locale.dayNamesShort[6] + "</option>" +																															
+
+					"<option  value=\"weekday\" " +
+					(monthDays.dayOfWeek == 'weekday'?" selected=\"selected\" ":"" ) + ">" + 
+					that.locale.weekday + "</option>" +
+					
+					"<option  value=\"weekendday\" " +
+					(monthDays.dayOfWeek == 'weekendday'?" selected=\"selected\" ":"" ) + ">" + 
+					that.locale.weekendday + "</option>" +					
+
+					"</select>";
+			
+		frequencyContainer.innerHTML = html;
+	}		
+	
+	function dispayYearMask(frequencyContainer) {
+		var html = "" +
+					"<label for=\"" + prefix + "repeatyear\">" + that.locale.every + "</label> " + 
+					"<input type=\"text\" class=\"ss_text\" name=\""  + prefix + "_everyN\" " + 
+					"       id=\"" + prefix + "repeatyear\" size=\"2\" " + 
+					"       value=\"" + interval + "\" > " + 
+					"<label for=\"" + prefix + "repeatyear\">" +  that.locale.years + "</label>";
+
+		frequencyContainer.innerHTML = html;
 	}
 	
 	function ss_show(objId){
