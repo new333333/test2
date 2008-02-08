@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9y1arq" pid="b9y1arq" name="Chapter" level="0" number="3"> <text>Reconfiguring and Upgrading</text> </target>
+
+ <target id="b9ye6xq" pid="b9ye6xq" name="Sect1" level="1" number="3.1"> <text>Backing Up and Restoring the Database</text> </target>
+
+ <target id="b9ye7og" pid="b9ye6xq" name="BridgeHead" level="2"> <text>Backing Up the Database</text> </target>
+
+ <target id="b9ye7p0" pid="b9ye6xq" name="BridgeHead" level="2"> <text>Restoring the Database</text> </target>
+
+ <target id="b9ye7fk" pid="b9ye7fk" name="Sect1" level="1" number="3.2"> <text>Reconfiguring Conferencing Hosts</text> </target>
+
+ <target id="b9ye7fl" pid="b9ye7fl" name="Sect1" level="1" number="3.3"> <text>Upgrading the Conferencing Client</text> </target>
+
+ <target id="b9yeaid" pid="b9yeaid" name="Sect1" level="1" number="3.4"> <text>Upgrading the Conferencing Servers</text> </target>
+
+ <target id="b9ye7fm" pid="b9ye7fm" name="Sect1" level="1" number="3.5"> <text>Starting and Stopping Conferencing Services</text> </target>
+
+ <target id="bbj228h" pid="b9ye7fm" name="BridgeHead" level="2"> <text>Starting and Stopping the Cluster</text> </target>
+
+ <target id="b9yedgd" pid="b9ye7fm" name="BridgeHead" level="2"> <text>Starting and Stopping Individual Machines</text> </target>
+
+</targets>

@@ -1,0 +1,1754 @@
+<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "Installing    ICEcore "
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 16
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 13
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        3345    chapter    Installing    ICEcore 
+
+
+ GRAPHICS REFERENCED IN BOOK
+
+       Count       Filename
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           2       filesupporttable.png
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          15       xref
+           0       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           0       ulink
+
+========================================================================-->
+
+<chapter conformance="none,doc,no,,80" id="b9vcafr" revision="01/01/03" lang="en" xml:base="01_installingicecore.xml">
+ <title>Installing 
+  <productname>ICEcore</productname>
+ </title>
+ <para>This chapter describes how to initially install and configure 
+  <productname>ICEcore</productname>:
+ </para>
+ <orderedlist spacing="normal">
+  <listitem>
+   <para><xref linkend="b9vchn5" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn6" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn7" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn8" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn9" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchna" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchnb" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchnc" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchnd" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchne" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchnf" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchng" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+ </orderedlist>
+ <sect1 id="b9vchn5">
+  <title>Prerequisites</title>
+  <para>You need a few things before you install 
+   <productname>ICEcore</productname>: 
+  </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>A good, solid computer with lots of memory. 
+     <remark>----- Need specs!</remark>
+    </para>
+   </listitem>
+   <listitem>
+    <para>JDK 1.5.x installed (do not use 1.6).</para>
+   </listitem>
+   <listitem>
+    <para>A Database Server:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>MySQL 5 for Linux or Windows</para>
+     </listitem>
+     <listitem>
+      <para>SQL Server for Windows (2000 or 2005)</para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+  </orderedlist>
+  <bridgehead id="banny50">Required RAM:</bridgehead>
+  <para>2 GB minimum.</para>
+  <note>
+   <para>You may potentially run with less RAM for specific development and testing configurations without simultaneous users, lots of database traffic, etc.</para>
+  </note>
+  <bridgehead id="bannybx">How much disk do you need?</bridgehead>
+  <para>This depends on how much data you plan to put into the system. </para>
+  <para>The software takes about 250 MB.</para>
+ </sect1>
+ <sect1 id="b9vchn6">
+  <title>Steps for Installing 
+   <productname>ICEcore</productname>
+  </title>
+  <procedure id="b9ptkcb">
+   <para>The following sequence shows the steps you want to follow to install 
+    <productname>ICEcore</productname>:
+   </para>
+   <step id="b9ptkcc" performance="required">
+    <para>Install JDK and Set Path</para>
+   </step>
+   <step id="b9ptl7r" performance="required">
+    <para>Install and Configure the Database Server</para>
+   </step>
+   <step id="b9ptld7" performance="required">
+    <para>Download the appropriate 
+     <productname>ICEcore</productname> kit
+    </para>
+   </step>
+   <step id="b9ptlge" performance="required">
+    <para>Edit the installer.xml file (see <xref linkend="b9vchn9" xrefstyle="RefNoPage"/>)</para>
+   </step>
+   <step id="b9ptlgi" performance="required">
+    <para>Run the installer (on Linux, do a 
+     <literal>chmod +x installer.linux</literal> to make the installer executable)
+    </para>
+   </step>
+   <step id="b9ptlgm" performance="required">
+    <para>Start and Stop 
+     <productname>ICEcore</productname>
+    </para>
+   </step>
+   <step id="b9ptnu8" performance="required">
+    <para>Login</para>
+   </step>
+   <step id="b9ptnua" performance="required">
+    <para>Add Users</para>
+   </step>
+  </procedure>
+ </sect1>
+ <sect1 id="b9vchn7">
+  <title>Database Planning</title>
+  <para>
+   <productname>ICEcore</productname> and LifeRay use separate dedicated databases within your database server.
+  </para>
+  <para>A set of SQL configuration scripts are used to initialize the databases (creating the necessary tables, etc.).</para>
+  <para>
+   <productname>ICEcore</productname>'s default database is MySQL. It also supports SQL Server on Windows 
+   <remark>and Oracle.</remark>
+  </para>
+  <para>[[ 
+   <productname>ICEcore</productname>'s database requirements are relatively modest. The bulk of the data uploaded to 
+   <productname>ICEcore</productname> is stored in a file repository (see <xref linkend="b9vchn8" xrefstyle="RefNoPage"/> - the database is primarily used for storing metadata and descriptive text.
+  </para>
+  <para>Because the amount of data stored in the database is highly sensitive to the usage patterns of 
+   <productname>ICEcore</productname> (which are highly variable) there is no reliable formula for determining disk space usage, but the following can be used as a guideline:
+  </para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> numberAttachments x averageAttachmentSize = totalAttachmentSpace</para>
+   </listitem>
+   <listitem>
+    <para>totalAttachmentSpace * .04 = sqlDataSpace</para>
+   </listitem>
+   <listitem>
+    <para> sqlDataSpace x 5 = sqlStorageSapce ]] -- Bill says he can’t verify</para>
+   </listitem>
+  </itemizedlist>
+  <bridgehead id="bannyhr">MySQL</bridgehead>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> MySQL 5 is required</para>
+   </listitem>
+   <listitem>
+    <para>Specify 
+     <filename>root</filename> for the administrator password (or make commensurate changes in the 
+     <productname>ICEcore</productname>
+     <filename>installer.xml </filename>file) 
+    </para>
+   </listitem>
+   <listitem>
+    <para> Set the default character set to UTF-8 by selecting “
+     <guimenu>Best support for Multilingualism</guimenu>”
+    </para>
+   </listitem>
+  </itemizedlist>
+  <bridgehead id="bannylt">Microsoft SQL Server </bridgehead>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> You can use SQL Server 2000 or SQL Server 2005</para>
+   </listitem>
+   <listitem>
+    <para>Make sure to select SQL Server and Windows for authentication (the default is Windows only)</para>
+   </listitem>
+   <listitem>
+    <para>Set the administrator password to “
+     <literal>sa</literal>” (or make commensurate changes in the 
+     <productname>ICEcore</productname>
+     <literal>installer.xml </literal>file)
+    </para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9vchn8">
+  <title>File System Planning</title>
+  <para>
+   <productname>ICEcore</productname> software and configuration files are stored in a tree shared with LifeRay, Tomcat, etc. There are some temporary files also located here, but mainly locks, etc.
+  </para>
+  <para>[[ 
+   <productname>ICEcore</productname> data is stored in the database (see <xref linkend="b9vchn7" xrefstyle="HeadingOnPage"/>) and on the file system. The file system usage is divided up into several functional areas:
+  </para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>
+     <filename> filerepository</filename> - This is where all attachment files are located, so it tends to be a large consumer of disk space. The tree is roughly organized by zone, binder (folder/workspace), and entry. 
+     <filename>archiveStore</filename> - Only activated in the Enterprise version of 
+     <productname>ICEcore</productname>, this is where previous versions of files are stored. The files are stored here to meet compliance and archival goals. 
+     <filename>cachefilestore</filename> - This tree holds information derived from the attachments, such as thumbnails, scaled images, text, and HTML renderings. Depending on the nature of the attachments this tree consumes somewhat less space than the file repository (but it can, conceivably, store more).
+    </para>
+   </listitem>
+   <listitem>
+    <para>
+     <filename>lucene</filename> - This tree holds the search index for the data. It tends to be a fraction of the space consumed by the file repository, but it is also sensitive to the type of information stored.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Other trees - These are other trees that you cannot configure which typically consume a small amount of space (relatively speaking).</para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>
+       <filename>rss</filename> - Caches of RSS feeds for folders
+      </para>
+     </listitem>
+     <listitem>
+      <para>
+       <filename>temp</filename> - Temporary files
+      </para>
+     </listitem>
+     <listitem>
+      <para>
+       <filename>definitions</filename> - Custom definitions are stored here ]] -- Bill can’t verify
+      </para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9vchn9">
+  <title>Editing the Installer (.xml) File</title>
+  <para>The 
+   <filename>installer.xml </filename>file provides the 
+   <productname>ICEcore</productname> installer with detailed configuration information regarding network, memory, database, file system, e-mail, presence, and other settings. Edit this file with your specific data. An example 
+   <filename>installer.xml </filename>file is shown below:
+  </para>
+
+<screen>
+&lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+&lt;!--           Aspen Installation Configuration File           --&gt;
+</screen>
+
+
+<screen>
+&lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+&lt;AspenConfig&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                   Network Settings                        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  The host name or IP address of the server must be      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  specified here.  The default, localhost, is only       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  appropriate for test configurations with no remote     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  access.                                                  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;Network&gt;
+</screen>
+
+
+<screen>
+        &lt;Host name="myhost" port="8080" /&gt;
+</screen>
+
+
+<screen>
+        &lt;WebServices endpoint="http://myhost:8080" /&gt;
+</screen>
+
+
+<screen>
+    &lt;/Network&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Memory (RAM) Settings                        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Aspen requires a minimum of 512m to operate.            --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  1g is recommended for basic production.                 --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  More is better.                                          --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;Memory&gt;
+</screen>
+
+
+<screen>
+        &lt;JavaVirtualMachine mx="1g" /&gt;
+</screen>
+
+
+<screen>
+    &lt;/Memory&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              File System Configuration                    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;FileSystem configName="basic"&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- The basic configuration only requires that you  --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- specify a root directory for the data and       --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- we'll take care of the rest.                    --&gt;
+</screen>
+
+
+<screen>
+      &lt;Config id="basic"&gt;
+</screen>
+
+
+<screen>
+        &lt;RootDirectory path="/home/aspendata"  /&gt;
+</screen>
+
+
+<screen>
+      &lt;/Config&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- The advanced configuration requires that you    --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- specify individual directory locations.         --&gt;
+</screen>
+
+
+<screen>
+      &lt;Config id="advanced"&gt;
+</screen>
+
+
+<screen>
+        &lt;RootDirectory path="/home/aspendata"  /&gt;
+</screen>
+
+
+<screen>
+        &lt;FileRepositories /&gt;
+</screen>
+
+
+<screen>
+        &lt;ArchiveStore   /&gt;
+</screen>
+
+
+<screen>
+        &lt;CacheStore     /&gt;
+</screen>
+
+
+<screen>
+        &lt;LuceneIndex    /&gt;
+</screen>
+
+
+<screen>
+        &lt;Other          /&gt;
+</screen>
+
+
+<screen>
+      &lt;/Config&gt;
+</screen>
+
+
+<screen>
+    &lt;/FileSystem&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Database Configuration                       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- Modify the configName to your desired configuration.    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- Change the Resources for the configuration if needed    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- (the defaults are pretty good)                            --&gt;
+</screen>
+
+
+<screen>
+    &lt;Database  configName="MySQL_Default"&gt;
+</screen>
+
+
+<screen>
+        &lt;Config id="MySQL_Default" type="MySql"&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="liferay"
+</screen>
+
+
+<screen>
+                driverClassName="com.mysql.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:mysql://localhost:3306/lportal?useUnicode=true&amp;amp;characterEncoding=UTF-8"
+</screen>
+
+
+<screen>
+                username="root"
+</screen>
+
+
+<screen>
+                password="root"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="aspen"
+</screen>
+
+
+<screen>
+                driverClassName="com.mysql.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;amp;characterEncoding=UTF-8"
+</screen>
+
+
+<screen>
+                username="root"
+</screen>
+
+
+<screen>
+                password="root"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+        &lt;/Config&gt;
+</screen>
+
+
+<screen>
+        &lt;Config id="SQLServer_Default" type="SQLserver"&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="liferay"
+</screen>
+
+
+<screen>
+                driverClassName="net.sourceforge.jtds.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:jtds:sqlserver://localhost/lportal;SelectMethod=cursor"
+</screen>
+
+
+<screen>
+                username="sa"
+</screen>
+
+
+<screen>
+                password="sa"
+</screen>
+
+
+<screen>
+             /&gt; 
+</screen>
+
+
+<screen>
+            &lt;Resource for="aspen"
+</screen>
+
+
+<screen>
+                driverClassName="net.sourceforge.jtds.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor"
+</screen>
+
+
+<screen>
+                username="sa"
+</screen>
+
+
+<screen>
+                password="sa"
+</screen>
+
+
+<screen>
+             /&gt; 
+</screen>
+
+
+<screen>
+        &lt;/Config&gt;
+</screen>
+
+
+<screen>
+    &lt;/Database&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Email Configuration Settings                 --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Edit the Outbound and Inbound settings as required.    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  For inbound mail (postings) you need to specify either --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  pop3 or imap, and fill out the settings for which one  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  you choose.                                              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;EmailSettings&gt;
+</screen>
+
+
+<screen>
+        &lt;Outbound&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource
+</screen>
+
+
+<screen>
+                mail.smtp.host="mailhost.yourcompany.com"
+</screen>
+
+
+<screen>
+                mail.smtp.user="aspen@yourcompany.com."
+</screen>
+
+
+<screen>
+                mail.smtp.password=""
+</screen>
+
+
+<screen>
+                mail.smtp.auth="false"
+</screen>
+
+
+<screen>
+                mail.smtp.port="25"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+         &lt;/Outbound&gt;
+</screen>
+
+
+<screen>
+        &lt;Inbound&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource 
+</screen>
+
+
+<screen>
+                mail.store.protocol="pop3"                     
+</screen>
+
+
+<screen>
+                mail.pop3.host="localhost"
+</screen>
+
+
+<screen>
+                 mail.pop3.auth="true"
+</screen>
+
+
+<screen>
+                mail.pop3.user="popEmailUserId"
+</screen>
+
+
+<screen>
+                mail.pop3.password="passwordHere"
+</screen>
+
+
+<screen>
+                mail.pop3.port="110"
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+                mail.imap.host="localhost"
+</screen>
+
+
+<screen>
+                mail.imap.auth="true"
+</screen>
+
+
+<screen>
+                mail.imap.user="imapEmailUserId"
+</screen>
+
+
+<screen>
+                mail.imap.password="passwordHere"
+</screen>
+
+
+<screen>
+                mail.imap.port="143"
+</screen>
+
+
+<screen>
+                mail.smtp.user="aspen@sitescape.com"
+</screen>
+
+
+<screen>
+                mail.transport.protocol="smtp"
+</screen>
+
+
+<screen>
+                mail.smtp.host="localhost"
+</screen>
+
+
+<screen>
+                mail.smtp.port="25"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+        &lt;/Inbound&gt;
+</screen>
+
+
+<screen>
+    &lt;/EmailSettings&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Presence Configuration Settings              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;Presence&gt;
+</screen>
+
+
+<screen>
+        &lt;Resource 
+</screen>
+
+
+<screen>
+            presence.service.enable="false"
+</screen>
+
+
+<screen>
+            presence.service.jabber.server="zon-server.yourcompany.com"
+</screen>
+
+
+<screen>
+            presence.broker.admin.id="admin"
+</screen>
+
+
+<screen>
+            presence.broker.admin.passwd="admin"
+</screen>
+
+
+<screen>
+            presence.broker.jabber.domain="newzon"
+</screen>
+
+
+<screen>
+            presence.broker.default.community.id="yourcommunity"
+</screen>
+
+
+<screen>
+            presence.broker.zon.url="http://zon-server.yourcompany.com:8000/imidio_api/"        /&gt;
+</screen>
+
+
+<screen>
+    &lt;/Presence&gt;    
+</screen>
+
+
+<screen>
+    &lt;!--                Custom Configuration Settings              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Custom properties set here will be placed in the       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  ssf-ext.properties file.                                 --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;CustomProperties&gt;
+</screen>
+
+
+<screen>
+        &lt;Resource 
+</screen>
+
+
+<screen>
+        /&gt;
+</screen>
+
+
+<screen>
+    &lt;/CustomProperties&gt;
+</screen>
+
+
+<screen>
+&lt;/AspenConfig&gt; 
+</screen>
+
+ </sect1>
+ <sect1 id="b9vchna">
+  <title>Run the Installer: Sample Installer Sequence</title>
+
+<screen>
+Aspen Installer 0.l.0
+</screen>
+
+
+<screen>
+Installing this software requires agreement to the terms and conditions set forth in the:
+</screen>
+
+
+<screen>
+SiteScape End User License Agreement for Beta Software
+</screen>
+
+
+<screen>
+You can review this agreement again at the download site.
+</screen>
+
+
+<screen>
+Note: You must answer “YES” to install the software.
+</screen>
+
+
+<screen>
+Have you read and agree with the license? : yes
+</screen>
+
+
+<screen>
+JAVA_HOME is set to: C:\Program Files\Java\jdk1.5.0_11
+</screen>
+
+
+<screen>
+Creating installer working directory: C:/aspen/temp-installer
+</screen>
+
+
+<screen>
+Enter the type of installation:
+</screen>
+
+
+<screen>
+  1. Aspen Enterprise 0.1.0 with Liferay/Tomcat - FULL INSTALL
+</screen>
+
+
+<screen>
+  2. Aspen Enterprise 0.1.0 with Liferay/Tomcat - UPDATE
+</screen>
+
+
+<screen>
+  3. Aspen Lucene Server  (Not Available)
+</screen>
+
+
+<screen>
+  4. Apply settings only  (Use with care)
+</screen>
+
+
+<screen>
+Installation type [1]: 1
+</screen>
+
+
+<screen>
+We have to install the software into a dedicated directory
+</screen>
+
+
+<screen>
+Install directory: [C:/aspen-team-0.1.0]:
+</screen>
+
+
+<screen>
+   Directory C:/aspen-team-0.1.0 does not exist.  Creating...
+</screen>
+
+
+<screen>
+Copying deployment kits to work directory...
+</screen>
+
+
+<screen>
+   (this takes about a minute)
+</screen>
+
+
+<screen>
+   ... done
+</screen>
+
+
+<screen>
+Ready to apply kits to the installation directory
+</screen>
+
+
+<screen>
+Enter Y to install, enter N to cancel installation [Y]:
+</screen>
+
+
+<screen>
+Installing Aspen (LifeRay/Tomcat) ... (this will take a minute or so)
+</screen>
+
+
+<screen>
+Installing Aspen converters ...
+</screen>
+
+
+<screen>
+   ... done
+</screen>
+
+
+<screen>
+Applying installation settings...
+</screen>
+
+
+<screen>
+   Loading installer.xml...
+</screen>
+
+
+<screen>
+   Loading current configuration files...
+</screen>
+
+
+<screen>
+   Database settings...
+</screen>
+
+
+<screen>
+      using database configuration: SQLServer_Default
+</screen>
+
+
+<screen>
+      Database type is: SQLServer
+</screen>
+
+
+<screen>
+   File system settings...
+</screen>
+
+
+<screen>
+      using configuration: basic
+</screen>
+
+
+<screen>
+   File system root path: C:/aspendata
+</screen>
+
+
+<screen>
+   Email settings...
+</screen>
+
+
+<screen>
+   Network settings...
+</screen>
+
+
+<screen>
+   Custom settings...
+</screen>
+
+
+<screen>
+   Startup files...
+</screen>
+
+
+<screen>
+   Writing all settings...
+</screen>
+
+
+<screen>
+   Settings applied.
+</screen>
+
+
+<screen>
+New installation selected.  Getting database creation scripts....
+</screen>
+
+
+<screen>
+   Creating Liferay database for SQLServer ...
+</screen>
+
+
+<screen>
+osql -U sa -P Born2test -i C:/aspen/temp-installer/liferay/create/create-sql-server.sql
+</screen>
+
+
+<screen>
+   Creating Aspen database for SQLServer ...
+</screen>
+
+
+<screen>
+osql -U sa -P Born2test -i C:/aspen/temp-installer/aspen/create/create-database-sqlserver.sql
+</screen>
+
+
+<screen>
+   Databases created.
+</screen>
+
+
+<screen>
+Installation completed.
+</screen>
+
+
+<screen>
+You can startup Aspen/Liferay by running the startup script
+</screen>
+
+
+<screen>
+in: C:/aspen-team-0.1.0/liferay-portal-tomcat-jdk5-4.1.2/bin
+</screen>
+
+
+<screen>
+
+</screen>
+
+ </sect1>
+ <sect1 id="b9vchnb">
+  <title>Starting and Stopping 
+   <productname>ICEcore</productname>
+  </title>
+  <bridgehead id="bannxe9">Starting 
+   <productname>ICEcore</productname>
+  </bridgehead>
+  <para>On Windows:</para>
+  <para>
+   <literal> /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/startup.bat </literal>
+  </para>
+  <para>On Linux:</para>
+  <para>
+   <literal> /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/startup.sh </literal>
+  </para>
+  <note>
+   <para>While this is dependent on your system configuration, it can take upwards of 60 seconds before 
+    <productname>ICEcore</productname>/Liferay starts accepting web transactions. Initial transactions also tend to be slower as various caches load into RAM. These delays are amplified somewhat when working with a new installation or updated software as the JSPs are recompiled as they are referenced. In Windows, startup is complete when the Tomcat window displays: 
+    <literal>INFO:Server Startup in ##### ms</literal>
+   </para>
+  </note>
+  <bridgehead id="bannyv1">Log Files/Monitoring</bridgehead>
+  <para>On Windows:</para>
+  <para>A Tomcat window appears when you issue the startup.bat command. Messages (good and bad) appear here.</para>
+  <para>On Linux: </para>
+  <para>Unlike Windows, the Tomcat process starts as a background process and no window appears. To monitor the messages in real time:</para>
+
+<screen>
+tail -f /yourinstall/liferay-portal-tomcat-jdk5-4.1.2/logs/catalina.out
+</screen>
+
+  <bridgehead id="bannz0o">Stopping 
+   <productname>ICEcore</productname>
+  </bridgehead>
+  <para>On Windows:</para>
+
+<screen>
+/yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/shutdown.bat
+</screen>
+
+  <para>On Linux:</para>
+
+<screen>
+/yourinstall/liferay-portal-tomcat-jdk5-4.1.2/bin/shutdown.sh
+</screen>
+
+ </sect1>
+ <sect1 id="b9vchnc">
+  <title>Initial Logon</title>
+  <para>After installing 
+   <productname>ICEcore</productname>/Liferay you need to log in. Liferay predefines one system administrator account and a default format for users.
+  </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Access your installation via the following URL: 
+     <literal>http://yourhost.name.here:8080</literal>
+    </para>
+   </listitem>
+   <listitem>
+    <para>At the login screen enter: 
+     <literal> administrator</literal>
+    </para>
+   </listitem>
+   <listitem>
+    <para>Enter the following Password: 
+     <literal>test</literal>
+    </para>
+    <para>This brings up the initial LifeRay portal window.</para>
+   </listitem>
+   <listitem>
+    <para>To add more portlets, click on the “
+     <guimenu>Add Content</guimenu>” link in the upper-right-hand corner. This brings up a panel of portlets along the left-hand margin:
+    </para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Expand the “
+       <productname>ICEcore</productname>” section to add more 
+       <productname>ICEcore</productname> features, such as the 
+       <guimenu>Administration</guimenu> portlet.
+      </para>
+     </listitem>
+     <listitem>
+      <para>Expand the “
+       <guimenu>Admin</guimenu>” section to add useful LifeRay features such as the 
+       <guimenu>Admin</guimenu> and 
+       <guimenu>Enterprise Admin</guimenu> portlets.
+      </para>
+     </listitem>
+    </itemizedlist>
+    <para>The portlets are placed in the narrow column on the left side. To move a portlet to the wider right column, mouse down on the title and drag it over the right-hand column and release when you see a blue bar with arrows on each side appear.</para>
+   </listitem>
+  </orderedlist>
+ </sect1>
+ <sect1 id="b9vchnd">
+  <title>Adding Users</title>
+  <para>As this is a teaming product, you probably want to add some people besides yourself. </para>
+  <para>There are two methods of managing users:</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Basic User Management - create and manage individual accounts manually</para>
+   </listitem>
+   <listitem>
+    <para>LDAP/eDirectory - synchronize user account management to a corporate directory</para>
+   </listitem>
+  </orderedlist>
+  <para>Regardless of which method you choose it is important to realize that because 
+   <productname>ICEcore</productname> is embedded within LifeRay, a portion of user management is delegated to the LifeRay. For example, LifeRay is responsible for all user authentications. 
+  </para>
+  <bridgehead id="bannx5y">Basic User Management</bridgehead>
+  <para>This capability comes “out of the box” with the product - no additional setup is required.Using the Liferay “
+   <guimenu>Enterprise Admin</guimenu>” portlet, click on the 
+   <guimenu>Users</guimenu> tab. (Note: Liferay has two portlets, “
+   <guimenu>Enterprise Admin</guimenu>” and “
+   <guimenu>Admin</guimenu>.” Both have “
+   <guimenu>Users</guimenu>” tabs, but they do very different things. Make sure you are using the correct portlet.) This brings up a list of current Liferay accounts. You can refer to the Liferay documentation for more advanced management, but the basic steps needed are:
+  </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para> Click 
+     <guimenu>Add</guimenu>.
+    </para>
+   </listitem>
+   <listitem>
+    <para> Fill in the 
+     <guimenu>First</guimenu>, 
+     <guimenu>Last Name</guimenu>, assign a 
+     <guimenu>User ID</guimenu>, and specify the e-mail address.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Save</guimenu>.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Liferay shows an extended form.</para>
+   </listitem>
+   <listitem>
+    <para>In the second section you can set the timezone and portal window size. While 
+     <productname>ICEcore</productname> can operate in an 800x600 pixel window, we recommend the 1024x768 or Full Screen option.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Save</guimenu>. 
+    </para>
+   </listitem>
+   <listitem>
+    <para>Click on the 
+     <guimenu>Password</guimenu> tab.
+    </para>
+   </listitem>
+   <listitem>
+    <para> Type in the password.</para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Save</guimenu>.
+    </para>
+   </listitem>
+  </orderedlist>
+  <para>The account is now created and ready for use. The user appears in 
+   <productname>ICEcore</productname> when they first log in and 
+   <productname>ICEcore</productname> creates their user workspace, including a blog, calendar, and file area.
+  </para>
+  <bridgehead id="bano067">User Management with LDAP/eDirectory </bridgehead>
+  <para>If you want to use a corporate directory as the master reference for user accounts you need to configure both Liferay and 
+   <productname>ICEcore</productname> in a similar manner. 
+   <productname>ICEcore</productname>’s LDAP configuration pages are designed to look and work in a similar fashion to Liferay, easing this task significantly. You can refer to the Liferay documentation for more detailed information, but the basic steps needed are:
+  </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Using the Liferay “
+     <guimenu>Admin</guimenu>” portlet, click on the 
+     <guimenu>Users</guimenu> tab. (Note: Liferay has two portlets, “
+     <guimenu>Enterprise Admin</guimenu>” and “
+     <guimenu>Admin</guimenu>”. Both have “
+     <guimenu>Users</guimenu>” tabs, but they do very different things. Make sure you are using the correct portlet.)
+    </para>
+   </listitem>
+   <listitem>
+    <para>Click on the 
+     <guimenu>Authentication</guimenu> tab.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Click on the 
+     <guimenu>LDAP</guimenu> tab.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Fill out the form with the values needed to map to your corporate directory.</para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Save</guimenu>.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Using the 
+     <productname>ICEcore</productname>
+     <guimenu>Administration</guimenu> portlet, click on “
+     <guimenu>Configure LDAP</guimenu>.”
+    </para>
+   </listitem>
+   <listitem>
+    <para>Fill out the form using the corresponding values that were used to configure Liferay. (See below for details on this form). </para>
+   </listitem>
+   <listitem>
+    <para>Click 
+     <guimenu>Apply</guimenu>.
+    </para>
+   </listitem>
+  </orderedlist>
+  <bridgehead id="bano0cl">The 
+   <productname>ICEcore</productname> LDAP Configuration Form
+  </bridgehead>
+  <para>This form is similar to the Liferay form but includes additional information on scheduling synchronization of all users and, optionally, groups. </para>
+  <para>Connection settings:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> URL: 
+     <literal>ldap://host:port/dc=foo,dc=bar</literal>
+    </para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para> e.g., 
+       <literal>ldap://192.168.3.3:389/dc=sleepy,dc=com</literal>
+      </para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+   <listitem>
+    <para>Principal: LDAP principal to authenticate access with</para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>e.g., 
+       <literal>cn=admin,o=itdepartment</literal>
+      </para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+   <listitem>
+    <para>Credentials: Above principal's password or authenticating token</para>
+   </listitem>
+  </itemizedlist>
+  <para>Users settings:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> Ldap attribute that identifies the user</para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>e.g, 
+       <literal>uid</literal>
+      </para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+   <listitem>
+    <para>Attribute mapping - This is how you map the LDAP attribute names of the user record to the 
+     <productname>ICEcore</productname> internal identifiers. Syntax is: 
+     <literal>aspenId=ldapAttName</literal>
+    </para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para> e.g, 
+       <literal>lastName=sn</literal>
+      </para>
+     </listitem>
+     <listitem>
+      <para>e.g., 
+       <literal>name=uid</literal>
+      </para>
+     </listitem>
+     <listitem>
+      <para>AspenIds: 
+       <literal>lastName, firstName, name, description, email, Address, phone</literal>
+      </para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+   <listitem>
+    <para>Select “
+     <guimenu>Synchronize user profiles</guimenu>” (recommended)
+    </para>
+   </listitem>
+   <listitem>
+    <para>Select “
+     <guimenu>Register LDAP user profiles automaticially</guimenu>” (recommended) 
+    </para>
+   </listitem>
+   <listitem>
+    <para>Select others as appropriate </para>
+   </listitem>
+  </itemizedlist>
+  <para>Groups settings:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> Register LDAP group profiles automatically (recommended)</para>
+   </listitem>
+   <listitem>
+    <para>Synchronize group membership (recommended)</para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9vchne">
+  <title>Mail Setup</title>
+  <para>
+   <productname>ICEcore</productname> e-mail integration is divided into two primary functions:
+  </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Notification - e-mail messages generated by 
+     <productname>ICEcore</productname> to inform people of events (e.g., new entries, changes) occurring within 
+     <productname>ICEcore</productname>.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Posting - the processing of e-mail messages sent to 
+     <productname>ICEcore</productname> with the intent of having the e-mail content added to a particular folder (as a new entry or reply).
+    </para>
+   </listitem>
+  </orderedlist>
+  <bridgehead id="bano0iu">System Configuration</bridgehead>
+  <para>As part of installing and configuring 
+   <productname>ICEcore</productname>, the system administrator must supply information related to the address and access to the mail system. E-mail integration is not required and you can configure the level of integration. 
+  </para>
+  <para>The
+   <filename> installer.xml </filename>file contains sections on e-mail configuration for both notification (Outbound) and posting (Inbound).
+  </para>
+  <para>Outbound configuration requires the basic information for generating SMTP mail messages: server, port, and optional authentication information.</para>
+  <para>
+   <productname>ICEcore</productname> posting works by the system accessing a single e-mail account (sometimes referred to as the “posting account”). Using your e-mail system, multiple e-mail addresses (aliases) can be mapped to this account. 
+   <productname>ICEcore</productname> periodically reads e-mail sent to this account and apply the messages to individual folders (more on this below).
+  </para>
+  <para>Create the account using your normal e-mail system management tools. You can configure the posting account to use either POP3 or IMAP. 
+   <productname>ICEcore</productname> needs a host, port, e-mail account id and password for the posting feature to work.
+  </para>
+  <bridgehead id="bano0o8">Setting up Incoming Mail schedule</bridgehead>
+  <para>In the 
+   <productname>ICEcore</productname>
+   <guimenu> Administration</guimenu> portlet, click on the “
+   <guimenu>Configure site incoming email schedule</guimenu>” link. This brings up a form that instructs 
+   <productname>ICEcore</productname> how when to check the posting e-mail account. You may choose to poll at specific times during the day or at some regular frequency.
+  </para>
+  <para>The right-hand side of the setup page lists any aliases and the folder that is using that alias. You set up the alias address to folder mapping within the folders themselves (see next section).</para>
+  <bridgehead id="bano0rs">Associating an E-mail Address with a Folder</bridgehead>
+  <para>If you enable incoming e-mail the final step that you need to take is to associate a particular e-mail alias address with a folder. When this is done, e-mail sent to that address is “read” by the folder and turned into entries (or replies).</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Navigate to the folder you want to receive e-mail and click on the “
+     <guimenu>Manage this folder</guimenu>” menu item, then select “
+     <guimenu>Email settings</guimenu>”.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Enter the e-mail alias address you want to associate with this folder. Click on the 
+     <guimenu>Apply</guimenu> button to save the address. 
+    </para>
+   </listitem>
+  </orderedlist>
+  <para>You can optionally set up the notification schedule for this folder at the same time (see next section). </para>
+  <bridgehead id="bano0w9">Establishing a Notification Schedule for a Folder</bridgehead>
+  <para>You can configure each folder to send out e-mail messages highlighting activity within the folder.</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Navigate to the folder you want to receive e-mail and click on the “
+     <guimenu>Manage this folder</guimenu>” menu item, then select “
+     <guimenu>Email settings</guimenu>”.
+    </para>
+   </listitem>
+   <listitem>
+    <para>Enable outgoing mail and select the type of schedule you want for notification. You can configure the schedule for specific times of the day or a regular frequency. You also need to specify who is to receive the e-mail. This can be a combination of users, groups, and arbitrary e-mail addresses. </para>
+   </listitem>
+   <listitem>
+    <para>Click the 
+     <guimenu>Apply</guimenu> button to save the schedule.
+    </para>
+   </listitem>
+  </orderedlist>
+ </sect1>
+ <sect1 id="b9vchnf">
+  <title>Memory Guidelines</title>
+  <para>Java virtual machine uses a memory pool that you can configure at startup time. (You can see 
+   <filename>catalina.bat/.sh</filename> for all of Tomcat's startup options).
+  </para>
+  <para>Memory settings are defined in the 
+   <filename>installer.xml </filename>file. The default configuration assumes 1GB is available for the Java virtual machine.
+  </para>
+  <para>Virtual memory configurations in excess of 2GB for large production environments are common, therefore 64-bit server systems are recommended.</para>
+  <para>LifeRay has its own (non-trivial) memory pools that needs to be factored in when determining overall memory demands. These are not accounted for in great detail here.</para>
+  <para>
+   <productname>ICEcore</productname> memory usage factors:
+  </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Number of sessions (users logged in)</para>
+   </listitem>
+   <listitem>
+    <para>Number of active/concurrent sessions</para>
+   </listitem>
+   <listitem>
+    <para> Hibernate cache (database)</para>
+   </listitem>
+   <listitem>
+    <para>Lucene cache</para>
+   </listitem>
+  </orderedlist>
+  <para>The largest and most important of these are the Hibernate and Lucene caches.</para>
+  <bridgehead id="bano10m">Hibernate Cache</bridgehead>
+  <para>Hibernate is a software framework that manages the mapping between Java objects and relational databases. Consequently, it has a sophisticated cache system that works on top of any database caching mechanisms.By default 
+   <productname>ICEcore</productname> uses the 
+   <filename>ehcache </filename>plug-in, which is a non-clustering cache manager. Fine tuning of the Hibernate cache is done through 
+   <filename>ehcache.xml</filename>.
+  </para>
+  <bridgehead id="bano14w">Lucene Cache</bridgehead>
+  <para>Lucene has a number of tuning parameters. At this time, we have not done any work with them.</para>
+ </sect1>
+ <sect1 id="b9vchng">
+  <title>Document Support</title>
+  <para>When a file is uploaded into 
+   <productname>ICEcore</productname> it is processed in a number of ways:
+  </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Textual content is extracted and sent to the search engine. For some file types (e.g., word processing documents) the textual content is obvious. For others, such as graphics files, there may be little or no textual content beyond basic metadata.</para>
+   </listitem>
+   <listitem>
+    <para> If possible, a thumbnail (and scaled image - somewhat larger than a thumbnail) of the file is created. The thumbnail of a multi-page document shows the first page.</para>
+   </listitem>
+   <listitem>
+    <para>If possible, an browser-only renderable (HTML) version of the file is created. This allows people who do not have the ability to open the file with its native application to get an idea of what is in the file. The rendering is on a “best effort” basis and the level of detail and fidelity of the rendering varies greatly.</para>
+   </listitem>
+  </orderedlist>
+  <para>The Open and Enterprise versions of 
+   <productname>ICEcore</productname> vary greatly in their ability to perform the above tasks.
+  </para>
+  <para>The Open version uses OpenOffice to provide access to common Microsoft and OpenOffice document formats, and that is about it.</para>
+  <para>The Enterprise version uses a licensed technology from the Stellent* company (now part of Oracle*) which provides processing capabilities to a wide spectrum of file types (over 200).</para>
+  <bridgehead id="bano1bk">Editing Support</bridgehead>
+  <para>There are two ways of editing files stored in 
+   <productname>ICEcore</productname>:
+  </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Download the file to your desktop. Edit the file. Upload the file to the entry (as an attachment). A new version of the attachment is created reflecting your changes. It is possible to manually “lock” the entry if you want to prevent other people from modifying any of the attached files.</para>
+   </listitem>
+   <listitem>
+    <para> Certain file types provide an [Edit] button which allows for “edit in place”. When available, clicking on the [Edit] button will launch a small Java applet which, in turn, launches the associated edit program for the file. The program accesses the file stored in 
+     <productname>ICEcore</productname> through WebDAV and is subject to the individual file locking protocols that WebDAV provides. Saving the file (or exiting the application) creates a new version of the attachment - no interaction with the browser is needed.
+    </para>
+   </listitem>
+  </orderedlist>
+  <para>Because the “edit in place” option requires the WebDAV URL support by the application, which is not universally supported by the operating systems, 
+   <productname>ICEcore</productname> must be configured to know which applications are “WebDAV-aware”.
+  </para>
+  <para>The following table (still very much a work in progress) shows the planned default configuration of file/document support in 
+   <productname>ICEcore</productname>.
+  </para>
+  <para/>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="filesupporttable.png" width="100%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="filesupporttable.png" width="100%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+ </sect1>
+</chapter>

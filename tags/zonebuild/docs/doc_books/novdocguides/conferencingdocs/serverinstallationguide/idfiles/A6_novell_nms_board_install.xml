@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="bcfyy50" pid="bcfyy50" name="Appendix" level="0" number="F"> <text>Installing the NMS Board</text> </target>
+
+ <target id="bcfz3k3" pid="bcfyy50" name="Procedure" level="1" number="1"> <text>Ensure that your computer meets the systems requirement below:</text> </target>
+
+ <target id="bcfz3k4" pid="bcfyy50" name="Step" level="2" number="1"> <text>Ensure that your computer meets the systems requirement below:</text> </target>
+
+ <target id="bcfz43a" pid="bcfyy50" name="Step" level="2" number="2"> <text>Power down the chassis and disconnect it from the power source.</text> </target>
+
+ <target id="bcfz43s" pid="bcfyy50" name="Step" level="2" number="3"> <text>Remove the cover and set it aside.</text> </target>
+
+ <target id="bcfz43v" pid="bcfyy50" name="Step" level="2" number="4"> <text> If you are installing more than one board, configure the two boards that are at the ends for H.100 bus termination. This is also a good time to configure the board(s) for PCI mode or PCI-X mode. This depends on the PCI slots in your chassis. Detailed instructions for both H.100 termination and PCI, PCI-X mode configurations are provided below.</text> </target>
+
+ <target id="bcfz43x" pid="bcfyy50" name="Step" level="2" number="5"> <text>Arrange the CG board(s) in adjacent PCI bus slots. Make sure each board's PCI bus connector is seated securely in a slot. The picture below shows a CG board seated securely in a PCI slot.</text> </target>
+
+ <target id="bcfz43z" pid="bcfyy50" name="Step" level="2" number="6"> <text>Secure the end bracket on the board(s) to the chassis.</text> </target>
+
+ <target id="bcfz441" pid="bcfyy50" name="Step" level="2" number="7"> <text>If you have multiple CG boards, connect the H.100 bus cable to each of the CG boards.</text> </target>
+
+ <target id="bcfz442" pid="bcfyy50" name="Step" level="2" number="8"> <text>Replace the cover and connect the computer to its power source.</text> </target>
+
+ <target id="bcfz444" pid="bcfyy50" name="Step" level="2" number="9"> <text>Skip this step if your conference bridge only supports IP clients. If you have installed  CG6565/64, now is the time to connect the mini RJ21 cable to the back of the CG6565/64 and the other end to the SEP panel to gain access to the 8 T1 or E1 trunks.</text> </target>
+
+ <target id="bdj45gn" pid="bcfyy50" name="Step" level="2" number="10"> <text>Download the NMS software and the patch for Conferencing 1.0 that includes the utility for configuring the NMS software (nmsconfig) from http://www.novell.com/downloads (http://www.novell.com/downloads) or get them from your support representative.</text> </target>
+
+ <target id="bcfz446" pid="bcfyy50" name="Step" level="2" number="11"> <text>Install NMS software:</text> </target>
+
+ <target id="bdj3ygm" pid="bcfyy50" name="Step" level="2" number="12"> <text>Make sure NMS ctdaemon is set to start up on boot and is running:</text> </target>
+
+ <target id="bdj46x1" pid="bcfyy50" name="Step" level="2" number="13"> <text>Untar Conferencing software:</text> </target>
+
+ <target id="bdj4723" pid="bcfyy50" name="Step" level="2" number="14"> <text>Untar the nmsconfig patch:</text> </target>
+
+ <target id="bdj478u" pid="bcfyy50" name="Step" level="2" number="15"> <text>Run nmsconfig and enter information for detected boards (refer to the nmsconfig section below for more information on nmsconfig):</text> </target>
+
+ <target id="bdj3y2m" pid="bcfyy50" name="Step" level="2" number="16"> <text>Run conferencing server install (uses info written by nmsconfig):</text> </target>
+
+ <target id="bcfz7ez" pid="bcfz7ez" name="Sect1" level="1" number="F.1"> <text>Configuring H.100 Bus Termination</text> </target>
+
+ <target id="bcfz993" pid="bcfz993" name="Sect1" level="1" number="F.2"> <text>Configuring the DIP Switches</text> </target>
+
+ <target id="bcfz9s5" pid="bcfz993" name="Sect2" level="2" number="F.2.1"> <text>S3 DIP Switch</text> </target>
+
+ <target id="bcfza6z" pid="bcfz993" name="Sect2" level="2" number="F.2.2"> <text>S2 DIP Switch</text> </target>
+
+ <target id="bcfzadi" pid="bcfz993" name="Sect2" level="2" number="F.2.3"> <text>S1 DIP Switch</text> </target>
+
+ <target name="InformalTable" level="3"> <text>Mode</text> </target>
+
+ <target id="bcfzaxe" pid="bcfz993" name="row" level="4"> <text>Mode</text> </target>
+
+ <target id="bcfzaxf" pid="bcfz993" name="row" level="4"> <text>PCI</text> </target>
+
+ <target id="bcfzaxg" pid="bcfz993" name="row" level="4"> <text>PCI-X</text> </target>
+
+ <target id="bcfzgxl" pid="bcfzgxl" name="Sect1" level="1" number="F.3"> <text>nmsconfig - Board Configuration Utility</text> </target>
+
+ <target id="bcfzn8d" pid="bcfzgxl" name="BridgeHead" level="2"> <text>nmsconfig Worksheet</text> </target>
+
+ <target id="bcfzqzx" pid="bcfzgxl" name="BridgeHead" level="2"> <text>T1 CAS Section</text> </target>
+
+ <target id="bcfzvst" pid="bcfzgxl" name="BridgeHead" level="2"> <text>T1 ISDN Section</text> </target>
+
+ <target id="bcfzvsu" pid="bcfzgxl" name="BridgeHead" level="2"> <text>E1 CAS Section</text> </target>
+
+ <target id="bcg03jc" pid="bcfzgxl" name="BridgeHead" level="2"> <text>E1 ISDN Section</text> </target>
+
+</targets>

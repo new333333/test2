@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+ <transport name="http" pivot="java:org.apache.axis.transport.http.CommonsHTTPSender"/>
+  <globalConfiguration >
+   <requestFlow >
+    <handler type="java:org.apache.ws.axis.security.WSDoAllSender" >
+     <parameter name="action" value="UsernameToken"/>
+     <!-- The following parameter is useful if all Web Services call is
+          made using a single user credential. -->
+     <parameter name="user" value="admin"/>
+     <!-- Using PasswordText allows client to send a cleartext password. -->
+     <parameter name="passwordType" value="PasswordText"/>
+     <parameter name="passwordCallbackClass" value="com.sitescape.team.samples.remoting.client.ws.security.PWCallbackText"/>
+     <!-- With PasswordDigest, a password digest value is sent to the server. 
+          In this case, WS client must ICEcore-encrypt the cleartext password
+          before passing it to the WS-Security tool for further digest. 
+          In other words, the password is digested twice in this case. -->
+     <!--<parameter name="passwordType" value="PasswordDigest"/>
+     <parameter name="passwordCallbackClass" value="com.sitescape.team.samples.remoting.client.ws.security.PWCallbackDigest"/>-->
+    </handler>
+   </requestFlow >
+  </globalConfiguration >
+</deployment> 

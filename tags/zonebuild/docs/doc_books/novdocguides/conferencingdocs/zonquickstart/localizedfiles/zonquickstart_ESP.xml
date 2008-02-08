@@ -1,0 +1,450 @@
+﻿<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "Zon Quick Start Guide"
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 8
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 3
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1659    chapter    Zon Quick Start Guide
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           0       xref
+           0       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           1       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+
+========================================================================-->
+
+<chapter role="quickstart" conformance="none,doc,no,,56" id="quickstart" revision="01/01/03" lang="en" xml:base="zonquickstart.xml">
+ <title>Gu&iacute;a de inicio r&aacute;pido de Zon</title>
+ <para>Conferencias</para>
+ <para>1.0</para>
+ <para>Julio de 2007</para>
+ <sect1 id="b20g4u4">
+  <title>
+   <productname>Zon</productname>
+  </title>
+  <para>Novell Conferencing se implementa mediante la tecnolog&iacute;a <productname>Zon</productname>. El t&eacute;rmino &ldquo; <productname>Zon</productname>&rdquo; que aparece en este documento se aplica a todas las versiones de <productname>Zon</productname> a no ser que se indique lo contrario. Para obtener m&aacute;s informaci&oacute;n sobre las funciones de <productname>Zon</productname>, consulte la <productname>Gu&iacute;a del usuario de Zon</productname> y la Ayuda en l&iacute;nea.
+  </para>
+  <sect2 id="baq6f78">
+   <title>Iniciar el cliente <productname>Zon</productname>:
+   </title>
+   <para>En Linux y Windows, haga doble clic en el icono del escritorio <productname>Zon</productname> (se coloca en el escritorio durante la instalaci&oacute;n).
+   </para>
+   <para>Si no ve el icono en el escritorio, haga lo siguiente:</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>En Windows, seleccione Inicio &gt; <guimenu>Todos los programas</guimenu> &gt; <productname>Zon</productname> <guimenu>Meeting</guimenu> &gt; <productname>Zon</productname> <guimenu>Meeting</guimenu>.
+     </para>
+    </listitem>
+    <listitem>
+     <para>En Linux, seleccione <guimenu>Ordenador</guimenu> o <guimenu>Sistema</guimenu>, haga clic en <guimenu>M&aacute;s aplicaciones</guimenu> y, a continuaci&oacute;n, seleccione el icono <productname>Zon</productname> que aparece bajo <guimenu>Nuevas aplicaciones</guimenu> o <guimenu>Comunicar</guimenu>.
+     </para>
+    </listitem>
+   </itemizedlist>
+   <para>Aparecer&aacute; el cliente <productname>Zon</productname> y ya podr&aacute; iniciar sesi&oacute;n.
+   </para>
+  </sect2>
+  <sect2 id="baq6h99">
+   <title>Iniciar sesi&oacute;n:</title>
+   <procedure id="baq6htf">
+    <step id="baq6htg" performance="required">
+     <para>Abra el cliente.</para>
+    </step>
+    <step id="baq6hze" performance="required">
+     <para>En el campo <guimenu>Nombre en pantalla</guimenu>, escriba el nombre de pantalla o selecci&oacute;nelo del men&uacute;. 
+     </para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>Su nombre en pantalla es su nombre de usuario registrado exclusivo. </para>
+      </listitem>
+      <listitem>
+       <para>Los nombres de pantalla son el modo en que los usuarios de <productname>Zon</productname> lo reconocen.
+       </para>
+      </listitem>
+      <listitem>
+       <para>Los nombres de pantalla son sensibles a las may&uacute;scula y min&uacute;sculas y no deben contener espacios.</para>
+      </listitem>
+      <listitem>
+       <para>Los nombres de pantalla s&oacute;lo deben ser alfanum&eacute;ricos y no deben contener caracteres ASCII. (Por ejemplo: se acepta bathgate222 o gbookworm, pero no bathgate 222 o gbook~worm.)</para>
+      </listitem>
+     </itemizedlist>
+     <note>
+      <para>Despu&eacute;s de la conexi&oacute;n inicial, el nombre de pantalla aparece en el men&uacute; <guimenu>Nombre en pantalla</guimenu>.
+      </para>
+     </note>
+    </step>
+    <step id="baq6j5p" performance="required">
+     <para>En el campo <guimenu>Contrase&ntilde;a</guimenu>, escriba la contrase&ntilde;a.
+     </para>
+    </step>
+    <step id="baq6k0g" performance="required">
+     <para>Configuraci&oacute;n opcional:</para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>Para inicira sesi&oacute;n y unirse a una reuni&oacute;n a la vez, escriba un PIN de reuni&oacute;n o el ID de reuni&oacute;n en el campo <guimenu>PIN de la reuni&oacute;n</guimenu>.
+       </para>
+      </listitem>
+      <listitem>
+       <para>Para guardar la contrase&ntilde;a, seleccione la opci&oacute;n <guimenu>Guardar contrase&ntilde;a</guimenu>. (Si el administrador no le da el derecho de utilizar esta opci&oacute;n, no es visible.)
+       </para>
+      </listitem>
+      <listitem>
+       <para>Para iniciar sesi&oacute;n autom&aacute;ticamente cuando se inicia <productname>Zon</productname>, seleccione la opci&oacute;n <guimenu>Inicio de sesi&oacute;n autom&aacute;tico</guimenu> (recomendado).
+       </para>
+      </listitem>
+      <listitem>
+       <para>Para volver a conectarse con el cliente cuando no hay conexi&oacute;n de red, seleccione la opci&oacute;n <guimenu>Seguir intentando si no hay conexi&oacute;n</guimenu> (recomendado).
+       </para>
+      </listitem>
+     </itemizedlist>
+    </step>
+    <step id="baq6l52" performance="required">
+     <para>Haga clic en <guimenu>Iniciar sesi&oacute;n</guimenu> para iniciar sesi&oacute;n.
+     </para>
+     <para>Aparecer&aacute; la ventana principal de <productname>Zon</productname> con la lista de reuniones.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6nma">
+   <title>Configurar la informaci&oacute;n de contacto:</title>
+   <procedure id="baq6ooj">
+    <step id="baq6ook" performance="required">
+     <para>En la ventana principal, seleccione el elemento de men&uacute; <guimenu>Opciones &gt; Editar mi informaci&oacute;n de contacto... </guimenu>.
+     </para>
+     <para>Aparece la ventana <guimenu>Editar usuario</guimenu>.
+     </para>
+    </step>
+    <step id="baq6osr" performance="required">
+     <para>Edite la informaci&oacute;n personal (consulte la Ayuda en l&iacute;nea de <productname>Zon</productname> o la Gu&iacute;a del usuario de <productname>Zon</productname> para obtener descripciones detalladas de estos campos). 
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6pi9">
+   <title>Agregar colegas:</title>
+   <procedure id="baq6pru">
+    <step id="baq6prv" performance="required">
+     <para>Seleccione el elemento de men&uacute; <guimenu>Contactos &gt; Gestionar contactos y colegas</guimenu>.
+     </para>
+    </step>
+    <step id="baq6qmc" performance="required">
+     <para>Seleccione uno o varios contactos de cualquier en <guimenu>Libreta de direcciones de la comunidad</guimenu> de la ventana <guimenu>Contacto</guimenu> (utilice la tecla CTRL o MAY&Uacute;S para seleccionar varios contactos). Si no ve la <guimenu>Libreta de direcciones de la comunidad</guimenu>, el administrador no le ha dado permiso para verla. En su lugar, utilice <guimenu>Buscar</guimenu> para localizar posibles colegas.
+     </para>
+    </step>
+    <step id="baq6qxy" performance="required">
+     <para>Haga clic con el bot&oacute;n derecho del rat&oacute;n en uno de los contactos seleccionados y seleccione el elemento de men&uacute; <guimenu>Agregar a colegas personales</guimenu>. (Puede ver todos los colegas personales en la <guimenu>Libreta de direcciones personales</guimenu>.)
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6rli">
+   <title>Agregar un usuario que no pertenece a la comunidad a la lista de colegas personales:</title>
+   <procedure id="baq6rqr">
+    <step id="baq6rqs" performance="required">
+     <para>Seleccione el elemento de men&uacute; <guimenu>Contactos &gt; Gestionar contactos y colegas</guimenu>. 
+     </para>
+    </step>
+    <step id="baq6rza" performance="required">
+     <para>Haga clic con el bot&oacute;n derecho del rat&oacute;n en la <guimenu>Libreta de direcciones personales</guimenu> y seleccione el elemento de men&uacute; <guimenu>Agregar colega por nombre en pantalla...</guimenu>.
+     </para>
+    </step>
+    <step id="baq6rzc" performance="required">
+     <para>Escriba el nombre en pantalla de los contactos en el cuadro de di&aacute;logo y haga clic en <guimenu>Aceptar</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6sa8">
+   <title>Editar la informaci&oacute;n de un contacto:</title>
+   <procedure id="baq6sqw">
+    <step id="baq6sqx" performance="required">
+     <para>Seleccione el elemento de men&uacute; <guimenu>Contactos &gt; Gestionar contactos y colegas...</guimenu>.
+     </para>
+    </step>
+    <step id="baq6szk" performance="required">
+     <para>En la ventana Gestionar contactos, seleccione el contacto que desea editar.</para>
+    </step>
+    <step id="baq6szm" performance="required">
+     <para>Haga clic en <guimenu>Editar</guimenu>.
+     </para>
+     <para>Aparece la ventana <guimenu>Editar usuario</guimenu>.
+     </para>
+    </step>
+    <step id="baq6szp" performance="required">
+     <para>Edite la informaci&oacute;n del contacto (consulte la Ayuda en l&iacute;nea de <productname>Zon</productname> o la Gu&iacute;a del usuario de <productname>Zon</productname> para obtener descripciones detalladas de estos campos). 
+     </para>
+    </step>
+    <step id="baq6szs" performance="required">
+     <para>Haga clic en <guimenu>Aceptar</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6tyk">
+   <title>Iniciar una reuni&oacute;n instant&aacute;nea:</title>
+   <para>Inicie la reuni&oacute;n instant&aacute;nea en el momento en que desee celebrar la reuni&oacute;n (no tiene ning&uacute;n participante definido previamente o una hora de inicio planificada).</para>
+   <procedure id="baq6vmf">
+    <step id="baq6vmg" performance="required">
+     <para>En la lista de reuniones, seleccione <guimenu>Mi reuni&oacute;n</guimenu> en <guimenu>Mi reuni&oacute;n instant&aacute;nea</guimenu>.
+     </para>
+    </step>
+    <step id="baq6vpo" performance="required">
+     <para>Haga clic en <guimenu>Iniciar</guimenu>.
+     </para>
+     <para>Aparece la ventana <guimenu>Configuraci&oacute;n de la reuni&oacute;n</guimenu>.
+     </para>
+    </step>
+    <step id="baq6vpq" performance="required">
+     <para>Agregue los contactos, para ello consulte el apartado Agregar invitados de la reuni&oacute;n que aparece m&aacute;s adelante.</para>
+    </step>
+    <step id="baq6vps" performance="required">
+     <para>Configure las opciones de reuni&oacute;n (consulte la Ayuda en l&iacute;nea de <productname>Zon</productname> o la Gu&iacute;a del usuario de <productname>Zon</productname> para obtener descripciones de las opciones de reuni&oacute;n).
+     </para>
+    </step>
+    <step id="baq6vpv" performance="required">
+     <para>Haga clic en <guimenu>Iniciar reuni&oacute;n</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq75i3">
+   <title>Unirse a una reuni&oacute;n:</title>
+   <procedure id="baq75lh">
+    <step id="baq75li" performance="required">
+     <para>Seleccione la reuni&oacute;n a la que desea unirse. </para>
+    </step>
+    <step id="baq75or" performance="required">
+     <para>Haga clic en <guimenu>Unirse</guimenu>. 
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq6xij">
+   <title>Crear una nueva reuni&oacute;n programada:</title>
+   <para>Una reuni&oacute;n programada es una reuni&oacute;n que puede tener participantes definidos previamente y una hora de inicio programada opcional. Si crea una reuni&oacute;n programada con una hora programada, la hora se colocar&aacute; en invitaciones de correo electr&oacute;nico que se enviar&aacute;n a los participantes de la reuni&oacute;n. Puede iniciar una reuni&oacute;n programada en cualquier momento, independientemente de la hora a la que se haya programado.</para>
+   <note>
+    <para>Si convierte a un invitado en moderador de una reuni&oacute;n programada, el invitado ser&aacute; un moderador persistente que puede iniciar, pero no editar, las reuniones programadas.</para>
+   </note>
+   <procedure id="baq6xkw">
+    <step id="baq6xkx" performance="required">
+     <para>Haga clic en <guimenu>Programar nuevo</guimenu>. Aparece la ventana <guimenu>Configuraci&oacute;n de la reuni&oacute;n</guimenu>.
+     </para>
+     <note>
+      <para>El ID de reuni&oacute;n y el PIN de la reuni&oacute;n permanecer&aacute;n vac&iacute;os hasta que se programe la reuni&oacute;n.</para>
+     </note>
+    </step>
+    <step id="baq6ykx" performance="required">
+     <para>Agregue los contactos, para ello consulte el apartado Agregar invitados de la reuni&oacute;n que aparece m&aacute;s adelante.</para>
+    </step>
+    <step id="baq6z77" performance="required">
+     <para>Configure las opciones de reuni&oacute;n (consulte la Ayuda en l&iacute;nea de <productname>Zon</productname> o la Gu&iacute;a del usuario de <productname>Zon</productname> para obtener descripciones de las opciones de reuni&oacute;n).
+     </para>
+    </step>
+    <step id="baq6z7a" performance="required">
+     <para>Haga clic en <guimenu>Programar reuni&oacute;n</guimenu>.
+     </para>
+    </step>
+    <step id="baq6zjn" performance="required">
+     <para>Si ha seleccionado notificaciones de correo electr&oacute;nico, aparecer&aacute; un cuadro de di&aacute;logo para enviar las invitaciones a la reuni&oacute;n:</para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para>Seleccione <guimenu>Enviar correos electr&oacute;nicos a todos los invitados a la reuni&oacute;n</guimenu> para enviar invitaciones a todos los invitados, aunque hayan recibido previamente invitaciones de correo electr&oacute;nico.
+       </para>
+      </listitem>
+      <listitem>
+       <para>Seleccione <guimenu>Enviar correos electr&oacute;nicos s&oacute;lo a nuevos invitados </guimenu> para enviar invitaciones s&oacute;lo a los invitados que acaba de agregar. Con una reuni&oacute;n nueva, todos los invitados son nuevos, por lo que se env&iacute;an invitaciones a todo el mundo.
+       </para>
+      </listitem>
+      <listitem>
+       <para>Seleccione <guimenu>No enviar correos electr&oacute;nicos</guimenu> si no desea que se env&iacute;e ninguna notificaci&oacute;n de correo electr&oacute;nico.
+       </para>
+      </listitem>
+     </itemizedlist>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq70m7">
+   <title>Agregar invitados a la reuni&oacute;n:</title>
+   <para>Para agregar contactos a una reuni&oacute;n, tiene que abrir la ventana <guimenu>Seleccionar contactos</guimenu> desde la ventana <guimenu>Configuraci&oacute;n de la reuni&oacute;n</guimenu> y agregar todos los contactos y grupos que desee invitar a la reuni&oacute;n. Tambi&eacute;n puede agregar a alguien que no sea un contacto desde la ventana <guimenu>Configuraci&oacute;n de la reuni&oacute;n</guimenu>, para ello consulte el apartado Invitar a alguien que no es un contacto que aparece m&aacute;s adelante.
+   </para>
+   <procedure id="baq71x0">
+    <step id="baq71x1" performance="required">
+     <para>En la ventana <guimenu>	Configuraci&oacute;n de la reuni&oacute;n</guimenu>, seleccione <guimenu>Mostrar contactos...</guimenu>
+     </para>
+    </step>
+    <step id="baq720t" performance="required">
+     <para>En la ventana <guimenu>Seleccionar contactos</guimenu>, seleccione los contactos y grupos que desea invitar a la reuni&oacute;n (utilice las teclas Ctrl + May&uacute;s para seleccionar varios contactos y grupos).
+     </para>
+    </step>
+    <step id="baq720v" performance="required">
+     <para>Haga clic en <guimenu>Invitar a reuni&oacute;n</guimenu>.
+     </para>
+     <para>La ventana <guimenu>Seleccionar contactos</guimenu> se cierra, y los contactos y grupos seleccionados aparecen en la lista <guimenu>	Invitados</guimenu> de la ventana <guimenu>Configuraci&oacute;n de la reuni&oacute;n</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq738b">
+   <title>Invitar a alguien que no es un contacto:</title>
+   <procedure id="baq73jd">
+    <step id="baq73je" performance="required">
+     <para>En la ventana <guimenu>Configuraci&oacute;n de la reuni&oacute;n</guimenu>, seleccione <guimenu>	Invitar a nuevo...</guimenu>
+     </para>
+     <para>Aparecer&aacute; una ventana vac&iacute;a de informaci&oacute;n del contacto.</para>
+    </step>
+    <step id="baq73n4" performance="required">
+     <para>Rellene la nueva informaci&oacute;n del contacto (consulte <guimenu>Editar la informaci&oacute;n de un contacto</guimenu>).
+     </para>
+    </step>
+    <step id="baq73n6" performance="required">
+     <para>Haga clic en <guimenu>Aceptar</guimenu>.
+     </para>
+     <para>La ventana de informaci&oacute;n de contacto se cierra y el contacto nuevo aparece en la lista Invitados de la ventana <guimenu>Configuraci&oacute;n de la reuni&oacute;n</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq70g2">
+   <title>Iniciar una reuni&oacute;n programada:</title>
+   <procedure id="baq74gr">
+    <step id="baq74gs" performance="required">
+     <para>Seleccione una de las reuniones programadas o una reuni&oacute;n en la que sea el moderador designado.</para>
+    </step>
+    <step id="baq74ru" performance="required">
+     <para>Haga clic en <guimenu>Iniciar</guimenu>. Aparece la ventana <guimenu>Configuraci&oacute;n de la reuni&oacute;n</guimenu>.
+     </para>
+    </step>
+    <step id="baq74lu" performance="required">
+     <para>Agregue todos los contactos adicionales que desee invitar a la reuni&oacute;n.</para>
+    </step>
+    <step id="baq74lw" performance="required">
+     <para>Si es necesario, edite las opciones de reuni&oacute;n (consulte la Ayuda en l&iacute;nea de <productname>Zon</productname> o la Gu&iacute;a del usuario de <productname>Zon</productname> para obtener descripciones de las opciones de reuni&oacute;n).
+     </para>
+    </step>
+    <step id="baq74lx" performance="required">
+     <para>Haga clic en <guimenu>Iniciar reuni&oacute;n</guimenu> en la parte inferior de la ventana.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq79ni">
+   <title>Buscar en las reuniones de la comunidad:</title>
+   <procedure id="baq79r5">
+    <step id="baq79r6" performance="required">
+     <para>Haga clic en <guimenu>Buscar... </guimenu>en la ventana <guimenu>Lista de reuniones</guimenu>. Aparece la ventana <guimenu>B&uacute;squeda de reuniones</guimenu>.
+     </para>
+    </step>
+    <step id="baq79z8" performance="required">
+     <para>Para guardar la b&uacute;squeda, haga clic en <guimenu>Guardar como...</guimenu>, escriba un nombre para la b&uacute;squeda y, a continuaci&oacute;n, haga clic en <guimenu>Aceptar</guimenu>. (Las b&uacute;squedas guardadas aparecen en la lista desplegable <guimenu>Buscar nombre</guimenu>.)
+     </para>
+    </step>
+    <step id="baq7ago" performance="required">
+     <para>Seleccione un <guimenu>Intervalo de fechas</guimenu>.
+     </para>
+    </step>
+    <step id="barpq5z" performance="required">
+     <para>Seleccione los <guimenu>Criterios de b&uacute;squeda</guimenu> de su b&uacute;squeda (puede seleccionar varias opciones para delimitar su b&uacute;squeda). Consulte la Ayuda en l&iacute;nea de <productname>Zon</productname> o la Gu&iacute;a del usuario de <productname>Zon</productname> para obtener m&aacute;s datos sobre estos criterios.
+     </para>
+    </step>
+    <step id="baq7atv" performance="required">
+     <para>Para configurar el n&uacute;mero de resultados que desea recuperar para esta b&uacute;squeda, escriba un n&uacute;mero en el campo N&uacute;mero de resultados (el valor predeterminado es 100).</para>
+    </step>
+    <step id="baq7dn5" performance="required">
+     <para>Haga clic en <guimenu>Buscar ahora</guimenu>.
+     </para>
+     <para>Los resultados de la b&uacute;squeda se muestran en un grupo bajo <guimenu>Resultados de la b&uacute;squeda en la comunidad</guimenu>. Si hay resultados de la b&uacute;squeda adicionales que van m&aacute;s all&aacute; del l&iacute;mite que ha especificado, haga clic con el bot&oacute;n derecho del rat&oacute;n en el grupo de resultados de la b&uacute;squeda y seleccione el elemento de men&uacute; <guimenu>Buscar m&aacute;s</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="baq768h">
+   <title>Unirse a una reuni&oacute;n mediante el ID o el PIN de la reuni&oacute;n:</title>
+   <para>El PIN de la reuni&oacute;n es un identificador personal que utiliza el servidor de la reuni&oacute;n para representar a un asistente espec&iacute;fico de una reuni&oacute;n espec&iacute;fica. El ID de reuni&oacute;n es un identificador gen&eacute;rico que representa s&oacute;lo una reuni&oacute;n espec&iacute;fica (no identifica a ning&uacute;n asistente espec&iacute;fico).</para>
+   <procedure id="baq76bp">
+    <step id="baq76bq" performance="required">
+     <para>Seleccione el elemento de men&uacute; <guimenu>Reuniones &gt; Unirse mediante ID o PIN de la reuni&oacute;n... </guimenu>.
+     </para>
+     <para>Aparece el cuadro de di&aacute;logo <guimenu>Unirse a reuni&oacute;n</guimenu>.
+     </para>
+    </step>
+    <step id="baq76eq" performance="required">
+     <para>Escriba el n&uacute;mero de <guimenu>PIN</guimenu> o <guimenu>ID de reuni&oacute;n</guimenu> en el campo del cuadro de di&aacute;logo <guimenu>Unirse a reuni&oacute;n</guimenu>. Utilice el PIN de la reuni&oacute;n para unirse a las reuniones siempre que sea posible de modo que el servidor de reuniones pueda identificarlo. Debe utilizar el PIN de la reuni&oacute;n para unirse a cualquier reuni&oacute;n en la que tenga la intenci&oacute;n de actuar como moderador.
+     </para>
+    </step>
+    <step id="baq76et" performance="required">
+     <para>Haga clic en <guimenu>Aceptar</guimenu>.
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="bata1vm">
+   <title>Compartir el escritorio o una aplicaci&oacute;n en una reuni&oacute;n:</title>
+   <para>Cuando se encuentre en una reuni&oacute;n, podr&aacute; compartir su escritorio o una aplicaci&oacute;n con todos los asistentes a la reuni&oacute;n. Tambi&eacute;n podr&aacute; otorgar a otros participantes el control remoto de su escritorio o de la aplicaci&oacute;n compartida (consulte el siguiente procedimiento).</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>Para compartir su escritorio, seleccione el elemento de men&uacute; <guimenu>Compartir &gt; Compartir escritorio</guimenu>.
+     </para>
+    </listitem>
+    <listitem>
+     <para>Para compartir una aplicaci&oacute;n, seleccione el elemento de men&uacute; <guimenu>Compartir &gt; Compartir aplicaci&oacute;n</guimenu>, seleccione una aplicaci&oacute;n de la ventana <guimenu>Compartir aplicaciones</guimenu> y, a continuaci&oacute;n, haga clic en <guimenu>Aceptar</guimenu>.
+     </para>
+    </listitem>
+   </itemizedlist>
+   <para>La sesi&oacute;n compartida se abrir&aacute; y todo el mundo podr&aacute; ver el escritorio o la aplicaci&oacute;n compartida bajo la pesta&ntilde;a <guimenu>Uso compartido de aplicaciones</guimenu> de la ventana <guimenu>Reuni&oacute;n</guimenu>. El elemento <guimenu>Compartir panel de control</guimenu> flota en la secci&oacute;n derecha superior de la ventana. Para cerrar la sesi&oacute;n compartida, haga clic en <guimenu>Dejar de compartir</guimenu> en el <guimenu>Panel de control compartido</guimenu>.
+   </para>
+  </sect2>
+  <sect2 id="bata8cb">
+   <title>Otorgar a los participantes el control remoto:</title>
+   <procedure id="bata8sd">
+    <step id="bata8se" performance="required">
+     <para>Seleccione uno o varios participantes.</para>
+    </step>
+    <step id="bata9bd" performance="required">
+     <para>Seleccione el elemento de men&uacute; <guimenu>Participantes &gt; Conceder control remoto</guimenu> para otorgar a los participantes derechos de control remoto sobre su sesi&oacute;n compartida ( <guimenu>[Ctl remoto]</guimenu> aparecer&aacute; junto a los nombres de los participantes).
+     </para>
+     <note>
+      <para>Un participante har&aacute; clic en la ventana de compartir para tener control remoto de la sesi&oacute;n compartida. Si hace clic en el rat&oacute;n o pulsa una tecla del teclado volver&aacute; a tener autom&aacute;ticamente el control de la sesi&oacute;n compartida.</para>
+     </note>
+    </step>
+   </procedure>
+  </sect2>
+ </sect1>
+ <sect1 role="legalinfo" id="b20g58r">
+  <title>Aviso legal</title>
+  <para>Copyright &copy; 2007 Novell, Inc. Todos los derechos reservados. Ninguna parte de esta publicaci&oacute;n se puede reproducir, fotocopiar, almacenar en un sistema de recuperaci&oacute;n o transmitir sin el consentimiento expreso por escrito del editor. Para saber cu&aacute;les son las marcas comerciales de Novell, consulte la <ulink url="http://www.novell.com/company/legal/trademarks/tmlist.html">lista de las marcas comerciales y marcas de servicio de Novell</ulink>. Todas las marcas comerciales de terceros son propiedad de sus respectivos propietarios. Un s&iacute;mbolo de marca comercial (&reg;, TM, etc.) denota una marca comercial de Novell; un asterisco (*) denota una marca comercial de otra empresa.
+  </para>
+ </sect1>
+</chapter>

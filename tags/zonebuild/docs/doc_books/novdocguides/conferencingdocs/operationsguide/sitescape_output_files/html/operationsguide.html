@@ -1,0 +1,3056 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Tuesday, October 23, 2007" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2007" />
+
+<style type="text/css">
+body { 
+		margin-left: .2in;
+		padding:0;
+		font-family:arial, helvetica, sans-serif;
+		font-size: 75%;
+		font-weight: normal;
+		color: #000000;
+		background-color: #ffffff;
+}
+
+/* headings */
+	h1 {font-size: 125%; font-weight: bold; color: #000000;}
+	h2,h3,h4,h5,h6 {font-size: 100%; font-weight: bold; color: #000000; margin-bottom:-6px;}
+
+	/* single file heading adjustments */
+	.singlefile h1 {font-size: 185%; color: #CC0000; margin-top:10px;}
+	.singlefile h2 {font-size: 140%; margin-top:35px;}
+	.singlefile h3 {font-size: 125%; margin-top:25px;}
+
+/* sections */
+	div.sect1 { margin-bottom: 10pt; }
+	div.sect2 { }
+	div.sect3, div.sect4, div.sect5, div.sect6 {margin-left:18px;}
+	
+/* msgset */
+	div.msgexplan {margin: 0px 0px 7px 0px;}
+	div.msgexplan span.title {margin: 0px 7px 0px 0px; font-size: 100%; font-weight: bold; color: #000000;}
+	div.msgtext p.para {margin: 4px 0px 16px 0px; font-size: 100%; font-weight: bold; color: #b00000;}
+
+/* links */
+	a {color:#0000cc;}
+	a:hover {color:#3366ff;}
+	a:visited {color:#993333;}
+	li.listitem a:hover {color:#3366ff;}
+	a.ulink a:hover {text-decoration:none; color:#3366ff;}
+
+	a.nav:link,
+	a.nav:visited,
+	a.nav:active { vertical-align: middle; font-weight: bold; color: gray; text-decoration: none; font-size: 100%;}
+	a.nav:hover { vertical-align: middle; font-weight: bold; color: #999999; text-decoration: none; font-size: 100%;}  
+
+/* paragraphs */	
+	p.para {font-weight: normal; color: #000000;}
+/*	p.title {margin:10px 0 4px 0;} */
+	p.msgtext {font-style: italic; font-weight: normal}
+	p.trademark {font-size: 75%; font-weight: normal; font-style: italic;}
+	/*p.entry {font-size: 95%; font-weight: normal; color: #000000; margin-top: -5px;}
+	p.table {font-weight: bold;}*/
+	pre.screen {font-family: monospace; margin: 10px 5px 10px 0px; padding: 1px 0px 3px 5px;font-size: 110%;color: #000000;}
+	p.glossterm {font-weight: bold;}
+	div.glossdef {margin:-10pt 0 0 0;}
+	
+/* admonitions */	
+	div.note,
+	div.tip,
+	div.warning,
+	div.important {margin: 12px 0px 5px 0px; padding: 0px 15px 0px 15px; border-bottom: 1px solid #999999; border-top: 1px solid #999999;}
+
+	div.note p em.title,
+	div.tip p em.title,
+	div.warning p em.title,
+	div.important p em.title {margin: 0px 7px 0px 0px; font-weight: bold; font-style: normal;font-size:95%;}
+	div.warning em.title {color: #cc0000}
+
+/* figures and images */	
+	img.inline {vertical-align: middle;}
+	img {line-height: normal;}
+	br.img {line-height: normal;}
+	div.figure em.figure {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:5px 5px 0 0;}
+	div.figure em.title {font-family: times, serif; font-size: 95%; font-style: italic; font-weight: normal; color: #000000;}
+	div.figure p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
+	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
+	div.informalfigure {margin:15px 0px 10px 0px;}
+	div.formalpara em.title {font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0 0;}
+	div.formalpara p.title {font-style: normal; font-weight: normal; color: #000000;}
+	
+/* tables */
+	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
+	td {font-size: 95%; font-weight: normal; color: #000000;}
+	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
+	div.formalpara table.topbot-lines {margin:0px 0 16px 0;}
+	div.informaltable table.topbot-lines {margin:10px 0 7px 0;}
+
+	table.topbot-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
+	table.topbot-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
+	table.topbot-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
+	table.topbot-lines tr.evenrow {background-color: white}
+	table.topbot-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
+	table.topbot-lines tr.oddrow {background-color: #f8f8f8}
+	table.topbot-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
+
+	table.all-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
+	table.all-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
+	table.all-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
+	table.all-lines tr.evenrow {background-color: white}
+	table.all-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
+	table.all-lines tr.oddrow {background-color: #f8f8f8}
+	table.all-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
+
+	table.no-lines tr.headerrow {background-color: white }
+	table.no-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; color: #404040; margin:1pt 0 0 0; background-color: white }
+	table.no-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white }
+	table.no-lines tr.evenrow td {background-color: white}
+	table.no-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white}
+	table.no-lines tr.oddrow td {background-color: white}
+	
+	table.calloutlist td {margin:0px; padding: 0px 6px 0px 0px;}
+	table.calloutlist p {margin: 5px 0px 5px 0px; padding: 0px;}
+	
+/* variablelists */
+	dt.term {font-style: normal; font-weight: bold; color: #000000;}
+	dd.listitem {margin-left: 22px; font-weight: normal;}
+	dt.refclass .application {font-size: 90%; font-style: normal; font-weight: bold; color: #000000; padding: 0px 20px 2px 0px;}
+	
+/* lists,procedures */
+	div.itemizedlist, div.orderedlist, div.procedure, div.substeps {margin-bottom:15px; font-weight: normal;}
+	ul.listbullet,ul.listcheck,ol {margin-left: 28px; padding-left: 0pt;}
+	ul.listcheck  {list-style-image : url("images/checkbox.gif"); list-style-type: square;}
+	ul.listbullet {list-style-type: disc; list-style-image : none;}
+	ul.simplelist {margin-left: 0px; list-style-type: none; list-style-image : none;padding-left: 0pt;}
+	div.orderedlist div.orderedlist > ol {list-style-type: lower-alpha;}
+	div.orderedlist div.orderedlist div.orderedlist > ol {list-style-type: lower-roman;}
+	div.substeps div.substeps div.substeps > ol {list-style-type:lower-alpha;}
+	div.substeps div.substeps > ol {list-style-type: decimal;}
+	div.substeps > ol {list-style-type: lower-alpha;}
+	li {margin: 5px 0 4px 0;}
+	li.member {margin:3px 0px 0px 10px;text-indent:-10px; font-weight: normal;}
+	li.step {font-weight: bold;color: #000000;}
+	div.procedure h1.title {font-weight: bold; color: #000000; margin-top: 22px; margin-bottom: -4pt;}
+
+/* bold inlines */	
+	em.refclass,em.glossterm,em.option {font-weight: bold; font-style: normal}
+
+/* italic inlines */	
+	em.diskname,em.emphasis,em.variable,em.versionvariable {font-style: italic; font-weight: normal}
+	span.citetitle,span.guimenu,span.replaceable {font-style: italic;}
+	tt,span.command,span.literal,span.filename {font-family: monospace; font-size: 130%;}
+	
+/* other inlines */	
+	em.msgtext {font-weight: bold; font-style: italic}
+	span.emphasis {font-weight: bold;}
+
+/* superscript and subscript */	
+	span.subscript,span.superscript {font-size: 80%;}
+
+/* single file toc elements */
+	div.toc {line-height: 11.5pt; background-color: #EEEEEE;  margin: 20px 0px 24px 0px; padding: 1px 0px 5px 0px}
+	div.toc h2 {margin-left: 5px}
+	div.toc div.toc1 {font-weight: normal; margin: 15px 10px 6px 5px}
+	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
+	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
+	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+	
+</style>
+
+<title>ICEcore Conference Operations Guide</title>
+</head>
+<body>
+
+<div class="book singlefile"  id="bookinfo">
+
+<h1 class="title"> ICEcore Conference Operations Guide</h1>
+
+<p class="para">This guide covers the initial configuration of ICEcore Conference. The term “ICEcore Conference” in this guide applies to all versions of ICEcore Conference unless otherwise noted.</p>
+<p class="para"></p>
+<h4 class="bridgehead" id="audience"> Audience</h4>
+
+<p class="para">This guide is intended for administrators.</p>
+<p class="para"></p>
+<h4 class="bridgehead" id="ban8e22"> Additional Documentation</h4>
+
+<p class="para">You may find more information in additional ICEcore Conference documentation: </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">ICEcore Conference Help system</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Conference Quick Start Guide</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Conference User Guide</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Conference Server Installation Guide</p></li></ul></div>
+
+<h4 class="bridgehead" id="b9yxnfu"> Contents of this Manual</h4>
+
+<p class="para">This manual provides information about the following:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">System Overview</p></li>
+<li class="listitem">
+<p class="listitem">The Administration Console</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Conference Communities</p></li>
+<li class="listitem">
+<p class="listitem">Adding Users</p></li>
+<li class="listitem">
+<p class="listitem">Obtaining Server Status</p></li>
+<li class="listitem">
+<p class="listitem">Auditing System Events</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Conference Administration</p></li>
+<li class="listitem">
+<p class="listitem">Troubleshooting Strategies</p></li>
+<li class="listitem">
+<p class="listitem">LDAP User Authentication</p></li></ul></div>
+
+<p class="para"></p>
+<h4 class="bridgehead" id="b9yxnfv"> Document Conventions</h4>
+
+<p class="para">This manual uses the following conventions:</p>
+<p class="para">A greater-than symbol (&gt;) is used to separate actions within a step and items in a cross-reference path.</p>
+<p class="para">A trademark symbol (®, ™, etc.) denotes a SiteScape trademark. An asterisk (*) denotes a third-party trademark.</p>
+<p class="para">When a single pathname can be written with a backslash for some platforms or a forward slash for other platforms, the pathname is presented with a backslash. Users of platforms that require a forward slash, such as Linux or UNIX, should use forward slashes as required by your software.</p>
+<div class="informaltable">
+<table class="topbot-lines">
+          
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yxhs9"></a>
+<p class="para">What you see</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">What it means</p></th>
+</tr>
+        
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yxhsa"></a>
+<p class="para">Click the 
+       <span class="guimenu">Add toolbar</span> item.
+      </p>
+<p class="para">Click the 
+       <span class="guimenu">Getting Started</span> link.
+      </p>
+<p class="para">Click the 
+       <span class="guimenu">Add Document</span> menu item.
+      </p>
+<p class="para">Click 
+       <span class="guimenu">Close</span>.
+      </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">References to toolbar items, links, menu items, and buttons are presented in 
+       <span class="guimenu">italic</span> font.
+      </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yxhsb"></a>
+<p class="para">Type 
+       <span class="literal">status</span>, then press Enter.
+      </p>
+<p class="para">Open the 
+       <span class="literal">ManagerGuide.pdf</span> file.
+      </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Text that you must type and file names are presented in 
+       <span class="filename">Courier</span> font.
+      </p></td>
+</tr></table>
+</div>
+
+<div class="chapter singlefile"  id="b9uab8e">
+
+<h1 class="title"><span class="number">1.0</span> System Overview</h1>
+
+<p class="para">This chapter provides an overview of the ICEcore Conference architecture and provides a description of the system components.</p>
+<p class="para">This chapter includes the following sections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uaf9s">Section 1.1, System Components</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uai16">Section 1.2, Cluster Architecture</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="b9uaf9s">
+
+<h2 class="title"><span class="number">1.1</span> System Components</h2>
+
+<p class="para">The ICEcore Conference Server is a highly modular suite of components that you can configure to run on one or more servers. Each component provides a core service to the system through a well-defined XML API. Since all communication occurs over an XML transport, the allocation of components to physical hardware is very flexible.</p>
+<p class="para">The system components are as follows:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> XML Router - Routes XML data and APIs calls between other components.</p></li>
+<li class="listitem">
+<p class="listitem">Client Connector - Handles incoming connections from desktop clients, and establishes user sessions with the Session Manager component.</p></li>
+<li class="listitem">
+<p class="listitem">Session Manager - Tracks connected users and related presence information, and allows users to exchange instant messages.</p></li>
+<li class="listitem">
+<p class="listitem">Meeting Controller - Manages in-progress meetings, and dispatches meeting events to meeting participants.</p></li>
+<li class="listitem">
+<p class="listitem">Notification Server - Sends notification e-mails and IM messages on behalf of the Meeting Controller and Schedule Server components.</p></li>
+<li class="listitem">
+<p class="listitem">Address Book - Stores and retrieves community and personal address books, and system profile information.</p></li>
+<li class="listitem">
+<p class="listitem">Schedule Server - Stores and retrieves meeting schedule, options, and participant information.</p></li>
+<li class="listitem">
+<p class="listitem">Voice Bridge - Controls telephony resources, connects calls to conferences, makes outbound calls, and provides telephone access to meeting features.</p></li>
+<li class="listitem">
+<p class="listitem">Meeting Archiver Server - Collects audio, application/desktop shared images, and chat sessions to create Macromedia Flash-based meeting archives stored in a web accessible repository.</p></li>
+<li class="listitem">
+<p class="listitem">App Share Server - Forwards application shared data from meeting presenter to meeting participants, and manages remote control access to presenter desktop.</p></li>
+<li class="listitem">
+<p class="listitem">Invitation Web Service - Joins participants to meetings based on invitation URL.</p></li>
+<li class="listitem">
+<p class="listitem">External Web Service - Provides web service API for external parties as needed for integration with existing service provider systems.</p></li></ul></div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uai16">
+
+<h2 class="title"><span class="number">1.2</span> Cluster Architecture</h2>
+
+<p class="para">A cluster is a set of components providing services to a community of users. The following diagram illustrates the architecture of an example cluster. This example displays a multiple server configuration.</p>
+<div class="informalfigure">
+            <img src="./clustearchitecture_a.png" alt="Cluster architecture" />
+          </div>
+
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="b9uaoae">
+
+<h1 class="title"><span class="number">2.0</span> The Administration Console</h1>
+
+<p class="para">This chapter describes the ICEcore Conference
+  <span class="guimenu">Administration Console</span>, including logging into the console and a description of the available tools.
+ </p>
+<p class="para">This chapter includes the following sections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ubokd">Section 2.1, Starting the Administration Console</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ubq8n">Section 2.2, Using the Administration Console</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="b9ubokd">
+
+<h2 class="title"><span class="number">2.1</span> Starting the Administration Console</h2>
+
+<p class="para">ICEcore Conference provides a web-browser-based 
+   <span class="guimenu">Administration Console</span> to assess the status of clusters and manage system communities. The URL for the 
+   <span class="guimenu">Administration Console</span> depends on the setting of the 
+   <span class="filename">global-config</span> variable 
+   <span class="filename">&lt;portal-hname&gt;</span> defined at system installation time. The 
+   <span class="guimenu">Administration Console</span> can be accessed using the following URL:
+  </p><pre class="screen">
+http://&lt;portal-hname&gt;/imidio/console/
+</pre>
+<p class="para">Once you access this page, you need to log in. When the software is installed, a default Super Administrator account is created with the screen name 
+   <span class="filename">admin</span> and password 
+   <span class="filename">admin</span>. A Super Administrator has the authority to manage all communities versus Community Administrators, who only have administrative authority within their specific community or communities. However, a Super Administrator can be restricted to a single community by entering a community name when logging in.
+  </p>
+<div class="informalfigure">
+            <img src="./login_a.png" alt="Log in page" />
+          </div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9ubq8n">
+
+<h2 class="title"><span class="number">2.2</span> Using the Administration Console</h2>
+
+<p class="para">Use the 
+   <span class="guimenu">Administration Console</span> to monitor the ICEcore Conference server environment. Use the 
+   <span class="guimenu">Administration Console</span> tabs to perform the following functions:
+  </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> Work with ICEcore Conference user communities</p></li>
+<li class="listitem">
+<p class="listitem">Obtain server and component status</p></li>
+<li class="listitem">
+<p class="listitem">Determine the system load</p></li></ul></div>
+
+<p class="para">For each function, an operations menu is available in a shaded box on the left of the page. You can exit the 
+   <span class="guimenu">Administration Console</span> at any time by clicking 
+   <span class="guimenu">Logout</span>. 
+  </p>
+<div class="sect2 singlefile"  id="b9ubqij">
+
+<h3 class="title"><span class="number">2.2.1</span> Component Status Page</h3>
+
+<p class="para">Once you log on, you are on the main page of the 
+    <span class="guimenu">Administration Console</span> &gt; 
+    <span class="guimenu">Component Status Summary Page</span>, which is a page similar to the following:
+   </p>
+<div class="informalfigure">
+              <img src="./managementconsole_a.png" alt="Component Status Page" />
+            </div>
+
+<p class="para">From this page, you can use the tabs to determine system status, manage communities or view system load. For each function, an operations menu is available in a shaded box on the left of the page. You can exit the 
+    <span class="guimenu">Administration Console</span> at any time by clicking 
+    <span class="guimenu">Logout</span>. 
+   </p>
+</div>
+
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="b9uc683">
+
+<h1 class="title"><span class="number">3.0</span> ICEcore Conference Communities</h1>
+
+<p class="para">A community is a group of users, usually within the same company or within a specific division within an organization. Once you install and configure the ICEcore Conference software, you need to set up communities and administrators for those communities. Community-member contacts are displayed in the 
+  <span class="guimenu">Community Address Book</span> in the ICEcore Conference Client.When the ICEcore Conference software is installed, a default 
+  <span class="guimenu">System Community</span> is created. This community provides the Super Administrator login and password information.
+ </p>
+<p class="para">This chapter includes the following sections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uc7x4">Section 3.1, Managing Communities</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uc80m">Section 3.2, Adding Communities</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uc80n">Section 3.3, Viewing Communities</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uc80o">Section 3.4, Removing Communities</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uc80p">Section 3.5, Updating Communities</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="b9uc7x4">
+
+<h2 class="title"><span class="number">3.1</span> Managing Communities</h2>
+
+<p class="para">You can manage ICEcore Conference communities with the ICEcore Conference
+   <span class="guimenu">Administration Console</span>. The 
+   <span class="guimenu">Manage Communities</span> tab provides tools for creating, deleting and modifying communities:
+  </p>
+<div class="informalfigure">
+            <img src="./manageconsolmanagecommunities_a.png" alt="Manage Communities tab" />
+          </div>
+
+<p class="para">Use the 
+   <span class="guimenu">Manage Communities</span> tabs to perform the following functions:
+  </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Display all communities</p></li>
+<li class="listitem">
+<p class="listitem">Search for specific communities</p></li>
+<li class="listitem">
+<p class="listitem"> Add a new community</p></li>
+<li class="listitem">
+<p class="listitem">Remove an existing community</p></li>
+<li class="listitem">
+<p class="listitem"> Modify an existing community</p></li></ul></div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uc80m">
+
+<h2 class="title"><span class="number">3.2</span> Adding Communities</h2>
+
+<p class="para">A default 
+   <span class="guimenu">System Community</span> is created when you install the software. This 
+   <span class="guimenu">System Community</span> contains the Super Administrator username and password. When you install ICEcore Conference for the first time, you should create at least one new community. This community should have a Community Administrator, usually the first user that is created in the community. 
+  </p>
+<div class="sect2 singlefile"  id="b9uc8se">
+
+<h3 class="title"><span class="number">3.2.1</span> To Add a Community:</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9uccje">
+<p class="para">From the 
+      <span class="guimenu">Manage Communities</span> tab, click 
+      <span class="guimenu">Add</span> to display the 
+      <span class="guimenu">Add Community</span> form. 
+     </p>
+<div class="informalfigure">
+                  <img src="./addcommunity_a.png" alt="Manage Communities tab" />
+                </div>
+</li>
+<li class="step" id="b9uccox">
+<p class="para">In the 
+      <span class="guimenu">Community Name</span> field, type a community name.
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The name of the community should be descriptive, and should only contain ASCII characters.</p></div>
+</li>
+<li class="step" id="b9uccp0">
+<p class="para">In the 
+      <span class="guimenu">Account Number</span> field (Optional), type an account number.
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>You can create an optional account number that you use for billing/cost center purposes. The 
+       <span class="guimenu">Account Number</span> field is alphanumeric. 
+      </p></div>
+</li>
+<li class="step" id="b9uccp1">
+<p class="para">In the 
+      <span class="guimenu">Contact Name</span> field, type the name of the individual who is the primary contact for this community.
+     </p></li>
+<li class="step" id="b9uccp3">
+<p class="para">In the 
+      <span class="guimenu">Contact Email</span> field, type the e-mail address of the primary contact.
+     </p></li>
+<li class="step" id="b9uccp5">
+<p class="para">In the 
+      <span class="guimenu">Contact Phone</span> field, type the phone number for the primary contact.
+     </p></li>
+<li class="step" id="b9uccp7">
+<p class="para">In the 
+      <span class="guimenu">User Name</span> field, type the name of the community administrator for the community (the user who creates the other users in the community via the ICEcore Conference Client console). Enter the full name of the community administrator (for example, Bob Smith).
+     </p></li>
+<li class="step" id="b9uccp8">
+<p class="para">In the 
+      <span class="guimenu">User Password</span> field, type a password for the community administrator.
+     </p></li>
+<li class="step" id="b9uccpa">
+<p class="para">In the 
+      <span class="guimenu">User Screenname</span> field, type a screen name for the community administrator. This is the screen name that other ICEcore Conference users see for the community administrator when they access their ICEcore Conference clients.
+     </p></li>
+<li class="step" id="b9uccpc">
+<p class="para">Select the 
+      <span class="guimenu">User is Admin </span>option to indicate that the user is a community administrator. Do not select this option if the first user in this community should not have administrative access.
+     </p></li>
+<li class="step" id="b9uccpe">
+<p class="para">Select the phone number of the voice bridge for this community from the 
+      <span class="guimenu">Bridge Phone</span> drop-down list.
+     </p></li>
+<li class="step" id="b9uccpg">
+<p class="para">In the 
+      <span class="guimenu">System URL</span> field, type the assigned system URL for community meeting invitations.
+     </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">The 
+        <span class="guimenu">Options</span> field is currently reserved and should be left blank.
+       </p></li>
+<li class="listitem">
+<p class="listitem">The 
+        <span class="guimenu">Default Profile ID</span> is also a reserved field and should be left blank.
+       </p></li></ul></div>
+</li>
+<li class="step" id="b9uccpp">
+<p class="para">Once you have entered the new community data, click 
+      <span class="guimenu">Add</span> to create the community.
+     </p></li></ol>
+</div>
+
+<p class="para">By default, when communities are defined, they are enabled. An enabled community is available for users to log into.</p>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uc80n">
+
+<h2 class="title"><span class="number">3.3</span> Viewing Communities</h2>
+
+<p class="para">To view existing communities use the 
+   <span class="guimenu">Manage Communities</span> tab and then select the 
+   <span class="guimenu">Show All</span> or the 
+   <span class="guimenu">Find</span> tool.
+  </p>
+<div class="sect2 singlefile"  id="b9uc915">
+
+<h3 class="title"><span class="number">3.3.1</span> To Show All Communities</h3>
+
+<p class="para">Use the 
+    <span class="guimenu">Show All</span> link to display all of the communities on the system. If more communities exist in the system than can be displayed on a page, use the 
+    <span class="guimenu">Previous</span> and 
+    <span class="guimenu">Next</span> buttons to scan the list of communities.
+   </p>
+</div>
+
+<div class="sect2 singlefile"  id="b9uc9pd">
+
+<h3 class="title"><span class="number">3.3.2</span> To Find a Community by Name</h3>
+
+<p class="para">Use the 
+    <span class="guimenu">Find</span> link to display an entry field for the community name and a 
+    <span class="guimenu">Search</span> button:
+   </p>
+<div class="informalfigure">
+              <img src="./managecommunnitiesfind_a.png" alt="Manage communities search" />
+            </div>
+
+<p class="para">You can enter the entire community name, or use the
+    <span class="guimenu"> % </span>wildcard character to find a community. When a community that matches your search parameter is found, the 
+    <span class="guimenu">Find Communities</span> table displays the matching communities.
+   </p>
+<p class="para">For example:</p>
+<div class="informalfigure">
+              <img src="./managecommunnitiesfindtable_a.png" alt="Search results" />
+            </div>
+
+<p class="para">The 
+    <span class="guimenu">Find Communities</span> table contains the following values for each community returned in the search:
+   </p>
+<div class="formalpara" id="bbj1qo3">
+          <p class="title"><em class="title">Operations</em>
+          – Operations provide tools that allow you to update, remove or enable/disable a community. The users of a disabled community cannot log into the system.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u03">
+          <p class="title"><em class="title">Community ID</em>
+          – The ID of the community that has been assigned by the database.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u04">
+          <p class="title"><em class="title">Community Name</em>
+          – The community name.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u05">
+          <p class="title"><em class="title">Account Number</em>
+          – The account number for the community, which may be used for billing/cost center purposes.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u06">
+          <p class="title"><em class="title">Contact Name</em>
+          – The primary contact for the community.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u07">
+          <p class="title"><em class="title">Contact Email</em>
+          – The e-mail address of the primary contact.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u08">
+          <p class="title"><em class="title">Contact Phone</em>
+          – The phone number of the primary contact.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u09">
+          <p class="title"><em class="title">User Name</em>
+          – The full name of the initial user of the community. Generally, the initial user is the community administrator.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u0a">
+          <p class="title"><em class="title">User Password</em>
+          – The password for the initial user of the community.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u0b">
+          <p class="title"><em class="title">Bridge Phone</em>
+          – The phone number for the voice bridge assigned to the community.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u0c">
+          <p class="title"><em class="title">System URL</em>
+          – The URL that is used for community meeting invitation.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u0d">
+          <p class="title"><em class="title">Account Type</em>
+          – The account type for the initial user. The account type may be either normal or admin.</p>
+        </div>
+
+<div class="formalpara" id="bbj1u0e">
+          <p class="title"><em class="title">Account Status</em>
+          – This indicates whether the community is enabled or disabled. A disabled community is not accessible by any of the community members.</p>
+        </div>
+
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uc80o">
+
+<h2 class="title"><span class="number">3.4</span> Removing Communities</h2>
+
+<p class="para">To delete existing communities, use the 
+   <span class="guimenu">Manage Communities</span> tab. You can either: 
+  </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> Use 
+     <span class="guimenu">Remove</span>:
+    </p>
+<div class="orderedlist">
+<ol class="orderedlist">
+            
+<li class="listitem">
+<p class="listitem">Click 
+       <span class="guimenu">Remove</span> in the left column of the page to see a list of community names.
+      </p></li>
+            
+<li class="listitem">
+<p class="listitem">Select the community you want to delete.</p></li>
+            
+<li class="listitem">
+<p class="listitem">Click 
+       <span class="guimenu">Delete</span>.
+      </p></li>
+          </ol></div>
+</li>
+<li class="listitem">
+<p class="listitem"> Use 
+     <span class="guimenu">Show All</span> or 
+     <span class="guimenu">Find</span>: 
+    </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>In either case, each community in the table contains a 
+      <span class="guimenu">Remove</span> link that removes that community.
+     </p></div>
+
+<div class="orderedlist">
+<ol class="orderedlist">
+            
+<li class="listitem">
+<p class="listitem">Select 
+       <span class="guimenu">Show All</span> or 
+       <span class="guimenu">Find</span> (to search by community name).
+      </p>
+<p class="listitem">The 
+       <span class="guimenu">Community Results</span> table appears.
+      </p></li>
+            
+<li class="listitem">
+<p class="listitem">In the row containing the community you want to delete, click 
+       <span class="guimenu">Remove</span>.
+      </p></li>
+          </ol></div>
+</li></ul></div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uc80p">
+
+<h2 class="title"><span class="number">3.5</span> Updating Communities</h2>
+
+<p class="para">To update or modify existing communities, use the 
+   <span class="guimenu">Manage Communities</span> tab. You can either:
+  </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> Click 
+     <span class="guimenu">Update</span> in the left column of the page to display a list of community names. Select the community to update and click 
+     <span class="guimenu">Edit</span>. 
+    </p></li>
+<li class="listitem">
+<p class="listitem"> Use 
+     <span class="guimenu">Show All</span> or 
+     <span class="guimenu">Find</span> to search by community name. In either case, each community in the community results table contains a 
+     <span class="guimenu">Update</span> link that updates that community.
+    </p></li></ul></div>
+
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="b9uczl1">
+
+<h1 class="title"><span class="number">4.0</span> Adding Users and Policies</h1>
+
+<p class="para">After you establish your communities, you can add users to the system. Use the ICEcore Conference client to accomplish this task. </p>
+<p class="para">This chapter includes the following sections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ud0ut">Section 4.1, Creating Policies</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ud21k">Section 4.2, Creating a New User</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ud21l">Section 4.3, Change the Policy for a User</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ud21m">Section 4.4, Reset the Password for a User</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="b9ud0ut">
+
+<h2 class="title"><span class="number">4.1</span> Creating Policies</h2>
+
+<p class="para">A policy is a set of privileges that governs the availability and limitations of certain features for a given user. Each user has a policy. Typically, an Administrator creates a small number of policies (appropriate for different levels of users) and assigns a policy to each user.</p>
+<div class="formalpara" id="b9ud4bg">
+        <p class="title"><em class="title">To create a new policy:</em>
+        </p>
+      </div>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9ud46s">
+<p class="para">From the ICEcore Conference client’s 
+     <span class="guimenu">Manage Contacts</span> window, select the 
+     <span class="guimenu">Admin &gt; Manage Policies </span>menu item.
+    </p>
+<div class="informalfigure">
+                <img src="./createpolicy1_a.png" alt="Admin menu" />
+              </div>
+</li>
+<li class="step" id="b9ud5li">
+<p class="para">In the 
+     <span class="guimenu">Policy Manager</span> window, click the 
+     <span class="guimenu">New Policy</span> button.
+    </p>
+<div class="informalfigure">
+                <img src="./createpolicy2_a.png" alt="Policy Manager window" />
+              </div>
+</li>
+<li class="step" id="b9ud5lk">
+<p class="para">In the 
+     <span class="guimenu">Policy Manager</span> dialog that appears, type a name for your new policy and click 
+     <span class="guimenu">OK</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./createpolicy2b_a.png" alt="Policy Manager dialog" />
+              </div>
+</li>
+<li class="step" id="b9ud5lm">
+<p class="para">In the 
+     <span class="guimenu">Policy Manager</span> window, click on the right column of the policy setting you wish to change.
+    </p>
+<div class="informalfigure">
+                <img src="./createpolicy3_a.png" alt="Policy Manager window" />
+              </div>
+</li>
+<li class="step" id="b9ud5lp">
+<p class="para">After you adjust all of the policy settings, click 
+     <span class="guimenu">OK</span>.
+    </p></li></ol>
+</div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>If you are creating a policy that is very similar to an existing policy, select the existing policy, click 
+    <span class="guimenu">Copy Policy</span>, provide a name for the new policy, and edit the settings.
+   </p></div>
+
+<p class="para">When creating a new policy, you have the ability to configure the following policy settings:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9udsw5"></a>
+<p class="para">This Setting...</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Means...</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udsw6"></a>
+<p class="para">Save Password</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Allows the user to use the 
+        <span class="guimenu">Save Password</span> and 
+        <span class="guimenu">Auto Sign On</span> features (if enabled) or requires that the user log in for every use of the client (if disabled).
+       </p>
+<p class="para">When this feature is enabled, the user is provided with a 
+        <span class="guimenu">Save Password</span> option in the 
+        <span class="guimenu">Sign On</span> window. If checked, ICEcore Conference then stores the user's password locally in encrypted form. The next time the user accesses the client, ICEcore Conference uses the locally stored password to perform an automatic log in.
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udsw7"></a>
+<p class="para">ICEcore Conference IM</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Allows or disallows ICEcore Conference instant messaging and chat. This setting does not affect chat within the context of a meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udsw8"></a>
+<p class="para">Download Public Meetings</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Allows or disallows the display of public meetings in the 
+        <span class="guimenu">Meetings</span> window.
+       </p>
+<p class="para">This setting is useful for large organizations. For more information, read the section immediately after this table.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udsw9"></a>
+<p class="para">Download Community Address Book</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Allows or disallow the download of the 
+        <span class="guimenu">Community Address Book</span>.
+       </p>
+<p class="para">This setting is useful for large organizations. For more information, read the section immediately after this table.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswa"></a>
+<p class="para">Share Desktop</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Allows or disallows the ability to share one's desktop during a meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswb"></a>
+<p class="para">Share Application</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Allows or disallows the ability to share an application during a meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswc"></a>
+<p class="para">Share PowerPoint</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Allows or disallows the ability to share a PowerPoint presentation during a meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswd"></a>
+<p class="para">Share Document</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Allows or disallows the ability to share a document during a meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswe"></a>
+<p class="para">Share Whiteboard</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Allows or disallows the ability to share the whiteboard during a meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswf"></a>
+<p class="para">Remote Control</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Allows or disallows the ability for meeting attendees to be given control of the presenter's desktop or application.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswg"></a>
+<p class="para">Number of Presence Monitors</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Indicates the total allowable number of personal buddies.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswh"></a>
+<p class="para">Invitee PIN Length</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Is the number of digits in a meeting PIN.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswi"></a>
+<p class="para">User Meeting ID Length </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Is the number of digits in a meeting ID.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswj"></a>
+<p class="para">Max Scheduled Meetings</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Indicates the maximum number of meetings the user is allowed to schedule.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9udswk"></a>
+<p class="para">Lock Timeout (minutes)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Is the number of minutes of inactivity before the user is required to unlock the client by entering a password.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uekkf"></a>
+<p class="para">Session Timeout (minutes)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Is the number of minutes of inactivity before the client is required to sign on again.</p></td>
+</tr></table>
+</div>
+
+<p class="para">The 
+   <span class="guimenu">Download Public Meetings</span> and 
+   <span class="guimenu">Download Community Address Book</span> policy settings are particularly useful for very large organizations. By disabling these settings, you enhance the performance of the client by not requiring it to download very large amounts of contact and public-meeting information that is most likely irrelevant for any one user.
+  </p>
+<p class="para">Despite the utility of these settings, disabling them requires the user to search for contacts and public meetings that may be of interest to her or him. For example, if you disable the display of the 
+   <span class="guimenu">Community Address Book</span> for a user, the user has to use the 
+   <span class="guimenu">Search</span> feature to add a contact to the buddy list.
+  </p>
+<p class="para">See the ICEcore Conference Online Help or ICEcore Conference User Guide for detailed information on searching.</p>
+<p class="para">In summary, if you decide to disable the display of either the 
+   <span class="guimenu">Community Address Book</span> or public meetings, be sure that your users have the information or training they need to use search to locate contacts and public meetings of interest.
+  </p>
+</div>
+
+<div class="sect1 singlefile"  id="b9ud21k">
+
+<h2 class="title"><span class="number">4.2</span> Creating a New User</h2>
+
+<p class="para">Once you establish a small number of policies that you want to apply to various groups of people in your organization, you can create user accounts. </p>
+<div class="formalpara" id="b9uekkg">
+        <p class="title"><em class="title">To create a user account:</em>
+        </p>
+      </div>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9uei42">
+<p class="para">From the 
+     <span class="guimenu">Manage Contacts and Users</span> window, select the 
+     <span class="guimenu">Community</span> Address Book.
+    </p>
+<div class="informalfigure">
+                <img src="./selectcommunity_a.png" alt="Manage Contacts and Users window" />
+              </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>If the Download Community Address Book feature is disabled, you may skip this step, and the remaining steps still create a new user properly. However, this step is very important when creating a contact or a new group.</p></div>
+</li>
+<li class="step" id="b9uei43">
+<p class="para">Click 
+     <span class="guimenu">New</span> in the lower-left corner of the window, and select the 
+     <span class="guimenu">New User</span> menu item.
+    </p>
+<div class="informalfigure">
+                <img src="./clicknewuser_a.png" alt="New menu" />
+              </div>
+</li>
+<li class="step" id="b9uei45">
+<p class="para">In the 
+     <span class="guimenu">New User</span> window, click items in the right column of the table to provide values for the new user's contact information.
+    </p></li>
+<li class="step" id="b9uei46">
+<p class="para">Provide values for at least the required contact-list items.</p>
+<p class="para">To make the account reasonably usable, we recommend that you also provide first name, last name, and at least one e-mail address (so that the new user can receive the 
+     <span class="guimenu">New User </span>e-mail message). See the ICEcore Conference Online Help or ICEcore Conference User Guide for detailed information on these fields.
+    </p>
+<div class="informalfigure">
+                <img src="./newcontact_a.png" alt="Manage contacts window" />
+              </div>
+</li>
+<li class="step" id="b9uei48">
+<p class="para">Click 
+     <span class="guimenu">OK</span>.
+    </p>
+<p class="para">ICEcore Conference creates the new user and a contact listing for that user.</p></li></ol>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9ud21l">
+
+<h2 class="title"><span class="number">4.3</span> Change the Policy for a User</h2>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9uek1u">
+<p class="para">In the 
+     <span class="guimenu">Manage Contacts and Users</span> window, select the user and click 
+     <span class="guimenu">Edit</span>.
+    </p>
+<div class="informalfigure">
+                <img src="./edituser_a.png" alt="Manage Contacts and Users window " />
+              </div>
+</li>
+<li class="step" id="b9uek7q">
+<p class="para">Select the currently applied policy from the 
+     <span class="guimenu">Policy</span> drop-down list.
+    </p>
+<div class="informalfigure">
+                <img src="./selectpolicy_a.png" alt="Policy drop-down list" />
+              </div>
+</li>
+<li class="step" id="b9uek7x">
+<p class="para">Click 
+     <span class="guimenu">OK</span>.
+    </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9ud21m">
+
+<h2 class="title"><span class="number">4.4</span> Reset the Password for a User</h2>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9uekwf">
+<p class="para">In the 
+     <span class="guimenu">Manage Contacts and Users</span> window, select the user and click 
+     <span class="guimenu">Edit</span>.
+    </p></li>
+<li class="step" id="b9uel65">
+<p class="para">In the 
+     <span class="guimenu">Password</span> field, type the new password.
+    </p>
+<div class="informalfigure">
+                <img src="./changepassword_a.png" alt="Password field" />
+              </div>
+</li>
+<li class="step" id="b9uel66">
+<p class="para">Click 
+     <span class="guimenu">OK</span>.
+    </p></li></ol>
+</div>
+
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="b9uemcl">
+
+<h1 class="title"><span class="number">5.0</span> Obtaining Server Status</h1>
+
+<p class="para">The 
+  <span class="guimenu">View Status</span> tab of the Administration Console provides a summary of the server components for any services that are directly connected to an XML Router or for the XML Routers themselves.This chapters includes the following sections: 
+ </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uen61">Section 5.1, Viewing Components</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uenrb">Section 5.2, Viewing Active Meetings</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uenrc">Section 5.3, Determining Voice Port Status</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uenrd">Section 5.4, ICEcore Conference System Component Logging</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uenre">Section 5.5, Assessing System Load</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="b9uen61">
+
+<h2 class="title"><span class="number">5.1</span> Viewing Components</h2>
+
+<p class="para">When you select the 
+   <span class="guimenu">View Status</span> tab, the main page is the 
+   <span class="guimenu">Component Status</span> page. You can determine the status of components connected to the XML Router by looking at the 
+   <span class="guimenu">Component Status</span> table. The status of the XML Routers is displayed in the 
+   <span class="guimenu">XML Router Status </span>table. In both tables, the 
+   <span class="guimenu">Status</span> column shows whether the component is connected to the XML Routers.
+  </p>
+<div class="informalfigure">
+            <img src="./managementconsole_a.png" alt="View Status tab" />
+          </div>
+
+<p class="para">The 
+   <span class="guimenu">Component Status</span> table has a number of columns for different attributes for each of the rows. The following table describes each column:
+  </p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9uerdd"></a>
+<p class="para">Column</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uerde"></a>
+<p class="para">Operations</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">These tools allow you to set the logging level for the XML router or in the case of voice bridges, to view the status of the voice ports on that bridge. </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uerdf"></a>
+<p class="para">Service</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This column identifies the service associated with each row.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uerdg"></a>
+<p class="para">ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This column identifies the ID of the service associated with each row. The ID is useful, for instance, for analyzing system log output.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uerdh"></a>
+<p class="para">Via Router</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This column identifies the XML Routers to which each service is connected (if any).</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uerdi"></a>
+<p class="para">Last Host</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This column identifies the last host on which the service was known to be running.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uerdj"></a>
+<p class="para">Status</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Either Online or Offline. This identifies whether the service is online or not.</p></td>
+</tr></table>
+</div>
+
+<p class="para">The 
+   <span class="guimenu">XML Router Status</span> table has a number of columns for different attributes for each of the rows. The following table describes each column:
+  </p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9ueubo"></a>
+<p class="para">Column</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uetkp"></a>
+<p class="para">Operations</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The links under this column allows you to set the logging level for components and, in the case of voice bridges, to view the status of the voice ports on that bridge. </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uetkq"></a>
+<p class="para">Location</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This column identifies the on which host the router is running.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uetkr"></a>
+<p class="para">User Count</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This column identifies the current number of ICEcore Conference users logged on to each XML Router</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uetks"></a>
+<p class="para">Status</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Either Online or Offline. This identifies whether the service is running or not.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uenrb">
+
+<h2 class="title"><span class="number">5.2</span> Viewing Active Meetings</h2>
+
+<p class="para">Select 
+   <span class="guimenu">View Active Meeting</span>. 
+  </p>
+<p class="para">The View Active Meeting table appears. This table contains a list of active meetings with the following information:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9uevnb"></a>
+<p class="para">Column</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ueuv6"></a>
+<p class="para">Mtg ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The Meeting ID of the active meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevnc"></a>
+<p class="para">Host ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The User ID of the host. This value is placed in CDR records and is useful for analyzing log output.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevnd"></a>
+<p class="para">Type</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This value shows whether the active meeting is an instant or scheduled meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevne"></a>
+<p class="para">Privacy</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This is what privacy setting is in effect for the active meeting. It may be private, public or unlisted.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevnf"></a>
+<p class="para">Title</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The title of the active meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevng"></a>
+<p class="para">Description</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The description of the active meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevnh"></a>
+<p class="para">Duration (mins)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The current duration of the active meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevni"></a>
+<p class="para">Time</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The start time of the active meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevnj"></a>
+<p class="para">Options</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">These are the meeting options in effect for the active meeting. (See table below for a description of the meeting options.)</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevnk"></a>
+<p class="para">Num Invited</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The number of participants invited to the active meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevnl"></a>
+<p class="para">Num Connected</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The number of participants connected via ICEcore Conference clients to the active meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevnm"></a>
+<p class="para">Appshare Server</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The app/desktop server associated with the active meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevnn"></a>
+<p class="para">Num Appshare Sessions</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The number of app/desktop sharing clients connected to the active meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevno"></a>
+<p class="para">Voice Server</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The voice bridge associated with the active meeting. This is also a link to get the voice port status for that bridge.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uevnp"></a>
+<p class="para">Num Calls</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The number of phone calls connected to the voice conference for the active meeting.</p></td>
+</tr></table>
+</div>
+
+<p class="para">The following meeting option values can be found in the 
+   <span class="guimenu">Options</span> column:
+  </p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9uf1je"></a>
+<p class="para">Column</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf0xg"></a>
+<p class="para">Screen callers</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This option specifies that caller names are recorded and played when callers enter the meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf1jf"></a>
+<p class="para">Lecture</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This option specifies that all non-host/non-moderators are muted by default when they join the conference. This is useful for large meetings.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf1jg"></a>
+<p class="para">No new participants</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This option specifies that new participants are denied entry into the meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf1jh"></a>
+<p class="para">Has password</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This option means that there is a password associated with the active meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf1ji"></a>
+<p class="para">Continue without moderator</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Normally, a meeting ends when the last moderator leaves the meeting. This option allows a meeting to continue even though no moderator is present.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf1jj"></a>
+<p class="para">Expirationless invitations</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The option means that participants are given invitations that do not expire. Normally, participant PINs expire.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf1jk"></a>
+<p class="para">Invitations valid before start</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This option means that invited participant's PINs are valid before the host or moderator starts the meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf1jl"></a>
+<p class="para">Recording meeting</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This option means that the meeting is currently being recorded.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf1jm"></a>
+<p class="para">No join/leave announcements</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This option means that when a participant joins or leaves a voice conference, no tone or announcement is played. This is useful for large meetings were the playing of tones would be distracting.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uenrc">
+
+<h2 class="title"><span class="number">5.3</span> Determining Voice Port Status</h2>
+
+<p class="para">Click the 
+   <span class="guimenu">Voice</span> link for an active meeting. The table that appears provides the following information:
+  </p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9uf4pz"></a>
+<p class="para">Column</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf38c"></a>
+<p class="para">Operation</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The only operation currently available for voice ports is to reset them. A reset operation drops any connected call and then stops and restarts line services.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf4q0"></a>
+<p class="para">ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This value identifies the board, trunk and channel for the port. The formula used to create an ID is:</p><pre class="screen">
+board &lt;&lt; 9 | trunk &lt;&lt; 7 | channel
+</pre>
+<p class="para">Board, trunk and channel are integers beginning with 0.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf4q1"></a>
+<p class="para">State</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This value is either no call or connected according to whether an active call is present on the port.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf4q2"></a>
+<p class="para">Meeting ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The Meeting ID of the meeting to which the port is associated.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf4q3"></a>
+<p class="para">Participant ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The Participant ID of the caller.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf4q4"></a>
+<p class="para">Screen name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The screen name of the caller.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf4q5"></a>
+<p class="para">Name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The full name of the caller.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf4q6"></a>
+<p class="para">Last Event Time</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The time of the last telephony event. The format is YYYYMMDDHHmmSS.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uf4q7"></a>
+<p class="para">Last Event Name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The name of the last telephony event.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uenrd">
+
+<h2 class="title"><span class="number">5.4</span> ICEcore Conference System Component Logging</h2>
+
+<p class="para">You can adjust the logging level of ICEcore Conference components using the Administration Console. The initial page contains Set Logging tools for the system components. Once you have selected a component, you can modify the logging level for that component.</p>
+<p class="para">There are three levels for logging:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<div class="formalpara" id="bbqptkz">
+            <p class="title"><em class="title">Error</em>
+            - this is the default logging level and only logs error conditions (creates smaller files).</p>
+          </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bbqptm2">
+            <p class="title"><em class="title">Info</em>
+             - logs error conditions and also provides summary information on server tasks.</p>
+          </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bbqptn5">
+            <p class="title"><em class="title">Debug</em>
+            - logs error conditions, summary information, and detailed debugging information.</p>
+          </div>
+</li></ul></div>
+
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>Keep the default logging level at 
+    <span class="guimenu">Error</span> to minimize CPU and I/O loads.
+   </p></div>
+
+<p class="para">Log files, in general, are written to the
+   <span class="filename"> /var/log/iic </span>directory, except for the web portal and external API server logs, which are written to files in the
+   <span class="filename"> /usr/local/apache2/logs </span>directory. Additional information may be found in the
+   <span class="filename"> /var/log/messages </span>directory.
+  </p>
+</div>
+
+<div class="sect1 singlefile"  id="b9uenre">
+
+<h2 class="title"><span class="number">5.5</span> Assessing System Load</h2>
+
+<p class="para">The View Utilization tab is used to obtain metrics on server capacity. When you access the 
+   <span class="guimenu">View Utilization</span> tab, the following page displays.
+  </p>
+<div class="informalfigure">
+            <img src="./viewutilization_a.png" alt="View Utilization tab" />
+          </div>
+
+<p class="para">Use this page to view a number of different system load metrics (measuring system load over time). The load parameters the system monitors are:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9ufb3k"></a>
+<p class="para">Parameter</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ufawn"></a>
+<p class="para">Meetings</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The number of currently active meetings.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ufbp0"></a>
+<p class="para">Ports</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The number of voice ports with a connected call.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ufbp1"></a>
+<p class="para">Users</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The number of users connected to the system via ICEcore Conference clients.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ufbp2"></a>
+<p class="para">Share sessions</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The number of active app/desktop sharing sessions.</p></td>
+</tr></table>
+</div>
+
+<p class="para">The average and peak values for the load parameter are gathered by sampling the above parameters once a second over a half hour interval. For example, the following is a sample of the 
+   <span class="guimenu">Users</span> table:
+  </p>
+<div class="informalfigure">
+            <img src="./viewutilizationusers_a.png" alt="Users table" />
+          </div>
+
+<p class="para">The last time-measured values are in the following format:</p><pre class="screen">
+&lt;year&gt;-&lt;month&gt;-&lt;day&gt;-&lt;hour&gt;-&lt;min&gt;-&lt;sec&gt;
+</pre>
+<p class="para">These values also show the end of the sampling interval of the load parameter (in this case the number of users connected via ICEcore Conference clients).</p>
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="b9ufr44">
+
+<h1 class="title"><span class="number">6.0</span> Auditing System Events</h1>
+
+<p class="para">ICEcore Conference provides the ability to monitor user and call record events, and to create files that can be exported or imported between other applications, such as a user database or a time tracking application.The system writes event logs in the 
+  <span class="filename">/var/iic/cdr </span>directory on the meeting controller hosts (call events) and the address book host (user and reservation event). If you have a multiple machine configuration, you can determine these hosts using the 
+  <span class="guimenu">Administration Console</span>.Every day at 6 a.m. GMT (1 a.m. EST), the event logs are rotated. The active event log file is renamed to include a timestamp of when the rotation was performed. If this file is not imported and deleted within 120 days, it is automatically removed.
+ </p>
+<p class="para">This chapter includes the following sections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ufnqq">Section 6.1, Real-Time Event Logs</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ufomp">Section 6.2, User Record Format</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ufomq">Section 6.3, Call Data Records</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ufomr">Section 6.4, Reservation Data Records</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ufoms">Section 6.5, Chat Audit Log Configuration</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="b9ufnqq">
+
+<h2 class="title"><span class="number">6.1</span> Real-Time Event Logs</h2>
+
+<p class="para">You can configure the ICEcore Conference servers, either at installation time or later, to produce real-time event logs for call, user and meeting reservation events. The real-time interface provides the event data records as they are occur so that third-party systems may use them (for example, a billing system or cost accounting system, management reporting systems or user directory database). The records are delivered via a TCP connection to ICEcore Conference server hosts.</p>
+<div class="sect2 singlefile"  id="b9ufr45">
+
+<h3 class="title"><span class="number">6.1.1</span> Determining Whether Real-time Events are Enabled</h3>
+
+<p class="para">If the value of the 
+    <span class="literal">enable_rt_logs</span> file is set to
+    <span class="literal"> yes</span>, the system delivers the records to consumers connecting to ICEcore Conference hosts. If it is set to
+    <span class="literal"> no</span>, the system does not provide the real-time interface. If real-time records are required but not enabled, re-run the installer script to change the setting.
+   </p>
+</div>
+
+<div class="sect2 singlefile"  id="b9ufptn">
+
+<h3 class="title"><span class="number">6.1.2</span> Determining Hosts and Ports</h3>
+
+<p class="para">You can find the hosts and ports providing the real-time event records by examining the global configuration found in 
+    <span class="literal">/opt/iic/conf/global-config </span>directory on any ICEcore Conference host.
+   </p>
+</div>
+
+<div class="sect2 singlefile"  id="b9ufpue">
+
+<h3 class="title"><span class="number">6.1.3</span> Call Record Host(s) and Port</h3>
+
+<p class="para">The connected call record host(s) is specified by the 
+    <span class="literal">controller_host </span>array in the
+    <span class="literal"> global-config</span>. The port to use for the connection is specified by the 
+    <span class="literal">rt_call_port </span>variable.
+   </p>
+</div>
+
+<div class="sect2 singlefile"  id="b9ufqh1">
+
+<h3 class="title"><span class="number">6.1.4</span> User record host(s) and port</h3>
+
+<p class="para">The connected user record host is specified by the 
+    <span class="literal">addressbk_host </span>array in the 
+    <span class="literal">global-config </span>file. The port to use for the connection is specified by the
+    <span class="literal"> rt_user_port </span>variable.
+   </p>
+</div>
+
+<div class="sect2 singlefile"  id="b9ufquj">
+
+<h3 class="title"><span class="number">6.1.5</span> Reservation record host(s) and port</h3>
+
+<p class="para">The connected user record host is specified by the
+    <span class="literal"> addressbk_host </span>array in the
+    <span class="literal"> global-config </span>file. The port to use for the connection is specified by the
+    <span class="literal"> rt_rsrv_port </span>variable.
+   </p>
+</div>
+
+<div class="sect2 singlefile"  id="b9ufqv4">
+
+<h3 class="title"><span class="number">6.1.6</span> Connecting to real-time event logs</h3>
+
+<p class="para">When a consumer of real-time events connects to one of the event logs described above, the system sends the contents of the event log for the current day. Future events are sent to the consumer as they occur for the duration of the time that the consumer remains connected to the event log host. Each night, the event logs are rotated. Once the logs have been rotated, the prior day’s events are no longer available to the real-time event log consumer. If needed, you can obtain them from the time stamped event log files (
+    <span class="literal">call+&lt;timestamp&gt;.elg, user+&lt;timestamp&gt;.elg</span> and 
+    <span class="literal">rsrv+&lt;timestamp&gt;.elg</span>) in the
+    <span class="literal"> /var/iic/cdr </span>directory on the same host used for the real-time event log connection. The time stamp on the files refers to the time that the log rotation happened.
+   </p>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9ufomp">
+
+<h2 class="title"><span class="number">6.2</span> User Record Format</h2>
+
+<p class="para">You can synchronize your databases whenever you add, update or delete users. The User Record format provides a standard comma-delimited text file that allows you to import or export a user list to other enterprise databases. </p>
+<p class="para">The user records are stored in
+   <span class="literal"> /var/iic/cdr/user.elg </span>on the host specified in
+   <span class="literal"> addressbk_host </span>in the
+   <span class="literal"> global-config </span>file for the cluster. The file is rotated daily to
+   <span class="literal"> /var/iic/cdr/user+&lt;timestamp&gt;.log</span>. You may want to place
+   <span class="literal"> /var/iic/cdr </span>on a network file system to facilitate the fetching of user records. Otherwise, you can fetch the call data records using tools such as
+   <span class="literal"> ssh/scp</span>.
+  </p>
+<p class="para">Importing user record data is handled using the
+   <span class="literal"> addressbk.update_contact </span>API call, which is described in the External API document. The database service outputs the following when users are added, updated, or deleted. The following table describes each of the records, their type, and the maximum length allowed:
+  </p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9ufrq0"></a>
+<p class="para">Record</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Type</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Maximum Length</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ufrq1"></a>
+<p class="para">Record ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String: &lt;hostname&gt;-&lt;10-digit sequence number&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">11 + &lt;max host name length&gt;</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1d"></a>
+<p class="para">Community ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">4-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">10</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1e"></a>
+<p class="para">User ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">4-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">10</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1f"></a>
+<p class="para">Event</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Integer:</p>
+<p class="para">1 = Added</p>
+<p class="para">2 = Updated</p>
+<p class="para">3 = Deleted</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">1</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1g"></a>
+<p class="para">Title</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">32</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1h"></a>
+<p class="para">First Name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1i"></a>
+<p class="para">Middle Name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1j"></a>
+<p class="para">Last Name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1k"></a>
+<p class="para">Suffix</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">32</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1l"></a>
+<p class="para">Company</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1m"></a>
+<p class="para">Job Title</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1n"></a>
+<p class="para">Address 1</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1o"></a>
+<p class="para">Address 2</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1p"></a>
+<p class="para">State</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1q"></a>
+<p class="para">Country</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1r"></a>
+<p class="para">Postal Code</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">32</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1s"></a>
+<p class="para">IIC Screen Name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1t"></a>
+<p class="para">Email 1</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1u"></a>
+<p class="para">Email 2</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1v"></a>
+<p class="para">Email 3</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">256</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1w"></a>
+<p class="para">Business Phone</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">32</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1x"></a>
+<p class="para">Home Phone</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">32</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1y"></a>
+<p class="para">Mobile Phone</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">32</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft1z"></a>
+<p class="para">Other Phone</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">32</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft20"></a>
+<p class="para">Extension</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">32</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9uft21"></a>
+<p class="para">AIM Screen Name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">128</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ad"></a>
+<p class="para">Yahoo Screen Name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">128</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ae"></a>
+<p class="para">MSN Screen Name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">128</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9af"></a>
+<p class="para">User 1</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">128</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ag"></a>
+<p class="para">User 2</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">128</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ah"></a>
+<p class="para">Default Phone</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Integer:</p>
+<p class="para">0 - None</p>
+<p class="para">1 - Business</p>
+<p class="para">2 - Home</p>
+<p class="para">3 - Mobile</p>
+<p class="para">4 - Other</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">1</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ai"></a>
+<p class="para">Default Email</p>
+<p class="para"></p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Integer:</p>
+<p class="para">0 - None</p>
+<p class="para">1 - Email 1</p>
+<p class="para">2 - Email 2</p>
+<p class="para">3 - Email 3</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">1</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9aj"></a>
+<p class="para">Type</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Integer:</p>
+<p class="para">0 - Registered User</p>
+<p class="para">1 - Admin</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">1</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ak"></a>
+<p class="para">Modified Time</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String: &lt;YYYY&gt;-&lt;MM&gt;-&lt;DD&gt;-&lt;HH&gt;-&lt;mm&gt;-&lt;SS&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">19</p></td>
+</tr></table>
+</div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Updated user records have zeros for Default Phone and Default Email fields. Deleted records have only the following content fields: 
+    <span class="guimenu">Record ID</span>, 
+    <span class="guimenu">User ID</span>, 
+    <span class="guimenu">Event</span> and 
+    <span class="guimenu">Modified Time</span> (i.e. 
+    <span class="guimenu">Deleted Time</span>).
+   </p></div>
+
+<p class="para"></p>
+</div>
+
+<div class="sect1 singlefile"  id="b9ufomq">
+
+<h2 class="title"><span class="number">6.3</span> Call Data Records</h2>
+
+<p class="para">Call data record files are created and stored by ICEcore Conference and allow you to track information about each event. The comma-delimited text file records each event, including meeting times and duration, call connection times, and which clients joined the meetings. This information is useful when determining billing.</p>
+<p class="para">The call data records are stored in
+   <span class="literal"> /var/iic/cdr/calls.elg </span>on the host specified in 
+   <span class="literal">controller_host </span>in the
+   <span class="literal"> global-config </span>file for the cluster. The file is rotated daily to
+   <span class="literal"> /var/iic/cdr/calls+&lt;timestamp&gt;.log</span>. Once the call data record of one of the rotated files is exported, you may delete it. You may want to place
+   <span class="literal"> /var/iic/cdr </span>on a network file system to ease exporting call data records. Otherwise, you can fetch the call data records using tools such as 
+   <span class="literal">ssh/scp</span>.
+  </p>
+<p class="para">The database service outputs the following information:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9ug9al"></a>
+<p class="para">Record</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Type</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Maximum Length</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug1te"></a>
+<p class="para">Record ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String: &lt;hostname&gt;-&lt;10-digit sequence number&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">11 + &lt;max host name length&gt;</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9am"></a>
+<p class="para">Time</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String: &lt;YYYY&gt;-&lt;MM&gt;-&lt;DD&gt;-&lt;HH&gt;-&lt;mm&gt;-&lt;SS&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">19</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9an"></a>
+<p class="para">Duration</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">10</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ao"></a>
+<p class="para">Event</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Integer</p>
+<p class="para">1 = meeting started</p>
+<p class="para">2 = meeting ended</p>
+<p class="para">3 = inbound call started</p>
+<p class="para">4 = outbound call started</p>
+<p class="para">5 = call connected</p>
+<p class="para">6 = call ended</p>
+<p class="para">7 = IIC client joined meeting</p>
+<p class="para">8 = IIC client left meeting</p>
+<p class="para">9 = App share started</p>
+<p class="para">10 = App share ended</p>
+<p class="para">11 = App share viewer connected</p>
+<p class="para">12 = App share viewer disconnected</p>
+<p class="para">13 = Meeting recording started</p>
+<p class="para">14 = Meeting recording stopped</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">2</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ap"></a>
+<p class="para">Event Info</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String:</p>
+<p class="para">DNIS (inbound call)Dialed number (outbound call)</p>
+<p class="para">User name (IIC client)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">297 + &lt;max host name length&gt;</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9aq"></a>
+<p class="para">Community ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">4-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">10</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ar"></a>
+<p class="para">Meeting ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">8-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">19</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9as"></a>
+<p class="para">Meeting Start (in seconds)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">4-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">10</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9at"></a>
+<p class="para">Host ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">4-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">10</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9au"></a>
+<p class="para">Participant ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">8-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">19</p></td>
+</tr></table>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9ufomr">
+
+<h2 class="title"><span class="number">6.4</span> Reservation Data Records </h2>
+
+<p class="para">Reservation Data Records (RDR) are data records that are formatted as lines of quoted comma-separated values. The values are as follows:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9ug9av"></a>
+<p class="para">Record</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Type</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Maximum Length</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug4rd"></a>
+<p class="para">Record ID (Assigned in ascending order)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String: &lt;hostname&gt;-&lt;10-digit sequence number&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">11 + &lt;max host name length&gt;</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9aw"></a>
+<p class="para">Meeting ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">8-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">19</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ax"></a>
+<p class="para">Meeting Start (in seconds)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">4-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">10</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9ay"></a>
+<p class="para">Meeting End (in seconds)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">4-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">10</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9az"></a>
+<p class="para">Community ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">4-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">10</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9b0"></a>
+<p class="para">Host ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">4-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">10</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="3" rowspan="1"><a name="b9ug9b1"></a>
+<div class="formalpara" id="b9ug8q8">
+                  <p class="title"><em class="title">Meeting Options</em>
+                  </p>
+                </div>
+</td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9b2"></a>
+<p class="para">Participant ID</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">8-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">19</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9b3"></a>
+<p class="para">Participant PIN</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">8-byte non-negative integer</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">19</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9b4"></a>
+<p class="para">Operation</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Integer</p>
+<p class="para">1 = Add Meeting Reservation
+        <sup class="superscript">1</sup>
+       </p>
+<p class="para">2 = Update Meeting Reservation1</p>
+<p class="para">3 = Remove Meeting Reservation1</p>
+<p class="para">4 = Add Participant2</p>
+<p class="para">5 = Remove Participant2</p>
+<p class="para">6 = Remove All Participants3</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">2</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ug9b5"></a>
+<p class="para">Event Info</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String:</p>
+<p class="para">DNIS (inbound call)</p>
+<p class="para">Dialed number (outbound call)</p>
+<p class="para">User name (IIC client)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">297 + &lt;max host name length&gt;</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="3" rowspan="1"><a name="b9ug9b6"></a>
+<div class="orderedlist">
+<ol class="orderedlist">
+                  
+<li class="listitem">
+<p class="listitem">When this Operation value is selected, the Participant ID and Participant PIN fields display no data.</p></li>
+                  
+<li class="listitem">
+<p class="listitem">When this Operation value is selected, the Community ID, Host ID, Meeting Start, Meeting End and Meeting Options fields display no data.</p></li>
+                  
+<li class="listitem">
+<p class="listitem">When this Operation value is selected, only the Record ID and Meeting ID fields display data.</p></li>
+                </ol></div>
+</td>
+</tr></table>
+</div>
+
+<div class="sect2 singlefile"  id="b9ugc5o">
+
+<h3 class="title"><span class="number">6.4.1</span> Reservation Data Record (RDR) Interface</h3>
+
+<p class="para">The Reservation Data Records are available to any consumers connected via TCP to an RDR port. RDRs are also written to files so that consumers can initialize and not lose billing data.</p>
+<p class="para">For RDRs written to a file, after a configurable interval of time, the file is closed and renamed to include a timestamp (e.g. 
+    <span class="literal">/var/iic/cdr/rsrv-2005-01-28-08-27.log</span>). Then a new RDR file is then created.
+   </p>
+<p class="para">When a real-time RDR consumer connects to the RDR port, all current RDR records are sent to the RDR consumer. Current RDR records are stored in
+    <span class="literal"> /var/iic/cdr/rsrv.elg </span>file until the log rotation time. A real-time RDR consumer can get the current information by fetching all of the available rotated RDR files in the
+    <span class="literal"> /var/iic/cdr </span>directory.
+   </p>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9ufoms">
+
+<h2 class="title"><span class="number">6.5</span> Chat Audit Log Configuration</h2>
+
+<p class="para">Chat audit logging can be configured at system installation or reconfiguration time using the
+   <span class="literal"> install.sh </span>script.
+  </p>
+<p class="para">The chat audit logs are placed in
+   <span class="literal"> /var/iic/chatlog </span>on the hosts assigned to run the XML router and meeting controller(s). ICEcore Conference IM and ICEcore Conference chat room messages are written to the file
+   <span class="literal"> /var/iic/chatlog/chat.log</span>. Meeting chat messages are written to
+   <span class="literal"> /var/iic/chatlog/mtgchat.log</span>.
+  </p>
+<p class="para">The chat messages contained in
+   <span class="literal"> chat.log </span>are XML stanzas:
+  </p><pre class="screen">
+&lt;message type='&lt;"chat"|"groupchat"&gt;' from='&lt;from_jid&gt;' to='&lt;to_jid&gt;' 
+</pre><pre class="screen">
+time='&lt;timestamp&gt;' &gt;
+</pre><pre class="screen">
+&lt;body&gt; ... &lt;/body&gt;&lt;x xmlns='jabber:x:event' /&gt;
+</pre><pre class="screen">
+&lt;/message&gt;
+</pre>
+<p class="para">The
+   <span class="literal"> from_jid </span>and
+   <span class="literal"> to_jid tags </span>have the forms:
+  </p><pre class="screen">
+&lt;screenname&gt;@&lt;xmlrouter_hostname&gt;/&lt;resource&gt;
+</pre>
+<p class="para">
+   <span class="literal">&lt;resource&gt; </span>is a session identifier in the case where the message type is “
+   <span class="literal">chat</span>” and it identifies the sender screen name in the case of “
+   <span class="literal">groupchat</span>” type messages.
+  </p>
+<p class="para">The timestamp has the form &lt;YYYY&gt;&lt;MM&gt;&lt;DD&gt;"T"&lt;hh&gt;&lt;mm&gt;&lt;ss&gt; and uses GMT time.</p>
+<p class="para">Each chat message is logged to a line in
+   <span class="literal"> mtgchat.log</span>. The each line contains comma-separated fields. Each field is quoted with double quotes at the beginning and end of the field (for example, “
+   <span class="literal">field value</span>”).
+  </p>
+<p class="para">The fields are as follows:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9ugf40"></a>
+<p class="para">Record</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Type</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ugdqe"></a>
+<p class="para">timestamp</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String (YYYMMDDTHH:MM:SS)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The time of the chat message in GMT. </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ugf41"></a>
+<p class="para">from_id</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The participant ID of the sender. The participant ID is assigned to each meeting participant and is sent in meeting invitations.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ugf42"></a>
+<p class="para">from_name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The displayed name of the meeting participant who sent the chat message.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ugf43"></a>
+<p class="para">delivery</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String (one of: ToAll, ToOne, ToHost, ToModerators, ToNonModerators)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This field shows to whom the message was delivered.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ugf44"></a>
+<p class="para">to_id</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This participant ID received the message. This is empty unless
+        <span class="literal"> delivery </span>is
+        <span class="literal"> ToOne</span>.
+       </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ugf45"></a>
+<p class="para">to_name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The display name of the meeting participant who received the chat message. This is empty unless
+        <span class="literal"> delivery </span>is
+        <span class="literal"> ToOne</span>.
+       </p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9ugf46"></a>
+<p class="para">message</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The contents of the chat message.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="b9urvau">
+
+<h1 class="title"><span class="number">7.0</span> ICEcore Conference Administration</h1>
+
+<p class="para">Use the following commands to administer ICEcore Conference. Run these commands on the ICEcore Conference servers using the Command Line interface (not the ICEcore Conference
+  <span class="guimenu">Administration Console</span>).
+ </p>
+<p class="para">This chapter includes the following sections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9urx1t">Section 7.1, Starting and Stopping ICEcore Conference Services</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9urxkc">Section 7.2, Backing Up the Database</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9urxkd">Section 7.3, Restoring the Database</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="b9urx1t">
+
+<h2 class="title"><span class="number">7.1</span> Starting and Stopping ICEcore Conference Services</h2>
+
+<p class="para">The following topics cover how you start and stop ICEcore Conference clusters and individual machines.</p>
+<div class="sect2 singlefile"  id="b9usk48">
+
+<h3 class="title"><span class="number">7.1.1</span> Starting and Stopping the Cluster</h3>
+
+<p class="para">ICEcore Conference services for the entire cluster may be started and stopped using the 
+    <span class="literal">control-cluster.sh</span> script described in the ICEcore Conference Installation Guide.
+   </p>
+<div class="sect3 singlefile"  id="b9ust9y">
+
+<h4 class="title"> To Stop ICEcore Conference Services:</h4>
+
+<p class="para">Type:</p><pre class="screen">
+./control-cluster.sh --cluster &lt;your-cluster&gt; [--single-host &lt;your-host&gt;] stop
+</pre>
+</div>
+
+<div class="sect3 singlefile"  id="b9ust9z">
+
+<h4 class="title"> To Start ICEcore Conference Services:</h4>
+
+<p class="para">Type: </p><pre class="screen">
+./control-cluster.sh --cluster &lt;your-cluster&gt; [--single-host &lt;your-host&gt;] start
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Use the 
+      <span class="filename">--single-host </span>argument if there is only one host in your cluster.
+     </p></div>
+
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9usta0">
+
+<h3 class="title"><span class="number">7.1.2</span> Starting and Stopping Individual Machines</h3>
+
+<p class="para">To start or stop services on only one of the machines on the cluster, use the script: </p><pre class="screen">
+/opt/iic/conf/control-services.sh.
+</pre>
+<div class="sect3 singlefile"  id="b9usta1">
+
+<h4 class="title"> To Stop ICEcore Conference Services with control-services.sh:</h4>
+
+<p class="para">Type: </p><pre class="screen">
+/opt/iic/conf/control-services.sh stop
+</pre>
+</div>
+
+<div class="sect3 singlefile"  id="b9usta2">
+
+<h4 class="title"> To Start ICEcore Conference Services with control-services.sh:</h4>
+
+<p class="para">Type: </p><pre class="screen">
+/opt/iic/conf/control-services.sh start
+</pre>
+</div>
+
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9urxkc">
+
+<h2 class="title"><span class="number">7.2</span> Backing Up the Database</h2>
+
+<p class="para">The system automatically backs up the database on a daily basis. The backups are in
+   <span class="filename"> /var/iic/db-backups </span>on the db-host (as defined in
+   <span class="filename"> /opt/iic/conf/global-config</span>). Each backup is a tar(1) archive compressed using the bzip21) utility. The current daily backup is called
+   <span class="filename"> db.tar.bz2</span>.
+  </p>
+<p class="para">You can also back up the database at any arbitrary time using the 
+   <span class="literal">pg_dump(1)</span> utility. The state of the database in the backup reflects all committed transactions at the time 
+   <span class="literal">pg_dump(1)</span> is run. Any updates done after the backup is started are ignored.
+  </p>
+<p class="para">The following command line shows how to dump the contents of the database to a tar(1) archive named
+   <span class="filename"> db.tar</span>:
+  </p><pre class="screen">
+pg_dump -b -F t -f db.tar &lt;db_name&gt;
+</pre><pre class="screen">
+bzip2 db.tar
+</pre>
+<p class="para">You can execute
+   <span class="filename"> pg_dump </span>on the
+   <span class="filename"> db_host </span>machine or set up the PostgreSQL environment variables according to the database configuration in
+   <span class="filename"> /opt/iic/conf/global-config</span>.
+  </p>
+</div>
+
+<div class="sect1 singlefile"  id="b9urxkd">
+
+<h2 class="title"><span class="number">7.3</span> Restoring the Database</h2>
+
+<p class="para">Restoring an archived database is done using the
+   <span class="filename"> pg_restore </span>command. To restore a backup from a
+   <span class="filename"> bzip2 </span>compressed tar file, use the following command:
+  </p><pre class="screen">
+bunzip2 db.tar.bz2
+</pre><pre class="screen">
+pg_restore -d &lt;db_name&gt; db.tar
+</pre>
+<p class="para">You can execute
+   <span class="filename"> pg_restore(1) </span>on the
+   <span class="filename"> db_host </span>machine or set up the PostgreSQL environment variables according to the database configuration in
+   <span class="filename"> /opt/iic/conf/global-config</span>.
+  </p>
+</div>
+
+</div>
+
+<div class="appendix singlefile"  id="b9varpy">
+
+<h1 class="title"><span class="number">A.0</span> LDAP User Authentication</h1>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The password for
+   <span class="literal"> admin </span>always comes from the ICEcore Conference internal database so that an administrator is able to log on even if directory servers are not available. Because the password must be passed over the network in plain text, we recommend deployment using SSL.
+  </p></div>
+
+<h4 class="bridgehead" id="bcbugrb"> LDAP User Authentication Input File</h4>
+
+<p class="para">You can modify the
+  <span class="literal"> sitescape-conferencing/cluster-prototype/ldap.xml.in </span>input file to use ActiveDirectory synchronization instead of eDirectory synchronization and to map additional LDAP attributes to ICEcore Conference contact fields.
+ </p>
+<p class="para">To use ActiveDirectory synchronization, you need to comment out the eDirectory section in the file and uncomment out the Active Directory section, see examples below:</p>
+<p class="para">eDirectory Section:</p><pre class="screen">
+ 	&lt;!-- configuration for eDirectory and generic LDAP server --&gt;
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre>
+<p class="para">Move the closing XML comment tag (
+  <span class="literal">--&gt;</span>) after the
+  <span class="literal"> ...generic LDAP server </span>comment so that it follows the
+  <span class="literal">&lt;/attributes&gt; </span>tag under the eDirectory section:
+ </p><pre class="screen">
+ 	&lt;!-- configuration for eDirectory and generic LDAP server  
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre><pre class="screen">
+      --&gt;
+</pre>
+<p class="para">ActiveDirectory Section:</p><pre class="screen">
+	&lt;!-- configuration for ActiveDirectory
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre><pre class="screen">
+	--&gt;
+</pre>
+<p class="para">Move the closing XML comment tag (
+  <span class="literal">--&gt;</span>) after the 
+  <span class="literal">&lt;/attributes&gt; </span>tag so that it follows the 
+  <span class="literal">configuration for ActiveDirectory </span>comment:
+ </p><pre class="screen">
+	&lt;!-- configuration for ActiveDirectory --&gt;
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre>
+<h4 class="bridgehead" id="bbkky1t"> ICEcore Conference Field Names</h4>
+
+<p class="para">Use these names to configure the mapping of LDAP attributes to ICEcore Conference contact fields:</p>
+<p class="para">“screenname” - “title” - “firstname” - “middlename” - “lastname” - “suffix” - “company” - “jobtitle” - “address1” - “address2” - “state” - “country” - “postalcode” - “aimname” - “email” - “email2” - “email3” - “busphone” - “homephone” - “mobilephone” - “otherphone” - “extension” - “msnscreen” - “yahooscreen” - “aimscreen” - “user1” - “user2” - “defphone”</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>For eDirectory, the
+   <span class="literal"> uid </span>attribute is mapped to the ICEcore Conference
+   <span class="literal"> screenname </span>by default. If you want to use the
+   <span class="literal"> cn </span>LDAP attribute instead of the
+   <span class="literal"> uid </span>attribute, you can change this mapping to map the
+   <span class="literal"> cn </span>attribute to the ICEcore Conference
+   <span class="literal"> screenname</span>.
+  </p></div>
+
+<h4 class="bridgehead" id="bbkkx32"> Address Book Configuration (Synchronization)</h4>
+
+<p class="para">Execute
+  <span class="literal"> /opt/iic/bin/ldap-sync.sh &lt;portal-server-hname&gt; </span>to perform the initial synchronization. 
+ </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>After starting the server, wait 20 seconds or so before executing this command; if you do not get an XML message back, you probably did not wait long enough.</p></div>
+
+<p class="para">This script displays an XML message if it fails (the fault message is clearly visible); if it succeeds, the XML data contains a single number that is the number of users actually synchronized. You can run this script manually as needed, or configured to run periodically using
+  <span class="literal"> cron</span> (the default setting is for it to run daily).
+ </p>
+</div>
+
+<div class="appendix singlefile"  id="bbj1ywi">
+
+<h1 class="title"><span class="number">B.0</span> Troubleshooting Strategies</h1>
+
+<p class="para">This chapter presents several troubleshooting strategies in the following sections:</p>
+<div class="sect1 singlefile"  id="bbkm64d">
+
+<h2 class="title"><span class="number">B.1</span> Verify That Everything is Running</h2>
+
+<p class="para">Run the following command and verify that all services say 
+   <span class="literal">running</span>:
+  </p><pre class="screen">
+/opt/iic/conf/control-services.sh status
+</pre>
+<p class="para">Run the following command and verify that two
+   <span class="literal"> jabberd </span>services are running:
+  </p><pre class="screen">
+ps -fA | grep jabberd
+</pre>
+<p class="para">There should be processes listening on the following ports:</p><pre class="screen">
+netstat -nl | grep 5222
+</pre><pre class="screen">
+netstat -nl | grep 2182
+</pre>
+<p class="para">There should be processes listening on the following port on each IP:</p><pre class="screen">
+netstat -l | grep http
+</pre>
+</div>
+
+<div class="sect1 singlefile"  id="bbkm64g">
+
+<h2 class="title"><span class="number">B.2</span> Enable Debug Logging</h2>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">For most services:</p>
+<p class="listitem">Edit
+     <span class="literal"> /opt/iic/conf/config.xml </span>and change
+     <span class="literal"> debug level </span>from
+     <span class="literal"> error </span>to
+     <span class="literal"> debug</span>.
+    </p></li>
+<li class="listitem">
+<p class="listitem">For jabberd:</p>
+<p class="listitem">Edit
+     <span class="literal"> /opt/iic/jabberd/jabber.xml </span>and search for
+     <span class="literal"> elogger</span>. Under this element, find the
+     <span class="literal"> debug </span>attribute and set to
+     <span class="literal"> 1</span>.
+    </p></li>
+<li class="listitem">
+<p class="listitem">Restart services using
+     <span class="literal"> /opt/iic/conf/control-services.sh stop</span> and
+     <span class="literal"> /opt/iic/conf/control-services.sh start</span>.
+    </p></li>
+<li class="listitem">
+<p class="listitem">Logs are in
+     <span class="literal"> /var/log/iic</span>, except for the client connector (
+     <span class="literal">jadc2s</span>) which uses
+     <span class="literal"> syslog</span>.
+    </p></li>
+<li class="listitem">
+<p class="listitem">you can also enable logging from the console, but that setting only lasts until the server is restarted and must be enabled service-by-service.</p></li>
+<li class="listitem">
+<p class="listitem">Note that logs are rotated according to the size and number specified in
+     <span class="literal"> config.xml</span>, so in some cases these numbers must be made larger to capture enough tracing.
+    </p></li>
+<li class="listitem">
+<p class="listitem">Apache logs are in
+     <span class="literal"> /usr/local/apache2/logs</span>.
+    </p></li></ul></div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bbkm64h">
+
+<h2 class="title"><span class="number">B.3</span> Service watchdog</h2>
+
+<p class="para">Most system services are run by
+   <span class="literal"> nanny</span>, which monitors the service process and restarts it automatically if it fails for any reason.
+  </p>
+<p class="para">If an administrator e-mail is configured when the system is installed, e-mails are sent when any ICEcore Conference services fail and need to be restarted. 
+   <span class="literal">Nanny </span>also outputs to
+   <span class="literal"> syslog</span> (i.e.
+   <span class="literal"> /var/log/messages</span>) when a service status changes.
+  </p>
+</div>
+
+<div class="sect1 singlefile"  id="bbkm64i">
+
+<h2 class="title"><span class="number">B.4</span> Error codes</h2>
+
+<p class="para">May turn up in server or client logs:</p><pre class="screen">
+
+</pre><pre class="screen">
+    // Common error codes
+</pre><pre class="screen">
+    Failed                = -1000,
+</pre><pre class="screen">
+    InvalidPIN            = -1001,
+</pre><pre class="screen">
+    InvalidSessionID      = -1002,
+</pre><pre class="screen">
+    InvalidMeetingID      = -1003,
+</pre><pre class="screen">
+    InvalidSubmeetingID   = -1004,
+</pre><pre class="screen">
+    InvalidUserID         = -1005,
+</pre><pre class="screen">
+    InvalidParticipantID  = -1006,
+</pre><pre class="screen">
+    InvalidServiceID      = -1007,
+</pre><pre class="screen">
+    DuplicateID           = -1008,
+</pre><pre class="screen">
+    InvalidParameter      = -1009,
+</pre><pre class="screen">
+    ParameterParseError   = -1010,
+</pre><pre class="screen">
+    DuplicateUserName     = -1011,
+</pre><pre class="screen">
+    PINAllocationError    = -1012,
+</pre><pre class="screen">
+    NoClientConnection    = -1013,
+</pre><pre class="screen">
+    PINExpired            = -1014,
+</pre><pre class="screen">
+    PINNotValidYet        = -1015,
+</pre><pre class="screen">
+
+</pre><pre class="screen">
+    // Error codes from controller
+</pre><pre class="screen">
+    InvalidAddress        = -2000,
+</pre><pre class="screen">
+    NotAuthorized         = -2001,
+</pre><pre class="screen">
+    NotMember             = -2002,
+</pre><pre class="screen">
+    InsufficientResources = -2003,
+</pre><pre class="screen">
+    NotLoaded             = -2004,
+</pre><pre class="screen">
+    AlreadyConnected      = -2005,
+</pre><pre class="screen">
+    NotConnected          = -2006,
+</pre><pre class="screen">
+    NotActive             = -2007,
+</pre><pre class="screen">
+    NoPhoneNumber         = -2008,
+</pre><pre class="screen">
+    InAnotherMeeting      = -2009,
+</pre><pre class="screen">
+    MeetingExists         = -2010,
+</pre><pre class="screen">
+    InvalidPassword       = -2011,
+</pre><pre class="screen">
+    Disconnected          = -2012,
+</pre><pre class="screen">
+    NotWhileLecture       = -2013,
+</pre><pre class="screen">
+    MeetingLocked         = -2014,
+</pre><pre class="screen">
+    PhoneNumberNotFound   = -2015,
+</pre><pre class="screen">
+    MeetingStartTimeout   = -2016,
+</pre><pre class="screen">
+    NoPort                = -2017,
+</pre><pre class="screen">
+    MtgArchiverTimeout    = -2018,
+</pre><pre class="screen">
+    MeetParamNotFound     = -2019,
+</pre><pre class="screen">
+
+</pre><pre class="screen">
+    // Error codes from voice service
+</pre><pre class="screen">
+    InvalidCallID              = -3000,
+</pre><pre class="screen">
+    NotConferenced             = -3001,
+</pre><pre class="screen">
+    MissingPIN                 = -3002,
+</pre><pre class="screen">
+    NoAvailResource            = -3003,
+</pre><pre class="screen">
+
+</pre><pre class="screen">
+    // Error codes from address book/schedule
+</pre><pre class="screen">
+    DBAccessError              = -4000,
+</pre><pre class="screen">
+    AddressBookError           = -4001,
+</pre><pre class="screen">
+    DuplicateContact           = -4002,
+</pre><pre class="screen">
+    ProfileSystemDeleteError   = -4003,
+</pre><pre class="screen">
+    ProfileInUseError          = -4004,
+</pre><pre class="screen">
+    UnknownGroup               = -4005,
+</pre><pre class="screen">
+    CommunitySystemDeleteError = -4006,
+</pre><pre class="screen">
+    CommunityNotFound          = -4007,
+</pre><pre class="screen">
+    CommunityStatusNotFound    = -4008,
+</pre><pre class="screen">
+    CommunityDisabled          = -4009,
+</pre><pre class="screen">
+    CommunityNameNotUnique     = -4010,
+</pre><pre class="screen">
+    DirectoryNotFound          = -4011,
+</pre><pre class="screen">
+    ProfileNotFound            = -4012,
+</pre><pre class="screen">
+    DuplicateUsername          = -4013,
+</pre><pre class="screen">
+    MaxMeetingsExceeded        = -4014,
+</pre><pre class="screen">
+    ProfileNameNotUnique       = -4015,
+</pre><pre class="screen">
+    InstantMeetingNotFound     = -4016,
+</pre><pre class="screen">
+    UserNotFound               = -4017,
+</pre><pre class="screen">
+    MaxPresenceExceeded        = -4018,
+</pre><pre class="screen">
+    InvalidScreenName          = -4019,
+</pre><pre class="screen">
+    InvalidScreenPassword      = -4020,
+</pre><pre class="screen">
+    CommunityOwnerDeleteError  = -4021,
+</pre><pre class="screen">
+
+</pre><pre class="screen">
+    // Error from app share
+</pre><pre class="screen">
+    NoShareSession             = -5000,
+</pre><pre class="screen">
+    ShareFailed                = -5001,
+</pre><pre class="screen">
+
+</pre>
+</div>
+
+<div class="sect1 singlefile"  id="bbkm64j">
+
+<h2 class="title"><span class="number">B.5</span> More advanced checks</h2>
+
+<p class="para">To reveal jabber start-up errors that happened before normal logging was enabled (usually only a database problem stops it at this point):</p><pre class="screen">
+/etc/rc.d/iicjabberd stop
+</pre><pre class="screen">
+cd /opt/iic/jabberd
+</pre><pre class="screen">
+jabberd/jabberd -H /opt/iic/jabberd -D
+</pre>
+</div>
+
+<div class="sect1 singlefile"  id="b9usz21">
+
+<h2 class="title"><span class="number">B.6</span> ICEcore Conference Client</h2>
+
+<p class="para">The following symptoms and possible causes are visible to the user of the ICEcore Conference client.</p>
+<div class="formalpara" id="b9ut1h5">
+        <p class="title"><em class="title">Symptom:</em>
+        The client displays the error “
+    <span class="guimenu">Unable to connect to server.</span>”
+   </p>
+      </div>
+
+<div class="formalpara" id="b9utnfq">
+        <p class="title"><em class="title">Possible Causes:</em>
+        </p>
+      </div>
+
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Hostname of the XML Router does not resolve properly on the client machine.</p>
+<p class="listitem">Check
+     <span class="literal"> \Documents and Settings\&lt;user-name&gt;\Application Data\meeting\zon.log </span>(Win32) or
+     <span class="literal"> ~/.meeting/zon.log </span>(Linux) in the system drive of the client machine for lines containing the text
+     <span class="literal"> Unable to resolve hostname</span>.
+    </p></li>
+        
+<li class="listitem">
+<p class="listitem">The client concentrator, jadc2s, is not running.</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+            
+<li class="listitem">
+<p class="listitem">Verify that the jadc2s process is running on all XML Router hosts.</p></li>
+            
+<li class="listitem">
+<p class="listitem">Verify that port 5222 is in LISTEN state.</p></li>
+            
+<li class="listitem">
+<p class="listitem">Look in 
+       <span class="literal">/var/log/iic/jadc2s.log </span>for more information.
+      </p></li>
+          </ol></div>
+</li>
+        
+<li class="listitem">
+<p class="listitem">The XML Router, jabberd, is not running.</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+            
+<li class="listitem">
+<p class="listitem">Verify that the jabberd processes are running on all XML Router hosts.</p></li>
+            
+<li class="listitem">
+<p class="listitem">Verify that a system component port is in LISTEN state.</p></li>
+            
+<li class="listitem">
+<p class="listitem">Look in
+       <span class="literal"> /var/log/iic/xmlrouter_error.log </span>for more information.
+      </p></li>
+          </ol></div>
+</li>
+        
+<li class="listitem">
+<p class="listitem">The meeting controller is not running or not connected</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+            
+<li class="listitem">
+<p class="listitem">Check
+       <span class="literal"> \Documents and Settings\&lt;user-name&gt;\Application Data\meeting\zon.log (Win32) or ~/.meeting/zon.log (Linux) </span>in the system drive of the client machine for lines containing the text “err=-995, msg=Internal Timeout, code=-1000, id=rpc_controllerauth”.
+      </p></li>
+            
+<li class="listitem">
+<p class="listitem">If Step A is true, check the meeting controller log files for more information and check the network connectivity between the meeting controller host and the XML Router host.</p></li>
+          </ol></div>
+</li>
+        
+<li class="listitem">
+<p class="listitem">The address book is not running or not connected</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+            
+<li class="listitem">
+<p class="listitem">Check
+       <span class="literal"> \Documents and Settings\&lt;user-name&gt;\Application Data\meeting\zon.log </span>(Win32) or
+       <span class="literal"> ~/.meeting/zon.log </span>(Linux) in the system drive of the client machine for lines containing the text “err=-995, msg=Internal Timeout, code=-1000, id=rpc_versionck”.
+      </p></li>
+            
+<li class="listitem">
+<p class="listitem">If Step A is true, check that the address book daemon is running. If it is, check the address book log files in
+       <span class="literal"> /var/log/iic </span>for more information and check the network connectivity between the address book host and the XML Router host.
+      </p></li>
+          </ol></div>
+</li>
+      </ol></div>
+
+<div class="formalpara" id="b9utvts">
+        <p class="title"><em class="title">Symptom:</em>
+        The client displays “Contact data fetch failed” in the 
+    <span class="guimenu">Edit User</span> dialog box status line.
+   </p>
+      </div>
+
+<div class="formalpara" id="b9utvtt">
+        <p class="title"><em class="title">Possible Causes:</em>
+        </p>
+      </div>
+
+<p class="para">The address book is not running or is not connected: </p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Check
+     <span class="literal"> \Documents and Settings\&lt;user-name&gt;\Application Data\meeting\zon.log </span>(Win32) or
+     <span class="literal"> ~/.meeting/zon.log </span>(Linux) in the system drive of the client machine for lines containing the text “err=-995, msg=Internal Timeout, code=-1000, id=rpc_getdata23”.
+    </p></li>
+        
+<li class="listitem">
+<p class="listitem">If you find this text, check that the address book daemon is running. If it is, check the address book log files for more information and check the network connectivity between the address book host and the XML Router host.</p></li>
+      </ol></div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uszuu">
+
+<h2 class="title"><span class="number">B.7</span> Voice Bridge</h2>
+
+<div class="formalpara" id="b9varla">
+        <p class="title"><em class="title">Symptom:</em>
+        Voice bridge prompts “
+    <span class="guimenu">Unable to join the meeting</span>” even though the meeting is available and both the password and the PIN are correct.
+   </p>
+      </div>
+
+<div class="formalpara" id="b9varlb">
+        <p class="title"><em class="title">Possible Causes:</em>
+        </p>
+      </div>
+
+<p class="para">The meeting controller is not responding to requests from the voice bridge. </p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem"> Check the network connectivity between the voice bridge and the XML Router for excessive packet loss.</p></li>
+        
+<li class="listitem">
+<p class="listitem">If there is no excessive packet loss, check the meeting controller log.</p></li>
+      </ol></div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uszuv">
+
+<h2 class="title"><span class="number">B.8</span> Meeting Archiver</h2>
+
+<div class="formalpara" id="b9varlc">
+        <p class="title"><em class="title">Symptom:</em>
+        If meeting archiver fails to process the meeting, the system administer receives e-mail notification.</p>
+      </div>
+
+<div class="formalpara" id="b9varld">
+        <p class="title"><em class="title">Possible Causes:</em>
+        </p>
+      </div>
+
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem"> The archiver may be out of disk space. Free up disk space by removing old files.</p></li>
+        
+<li class="listitem">
+<p class="listitem">The archiver failed to fetch raw recording data.</p></li>
+      </ol></div>
+
+<div class="formalpara" id="b9varle">
+        <p class="title"><em class="title">Solution:</em>
+        </p>
+      </div>
+
+<p class="para">Run the following command to restart the meeting archiver:</p><pre class="screen">
+/etc/init.d/iicmtgarchiver stop
+</pre><pre class="screen">
+/etc/init.d/iicmtgarchiver start
+</pre>
+<p class="para">The meeting archiver processes the failed meeting recordings.</p>
+<div class="formalpara" id="b9varlf">
+        <p class="title"><em class="title">Symptom:</em>
+        The meeting flash movie does not contain all of the necessary components, for example, there is no voice recording with the movie. </p>
+      </div>
+
+<div class="formalpara" id="b9varlg">
+        <p class="title"><em class="title">Possible Causes:</em>
+        </p>
+      </div>
+
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem"> The raw data for each meeting is stored for seven days after the end of the meeting before it is deleted. If you move the meeting instance from
+     <span class="literal"> /var/mtgspool/done </span>to
+     <span class="literal"> var/mtgspool/active</span> within the seven day window, the meeting instance is formatted with a meeting ID followed by the meeting start time. For example, 555555-2007-02-22-12-16-16.
+    </p></li>
+        
+<li class="listitem">
+<p class="listitem">Once the file for the meeting instance has been renamed, restart the meeting archiver, as documented above.</p></li>
+      </ol></div>
+
+</div>
+
+</div>
+
+<div class="appendix singlefile"  id="legal">
+
+<h1 class="title"><span class="number">C.0</span> Legal Notices</h1>
+<div class="legalnotice" id="legalnotices">
+      
+      
+<p class="para">SiteScape, Inc., makes no representations or warranties with respect to the contents or use of this documentation, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, SiteScape, Inc., reserves the right to revise this publication and to make changes to its content, at any time, without obligation to notify any person or entity of such revisions or changes.</p>
+      
+<p class="para">Further, SiteScape, Inc., makes no representations or warranties with respect to any software, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, SiteScape, Inc., reserves the right to make changes to any and all parts of SiteScape software, at any time, without any obligation to notify any person or entity of such changes.</p>
+      
+<p class="para">Any products or technical information provided under this Agreement may be subject to U.S. export controls and the trade laws of other countries. You agree to comply with all export control regulations and to obtain any required licenses or classification to export, re-export or import deliverables. You agree not to export or re-export to entities on the current U.S. export exclusion lists or to any embargoed or terrorist countries as specified in the U.S. export laws. You agree to not use deliverables for prohibited nuclear, missile, or chemical biological weaponry end uses.</p>
+      
+<p class="para">SiteScape, Inc., has intellectual property rights relating to technology embodied in the product that is described in this document.</p>
+      <ul class="simplelist">
+        <li class="member">SiteScape, Inc.</li>
+        <li class="member">12 Clock Tower Place, Suite 210</li>
+        <li class="member">Maynard, MA 021754</li>
+        <li class="member">U.S.A.</li>
+        <li class="member">www.SiteScape.com</li>
+        <li class="member"></li>
+      </ul>
+    </div><div class="legalnotice" id="thirdparty">
+      
+<h1 class="title"> Third-Party Materials</h1>
+
+      <ul class="simplelist">
+        <li class="member">All third-party trademarks are the property of their respective owners.</li>
+      </ul>
+    </div>
+</div>
+
+</div>
+
+</body>
+</html>

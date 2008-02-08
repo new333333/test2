@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_user" caption="__definition_default_user" type="7" nextId="33" definitionType="7" databaseId="402883b90cc53079010cc539bf260007" internalId="402883b90cc53079010cc539bf260007">
+  <item name="profileEntryForm" caption="__profile_entry_form_definition" type="form" id="1">
+    <properties/>
+    <item name="profileEntryFormForm" caption="__form" id="2">
+      <item name="profileName" caption="__profile_name" type="data" id="3">
+        <properties>
+          <property name="name" value="name"/>
+          <property name="caption" value="__profile_name"/>
+          <property name="width" value=""/>
+        </properties>
+      </item>
+      <item name="table3" caption="__three_column_table" id="19">
+        <properties>
+          <property name="name" value="table1"/>
+          <property name="caption" value=""/>
+          <property name="required" caption="__required" type="boolean" default="false" value="false">
+            <help>ihelp.designers.required</help>
+          </property>
+        </properties>
+        <item name="profileFirstName" caption="__firstName" type="data" id="5" category="profileEntryData">
+          <properties>
+            <property name="name" value="firstName"/>
+            <property name="caption" value="__firstName"/>
+            <property name="width" value=""/>
+            <property name="required" caption="__required" type="boolean" default="false" value="false">
+              <help>ihelp.designers.required</help>
+            </property>
+          </properties>
+        </item>
+        <item name="profileMiddleName" caption="__middleName" type="data" id="6">
+          <properties>
+            <property name="name" value="middleName"/>
+            <property name="caption" value="__middleName"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileLastName" caption="__lastName" type="data" id="7">
+          <properties>
+            <property name="name" value="lastName"/>
+            <property name="caption" value="__lastName"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileEmailAddress" caption="__emailAddress" type="data" id="8">
+          <properties>
+            <property name="name" value="emailAddress"/>
+            <property name="caption" value="__emailAddress"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profileMobileEmailAddress" caption="__mobileEmailAddress" type="data" category="profileEntryData" id="29">
+          <properties>
+            <property name="caption" value="__mobileEmailAddress"/>
+            <property name="name" value="mobileEmailAddress"/>
+            <property name="width" value=""/>
+            <property name="required" value="false"/>
+          </properties>
+        </item>
+        <item name="profileTxtEmailAddress" caption="__txtEmailAddress" type="data" category="profileEntryData" id="30">
+          <properties>
+            <property name="caption" value="__txtEmailAddress"/>
+            <property name="name" value="txtEmailAddress"/>
+            <property name="width" value=""/>
+            <property name="required" value="false"/>
+          </properties>
+        </item>
+        <item name="profileZonName" caption="__zonName" type="data" id="9">
+          <properties>
+            <property name="name" value="zonName"/>
+            <property name="caption" value="__zonName"/>
+            <property name="width" value=""/>
+            <property name="required" value=""/>
+          </properties>
+        </item>
+        <item name="profilePhone" caption="__phone" type="data" category="profileEntryData" id="23">
+          <properties>
+            <property name="name" value="phone"/>
+            <property name="caption" value="__phone"/>
+            <property name="width" value=""/>
+            <property name="required" caption="__required" type="boolean" default="false" value="false">
+              <help>ihelp.designers.required</help>
+            </property>
+          </properties>
+        </item>
+      </item>
+      <item name="profileEntryPicture" caption="__profile_entry_picture" type="data" id="4">
+        <properties>
+          <property name="name" value="picture"/>
+          <property name="caption" value="__profile_entry_picture"/>
+          <property name="width" value=""/>
+          <property name="maxWidth" value=""/>
+          <property name="maxHeight" value=""/>
+          <property name="storage" value="simpleFileRepository"/>
+        </properties>
+      </item>
+      <item name="entryFormButtons" caption="__form_buttons" id="10">
+        <properties>
+          <property name="alignment" value=""/>
+        </properties>
+        <item name="okButton" caption="__ok_button" id="11">
+          <properties>
+            <property name="caption" value="__ok"/>
+            <property name="onClick" value=""/>
+          </properties>
+        </item>
+        <item name="cancelButton" caption="__cancel_button" id="12">
+          <properties>
+            <property name="caption" value="__cancel"/>
+            <property name="onClick" value=""/>
+          </properties>
+        </item>
+      </item>
+      <properties>
+        <property name="name" value="form1"/>
+        <property name="type" value="profile"/>
+      </properties>
+    </item>
+  </item>
+  <item name="profileEntryView" caption="__profile_entry_view_definition" id="13">
+    <properties/>
+    <item name="profileTitle" caption="__profile_title" id="14">
+      <properties>
+        <property name="caption" value="__profile_title"/>
+      </properties>
+    </item>
+    <item name="table3View" caption="__three_column_table" category="generalViewLayout" id="25">
+      <properties>
+        <property name="name" value=""/>
+        <property name="caption" value=""/>
+        <property name="required" caption="__required" type="boolean" default="false" value="false">
+          <help>ihelp.designers.required</help>
+        </property>
+      </properties>
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="27" formItem="profileEmailAddress">
+        <properties>
+          <property name="name" value="emailAddress"/>
+          <property name="caption" value="__emailAddress"/>
+        </properties>
+      </item>
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="31" formItem="profileMobileEmailAddress">
+        <properties>
+          <property name="caption" value="__mobileEmailAddress"/>
+          <property name="name" value="mobileEmailAddress"/>
+        </properties>
+      </item>
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="32" formItem="profileTxtEmailAddress">
+        <properties>
+          <property name="caption" value="__txtEmailAddress"/>
+          <property name="name" value="txtEmailAddress"/>
+        </properties>
+      </item>
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="28" formItem="profileZonName">
+        <properties>
+          <property name="name" value="zonName"/>
+          <property name="caption" value="__zonName"/>
+        </properties>
+      </item>
+      <item name="profileEntryDataItem" type="dataView" caption="__profile_entry_data_item" category="profileEntryViewData" id="26" formItem="profilePhone">
+        <properties>
+          <property name="name" value="phone"/>
+          <property name="caption" value="__phone"/>
+        </properties>
+      </item>
+    </item>
+    <item name="profileEntryDataItem" caption="__profile_entry_data_item" id="22" formItem="profileEntryPicture">
+      <properties>
+        <property name="name" value="picture"/>
+        <property name="caption" value="__profile_entry_picture"/>
+      </properties>
+    </item>
+  </item>
+  <item name="profileEntryBusinessCard" caption="__profile_entry_business_card_definition" id="15">
+    <properties/>
+    <item name="profileEntryBusinessCardElements" caption="__profile_entry_business_card_elements" id="16">
+      <properties>
+        <property name="_elements" value="name"/>
+        <property name="_elements" value="title"/>
+        <property name="_elements" value="phone"/>
+        <property name="_elements" value="emailAddress"/>
+        <property name="_elements" value="mobileEmailAddress"/>
+        <property name="_elements" value="txtEmailAddress"/>
+        <property name="_elements" value="zonName"/>
+        <property name="maxWidth" value=""/>
+        <property name="maxHeight" value=""/>
+      </properties>
+    </item>
+  </item>
+  <item name="profileEntryMiniBusinessCard" caption="__profile_entry_mini_business_card_definition" id="17">
+    <properties/>
+    <item name="profileEntryMiniBusinessCardElements" caption="__profile_entry_mini_business_card_elements" id="18">
+      <properties>
+        <property name="_elements" value="title"/>
+        <property name="_elements" value="phone"/>
+        <property name="_elements" value="emailAddress"/>
+        <property name="_elements" value="mobileEmailAddress"/>
+        <property name="_elements" value="txtEmailAddress"/>
+        <property name="_elements" value="zonName"/>
+      </properties>
+    </item>
+  </item>
+  <properties>
+    <property name="caption" value="__definition_default_user"/>
+    <property name="name" value="_user"/>
+  </properties>
+</definition>

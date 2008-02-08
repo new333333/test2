@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<template type="5" internalId="402883b90cc53079010cc539bf260009">
+  <attribute name="templateTitle" type="string"><![CDATA[__template_folder_task]]></attribute>
+  <attribute name="templateDescription" type="description"><![CDATA[__template_folder_task_description]]></attribute>
+  <attribute name="title" type="string"><![CDATA[__template_folder_task]]></attribute>
+  <attribute name="description" type="description"><![CDATA[]]></attribute>
+  <attribute name="iconName" type="string">/icons/folder_blue_calendar.gif</attribute>
+  <attribute name="name" type="string">_folder_task</attribute>
+  <property name="library">false</property>
+  <property name="uniqueTitle">false</property>
+  <property name="inheritFunctionMembership">true</property>
+  <property name="inheritDefinitions">false</property>
+  <property name="inheritTeamMembers">true</property>
+  <definition name="_taskFolder" databaseId="402883c1129b1f8101129b28bc620003"/>
+  <definition name="_taskEntry" databaseId="402883c1129b1f8101129b28bbe50002"/>
+</template>

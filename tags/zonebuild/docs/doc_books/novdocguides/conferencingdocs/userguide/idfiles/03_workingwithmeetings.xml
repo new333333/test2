@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9r6xe1" pid="b9r6xe1" name="Chapter" level="0" number="3"> <text>Working with Meetings</text> </target>
+
+ <target id="bawerq4" pid="bawerq4" name="Sect1" level="1" number="3.1"> <text>Running and Editing Your Instant Meeting</text> </target>
+
+ <target id="bawfe5l" pid="bawerq4" name="BridgeHead" level="2"> <text>To Start an Instant Meeting:</text> </target>
+
+ <target id="bawey0v" pid="bawerq4" name="Procedure" level="2" number="1"> <text>In the meeting list, select My Meeting under My Instant Meeting. </text> </target>
+
+ <target id="bawey0w" pid="bawerq4" name="Step" level="3" number="1"> <text>In the meeting list, select My Meeting under My Instant Meeting. </text> </target>
+
+ <target id="baweyiz" pid="bawerq4" name="Step" level="3" number="2"> <text>Click Start. </text> </target>
+
+ <target id="bawey3o" pid="bawerq4" name="Step" level="3" number="3"> <text>Add your contacts, see "Adding and Removing Meeting Invitees" on page 48.</text> </target>
+
+ <target id="bawey3q" pid="bawerq4" name="Step" level="3" number="4"> <text>Configure the meeting options, see "Editing the Meeting Options" on page 50.</text> </target>
+
+ <target id="bawey3s" pid="bawerq4" name="Step" level="3" number="5"> <text>Click Start Meeting.</text> </target>
+
+ <target id="bawey0x" pid="bawerq4" name="BridgeHead" level="2"> <text>To Edit Your Instant Meeting Settings:</text> </target>
+
+ <target id="bawey79" pid="bawerq4" name="Procedure" level="2" number="1"> <text>In the meeting list, select My Meeting under My Instant Meeting.</text> </target>
+
+ <target id="bawey7a" pid="bawerq4" name="Step" level="3" number="1"> <text>In the meeting list, select My Meeting under My Instant Meeting.</text> </target>
+
+ <target id="bawey7m" pid="bawerq4" name="Step" level="3" number="2"> <text>Click Edit.</text> </target>
+
+ <target id="bawey7p" pid="bawerq4" name="Step" level="3" number="3"> <text>Configure the meeting options, see "Editing the Meeting Options" on page 50.</text> </target>
+
+ <target id="bawey7s" pid="bawerq4" name="Step" level="3" number="4"> <text>Click Schedule Meeting.</text> </target>
+
+ <target id="bawezth" pid="bawerq4" name="Step" level="3" number="5"> <text>In the Meeting Confirmation dialog that appears, click OK.</text> </target>
+
+ <target id="bawerwm" pid="bawerwm" name="Sect1" level="1" number="3.2"> <text>Running and Editing a Scheduled Meeting</text> </target>
+
+ <target id="bawfe5m" pid="bawerwm" name="BridgeHead" level="2"> <text>To Create a New Scheduled Meeting:</text> </target>
+
+ <target id="bawf1yg" pid="bawerwm" name="Procedure" level="2" number="1"> <text>Click Schedule New.</text> </target>
+
+ <target id="bawf1yh" pid="bawerwm" name="Step" level="3" number="1"> <text>Click Schedule New.</text> </target>
+
+ <target id="bawf21h" pid="bawerwm" name="Step" level="3" number="2"> <text>Add your contacts, see "Adding and Removing Meeting Invitees" on page 48.</text> </target>
+
+ <target id="bawf21j" pid="bawerwm" name="Step" level="3" number="3"> <text>Configure the meeting options, see "Editing the Meeting Options" on page 50.</text> </target>
+
+ <target id="bawf21l" pid="bawerwm" name="Step" level="3" number="4"> <text>Click Schedule Meeting.</text> </target>
+
+ <target id="bawf21n" pid="bawerwm" name="Step" level="3" number="5"> <text>If you selected e-mail notifications, a dialog appears for pre-sending meeting invitations:</text> </target>
+
+ <target id="bawf1yi" pid="bawerwm" name="BridgeHead" level="2"> <text>To Start a Scheduled Meeting:</text> </target>
+
+ <target id="bawf3f5" pid="bawerwm" name="Procedure" level="2" number="1"> <text>Select one of your Scheduled Meetings or a meeting where you are a designated moderator (look for the Yes in the Moderator column).</text> </target>
+
+ <target id="bawf3f6" pid="bawerwm" name="Step" level="3" number="1"> <text>Select one of your Scheduled Meetings or a meeting where you are a designated moderator (look for the Yes in the Moderator column).</text> </target>
+
+ <target id="bawf3hi" pid="bawerwm" name="Step" level="3" number="2"> <text>Click Start. </text> </target>
+
+ <target id="bawf3hl" pid="bawerwm" name="Step" level="3" number="3"> <text>Add any additional contacts you want to invite to the meeting, see "Adding and Removing Meeting Invitees" on page 48.</text> </target>
+
+ <target id="bawf3ho" pid="bawerwm" name="Step" level="3" number="4"> <text>If necessary, edit the meeting options, see Section 3.4, "Editing the Meeting Options," on page 50.</text> </target>
+
+ <target id="bawf3hr" pid="bawerwm" name="Step" level="3" number="5"> <text>Click Start Meeting at the bottom of the window.</text> </target>
+
+ <target id="bawf1yj" pid="bawerwm" name="BridgeHead" level="2"> <text>To Edit Settings for a Scheduled Meeting:</text> </target>
+
+ <target id="bawfe5n" pid="bawerwm" name="Procedure" level="2" number="1"> <text>Select one of your Scheduled Meetings.</text> </target>
+
+ <target id="bawfe5o" pid="bawerwm" name="Step" level="3" number="1"> <text>Select one of your Scheduled Meetings.</text> </target>
+
+ <target id="bawfe5p" pid="bawerwm" name="Step" level="3" number="2"> <text>Click Edit to bring up the Meeting Setup window.</text> </target>
+
+ <target id="bawfe5q" pid="bawerwm" name="Step" level="3" number="3"> <text>Edit your contacts, see "Adding and Removing Meeting Invitees" on page 48.</text> </target>
+
+ <target id="bawfe5r" pid="bawerwm" name="Step" level="3" number="4"> <text>Edit the meeting options, see Section 3.4, "Editing the Meeting Options," on page 50.</text> </target>
+
+ <target id="bawfe5s" pid="bawerwm" name="Step" level="3" number="5"> <text>Click Schedule Meeting.</text> </target>
+
+ <target id="bawes2i" pid="bawes2i" name="Sect1" level="1" number="3.3"> <text>Adding and Removing Meeting Invitees</text> </target>
+
+ <target id="bawfe5t" pid="bawes2i" name="BridgeHead" level="2"> <text>To Invite Contacts or Groups to a Meeting:</text> </target>
+
+ <target id="bawf55z" pid="bawes2i" name="Procedure" level="2" number="1"> <text>From the Meeting Setup window, select Show Contacts.</text> </target>
+
+ <target id="bawf560" pid="bawes2i" name="Step" level="3" number="1"> <text>From the Meeting Setup window, select Show Contacts.</text> </target>
+
+ <target id="bawf56c" pid="bawes2i" name="Step" level="3" number="2"> <text>In the Select Contacts window, select the contacts and groups you want to invite to your meeting (use the Ctrl and Shift keys to select multiple contacts and groups).</text> </target>
+
+ <target id="bawf56f" pid="bawes2i" name="Step" level="3" number="3"> <text>Click Invite to Meeting.</text> </target>
+
+ <target id="bawf561" pid="bawes2i" name="BridgeHead" level="2"> <text>To Invite Someone Who is Not a Contact:</text> </target>
+
+ <target id="bawfe5u" pid="bawes2i" name="Procedure" level="2" number="1"> <text>From the Meeting Setup window, select Invite New.</text> </target>
+
+ <target id="bawfe5v" pid="bawes2i" name="Step" level="3" number="1"> <text>From the Meeting Setup window, select Invite New.</text> </target>
+
+ <target id="bawfe5w" pid="bawes2i" name="Step" level="3" number="2"> <text>Fill out the new contact's Name, Email and Phone information.</text> </target>
+
+ <target id="bawfe5x" pid="bawes2i" name="Step" level="3" number="3"> <text>Click OK.</text> </target>
+
+ <target id="bawf562" pid="bawes2i" name="BridgeHead" level="2"> <text>To Remove an Invitee or Group From Your Meeting:</text> </target>
+
+ <target id="bawfe5y" pid="bawes2i" name="Procedure" level="2" number="1"> <text>In the Meeting Setup window, select the Invitees and Groups you want to remove from the Invitees list (use the Ctrl or Shift keys to select multiple Invitees and Groups).</text> </target>
+
+ <target id="bawfe5z" pid="bawes2i" name="Step" level="3" number="1"> <text>In the Meeting Setup window, select the Invitees and Groups you want to remove from the Invitees list (use the Ctrl or Shift keys to select multiple Invitees and Groups).</text> </target>
+
+ <target id="bawfe60" pid="bawes2i" name="Step" level="3" number="2"> <text>Click Remove Selected.</text> </target>
+
+ <target id="bawfe61" pid="bawes2i" name="Step" level="3" number="3"> <text>The Invitees and Groups you selected are removed from the meeting. </text> </target>
+
+ <target id="bawetht" pid="bawetht" name="Sect1" level="1" number="3.4"> <text>Editing the Meeting Options</text> </target>
+
+ <target id="bawf86e" pid="bawetht" name="Sect2" level="2" number="3.4.1"> <text>General Meeting Options</text> </target>
+
+ <target id="bawfe62" pid="bawetht" name="Sect2" level="2" number="3.4.2"> <text>Meeting Info Options</text> </target>
+
+ <target id="bawfe63" pid="bawetht" name="Sect2" level="2" number="3.4.3"> <text>Advanced Meeting Options</text> </target>
+
+ <target id="bawethu" pid="bawethu" name="Sect1" level="1" number="3.5"> <text>Joining a Scheduled Meeting</text> </target>
+
+ <target id="bawfmb5" pid="bawethu" name="BridgeHead" level="2"> <text>To Join a Meeting:</text> </target>
+
+ <target id="bawfl5s" pid="bawethu" name="Procedure" level="2" number="1"> <text>Select the meeting you want to join. </text> </target>
+
+ <target id="bawfl5t" pid="bawethu" name="Step" level="3" number="1"> <text>Select the meeting you want to join. </text> </target>
+
+ <target id="bawfl84" pid="bawethu" name="Step" level="3" number="2"> <text>Click Join. </text> </target>
+
+ <target id="bawfl5u" pid="bawethu" name="BridgeHead" level="2"> <text>To Join a Meeting by Meeting ID or PIN:</text> </target>
+
+ <target id="bawfmb6" pid="bawethu" name="Procedure" level="2" number="1"> <text>Select the Meetings &#62; Join by Meeting ID or PIN... menu item.</text> </target>
+
+ <target id="bawfmb7" pid="bawethu" name="Step" level="3" number="1"> <text>Select the Meetings &#62; Join by Meeting ID or PIN... menu item.</text> </target>
+
+ <target id="bawfmb8" pid="bawethu" name="Step" level="3" number="2"> <text>Type the Meeting ID or PIN number into the field in the Join Meeting dialog.</text> </target>
+
+ <target id="bawfl9t" pid="bawethu" name="Step" level="3" number="3"> <text>Click OK.</text> </target>
+
+ <target id="bawethv" pid="bawethv" name="Sect1" level="1" number="3.6"> <text>Finding a Community Meeting</text> </target>
+
+ <target id="bawfyqd" pid="bawethv" name="BridgeHead" level="2"> <text>To Search the Community Meetings:</text> </target>
+
+ <target id="bawftjp" pid="bawethv" name="Procedure" level="2" number="1"> <text>Click Find at the bottom of the Meetings List window.</text> </target>
+
+ <target id="bawftjq" pid="bawethv" name="Step" level="3" number="1"> <text>Click Find at the bottom of the Meetings List window.</text> </target>
+
+ <target id="bawftjy" pid="bawethv" name="Step" level="3" number="2"> <text>To save the search, click Save As, type in a name for your search, and then click OK.</text> </target>
+
+ <target id="bawftjz" pid="bawethv" name="Step" level="3" number="3"> <text>Select a Date Range:</text> </target>
+
+ <target id="bawftk2" pid="bawethv" name="Step" level="3" number="4"> <text>Select the Search Criteria for your search (you can select multiple options to narrow your search down):</text> </target>
+
+ <target id="bawftk5" pid="bawethv" name="Step" level="3" number="5"> <text>To configure the number of results you want to retrieve for this search, type a number into the Number of Results field (default is 100).</text> </target>
+
+ <target id="bawftk8" pid="bawethv" name="Step" level="3" number="6"> <text>Click Search Now.</text> </target>
+
+ <target id="bawftjr" pid="bawethv" name="BridgeHead" level="2"> <text>To Delete Search Results:</text> </target>
+
+ <target id="bawftjs" pid="bawethv" name="BridgeHead" level="2"> <text>To Edit a Search Result Group:</text> </target>
+
+ <target id="bawftjt" pid="bawethv" name="BridgeHead" level="2"> <text>To Run a Saved Search: </text> </target>
+
+ <target id="bawfvo3" pid="bawethv" name="Procedure" level="2" number="1"> <text>Click Find at the bottom of the Meetings List window.</text> </target>
+
+ <target id="bawfvo4" pid="bawethv" name="Step" level="3" number="1"> <text>Click Find at the bottom of the Meetings List window.</text> </target>
+
+ <target id="bawfvod" pid="bawethv" name="Step" level="3" number="2"> <text>Select the saved search you want to run from the Search Name drop-down list.</text> </target>
+
+ <target id="bawfvof" pid="bawethv" name="Step" level="3" number="3"> <text>Make any configuration changes you want.</text> </target>
+
+ <target id="bawfvoh" pid="bawethv" name="Step" level="3" number="4"> <text>Click Search Now.</text> </target>
+
+ <target id="bawethw" pid="bawethw" name="Sect1" level="1" number="3.7"> <text>Viewing Meeting Details</text> </target>
+
+ <target id="bawethx" pid="bawethx" name="Sect1" level="1" number="3.8"> <text>Making Phone Calls</text> </target>
+
+ <target id="bawg8nr" pid="bawethx" name="BridgeHead" level="2"> <text>Call types</text> </target>
+
+ <target id="bawg8ns" pid="bawethx" name="BridgeHead" level="2"> <text>To Move to a Conference Call From a 1-to-1 Call</text> </target>
+
+ <target id="bawg8nt" pid="bawethx" name="BridgeHead" level="2"> <text>To Call a Meeting Member from the meeting window (1-to-1 call):</text> </target>
+
+ <target id="bawg0mr" pid="bawethx" name="Procedure" level="2" number="1"> <text>Right-click on a participant from the Meeting Window. </text> </target>
+
+ <target id="bawg0ms" pid="bawethx" name="Step" level="3" number="1"> <text>Right-click on a participant from the Meeting Window. </text> </target>
+
+ <target id="bawg0n4" pid="bawethx" name="Step" level="3" number="2"> <text>Select 1-to-1 Call.</text> </target>
+
+ <target id="bawg0n8" pid="bawethx" name="Step" level="3" number="3"> <text>Select or enter a phone number to call the participant. A 1-to-1 call is made between the selected phone number and your Follow Me phone number. You are placed in a private sub-meeting inside the Meeting Window. If you are already on the phone and in a meeting, you are not re-called, but connected to the outbound invitee call.</text> </target>
+
+ <target id="bawg8nu" pid="bawethx" name="BridgeHead" level="2"> <text>To Conference Multiple Parties in an Instant Meeting:</text> </target>
+
+ <target id="bawg150" pid="bawethx" name="Procedure" level="2" number="1"> <text>Start your instant meeting. The meeting setup dialog appears.</text> </target>
+
+ <target id="bawg151" pid="bawethx" name="Step" level="3" number="1"> <text>Start your instant meeting. The meeting setup dialog appears.</text> </target>
+
+ <target id="bawg158" pid="bawethx" name="Step" level="3" number="2"> <text>Invite the people you want to have a conference call with, see "Adding and Removing Meeting Invitees" on page 48.</text> </target>
+
+ <target id="bawg15a" pid="bawethx" name="Step" level="3" number="3"> <text>If you have only two invitees and wish to make a 1-to-1 call, select the Make 1-to-1 Call When You Call One Other Person option, otherwise you connect via a conference call. Calls with three or more invitees are always conference calls, regardless of this option.</text> </target>
+
+ <target id="bawg15c" pid="bawethx" name="Step" level="3" number="4"> <text>Next to Set Phones, click All to call the invitees' default phone numbers. Double-check these numbers and make sure they are set correctly. See "Editing the Meeting Options" on page 50 for more information.</text> </target>
+
+ <target id="bawg15f" pid="bawethx" name="Step" level="3" number="5"> <text>Click Start Meeting.</text> </target>
+
+ <target id="bbkmnjs" pid="bbkmnjs" name="Sect1" level="1" number="3.9"> <text>Using the PC Phone Feature</text> </target>
+
+ <target id="bbmo4b6" pid="bbkmnjs" name="FormalPara" level="2" number="w"> <text>Connect</text> </target>
+
+ <target id="bbmo4v0" pid="bbkmnjs" name="FormalPara" level="2" number="w"> <text>Dial</text> </target>
+
+ <target id="bbmo4vr" pid="bbkmnjs" name="FormalPara" level="2" number="w"> <text>Audio Properties</text> </target>
+
+ <target id="bawethy" pid="bawethy" name="Sect1" level="1" number="3.10"> <text>E-mail and IM Invitations</text> </target>
+
+ <target id="bawg8nv" pid="bawethy" name="BridgeHead" level="2"> <text>About the Meeting Invitation Link</text> </target>
+
+ <target id="bawg2sy" pid="bawethy" name="BridgeHead" level="2"> <text>Invitation Expiration Times</text> </target>
+
+ <target id="bawethz" pid="bawethz" name="Sect1" level="1" number="3.11"> <text>Meeting Window</text> </target>
+
+ <target id="baweti0" pid="baweti0" name="Sect1" level="1" number="3.12"> <text>Meeting Window Menus</text> </target>
+
+ <target id="bawgbnc" pid="baweti0" name="Sect2" level="2" number="3.12.1"> <text>Meeting Menu</text> </target>
+
+ <target id="bawgfu6" pid="baweti0" name="BridgeHead" level="3"> <text>Meeting Menu Items:</text> </target>
+
+ <target id="bawgg8t" pid="baweti0" name="Sect2" level="2" number="3.12.2"> <text>My Phone Menu</text> </target>
+
+ <target id="bawgh57" pid="baweti0" name="BridgeHead" level="3"> <text>My Phone Menu Items:</text> </target>
+
+ <target id="bawgh58" pid="baweti0" name="Sect2" level="2" number="3.12.3"> <text>Participants Menu (Moderators only)</text> </target>
+
+ <target id="bawgh59" pid="baweti0" name="Sect2" level="2" number="3.12.4"> <text>Sub-meetings Menu (Moderators only)</text> </target>
+
+ <target id="bawgh5a" pid="baweti0" name="Sect2" level="2" number="3.12.5"> <text>Sharing Menu (Moderators only)</text> </target>
+
+ <target id="bawgh5b" pid="baweti0" name="Sect2" level="2" number="3.12.6"> <text>Help Menu</text> </target>
+
+ <target id="baweti1" pid="baweti1" name="Sect1" level="1" number="3.13"> <text>Right-Click Menu Items</text> </target>
+
+ <target id="baweti2" pid="baweti2" name="Sect1" level="1" number="3.14"> <text>Meeting Option Controls</text> </target>
+
+ <target id="baweti3" pid="baweti3" name="Sect1" level="1" number="3.15"> <text>Sub-meetings</text> </target>
+
+ <target id="bawkq38" pid="baweti3" name="BridgeHead" level="2"> <text>How to Start a Sub-meeting</text> </target>
+
+ <target id="baweti4" pid="baweti4" name="Sect1" level="1" number="3.16"> <text>Meeting Chat</text> </target>
+
+ <target id="baweti5" pid="baweti5" name="Sect1" level="1" number="3.17"> <text>Meeting Summary Tab</text> </target>
+
+ <target id="baweti6" pid="baweti6" name="Sect1" level="1" number="3.18"> <text>Meeting Application Share Tab</text> </target>
+
+ <target id="bawkyix" pid="baweti6" name="BridgeHead" level="2"> <text>Information about Sharing Data:</text> </target>
+
+ <target id="bawkrx9" pid="baweti6" name="BridgeHead" level="2"> <text>When You Present a Share Session:</text> </target>
+
+ <target id="bawkrxa" pid="baweti6" name="BridgeHead" level="2"> <text>When You View a Share Session:</text> </target>
+
+ <target id="baweti7" pid="baweti7" name="Sect1" level="1" number="3.19"> <text>Meeting Whiteboard Tab</text> </target>
+
+ <target id="bawkxtk" pid="baweti7" name="Sect2" level="2" number="3.19.1"> <text>Document Options</text> </target>
+
+ <target id="bawkyiy" pid="baweti7" name="Sect2" level="2" number="3.19.2"> <text>Page Options</text> </target>
+
+ <target id="bawkyiz" pid="baweti7" name="Sect2" level="2" number="3.19.3"> <text>Editing Tools</text> </target>
+
+ <target id="bawkyj0" pid="baweti7" name="Sect2" level="2" number="3.19.4"> <text>Graphics and Text Tools</text> </target>
+
+</targets>

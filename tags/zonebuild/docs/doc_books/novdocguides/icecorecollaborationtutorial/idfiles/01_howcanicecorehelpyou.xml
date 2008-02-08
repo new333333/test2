@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9yx9t2" pid="b9yx9t2" name="Chapter" level="0" number="1"> <text>How Can ICEcore Help You?</text> </target>
+
+ <target id="b9yxqdb" pid="b9yxqdb" name="Sect1" level="1" number="1.1"> <text>A Traditional Web Application</text> </target>
+
+ <target id="b9yxrcu" pid="b9yxrcu" name="Sect1" level="1" number="1.2"> <text>A Remote-Access Repository</text> </target>
+
+</targets>

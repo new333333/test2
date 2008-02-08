@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9yefsv" pid="b9yefsv" name="Chapter" level="0" number="4"> <text>Modifying Template Files</text> </target>
+
+ <target id="b9yego1" pid="b9yego1" name="Sect1" level="1" number="4.1"> <text>Modifying the Meeting Invitation Template </text> </target>
+
+ <target name="InformalTable" level="2"> <text>Value </text> </target>
+
+ <target id="b9yehw7" pid="b9yego1" name="row" level="3"> <text>Value </text> </target>
+
+ <target id="b9yehw8" pid="b9yego1" name="row" level="3"> <text>EMAIL_IM</text> </target>
+
+ <target id="b9yeifb" pid="b9yego1" name="row" level="3"> <text>EMAIL_ONLY</text> </target>
+
+ <target id="b9yeifc" pid="b9yego1" name="row" level="3"> <text>IM_ONLY</text> </target>
+
+ <target name="InformalTable" level="2"> <text>Tag </text> </target>
+
+ <target id="b9yejfu" pid="b9yego1" name="row" level="3"> <text>Tag </text> </target>
+
+ <target id="b9yejfv" pid="b9yego1" name="row" level="3"> <text>&#60;TITLE&#62;</text> </target>
+
+ <target id="b9yejrr" pid="b9yego1" name="row" level="3"> <text>&#60;HOST&#62;</text> </target>
+
+ <target id="b9yejrs" pid="b9yego1" name="row" level="3"> <text>&#60;TIME&#62;</text> </target>
+
+ <target id="b9yejrt" pid="b9yego1" name="row" level="3"> <text>&#60;DESCRIPTION&#62;</text> </target>
+
+ <target id="b9yejru" pid="b9yego1" name="row" level="3"> <text>&#60;MESSAGE&#62;</text> </target>
+
+ <target id="b9yejrv" pid="b9yego1" name="row" level="3"> <text>&#60;INVITEE-NAME&#62;</text> </target>
+
+ <target id="b9yejrw" pid="b9yego1" name="row" level="3"> <text>&#60;INVITEE-PHONE&#62;</text> </target>
+
+ <target id="b9yejrx" pid="b9yego1" name="row" level="3"> <text>&#60;INVITEE-PIN&#62;</text> </target>
+
+ <target id="b9yejry" pid="b9yego1" name="row" level="3"> <text>&#60;MEETING-URL&#62;</text> </target>
+
+ <target id="b9yejrz" pid="b9yego1" name="row" level="3"> <text>&#60;ANONYMOUS-URL&#62;</text> </target>
+
+ <target id="b9yejs0" pid="b9yego1" name="row" level="3"> <text>&#60;MEETING-PHONE&#62;</text> </target>
+
+ <target id="b9yejs1" pid="b9yego1" name="row" level="3"> <text>&#60;ANONYMOUS-PIN&#62;</text> </target>
+
+ <target id="b9yejs2" pid="b9yego1" name="row" level="3"> <text>&#60;PASSWORD&#62;</text> </target>
+
+ <target id="b9yeh9r" pid="b9yeh9r" name="Sect1" level="1" number="4.2"> <text>Using IF Statements</text> </target>
+
+ <target name="InformalTable" level="2"> <text>Variable</text> </target>
+
+ <target id="b9yf0av" pid="b9yeh9r" name="row" level="3"> <text>Variable</text> </target>
+
+ <target id="b9yf0aw" pid="b9yeh9r" name="row" level="3"> <text>CALL_IN</text> </target>
+
+ <target id="b9yf0ta" pid="b9yeh9r" name="row" level="3"> <text>CALL_OUT</text> </target>
+
+ <target id="b9yf0tb" pid="b9yeh9r" name="row" level="3"> <text>DESCRIPTION</text> </target>
+
+ <target id="b9yf0tc" pid="b9yeh9r" name="row" level="3"> <text>MESSAGE</text> </target>
+
+ <target id="b9yf0td" pid="b9yeh9r" name="row" level="3"> <text>PASSWORD</text> </target>
+
+ <target id="b9yf0te" pid="b9yeh9r" name="row" level="3"> <text>PRIVATE</text> </target>
+
+ <target id="b9yeh9s" pid="b9yeh9s" name="Sect1" level="1" number="4.3"> <text>Modifying the Meeting Summary E-mail Template</text> </target>
+
+ <target name="InformalTable" level="2"> <text>Tag</text> </target>
+
+ <target id="b9yf262" pid="b9yeh9s" name="row" level="3"> <text>Tag</text> </target>
+
+ <target id="b9yf263" pid="b9yeh9s" name="row" level="3"> <text>&#60;MeetingID&#62;</text> </target>
+
+ <target id="b9yf264" pid="b9yeh9s" name="row" level="3"> <text>&#60;StartDateTime&#62;</text> </target>
+
+ <target id="b9yf265" pid="b9yeh9s" name="row" level="3"> <text>&#60;Duration&#62;</text> </target>
+
+ <target id="b9yf266" pid="b9yeh9s" name="row" level="3"> <text>&#60;VoiceRecording&#62;</text> </target>
+
+ <target id="b9yf267" pid="b9yeh9s" name="row" level="3"> <text>&#60;DataRecording&#62;</text> </target>
+
+ <target id="b9yf268" pid="b9yeh9s" name="row" level="3"> <text>&#60;MeetingParticipants&#62;</text> </target>
+
+ <target id="b9yeh9t" pid="b9yeh9t" name="Sect1" level="1" number="4.4"> <text>Modifying the New User Greeting E-mail Template</text> </target>
+
+ <target name="InformalTable" level="2"> <text>Tag</text> </target>
+
+ <target id="b9yf4cb" pid="b9yeh9t" name="row" level="3"> <text>Tag</text> </target>
+
+ <target id="b9yf4cc" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICNAME&#62;</text> </target>
+
+ <target id="b9yf4cd" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICUSERNAME&#62;</text> </target>
+
+ <target id="b9yf4ce" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICPASSWORD&#62;</text> </target>
+
+ <target id="b9yf4cf" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICDIALIN&#62;</text> </target>
+
+ <target id="b9yf4cg" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICPERSONALPIN&#62;</text> </target>
+
+ <target id="b9yf4ch" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICMEETINGID&#62;</text> </target>
+
+ <target id="bdj2669" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICPRODNAME&#62; </text> </target>
+
+ <target id="bdj266a" pid="b9yeh9t" name="row" level="3"> <text>&#60;ZONLANG&#62;</text> </target>
+
+ <target id="bdj266b" pid="b9yeh9t" name="row" level="3"> <text>&#60;IICPORTAL&#62; </text> </target>
+
+</targets>

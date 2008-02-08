@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9xe5we" pid="b9xe5we" name="Chapter" level="0" number="5"> <text>Using a Question in Workflows</text> </target>
+
+ <target id="b9xe7dc" pid="b9xe5we" name="BridgeHead" level="1"> <text>What's in this Chapter?</text> </target>
+
+ <target id="b9xeakc" pid="b9xeakc" name="Sect1" level="1" number="5.1"> <text>Add a Question to the Workflow</text> </target>
+
+ <target id="b9xeb1t" pid="b9xeakc" name="row" level="2"> <text>Condition </text> </target>
+
+ <target id="b9xeb1u" pid="b9xeakc" name="row" level="2"> <text>The employee enters a Time Off Request.</text> </target>
+
+ <target id="b9xec15" pid="b9xeakc" name="row" level="2"> <text>The manager indicates receipt.</text> </target>
+
+ <target id="b9xec16" pid="b9xeakc" name="row" level="2"> <text>The manager approves the request.</text> </target>
+
+ <target id="b9xec17" pid="b9xeakc" name="row" level="2"> <text>The manager denies the request.</text> </target>
+
+ <target id="b9xec18" pid="b9xeakc" name="row" level="2"> <text>HR has entered the approved vacation</text> </target>
+
+ <target id="b9xecuh" pid="b9xeakc" name="BridgeHead" level="2"> <text>To add a workflow question to the Review state:</text> </target>
+
+ <target id="b9xecwj" pid="b9xeakc" name="Procedure" level="2" number="1"> <text>View the workflow-development page for the Time Off workflow, if you are not already viewing this page.</text> </target>
+
+ <target id="b9xecwk" pid="b9xeakc" name="Step" level="3" number="1"> <text>View the workflow-development page for the Time Off workflow, if you are not already viewing this page.</text> </target>
+
+ <target id="b9xed20" pid="b9xeakc" name="Step" level="3" number="2"> <text>Click Show whole workflow in the toolbar, which displays the flowchart in the working</text> </target>
+
+ <target id="b9xed23" pid="b9xeakc" name="Step" level="3" number="3"> <text>Click the Review oval in the flowchart.</text> </target>
+
+ <target id="b9xed25" pid="b9xeakc" name="Step" level="3" number="4"> <text>From the "Edit the current state" menu, click Define a question:</text> </target>
+
+ <target id="b9xed28" pid="b9xeakc" name="Step" level="3" number="5"> <text>Enter this question and set of corresponding responses:</text> </target>
+
+ <target id="b9xed2c" pid="b9xeakc" name="Step" level="3" number="6"> <text>Click OK to save the question. </text> </target>
+
+ <target id="b9xe8xd" pid="b9xe8xd" name="Sect1" level="1" number="5.2"> <text>Associating Conditions with Question Replies</text> </target>
+
+ <target id="b9xego1" pid="b9xe8xd" name="Sect2" level="2" number="5.2.1"> <text>Define the Approved Condition</text> </target>
+
+ <target id="b9xegwi" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>Make sure that the current state is Review.</text> </target>
+
+ <target id="b9xegwj" pid="b9xe8xd" name="Step" level="4" number="1"> <text>Make sure that the current state is Review.</text> </target>
+
+ <target id="b9xeh1x" pid="b9xe8xd" name="Step" level="4" number="2"> <text> Click the Add, modify, or delete conditions workflow tool:</text> </target>
+
+ <target id="b9xeh1z" pid="b9xe8xd" name="Step" level="4" number="3"> <text>Click the Add condition button. </text> </target>
+
+ <target id="b9xeh20" pid="b9xe8xd" name="Step" level="4" number="4"> <text>Enter the condition name "Approved."</text> </target>
+
+ <target id="b9xeh22" pid="b9xe8xd" name="Step" level="4" number="5"> <text>In the "If this state is&#201;" column, click the Review checkbox.</text> </target>
+
+ <target id="b9xeh24" pid="b9xe8xd" name="Step" level="4" number="6"> <text>In the Review row and in the "And if this response is given..." column, click Yes (which selects it). </text> </target>
+
+ <target id="b9xeh25" pid="b9xe8xd" name="Step" level="4" number="7"> <text>Click the "Condition is true if the specified items are found" radio button, toward the bottom of the form.</text> </target>
+
+ <target id="b9xeh27" pid="b9xe8xd" name="Step" level="4" number="8"> <text>Click OK.</text> </target>
+
+ <target id="b9xeh2b" pid="b9xe8xd" name="Step" level="4" number="9"> <text>The "Add, modify, or delete conditions" form reappears, displaying the new condition.</text> </target>
+
+ <target id="b9xeakd" pid="b9xe8xd" name="Sect2" level="2" number="5.2.2"> <text>Define the Denied Condition (Exercise)</text> </target>
+
+ <target id="b9xeake" pid="b9xe8xd" name="Sect2" level="2" number="5.2.3"> <text>Define the Transitions</text> </target>
+
+ <target id="b9xfai7" pid="b9xe8xd" name="BridgeHead" level="3"> <text>Create an Approved Condition</text> </target>
+
+ <target id="b9xfam9" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text> Make sure that the current state is Review.</text> </target>
+
+ <target id="b9xfama" pid="b9xe8xd" name="Step" level="4" number="1"> <text> Make sure that the current state is Review.</text> </target>
+
+ <target id="b9xfau8" pid="b9xe8xd" name="Step" level="4" number="2"> <text>Click the Add or delete transitions workflow tool:</text> </target>
+
+ <target id="b9xfaua" pid="b9xe8xd" name="Step" level="4" number="3"> <text>From the "Select the conditions that must all be true" list, click Approved (which selects it).</text> </target>
+
+ <target id="b9xfauc" pid="b9xe8xd" name="Step" level="4" number="4"> <text>From the "to cause a transition to:" list, click Approve (which selects it).</text> </target>
+
+ <target id="b9xfaud" pid="b9xe8xd" name="Step" level="4" number="5"> <text>Click the Add transition and continue button.</text> </target>
+
+ <target id="b9xfbgy" pid="b9xe8xd" name="BridgeHead" level="3"> <text>Create a Denied Transition (Exercise)</text> </target>
+
+ <target id="b9xeakf" pid="b9xe8xd" name="Sect2" level="2" number="5.2.4"> <text>Removing Older Transitions</text> </target>
+
+ <target id="b9xfcya" pid="b9xe8xd" name="BridgeHead" level="3"> <text>To remove manual transitions:</text> </target>
+
+ <target id="b9xfd3i" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>In the "Current Transitions" table, click the radio button next to either instance of "Manual transition (group 1)."</text> </target>
+
+ <target id="b9xfd3j" pid="b9xe8xd" name="Step" level="4" number="1"> <text>In the "Current Transitions" table, click the radio button next to either instance of "Manual transition (group 1)."</text> </target>
+
+ <target id="b9xfd4n" pid="b9xe8xd" name="Step" level="4" number="2"> <text>Click Delete transition and continue.</text> </target>
+
+ <target id="b9xfd4p" pid="b9xe8xd" name="Step" level="4" number="3"> <text>Select the remaining transition and delete it in the same way. </text> </target>
+
+ <target id="b9xeakg" pid="b9xeakg" name="Sect1" level="1" number="5.3"> <text>Granting Permission to View and Answer the Question</text> </target>
+
+ <target id="b9xfdk3" pid="b9xeakg" name="BridgeHead" level="2"> <text>To control access to the question:</text> </target>
+
+ <target id="b9xfdkr" pid="b9xeakg" name="Procedure" level="2" number="1"> <text>Click Show whole workflow in the toolbar, which displays the flowchart in the working area.</text> </target>
+
+ <target id="b9xfdks" pid="b9xeakg" name="Step" level="3" number="1"> <text>Click Show whole workflow in the toolbar, which displays the flowchart in the working area.</text> </target>
+
+ <target id="b9xfdtp" pid="b9xeakg" name="Step" level="3" number="2"> <text>Click the Review oval in the flowchart. </text> </target>
+
+ <target id="b9xfdtq" pid="b9xeakg" name="Step" level="3" number="3"> <text>Click Set access rights for this state workflow tool.</text> </target>
+
+ <target id="b9xfdts" pid="b9xeakg" name="Step" level="3" number="4"> <text>Click Respond (selecting it) in the "Access rights" column.</text> </target>
+
+ <target id="b9xfdtu" pid="b9xeakg" name="Step" level="3" number="5"> <text>Click the Selected users and groups checkbox. </text> </target>
+
+ <target id="b9xfdtv" pid="b9xeakg" name="Step" level="3" number="6"> <text>Use the "Find groups" window to make sure that only the Manager group is selected.</text> </target>
+
+ <target id="b9xfdtx" pid="b9xeakg" name="Step" level="3" number="7"> <text> Click the Apply button.</text> </target>
+
+ <target id="b9xeakh" pid="b9xeakh" name="Sect1" level="1" number="5.4"> <text>Summary</text> </target>
+
+ <target id="b9xeaki" pid="b9xeaki" name="Sect1" level="1" number="5.5"> <text>Next Steps</text> </target>
+
+</targets>
