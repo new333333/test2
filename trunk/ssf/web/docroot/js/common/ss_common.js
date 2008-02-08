@@ -536,7 +536,7 @@ function ss_cancelButtonCloseWindow() {
 		//This looks like it is a pop-up form
 		self.window.close();
 		return
-	} else if (self != self.parent) {
+	} else if (self.parent) {
 		iframeObj = self.parent.document.getElementById(self.name)
 		if (iframeObj != null && iframeObj.tagName.toLowerCase() == 'iframe') {
 			if (iframeObj.parentNode.tagName.toLowerCase() == 'div') {

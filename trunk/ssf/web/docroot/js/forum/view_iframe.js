@@ -45,7 +45,7 @@ function ss_setEntryDivHeight() {
 	setTimeout("ss_positionEntryDiv();", 100);
 }
 function ss_showForumEntryInIframe(url) {
-	if (self != self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
+	if (self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
 		self.parent.ss_showForumEntryInIframe(url);
 		return
 	}
