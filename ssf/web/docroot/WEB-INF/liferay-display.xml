@@ -16,5 +16,6 @@
 		<portlet id="ss_search" />
 		<portlet id="ss_task" />
 		<portlet id="ss_toolbar" />
+		<portlet id="ss_workarea" />
 	</category>
 </display>

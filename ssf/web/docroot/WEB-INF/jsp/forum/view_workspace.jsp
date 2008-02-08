@@ -53,12 +53,12 @@
 <c:if test="${empty ssReloadUrl}">
 <c:if test="${ss_displayType == 'ss_workarea'}">
 <script type="text/javascript">
-if (self != self.parent) {
+if (self.parent) {
 	//We are in an iframe inside a portlet (maybe?)
 	var windowName = self.window.name    
-	if (windowName.indexOf("ss_viewListingIframe") == 0) {
+	if (windowName.indexOf("ss_workareaIframe") == 0) {
 		//We are running inside an iframe, get the namespace name of that iframe's owning portlet
-		var namespace = windowName.substr("ss_viewListingIframe".length)
+		var namespace = windowName.substr("ss_workareaIframe".length)
 		//alert('namespace = '+namespace+', binderId = ${ssBinder.id}, entityType = ${ssBinder.entityType}')
 		var url = "<ssf:url
 					adapter="true"
@@ -92,7 +92,7 @@ function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 	url = ss_replaceSubStr(url, "ssEntryIdPlaceHolder", entryId);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
 <ssf:ifnotadapter>
-	var iframeDivObj = document.getElementById('ss_viewListingIframe${renderResponse.namespace}')
+	var iframeDivObj = document.getElementById('ss_workareaIframe${renderResponse.namespace}')
 	if (iframeDivObj != null) {
 		iframeDivObj.src = url;
 	} else {
@@ -111,9 +111,9 @@ if (typeof ss_workarea_showId == "undefined")
 <script type="text/javascript">
 var ss_workareaIframeOffset = 50;
 function ss_setWorkareaIframeSize${renderResponse.namespace}() {
-	var iframeDiv = document.getElementById('ss_viewListingIframe${renderResponse.namespace}')
-	if (window.frames['ss_viewListingIframe${renderResponse.namespace}'] != null) {
-		eval("var iframeHeight = parseInt(window.ss_viewListingIframe${renderResponse.namespace}" + ".document.body.scrollHeight);")
+	var iframeDiv = document.getElementById('ss_workareaIframe${renderResponse.namespace}')
+	if (window.frames['ss_workareaIframe${renderResponse.namespace}'] != null) {
+		eval("var iframeHeight = parseInt(window.ss_workareaIframe${renderResponse.namespace}" + ".document.body.scrollHeight);")
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = iframeHeight + ss_workareaIframeOffset + "px"
 		}
@@ -121,9 +121,13 @@ function ss_setWorkareaIframeSize${renderResponse.namespace}() {
 }
 ss_createOnResizeObj('ss_setWorkareaIframeSize${renderResponse.namespace}', ss_setWorkareaIframeSize${renderResponse.namespace});
 ss_createOnLayoutChangeObj('ss_setWorkareaIframeSize${renderResponse.namespace}', ss_setWorkareaIframeSize${renderResponse.namespace});
+
+var ss_portal_view_normal_url${renderResponse.namespace} = "<ssf:url windowState="normal"/>";
+var ss_portal_view_maximized_url${renderResponse.namespace} = "<ssf:url windowState="maximized"/>";
+var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 </script>
-<iframe id="ss_viewListingIframe${renderResponse.namespace}" 
-    name="ss_viewListingIframe${renderResponse.namespace}" 
+<iframe id="ss_workareaIframe${renderResponse.namespace}" 
+    name="ss_workareaIframe${renderResponse.namespace}" 
     style="width:100%; height:400px; display:block; position:relative;"
 	src="<ssf:url     
     		adapter="true" 

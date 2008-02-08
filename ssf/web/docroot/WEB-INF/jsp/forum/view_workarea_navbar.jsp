@@ -77,12 +77,6 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 <!-- Start of global toolbar -->
 <script type="text/javascript">
 function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
-	if (self != self.parent) {
-		//We are in an iframe inside a portlet (maybe?)
-		var bodyObj = document.getElementsByTagName("body").item(0);
-		var iframeObj = bodyObj.parentNode().parentNode();
-		alert(iframeObj.id)
-	}
 	if (typeof entryId == "undefined") entryId = "";
 	//Build a url to go to
 	var url = "<ssf:url 
@@ -99,6 +93,33 @@ function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 }
 if (typeof ss_workarea_showId == "undefined") 
 	ss_workarea_showId = ss_workarea_showId${renderResponse.namespace};
+
+function ss_goToMyParentPortletNormalView${renderResponse.namespace}() {
+	//See if we are in an iframe inside a portlet 
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_workareaIframe") == 0) {
+		//We are running inside an iframe, get the namespace name of that iframe's owning portlet
+		var namespace = windowName.substr("ss_workareaIframe".length)
+		var url = "";
+		try {
+			eval('url = self.parent.ss_portal_view_normal_url'+namespace)
+		} catch(e) {}
+		if (url != "" && url != "undefined") self.parent.location.href = url;
+	}
+}
+function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
+	//See if we are in an iframe inside a portlet 
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_workareaIframe") == 0) {
+		//We are running inside an iframe, get the namespace name of that iframe's owning portlet
+		var namespace = windowName.substr("ss_workareaIframe".length)
+		var url = "";
+		try {
+			eval('url = self.parent.ss_portal_view_maximized_url'+namespace)
+		} catch(e) {}
+		if (url != "" && url != "undefined") self.parent.location.href = url;
+	}
+}
 </script>
 
 <div id="ss_top_nav_wrapper" style="width:100%;">
@@ -110,42 +131,27 @@ if (typeof ss_workarea_showId == "undefined")
 <table border="0" cellpadding="0" cellspacing="0" >
   <tr>
     <td align="center" valign="top">
+      <div id="ss_portalViewButtons${renderResponse.namespace}" style="display:none;">
       <div id="ss_top_nav_buttontwo">
         <ul>
           <li>
 			  <ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
 			      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
 			  </ssHelpSpot>
-	          <a 
-			  <c:if test="${ssBinder.entityType == 'folder'}">
-			    href="<ssf:url windowState="normal"
-				    action="view_folder_listing"
-				    binderId="${ssBinder.id}"/>"
-			  </c:if>
-			  <c:if test="${ssBinder.entityType == 'workspace'}">
-			    href="<ssf:url windowState="normal"
-				    action="view_workspace"
-				    binderId="${ssBinder.id}"/>"
-			  </c:if>
-			  <c:if test="${ssBinder.entityType == 'profiles'}">
-			    href="<ssf:url windowState="normal"
-				    action="view_profile_listing"
-				    binderId="${ssBinder.id}"/>"
-			  </c:if>
-	          <c:if test="${ss_windowState == 'normal'}">
-	            class="current"
-	          </c:if>
-	          title="<ssf:nlt tag="navigation.portalView"/>"
+	          <a id="ss_portalViewPortalButton${renderResponse.namespace}" 
+	            href="javascript: ;" 
+	            onClick="ss_goToMyParentPortletNormalView${renderResponse.namespace}();return false;"
+	          title="<ssf:nlt tag="navigation.goToPortalView"/>"
 	          ><ssf:nlt tag="navigation.portalView"/></a></li>
           <li>
- 			  <a title="<ssf:nlt tag="navigation.expandedView"/>"
-				href="<ssf:url windowState="maximized"/>"
-	            <c:if test="${ss_windowState == 'normal'}">
-	              class="current"
-	            </c:if>
+ 			  <a id="ss_portalViewMaximizedButton${renderResponse.namespace}" 
+				href="javascript: ;"
+	            onClick="ss_goToMyParentPortletMaximizedView${renderResponse.namespace}();return false;"
+	          title="<ssf:nlt tag="navigation.goToMaximizedView"/>"
               ><ssf:nlt tag="navigation.expandedView"/></a>
           </li>
         </ul>
+      </div>
       </div>
       <div id="ss_top_nav_buttonthree">
         <ul>
@@ -192,6 +198,26 @@ if (typeof ss_workarea_showId == "undefined")
     </td>
   </tr>
 </table>
+<script type="text/javascript">
+	//See if we are in an iframe inside a portlet 
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_workareaIframe") == 0) {
+		//We are running inside a portlet iframe
+		var divObj = document.getElementById('ss_portalViewButtons${renderResponse.namespace}')
+		divObj.style.display = "block";
+		var windowState = "";
+		try {
+			eval('windowState = self.parent.ss_portal_view_window_state'+namespace)
+		} catch(e) {}
+		if (windowState == "normal") {
+			var aObj = document.getElementById('ss_portalViewPortalButton${renderResponse.namespace}')
+			aObj.className = "current"
+		} else {
+			var aObj = document.getElementById('ss_portalViewMaximizedButton${renderResponse.namespace}')
+			aObj.className = "current"
+		}
+	}
+</script>
 
 </td>
 </tr>
