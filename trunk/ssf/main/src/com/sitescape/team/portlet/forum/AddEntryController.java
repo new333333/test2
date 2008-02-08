@@ -54,6 +54,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Binder;
@@ -399,13 +400,14 @@ public class AddEntryController extends SAbstractController {
 		int dayOfMonth = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_DAY_OF_MONTH, -1);
 
 		String time = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DATE_TIME, null);
-		int duration = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_TIME_DURATION, -1);
+		int duration = PortletRequestUtils.getIntParameter(request, WebKeys.URL_DATE_TIME_DURATION, 30);
 		
+		TimeZone timeZone = RequestContextHolder.getRequestContext().getUser().getTimeZone();
+		DateTime startDate = null;
 		if (year != -1 && month != -1 && dayOfMonth != -1) {
 			month++;
-			TimeZone timeZone = RequestContextHolder.getRequestContext().getUser().getTimeZone();
 		
-			DateTime startDate = (new DateTime(DateTimeZone.forTimeZone(timeZone))).withYear(year).withMonthOfYear(month).withDayOfMonth(dayOfMonth);
+			startDate = (new DateTime(DateTimeZone.forTimeZone(timeZone))).withYear(year).withMonthOfYear(month).withDayOfMonth(dayOfMonth);
 			
 			if (time != null && !time.equals("-1")) {
 				String[] timeS = time.split(":");
@@ -428,12 +430,14 @@ public class AddEntryController extends SAbstractController {
 			} else if (time != null && time.equals("-1")) {
 				timeZone = null;
 			}
+		} else {
+			startDate = new DateTime(EventsViewHelper.getCalendarCurrentDate(request.getPortletSession()));
+		}
 		
+		if (startDate != null) {
 			Event event = new Event(startDate.toGregorianCalendar(), new Duration(0, 0, duration, 0), 0);
 			event.setTimeZone(timeZone);
 			model.put(WebKeys.CALENDAR_INITIAL_EVENT, event);
 		}
-		
 	}
-
 }
