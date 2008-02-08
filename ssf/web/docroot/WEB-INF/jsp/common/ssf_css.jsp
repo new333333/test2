@@ -3964,6 +3964,15 @@ ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	color:#333333;
 }
 
+/* EVENT EDITOR */
+
+.ss_event_editor .ss_requrency_row_active {
+	border: 1px solid #CCCCCC;
+}
+
+.ss_event_editor .ss_requrency_row_unactive {
+	border: 1px solid transparent;
+}
 
 /* TEAM BUDDIES LIST */
 
