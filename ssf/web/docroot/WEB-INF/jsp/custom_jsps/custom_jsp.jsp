@@ -28,21 +28,35 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //Custom jsp element %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-
 <%
-	//Get the jsp to be called
-	String formJsp = (String) request.getAttribute("property_formJsp");
-	String viewJsp = (String) request.getAttribute("property_viewJsp");
-	String mailJsp = (String) request.getAttribute("property_mailJsp");
+/**
+ * This is an example of a custom jsp 
+ * 
+ * These are set up as request attributes:
+ *   property_name - the element name used to save the data in the database
+ *   property_caption - the caption specified in the entry definition
+ *   ssConfigJspStyle - the type of operation (form, view, mail or mobile)
+ *   ssConfigJsp - default system jsp for this item
+ *	 ssDefinitionEntry - the current entry
+ *   ssDefinitionEntry.customAttributes[property_name].value - the current value of the data element
+ */
 %>
-<c:if test="${ssConfigJspStyle == 'form' && !empty property_formJsp}">
-<%@include file="/WEB-INF/jsp/custom_jsps/<%=formJsp%>" %>
+
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:choose>
+<c:when test="${ssConfigJspStyle == 'form'}">
+<%@ include file="/WEB-INF/jsp/custom_jsps/custom_jsp_form.jsp" %>
+</c:when>
+<c:when test="${ssConfigJspStyle == 'view'}">
+<%@ include file="/WEB-INF/jsp/custom_jsps/custom_jsp_view.jsp" %>
+</c:when>
+<c:when test="${ssConfigJspStyle == 'mail'}">
+<%@ include file="/WEB-INF/jsp/custom_jsps/custom_jsp_mail.jsp" %>
+</c:when>
+<c:otherwise>
+<c:if test="${!empty ssConfigJsp}">
+<jsp:include page="${ssConfigJsp}" />
 </c:if>
-<c:if test="${ssConfigJspStyle == 'view' && !empty property_viewJsp}">
-<%@include file="/WEB-INF/jsp/custom_jsps/<%=viewJsp%>" %>
-</c:if>
-<c:if test="${ssConfigJspStyle == 'mail' && !empty property_mailJsp}">
-<%@include file="/WEB-INF/jsp/custom_jsps/<%=mailJsp%>" %>
-</c:if>
+</c:otherwise>
+</c:choose>
+

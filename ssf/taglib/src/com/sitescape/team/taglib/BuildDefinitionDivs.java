@@ -716,7 +716,12 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 					}
 					String propertyValue0 = "";
-					if (propertyValues.size() > 0) propertyValue0 = (String) propertyValues.get(0);
+					if (propertyValues.size() > 0) {
+						propertyValue0 = (String) propertyValues.get(0);
+					} else {
+						//if no value assigned and deprecated, don't show it
+						if (propertyConfig.attributeValue("status", "").equals("deprecated")) continue;
+					}
 					String propertyValueDefault = RepositoryUtil.getDefaultRepositoryName();
 					if (propertyValueDefault.equals("")) propertyConfig.attributeValue("default", "");
 					String type = propertyConfig.attributeValue("type", "text");
@@ -1301,35 +1306,33 @@ public class BuildDefinitionDivs extends TagSupport {
 			sb.append("<br/>");
 			sb.append("<input type=\"hidden\" name=\"definitionType_"+rootElementId+"\" value=\""+ rootElement.attributeValue("definitionType", "") +"\"/>\n");
 
-			//Presence determines if jsps are allowed
-			Element jspRootConfig = rootConfigElement.element("jsps");
-	
-			if (!"customJspView".equals(rootElementName) && jspRootConfig != null) {
-				String value = "";
-				String inherit="on";
-				if (rootConfigElement != rootElement) { //if adding new item, don't copy system jsps
-					Element custom = (Element)rootElement.selectSingleNode("./jsps/jsp[@name='custom']");
-					if (custom != null) {
-						value = custom.attributeValue("value", "");
-						if ("false".equals(custom.attributeValue("inherit"))) inherit="off";
-					}
+			String customValue = "";
+			String inherit="";
+			if (rootConfigElement != rootElement) { //if adding new item, don't copy system jsps
+				Element custom = (Element)rootElement.selectSingleNode("./jsps/jsp[@name='custom']");
+				if (custom != null) {
+					if ("true".equals(custom.attributeValue("inherit"))) inherit="checked=\"on\"";
+					else customValue = custom.attributeValue("value", "");
+
 				}
-				String display=rootConfigElement.attributeValue("display");
-				if ("form".equals(display)) {
-					sb.append(NLT.get("__custom_form_jsp")); 					
-				} else {
-					sb.append(NLT.get("__custom_view_jsp")); 
-				}
-				sb.append("<br/> <input type=\"text\" size=\"40\" name=\"jspName_custom\" value=\"" +
-						value + "\"/>");
-				if ("form".equals(display)) {
-					sb.append("<a name=\"help_div_customFormJsp_a\" onClick=\"ss_activateMenuLayerMove('help_div_customFormJsp');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
-				} else {
-					sb.append("<a name=\"help_div_customViewJsp_a\" onClick=\"ss_activateMenuLayerMove('help_div_customViewJsp');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");					
-					if ("dataView".equals(rootElement.attributeValue("type")) ) { //wraps a form element
-						sb.append("<br/><input type=\"checkbox\" name=\"jspName_custom_inherit\" checked=\""  +
-								inherit + "\"/> " + NLT.get("__custom_view_jsp_inherit") );
-					}
+			} 
+			String display=rootConfigElement.attributeValue("display");
+			if ("form".equals(display)) {
+				sb.append(NLT.get("__custom_form_jsp")); 					
+			} else {
+				sb.append(NLT.get("__custom_view_jsp")); 
+			}
+			sb.append("<br/> <input type=\"text\" size=\"40\" name=\"jspName_custom\" value=\"" +
+					customValue + "\"/>");
+			if ("form".equals(display)) {
+				sb.append("<a name=\"help_div_customFormJsp_a\" onClick=\"ss_activateMenuLayerMove('help_div_customFormJsp');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
+			} else {
+				sb.append("<a name=\"help_div_customViewJsp_a\" onClick=\"ss_activateMenuLayerMove('help_div_customViewJsp');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");					
+				if ("dataView".equals(rootElement.attributeValue("type")) ) { //wraps a form element
+					sb.append("<br/><input type=\"checkbox\" name=\"jspName_custom_inherit\" " +
+							inherit + "/> " + NLT.get("__custom_view_jsp_inherit") );
+					sb.append("<a name=\"help_div_customInheritJsp_a\" onClick=\"ss_activateMenuLayerMove('help_div_customInheritJsp');return false;\"><img alt=\"" + NLT.get("alt.help") + "\" border=\"0\" src=\""+helpImgUrl+"\"/></a>\n");
+
 				}
 			}
 		}
@@ -1385,7 +1388,13 @@ public class BuildDefinitionDivs extends TagSupport {
 		hb.append("<span>");
 		hb.append(NLT.get("__custom_view_jsp_help"));
 		hb.append("</span>\n</div>\n");
-
+		
+		hb.append("</span>\n</div>\n");
+		hb.append("<div align=\"left\" id=\"help_div_customInheritJsp");
+		hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");
+		hb.append("<span>");
+		hb.append(NLT.get("__custom_view_jsp_inherit_help"));
+		hb.append("</span>\n</div>\n");
 	}
 	
 	private void buildHelpDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {

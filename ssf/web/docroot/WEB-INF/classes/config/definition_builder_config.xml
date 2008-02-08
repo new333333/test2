@@ -2102,10 +2102,10 @@
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="formJsp" caption="__form_jsp_name" type="text"/>
-			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
-			<property name="mobileJsp" caption="__mobile_jsp_name" type="text"/>
-			<property name="mailJsp" caption="__mail_jsp_name" type="text"/>
+			<property name="formJsp" caption="__form_jsp_name" type="text" status="deprecated"/>
+			<property name="viewJsp" caption="__view_jsp_name" type="text" status="deprecated"/>
+			<property name="mobileJsp" caption="__mobile_jsp_name" type="text" status="deprecated"/>
+			<property name="mailJsp" caption="__mail_jsp_name" type="text" status="deprecated"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" definitionType="1" caption="__title" />
@@ -2129,9 +2129,9 @@
 		
 	<item name="customJspView" caption="__custom_jsp" category="generalViewLayout" display="view">
 		<properties>
-			<property name="viewJsp" caption="__view_jsp_name" type="text"/>
-			<property name="mobileJsp" caption="__mobile_jsp_name" type="text"/>
-			<property name="mailJsp" caption="__mail_jsp_name" type="text"/>
+			<property name="viewJsp" caption="__view_jsp_name" type="text" status="deprecated"/>
+			<property name="mobileJsp" caption="__mobile_jsp_name" type="text" status="deprecated"/>
+			<property name="mailJsp" caption="__mail_jsp_name" type="text" status="deprecated"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="dashboardCanvas" definitionType="5" caption="__dashboard_canvas" />
