@@ -38,8 +38,10 @@ import org.apache.ws.security.WSConstants;
 import org.apache.ws.security.WSPasswordCallback;
 
 import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
+import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.zone.ZoneModule;
@@ -109,7 +111,9 @@ public class PWCallback implements CallbackHandler {
         			// meaning the false user object will not be utilized errorneously.
         			// This is our only chance to get at that piece of info (ie, user 
         			// identify) when invoked by WS runtime (as opposed to web framework).
-        			RequestContextUtil.setThreadContext(user);
+        			RequestContext rc = RequestContextUtil.setThreadContext(user);
+        			// Give it a little more information about how this request came in.
+        			rc.setAuthenticator(LoginInfo.AUTHENTICATOR_WS);
         		}
             	catch(NoUserByTheNameException e) {
             		// With wsse:PasswordDigest, all we need to do here is not to

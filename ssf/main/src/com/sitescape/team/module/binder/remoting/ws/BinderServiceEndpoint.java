@@ -28,15 +28,19 @@
  */
 package com.sitescape.team.module.binder.remoting.ws;
 
-import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-public class BinderServiceEndpoint extends ServletEndpointSupport implements BinderService {
+import com.sitescape.team.util.SpringContextUtil;
 
+public class BinderServiceEndpoint implements ServiceLifecycle, BinderService {
+
+	// Implementation note: NEVER extend org.springframework.remoting.jaxrpc.ServletEndpointSupport
+	// to get a handle on the application context from it. Our system design requires it to be
+	// possible to invoke this service endpoint across app boundaries, that is, from different 
+	// servlet context. Therefore we must obtain the application context through our own
+	// SpringContextUtil class. 
 	private BinderService binderService;
-	
-	protected void onInit() {
-		this.binderService = (BinderService) getWebApplicationContext().getBean("binderService");
-	}
 	
 	protected BinderService getBinderService() {
 		return binderService;
@@ -57,5 +61,12 @@ public class BinderServiceEndpoint extends ServletEndpointSupport implements Bin
 	public String search(String query, int offset, int maxResults) {
 		return getBinderService().search(query, offset, maxResults);
 	}
+
+	public void init(Object context) throws ServiceException {
+		this.binderService = (BinderService) SpringContextUtil.getBean("binderService");
+	}
 	
+	public void destroy() {
+	}
+
 }

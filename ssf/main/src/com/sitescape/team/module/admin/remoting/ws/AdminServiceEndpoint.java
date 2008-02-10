@@ -28,21 +28,28 @@
  */
 package com.sitescape.team.module.admin.remoting.ws;
 
-import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-public class AdminServiceEndpoint extends ServletEndpointSupport implements AdminService {
+import com.sitescape.team.util.SpringContextUtil;
+
+public class AdminServiceEndpoint implements ServiceLifecycle, AdminService {
 
 	private AdminService adminService;
 	
-	protected void onInit() {
-		this.adminService = (AdminService) getWebApplicationContext().getBean("adminService");
-	}
 	protected AdminService getAdminService() {
 		return adminService;
 	}
 	
 	public long addBinder(long parentBinderId, long binderConfigId, String title) {
 		return getAdminService().addBinder(parentBinderId, binderConfigId, title);
+	}
+
+	public void init(Object context) throws ServiceException {
+		this.adminService = (AdminService) SpringContextUtil.getBean("adminService");
+	}
+	
+	public void destroy() {
 	}
 
 }

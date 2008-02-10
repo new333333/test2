@@ -57,6 +57,10 @@ public class RequestContext {
      * Session Context
      */
     private SessionContext sessionCtx; 
+    /*
+     * (Optional) Authenticator name.
+     */
+    private String authenticator;
     
     private boolean resolved = false;
     
@@ -204,6 +208,14 @@ public class RequestContext {
     
     public SessionContext getSessionContext() {
     	return sessionCtx;
+    }
+    
+    public void setAuthenticator(String authenticator) {
+    	this.authenticator = authenticator;
+    }
+    
+    public String getAuthenticator() {
+    	return authenticator;
     }
     
     /**

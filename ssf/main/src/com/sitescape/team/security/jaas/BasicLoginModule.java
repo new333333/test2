@@ -44,17 +44,23 @@ import javax.security.auth.spi.LoginModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitescape.team.asmodule.zonecontext.ZoneContextHolder;
+import com.sitescape.team.domain.LoginInfo;
+import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.security.authentication.AuthenticationManagerUtil;
-import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.util.Validator;
 
 public class BasicLoginModule implements LoginModule {
 
 	protected static Log logger = LogFactory.getLog(BasicLoginModule.class);
-
+			
 	private Subject subject;
 	private CallbackHandler callbackHandler;
 	private Principal principal;
 	private String password;
+	private String authenticator;
+	protected String roleName;
 	
 	public boolean abort() throws LoginException {
 		return true;
@@ -75,6 +81,12 @@ public class BasicLoginModule implements LoginModule {
 			Map<String, ?> sharedState, Map<String, ?> options) {
 		this.subject = subject;
 		this.callbackHandler = callbackHandler;
+		authenticator = (String) options.get("authenticator");
+		if(Validator.isNull(authenticator))
+			authenticator = LoginInfo.AUTHENTICATOR_UNKNOWN;
+		roleName = (String) options.get("role");
+		if(Validator.isNull(roleName))
+			roleName = "users";
 	}
 
 	public boolean login() throws LoginException {
@@ -132,7 +144,6 @@ public class BasicLoginModule implements LoginModule {
 
 	protected String[] authenticate() throws IOException,
 			UnsupportedCallbackException, LoginException {
-
 		NameCallback nameCallback = new NameCallback("Username: ");
 		PasswordCallback passwordCallback = new PasswordCallback("Password: ",
 				false);
@@ -153,16 +164,22 @@ public class BasicLoginModule implements LoginModule {
 			password = "";
 
 		try {
-			AuthenticationManagerUtil.authenticate(SZoneConfig
-					.getDefaultZoneName(), username, password, false, false, "portal");
+			String zoneName = getZoneModule().getZoneNameByVirtualHost(ZoneContextHolder.getServerName());
+			
+			AuthenticationManagerUtil.authenticate
+			(zoneName, username, password, false, false, authenticator);
 
 			// If still here, the authentication was successful.
 			return new String[] { username, password };
 		} catch (Exception e) {
-			logger.error(e.getLocalizedMessage());
+			logger.error(e);
 		}
 
 		return null;
+	}
+	
+	private ZoneModule getZoneModule() {
+		return (ZoneModule) SpringContextUtil.getBean("zoneModule");
 	}
 
 }

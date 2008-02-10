@@ -39,7 +39,7 @@ public class SiteScapeLoginModule extends BasicLoginModule {
 		boolean commitValue = super.commit();
 
 		if (commitValue) {
-			SiteScapeRole role = new SiteScapeRole("users");
+			SiteScapeRole role = new SiteScapeRole(roleName);
 
 			getSubject().getPrincipals().add(role);
 		}

@@ -28,15 +28,14 @@
  */
 package com.sitescape.team.module.profile.remoting.ws;
 
-import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-public class ProfileServiceEndpoint extends ServletEndpointSupport implements ProfileService {
+import com.sitescape.team.util.SpringContextUtil;
+
+public class ProfileServiceEndpoint implements ServiceLifecycle, ProfileService {
 
 	private ProfileService profileService;
-	
-	protected void onInit() {
-		this.profileService = (ProfileService) getWebApplicationContext().getBean("profileService");
-	}
 	
 	protected ProfileService getProfileService() {
 		return profileService;
@@ -69,4 +68,12 @@ public class ProfileServiceEndpoint extends ServletEndpointSupport implements Pr
 	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
 		getProfileService().modifyPrincipal(binderId, principalId, inputDataAsXML);
 	}
+	
+	public void init(Object context) throws ServiceException {
+		this.profileService = (ProfileService) SpringContextUtil.getBean("profileService");
+	}
+	
+	public void destroy() {
+	}
+
 }
