@@ -96,6 +96,8 @@
 		<ant dir="${project.dir}/liferay" target="deploy" inheritAll="false" />
 		<!-- ssfs component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
+		<!-- ssr component is deployed into its own web app -->
+		<ant dir="${project.dir}/ssr" target="deploy" inheritAll="false" />
 	</target>
 
 	<target name="deploy-liferay-tomcat" depends="clean, init-liferay, clean-app-server">

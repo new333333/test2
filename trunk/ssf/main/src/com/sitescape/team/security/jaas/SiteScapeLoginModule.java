@@ -38,7 +38,9 @@ import javax.security.auth.spi.LoginModule;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.ServerDetector;
+import com.sitescape.util.Validator;
 
 public class SiteScapeLoginModule implements LoginModule {
 
@@ -47,18 +49,30 @@ public class SiteScapeLoginModule implements LoginModule {
 	private LoginModule loginModule;
 
 	public SiteScapeLoginModule() {
-		if (ServerDetector.isJBoss()) {
-			loginModule =
-				new com.sitescape.team.security.jaas.jboss.SiteScapeLoginModule();
+		String jassImplClassName = SPropsUtil.getString("security.jaas.impl.class", null);
+		
+		if (Validator.isNotNull(jassImplClassName)) {
+			try {
+				loginModule = (LoginModule) Class.forName(jassImplClassName).newInstance();
+			}
+			catch(Exception e) {
+				logger.error(e);
+			}
 		}
-		else if (ServerDetector.isTomcat()) {
-			loginModule =
-				new com.sitescape.team.security.jaas.tomcat.SiteScapeLoginModule();
-		}
-		else {
-			logger.warn("Unrecognized container type");
-			loginModule = 
-				new com.sitescape.team.security.jaas.SiteScapeLoginModule();
+		
+		if(loginModule == null) {
+			if (ServerDetector.isJBoss()) {
+				loginModule =
+					new com.sitescape.team.security.jaas.jboss.SiteScapeLoginModule();
+			}
+			else if (ServerDetector.isTomcat()) {
+				loginModule =
+					new com.sitescape.team.security.jaas.tomcat.SiteScapeLoginModule();
+			}
+			else {
+				logger.error("Unrecognized container type");
+				throw new RuntimeException("Unrecognized container type");
+			}
 		}
 		
 		if(logger.isDebugEnabled())
@@ -75,7 +89,19 @@ public class SiteScapeLoginModule implements LoginModule {
 
 	public void initialize(Subject subject, CallbackHandler callbackHandler, 
 			Map<String, ?> sharedState, Map<String, ?> options) {
-		loginModule.initialize(subject, callbackHandler, sharedState, options);
+		String enableKey = (String) options.get("enableKey");
+		boolean enable = true;
+		if(Validator.isNotNull(enableKey)) {
+			enable = SPropsUtil.getBoolean(enableKey, true);
+		}
+		if(enable) {
+			loginModule.initialize(subject, callbackHandler, sharedState, options);
+		}
+		else {
+			if(logger.isDebugEnabled())
+				logger.debug("Denying remote client login: It is disabled");
+			throw new RuntimeException("The service is disabled");
+		}
 	}
 
 	public boolean login() throws LoginException {

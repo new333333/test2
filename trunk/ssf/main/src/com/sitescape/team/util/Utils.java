@@ -82,4 +82,13 @@ public class Utils {
 		}
 		return zoneKey;
 	}
+	
+	public static RuntimeException launderUncheckedException(Throwable uncheckedException) {
+		if(uncheckedException instanceof Error)
+			throw (Error) uncheckedException;
+		else if(uncheckedException instanceof RuntimeException)
+			return (RuntimeException) uncheckedException;
+		else
+			throw new IllegalArgumentException(uncheckedException);
+	}
 }

@@ -28,15 +28,15 @@
  */
 package com.sitescape.team.module.folder.remoting.ws;
 
-import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-public class FolderServiceEndpoint extends ServletEndpointSupport implements FolderService {
+import com.sitescape.team.util.SpringContextUtil;
+
+public class FolderServiceEndpoint implements ServiceLifecycle, FolderService {
 
 	private FolderService folderService;
-	
-	protected void onInit() {
-		this.folderService = (FolderService) getWebApplicationContext().getBean("folderService");
-	}
+
 	protected FolderService getFolderService() {
 		return folderService;
 	}
@@ -63,6 +63,13 @@ public class FolderServiceEndpoint extends ServletEndpointSupport implements Fol
 	
 	public void uploadFolderFile(long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		getFolderService().uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
+	}
+
+	public void init(Object context) throws ServiceException {
+		this.folderService = (FolderService) SpringContextUtil.getBean("folderService");
+	}
+	
+	public void destroy() {
 	}
 
 }

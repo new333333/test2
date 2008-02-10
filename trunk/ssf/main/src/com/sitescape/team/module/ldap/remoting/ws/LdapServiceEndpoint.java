@@ -28,15 +28,14 @@
  */
 package com.sitescape.team.module.ldap.remoting.ws;
 
-import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-public class LdapServiceEndpoint extends ServletEndpointSupport implements LdapService {
+import com.sitescape.team.util.SpringContextUtil;
+
+public class LdapServiceEndpoint implements ServiceLifecycle, LdapService {
 
 	private LdapService ldapService;
-	
-	protected void onInit() {
-		this.ldapService = (LdapService) getWebApplicationContext().getBean("ldapService");
-	}
 	
 	protected LdapService getLdapService() {
 		return ldapService;
@@ -44,6 +43,13 @@ public class LdapServiceEndpoint extends ServletEndpointSupport implements LdapS
 
 	public void syncUser(Long userId) {
 		getLdapService().syncUser(userId);
+	}
+
+	public void init(Object context) throws ServiceException {
+		this.ldapService = (LdapService) SpringContextUtil.getBean("ldapService");
+	}
+	
+	public void destroy() {
 	}
 
 }

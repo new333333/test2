@@ -42,7 +42,7 @@ public class SiteScapeLoginModule extends BasicLoginModule {
 		if (commitValue) {
 			SiteScapeGroup group = new SiteScapeGroup("Roles");
 
-			group.addMember(new SiteScapePrincipal("users"));
+			group.addMember(new SiteScapePrincipal(roleName));
 
 			getSubject().getPrincipals().add(group);
 		}

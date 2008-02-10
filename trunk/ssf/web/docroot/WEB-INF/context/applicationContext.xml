@@ -765,12 +765,9 @@ text/calendar											  ics
 		<property name="reportModule"><ref local="reportModule"/></property>
 	</bean>
 	
-	<bean id="checkEnabledInterceptor" class="com.sitescape.team.remoting.ws.interceptor.CheckEnabledInterceptor" />
-	
 	<bean id="wsProxyTemplate" class="org.springframework.aop.framework.ProxyFactoryBean" abstract="true">
 		<property name="interceptorNames">
 			<list>
-				<value>checkEnabledInterceptor</value>
 				<value>aopallianceLoggingInterceptor</value>
 				<!-- When a user request is served, typically one of the very first 
 				     interceptors we define is one that sets up request context for 

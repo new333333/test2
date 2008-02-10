@@ -30,16 +30,16 @@ package com.sitescape.team.module.license.remoting.ws;
 
 import java.util.Collection;
 
-import org.dom4j.Document;
-import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-public class LicenseServiceEndpoint extends ServletEndpointSupport implements LicenseService {
+import org.dom4j.Document;
+
+import com.sitescape.team.util.SpringContextUtil;
+
+public class LicenseServiceEndpoint implements ServiceLifecycle, LicenseService {
 
 	private LicenseService licenseService;
-	
-	protected void onInit() {
-		this.licenseService = (LicenseService) getWebApplicationContext().getBean("licenseService");
-	}
 	
 	protected LicenseService getLicenseService() {
 		return licenseService;
@@ -59,6 +59,13 @@ public class LicenseServiceEndpoint extends ServletEndpointSupport implements Li
 
 	public void updateLicense() {
 		getLicenseService().updateLicense();
+	}
+
+	public void init(Object context) throws ServiceException {
+		this.licenseService = (LicenseService) SpringContextUtil.getBean("licenseService");
+	}
+	
+	public void destroy() {
 	}
 
 }

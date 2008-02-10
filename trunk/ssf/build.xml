@@ -86,6 +86,8 @@
 		<ant dir="war" target="clean" />
 		
 		<ant dir="ssfs" target="clean" />
+		
+		<ant dir="ssr" target="clean" />
 	</target>
 
 	<target name="compile">
@@ -136,6 +138,8 @@
 		<ant dir="war" target="war" />
 		
 		<ant dir="ssfs" target="war" />
+		
+		<ant dir="ssr" target="war" />
 	</target>
 
 	<target name="deploy">
@@ -160,6 +164,8 @@
 		<ant dir="web" target="deploy" />
 		
 		<ant dir="ssfs" target="deploy" />
+		
+		<ant dir="ssr" target="deploy" />
 	</target>
 
 	<target name="java2html">

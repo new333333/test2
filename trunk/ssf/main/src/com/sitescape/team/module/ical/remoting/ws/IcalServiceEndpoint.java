@@ -28,21 +28,28 @@
  */
 package com.sitescape.team.module.ical.remoting.ws;
 
-import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-public class IcalServiceEndpoint extends ServletEndpointSupport implements IcalService {
+import com.sitescape.team.util.SpringContextUtil;
+
+public class IcalServiceEndpoint implements ServiceLifecycle, IcalService {
 
 	private IcalService icalService;
 	
-	protected void onInit() {
-		this.icalService = (IcalService) getWebApplicationContext().getBean("icalService");
-	}
 	protected IcalService getIcalService() {
 		return icalService;
 	}
 
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML) {
 		getIcalService().uploadCalendarEntries(folderId, iCalDataAsXML);
+	}
+
+	public void init(Object context) throws ServiceException {
+		this.icalService = (IcalService) SpringContextUtil.getBean("icalService");
+	}
+	
+	public void destroy() {
 	}
 
 }

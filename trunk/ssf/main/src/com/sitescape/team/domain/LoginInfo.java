@@ -30,8 +30,6 @@ package com.sitescape.team.domain;
 
 import java.util.Date;
 
-import com.sitescape.team.domain.AuditTrail.AuditType;
-
 /**
  * @hibernate.subclass discriminator-value="L"
  * 
@@ -42,12 +40,35 @@ import com.sitescape.team.domain.AuditTrail.AuditType;
  */
 public class LoginInfo extends AuditTrail {
 
+	/**
+	 * Unknown authenticator
+	 */
+	public static final String AUTHENTICATOR_UNKNOWN = "unknown";
+	/**
+	 * User logged in through portal
+	 */
 	public static final String AUTHENTICATOR_PORTAL	= "portal";
+	/**
+	 * WebDAV client
+	 */
 	public static final String AUTHENTICATOR_WEBDAV	= "webdav";
+	/**
+	 * RSS client
+	 */
 	public static final String AUTHENTICATOR_RSS	= "rss";
+	/**
+	 * iCal client
+	 */
 	public static final String AUTHENTICATOR_ICAL	= "ical";
+	/**
+	 * SOAP-based WS client with WS-Security authentication 
+	 */
 	public static final String AUTHENTICATOR_WS		= "ws";
-		
+	/**
+	 * Remoting client with Basic authentication
+	 */
+	public static final String AUTHENTICATOR_REMOTING = "remoting";
+	
 	public LoginInfo() {
 	}
 

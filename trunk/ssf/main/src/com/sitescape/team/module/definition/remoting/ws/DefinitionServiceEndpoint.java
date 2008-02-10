@@ -28,15 +28,14 @@
  */
 package com.sitescape.team.module.definition.remoting.ws;
 
-import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-public class DefinitionServiceEndpoint extends ServletEndpointSupport implements DefinitionService {
+import com.sitescape.team.util.SpringContextUtil;
+
+public class DefinitionServiceEndpoint implements ServiceLifecycle, DefinitionService {
 
 	private DefinitionService definitionService;
-	
-	protected void onInit() {
-		this.definitionService = (DefinitionService) getWebApplicationContext().getBean("definitionService");
-	}
 	
 	protected DefinitionService getDefinitionService() {
 		return definitionService;
@@ -48,6 +47,13 @@ public class DefinitionServiceEndpoint extends ServletEndpointSupport implements
 
 	public String getDefinitionConfigAsXML() {
 		return getDefinitionService().getDefinitionConfigAsXML();
+	}
+
+	public void init(Object context) throws ServiceException {
+		this.definitionService = (DefinitionService) SpringContextUtil.getBean("definitionService");
+	}
+	
+	public void destroy() {
 	}
 
 }

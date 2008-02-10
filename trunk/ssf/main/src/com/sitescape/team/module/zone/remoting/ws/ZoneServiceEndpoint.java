@@ -28,15 +28,14 @@
  */
 package com.sitescape.team.module.zone.remoting.ws;
 
-import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-public class ZoneServiceEndpoint extends ServletEndpointSupport implements ZoneService {
+import com.sitescape.team.util.SpringContextUtil;
+
+public class ZoneServiceEndpoint implements ServiceLifecycle, ZoneService {
 
 	private ZoneService zoneService;
-	
-	protected void onInit() {
-		this.zoneService = (ZoneService) getWebApplicationContext().getBean("zoneService");
-	}
 	
 	protected ZoneService getZoneService() {
 		return zoneService;
@@ -52,6 +51,13 @@ public class ZoneServiceEndpoint extends ServletEndpointSupport implements ZoneS
 
 	public void modifyZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
 		getZoneService().modifyZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	}
+
+	public void init(Object context) throws ServiceException {
+		this.zoneService = (ZoneService) SpringContextUtil.getBean("zoneService");
+	}
+	
+	public void destroy() {
 	}
 
 }
