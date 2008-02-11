@@ -28,14 +28,12 @@
  */
 package com.sitescape.team.dao.impl;
 
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -44,10 +42,10 @@ import java.util.TreeSet;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
+import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
-import org.hibernate.FetchMode;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.springframework.dao.DataAccessException;
@@ -62,10 +60,8 @@ import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.EmailAddress;
-import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Membership;
 import com.sitescape.team.domain.NoGroupByTheIdException;
@@ -83,8 +79,6 @@ import com.sitescape.team.domain.UserEntityPK;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.UserPropertiesPK;
 import com.sitescape.team.domain.Visits;
-import com.sitescape.team.domain.WorkflowControlledEntry;
-import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
@@ -739,7 +733,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	return loadUser(id, zoneId);
    }
    public Set<Long> getPrincipalIds(User user) {
-	   if (user.isAllUserMember()) return new HashSet(user.computePrincipalIds(getReservedId(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
+	   if (user.isAllUserMember()) return new HashSet(user.computePrincipalIds(getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
 	   return new HashSet(user.computePrincipalIds(null));
    
     }

@@ -338,14 +338,17 @@ public class User extends Principal {
      * 
      * @return
      */
-    public Set computePrincipalIds(Long reservedGroupId) {
+    public Set computePrincipalIds(Group reservedGroup) {
     	// Each thread serving a user request has its own copy of user object.
     	// Therefore we do not have to use synchronization around principalIds.
         if (!isActive()) return new HashSet();
         
         if(principalIds == null) {
     		Set ids = new HashSet();
-    		if (reservedGroupId != null) ids.add(reservedGroupId);
+    		if (reservedGroup != null) {
+    			//this handles the case where all users is part of another group
+    			addPrincipalIds(reservedGroup, ids);
+    		}
     		addPrincipalIds(this, ids);
     		principalIds = ids;
     	}
