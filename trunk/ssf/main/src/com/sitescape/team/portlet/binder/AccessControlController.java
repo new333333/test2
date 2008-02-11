@@ -65,7 +65,6 @@ public class AccessControlController extends AbstractBinderController {
 	throws Exception {
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
 		Binder binder = getBinderModule().getBinder(binderId);
 		request.setAttribute("roleId", "");
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
@@ -81,7 +80,7 @@ public class AccessControlController extends AbstractBinderController {
 			getAdminModule().setWorkAreaFunctionMembershipInherited(binder,inherit);			
 		
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			setupViewBinder(response, binderId, binderType);
+			setupReloadOpener(response, binderId);
 			
 		} else {
 			response.setRenderParameters(request.getParameterMap());

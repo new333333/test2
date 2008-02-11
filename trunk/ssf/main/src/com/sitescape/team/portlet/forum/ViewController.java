@@ -69,6 +69,7 @@ public class ViewController  extends SAbstractController {
 	public static final String WIKI_PORTLET="ss_wiki";
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
 	public static final String WORKAREA_PORTLET="ss_workarea";
+	public static final String WELCOME_PORTLET="ss_welcome";
 
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
  		PortletPreferences prefs = null;

@@ -356,7 +356,7 @@
         <portlet-class>com.sitescape.team.spring.web.portlet.DispatcherPortlet</portlet-class>
 		<init-param>
 			<name>contextConfigLocation</name>
-			<value>/WEB-INF/context/portlet/welcome.xml optional:/WEB-INF/context/portlet/welcome-ext.xml</value>
+			<value>/WEB-INF/context/portlet/ssf.xml /WEB-INF/context/portlet/ssf-additional.xml optional:/WEB-INF/context/portlet/ssf-ext.xml</value>
 		</init-param>
 		<init-param>
 			<name>contextClass</name>
@@ -365,6 +365,7 @@
         <expiration-cache>300</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
+            <portlet-mode>view</portlet-mode>
         </supports>
         <resource-bundle>content.welcome</resource-bundle>
     </portlet>

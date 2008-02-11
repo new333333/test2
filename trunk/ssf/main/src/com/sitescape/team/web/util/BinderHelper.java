@@ -124,6 +124,7 @@ public class BinderHelper {
 	public static final String WIKI_PORTLET="ss_wiki";
 	public static final String WORKSPACE_PORTLET="ss_workspacetree";
 	public static final String WORKAREA_PORTLET="ss_workarea";
+	public static final String WELCOME_PORTLET="ss_welcome";
 
 	static public ModelAndView CommonPortletDispatch(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -187,7 +188,7 @@ public class BinderHelper {
 				response.setProperty(RenderResponse.EXPIRATION_CACHE,"300");
 			} catch(Exception e) {}
 			return new ModelAndView(WebKeys.VIEW_FORUM, model);
-		} else if (WORKSPACE_PORTLET.equals(displayType)) {
+		} else if (WORKSPACE_PORTLET.equals(displayType) || WELCOME_PORTLET.equals(displayType)) {
 			String id = null;
 			if (prefs != null) id = PortletPreferencesUtil.getValue(prefs, WebKeys.WORKSPACE_PREF_ID, null);
 			Workspace binder;
@@ -206,7 +207,11 @@ public class BinderHelper {
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
 				
-		    return new ModelAndView("workspacetree/view", model);
+			if (WELCOME_PORTLET.equals(displayType)) {
+				return new ModelAndView("help/welcome", model);
+			} else {
+				return new ModelAndView("workspacetree/view", model);
+			}
 		    
 		} else if (PRESENCE_PORTLET.equals(displayType)) {
  			Set ids = new HashSet();		
@@ -405,6 +410,8 @@ public class BinderHelper {
 			return ViewController.MOBILE_PORTLET;
 		else if (pName.contains(ViewController.WORKAREA_PORTLET))
 			return ViewController.WORKAREA_PORTLET;
+		else if (pName.contains(ViewController.WELCOME_PORTLET))
+			return ViewController.WELCOME_PORTLET;
 		return null;
 
 	}
