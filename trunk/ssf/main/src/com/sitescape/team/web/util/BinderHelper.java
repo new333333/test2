@@ -301,6 +301,7 @@ public class BinderHelper {
 			binderIds = LongIdUtil.getIdsAsLongSet((String)mobileBinderIds);
 		} else if (mobileBinderIds instanceof String[]) {
 			binderIds = LongIdUtil.getIdsAsLongSet((String[])mobileBinderIds);
+			bs.getProfileModule().setUserProperty(null,ObjectKeys.USER_PROPERTY_MOBILE_BINDER_IDS, LongIdUtil.getIdsAsString((String[])mobileBinderIds));
 		} else {
 			binderIds = new HashSet();
 		}
