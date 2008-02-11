@@ -399,13 +399,13 @@ public class ViewEntryController extends  SAbstractController {
 					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 					toolbar.addToolbarMenu("4_move", NLT.get("toolbar.move"), url);
 					//The "Copy" menu
-/*					url = response.createActionURL();
+					url = response.createActionURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_FOLDER_ENTRY);
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_COPY);
 					url.setParameter(WebKeys.URL_BINDER_ID, folderId);
 					url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 					toolbar.addToolbarMenu("5_copy", NLT.get("toolbar.copy"), url);
-*/				}
+				}
 			}
 			Iterator itWorkflows = entry.getParentBinder().getWorkflowDefinitions().iterator();
 			if (itWorkflows.hasNext()) {

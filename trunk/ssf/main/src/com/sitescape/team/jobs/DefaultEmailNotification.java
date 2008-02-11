@@ -36,6 +36,7 @@ import org.quartz.JobExecutionException;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.jobs.DefaultEmailPosting.MailJobDescription;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
 /**
@@ -60,32 +61,30 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
     }
 
 
-	public ScheduleInfo getScheduleInfo(Binder binder) {
-		return getScheduleInfo(new MailJobDescription(binder));
+	public ScheduleInfo getScheduleInfo(Long zoneId) {
+		return getScheduleInfo(new MailJobDescription(zoneId));
 	}
-	public void setScheduleInfo(ScheduleInfo info, Binder binder) {
-		info.getDetails().put("binder", binder.getId());
-		setScheduleInfo(new MailJobDescription(binder), info);
+	public void setScheduleInfo(ScheduleInfo info) {
+		setScheduleInfo(new MailJobDescription(info.getZoneId()), info);
+
 	}
 
-	public void enable(boolean enable, Binder binder) {
-		enable(enable, new MailJobDescription(binder));
+	public void enable(boolean enable, Long zoneId) {
+		enable(enable, new MailJobDescription(zoneId));
  	}
 	public class MailJobDescription implements JobDescription {
-		private Binder binder;
 		private Long zoneId;
-		public MailJobDescription(Binder binder) {
-			this.binder = binder;
-			this.zoneId = binder.getZoneId();
+		public MailJobDescription(Long zoneId) {
+			this.zoneId = zoneId;
 		}
     	public  String getDescription() {
-    		return SSStatefulJob.trimDescription(binder.toString());
+    		return SSStatefulJob.trimDescription(zoneId.toString());
     	}
     	public Long getZoneId() {
     		return zoneId;
     	}
     	public String getName() {
-    		return binder.getId().toString();
+    		return zoneId.toString();
     	}
     	public String getGroup() {
     		return EmailNotification.NOTIFICATION_GROUP;
@@ -98,7 +97,6 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
     	}
     	public ScheduleInfo getDefaultScheduleInfo() {
     		ScheduleInfo info = new ScheduleInfo(zoneId);
-    		info.getDetails().put("binder", binder.getId());
     		info.getDetails().put("lastNotification", new Date());
     		return info;
     	}

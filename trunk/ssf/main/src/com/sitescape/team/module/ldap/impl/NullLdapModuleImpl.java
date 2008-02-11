@@ -36,7 +36,7 @@ import com.sitescape.team.module.ldap.LdapConfig;
 import com.sitescape.team.module.ldap.LdapModule;
 
 public class NullLdapModuleImpl extends CommonDependencyInjection implements LdapModule {
-	public boolean testAccess(String operation) {
+	public boolean testAccess(LdapOperation operation) {
 		return false;
 	}
 

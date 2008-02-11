@@ -696,7 +696,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		}
     }
 
-	public List<Tag> getTags(FolderEntry entry) {
+	public Collection<Tag> getTags(FolderEntry entry) {
 		//have Entry - so assume read access
 		//bulk load tags
         return getCoreDao().loadEntityTags(entry.getEntityIdentifier(), RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());

@@ -39,22 +39,20 @@ import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dom4j.Document;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.jobs.ScheduleInfo;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.tree.MailTreeHelper;
-import com.sitescape.team.web.tree.WsDomTreeBuilder;
-import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.MailTreeHelper;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.ScheduleHelper;
 import com.sitescape.util.Validator;
@@ -81,7 +79,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 				if (formData.containsKey("groups")) userList.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 //				ScheduleInfo config = getBinderModule().getNotificationConfig(folderId);
 //				getScheduleData(request, config);
-				getBinderModule().modifyNotification(folderId, getNotifyData(request), userList);
+				getBinderModule().modifyNotification(folderId, userList, getNotifyData(request));
 //				getBinderModule().setNotificationConfig(folderId, config);			
 			}
 			if (formData.containsKey("alias")) {
@@ -115,7 +113,7 @@ public class EmailConfigController extends  AbstractBinderController  {
 		//get top level schedule
 
 		if (folder.isTop()) {
-			ScheduleInfo config = getBinderModule().getNotificationConfig(folder.getZoneId());
+			ScheduleInfo config = getAdminModule().getNotificationSchedule();
 			model.put(WebKeys.SCHEDULE_INFO, config);
 //			config = getBinderModule().getNotificationConfig(folderId);
 //			model.put(WebKeys.SCHEDULE_INFO, config);

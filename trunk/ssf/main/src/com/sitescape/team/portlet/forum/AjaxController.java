@@ -693,7 +693,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			Binder binder = getBinderModule().getBinder(binderId);
 			Subscription sub = getBinderModule().getSubscription(binderId);
 			model.put(WebKeys.SUBSCRIPTION, sub);
-			model.put(WebKeys.SCHEDULE_INFO, getBinderModule().getNotificationConfig(binder.getZoneId()));
+			model.put(WebKeys.SCHEDULE_INFO, getAdminModule().getNotificationSchedule());
 			model.put(WebKeys.BINDER, binder);
 			return new ModelAndView("forum/subscribe_return", model);			
 		} else {

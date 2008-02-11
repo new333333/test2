@@ -75,11 +75,13 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.jobs.EmailNotification;
 import com.sitescape.team.jobs.EmailPosting;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.jobs.SendEmail;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -242,7 +244,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
    		Binder top = RequestContextHolder.getRequestContext().getZone();
 		switch (operation) {
 			case manageFunction:
-			case managePosting:
+			case manageMail:
 			case manageTemplate:
 			case manageErrorLogs:
   				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
@@ -261,12 +263,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	return coreDao.loadPostings(RequestContextHolder.getRequestContext().getZoneId());
     }
     public void modifyPosting(String postingId, Map updates) {
-    	checkAccess(AdminOperation.managePosting);
+    	checkAccess(AdminOperation.manageMail);
     	PostingDef post = coreDao.loadPosting(postingId, RequestContextHolder.getRequestContext().getZoneId());
     	ObjectBuilder.updateObject(post, updates);
     }
     public void addPosting(Map updates) {
-    	checkAccess(AdminOperation.managePosting);
+    	checkAccess(AdminOperation.manageMail);
     	PostingDef post = new PostingDef();
     	post.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
        	ObjectBuilder.updateObject(post, updates);
@@ -274,7 +276,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
       	coreDao.save(post);   	
     }
     public void deletePosting(String postingId) {
-    	checkAccess(AdminOperation.managePosting);
+    	checkAccess(AdminOperation.manageMail);
     	PostingDef post = coreDao.loadPosting(postingId, RequestContextHolder.getRequestContext().getZoneId());
     	if (post.getBinder() != null) {
     		post.getBinder().setPosting(null);
@@ -286,7 +288,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
        	return getPostingObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
     }
     public void setPostingSchedule(ScheduleInfo config) throws ParseException {
-       	checkAccess(AdminOperation.managePosting);
+       	checkAccess(AdminOperation.manageMail);
     	getPostingObject().setScheduleInfo(config);
     }	     
     private EmailPosting getPostingObject() {
@@ -309,6 +311,41 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
                             + emailPostingClass + "'");
         }
     }
+	/**
+     * Do actual work to either enable or disable digest notification.
+     * @param id
+     * @param value
+     */
+	public ScheduleInfo getNotificationSchedule() {
+  		return getNotificationObject().getScheduleInfo(RequestContextHolder.getRequestContext().getZoneId());
+	}
+	    
+    //inside write transaction    
+    public void setNotificationSchedule(ScheduleInfo config) {
+    	checkAccess(AdminOperation.manageMail);
+        //data is stored with job
+        getNotificationObject().setScheduleInfo(config);
+    }    
+    private EmailNotification getNotificationObject() {
+    	String emailNotifyClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFICATION_JOB);
+        try {
+            Class processorClass = ReflectHelper.classForName(emailNotifyClass);
+            EmailNotification job = (EmailNotification)processorClass.newInstance();
+            return job;
+        } catch (ClassNotFoundException e) {
+            throw new ConfigurationException(
+                    "Invalid EmailNotification class name '" + emailNotifyClass + "'",
+                    e);
+        } catch (InstantiationException e) {
+            throw new ConfigurationException(
+                    "Cannot instantiate EmailNotification of type '"
+                            + emailNotifyClass + "'");
+        } catch (IllegalAccessException e) {
+            throw new ConfigurationException(
+                    "Cannot instantiate EmailNotification of type '"
+                            + emailNotifyClass + "'");
+        }
+    }    
     //These should be created when the zone is created, but just incase provide minimum backup
 	public TemplateBinder addDefaultTemplate(int type) {
 	   	//This is called as a side effect to bootstrap

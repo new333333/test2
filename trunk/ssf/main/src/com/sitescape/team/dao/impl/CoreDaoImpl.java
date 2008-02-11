@@ -1228,8 +1228,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        );
 		
 	}	
-    //load public and personal private tags for an entity.  Optimization
-    //order by id and name
+    //load public and personal private tags for an entity.
     public List<Tag> loadEntityTags(final EntityIdentifier entityIdentifier, final EntityIdentifier ownerIdentifier) {
 	   	return (List<Tag>)getHibernateTemplate().execute(
 		     	new HibernateCallback() {

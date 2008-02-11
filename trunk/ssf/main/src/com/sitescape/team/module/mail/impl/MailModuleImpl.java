@@ -141,6 +141,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 //	protected Map<String,String> mailAccounts = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 	public MailModuleImpl() {
 		defaultProps.put(MailModule.POSTING_JOB, "com.sitescape.team.jobs.DefaultEmailPosting");
+		defaultProps.put(MailModule.NOTIFICATION_JOB, "com.sitescape.team.jobs.DefaultEmailNotification");
+	 	defaultProps.put(MailModule.SUBSCRIPTION_JOB, "com.sitescape.team.jobs.DefaultFillEmailSubscription");
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_TEXT, "mailText.xslt");
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_HTML, "mailHtml.xslt");
 		defaultProps.put(MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED, "false");
@@ -225,8 +227,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	}
 
 	protected FillEmailSubscription getSubscriptionProcessor(Workspace zone) {
-	 	   String jobClass = SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FillEmailSubscription.SUBSCRIPTION_JOB + "']");
-	 	   if (Validator.isNull(jobClass)) jobClass = "com.sitescape.team.jobs.DefaultFillEmailSubscription";
+    	String jobClass = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), SUBSCRIPTION_JOB);
 	 	   try {
 	 		   Class processorClass = ReflectHelper.classForName(jobClass);
 	 		   FillEmailSubscription job = (FillEmailSubscription)processorClass.newInstance();
@@ -255,7 +256,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		if (zone.isDeleted()) return;
 		//make sure a delete job is scheduled for the zone
 		FillEmailSubscription sub = getSubscriptionProcessor(zone);
-		String minString = (String)SZoneConfig.getString(zone.getName(), "folderConfiguration/property[@name='" + FillEmailSubscription.SUBSCRIPTION_MINUTES + "']");
+		String minString = (String)getMailProperty(zone.getName(), SUBSCRIPTION_MINUTES);
 		int minutes = 5;
 		try {
 			minutes = Integer.parseInt(minString);

@@ -78,10 +78,10 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 				++pos;
 				updates.clear();
 			}
-			config = getBinderModule().getNotificationConfig(RequestContextHolder.getRequestContext().getZoneId());
+			config = getAdminModule().getNotificationSchedule();
 			config.setSchedule(ScheduleHelper.getSchedule(request, "notify"));
 			config.setEnabled(PortletRequestUtils.getBooleanParameter(request,  "notifyenabled", false));
-			getBinderModule().setNotificationConfig(RequestContextHolder.getRequestContext().getZoneId(), config);			
+			getAdminModule().setNotificationSchedule(config);			
 
 			response.setRenderParameters(formData);
 	} else if (formData.containsKey("closeBtn") || (formData.containsKey("cancelBtn"))) {
@@ -101,7 +101,7 @@ public class ConfigurePostingJobController extends  SAbstractController  {
 		model.put(WebKeys.SCHEDULE_INFO + "post", config);	
 		model.put(WebKeys.POSTINGS, getAdminModule().getPostings());
 		model.put(WebKeys.MAIL_POSTING_USE_ALIASES, SPropsUtil.getString("mail.posting.useAliases", "false"));
-		config = getBinderModule().getNotificationConfig(RequestContextHolder.getRequestContext().getZoneId());
+		config = getAdminModule().getNotificationSchedule();
 		model.put(WebKeys.SCHEDULE_INFO + "notify", config);
 		return new ModelAndView(WebKeys.VIEW_ADMIN_CONFIGURE_POSTING_JOB, model);
 	}

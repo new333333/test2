@@ -5,7 +5,6 @@
 <model-processor-mapping>
 	<processors>
 		<processor class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter" spring-bean-type="internal" spring-bean-name="defaultFolderEmailFormatter"/>
-		<processor class="com.sitescape.team.jobs.DefaultEmailNotification" spring-bean-type="none"/>
 		<processor class="com.sitescape.team.jobs.DefaultLdapSynchronization" spring-bean-type="none"/>
 		<processor class="com.sitescape.team.jobs.DefaultFailedEmail" spring-bean-type="none"/>
 		<processor class="com.sitescape.team.jobs.DefaultSendEmail" spring-bean-type="none"/>
@@ -24,7 +23,6 @@
 			<mapping processor-key="processorKey_folderEmailFormatter" processor-class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter"/>
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
 			<mapping processor-key="processorKey_binderCoreProcessor_5" processor-class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
-			<mapping processor-key="processorKey_emailNotificationJob" processor-class="com.sitescape.team.jobs.DefaultEmailNotification"/>
 			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.team.jobs.DefaultSendEmail"/>
 			<mapping processor-key="processorKey_failedEmailJob" processor-class="com.sitescape.team.jobs.DefaultFailedEmail"/>
 		</model-class>
@@ -32,7 +30,6 @@
 			<mapping processor-key="processorKey_wsLdapSynchronizationJob" processor-class="com.sitescape.team.jobs.DefaultLdapSynchronization"/>
 			<mapping processor-key="processorKey_wsLdapNameMapper" processor-class="com.sitescape.team.ldap.DefaultLdapNameMapper"/>
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
-			<mapping processor-key="processorKey_emailNotificationJob" processor-class="com.sitescape.team.jobs.DefaultEmailNotification"/>
 			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.team.jobs.DefaultSendEmail"/>
 		</model-class>
 		<model-class name="com.sitescape.team.domain.TemplateBinder">

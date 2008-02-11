@@ -29,14 +29,8 @@
 package com.sitescape.team.jobs;
 import java.util.Date;
 public interface FillEmailSubscription {
-    /**
-     * This key is used to uniquely identify a type of processor (ie, a 
-     * concrete class implementing this interface).
-     */
 	public static final String SUBSCRIPTION_GROUP="fill-subscription";
 	public static final String SUBSCRIPTION_DESCRIPTION="Fill subsciptions";
-	public final static String SUBSCRIPTION_JOB="subscription.job";
-	public final static String SUBSCRIPTION_MINUTES="timeout.minutes";
     public void schedule(Long zoneId, Date changeDate, int seconds);
     public void remove(Long zoneId);
 }

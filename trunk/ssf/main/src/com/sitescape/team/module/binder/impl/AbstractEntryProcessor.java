@@ -28,10 +28,8 @@
  */
 package com.sitescape.team.module.binder.impl;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -57,15 +55,12 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowResponse;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.processor.EntryProcessor;
@@ -631,7 +626,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     //***********************************************************************************************************   
     //inside write transaction    
-    public Entry copyEntry(Binder binder, Entry source, Binder destination, InputDataAccessor inputData) {
+    public Entry copyEntry(Binder binder, Entry source, Binder destination, Map params) {
 		throw new NotSupportedException(
 				"errorcode.notsupported.copyEntry", new String[]{source.getTitle()});
     }
@@ -740,15 +735,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     //***********************************************************************************************************
     //no transaction
-    public Binder copyBinder(Binder source, Binder destination, InputDataAccessor inputData) {
-    	Binder binder = super.copyBinder(source, destination, inputData);
-    	copyEntries(source, binder, null);
+    public Binder copyBinder(Binder source, Binder destination, Map params) {
+    	Binder binder = super.copyBinder(source, destination, params);
+    	copyEntries(source, binder, params);
     	return binder;
     }
 
     //***********************************************************************************************************
     //no transaction
-    public void copyEntries(Binder source, Binder destination, InputDataAccessor inputData) {
+    public void copyEntries(Binder source, Binder destination, Map params) {
 		throw new NotSupportedException("errorcode.notsupported.copyEntry", "ALL");
 
     }

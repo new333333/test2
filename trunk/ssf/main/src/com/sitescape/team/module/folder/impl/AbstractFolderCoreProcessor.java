@@ -392,7 +392,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	   }
    }
    //***********************************************************************************************************
-   public Entry copyEntry(Binder binder, Entry source, Binder destination, InputDataAccessor inputData) {
+   public Entry copyEntry(Binder binder, Entry source, Binder destination, Map params) {
    	 
 	   if (destination.isZone() || 
 			   ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()) ||
@@ -647,20 +647,21 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	}
     //***********************************************************************************************************
     //no transaction
-    public Binder copyBinder(Binder source, Binder destination, InputDataAccessor inputData) {
+    public Binder copyBinder(Binder source, Binder destination, Map params) {
     	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
-    		return super.copyBinder(source, destination, inputData);
+    		return super.copyBinder(source, destination, params);
     	else throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
    	 
     }
     //***********************************************************************************************************
    //no transaction
-    public void copyEntries(final Binder source, Binder binder, final InputDataAccessor inputData) { 
+    public void copyEntries(final Binder source, Binder binder, final Map params) { 
 		//now copy entries
 		final Folder folder = (Folder)binder;
 		getTransactionTemplate().execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
-		    	Boolean preserverDocNum = (Boolean)inputData.getSingleObject(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER);
+		    	Boolean preserverDocNum = null;
+		    	if (params != null) preserverDocNum = (Boolean)params.get(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER);
 		    	if (preserverDocNum == null) preserverDocNum=Boolean.FALSE;
 				getCoreDao().lock(folder);
 				FilterControls filter = new FilterControls();

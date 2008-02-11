@@ -74,15 +74,17 @@ public interface BinderModule {
 	 * @param binderId
 	 * @param style
 	 */
-	public void addSubscription(Long binderId, Map<Integer,String[]> styles) throws AccessControlException;
+	public void addSubscription(Long binderId, Map<Integer,String[]> styles) 
+		throws AccessControlException;
 	/**
 	 * Copy a binder to another location
 	 * @param sourceId
 	 * @param destinationId
-	 * @param cascade
+	 * @param cascade - True to copy child binders
 	 * @return
 	 */
-	public Long copyBinder(Long sourceId, Long destinationId, boolean cascade);
+	public Long copyBinder(Long sourceId, Long destinationId, boolean cascade)
+		throws AccessControlException;
 	/**
 	 * Delete a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but
@@ -92,7 +94,7 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public Set<Exception> deleteBinder(Long binderId) 
-	throws AccessControlException;
+		throws AccessControlException;
 	/**
 	 * Delete a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but
@@ -105,7 +107,7 @@ public interface BinderModule {
 	 * @throws AccessControlException
 	 */
 	public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource) 
-	throws AccessControlException;
+		throws AccessControlException;
 		
 	/**
 	 * Stop receiveing notifications that you have explicity requested.
@@ -118,7 +120,8 @@ public interface BinderModule {
 	 * @param tagId
 	 * @throws AccessControlException
 	 */
-	public void deleteTag(Long binderId, String tagId) throws AccessControlException;
+	public void deleteTag(Long binderId, String tagId) 
+		throws AccessControlException;
 	/**
 	 * Execute a search query.  Read access is automatically checked
 	 * @param searchQuery
@@ -159,7 +162,7 @@ public interface BinderModule {
      */
     public boolean checkBinderAccess(Long binderId, User user);
     /**
-     * Load binders,
+     * Load binders.
      * @param binderIds
      * @return Binders sorted by title
      */
@@ -167,7 +170,7 @@ public interface BinderModule {
     /**
      * Search for child binders - 1 level
      * @param binder
-     * @param options
+     * @param options - search options
      * @return search results
      */
     public Map getBinders(Binder binder, Map options);
@@ -180,14 +183,8 @@ public interface BinderModule {
      * @return
      * @throws AccessControlException
      */
-    public Binder getBinderByPathName(String pathName) throws AccessControlException;
-    /**
-     * Get the current schedule information for email notifications on this binder.
-     * If the binder is a sub-folder, its schedule is handled by the topFolder
-     * @param binderId
-     * @return
-     */
-    public ScheduleInfo getNotificationConfig(Long binderId);
+    public Binder getBinderByPathName(String pathName) 
+    	throws AccessControlException;
     /**
      * Orders list
      * @param wordroot
@@ -206,7 +203,7 @@ public interface BinderModule {
 	 * @param binder
 	 * @return 
 	 */
-	public List<Tag> getTags(Binder binder);
+	public Collection<Tag> getTags(Binder binder);
 	/**
 	 * Get a list of team members for the given binder
 	 * @param binder
@@ -272,20 +269,23 @@ public interface BinderModule {
      * @throws WriteFilesException
      */
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException;
+    		Map fileItems, Collection deleteAttachments)
+    	throws AccessControlException, WriteFilesException;
     /**
-     * Modify who gets email notifications.  The upates are applied to the <code>NotificationDef</code> for this binder
+     * Modify who gets email notifications.  The updates are applied to the <code>NotificationDef</code> for this binder
      * @param binderId
      * @param updates
      * @param principalIds
      */
-    public void modifyNotification(Long binderId, Map updates, Collection<Long> principalIds) throws AccessControlException;  
+    public void modifyNotification(Long binderId, Collection<Long> principalIds, Map updates)
+    	throws AccessControlException;  
 	/**
 	 * Move a binder, all of its entries and sub-binders
 	 * @param fromId - the binder to move
 	 * @param toId - destination id
 	 */
-	public void moveBinder(Long binderId, Long toId) throws AccessControlException;  
+	public void moveBinder(Long binderId, Long toId)
+		throws AccessControlException;  
 	/**
 	 * Set the definition inheritance on a binder
 	 * @param binderId
@@ -293,14 +293,16 @@ public interface BinderModule {
 	 * @return
 	 * @throws AccessControlException
 	 */
-    public Binder setDefinitions(Long binderId, boolean inheritFromParent)  throws AccessControlException;
+    public Binder setDefinitions(Long binderId, boolean inheritFromParent)
+    	throws AccessControlException;
     /**
      * Modify the list of definitions assocated with a binder
      * @param binderId
      * @param definitionIds
      * @throws AccessControlException
      */
-    public Binder setDefinitions(Long binderId, List<String> definitionIds) throws AccessControlException;
+    public Binder setDefinitions(Long binderId, List<String> definitionIds)
+    	throws AccessControlException;
     /**
      * Modify the list of definitions and workflows assocated with a binder
      * @param binderId
@@ -308,41 +310,31 @@ public interface BinderModule {
      * @param workflowAssociations
      * @throws AccessControlException
      */
-    public Binder setDefinitions(Long binderId, List<String> definitionIds, Map workflowAssociations) throws AccessControlException;
-    /**
-     * Set the schedule by which notifications are sent.  Use this to both enable and disable notifications
-     * @param binderId
-     * @param config
-     */
-    public void setNotificationConfig(Long binderId, ScheduleInfo config) throws AccessControlException;  
-	/**
-	 * Update the <code>com.sitescape.team.domain.PostingDef</code> associated with this binder.
-	 * If one doesn't exists, create one.  
-	 * If emailAddress is null, delete the current <code>PostingDef</code>
-	 * @param binderId
-	 * @param updates
-	 */
-    public void setPosting(Long binderId, Map updates) throws AccessControlException;  
+    public Binder setDefinitions(Long binderId, List<String> definitionIds, Map workflowAssociations)
+    	throws AccessControlException;
     /**
      * Same as <code>setPosting</code>
      * @param binderId
      * @param emailAddress
      */
-    public void setPosting(Long binderId, String emailAddress) throws AccessControlException;  
+    public void setPosting(Long binderId, String emailAddress) 
+    	throws AccessControlException;  
     /**
      * Same as <code>setPosting</code>
      * @param binderId
      * @param emailAddress
      * @param password
      */
-    public void setPosting(Long binderId, String emailAddress, String password) throws AccessControlException;  
+    public void setPosting(Long binderId, String emailAddress, String password)
+    	throws AccessControlException;  
     /**
      * Set a property to be associated with this binder
      * @param binderId
      * @param property
      * @param value
      */
-    public void setProperty(Long binderId, String property, Object value) throws AccessControlException;  
+    public void setProperty(Long binderId, String property, Object value)
+    	throws AccessControlException;  
     /**
      * Create a new tag for this binder
      * @param binderId
@@ -350,37 +342,52 @@ public interface BinderModule {
      * @param community
      * @throws AccessControlException
      */
-	public void setTag(Long binderId, String newtag, boolean community) throws AccessControlException;  
+	public void setTag(Long binderId, String newtag, boolean community) 
+		throws AccessControlException;  
 	/**
 	 * Set the team members for a binder.  By default inherits from parent
 	 * @param binderId
 	 * @param membersIds
 	 * @throws AccessControlException
 	 */
-	public void setTeamMembers(Long binderId, Collection<Long> membersIds) throws AccessControlException;  
-	public void setTeamMembershipInherited(Long binderId, boolean inherit) throws AccessControlException;
+	public void setTeamMembers(Long binderId, Collection<Long> membersIds) 
+		throws AccessControlException; 
 	/**
-	 * Test access to a binder.   This
-	 * allows the binderModule to check for multiple rights or change requirments in the future.
+	 * Enable or disable inheritting team membership
+	 * @param binderId
+	 * @param inherit
+	 * @throws AccessControlException
+	 */
+	public void setTeamMembershipInherited(Long binderId, boolean inherit)
+		throws AccessControlException;
+	/**
+	 * Test access to a binder. 
 	 * @param binder
 	 * @param operation 
 	 * @return
 	 */
 	public boolean testAccess(Binder binder, BinderOperation operation);
-	public void checkAccess(Binder binder, BinderOperation operation) throws AccessControlException;
+	/**
+	 * Same as <code>testAccess</code>, except an exception is thrown if access is denied
+	 * @param binder
+	 * @param operation
+	 * @throws AccessControlException
+	 */
+	public void checkAccess(Binder binder, BinderOperation operation)
+		throws AccessControlException;
 	
     /**
-     * Traverse the binder tree  returing a DOM structure containing workspaces and
+     * Traverse the binder tree returing a DOM structure containing workspaces and
      * folders
-     * @param id
+     * @param binderId
      * @param domTreeHelper
      * @param levels = depth to return.  -1 means all
      * @return
      * @throws AccessControlException
      */
-	public Document getDomBinderTree(DomTreeBuilder domTreeHelper);
-	public Document getDomBinderTree(Long folderId, DomTreeBuilder domTreeHelper);
-	public Document getDomBinderTree(Long folderId, DomTreeBuilder domTreeHelper, int levels);
- 	public Document getDomBinderTree(Long topId, Long bottonId, DomTreeBuilder domTreeHelper) throws AccessControlException;
+	public Document getDomBinderTree(Long binderId, DomTreeBuilder domTreeHelper, int levels)
+		throws AccessControlException;
+ 	public Document getDomBinderTree(Long topId, Long bottonId, DomTreeBuilder domTreeHelper) 
+ 		throws AccessControlException;
 
 }
