@@ -49,8 +49,8 @@
 
 <c:if test="${0 == 1 && empty ssReloadUrl}">
 	<script type="text/javascript">
-		var ss_reloadUrl${ssBinder.id} = "${ss_reloadUrl}";
-		var ss_reloadUrl = ss_reloadUrl${ssBinder.id};
+		var ss_reloadUrl = "${ss_reloadUrl}";
+		var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 	</script>
 
 <div id="ss_workareaAccessories" class="ss_style">

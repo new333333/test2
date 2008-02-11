@@ -187,8 +187,8 @@ document.$renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllI
 <ssf:nlt tag="${ssBinderConfig.templateTitle}" checkIfTag="true"/></span>
 <br/>
 <script type="text/javascript">
-var ss_reloadUrl${ssBinder.id} = "${ss_reloadUrl}";
-var ss_reloadUrl = ss_reloadUrl${ssBinder.id};
+var ss_reloadUrl = "${ss_reloadUrl}";
+var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 
 function <%=cTreeName%>_showId(id, obj, action) {
 	//Build a url to go to

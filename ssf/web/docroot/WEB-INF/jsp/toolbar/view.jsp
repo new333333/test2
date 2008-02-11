@@ -42,13 +42,13 @@
 <c:set var="ss_navbar_style" value="portlet" scope="request"/>
 </c:if>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-<%
-String wsTreeName = renderResponse.getNamespace() + "_wsTree";
-%>
 <script type="text/javascript">
-function <%= wsTreeName %>_showId(id, obj, action) {
+function ${renderResponse.namespace}_wsTree_showId(id, obj, action) {
+	if (typeof ss_workarea_showId !== "undefined") {
+		return ss_workarea_showId(id, action);
+	}
 	//Build a url to go to
-	var url = "<ssf:url action="ssActionPlaceHolder"><ssf:param 
+	var url = "<ssf:url windowState="maximized" action="ssActionPlaceHolder"><ssf:param 
 			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
@@ -69,19 +69,19 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <td valign="top">
 <c:choose>
 <c:when test="${renderRequest.windowState == 'normal'}">
-	<ssf:tree treeName="<%= wsTreeName %>" 
+	<ssf:tree treeName="${renderResponse.namespace}_wsTree" 
 	  topId="${ssWsDomTreeBinderId}" 
 	  treeDocument="<%= ssWsDomTree %>"  
 	  rootOpen="true"
-	  showIdRoutine="<%= wsTreeName + "_showId" %>"
+	  showIdRoutine="${renderResponse.namespace}_wsTree_showId"
 	   />
 </c:when>
 <c:when test="${renderRequest.windowState == 'maximized'}">
-	<ssf:tree treeName="<%= wsTreeName %>" 
+	<ssf:tree treeName="${renderResponse.namespace}_wsTree" 
 	  topId="${ssWsDomTreeBinderId}" 
 	  treeDocument="<%= ssWsDomTree %>"  
 	  rootOpen="true"
-	  showIdRoutine="<%= wsTreeName + "_showId" %>"
+	  showIdRoutine="${renderResponse.namespace}_wsTree_showId"
 	  />
 </c:when>
 </c:choose>			

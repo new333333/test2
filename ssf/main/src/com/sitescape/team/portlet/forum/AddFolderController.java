@@ -131,10 +131,10 @@ public class AddFolderController extends SAbstractController {
 				}
 			}
 			
-			setupViewBinder(response, newId);
+			setupReloadOpener(response, newId);
 			
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			setupViewBinder(response, binderId);
+			setupCloseWindow(response);
 		} else {
 			response.setRenderParameters(formData);
 		}
@@ -205,15 +205,14 @@ public class AddFolderController extends SAbstractController {
 		return new ModelAndView(WebKeys.VIEW_ADD_BINDER, model);
 	}
 
-	protected void setupViewBinder(ActionResponse response, Long binderId) {
-		Binder binder = getBinderModule().getBinder(binderId);
-		response.setRenderParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());		
-		response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
-		if (binder.getEntityType().name().equals(EntityType.folder.name())) {
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
-		} else {
-			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_WS_LISTING);
-		}
+	private void setupReloadOpener(ActionResponse response, Long binderId) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+	}
+	private void setupCloseWindow(ActionResponse response) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);
 	}
 }
 

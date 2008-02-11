@@ -66,4 +66,14 @@ public abstract class AbstractBinderController extends SAbstractController {
 		Binder parent = binder.getParentBinder();	
 		setupViewBinder(response, parent.getId(), parent.getEntityType().name());
 	}
+
+	protected void setupReloadOpener(ActionResponse response, Long binderId) {
+		//return to view binder
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER);
+		response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+	}
+	protected void setupCloseWindow(ActionResponse response) {
+		//return to view entry
+		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);
+	}
 }

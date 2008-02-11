@@ -31,7 +31,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
-function ss_treeShowIdConfig$renderResponse.namespace}(id, obj, action) {
+function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	var binderId = id;
 	//See if the id is formatted (e.g., "ss_favorites_xxx")
 	if (binderId.indexOf("_") >= 0) {

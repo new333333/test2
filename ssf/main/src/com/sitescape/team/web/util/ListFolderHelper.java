@@ -1252,26 +1252,33 @@ public class ListFolderHelper {
 		qualifiers = new HashMap();
 		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageFolderMenu");
 		boolean adminMenuCreated=false;
-		folderToolbar.addToolbarMenu("1_administration", NLT.get("toolbar.manageThisFolder"), "", qualifiers);
+		folderToolbar.addToolbarMenu("1_administration", 
+				NLT.get("toolbar.manageThisFolder"), "", qualifiers);
 		//Add Folder
 		if (bs.getFolderModule().testAccess(folder, FolderOperation.addFolder)) {
 			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_SUB_FOLDER);
-			folderToolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolder"), url);
+			folderToolbar.addToolbarMenuItem("1_administration", "folders", 
+					NLT.get("toolbar.menu.addFolder"), url, qualifiers);
 		}
 		
 		//Move binder
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.moveBinder)) {
 			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MOVE);
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.move_folder"), url);
+			folderToolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.move_folder"), url, qualifiers);
 		}
 
 		//Copy binder
@@ -1288,21 +1295,27 @@ public class ListFolderHelper {
 		//Configuration
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.modifyBinder)) {
 			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configuration"), url);
+			folderToolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.configuration"), url, qualifiers);
 		}
 		
 		//Reporting
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.report)) {
 			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.report"), url);
+			folderToolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.report"), url, qualifiers);
 		}
 		
 		//Definition builder - forms (turned off until local definitions supported)
@@ -1328,12 +1341,14 @@ public class ListFolderHelper {
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteBinder)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_DELETE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.delete_folder"), url, qualifiers);		
+			folderToolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.delete_folder"), url, qualifiers);		
 		}
 
 		//Modify binder
@@ -1358,7 +1373,8 @@ public class ListFolderHelper {
 			adapterUrl.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.import_forum_entries"), adapterUrl.toString(), qualifiers);		
+			folderToolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.import_forum_entries"), adapterUrl.toString(), qualifiers);		
 		}
 		
 		if(LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.folder.MirroredFolder")) {
@@ -1367,6 +1383,7 @@ public class ListFolderHelper {
 					bs.getFolderModule().testAccess(folder, FolderOperation.synchronize)) {
 				adminMenuCreated=true;
 				qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
 				qualifiers.put("showSpinner", new Boolean(true));
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
@@ -1380,10 +1397,13 @@ public class ListFolderHelper {
 		//set email
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageMail)) {
 			try {
+				qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIG_EMAIL);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.configure_folder_email"), url);
+				folderToolbar.addToolbarMenuItem("1_administration", "", 
+						NLT.get("toolbar.menu.configure_folder_email"), url, qualifiers);
 				adminMenuCreated=true;
 			} catch (AccessControlException ac) {};
 		}
@@ -1394,6 +1414,7 @@ public class ListFolderHelper {
 		//Access control
 		if (bs.getAdminModule().testAccess(folder, AdminOperation.manageFunctionMembership)) {
 			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
 			qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.accessControlMenu");
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);

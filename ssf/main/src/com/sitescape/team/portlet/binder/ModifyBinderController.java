@@ -112,7 +112,7 @@ public class ModifyBinderController extends AbstractBinderController {
 		   		}
 		   		try {
 		   			getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts);				
-		   			setupViewBinder(response, binderId, binderType);	
+		   			setupReloadOpener(response, binderId);	
 		   		} catch (ConfigurationException cf) {
 		   			response.setRenderParameters(formData);
 		   			response.setRenderParameter(WebKeys.EXCEPTION, cf.getLocalizedMessage() != null ? cf.getLocalizedMessage() : cf.getMessage());
@@ -127,7 +127,7 @@ public class ModifyBinderController extends AbstractBinderController {
 					// nothing to do
 				}
 				if (destinationId != null) getBinderModule().moveBinder(binderId, destinationId);
-				setupViewBinder(response, binderId, binderType);
+				setupReloadOpener(response, binderId);
 			} else if (op.equals(WebKeys.OPERATION_COPY)) {
 				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 				Long destinationId = null;
@@ -138,9 +138,9 @@ public class ModifyBinderController extends AbstractBinderController {
 				}
 				if (destinationId != null) {
 					Long copyId = getBinderModule().copyBinder(binderId, destinationId, true);
-					setupViewBinder(response, copyId, binderType);
+					setupReloadOpener(response, copyId);
 				} else {
-					setupViewBinder(response, binderId, binderType);
+					setupReloadOpener(response, binderId);
 				}
 			} else if (op.equals(WebKeys.OPERATION_DELETE)) {
 				// The delete-mirrored-binder form was submitted.
@@ -151,11 +151,11 @@ public class ModifyBinderController extends AbstractBinderController {
 				getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource));
 				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 			} else {
-				setupViewBinder(response, binderId, binderType);			
+				setupReloadOpener(response, binderId);			
 			}	
 		} else if (formData.containsKey("cancelBtn")) {
 			//The user clicked the cancel button
-			setupViewBinder(response, binderId, binderType);
+			setupCloseWindow(response);
 		} else if (op.equals(WebKeys.OPERATION_DELETE)) {
 			response.setRenderParameters(formData);
 		} else {

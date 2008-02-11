@@ -32,11 +32,8 @@
 <c:if test="${empty ss_portletInitialization}">
 <div class="ss_style ss_portlet_style ss_portlet">
 
-<%
-String wsTreeName = renderResponse.getNamespace() + "_wsTree";
-%>
 <script type="text/javascript">
-function <%= wsTreeName %>_showId(id, obj, action) {
+function ${renderResponse.namespace}_wsTree_showId(id, obj, action) {
 	if (typeof ss_workarea_showId !== "undefined") {
 		return ss_workarea_showId(id, action);
 	}
@@ -51,7 +48,6 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 
 </script>
 
-<jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 <table width="100%">
 	<tr>
 		<td align="left">
@@ -60,19 +56,19 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 			<div>
 			<c:choose>
 			<c:when test="${renderRequest.windowState == 'normal'}">
-				<ssf:tree treeName="<%= wsTreeName %>" 
+				<ssf:tree treeName="${renderResponse.namespace}_wsTree" 
 				  topId="${ssWsDomTreeBinderId}" 
-				  treeDocument="<%= ssWsDomTree %>"  
+				  treeDocument="${ssWsDomTree}"  
 				  rootOpen="false"
-				  showIdRoutine="<%= wsTreeName + "_showId" %>"
+				  showIdRoutine="${renderResponse.namespace}_wsTree_showId"
 				   />
 			</c:when>
 			<c:when test="${renderRequest.windowState == 'maximized'}">
-				<ssf:tree treeName="<%= wsTreeName %>" 
+				<ssf:tree treeName="${renderResponse.namespace}_wsTree" 
 				  topId="${ssWsDomTreeBinderId}" 
-				  treeDocument="<%= ssWsDomTree %>"  
+				  treeDocument="${ssWsDomTree}"  
 				  rootOpen="true"
-				  showIdRoutine="<%= wsTreeName + "_showId" %>"
+				  showIdRoutine="${renderResponse.namespace}_wsTree_showId"
 				  />
 			</c:when>
 			</c:choose>			

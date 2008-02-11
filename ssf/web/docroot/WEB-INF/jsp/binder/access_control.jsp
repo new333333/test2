@@ -41,9 +41,9 @@ function ss_treeShowIdAccessControl${renderResponse.namespace}(id, obj, action) 
 	}
 
 	//Build a url to go to
-	var url = "<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="configure_access_control"/><portlet:param 
-		name="binderId" value="ssBinderIdPlaceHolder"/></portlet:renderURL>";
+	var url = "<ssf:url ><ssf:param 
+		name="action" value="configure_access_control"/><ssf:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>";
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	self.location.href = url;
 	return false;
@@ -99,10 +99,11 @@ var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse
 </td>
 <td align="right" valign="top">
 <form class="ss_form" method="post" style="display:inline;" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="configure_access_control"/><portlet:param 
-	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
+	action="<ssf:url ><ssf:param 
+	name="action" value="configure_access_control"/><ssf:param 
+	name="actionUrl" value="true"/><ssf:param 
+	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
@@ -132,10 +133,11 @@ var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse
   <br/><br/>
   <form class="ss_form" name="inheritanceForm" method="post" 
     onSubmit="return ss_onSubmit(this);"
-    action="<portlet:actionURL windowState="maximized"><portlet:param 
-  		name="action" value="configure_access_control"/><portlet:param 
-  		name="binderType" value="${ssBinder.entityType}"/><portlet:param 
-  		name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
+    action="<ssf:url ><ssf:param 
+  		name="action" value="configure_access_control"/><ssf:param 
+  		name="actionUrl" value="true"/><ssf:param 
+  		name="binderType" value="${ssBinder.entityType}"/><ssf:param 
+  		name="binderId" value="${ssBinder.id}"/></ssf:url>">
   <ssf:nlt tag="binder.configure.access_control.inherit"/> <ssf:inlineHelp tag="ihelp.other.inherit_roles"/>
   <br/>
   &nbsp;&nbsp;&nbsp;<input type="radio" name="inherit" value="yes" ${yes_checked}>
@@ -162,10 +164,11 @@ var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse
   name="${renderResponse.namespace}rolesForm" 
   id="${renderResponse.namespace}rolesForm" 
   method="post" 
-  action="<portlet:actionURL><portlet:param 
-  		name="action" value="configure_access_control"/><portlet:param 
-  		name="binderId" value="${ssBinder.id}"/><portlet:param 
-  		name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
+  action="<ssf:url><ssf:param 
+  		name="action" value="configure_access_control"/><ssf:param 
+  		name="actionUrl" value="true"/><ssf:param 
+  		name="binderId" value="${ssBinder.id}"/><ssf:param 
+  		name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
 
 <input type="hidden" name="btnClicked"/>
 <input type="hidden" name="roleIdToAdd"/>
@@ -312,10 +315,11 @@ var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse
 <br/>
 
 <form class="ss_form" method="post" style="display:inline;" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="configure_access_control"/><portlet:param 
-	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>">
+	action="<ssf:url ><ssf:param 
+	name="action" value="configure_access_control"/><ssf:param 
+	name="actionUrl" value="true"/><ssf:param 
+	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
   <input type="submit" class="ss_submit" name="closeBtn" 
     value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
