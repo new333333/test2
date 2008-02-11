@@ -40,7 +40,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	}
 
 	//Build a url to go to
-	var url = "<ssf:url action="configure_definitions"><ssf:param 
+	var url = "<ssf:url actionUrl="false" action="configure_definitions"><ssf:param 
 		name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>";
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
 	self.location.href = url;
