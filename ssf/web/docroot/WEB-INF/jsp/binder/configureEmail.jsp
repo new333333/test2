@@ -36,7 +36,7 @@ String wsTreeName = "email_" + renderResponse.getNamespace();
 <script type="text/javascript">
 function <%= wsTreeName %>_showId(id, obj, action) {
 	//Build a url to go to
-	var url = "<ssf:url action="ssActionPlaceHolder"><ssf:param 
+	var url = "<ssf:url action="ssActionPlaceHolder" actionUrl="false" ><ssf:param 
 			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
