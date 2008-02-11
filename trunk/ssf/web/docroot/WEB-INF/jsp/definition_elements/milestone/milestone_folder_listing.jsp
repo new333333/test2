@@ -105,7 +105,7 @@
 		</th>
 		<th>
 <c:if test="${ssConfigJspStyle != 'template'}">
-			    <a href="<ssf:url action="${action}"/><ssf:param 
+			    <a href="<ssf:url action="${action}"><ssf:param 
 			    	name="operation" value="save_folder_sort_info"/><ssf:param 
 			    	name="binderId" value="${ssFolder.id}"/><ssf:param 
 			    	name="ssFolderSortBy" value="tasks"/><c:choose><c:when 
