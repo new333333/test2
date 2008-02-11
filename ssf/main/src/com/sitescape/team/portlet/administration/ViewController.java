@@ -59,6 +59,7 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionModule.DefinitionOperation;
 import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.license.LicenseModule.LicenseOperation;
+import com.sitescape.team.module.ldap.LdapModule.LdapOperation;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
@@ -246,7 +247,7 @@ public class ViewController extends  SAbstractController {
 		}
 
 		//Ldap configuration
-		if (getLdapModule().testAccess("getLdapConfig")) {
+		if (getLdapModule().testAccess(LdapOperation.manageLdap)) {
 			if (getLdapModule().getLdapConfig() != null) {
 				element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 				element.addAttribute("title", NLT.get("administration.configure_ldap"));
@@ -276,7 +277,7 @@ public class ViewController extends  SAbstractController {
 		}
 		
 		//email schedule
-		if (getAdminModule().testAccess(AdminOperation.managePosting)) {
+		if (getAdminModule().testAccess(AdminOperation.manageMail)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.configure_mail"));
 			element.addAttribute("image", "bullet");

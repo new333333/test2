@@ -502,17 +502,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        	}
        	Map params = new HashMap();
        	params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-   		Binder binder = loadBinderProcessor(source).copyBinder(source, destinationParent, new MapInputData(params));
+   		Binder binder = loadBinderProcessor(source).copyBinder(source, destinationParent, params);
        	if (cascade) doCopyChildren(source, binder);
        	return binder.getId();
      }
      private void doCopyChildren(Binder source, Binder destinationParent) {
     	 Map params = new HashMap();
     	 params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.FALSE);
-    	 InputDataAccessor input = new MapInputData(params);
+    	 params.put(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER, Boolean.TRUE);
     	 List<Binder>children = source.getBinders();
     	 for (Binder child:children) {
-    		 Binder binder = loadBinderProcessor(child).copyBinder(child, destinationParent, input);
+    		 Binder binder = loadBinderProcessor(child).copyBinder(child, destinationParent, params);
     		 doCopyChildren(child, binder);
     	 }
      }
@@ -586,7 +586,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	/**
 	 * Get tags owned by this binder or current user
 	 */	
-	public List<Tag> getTags(Binder binder) {
+	public Collection<Tag> getTags(Binder binder) {
 		//have binder - so assume read access
 		//bulk load tags
         return getCoreDao().loadEntityTags(binder.getEntityIdentifier(), RequestContextHolder.getRequestContext().getUser().getEntityIdentifier());
@@ -948,26 +948,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     }	
     //inside write transaction    
     public void setPosting(Long binderId, String emailAddress) {
-    	Map updates = new HashMap();
-    	updates.put("emailAddress", emailAddress);
-    	setPosting(binderId, updates);
+    	setPosting(binderId, emailAddress, null);
     }
     //inside write transaction    
     public void setPosting(Long binderId, String emailAddress, String password) {
-    	Map updates = new HashMap();
-    	updates.put("emailAddress", emailAddress);
-    	updates.put("password", password);
-    	setPosting(binderId, updates);
-    }
-    //inside write transaction    
-    public void setPosting(Long binderId, Map updates) {
         Binder binder = loadBinder(binderId); 
         checkAccess(binder, BinderOperation.manageMail);
         PostingDef post = binder.getPosting();
-        String email = (String)updates.get("emailAddress");
-        String password = null;
-        if (updates.containsKey("password")) password = (String)updates.get("password");
-        if (Validator.isNull(email)) {
+        if (Validator.isNull(emailAddress)) {
         	//if posting exists for this binder, remove it
         	if (post == null) return;
         	binder.setPosting(null);
@@ -975,17 +963,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         	return;
         } else {
             //see if it exists already
-        	email = email.toLowerCase();
+        	emailAddress = emailAddress.toLowerCase();
         	//see if assigned to someone else
-        	if ((post == null) || !email.equals(post.getEmailAddress())) {
-        		List results = getCoreDao().loadObjects(PostingDef.class, new FilterControls("emailAddress", email), binder.getZoneId());
+        	if ((post == null) || !emailAddress.equals(post.getEmailAddress())) {
+        		List results = getCoreDao().loadObjects(PostingDef.class, new FilterControls("emailAddress", emailAddress), binder.getZoneId());
         		if (!results.isEmpty()) {
         			//exists, see if it is assigned
         			PostingDef oldPost = (PostingDef)results.get(0);
         			//if address is assigned, cannot continue
         			if (oldPost.getBinder() != null) {
         				if (!oldPost.getBinder().equals(binder)) {
-        					throw new NotSupportedException("errorcode.posting.assigned", new String[]{email});
+        					throw new NotSupportedException("errorcode.posting.assigned", new String[]{emailAddress});
         				}
         			}
         			if (post != null) getCoreDao().delete(post);
@@ -1001,32 +989,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         post.setBinder(binder);
         post.setEnabled(true);
         post.setReplyPostingOption(PostingDef.POST_AS_A_REPLY);
-       	ObjectBuilder.updateObject(post, updates);
-      	post.setEmailAddress(email);
+      	post.setEmailAddress(emailAddress);
       	post.setPassword(password);
       	binder.setPosting(post);
     }
-	/**
-     * Do actual work to either enable or disable email notification.
-     * @param id
-     * @param value
-     */
-	public ScheduleInfo getNotificationConfig(Long binderId) {
-        Binder binder = loadBinder(binderId); 
-        //Anyone can read 
-        //data is stored with job
-		EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
-  		return process.getScheduleInfo(binder);
-	}
-	    
-    //inside write transaction    
-    public void setNotificationConfig(Long binderId, ScheduleInfo config) {
-        Binder binder = loadBinder(binderId); 
-        checkAccess(binder, BinderOperation.manageMail); 
-        //data is stored with job
-        EmailNotification process = (EmailNotification)processorManager.getProcessor(binder, EmailNotification.PROCESSOR_KEY);
-  		process.setScheduleInfo(config, binder);
-    }
+
     /**
      * Set the notification definition for a folder.  
      * @param id
@@ -1034,7 +1001,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
      * @param principals - if null, don't change list.
      */
     //inside write transaction    
-    public void modifyNotification(Long binderId, Map updates, Collection<Long> principalIds) {
+    public void modifyNotification(Long binderId, Collection<Long> principalIds, Map updates) {
         Binder binder = loadBinder(binderId); 
         checkAccess(binder, BinderOperation.manageMail); 
     	NotificationDef current = binder.getNotificationDef();
@@ -1048,29 +1015,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	List notifyUsers = getProfileDao().loadPrincipals(principalIds, binder.getZoneId(), true);
    		current.setDistribution(notifyUsers);
     }
-    
-    
-    
-    
-    
-    
-    
-    
-
 	
-	
-	
-	
-	
-	
-	
-	
-    public org.dom4j.Document getDomBinderTree(DomTreeBuilder domTreeHelper) throws AccessControlException {
-       	return getDomBinderTree(null, domTreeHelper, -1);
-    }
-    public org.dom4j.Document getDomBinderTree(Long id, DomTreeBuilder domTreeHelper) throws AccessControlException {
-       	return getDomBinderTree(id, domTreeHelper, -1);
-    }
     public org.dom4j.Document getDomBinderTree(Long id, DomTreeBuilder domTreeHelper, int levels) 
     		throws AccessControlException {
     	//getWorkspace does access check

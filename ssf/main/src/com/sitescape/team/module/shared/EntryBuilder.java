@@ -219,7 +219,11 @@ public class EntryBuilder {
 								newV.add(val);
 							}
 						}
-						destination.addCustomAttribute(ca.getName(), newV);
+						CustomAttribute v = destination.getCustomAttribute(ca.getName());
+						//should exists, cause copy files would have added it.
+						//but may be an issue if multiple fields point to same attachment
+						if (v == null) destination.addCustomAttribute(ca.getName(), newV);
+						else v.setValue(newV);
 					}
 					break;
 				} 

@@ -1068,7 +1068,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
     //***********************************************************************************************************
     //no transaction    
-    public Binder copyBinder(final Binder source, final Binder destination, final InputDataAccessor inputData) {
+    public Binder copyBinder(final Binder source, final Binder destination, final Map params) {
     	if (source.equals(destination))   
     		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
     	 
@@ -1079,32 +1079,33 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
       		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
     	if (ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()))
          		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
-    	final Map ctx = copyBinder_setCtx(source, destination, null);
+    	final Map ctx = copyBinder_setCtx(source, destination, params, null);
      	final Binder binder = copyBinder_create(source, ctx);
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
                 //need to set entry/binder information before generating file attachments
                 //Attachments/Events need binder info for AnyOwner
-        		copyBinder_fillIn(source, destination, binder, inputData, ctx);
+        		copyBinder_fillIn(source, destination, binder, params, ctx);
                                 
-                copyBinder_preSave(source, destination, binder, inputData, ctx);      
+                copyBinder_preSave(source, destination, binder, params, ctx);      
 
-                copyBinder_save(source, destination, binder, inputData, ctx);      
+                copyBinder_save(source, destination, binder, params, ctx);      
                 
-                copyBinder_postSave(source, destination, binder, inputData, ctx);
+                copyBinder_postSave(source, destination, binder, params, ctx);
                 //register title for uniqueness for webdav; always ensure binder titles are unique in parent
                 getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
                 if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
                 return null;
         	}
         });
- 		copyBinder_index(binder, ctx);
+ 		copyBinder_index(binder, params, ctx);
  		return binder;
     }
     //no transaction    
-    protected Map copyBinder_setCtx(Binder source, Binder destination, Map ctx) {
+    protected Map copyBinder_setCtx(Binder source, Binder destination, Map inParams, Map ctx) {
     	if (ctx == null) ctx = new HashMap();
+    	ctx.putAll(inParams);
     	return ctx;
     }
     //no transaction - should be overridden 
@@ -1123,12 +1124,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
    }
    //inside write transaction    
-   protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, InputDataAccessor inputData, Map ctx) {  
+   protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, Map params, Map ctx) {  
        binder.setLogVersion(Long.valueOf(1));
        binder.setPathName(parent.getPathName() + "/" + binder.getTitle());
 
    	//force a lock so contention on the sortKey is reduced
-       Object lock = inputData.getSingleObject(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
+       Object lock = params.get(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
        if (Boolean.TRUE.equals(lock)) {
            getCoreDao().lock(parent);
        } 
@@ -1136,15 +1137,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		if(binder.isMirrored())
  			binder.setLibrary(true);
  		
- 		checkConstraintMirrored(parent, binder, binder.isLibrary(), inputData);
+ 		checkConstraintMirrored(parent, binder, binder.isLibrary(), null);
        
    }
-   protected void copyBinder_preSave(Binder source, Binder parent, Binder binder, InputDataAccessor inputData, Map ctx) {  
+   protected void copyBinder_preSave(Binder source, Binder parent, Binder binder, Map params, Map ctx) {  
    }
-   protected void copyBinder_save(Binder source, Binder parent, Binder binder, InputDataAccessor inputData, Map ctx) {  
+   protected void copyBinder_save(Binder source, Binder parent, Binder binder, Map params, Map ctx) {   
 	   getCoreDao().save(binder);
    }
-   protected void copyBinder_postSave(Binder source, Binder parent, Binder binder, InputDataAccessor inputData, Map ctx) { 
+   protected void copyBinder_postSave(Binder source, Binder parent, Binder binder, Map params, Map ctx) {   
 		EntityDashboard dashboard = getCoreDao().loadEntityDashboard(source.getEntityIdentifier());
 		if (dashboard != null) {
 			EntityDashboard myDashboard = new EntityDashboard(dashboard);
@@ -1169,7 +1170,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
    
     //inside write transaction    
-    protected void copyBinder_index(Binder binder, Map ctx) {
+    protected void copyBinder_index(Binder binder, Map params, Map ctx) {  
 		getCoreDao().flush(); //get updates out 
 		//entries should be indexed already
     	indexBinder(binder, false, false, null); 

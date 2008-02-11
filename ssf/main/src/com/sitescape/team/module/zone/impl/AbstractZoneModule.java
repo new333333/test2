@@ -333,14 +333,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	 			if (query != null) query.close();
 	 			query=null;
 	 		}
-			ScheduleInfo info = getBinderModule().getNotificationConfig(zone.getId());
+			ScheduleInfo info = getAdminModule().getNotificationSchedule();
 			//create schedule first time through
 			if (!info.isEnabled()) {
 				info.getSchedule().setDaily(true);
 				info.getSchedule().setHours("0");
 				info.getSchedule().setMinutes("15");
 				info.setEnabled(true);
-				getBinderModule().setNotificationConfig(zone.getId(), info);
+				getAdminModule().setNotificationSchedule(info);
 				
 			}
 			zone.setUpgradeVersion(2);
@@ -529,12 +529,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		user = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
     		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
 
-    		ScheduleInfo info = getBinderModule().getNotificationConfig(top.getId());
+    		ScheduleInfo info = getAdminModule().getNotificationSchedule();
    			info.getSchedule().setDaily(true);
    			info.getSchedule().setHours("0");
    			info.getSchedule().setMinutes("15");
    			info.setEnabled(true);
-   			getBinderModule().setNotificationConfig(top.getId(), info);
+   			getAdminModule().setNotificationSchedule(info);
  
     		return top;
  	}

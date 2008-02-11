@@ -159,7 +159,7 @@ public interface FolderModule {
 	 * @param entry
 	 * @return 
 	 */
-	public List<Tag> getTags(FolderEntry entry);
+	public Collection<Tag> getTags(FolderEntry entry);
  	  
 	public Map getUnseenCounts(Collection<Long> folderIds);
 	public Map getWorkflowQuestions(FolderEntry entry, Long stateId);

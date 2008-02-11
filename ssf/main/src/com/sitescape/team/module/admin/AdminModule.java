@@ -56,7 +56,7 @@ import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 public interface AdminModule {
 	public enum AdminOperation {
 		manageFunction,
-		managePosting,
+		manageMail,
 		manageTemplate,
 		report,
 		manageFunctionMembership,
@@ -176,6 +176,11 @@ public interface AdminModule {
      */
     public List<Function> getFunctions();
     /**
+     * Get the current schedule information for digest email notifications.
+    * @return
+     */
+    public ScheduleInfo getNotificationSchedule();
+    /**
      * Get system posting definitions
      * @return
      */
@@ -230,6 +235,12 @@ public interface AdminModule {
 	 */
     public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception;
 
+    /**
+     * Set the schedule by which digest notifications are sent.  Use this to both enable and disable notifications
+     * @param binderId
+     * @param config
+     */
+    public void setNotificationSchedule(ScheduleInfo config) throws AccessControlException;  
     public void setPostingSchedule(ScheduleInfo config) throws ParseException, AccessControlException;;
 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;

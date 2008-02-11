@@ -38,7 +38,10 @@ import com.sitescape.team.domain.NoUserByTheNameException;
  *
  */
 public interface LdapModule {
-	public boolean testAccess(String operation);
+	public enum LdapOperation {
+		manageLdap,
+	}
+	public boolean testAccess(LdapOperation operation);
 
 	public LdapConfig getLdapConfig();
 	public void setLdapConfig(LdapConfig config);

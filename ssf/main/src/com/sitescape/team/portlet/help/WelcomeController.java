@@ -43,6 +43,7 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
+import com.sitescape.team.module.ldap.LdapModule.LdapOperation;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -70,7 +71,7 @@ public class WelcomeController extends SAbstractController {
         Map<String,Object> model = new HashMap<String,Object>();
  		model.put(WebKeys.USER_PRINCIPAL, user);
 
-		if (getLdapModule().testAccess("getLdapConfig") || getAdminModule().testAccess(AdminOperation.managePosting)) {
+		if (getLdapModule().testAccess(LdapOperation.manageLdap) || getAdminModule().testAccess(AdminOperation.manageMail)) {
 			model.put(WebKeys.SHOW_INSTALLATION_GUIDE, true);
 		}
 		

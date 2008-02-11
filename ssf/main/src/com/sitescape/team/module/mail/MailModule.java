@@ -41,6 +41,10 @@ import com.sitescape.team.domain.Binder;
  */
 public interface MailModule {
 	public static String POSTING_JOB="posting.job";
+	public static String NOTIFICATION_JOB="notification.job";
+	public final static String SUBSCRIPTION_JOB="subscription.job";
+	public final static String SUBSCRIPTION_MINUTES="subscription.minutes";
+
 	public static final String NOTIFY_TEMPLATE_TEXT="notify.mailText";
 	public static final String NOTIFY_TEMPLATE_HTML="notify.mailHtml";
 	public static final String NOTIFY_TEMPLATE_CACHE_DISABLED="notify.templateCacheDisabled";

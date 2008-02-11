@@ -411,7 +411,7 @@ public class WorkspaceTreeHelper {
 				toolbar.addToolbarMenuItem("1_administration", "", 
 						NLT.get("toolbar.menu.move_workspace"), url, qualifiers);
 			}
-/*			if (bs.getBinderModule().testAccess(workspace, BinderOperation.copyBinder)) {
+			if (bs.getBinderModule().testAccess(workspace, BinderOperation.copyBinder)) {
 				adminMenuCreated=true;
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
@@ -420,7 +420,7 @@ public class WorkspaceTreeHelper {
 				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
 				toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.copy_workspace"), url);
 			}
-*/
+
 		}
 		//Reporting
 		if (bs.getBinderModule().testAccess(workspace, BinderOperation.report)) {
