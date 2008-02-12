@@ -72,10 +72,10 @@ dojo.widget.defineWidget(
 						chkbox.value = i;
 						chkbox.id = chckboxId;
 						chkbox.name = this.searchFieldName;
+						liObj.appendChild(chkbox);
 						if (stepsS.indexOf("|" + i + "|") > -1) {
 							chkbox.checked = true;
-						}
-						liObj.appendChild(chkbox);
+						}		
 						var label = document.createElement("label");
 						label.setAttribute("for", chckboxId);
 						label.setAttribute("style", "padding-left: 5px;");
