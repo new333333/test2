@@ -58,23 +58,22 @@
 	}
 %>
 <div class="ss_entryContent">
-<div class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></div>
-<div id="<%= elementName %>_startError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.startDateError"/></span></div>
-<div id="<%= elementName %>_endError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.endDateError"/></span></div>
-<c:choose>
-	<c:when test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
-		<c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />	
-	</c:when>
-	<c:when test="${!empty ssInitialEvent}">
-		<c:set var="ev" value="${ssInitialEvent}" />	
-	</c:when>	
-</c:choose>
+	<div class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></div>
+	<div id="<%= elementName %>_startError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.startDateError"/></span></div>
+	<div id="<%= elementName %>_endError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.endDateError"/></span></div>
+	<c:choose>
+		<c:when test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
+			<c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />	
+		</c:when>
+		<c:when test="${!empty ssInitialEvent}">
+			<c:set var="ev" value="${ssInitialEvent}" />	
+		</c:when>	
+	</c:choose>
 
-<ssf:eventeditor id="<%= elementName %>" 
-         formName="<%= formName %>" 
-         initEvent="${ev}"
-         required="<%= req %>"
-         hasDuration="<%= hasDur %>"
-         hasRecurrence="<%= hasRecur %>" />
-</div>
+	<ssf:eventeditor id="<%= elementName %>" 
+	         formName="<%= formName %>" 
+	         initEvent="${ev}"
+	         required="<%= req %>"
+	         hasDuration="<%= hasDur %>"
+	         hasRecurrence="<%= hasRecur %>" />
 </div>
