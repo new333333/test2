@@ -114,7 +114,7 @@ try {
 				}
 				
 				var label = document.createElement("label");
-				label.setAttribute("for", checkboxId);
+				label.htmlFor = checkboxId;
 	
 				var txtNode = document.createTextNode(members[(j * rows) + i][1]);
 				label.appendChild(txtNode);
