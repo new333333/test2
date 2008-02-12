@@ -78,90 +78,15 @@
 </c:choose>
 
 <div class="ss_event_editor">
-<table class="ss_style">
-	<tr>
-		<td class="contentbold"><ssf:nlt tag="event.start" />:</td>
-		<td>
-			<div dojoType="DropdownEventDatePicker" 
-				widgetId="event_start_${prefix}" 
-				name="${dateId}_fullDate" 
-				id="${dateId}_${prefix}"
-				lang="<ssf:convertLocaleToDojoStyle />"
-				<c:choose>
-				    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
-					    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
-				    </c:when>
-				    <c:otherwise>
-				    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
-				    </c:otherwise>
-				</c:choose>
-				<c:if test="${!empty startDate}">
-					value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
-				</c:if>
-				startDateWidgetId="event_start_${prefix}"
-				startTimeWidgetId="event_start_time_${prefix}"
-				endDateWidgetId="event_end_${prefix}"
-				endTimeWidgetId="event_end_time_${prefix}"></div>
-		</td>
-		<td>
-			<span id="${prefix}eventStartTime"
-				<c:if test="${initEvent.allDayEvent}">
-					style="display: none; "
-				</c:if>
-				>
-				<div dojoType="DropdownEventTimePicker"
-					widgetId="event_start_time_${prefix}" 
-					name="${dateId}_0_fullTime" 
-					id="${dateId}_time_${prefix}"
-					lang="<ssf:convertLocaleToDojoStyle />" 	
-					<c:choose>
-						<c:when test="${initEvent.allDayEvent}">
-							value="08:00:00"
-						</c:when>
-						<c:otherwise>
-							<c:if test="${!empty startDate}">
-								value="<fmt:formatDate value="${startDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
-							</c:if>
-						</c:otherwise>
-					</c:choose>
-					startDateWidgetId="event_start_${prefix}"
-					startTimeWidgetId="event_start_time_${prefix}"
-					endDateWidgetId="event_end_${prefix}"
-					endTimeWidgetId="event_end_time_${prefix}"></div>
-					
-				<input type="hidden" name="${dateId}_timezoneid" value="${ssUser.timeZone.ID}" />
-				<input type="hidden" name="${dateId}_skipTime" id="${dateId}_skipTime_${prefix}"
-					<c:choose>
-						<c:when test="${initEvent.allDayEvent}">
-							value="true"
-						</c:when>
-						<c:otherwise>
-							value="false"
-						</c:otherwise>
-					</c:choose>
-					/>
-			</span>	
-		</td>
-		<c:if test="${attMap.hasDur}">
-			<td>
-				<input type="checkbox" name="${allDayEventId}"
-				<c:if test="${initEvent.allDayEvent}">
-					checked="checked"
-				</c:if> id="${prefix}_${dateId}_allDayEvent" 
-				onclick="${prefix}ssEventEditor.toggleAllDay(this, ['${dateId}_skipTime_${prefix}', '${dateId2}_skipTime_${prefix}']); " /><label for="${prefix}_${dateId}_allDayEvent"><ssf:nlt tag="event.allDay" /></label>
-			</td>
-		</c:if>
-	</tr>
-	
-	<c:if test="${attMap.hasDur}">
+	<table class="ss_style">
 		<tr>
-			<td class="contentbold"><ssf:nlt tag="event.end" />:</td>
+			<td class="contentbold"><ssf:nlt tag="event.start" />:</td>
 			<td>
 				<div dojoType="DropdownEventDatePicker" 
-					widgetId="event_end_${prefix}" 
-					name="${dateId2}_fullDate" 
-					id="${dateId2}_${prefix}"
-					lang="<ssf:convertLocaleToDojoStyle />" 
+					widgetId="event_start_${prefix}" 
+					name="${dateId}_fullDate" 
+					id="${dateId}_${prefix}"
+					lang="<ssf:convertLocaleToDojoStyle />"
 					<c:choose>
 					    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
 						    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
@@ -170,8 +95,8 @@
 					    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
 					    </c:otherwise>
 					</c:choose>
-					<c:if test="${!empty endDate}">			
-						value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
+					<c:if test="${!empty startDate}">
+						value="<fmt:formatDate value="${startDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
 					</c:if>
 					startDateWidgetId="event_start_${prefix}"
 					startTimeWidgetId="event_start_time_${prefix}"
@@ -179,33 +104,33 @@
 					endTimeWidgetId="event_end_time_${prefix}"></div>
 			</td>
 			<td>
-				<span id="${prefix}eventEndTime"
+				<span id="${prefix}eventStartTime"
 					<c:if test="${initEvent.allDayEvent}">
 						style="display: none; "
-					</c:if>			
+					</c:if>
 					>
 					<div dojoType="DropdownEventTimePicker"
-						widgetId="event_end_time_${prefix}" 
-						name="${dateId2}_0_fullTime" 
-						id="${dateId2}_time_${prefix}"
-						lang="<ssf:convertLocaleToDojoStyle />" 
+						widgetId="event_start_time_${prefix}" 
+						name="${dateId}_0_fullTime" 
+						id="${dateId}_time_${prefix}"
+						lang="<ssf:convertLocaleToDojoStyle />" 	
 						<c:choose>
 							<c:when test="${initEvent.allDayEvent}">
-								value="08:30:00"
+								value="08:00:00"
 							</c:when>
 							<c:otherwise>
-								<c:if test="${!empty endDate}">	
-									value="<fmt:formatDate value="${endDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+								<c:if test="${!empty startDate}">
+									value="<fmt:formatDate value="${startDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
 								</c:if>
 							</c:otherwise>
-						</c:choose>						
+						</c:choose>
 						startDateWidgetId="event_start_${prefix}"
 						startTimeWidgetId="event_start_time_${prefix}"
 						endDateWidgetId="event_end_${prefix}"
 						endTimeWidgetId="event_end_time_${prefix}"></div>
 						
-					<input type="hidden" name="${dateId2}_timezoneid" value="${ssUser.timeZone.ID}" />
-					<input type="hidden" name="${dateId2}_skipTime" id="${dateId2}_skipTime_${prefix}"
+					<input type="hidden" name="${dateId}_timezoneid" value="${ssUser.timeZone.ID}" />
+					<input type="hidden" name="${dateId}_skipTime" id="${dateId}_skipTime_${prefix}"
 						<c:choose>
 							<c:when test="${initEvent.allDayEvent}">
 								value="true"
@@ -215,12 +140,87 @@
 							</c:otherwise>
 						</c:choose>
 						/>
-				</span>
+				</span>	
 			</td>
+			<c:if test="${attMap.hasDur}">
+				<td>
+					<input type="checkbox" name="${allDayEventId}"
+					<c:if test="${initEvent.allDayEvent}">
+						checked="checked"
+					</c:if> id="${prefix}_${dateId}_allDayEvent" 
+					onclick="${prefix}ssEventEditor.toggleAllDay(this, ['${dateId}_skipTime_${prefix}', '${dateId2}_skipTime_${prefix}']); " /><label for="${prefix}_${dateId}_allDayEvent"><ssf:nlt tag="event.allDay" /></label>
+				</td>
+			</c:if>
 		</tr>
+		
+	<c:if test="${attMap.hasDur}">
+			<tr>
+				<td class="contentbold"><ssf:nlt tag="event.end" />:</td>
+				<td>
+					<div dojoType="DropdownEventDatePicker" 
+						widgetId="event_end_${prefix}" 
+						name="${dateId2}_fullDate" 
+						id="${dateId2}_${prefix}"
+						lang="<ssf:convertLocaleToDojoStyle />" 
+						<c:choose>
+						    <c:when test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
+							    weekStartsOn="${ssUserProperties.calendarFirstDayOfWeek - 1}"
+						    </c:when>
+						    <c:otherwise>
+						    	weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
+						    </c:otherwise>
+						</c:choose>
+						<c:if test="${!empty endDate}">			
+							value="<fmt:formatDate value="${endDate}" pattern="yyyy-MM-dd" timeZone="${timeZoneID}"/>"
+						</c:if>
+						startDateWidgetId="event_start_${prefix}"
+						startTimeWidgetId="event_start_time_${prefix}"
+						endDateWidgetId="event_end_${prefix}"
+						endTimeWidgetId="event_end_time_${prefix}"></div>
+				</td>
+				<td>
+					<span id="${prefix}eventEndTime"
+						<c:if test="${initEvent.allDayEvent}">
+							style="display: none; "
+						</c:if>			
+						>
+						<div dojoType="DropdownEventTimePicker"
+							widgetId="event_end_time_${prefix}" 
+							name="${dateId2}_0_fullTime" 
+							id="${dateId2}_time_${prefix}"
+							lang="<ssf:convertLocaleToDojoStyle />" 
+							<c:choose>
+								<c:when test="${initEvent.allDayEvent}">
+									value="08:30:00"
+								</c:when>
+								<c:otherwise>
+									<c:if test="${!empty endDate}">	
+										value="<fmt:formatDate value="${endDate}" pattern="HH:mm:ss" timeZone="${timeZoneID}"/>"
+									</c:if>
+								</c:otherwise>
+							</c:choose>						
+							startDateWidgetId="event_start_${prefix}"
+							startTimeWidgetId="event_start_time_${prefix}"
+							endDateWidgetId="event_end_${prefix}"
+							endTimeWidgetId="event_end_time_${prefix}"></div>
+							
+						<input type="hidden" name="${dateId2}_timezoneid" value="${ssUser.timeZone.ID}" />
+						<input type="hidden" name="${dateId2}_skipTime" id="${dateId2}_skipTime_${prefix}"
+							<c:choose>
+								<c:when test="${initEvent.allDayEvent}">
+									value="true"
+								</c:when>
+								<c:otherwise>
+									value="false"
+								</c:otherwise>
+							</c:choose>
+							/>
+					</span>
+				</td>
+			</tr>
 	</c:if>
-</table>
-
+	</table>
+	
 
 <c:set var="interval" value="1" />
 <c:set var="frequency" value="none" />
@@ -413,108 +413,108 @@
 				</tr>
 			</table>			
 		</div>		
-	
+	</div>
 </c:if>
-
-<script type="text/javascript">
-
-var ${prefix}ssEventEditor = new ssEventEditor("${prefix}", "${frequency}", ${interval}, 
-									[${sundaySeleted}, ${mondaySeleted}, ${tuesdaySeleted}, ${wednesdaySeleted}, ${thursdaySeleted}, ${fridaySeleted}, ${saturdaySeleted}], 
-									{dayPosition: "${daystring}", dayOfWeek: "${dowstring}"}
-								);
-
-${prefix}ssEventEditor.locale.every = "<ssf:nlt tag="event.every" />";
-${prefix}ssEventEditor.locale.days = "<ssf:nlt tag="event.days" />";
-${prefix}ssEventEditor.locale.weeks = "<ssf:nlt tag="event.weeks" />";
-${prefix}ssEventEditor.locale.weeksOccurson = "<ssf:nlt tag="event.editor.weeks.occurson" />";
-${prefix}ssEventEditor.locale.months = "<ssf:nlt tag="event.months" />";
-${prefix}ssEventEditor.locale.years = "<ssf:nlt tag="event.years" />";
-${prefix}ssEventEditor.locale.dayNamesShort = ["<ssf:nlt tag="calendar.day.abbrevs.su"/>", "<ssf:nlt tag="calendar.day.abbrevs.mo"/>", "<ssf:nlt tag="calendar.day.abbrevs.tu"/>", "<ssf:nlt tag="calendar.day.abbrevs.we"/>", "<ssf:nlt tag="calendar.day.abbrevs.th"/>", "<ssf:nlt tag="calendar.day.abbrevs.fr"/>", "<ssf:nlt tag="calendar.day.abbrevs.sa"/>"];
-${prefix}ssEventEditor.locale.monthOnWeeksTitle = "<ssf:nlt tag="event.month.onWeeks.title" />";
-${prefix}ssEventEditor.locale.monthOnDaysTitle = "<ssf:nlt tag="event.month.onDays.title" />";
-${prefix}ssEventEditor.locale.pleaseSelect = "<ssf:nlt tag="general.please_select" />";
-${prefix}ssEventEditor.locale.weekFirst = "<ssf:nlt tag="event.whichweek.first" />";
-${prefix}ssEventEditor.locale.weekSecond = "<ssf:nlt tag="event.whichweek.second" />";
-${prefix}ssEventEditor.locale.weekThird = "<ssf:nlt tag="event.whichweek.third" />";
-${prefix}ssEventEditor.locale.weekFourth = "<ssf:nlt tag="event.whichweek.fourth" />";
-${prefix}ssEventEditor.locale.weekLast = "<ssf:nlt tag="event.whichweek.last" />";
-${prefix}ssEventEditor.locale.weekday = "<ssf:nlt tag="calendar.day.names.weekday" />";
-${prefix}ssEventEditor.locale.weekendday = "<ssf:nlt tag="calendar.day.names.weekendday" />";
 	
-${prefix}ssEventEditor.setFrequency();
-
-</script>
-
-
-<script type="text/javascript">
-
-function ${prefix}_checkRadio(id) {
-	if (document.getElementById) {
-		var el = document.getElementById(id);
-		if (el && el.checked !== undefined) {
-			el.checked = true;
+	<script type="text/javascript">
+		
+		var ${prefix}ssEventEditor = new ssEventEditor("${prefix}", "${frequency}", ${interval}, 
+											[${sundaySeleted}, ${mondaySeleted}, ${tuesdaySeleted}, ${wednesdaySeleted}, ${thursdaySeleted}, ${fridaySeleted}, ${saturdaySeleted}], 
+											{dayPosition: "${daystring}", dayOfWeek: "${dowstring}"}
+										);
+		
+		${prefix}ssEventEditor.locale.every = "<ssf:nlt tag="event.every" />";
+		${prefix}ssEventEditor.locale.days = "<ssf:nlt tag="event.days" />";
+		${prefix}ssEventEditor.locale.weeks = "<ssf:nlt tag="event.weeks" />";
+		${prefix}ssEventEditor.locale.weeksOccurson = "<ssf:nlt tag="event.editor.weeks.occurson" />";
+		${prefix}ssEventEditor.locale.months = "<ssf:nlt tag="event.months" />";
+		${prefix}ssEventEditor.locale.years = "<ssf:nlt tag="event.years" />";
+		${prefix}ssEventEditor.locale.dayNamesShort = ["<ssf:nlt tag="calendar.day.abbrevs.su"/>", "<ssf:nlt tag="calendar.day.abbrevs.mo"/>", "<ssf:nlt tag="calendar.day.abbrevs.tu"/>", "<ssf:nlt tag="calendar.day.abbrevs.we"/>", "<ssf:nlt tag="calendar.day.abbrevs.th"/>", "<ssf:nlt tag="calendar.day.abbrevs.fr"/>", "<ssf:nlt tag="calendar.day.abbrevs.sa"/>"];
+		${prefix}ssEventEditor.locale.monthOnWeeksTitle = "<ssf:nlt tag="event.month.onWeeks.title" />";
+		${prefix}ssEventEditor.locale.monthOnDaysTitle = "<ssf:nlt tag="event.month.onDays.title" />";
+		${prefix}ssEventEditor.locale.pleaseSelect = "<ssf:nlt tag="general.please_select" />";
+		${prefix}ssEventEditor.locale.weekFirst = "<ssf:nlt tag="event.whichweek.first" />";
+		${prefix}ssEventEditor.locale.weekSecond = "<ssf:nlt tag="event.whichweek.second" />";
+		${prefix}ssEventEditor.locale.weekThird = "<ssf:nlt tag="event.whichweek.third" />";
+		${prefix}ssEventEditor.locale.weekFourth = "<ssf:nlt tag="event.whichweek.fourth" />";
+		${prefix}ssEventEditor.locale.weekLast = "<ssf:nlt tag="event.whichweek.last" />";
+		${prefix}ssEventEditor.locale.weekday = "<ssf:nlt tag="calendar.day.names.weekday" />";
+		${prefix}ssEventEditor.locale.weekendday = "<ssf:nlt tag="calendar.day.names.weekendday" />";
+			
+		${prefix}ssEventEditor.setFrequency();
+	
+	</script>
+	
+	
+	<script type="text/javascript">
+	
+	function ${prefix}_checkRadio(id) {
+		if (document.getElementById) {
+			var el = document.getElementById(id);
+			if (el && el.checked !== undefined) {
+				el.checked = true;
+			}
 		}
 	}
-}
-
-function rowMarker () {
-	this.currentRow = undefined;
 	
-	this.mark = function(radioObj, rowId) {
-		if (this.currentRow) {
-			this.currentRow.className = "ss_requrency_row_unactive";
-		}
-		if (document.getElementById && radioObj) {
-			var row = document.getElementById(rowId);
-			if (row) {
-				if (radioObj.checked) {
-					row.className= "ss_requrency_row_active";
-					this.currentRow = row;
+	function rowMarker () {
+		this.currentRow = undefined;
+		
+		this.mark = function(radioObj, rowId) {
+			if (this.currentRow) {
+				this.currentRow.className = "ss_requrency_row_unactive";
+			}
+			if (document.getElementById && radioObj) {
+				var row = document.getElementById(rowId);
+				if (row) {
+					if (radioObj.checked) {
+						row.className= "ss_requrency_row_active";
+						this.currentRow = row;
+					}
 				}
 			}
 		}
 	}
-}
-
-var ${prefix}_rangeRowMarker = new rowMarker();
-
-</script>
-
-<c:if test="${attMap.hasRecur}">
-
-<script type="text/javascript">
-
-	<c:choose>
-		<c:when test="${count == -1}">
-			${prefix}_rangeRowMarker.currentRow = document.getElementById("${prefix}_rangeSel_until_row");
-		</c:when>
-		<c:when test="${count > 0}">
-			${prefix}_rangeRowMarker.currentRow = document.getElementById("${prefix}_rangeSel_count_row");
-		</c:when>
-		<c:when test="${count == 0}">
-			${prefix}_rangeRowMarker.currentRow = document.getElementById("${prefix}_rangeSel_forever_row");
-		</c:when>
-	</c:choose>
-
-	dojo.addOnLoad( function() { 
-		dojo.event.connect(dojo.widget.byId("repeat_until_${prefix}"), "onValueChanged", function() { 
-			${prefix}_checkRadio('${prefix}_rangeSel_until');
-			${prefix}_rangeRowMarker.mark(document.getElementById('${prefix}_rangeSel_until'), '${prefix}_rangeSel_until_row');
-		});
-	 });
-
-</script>   
-</c:if>
-
-
-<script type="text/javascript">
-
-	djConfig.searchIds.push("${dateId}_${prefix}");
-	djConfig.searchIds.push("${dateId2}_${prefix}");
-	djConfig.searchIds.push("${endrangeId}_${prefix}");
-	djConfig.searchIds.push("${dateId}_time_${prefix}");
-	djConfig.searchIds.push("${dateId2}_time_${prefix}");
-
-</script>
+	
+	var ${prefix}_rangeRowMarker = new rowMarker();
+	
+	</script>
+	
+	<c:if test="${attMap.hasRecur}">
+	
+	<script type="text/javascript">
+	
+		<c:choose>
+			<c:when test="${count == -1}">
+				${prefix}_rangeRowMarker.currentRow = document.getElementById("${prefix}_rangeSel_until_row");
+			</c:when>
+			<c:when test="${count > 0}">
+				${prefix}_rangeRowMarker.currentRow = document.getElementById("${prefix}_rangeSel_count_row");
+			</c:when>
+			<c:when test="${count == 0}">
+				${prefix}_rangeRowMarker.currentRow = document.getElementById("${prefix}_rangeSel_forever_row");
+			</c:when>
+		</c:choose>
+	
+		dojo.addOnLoad( function() { 
+			dojo.event.connect(dojo.widget.byId("repeat_until_${prefix}"), "onValueChanged", function() { 
+				${prefix}_checkRadio('${prefix}_rangeSel_until');
+				${prefix}_rangeRowMarker.mark(document.getElementById('${prefix}_rangeSel_until'), '${prefix}_rangeSel_until_row');
+			});
+		 });
+	
+	</script>   
+	</c:if>
+	
+	
+	<script type="text/javascript">
+	
+		djConfig.searchIds.push("${dateId}_${prefix}");
+		djConfig.searchIds.push("${dateId2}_${prefix}");
+		djConfig.searchIds.push("${endrangeId}_${prefix}");
+		djConfig.searchIds.push("${dateId}_time_${prefix}");
+		djConfig.searchIds.push("${dateId2}_time_${prefix}");
+	
+	</script>
 
 </div>
