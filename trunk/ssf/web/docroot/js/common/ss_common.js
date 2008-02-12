@@ -4524,7 +4524,7 @@ function ss_Clipboard () {
 		usersCheckboxes.push(inputObj);
 		
 		var labelObj = document.createElement("label");
-		labelObj.setAttribute("for", "muster_ids_" + index);
+		labelObj.htmlFor = "muster_ids_" + index;
 		labelObj.appendChild(document.createTextNode(userTitle));
 					
 		liObj.appendChild(inputObj);

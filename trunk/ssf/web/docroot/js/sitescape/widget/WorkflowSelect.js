@@ -77,10 +77,10 @@ dojo.widget.defineWidget(
 							chkbox.checked = true;
 						}		
 						var label = document.createElement("label");
-						label.setAttribute("for", chckboxId);
 						label.setAttribute("style", "padding-left: 5px;");
 						label.appendChild(document.createTextNode(data[i]));
 						liObj.appendChild(label);
+						label.htmlFor =  chckboxId;
 					}
 				}),
 				mimetype: "text/json",

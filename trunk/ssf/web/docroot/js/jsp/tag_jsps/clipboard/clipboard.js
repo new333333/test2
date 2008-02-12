@@ -118,7 +118,7 @@ function ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, members, pref
 				label.appendChild(txtNode);
 				
 				cell.appendChild(label);
-				label.setAttribute("for", checkboxId);
+				label.htmlFor = checkboxId;
 				
 				checkboxes.push(checkbox);
 			}
