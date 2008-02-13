@@ -522,7 +522,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 
 		for (int i=0; i<digestResults.size(); ++i) {
 			Object row[] = (Object [])digestResults.get(i);
-			mHelper.setEntries((Collection)row[0]);
+			Collection msgs = (Collection)row[0];
+			if (msgs.isEmpty()) continue;
+			mHelper.setEntries(msgs);
 			mHelper.setType(Notify.SUMMARY);
 			mHelper.setSendAttachments(false);
 			doSubscription(folder, mailSender, mHelper, (Map)row[1]);
