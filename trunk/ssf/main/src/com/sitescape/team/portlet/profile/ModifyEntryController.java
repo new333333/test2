@@ -41,7 +41,7 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.domain.Binder;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.module.shared.MapInputData;
@@ -66,7 +66,9 @@ public class ModifyEntryController extends SAbstractController {
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (formData.containsKey("okBtn") && op.equals(WebKeys.OPERATION_DELETE)) {
 			String deleteWs = PortletRequestUtils.getStringParameter(request, "deleteWs", null);
-			getProfileModule().deleteEntry(binderId, entryId, GetterUtil.getBoolean(deleteWs, false));			
+			Map options = new HashMap();
+			options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, GetterUtil.getBoolean(deleteWs, false));
+			getProfileModule().deleteEntry(binderId, entryId, null);			
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());		
 			response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 			response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
@@ -88,7 +90,7 @@ public class ModifyEntryController extends SAbstractController {
 				}
 				
 			}
-			getProfileModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null);
+			getProfileModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null, null);
 
 			//See if there was a request to reorder the graphic files
 			String graphicFileIds = PortletRequestUtils.getStringParameter(request, "_graphic_id_order", "");

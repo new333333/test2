@@ -389,13 +389,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        	result.addAll(getProfileDao().loadGroups(entryIds, user.getZoneId()));
 		return result;
 	}
-	public SortedSet<Principal> getPrincipals(Collection<Long> ids, Long zoneId) {
+	public SortedSet<Principal> getPrincipals(Collection<Long> ids) {
 		//does read access check
 		ProfileBinder binder = getProfileBinder();
  	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<Principal> result = new TreeSet(c);
- 		result.addAll(getProfileDao().loadPrincipals(ids, zoneId, false));
+ 		result.addAll(getProfileDao().loadPrincipals(ids, user.getZoneId(), false));
  		return result;
 	}
     
@@ -407,14 +407,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 
 	//NO transaction
-    public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
+    public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
         ProfileBinder binder = loadBinder(binderId);
         checkAccess(binder, ProfileOperation.addEntry);
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneId());
         try {
-        	return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems).getId();
+        	return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems, options).getId();
         } catch (DataIntegrityViolationException de) {
         	throw new ObjectExistsException("errorcode.user.exists", (Object[])null, de);
         }
@@ -435,11 +435,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     //NO transaction
     public void modifyEntry(Long binderId, Long id, InputDataAccessor inputData) 
 	throws AccessControlException, WriteFilesException {
-    	modifyEntry(binderId, id, inputData, new HashMap(), null, null);
+    	modifyEntry(binderId, id, inputData, null, null, null, null);
     }
     //NO transaction
    public void modifyEntry(Long binderId, Long entryId, InputDataAccessor inputData, 
-		   Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+		   Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
    		throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadBinder(binderId);
         ProfileCoreProcessor processor=loadProcessor(binder);
@@ -461,11 +461,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     			if (a != null) atts.add(a);
     		}
     	}
-    	processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo);
+    	processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo, options);
       }
 
    //NO transaction
-    public void addEntries(Long binderId, Document doc) {
+    public void addEntries(Long binderId, Document doc, Map options) {
        ProfileBinder binder = loadBinder(binderId);
        checkAccess(binder, ProfileOperation.addEntry);
        //process the document
@@ -518,7 +518,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	   params.put("zoneId", binder.getZoneId());
     	   List<Principal> deleteUsers = getCoreDao().loadObjects("from com.sitescape.team.domain.User where zoneId=:zoneId and name in (:plist)", params);
     	   if (!deleteUsers.isEmpty()) {
-    		   deleteEntries(binder, deleteUsers);
+    		   deleteEntries(binder, deleteUsers, options);
     	   }
        }
     		   //add entries grouped by definitionId
@@ -526,7 +526,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	   Map.Entry me = (Map.Entry)iter.next();
     	   List users = (List)me.getValue();
     	   Definition userDef = (Definition)me.getKey();
-    	   addEntries(users, User.class, binder, userDef); 
+    	   addEntries(users, User.class, binder, userDef, options); 
     	}
        
        defList = root.selectNodes("/profiles/group");
@@ -551,22 +551,22 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     	   params.put("zoneId", binder.getZoneId());
     	   List<Principal> deleteGroups = getCoreDao().loadObjects("from com.sitescape.team.domain.Group where zoneId=:zoneId and name in (:plist)", params);
     	   if (!deleteGroups.isEmpty()) {
-    		   deleteEntries(binder, deleteGroups);
+    		   deleteEntries(binder, deleteGroups, options);
     	   }
        }
 
 	   Group temp = new Group();
 	   getDefinitionModule().setDefaultEntryDefinition(temp);
 	   Definition defaultGroupDef = temp.getEntryDef();
-   	   addEntries(groupList, Group.class, binder, defaultGroupDef);  	   
+   	   addEntries(groupList, Group.class, binder, defaultGroupDef, options);  	   
     }
   	//no transaction
-    private void deleteEntries(final ProfileBinder binder, final Collection<Principal> entries) {
+    private void deleteEntries(final ProfileBinder binder, final Collection<Principal> entries, final Map options) {
 		getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
         		   try {
         			   for (Principal p:entries) {
-        				   deleteEntry(binder.getId(), p.getId(), true);
+        				   deleteEntry(binder.getId(), p.getId(), options);
         			   }
         		   } catch  (AccessControlException ac) {
         			   //can't do one, can't do any
@@ -576,7 +576,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	     }});
 
     }
-    private void addEntries(List elements, Class clazz, ProfileBinder binder, Definition def) {
+    private void addEntries(List elements, Class clazz, ProfileBinder binder, Definition def, Map options) {
        ProfileCoreProcessor processor=loadProcessor(binder);
    	   Map newEntries = new TreeMap(String.CASE_INSENSITIVE_ORDER);
    	   Map oldEntries = new HashMap();
@@ -623,7 +623,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 							logger.info("'" + iter.next() + "'");
 						}
 					}
-					processor.syncEntries(oldEntries);
+					processor.syncEntries(oldEntries, options);
 					//processor commits entries - so update indexnow
 					IndexSynchronizationManager.applyChanges();
 				} catch (Exception ex) {
@@ -640,7 +640,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 							logger.info("'" + iter.next() + "'");
 						}
 					}
-					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()));
+					List addedEntries = processor.syncNewEntries(binder, def, clazz, new ArrayList(newEntries.values()), options);
 					//processor commits entries - so update indexnow
 					IndexSynchronizationManager.applyChanges();
 					//flush from cache
@@ -653,7 +653,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   	   }
     }
     //NO transaction
-    public Workspace addUserWorkspace(User entry) throws AccessControlException {
+    public Workspace addUserWorkspace(User entry, Map options) throws AccessControlException {
         if (entry.getWorkspaceId() != null) {
         	try {
         		return (Workspace)getCoreDao().loadBinder(entry.getWorkspaceId(), entry.getZoneId()); 
@@ -685,7 +685,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   				updates.put(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
   				updates.put(ObjectKeys.FIELD_ENTITY_TITLE, wsTitle);
         		updates.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-  				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null);				
+  				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, options);				
   			}
    		} catch (WriteFilesException wf) {
    			logger.error("Error create user workspace: ", wf);
@@ -699,7 +699,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    }
 
     //NO transaction
-    public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
+    public Long addGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException {
         ProfileBinder binder = loadBinder(binderId);
         checkAccess(binder, ProfileOperation.addEntry);
@@ -711,28 +711,30 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         	definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_GROUP_VIEW);
         }
         try {
-        	return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems).getId();
+        	return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems, options).getId();
         } catch (DataIntegrityViolationException de) {
         	throw new ObjectExistsException("errorcode.group.exists", (Object[])null, de);
         }
     }
 
     //RW transaction
-    public void deleteEntry(Long binderId, Long principalId, boolean deleteWS) {
+    public void deleteEntry(Long binderId, Long principalId, Map options) {
         ProfileBinder binder = loadBinder(binderId);
         ProfileCoreProcessor processor=loadProcessor(binder);
         Principal entry = (Principal)processor.getEntry(binder, principalId);
         checkAccess(entry, ProfileOperation.deleteEntry);
        	if (entry.isReserved()) 
     		throw new NotSupportedException("errorcode.principal.reserved", new Object[]{entry.getName()});       	
-       	processor.deleteEntry(binder, entry, true); // third arg is irrelevant 
-        if (deleteWS && (entry instanceof User)) {
+       	processor.deleteEntry(binder, entry, true, options); 
+       	boolean delWs = Boolean.FALSE;
+       	if (options != null) delWs = (Boolean)options.get(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE);
+       	if (Boolean.TRUE.equals(delWs) && (entry instanceof User)) {
         	//delete workspace
         	User u = (User)entry;
         	Long wsId = u.getWorkspaceId();
         	if (wsId != null) {
         		try {
-        			getBinderModule().deleteBinder(wsId, true);
+        			getBinderModule().deleteBinder(wsId, true, options);
         			u.setWorkspaceId(null);       		
         		} catch (Exception ue) {}    
         	}
@@ -822,7 +824,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 	
     //NO transaction
-	public User addUserFromPortal(String userName, String password, Map updates) {
+	public User addUserFromPortal(String userName, String password, Map updates, Map options) {
 		if(updates == null)
 			updates = new HashMap();
 		
@@ -849,11 +851,11 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			if (userDef == null) userDef = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_ENTRY_VIEW);
 			List<InputDataAccessor>accessors = new ArrayList();
 			accessors.add(new MapInputData(newUpdates));
-			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors).get(0);
+			User user = (User)processor.syncNewEntries(profiles, userDef, User.class, accessors, options).get(0);
 			// flush user before adding workspace
 			IndexSynchronizationManager.applyChanges();
 			
-			addUserWorkspace(user);
+			addUserWorkspace(user, options);
 			//do now, with request context set
 			IndexSynchronizationManager.applyChanges();
 			return user;
@@ -864,7 +866,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 
     //No transaction
-	public void modifyUserFromPortal(User user, Map updates) {
+	public void modifyUserFromPortal(User user, Map updates, Map options) {
 		if (updates == null)
 			return; // nothing to update with
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
@@ -874,10 +876,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 			//use processor to handle title changes
 			ProfileCoreProcessor processor = (ProfileCoreProcessor)getProcessorManager().getProcessor(user.getParentBinder(), 
 					user.getParentBinder().getProcessorKey(ProfileCoreProcessor.PROCESSOR_KEY));
-			processor.syncEntry(user, new MapInputData(updates));
+			processor.syncEntry(user, new MapInputData(updates), options);
 			// flush user before adding workspace
 			IndexSynchronizationManager.applyChanges();
-			if (user.getWorkspaceId() == null) addUserWorkspace(user);
+			if (user.getWorkspaceId() == null) addUserWorkspace(user, options);
 
 			//do now, with request context set
 			IndexSynchronizationManager.applyChanges();
@@ -922,34 +924,26 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	}
 
     //RW transaction
-	public void deleteUserByName(String userName,  boolean deleteWS) {
+	public void deleteUserByName(String userName,  Map options) {
 		try {
 			User user = getProfileDao().findUserByName(userName, 
 					RequestContextHolder.getRequestContext().getZoneName());
-			deleteEntry(user.getParentBinder().getId(), user.getId(), deleteWS);
+			deleteEntry(user.getParentBinder().getId(), user.getId(),options);
 		}
 		catch(NoUserByTheNameException thisIsOk) {}
 	}
-	
-	public void addUserToGroup(long userId, String username, long groupId) {
-		if(username != null) {			
-			userId = getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneName()).getId().longValue();
+	//RW transaction
+	public void addUserToGroup(Long userId, String username, Long groupId) {
+		ProfileBinder binder = getProfileBinder();
+		Group group = (Group)getEntry(binder.getId(), groupId);		
+		checkAccess(group, ProfileOperation.modifyEntry);   
+		Principal user;
+		if (Validator.isNotNull(username)) {			
+			user = getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneName());
+		} else {
+			user = getProfileDao().loadPrincipal(userId, binder.getZoneId(), true);
 		}
-		HashSet<Long> userIds = new HashSet<Long>();
-		userIds.add(userId);
-		Set<Principal> principals = getPrincipals(userIds, RequestContextHolder.getRequestContext().getZoneId());
-		Long profileBinderId = getProfileBinder().getId();
-		Group group = (Group)getEntry(profileBinderId, groupId);		
-		List memberList = group.getMembers();
-		memberList.addAll(principals);
-		Map updates = new HashMap();
-		updates.put(ObjectKeys.FIELD_GROUP_MEMBERS, memberList);
-		try {
-			modifyEntry(profileBinderId, groupId, new MapInputData(updates));
-		} catch(WriteFilesException e) {
-			// We have no files, so this can't actually happen
-   			logger.error("Error adding user to group: ", e);
-		}
+		group.addMember(user);
 	}
 }
 

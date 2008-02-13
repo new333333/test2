@@ -30,11 +30,9 @@ package com.sitescape.team.module.folder;
 
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import org.dom4j.Document;
+import java.util.SortedSet;
 
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.FileAttachment;
@@ -48,7 +46,6 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.StatusTicket;
-import com.sitescape.team.web.tree.DomTreeBuilder;
 
 /**
  * <code>FolderModule</code> provides folder-related operations that the caller
@@ -79,63 +76,223 @@ public interface FolderModule {
 	   overrideReserveEntry,
 	   synchronize
    }
-
-	   /**
-     * Create an entry object from the input data and add it to the specified
-     * folder.  
-     * 
-     * @param folder
-     * @param inputData raw input data
-     * @return
+ 
+   /**
+    * Create an <code>FolderEntry</code> from the input data and add it to the specified
+    * <code>Folder</code>.  
+    * 
+    * @param folderId
+    * @param definitionId
+    * @param inputData
+    * @param fileItems - may be null
+    * @param options - additional processing options or null
+    * @return
+    * @throws AccessControlException
+    * @throws WriteFilesException
+    */
+     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Map options) 
+    	throws AccessControlException, WriteFilesException;
+    /**
+     * Start a workflow on a <code>FolderEntry</code>
+     * @param folderId
+     * @param entryId
+     * @param definitionId
      * @throws AccessControlException
      */
-    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException;
-    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) throws AccessControlException;
+    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) 
+    	throws AccessControlException;
+    /**
+     * Add a reply to the specified <code>FolderEntry</code>
+     * @param folderId
+     * @param parentId
+     * @param definitionId
+     * @param inputData
+     * @param fileItems- may be null
+     * @param options - additional processing options or null
+     * @return
+     * @throws AccessControlException
+     * @throws WriteFilesException
+     */
     public Long addReply(Long folderId, Long parentId, String definitionId, 
-    		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
-
+    		InputDataAccessor inputData, Map fileItems, Map options) 
+    	throws AccessControlException, WriteFilesException;
+    /**
+     * Add a new <code>Folder</code> under this folder.
+     * @param folderId
+     * @param definitionId
+     * @param inputData
+     * @param fileItems May be <code>null</code>
+     * @param options Additional processing options or null
+     * @return
+     * @throws AccessControlException
+     * @throws WriteFilesException
+     */
     public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems) throws AccessControlException, WriteFilesException;
+       		Map fileItems, Map options)
+    	throws AccessControlException, WriteFilesException;
+    /**
+     * Subscribe to an entry.  Multiple styles can be specified and multiple address/style are permitted
+     * @param folderId
+     * @param entryId
+     * @param styles
+     */
     public void addSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles); 
-	public void addVote(Long folderId, Long entryId, InputDataAccessor inputData) throws AccessControlException;
+    /**
+     * Add a vote to a survey entry.
+     * @param folderId
+     * @param entryId
+     * @param inputData
+     * @param options additional processing options or null
+     * @throws AccessControlException
+     */
+    public void addVote(Long folderId, Long entryId, InputDataAccessor inputData, Map options) 
+		throws AccessControlException;
 
+    /**
+     * Check access to a <code>Folder</code> throwing an exception if access is denied
+     * @param folder
+     * @param operation
+     * @throws AccessControlException
+     */
+    public void checkAccess(Folder folder, FolderOperation operation) 
+    	throws AccessControlException;
+    /**
+     * Check access to a <code>FolderEntry</code> throwing an exception if access is denied
+     * @param entry
+     * @param operation
+     * @throws AccessControlException
+     */
+    public void checkAccess(FolderEntry entry, FolderOperation operation) 
+    	throws AccessControlException;
     /**
      * Complete deletion of folders previously marked for delete
      * Used by a scheduled job to finish the delete in the background
      *
      */
     public void cleanupFolders();
-    public void copyEntry(Long folderId, Long entryId, Long destinationId) throws AccessControlException;
+    /**
+     * Copy a <code>FolderEntry</code> to another <code>Folder</code>.  Workflows and subsciptions will not be copied.
+     * @param folderId
+     * @param entryId
+     * @param destinationId
+     * @param options additional processing options or null
+     * @throws AccessControlException
+     */
+    public void copyEntry(Long folderId, Long entryId, Long destinationId, Map options)
+    	throws AccessControlException;
    /**
-     * Delete a FolderEntry and all of its replies
+     * Delete a <code>FolderEntry</code> and all of its replies.  Deleted mirrored resources also.
      * @param parentFolderId
      * @param entryId
      * @throws AccessControlException
      */
-    public void deleteEntry(Long parentFolderId, Long entryId) throws AccessControlException;
-    public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource) throws AccessControlException;
-    public void deleteEntryWorkflow(Long parentFolderId, Long entryId, String definitionId) throws AccessControlException;
+    public void deleteEntry(Long parentFolderId, Long entryId) 
+    throws AccessControlException;
+    /**
+     * Delete a <code>FolderEntry</code> and all of its replies.
+     * @param parentFolderId
+     * @param entryId
+     * @param deleteMirroredSource
+     * @param options - processing options or null
+     * @throws AccessControlException
+     */
+    public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource, Map options) 
+    	throws AccessControlException;
+    /**
+     * Stop a running workflow and delete it from the states of the <code>FolderEntry</code>.
+     * @param parentFolderId
+     * @param entryId
+     * @param definitionId
+     * @throws AccessControlException
+     */
+    public void deleteEntryWorkflow(Long parentFolderId, Long entryId, String definitionId)
+    	throws AccessControlException;
+    /**
+     * Unsubscribe to a <code>FolderEntry</code>
+     * @param folderId
+     * @param entryId
+     */
     public void deleteSubscription(Long folderId, Long entryId);
-    public void deleteTag(Long binderId, Long entryId, String tagId) throws AccessControlException;
-    
-	public Map getEntries(Long folderId) throws AccessControlException;
+    /**
+     * Delete a <code>Tag</code> associated with a <code>FolderEntry</code>
+     * @param binderId
+     * @param entryId
+     * @param tagId
+     * @throws AccessControlException
+     */
+    public void deleteTag(Long binderId, Long entryId, String tagId) 
+    	throws AccessControlException;
 	/**
-	 * Return entries
+	 * Search for entries in the <code>Folder</code>.  Optionally specify search options
 	 * @param folderId
-	 * @param options
-	 * @return search results
+	 * @param searchOptions - may be null
+	 * @return Map containing 5 Map.entry
+	 *        ObjectKeys.BINDER, Folder
+	 *        ObjectKeys.SEARCH_ENTRIES, childEntries: List
+	 *        ObjectKeys.SEARCH_COUNT_TOTAL, Integer
+	 *        ObjectKeys.TOTAL_SEARCH_COUNT, Integer
+	 *        ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, Integer
 	 * @throws AccessControlException
 	 */
-	public Map getEntries(Long folderId, Map options) throws AccessControlException;
-    public FolderEntry getEntry(Long parentFolderId, Long entryId) throws AccessControlException;
+	public Map getEntries(Long folderId, Map searchOptions) 
+		throws AccessControlException;
+	/**
+	 * Get the <code>FolderEntry</code> with the specified id and parent
+	 * @param parentFolderId
+	 * @param entryId
+	 * @return
+	 * @throws AccessControlException
+	 */
+    public FolderEntry getEntry(Long parentFolderId, Long entryId) 
+    	throws AccessControlException;
+    /**
+     * 
+     * @param parentFolderId
+     * @param entryId
+     * @return Map containing 3 items:   
+     * 			<code>ObjectKeys.FOLDER_ENTRY</code>, entry
+     * 			<code>ObjectKeys.FOLDER_ENTRY_ANCESTORS</code>, List<FolderEntry> ordered by sortKey
+     * 			<code>ObjectKeys.FOLDER_ENTRY_DESCENDANTS</code>, List<FolderEntry> ordered by sortKey
+     * @throws AccessControlException
+     */
     public Map getEntryTree(Long parentFolderId, Long entryId) throws AccessControlException;
-    public Folder getFolder(Long folderId) throws AccessControlException;
-	public Set<Folder> getFolders(Collection<Long> folderIds);
-    public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title) throws AccessControlException;
-	public Map getFullEntries(Long folderId) throws AccessControlException;
-	public Map getFullEntries(Long folderId, Map options) throws AccessControlException;
-	public Folder locateEntry(Long entryId);
+    /**
+     * Get the <code>Folder</code> with the specified id
+     * @param folderId
+     * @return
+     * @throws AccessControlException
+     */
+    public Folder getFolder(Long folderId) 
+    	throws AccessControlException;
+    /**
+     * Get set of folders sorted by title
+     * @param folderIds
+     * @return
+     */
+	public SortedSet<Folder> getFolders(Collection<Long> folderIds);
+	/**
+	 * Return a set of folderEntrys, doing the lookup by normalized title.
+	 * This is for wiki links where normalize title is used
+	 * @param folderId
+	 * @param title
+	 * @return
+	 * @throws AccessControlException
+	 */
+    public Set<FolderEntry> getFolderEntryByNormalizedTitle(Long folderId, String title)
+    	throws AccessControlException;
+ 	/**
+	 * Search for entries in a folder and additionally return the folderEntry and its tags.
+	 * @param folderId
+	 * @param searchOptions - may be null
+	 * @return Map containing {@link #getEntries getEntries} results plus
+	 * 			<code>ObjectKeys.FULL_ENTRIES</code>, List<FolderEntry>
+	 * 			<code>ObjectKeys.COMMUNITY_ENTITY_TAGS</code>, Map<Long, Collection<Tag>>
+	 * 			<code>ObjectKeys.PERSONAL_ENTITY_TAGS</code>, Map<Long, Collection<Tag>>
+	 * @throws AccessControlException
+	 */
+	public Map getFullEntries(Long folderId,
+				Map searchOptions) throws AccessControlException;
 	/**
      * Finds library folder entry by the file name. If no matching entry is 
      * found it returns <code>null</code>. If matching entry is found but the
@@ -149,10 +306,30 @@ public interface FolderModule {
     public FolderEntry getLibraryFolderEntryByFileName(Folder libraryFolder, String fileName)
     	throws AccessControlException;
     
-    
-	public Map getManualTransitions(FolderEntry entry, Long stateId);
-    public Set<Folder> getSubfolders(Folder folder);
-    public Set<String> getSubfoldersTitles(Folder folder);
+    /**
+     * Return the manual transitions currently available for an entry in the specified state.
+     * @param entry
+     * @param stateId
+     * @return Map where each key is a stateName and each value is the untranslated state caption
+     */
+	public Map<String, String> getManualTransitions(FolderEntry entry, Long stateId);
+	/**
+	 * Return sub-folders of this folder, sorted by title (1-level)
+	 * @param folder
+	 * @return
+	 */
+    public SortedSet<Folder> getSubfolders(Folder folder);
+    /**
+     * Return the sorted titles of this folders sub-folders (1-level)
+     * @param folder
+     * @return
+     */
+    public SortedSet<String> getSubfoldersTitles(Folder folder);
+    /**
+     * Return the current users subscription the the folderEntry
+     * @param entry
+     * @return
+     */
 	public Subscription getSubscription(FolderEntry entry); 
 	/**
 	 * Return community tags and the current users personal tags on the entry
@@ -160,25 +337,48 @@ public interface FolderModule {
 	 * @return 
 	 */
 	public Collection<Tag> getTags(FolderEntry entry);
- 	  
-	public Map getUnseenCounts(Collection<Long> folderIds);
-	public Map getWorkflowQuestions(FolderEntry entry, Long stateId);
+	/**
+	 * Get count of entries unseen for each folder.  Unseen counts are only kept for a short time. Refer to ObjectKeys.SEEN_MAP_TIMEOUT
+	 * @param folderIds
+	 * @return
+	 */
+	public Map<Folder, Long> getUnseenCounts(Collection<Long> folderIds);
+	/**
+	 * Return the workflow questions currently available for an entry in the specified state.
+	 * @param entry
+	 * @param stateId
+	 * @return Map where each key is a questionName and each value is a map.  The value map contains
+	 * 2 entries:  (Key:ObjectKeys.WORKFLOW_QUESTION_TEXT, Value: untranslated text) and (Key:ObjectKeys.WORKFLOW_QUESTION_RESPONSES,Value: maap of responses).  The response map contains key:responseName and value:untranslated responseText
+	 */
+	public Map<String, Map> getWorkflowQuestions(FolderEntry entry, Long stateId);
+	/**
+	 * Re-index an existing entry.  Should be handled internally
+	 * @param entry
+	 * @param includeReplies
+	 */
 	public void indexEntry(FolderEntry entry, boolean includeReplies);
+	/**
+	 * Return the parent Folder of the entry.  Useful if an entry has moved.
+	 * @param entryId
+	 * @return
+	 */
+	public Folder locateEntry(Long entryId);
     /**
-     * 
-     * @param folderId
-     * @param entryId
-     * @param inputData
-     * @param fileItems
-     * @param deleteAttachments A collection of either <code>java.lang.String</code>
-     * representing database id of each attachment or 
-     * {@link com.sitescape.team.domain.Attachment Attachment}.
+     * Modify an existing <code>FolderEntry</code> with inputData.
+     * @param folderId ID of the folder
+     * @param entryId ID of the entry
+     * @param inputData attributes to be modified
+     * @param fileItems - may be null
+     * @param deleteAttachments - A collection of <code>String</code>
+     * representing database id of each attachment or null
+     * @param fileRenamesTo  may be null
+     * @param options  processing options or null
      * @throws AccessControlException
      * @throws WriteFilesException
      * @throws ReservedByAnotherUserException
      */
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
     	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
     
     /**
@@ -199,11 +399,27 @@ public interface FolderModule {
      * @throws ReservedByAnotherUserException
      */
     public void modifyEntry(Long folderId, Long entryId, String fileDataItemName, String fileName, InputStream content)
-	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
-    
-    public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
-
-    public void moveEntry(Long folderId, Long entryId, Long destinationId) throws AccessControlException;
+		throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
+    /**
+     * Move an entry workflow from the state identified as stateId to a new state.
+     * @param folderId
+     * @param entryId
+     * @param stateId
+     * @param toState
+     * @throws AccessControlException
+     */
+    public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) 
+    	throws AccessControlException;
+    /**
+     * Move a top level entry to another folder.  Replies are moved with the entry.
+     * @param folderId
+     * @param entryId
+     * @param destinationId
+     * @param options - processing options or null
+     * @throws AccessControlException
+     */
+    public void moveEntry(Long folderId, Long entryId, Long destinationId, Map options) 
+    	throws AccessControlException;
 
     /**
      * Reserve the entry.
@@ -218,19 +434,77 @@ public interface FolderModule {
     	throws AccessControlException, ReservedByAnotherUserException,
     	FilesLockedByOtherUsersException;
     
-    
-	public void setTag(Long binderId, Long entryId, String tag, boolean community) throws AccessControlException;
-    public void setUserRating(Long folderId, Long entryId, long value) throws AccessControlException;
-	public void setUserRating(Long folderId, long value) throws AccessControlException;
+    /**
+     * Add a tag to a folderEntry
+     * @param binderId
+     * @param entryId
+     * @param tag
+     * @param community
+     * @throws AccessControlException
+     */
+	public void setTag(Long binderId, Long entryId, String tag, boolean community) 
+		throws AccessControlException;
+	/**
+	 * Rate a folderEntry
+	 * @param folderId
+	 * @param entryId
+	 * @param value
+	 * @throws AccessControlException
+	 */
+    public void setUserRating(Long folderId, Long entryId, long value) 
+    	throws AccessControlException;
+    /**
+     * Rate a folder
+     * @param folderId
+     * @param value
+     * @throws AccessControlException
+     */
+	public void setUserRating(Long folderId, long value) 
+		throws AccessControlException;
+	/**
+	 * Mark the current user has visited the entry.  A running count is kept
+	 * @param entry
+	 */
 	public void setUserVisit(FolderEntry entry);
-    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) throws AccessControlException;
- //   public void setVote(Long folderId, Long entryId, String definitionId)
+	/**
+	 * Record responses to workflow questions
+	 * @param folderId
+	 * @param entryId
+	 * @param stateId
+	 * @param inputData
+	 * @throws AccessControlException
+	 */
+    public void setWorkflowResponse(Long folderId, Long entryId, Long stateId, InputDataAccessor inputData) 
+    	throws AccessControlException;
+    /**
+     * 	Test access to a binder. 
+     * @param folder
+     * @param operation
+     * @return
+     */
     public boolean testAccess(Folder folder, FolderOperation operation);
-    public void checkAccess(Folder folder, FolderOperation operation) throws AccessControlException;
+    /**
+     * Test access to a folderEntry.  Access may be effected by workflows
+     * @param entry
+     * @param operation
+     * @return
+     */
     public boolean testAccess(FolderEntry entry, FolderOperation operation);
-    public void checkAccess(FolderEntry entry, FolderOperation operation) throws AccessControlException;
+    /**
+     * Test if current user is allowed to transition out of  a workflow state
+     * @param entry
+     * @param stateId
+     * @return
+     */
     public boolean testTransitionOutStateAllowed(FolderEntry entry, Long stateId);
-	public boolean testTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState);
+    /**
+     * Test if currnet user is allowed to transition into the specified stae
+     * @param entry
+     * @param stateId
+     * @param toState
+     * @return
+     */
+    public boolean testTransitionInStateAllowed(FolderEntry entry, Long stateId, String toState);
    
     
     /**
@@ -255,7 +529,10 @@ public interface FolderModule {
 	 * @return returns <code>false</code> if the folder represented by the
 	 * <code>folderId</code> has been deleted as result of the synchronization.
 	 * Otherwise returns <code>true</code>
+	 * @throws AccessControlException
 	 * @throws FIException
+	 * @throws UncheckedIOException
 	 */
-	public boolean synchronize(Long folderId, StatusTicket statusTicket) throws AccessControlException, FIException, UncheckedIOException;
+	public boolean synchronize(Long folderId, StatusTicket statusTicket)
+		throws AccessControlException, FIException, UncheckedIOException;
 }

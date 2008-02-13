@@ -111,7 +111,7 @@ public class ModifyBinderController extends AbstractBinderController {
 		   			}
 		   		}
 		   		try {
-		   			getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts);				
+		   			getBinderModule().modifyBinder(binderId, mid, fileMap, deleteAtts, null);				
 		   			setupReloadOpener(response, binderId);	
 		   		} catch (ConfigurationException cf) {
 		   			response.setRenderParameters(formData);
@@ -126,7 +126,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				} catch (NumberFormatException e) {
 					// nothing to do
 				}
-				if (destinationId != null) getBinderModule().moveBinder(binderId, destinationId);
+				if (destinationId != null) getBinderModule().moveBinder(binderId, destinationId, null);
 				setupReloadOpener(response, binderId);
 			} else if (op.equals(WebKeys.OPERATION_COPY)) {
 				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
@@ -137,7 +137,7 @@ public class ModifyBinderController extends AbstractBinderController {
 					// nothing to do
 				}
 				if (destinationId != null) {
-					Long copyId = getBinderModule().copyBinder(binderId, destinationId, true);
+					Long copyId = getBinderModule().copyBinder(binderId, destinationId, null);
 					setupReloadOpener(response, copyId);
 				} else {
 					setupReloadOpener(response, binderId);
@@ -148,7 +148,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				Binder binder = getBinderModule().getBinder(binderId);			
 				//get view data, before binder is deleted
 				setupViewOnDelete(response, binder, binderType);	
-				getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource));
+				getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource), null);
 				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
 			} else {
 				setupReloadOpener(response, binderId);			

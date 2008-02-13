@@ -42,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
@@ -287,7 +288,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		return folder;        
 	}
 	
-	public Set<Folder> getFolders(Collection<Long> folderIds) {
+	public SortedSet<Folder> getFolders(Collection<Long> folderIds) {
         User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
        	TreeSet<Folder> result = new TreeSet<Folder>(c);
@@ -304,7 +305,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	}
     //no transaction by default
    public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException {
+    		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
     	afCount.incrementAndGet();
 		Folder parentFolder = loadFolder(parentFolderId);
 		checkAccess(parentFolder, FolderOperation.addFolder);
@@ -315,14 +316,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			def = parentFolder.getEntryDef();
 		}
     			
-		Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems);
+		Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems, options);
 		if(parentFolder.isMirrored() && binder.isMirrored())
-			getBinderModule().setDefinitions(binder.getId(), true);
+			getBinderModule().setDefinitionsInherited(binder.getId(), true);
 		return binder.getId();
     }
     //no transaction by default
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException {
+    		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
     	aeCount.incrementAndGet();
 
         Folder folder = loadFolder(folderId);
@@ -338,12 +339,12 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         	def = folder.getDefaultEntryDef();
         }
         
-        Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems);
+        Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         return entry.getId();
     }
     //no transaction    
 	public Long addReply(Long folderId, Long parentId, String definitionId, 
-    		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException {
+    		InputDataAccessor inputData, Map fileItems, Map options) throws AccessControlException, WriteFilesException {
     	arCount.incrementAndGet();
     	
         Folder folder = loadFolder(folderId);
@@ -352,11 +353,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         //load parent entry
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId);
         checkAccess(entry, FolderOperation.addReply);
-        FolderEntry reply = processor.addReply(entry, def, inputData, fileItems);
+        FolderEntry reply = processor.addReply(entry, def, inputData, fileItems, options);
         return reply.getId();
     }
     //no transaction    
-	public void addVote(Long folderId, Long entryId, InputDataAccessor inputData) throws AccessControlException {
+	public void addVote(Long folderId, Long entryId, InputDataAccessor inputData, Map options) throws AccessControlException {
 	   	meCount.incrementAndGet();
    	
         Folder folder = loadFolder(folderId);
@@ -369,14 +370,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         	throw new ReservedByAnotherUserException(entry);
  
  		try {
-			processor.modifyEntry(folder, entry, inputData, null, null, null);
+			processor.modifyEntry(folder, entry, inputData, null, null, null, options);
     	} catch (WriteFilesException ex) {
     	    //should never happen   
     	}
 	}
     //no transaction    
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
         
     	meCount.incrementAndGet();
@@ -397,7 +398,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
    				if (a != null) delAtts.add(a);
     		}
     	}
-    	processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo);
+    	processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo, options);
          
     }    
     
@@ -409,26 +410,20 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	if(fileDataItemName == null)
     		fileDataItemName = ObjectKeys.FILES_FROM_APPLET_FOR_BINDER + "1";
     	fileItems.put(fileDataItemName, mf);
-    	modifyEntry(folderId, entryId, new EmptyInputData(), fileItems, null, null);
+    	modifyEntry(folderId, entryId, new EmptyInputData(), fileItems, null, null, null);
     }
 
-    public Map getEntries(Long folderId) {
-        return getEntries(folderId, new HashMap());
-    }
 
-    public Map getEntries(Long folderId, Map options) {
+    public Map getEntries(Long folderId, Map searchOptions) {
         Folder folder = loadFolder(folderId);
         //search query does access checks
-        return loadProcessor(folder).getBinderEntries(folder, entryTypes, options);
+        return loadProcessor(folder).getBinderEntries(folder, entryTypes, searchOptions);
     }
     
-    public Map getFullEntries(Long folderId) {
-    	return getFullEntries(folderId, new HashMap());
-    }
     
-    public Map getFullEntries(Long folderId, Map options) {
-        //search query does access checks
-        Map result =  getEntries(folderId, options);
+    public Map getFullEntries(Long folderId, Map searchOptions) {
+    	//search query does access checks
+        Map result =  getEntries(folderId, searchOptions);
         //now load the full database object
         List childEntries = (List)result.get(ObjectKeys.SEARCH_ENTRIES);
         ArrayList ids = new ArrayList();
@@ -496,11 +491,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         return result;
     }
 
-    public Map getUnseenCounts(Collection<Long> folderIds) {
+    public Map<Folder, Long> getUnseenCounts(Collection<Long> folderIds) {
     	//search engine will do acl checks
         User user = RequestContextHolder.getRequestContext().getUser();
         SeenMap seenMap = getProfileDao().loadSeenMap(user.getId());
-        Map results = new HashMap();
+        Map<Folder, Long> results = new HashMap();
         Set<Folder> folders = new HashSet();
         for (Long id:folderIds) {
         	try {
@@ -510,7 +505,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         if (folders.size() > 0) {
 	        Hits hits = getRecentEntries(folders);
 	        if (hits != null) {
-	        	Map unseenCounts = new HashMap();
+	        	Map<String, Counter> unseenCounts = new HashMap();
 		        Date modifyDate = new Date();
 		        for (int i = 0; i < hits.length(); i++) {
 					String folderIdString = hits.doc(i).getField(EntityIndexUtils.BINDER_ID_FIELD).stringValue();
@@ -522,7 +517,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 					try {
 						modifyDate = DateTools.stringToDate(hits.doc(i).getField(IndexUtils.LASTACTIVITY_FIELD).stringValue());
 					} catch (ParseException pe) {} // no need to do anything
-					Counter cnt = (Counter)unseenCounts.get(folderIdString);
+					Counter cnt = unseenCounts.get(folderIdString);
 					if (cnt == null) {
 						cnt = new Counter();
 						unseenCounts.put(folderIdString, cnt);
@@ -533,8 +528,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 				}
 		        for (Folder f : folders) {
 		        	Counter cnt = (Counter)unseenCounts.get(f.getId().toString());
-		        	if (cnt == null) cnt = new Counter();
-		        	results.put(f, cnt);
+		        	if (cnt == null) {
+		        		results.put(f, Long.valueOf(0));
+		        	} else {
+		        		results.put(f, cnt.getCount());
+		        	}
 		        }
 	        }
         }
@@ -623,20 +621,20 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
     //no transaction        
     public void deleteEntry(Long parentFolderId, Long entryId) {
-    	deleteEntry(parentFolderId, entryId, true);
+    	deleteEntry(parentFolderId, entryId, true, null);
     }
     //no transaction    
-    public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource) {
+    public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource, Map options) {
     	deCount.incrementAndGet();
 
         Folder folder = loadFolder(parentFolderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkAccess(entry, FolderOperation.deleteEntry);
-        processor.deleteEntry(folder, entry, deleteMirroredSource);
+        processor.deleteEntry(folder, entry, deleteMirroredSource, options);
     }
     //inside write transaction    
-    public void moveEntry(Long folderId, Long entryId, Long destinationId) {
+    public void moveEntry(Long folderId, Long entryId, Long destinationId, Map options) {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
@@ -645,10 +643,10 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         
         Folder destination =  loadFolder(destinationId);
         checkAccess(destination, FolderOperation.addEntry);
-        processor.moveEntry(folder, entry, destination);
+        processor.moveEntry(folder, entry, destination, options);
     }
     //inside write transaction    
-    public void copyEntry(Long folderId, Long entryId, Long destinationId) {
+    public void copyEntry(Long folderId, Long entryId, Long destinationId, Map options) {
         Folder folder = loadFolder(folderId);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
@@ -656,7 +654,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
               
         Folder destination =  loadFolder(destinationId);
         checkAccess(destination, FolderOperation.addEntry);
-        processor.copyEntry(folder, entry, destination, null);
+        processor.copyEntry(folder, entry, destination, options);
     }
     //inside write transaction    
     public void addSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
@@ -952,7 +950,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
    		}
    		return views;
     }
-    public Set<String> getSubfoldersTitles(Folder folder) {
+    public SortedSet<String> getSubfoldersTitles(Folder folder) {
     	//already have access to folder
     	TreeSet<String> titles = new TreeSet<String>();
    		
@@ -966,9 +964,11 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	return titles;    	
     }
     
-    public Set<Folder> getSubfolders(Folder folder) {
+    public SortedSet<Folder> getSubfolders(Folder folder) {
     	//already have access to folder
-    	Set<Folder> subFolders = new HashSet<Folder>();
+        User user = RequestContextHolder.getRequestContext().getUser();
+        Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
+       	TreeSet<Folder> subFolders = new TreeSet<Folder>(c);
    		
     	for(Object o : folder.getFolders()) {
     		Folder f = (Folder) o;
@@ -989,7 +989,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
    		for (Folder f: folders) {
    			FolderCoreProcessor processor = loadProcessor(f);
    			try {
-  				processor.deleteBinder(f, true);
+  				processor.deleteBinder(f, true, null);
    			} catch (Exception ex) {
    				logger.error(ex);
    			}
@@ -1019,20 +1019,16 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
      * @author Janet McCann
      *
      */
-    public class Counter {
-    	long count=0;
+    protected class Counter {
+    	private long count=0;
     	protected Counter() {	
     	}
-    	public void increment() {
+    	protected void increment() {
     		++count;
     	}
-    	public long getCount() {
+    	protected Long getCount() {
     		return count;
-    	}
-    	public String toString() {
-    		return String.valueOf(count);
-    	}
-    	
+    	}    	
     }
     
 	public void clearStatistics() {

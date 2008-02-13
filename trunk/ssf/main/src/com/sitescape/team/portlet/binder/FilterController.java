@@ -132,7 +132,7 @@ public class FilterController extends AbstractBinderController {
 		Map searchFilterData = new HashMap();
 		model.put(WebKeys.SEARCH_FILTER_MAP, searchFilterData);
 		
-		Workspace ws = getWorkspaceModule().getWorkspace();
+		Workspace ws = getWorkspaceModule().getTopWorkspace();
 		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 		model.put(WebKeys.DOM_TREE, tree);
 

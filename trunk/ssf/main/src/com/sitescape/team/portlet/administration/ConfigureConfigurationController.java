@@ -163,7 +163,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 					}
 					
 				}
-				getBinderModule().modifyBinder(configId, new MapInputData(formData), fileMap, deleteAtts);
+				getBinderModule().modifyBinder(configId, new MapInputData(formData), fileMap, deleteAtts, null);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 			} else if (WebKeys.OPERATION_MODIFY_TEMPLATE.equals(operation)) {

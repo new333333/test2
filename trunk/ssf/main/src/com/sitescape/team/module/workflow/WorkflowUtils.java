@@ -54,7 +54,7 @@ import com.sitescape.util.Validator;
  */
 public class WorkflowUtils {
         
-    public static Map getManualTransitions(Definition wfDef, String stateName) {
+    public static Map<String, String> getManualTransitions(Definition wfDef, String stateName) {
 		Map transitionData = new LinkedHashMap();
 		Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
@@ -82,7 +82,7 @@ public class WorkflowUtils {
 		return transitionData;
     }
 
-    public static Map getQuestions(Definition wfDef, String stateName) {
+    public static Map<String, Map> getQuestions(Definition wfDef, String stateName) {
 		Map questionsData = new LinkedHashMap();
 		Document wfDoc = wfDef.getDefinition();
 		//Find the current state in the definition
@@ -96,8 +96,8 @@ public class WorkflowUtils {
 					String questionName = DefinitionUtils.getPropertyValue((Element)questions.get(j), "name");
 					String questionText = DefinitionUtils.getPropertyValue((Element)questions.get(j), "question");
 					Map responseData = new LinkedHashMap();
-					questionData.put(WebKeys.WORKFLOW_QUESTION_TEXT, questionText);
-					questionData.put(WebKeys.WORKFLOW_QUESTION_RESPONSES, responseData);
+					questionData.put(ObjectKeys.WORKFLOW_QUESTION_TEXT, questionText);
+					questionData.put(ObjectKeys.WORKFLOW_QUESTION_RESPONSES, responseData);
 					List responses = ((Element)questions.get(j)).selectNodes("./item[@name='workflowResponse']");
 					if (responses != null) {
 						for (int k = 0; k < responses.size(); k++) {

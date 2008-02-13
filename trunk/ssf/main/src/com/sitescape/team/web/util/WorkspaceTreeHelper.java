@@ -109,7 +109,7 @@ public class WorkspaceTreeHelper {
 			Long workspaceId = bs.getProfileModule().getEntryWorkspaceId(binderId, entryId);
 			if (workspaceId == null && user.getId().equals(entryId)) {
 				//This is the user trying to access his or her own workspace; try to create it
-				binder = bs.getProfileModule().addUserWorkspace(user);
+				binder = bs.getProfileModule().addUserWorkspace(user, null);
 				if (binder == null) {
 					// Redirect to profile list
 					PortletURL reloadUrl = response.createRenderURL();

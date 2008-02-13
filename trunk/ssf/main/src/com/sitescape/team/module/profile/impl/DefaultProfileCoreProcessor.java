@@ -93,10 +93,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	implements ProfileCoreProcessor {
 	DateFormat dateFmt = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT);
 	//inside write transaction    
-	public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
+	public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
 		if(logger.isDebugEnabled())
 			logger.debug("Deleting binder [" + binder.getPathName() + "]");
-		if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource);
+		if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource, options);
 		else {
 			//if binder is marked deleted, we are called from cleanup code without a transaction 
 			final ProfileBinder pBinder = (ProfileBinder)binder;
@@ -173,13 +173,13 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
  
        //*******************************************************************/
   	//not supported
-	public void moveBinder(Binder source, Binder destination) {
+	public void moveBinder(Binder source, Binder destination, Map options) {
 		throw new NotSupportedException("errorcode.notsupported.moveBinder");
 	
 	}
     //*******************************************************************/
   	//not supported
-	public Binder copyBinder(Binder source, Binder destination, InputDataAccessor inputData)  {
+	public Binder copyBinder(Binder source, Binder destination, InputDataAccessor inputData, Map options)  {
 		throw new NotSupportedException("errorcode.notsupported.copyBinder");
 	
 	}
@@ -234,12 +234,11 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     }
        
     //***********************************************************************************************************	
-    protected Map modifyEntry_setCtx(Entry entry, Map ctx) {
+    protected void modifyEntry_setCtx(Entry entry, Map ctx) {
     	if (entry instanceof Group) {
-        	if (ctx == null) ctx = new HashMap();
     		ctx.put(ObjectKeys.FIELD_GROUP_MEMBERS, new HashSet(((Group)entry).getMembers()));
     	}
-    	return super.modifyEntry_setCtx(entry, ctx);
+    	super.modifyEntry_setCtx(entry, ctx);
     }
     //inside write transaction
    protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
@@ -292,7 +291,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 				   updates.put(ObjectKeys.FIELD_ENTITY_TITLE, user.getTitle());
 				   updates.put(ObjectKeys.FIELD_BINDER_SEARCHTITLE, user.getSearchTitle());
 				   try {
-					   processor.modifyBinder(ws, new MapInputData(updates), null, null);
+					   processor.modifyBinder(ws, new MapInputData(updates), null, null, null);
 					   excludeIds = new ArrayList();
 					   excludeIds.add(ws.getId());
 					   //modifyBinder will also reindex direct child binders, so remove them
@@ -503,8 +502,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
      * reindex all users unnecessarily
      * Files are not handled here
      */
-	public void syncEntry(final Principal entry, final InputDataAccessor inputData) {
-		final Map ctx = syncEntry_setCtx(entry, null);
+	public void syncEntry(final Principal entry, final InputDataAccessor inputData, Map options) {
+		final Map ctx = new HashMap();
+		if (options != null) ctx.putAll(options);
+		syncEntry_setCtx(entry, ctx);
 		Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null, ctx);
 	    final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
 	        
@@ -520,8 +521,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	    if (changed.equals(Boolean.TRUE)) modifyEntry_indexAdd(entry.getParentBinder(), entry, inputData, null, null, ctx);		
 		
 	}
-	protected Map syncEntry_setCtx(Entry entry, Map ctx) {
-		return modifyEntry_setCtx(entry, ctx);
+	protected void syncEntry_setCtx(Entry entry, Map ctx) {
+		modifyEntry_setCtx(entry, ctx);
 	}
 	protected boolean syncEntry_fillIn(Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
 	        for (Iterator iter=entryData.entrySet().iterator(); iter.hasNext();) {
@@ -561,7 +562,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	 * Synchronize a list of entries.  The map key is the entry, value
 	 * is an InputDataAccessor of updates.  Only index entries that change
 	 */
-	public void syncEntries(final Map entries) {
+	public void syncEntries(final Map entries, final Map options) {
 		if (entries.isEmpty()) return;
 	    
         // The following part requires update database transaction.
@@ -571,7 +572,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
                  for (Iterator i=entries.entrySet().iterator(); i.hasNext();) {
                 	 Map.Entry mEntry = (Map.Entry)i.next();
                 	 Principal entry = (Principal)mEntry.getKey();
-                	 Map ctx = syncEntry_setCtx(entry, null);
+                	 Map ctx = new HashMap();
+                	 if (options != null) ctx.putAll(options);
+                	 syncEntry_setCtx(entry, ctx);
                 	 InputDataAccessor inputData = (InputDataAccessor)mEntry.getValue();
         	    	
                 	 Map entryDataAll = modifyEntry_toEntryData(entry, inputData, null, ctx);
@@ -614,11 +617,12 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     protected void syncNewEntry_startWorkflow(Entry entry, Map ctx) {
     	addEntry_startWorkflow(entry, ctx);
     }
-   public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors) {
+   public List syncNewEntries(final Binder binder, final Definition definition, final Class clazz, final List inputAccessors, Map options) {
 	   if (inputAccessors.isEmpty()) return new ArrayList();
 	   SimpleProfiler.startProfiler("DefaultProfileCoreProcessor.syncNewEntries");
 	    // The following part requires update database transaction.
    		final Map ctx = new HashMap();
+   		if (options != null) ctx.putAll(options);
 		Map<Principal, InputDataAccessor> newEntries = (Map)getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		Map newEntries = new HashMap();

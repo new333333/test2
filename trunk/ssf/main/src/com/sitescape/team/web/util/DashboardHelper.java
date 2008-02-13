@@ -733,7 +733,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
         	beans.put(id, idData);
     	}
     	if (isConfig) {
-    		Workspace ws = getWorkspaceModule().getWorkspace();
+    		Workspace ws = getWorkspaceModule().getTopWorkspace();
     		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()), 1);
     		idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
     	}
@@ -809,7 +809,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	}
 		
 		
-    	Workspace ws = getWorkspaceModule().getWorkspace();
+    	Workspace ws = getWorkspaceModule().getTopWorkspace();
     	Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()), 1);
     	idData.put(WebKeys.DASHBOARD_WORKSPACE_TREE, tree);
 
@@ -851,7 +851,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(searchQuery, getDefinitionModule(), getProfileModule(), getBinderModule());
 		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
-		Workspace ws = getWorkspaceModule().getWorkspace();
+		Workspace ws = getWorkspaceModule().getTopWorkspace();
 		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 		model.put(WebKeys.DOM_TREE, tree);
 		

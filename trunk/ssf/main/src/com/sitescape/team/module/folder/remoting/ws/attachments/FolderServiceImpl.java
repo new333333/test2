@@ -98,7 +98,7 @@ public class FolderServiceImpl extends com.sitescape.team.module.folder.remoting
 		try {
 			// Finally invoke the business method. 
 			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-				new EmptyInputData(), fileItems, null, null);
+				new EmptyInputData(), fileItems, null, null, null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

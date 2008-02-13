@@ -101,9 +101,9 @@
 		      style="display:inline; background: inherit !important;">
 		    <input type="hidden" name="tokenId" value="${workflow.id}">
 		    <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
-		    <span class="ss_bold"><c:out value="${question.value.ssWorkflowQuestionText}"/></span><br/>
+		    <span class="ss_bold"><c:out value="${question.value.workflow_questionText}"/></span><br/>
 		    <select name="${question.key}">
-		    <c:forEach var="response" items="${question.value.ssWorkflowQuestionResponses}">
+		    <c:forEach var="response" items="${question.value.workflow_questionResponses}">
 		      <option value="${response.key}">${response.value}</option>
 		    </c:forEach>
 		    </select><input type="submit" class="ss_submit" name="respondBtn" 
@@ -165,9 +165,9 @@
 				      style="display:inline; background: inherit !important;">
 				    <input type="hidden" name="tokenId" value="${workflow.id}">
 				    <input type="hidden" name="replyId" value="${ssDefinitionEntry.id}">
-				    <span class="ss_bold"><c:out value="${question.value.ssWorkflowQuestionText}"/></span><br/>
+				    <span class="ss_bold"><c:out value="${question.value.workflow_questionText}"/></span><br/>
 				    <select name="${question.key}">
-				    <c:forEach var="response" items="${question.value.ssWorkflowQuestionResponses}">
+				    <c:forEach var="response" items="${question.value.workflow_questionResponses}">
 				      <option value="${response.key}">${response.value}</option>
 				    </c:forEach>
 				    </select><input type="submit" class="ss_submit" name="respondBtn" 

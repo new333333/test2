@@ -832,7 +832,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			// This means that the uri ends with "library"
 			// Get the top-level workspace. 
 			try {
-				Workspace topWorkspace = bs.getWorkspaceModule().getWorkspace();
+				Workspace topWorkspace = bs.getWorkspaceModule().getTopWorkspace();
 				return new String[] {topWorkspace.getTitle()};
 			}
 			catch(AccessControlException e) {
@@ -897,7 +897,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				List faId = new ArrayList();
 				faId.add(fa.getId());
 				
-				bs.getFolderModule().modifyEntry(getParentBinder(objMap).getId(), getFolderEntry(objMap).getId(), new EmptyInputData(), null, faId, null);
+				bs.getFolderModule().modifyEntry(getParentBinder(objMap).getId(), getFolderEntry(objMap).getId(), new EmptyInputData(), null, faId, null, null);
 			}
 		}
 		catch (AccessControlException e) {
@@ -927,7 +927,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			Map data = new HashMap();
 			data.put("title", getLastElemName(targetMap));
 			
-			bs.getBinderModule().modifyBinder(getLeafBinder(sourceMap).getId(), new MapInputData(data), null, null);
+			bs.getBinderModule().modifyBinder(getLeafBinder(sourceMap).getId(), new MapInputData(data), null, null, null);
 		}
 		catch(AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());
@@ -946,7 +946,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 			FolderEntry entry = getFolderEntry(sourceMap);
 			
 			bs.getFolderModule().modifyEntry(entry.getParentBinder().getId(), 
-					entry.getId(), new EmptyInputData(), null, null, renamesTo);
+					entry.getId(), new EmptyInputData(), null, null, renamesTo, null);
 		}
 		catch(AccessControlException e) {
 			throw new NoAccessException(e.getLocalizedMessage());

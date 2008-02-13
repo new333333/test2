@@ -195,7 +195,7 @@ public class BinderHelper {
 			try {
 				binder = bs.getWorkspaceModule().getWorkspace(Long.valueOf(id));
 			} catch (Exception ex) {
-				binder = bs.getWorkspaceModule().getWorkspace();				
+				binder = bs.getWorkspaceModule().getTopWorkspace();				
 			}
 			Document wsTree;
 			//when at the top, don't expand
@@ -240,7 +240,7 @@ public class BinderHelper {
   			model.put(WebKeys.USER_LIST, LongIdUtil.getIdsAsString(ids));
   			return new ModelAndView(WebKeys.VIEW_PRESENCE, model);				
 		} else if (TOOLBAR_PORTLET.equals(displayType)) {
-			Workspace binder = bs.getWorkspaceModule().getWorkspace();
+			Workspace binder = bs.getWorkspaceModule().getTopWorkspace();
 			Document wsTree;
 			if (request.getWindowState().equals(WindowState.NORMAL)) {
 				wsTree = bs.getBinderModule().getDomBinderTree(binder.getId(), new WsDomTreeBuilder(null, true, bs), 1);
@@ -360,7 +360,7 @@ public class BinderHelper {
 			if (binder.getEntityType().name().equals(EntityType.workspace.name()))
 				return WorkspaceTreeHelper.setupWorkspaceBeans(bs, binderId, request, response);
 		}
-		binder = bs.getWorkspaceModule().getWorkspace();
+		binder = bs.getWorkspaceModule().getTopWorkspace();
 		Document tree = bs.getBinderModule().getDomBinderTree(binder.getId(), 
 				new WsDomTreeBuilder(null, true, bs), 1);
 		model.put(WebKeys.WORKSPACE_DOM_TREE, tree);
@@ -372,7 +372,7 @@ public class BinderHelper {
 	protected static ModelAndView setupWorkareaNavigationPortlet(AllModulesInjected bs, 
 			RenderRequest request, PortletPreferences prefs, Map model, String view) {
 		//This is the workarea navigation view
-		Binder binder = bs.getWorkspaceModule().getWorkspace();
+		Binder binder = bs.getWorkspaceModule().getTopWorkspace();
 		Document tree = bs.getBinderModule().getDomBinderTree(binder.getId(), 
 				new WsDomTreeBuilder(null, true, bs), 1);
 
@@ -1754,7 +1754,7 @@ public class BinderHelper {
 		
 		model.putAll(prepareSavedQueries(bs));
 		
-		Workspace ws = bs.getWorkspaceModule().getWorkspace();
+		Workspace ws = bs.getWorkspaceModule().getTopWorkspace();
 		Document tree = bs.getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, bs),1);
 		model.put(WebKeys.DOM_TREE, tree);
 		

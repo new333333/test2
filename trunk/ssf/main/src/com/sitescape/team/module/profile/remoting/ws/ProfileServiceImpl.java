@@ -91,7 +91,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		Document doc = getDocument(inputDataAsXML);
 		
 		try {
-			return getProfileModule().addUser(new Long(binderId), definitionId, new DomInputData(doc, getIcalModule()), null).longValue();
+			return getProfileModule().addUser(new Long(binderId), definitionId, new DomInputData(doc, getIcalModule()), null, null).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -105,7 +105,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		Document doc = getDocument(inputDataAsXML);
 		
 		try {
-			return getProfileModule().addGroup(new Long(binderId), definitionId, new DomInputData(doc, getIcalModule()), null).longValue();
+			return getProfileModule().addGroup(new Long(binderId), definitionId, new DomInputData(doc, getIcalModule()), null, null).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -114,7 +114,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 	}
 	
 	public void addUserToGroup(long userId, String username, long groupId) {
-		getProfileModule().addUserToGroup(userId, username, groupId);
+		getProfileModule().addUserToGroup(Long.valueOf(userId), username, Long.valueOf(groupId));
 	}
 	
 	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
@@ -133,7 +133,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 	
 	public void deletePrincipal(long binderId, long principalId) {
 		try {
-			getProfileModule().deleteEntry(new Long(binderId), new Long(principalId), false);
+			getProfileModule().deleteEntry(new Long(binderId), new Long(principalId), null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

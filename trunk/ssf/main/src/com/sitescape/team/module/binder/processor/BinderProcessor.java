@@ -49,10 +49,10 @@ import com.sitescape.team.util.StatusTicket;
 public interface BinderProcessor {
     public static final String PROCESSOR_KEY = "processorKey_binderCoreProcessor";
 
-    public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
+    public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException;
-    public Binder copyBinder(Binder source, Binder destination, Map params);
-    public void deleteBinder(Binder binder, boolean deleteMirroredSource) throws AccessControlException;
+    public Binder copyBinder(Binder source, Binder destination, Map options);
+    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) throws AccessControlException;
   	//return search results
   	public Map getBinders(Binder binder, Map options);
     public void indexFunctionMembership(Binder binder, boolean cascade);
@@ -63,9 +63,9 @@ public interface BinderProcessor {
 	public Collection indexTree(Binder binder, Collection exclusions);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket);
       
- 	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
+ 	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments, Map options) 
 		throws AccessControlException, WriteFilesException;
-    public void moveBinder(Binder source, Binder destination);
+    public void moveBinder(Binder source, Binder destination, Map options);
     /**
      * Fix up a binder after its parent have been moved
      * Needs to be public, since calls cross binders and may be

@@ -41,7 +41,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
@@ -49,24 +48,19 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.UserProperties;
-import com.sitescape.team.domain.WorkflowSupport;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
-import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.FolderConfigHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
-import com.sitescape.team.web.tree.FolderConfigHelper;
 
 /**
  * @author Peter Hurley
@@ -128,7 +122,7 @@ public class ModifyEntryController extends SAbstractController {
 				}
 			
 				getFolderModule().modifyEntry(folderId, entryId, 
-						new MapInputData(formData), fileMap, deleteAtts, null);
+						new MapInputData(formData), fileMap, deleteAtts, null, null);
 								
 				//See if the user wants to send mail
 				BinderHelper.sendMailOnEntryCreate(this, request, folderId, entryId);
@@ -150,13 +144,13 @@ public class ModifyEntryController extends SAbstractController {
 				if (destinationId != null) {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
-					getFolderModule().moveEntry(folderId, entryId, destinationId);
+					getFolderModule().moveEntry(folderId, entryId, destinationId, null);
 					setupViewFolder(response, folderId);		
 				} else {
 					setupViewEntry(response, folderId, entryId);
 				}
 			} else if (op.equals(WebKeys.OPERATION_COPY)) {
-				//must be move entry
+				//must be copy entry
 				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 				Long destinationId = null;
 				try {
@@ -167,18 +161,7 @@ public class ModifyEntryController extends SAbstractController {
 				if (destinationId != null) {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
-					getFolderModule().copyEntry(folderId, entryId, destinationId);
-					setupViewFolder(response, folderId);		
-				} else {
-					setupViewEntry(response, folderId, entryId);
-				}
-			} else if (op.equals(WebKeys.OPERATION_COPY)) {
-				//must be move entry
-				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
-				if (destinationId != null) {
-					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
-					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
-					getFolderModule().copyEntry(folderId, entryId, destinationId);
+					getFolderModule().copyEntry(folderId, entryId, destinationId, null);
 					setupViewFolder(response, folderId);		
 				} else {
 					setupViewEntry(response, folderId, entryId);
@@ -187,7 +170,7 @@ public class ModifyEntryController extends SAbstractController {
 			
 		} else if (formData.containsKey("editElementBtn")) {
 			getFolderModule().modifyEntry(folderId, entryId, 
-					new MapInputData(formData), new HashMap(), null, null);
+					new MapInputData(formData), null, null, null, null);
 			setupReloadOpener(response, folderId, entryId);
 
 		} else if (formData.containsKey("cancelBtn")) {
@@ -205,16 +188,7 @@ public class ModifyEntryController extends SAbstractController {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 	}
-	private void setupReloadOpenerParent(ActionResponse response, Long folderId, Long entryId) {
-		//return to view entry
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_RELOAD_OPENER_PARENT);
-		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-	}
-	private void setupCloseWindow(ActionResponse response) {
-		//return to view entry
-		response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CLOSE_WINDOW);
-	}
+
 	private void setupViewEntry(ActionResponse response, Long folderId, Long entryId) {
 		response.setRenderParameter(WebKeys.URL_BINDER_ID, folderId.toString());		
 		response.setRenderParameter(WebKeys.URL_ENTRY_ID, entryId.toString());		
@@ -270,7 +244,7 @@ public class ModifyEntryController extends SAbstractController {
 			Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));
 			entry  = getFolderModule().getEntry(folderId, entryId);
 			
-			Workspace ws = getWorkspaceModule().getWorkspace();
+			Workspace ws = getWorkspaceModule().getTopWorkspace();
 			model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
 
 			model.put(WebKeys.ENTRY, entry);

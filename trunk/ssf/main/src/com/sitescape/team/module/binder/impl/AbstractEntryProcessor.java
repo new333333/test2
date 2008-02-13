@@ -100,11 +100,13 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	//***********************************************************************************************************	
     
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
-    		final InputDataAccessor inputData, Map fileItems) 
+    		final InputDataAccessor inputData, Map fileItems, Map options) 
     	throws WriteFilesException {
         // This default implementation is coded after template pattern. 
         
-        final Map ctx = addEntry_setCtx(binder, null);
+        final Map ctx = new HashMap();
+        if (options != null) ctx.putAll(options);
+        addEntry_setCtx(binder, ctx);
     	Map entryDataAll;
     	
     	SimpleProfiler.startProfiler("addEntry_toEntryData");
@@ -183,8 +185,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         }
     }
 
-    protected Map addEntry_setCtx(Binder binder, Map ctx) {
-    	return ctx;
+    protected void addEntry_setCtx(Binder binder, Map ctx) {    	
     }
 
     
@@ -401,9 +402,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //no transaction expected
     public void modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, 
-    		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo)  
+    		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo, Map options)  
     		throws WriteFilesException {
-       final Map ctx = modifyEntry_setCtx(entry, null);
+       final Map ctx = new HashMap();
+       if (options != null) ctx.putAll(options);
+       modifyEntry_setCtx(entry, ctx);
 
     	Map entryDataAll;
 
@@ -474,12 +477,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    }
 	}
 
-    protected Map modifyEntry_setCtx(Entry entry, Map ctx) {
-    	if (ctx == null) ctx = new HashMap();
+    protected void modifyEntry_setCtx(Entry entry, Map ctx) {
     	//save normalized title and title before changes
 		ctx.put(ObjectKeys.FIELD_ENTITY_NORMALIZED_TITLE, entry.getNormalTitle());
 		ctx.put(ObjectKeys.FIELD_ENTITY_TITLE, entry.getTitle());
-    	return ctx;
     }
    protected FilesErrors modifyEntry_filterFiles(Binder binder, Entry entry,
     		Map entryData, List fileUploadItems, Map ctx) throws FilterException, TitleException {
@@ -626,15 +627,17 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     //***********************************************************************************************************   
     //inside write transaction    
-    public Entry copyEntry(Binder binder, Entry source, Binder destination, Map params) {
+    public Entry copyEntry(Binder binder, Entry source, Binder destination, Map options) {
 		throw new NotSupportedException(
 				"errorcode.notsupported.copyEntry", new String[]{source.getTitle()});
     }
  
     //***********************************************************************************************************   
     //no transaction expected
-    public void deleteEntry(final Binder parentBinder, final Entry entry, final boolean deleteMirroredSource) {
-    	final Map ctx = deleteEntry_setCtx(entry, null);
+    public void deleteEntry(final Binder parentBinder, final Entry entry, final boolean deleteMirroredSource, Map options) {
+    	final Map ctx = new HashMap();
+    	if (options != null) ctx.putAll(options);
+    	deleteEntry_setCtx(entry, ctx);
     	final List<ChangeLog> changeLogs = new ArrayList();
     	//setup change logs, so have a complete picture of the entry.
     	//don't commit until transaction
@@ -675,8 +678,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	SimpleProfiler.stopProfiler("deleteEntry_indexDel");
    }
     //no transaction
-    protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
-    	return ctx;
+    protected void deleteEntry_setCtx(Entry entry, Map ctx) {
     }
     //no transaction
    	protected void deleteEntry_processChangeLogs(Binder parentBinder, Entry entry, Map ctx, List changeLogs) {
@@ -729,21 +731,21 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         IndexSynchronizationManager.deleteDocument(entry.getIndexDocumentUid());
    }
     //***********************************************************************************************************
-    public void moveEntry(Binder binder, Entry entry, Binder destination) {
+    public void moveEntry(Binder binder, Entry entry, Binder destination, Map options) {
 		throw new NotSupportedException(
 				"errorcode.notsupported.moveEntry", new String[]{entry.getTitle()});
     }
     //***********************************************************************************************************
     //no transaction
-    public Binder copyBinder(Binder source, Binder destination, Map params) {
-    	Binder binder = super.copyBinder(source, destination, params);
-    	copyEntries(source, binder, params);
+    public Binder copyBinder(Binder source, Binder destination, Map options) {
+    	Binder binder = super.copyBinder(source, destination, options);
+    	copyEntries(source, binder, options);
     	return binder;
     }
 
     //***********************************************************************************************************
     //no transaction
-    public void copyEntries(Binder source, Binder destination, Map params) {
+    public void copyEntries(Binder source, Binder destination, Map options) {
 		throw new NotSupportedException("errorcode.notsupported.copyEntry", "ALL");
 
     }
@@ -820,7 +822,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 			if (!inputData.exists(question)) continue;
 			String response = inputData.getSingleValue(question);
 			Map qData = (Map)me.getValue();
-			Map rData = (Map)qData.get(WebKeys.WORKFLOW_QUESTION_RESPONSES);
+			Map rData = (Map)qData.get(ObjectKeys.WORKFLOW_QUESTION_RESPONSES);
 			if (!rData.containsKey(response)) {
 				throw new IllegalArgumentException("Illegal workflow response: " + response);
 			}
@@ -1008,7 +1010,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
         		maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
         
-    	if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
+        	if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
     			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);       
         }
     	maxResults = getBinderEntries_maxEntries(maxResults); 

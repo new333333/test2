@@ -262,7 +262,7 @@ public class ReportDownloadController extends  SAbstractController {
 			}
 		}
 		if(userIds.size() > 0) {
-			SortedSet<Principal> principals = getProfileModule().getPrincipals(userIds, RequestContextHolder.getRequestContext().getZoneId());
+			SortedSet<Principal> principals = getProfileModule().getPrincipals(userIds);
 			for(Principal p : principals) {
 				userMap.put(p.getId(), p);
 			}

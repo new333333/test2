@@ -91,7 +91,8 @@ public class UserProperties extends ZonedObject {
     }    
     
     public void setProperty(String key, Object value) {
-    	//only update if it changes to reduce writes
+ 	   if (value instanceof Object[]) throw new IllegalArgumentException("Arrays not supported");
+    	//only update if it changes; to reduce writes
     	if (userProperties.containsKey(key)) {
     		if (value == null) userProperties.remove(key);
     		else {

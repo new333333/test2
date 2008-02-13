@@ -404,7 +404,7 @@ public class IcalModuleImpl implements IcalModule {
 				
 				MapInputData inputData = new MapInputData(formData);
 				try {
-					Long entryId = folderModule.addEntry(folderId, entryType, inputData, new HashMap());
+					Long entryId = folderModule.addEntry(folderId, entryType, inputData, null, null);
 					entries.add(entryId);
 				} catch (AccessControlException e) {
 					logger.warn("Can not create entry from iCal file.", e);
@@ -431,7 +431,7 @@ public class IcalModuleImpl implements IcalModule {
 				
 				MapInputData inputData = new MapInputData(formData);
 				try {
-					Long entryId = folderModule.addEntry(folderId, entryType, inputData, new HashMap());
+					Long entryId = folderModule.addEntry(folderId, entryType, inputData, null, null);
 					entries.add(entryId);
 					logger.info("New entry id created from iCal file [" + entryId + "]");
 				} catch (AccessControlException e) {

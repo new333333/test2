@@ -43,7 +43,6 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
@@ -77,18 +76,35 @@ public interface BinderModule {
 	public void addSubscription(Long binderId, Map<Integer,String[]> styles) 
 		throws AccessControlException;
 	/**
+	 * Check access to a binder, throwing an exception if access is denied.
+	 * @param binder
+	 * @param operation
+	 * @throws AccessControlException
+	 */
+	public void checkAccess(Binder binder, BinderOperation operation)
+		throws AccessControlException;
+	
+    /**
+     * Check binder access by a user
+     * @param binderId
+     * @param user
+     * @return
+     */
+    public boolean checkAccess(Long binderId, User user);
+	/**
 	 * Copy a binder to another location
 	 * @param sourceId
 	 * @param destinationId
 	 * @param cascade - True to copy child binders
+     * @param options - processing options or null (See INPUT_OPTION_COPY_BINDER_CASCADE)
 	 * @return
 	 */
-	public Long copyBinder(Long sourceId, Long destinationId, boolean cascade)
+	public Long copyBinder(Long sourceId, Long destinationId, Map options)
 		throws AccessControlException;
 	/**
 	 * Delete a binder including any sub-binders and entries.
 	 * Any errors deleting child-binders will be returned, but
-	 * will continue deleting as much as possible.
+	 * will continue deleting as much as possible.  Mirrored source will be deleted
 	 * @param binderId
 	 * @return Set of exceptions when deleting child binders
 	 * @throws AccessControlException
@@ -103,10 +119,11 @@ public interface BinderModule {
 	 * @param deleteMirroredSource indicates whether or not to delete the
 	 * corresponding source resources (directories and files) if this binder
 	 * or any of the child binders is mirrored.
+	 * @param options - processing options or null
 	 * @return Set of exceptions when deleting child binders
 	 * @throws AccessControlException
 	 */
-	public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource) 
+	public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource, Map options) 
 		throws AccessControlException;
 		
 	/**
@@ -123,26 +140,27 @@ public interface BinderModule {
 	public void deleteTag(Long binderId, String tagId) 
 		throws AccessControlException;
 	/**
-	 * Execute a search query.  Read access is automatically checked
+	 * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
 	 * @param searchQuery
 	 * @return
 	 */
     public Map executeSearchQuery(Document searchQuery);
     /**
-     * Same as <code>executeSearchQuery</code>
-     * @param searchQuery
-     * @param options
-     * @return
-     */
-    public Map executeSearchQuery(Document searchQuery, Map options);
-    /**
-     * Execute a search query using a <code>QueryBuilder</code>-ready <code>Document</code>.
+     * Same as {@link #executeSearchQuery(Document) executeSearchQuery}.
      * @param query
      * @param offset
      * @param maxResults
      * @return
      */
     public Map executeSearchQuery(Document query, int offset, int maxResults);
+    /**
+     * Same as {@link #executeSearchQuery(Document) executeSearchQuery}. 
+     * Optionally provide additional searchOptions.
+     * @param searchQuery
+     * @param searchOptions
+     * @return
+     */
+    public Map executeSearchQuery(Document searchQuery, Map searchOptions);
     /**
      * Get a binder
      * @param binderId
@@ -153,15 +171,6 @@ public interface BinderModule {
     public Binder getBinder(Long binderId)
 		throws NoBinderByTheIdException, AccessControlException;
     /**
-     * Check binder access by a user
-     * @param binderId
-     * @param user
-     * @return
-     * @throws NoBinderByTheIdException
-     * @throws AccessControlException
-     */
-    public boolean checkBinderAccess(Long binderId, User user);
-    /**
      * Load binders.
      * @param binderIds
      * @return Binders sorted by title
@@ -170,10 +179,10 @@ public interface BinderModule {
     /**
      * Search for child binders - 1 level
      * @param binder
-     * @param options - search options
+     * @param searchOptions - search options
      * @return search results
      */
-    public Map getBinders(Binder binder, Map options);
+    public Map getBinders(Binder binder, Map searchOptions);
     /**
      * Finds a binder by path name. If no binder exists with the path name,
      * it returns <code>null</code>. If a matching binder exists but the
@@ -185,6 +194,28 @@ public interface BinderModule {
      */
     public Binder getBinderByPathName(String pathName) 
     	throws AccessControlException;
+    /**
+     * Traverse the binder tree returing a DOM structure containing workspaces and
+     * folders
+     * @param binderId
+     * @param domTreeHelper
+     * @param levels = depth to return.  -1 means all
+     * @return
+     * @throws AccessControlException
+     */
+	public Document getDomBinderTree(Long binderId, DomTreeBuilder domTreeHelper, int levels)
+		throws AccessControlException;
+	/**
+     * Traverse one path of the binder tree returing a DOM structure containing workspaces and
+     * folders starting at topId and ending at bottomId.
+	 * @param topId
+	 * @param bottonId
+	 * @param domTreeHelper
+	 * @return
+	 * @throws AccessControlException
+	 */
+ 	public Document getDomBinderTree(Long topId, Long bottonId, DomTreeBuilder domTreeHelper) 
+ 		throws AccessControlException;
     /**
      * Orders list
      * @param wordroot
@@ -243,7 +274,7 @@ public interface BinderModule {
      */
     public Set<Long> indexTree(Long binderId) throws AccessControlException;
     /**
-     * Same as <code>indexTree</code> except handles a collection of binders.  Use this as a
+     * Same as {@link #indexTree(Long) indexTree} except handles a collection of binders.  Use this as a
      * performance optimzation for multiple binders- it handles the index cleanup better
      * @param binderId
      * @return Set of binderIds indexed
@@ -251,28 +282,20 @@ public interface BinderModule {
      public Set<Long> indexTree(Collection<Long> binderId, StatusTicket statusTicket) throws AccessControlException;
    
     /**
-     * Modify a binder
+     * Modify a binder.  Optionally include files to add and attachments to delete 
      * @param binderId
      * @param inputData
-     * @throws AccessControlException
-     * @throws WriteFilesException
-     */
-    public void modifyBinder(Long binderId, InputDataAccessor inputData) 
-    	throws AccessControlException, WriteFilesException;
-    /**
-     * Same as <code>modifyBinder</code>.  Optionally include files to add and attachments to delete 
-     * @param binderId
-     * @param inputData
-     * @param fileItems
-     * @param deleteAttachments
+     * @param fileItems - may be null
+     * @param deleteAttachments - may be null
+     * @param options - processing options or null
      * @throws AccessControlException
      * @throws WriteFilesException
      */
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments)
+    		Map fileItems, Collection deleteAttachments, Map options)
     	throws AccessControlException, WriteFilesException;
     /**
-     * Modify who gets email notifications.  The updates are applied to the <code>NotificationDef</code> for this binder
+     * Modify who gets email notifications. 
      * @param binderId
      * @param updates
      * @param principalIds
@@ -283,9 +306,19 @@ public interface BinderModule {
 	 * Move a binder, all of its entries and sub-binders
 	 * @param fromId - the binder to move
 	 * @param toId - destination id
+     * @param options - processing options or null
 	 */
-	public void moveBinder(Long binderId, Long toId)
+	public void moveBinder(Long binderId, Long toId, Map options)
 		throws AccessControlException;  
+    /**
+     * Modify the list of definitions and workflows assocated with a binder
+     * @param binderId
+     * @param definitionIds
+     * @param workflowAssociations Map entryDefinitionId to workflowDefinitionId
+     * @throws AccessControlException
+     */
+    public Binder setDefinitions(Long binderId, List<String> definitionIds, Map<String,String> workflowAssociations)
+    	throws AccessControlException;
 	/**
 	 * Set the definition inheritance on a binder
 	 * @param binderId
@@ -293,37 +326,13 @@ public interface BinderModule {
 	 * @return
 	 * @throws AccessControlException
 	 */
-    public Binder setDefinitions(Long binderId, boolean inheritFromParent)
+    public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent)
     	throws AccessControlException;
     /**
-     * Modify the list of definitions assocated with a binder
-     * @param binderId
-     * @param definitionIds
-     * @throws AccessControlException
-     */
-    public Binder setDefinitions(Long binderId, List<String> definitionIds)
-    	throws AccessControlException;
-    /**
-     * Modify the list of definitions and workflows assocated with a binder
-     * @param binderId
-     * @param definitionIds
-     * @param workflowAssociations
-     * @throws AccessControlException
-     */
-    public Binder setDefinitions(Long binderId, List<String> definitionIds, Map workflowAssociations)
-    	throws AccessControlException;
-    /**
-     * Same as <code>setPosting</code>
+     * Add emailAddress and (options password) for posting to a binder
      * @param binderId
      * @param emailAddress
-     */
-    public void setPosting(Long binderId, String emailAddress) 
-    	throws AccessControlException;  
-    /**
-     * Same as <code>setPosting</code>
-     * @param binderId
-     * @param emailAddress
-     * @param password
+     * @param password - null if using aliases
      */
     public void setPosting(Long binderId, String emailAddress, String password)
     	throws AccessControlException;  
@@ -367,27 +376,5 @@ public interface BinderModule {
 	 * @return
 	 */
 	public boolean testAccess(Binder binder, BinderOperation operation);
-	/**
-	 * Same as <code>testAccess</code>, except an exception is thrown if access is denied
-	 * @param binder
-	 * @param operation
-	 * @throws AccessControlException
-	 */
-	public void checkAccess(Binder binder, BinderOperation operation)
-		throws AccessControlException;
-	
-    /**
-     * Traverse the binder tree returing a DOM structure containing workspaces and
-     * folders
-     * @param binderId
-     * @param domTreeHelper
-     * @param levels = depth to return.  -1 means all
-     * @return
-     * @throws AccessControlException
-     */
-	public Document getDomBinderTree(Long binderId, DomTreeBuilder domTreeHelper, int levels)
-		throws AccessControlException;
- 	public Document getDomBinderTree(Long topId, Long bottonId, DomTreeBuilder domTreeHelper) 
- 		throws AccessControlException;
 
 }

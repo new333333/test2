@@ -124,7 +124,7 @@ public class UserSynchInterceptor implements HandlerInterceptor,InitializingBean
 				updates = filterUpdates(updates);
 				
 				if(!updates.isEmpty()) {
-					getProfileModule().modifyUserFromPortal(user, updates);				
+					getProfileModule().modifyUserFromPortal(user, updates, null);				
 				}
 				
 				ses.setAttribute(WebKeys.PORTLET_USER_SYNC, Boolean.TRUE, PortletSession.APPLICATION_SCOPE);

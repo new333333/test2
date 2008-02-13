@@ -313,7 +313,8 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	if (properties.isEmpty()) properties = null;
     }
     public void setProperty(String name, Object value) {
-    	if (value == null) removeProperty(name);
+ 	   if (value instanceof Object[]) throw new IllegalArgumentException("Arrays not supported");
+ 	   if (value == null) removeProperty(name);
     	if (properties == null) properties = new HashMap();
     	properties.put(name, value);
     }

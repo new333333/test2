@@ -71,7 +71,7 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException {
 		throw new UnsupportedOperationException("Workflow is not supported in the base edition");
     }
-	public Map getManualTransitions(FolderEntry entry, Long stateId) {
+	public Map<String, String> getManualTransitions(FolderEntry entry, Long stateId) {
 		return new HashMap();
     }		
 
