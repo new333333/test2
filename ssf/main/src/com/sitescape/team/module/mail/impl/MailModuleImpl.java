@@ -712,7 +712,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	   				mHelper.setTimeZone(timeZone);
    					for (int i=0; i<digestResults.size(); ++i) {
    						Object row[] = (Object [])digestResults.get(i);
-   						mHelper.setEntries((Collection)row[0]);
+   						Collection msgs = (Collection)row[0];
+   						if (msgs.isEmpty()) continue; //didn't have access
+   						mHelper.setEntries(msgs);
    						mHelper.setType(Notify.NotifyType.summary);
    						mHelper.setSendAttachments(false);
    						doSubscription(currentFolder, mailSender, mHelper, (Map)row[1], ctx);
