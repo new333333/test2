@@ -708,9 +708,9 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 							if (index == -1) id=Long.valueOf(docId);
 							else id=Long.valueOf(docId.substring(0, index));
 							if (option.longValue() == PostingDef.POST_AS_A_REPLY.longValue())
-								folderModule.addReply(folder.getId(), id, defId, new MapInputData(inputData), fileItems);
+								folderModule.addReply(folder.getId(), id, defId, new MapInputData(inputData), fileItems, null);
 							else
-								folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
+								folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems, null);
 							msgs[i].setFlag(Flags.Flag.DELETED, true);
 						}
 					} else {
@@ -755,7 +755,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						}
 							
 						if (!fileItems.isEmpty() || entryIdsFromICalendars.isEmpty()) {
-							folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems);
+							folderModule.addEntry(folder.getId(), defId, new MapInputData(inputData), fileItems, null);
 						}
 						msgs[i].setFlag(Flags.Flag.DELETED, true);
 					}

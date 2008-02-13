@@ -187,7 +187,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	//***********************************************************************************************************	
     //no transaction    
     public Binder addBinder(final Binder parent, Definition def, Class clazz, 
-    		final InputDataAccessor inputData, Map fileItems) 
+    		final InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
       	if (parent.isZone())
@@ -196,7 +196,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
     	sp.start("addBinder_toEntryData");
-        final Map ctx = addBinder_setCtx(parent, null);
+        final Map ctx = new HashMap();
+        if (options != null) ctx.putAll(options);
+        addBinder_setCtx(parent, ctx);
         Map entryDataAll = addBinder_toEntryData(parent, def, inputData, fileItems,ctx);
         sp.stop("addBinder_toEntryData");
         
@@ -281,8 +283,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
     }
     //inside write transaction    
-    protected Map addBinder_setCtx(Binder binder, Map ctx) {
-    	return ctx;
+    protected void addBinder_setCtx(Binder binder, Map ctx) {
     }
 
     //inside write transaction    
@@ -340,7 +341,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         binder.setOwner(user);
 
        	//force a lock so contention on the sortKey is reduced
-        Object lock = inputData.getSingleObject(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
+        Object lock = ctx.get(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
         if (Boolean.TRUE.equals(lock)) {
             getCoreDao().lock(parent);
         } 
@@ -530,13 +531,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //***********************************************************************************************************
     //no transaction    
     public void modifyBinder(final Binder binder, final InputDataAccessor inputData, 
-    		Map fileItems, final Collection deleteAttachments) 
+    		Map fileItems, final Collection deleteAttachments, Map options) 
     		throws AccessControlException, WriteFilesException {
 	
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
     	sp.start("modifyBinder_toEntryData");
-    	final Map ctx = modifyBinder_setCtx(binder, null);
+        final Map ctx = new HashMap();
+        if (options != null) ctx.putAll(options);
+    	modifyBinder_setCtx(binder, ctx);
 	    Map entryDataAll = modifyBinder_toEntryData(binder, inputData, fileItems, ctx);
 	    sp.stop("modifyBinder_toEntryData");
 	    
@@ -612,11 +615,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	    }
 	}
     //no transaction    
-    protected Map modifyBinder_setCtx(Binder binder, Map ctx) {
-    	if (ctx == null) ctx = new HashMap();
+    protected void modifyBinder_setCtx(Binder binder, Map ctx) {
     	//save title before changes
 		ctx.put(ObjectKeys.FIELD_ENTITY_TITLE, binder.getTitle());
-    	return ctx;
     }
     //no transaction    
     protected FilesErrors modifyBinder_filterFiles(Binder binder, List fileUploadItems, Map ctx) throws FilterException {
@@ -777,14 +778,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     //***********************************************************************************************************
     //inside write transaction    
-    public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
+    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
     	if (binder.isReserved() && !binder.getRoot().isDeleted()) 
     		throw new NotSupportedException(
     				"errorcode.notsupported.deleteBinder", new String[]{binder.getPathName()});
     	SimpleProfiler sp = new SimpleProfiler(false);
     	
     	sp.start("deleteBinder_preDelete");
-    	final Map ctx = deleteBinder_setCtx(binder, null);
+        final Map ctx = new HashMap();
+        if (options != null) ctx.putAll(options);
+     	deleteBinder_setCtx(binder, ctx);
         deleteBinder_preDelete(binder,ctx);
         sp.stop("deleteBinder_preDelete");
         
@@ -818,8 +821,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         sp.print();
     }
     //inside write transaction    
-    protected Map deleteBinder_setCtx(Binder binder, Map ctx) {
-    	return ctx;
+    protected void deleteBinder_setCtx(Binder binder, Map ctx) {
     }
     
     //inside write transaction    
@@ -903,7 +905,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //***********************************************************************************************************
     //inside write transaction    
-    public void moveBinder(Binder source, Binder destination) {
+    public void moveBinder(Binder source, Binder destination, Map options) {
     	if (source.equals(destination)) return;
     	if (source.isReserved() || source.isZone()) 
     		throw new NotSupportedException(
@@ -914,7 +916,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if (destination.getBinderKey().getSortKey().startsWith(source.getBinderKey().getSortKey())) {
     		throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
     	}
-    	Map ctx = moveBinder_setCtx(source, destination, null);
+        final Map ctx = new HashMap();
+        if (options != null) ctx.putAll(options);
+     	moveBinder_setCtx(source, destination, ctx);
     	moveBinder_preMove(source, destination, ctx);
     	boolean resourcePathAffected = moveBinder_mirrored(source, destination, ctx);
     	moveBinder_move(source, destination, resourcePathAffected, ctx);
@@ -924,9 +928,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
     }
     //inside write transaction    
-    protected Map moveBinder_setCtx(Binder source, Binder destination, Map ctx) {
-    	if (ctx == null) ctx = new HashMap();
-    	return ctx;
+    protected void moveBinder_setCtx(Binder source, Binder destination, Map ctx) {
     }
     //inside write transaction    
 	protected void moveBinder_preMove(Binder source, Binder destination, Map ctx) {
@@ -1068,7 +1070,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
     //***********************************************************************************************************
     //no transaction    
-    public Binder copyBinder(final Binder source, final Binder destination, final Map params) {
+    public Binder copyBinder(final Binder source, final Binder destination, final Map options) {
     	if (source.equals(destination))   
     		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
     	 
@@ -1079,34 +1081,33 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
       		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
     	if (ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()))
          		throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
-    	final Map ctx = copyBinder_setCtx(source, destination, params, null);
+        final Map ctx = new HashMap();
+        if (options != null) ctx.putAll(options);
+    	copyBinder_setCtx(source, destination, ctx);
      	final Binder binder = copyBinder_create(source, ctx);
         // The following part requires update database transaction.
         getTransactionTemplate().execute(new TransactionCallback() {
         	public Object doInTransaction(TransactionStatus status) {
                 //need to set entry/binder information before generating file attachments
                 //Attachments/Events need binder info for AnyOwner
-        		copyBinder_fillIn(source, destination, binder, params, ctx);
+        		copyBinder_fillIn(source, destination, binder, ctx);
                                 
-                copyBinder_preSave(source, destination, binder, params, ctx);      
+                copyBinder_preSave(source, destination, binder, ctx);      
 
-                copyBinder_save(source, destination, binder, params, ctx);      
+                copyBinder_save(source, destination, binder, ctx);      
                 
-                copyBinder_postSave(source, destination, binder, params, ctx);
+                copyBinder_postSave(source, destination, binder, ctx);
                 //register title for uniqueness for webdav; always ensure binder titles are unique in parent
                 getCoreDao().updateFileName(binder.getParentBinder(), binder, null, binder.getTitle());
                 if (binder.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(binder.getParentBinder(), binder, null, binder.getNormalTitle());
                 return null;
         	}
         });
- 		copyBinder_index(binder, params, ctx);
+ 		copyBinder_index(binder, ctx);
  		return binder;
     }
     //no transaction    
-    protected Map copyBinder_setCtx(Binder source, Binder destination, Map inParams, Map ctx) {
-    	if (ctx == null) ctx = new HashMap();
-    	ctx.putAll(inParams);
-    	return ctx;
+    protected void copyBinder_setCtx(Binder source, Binder destination, Map ctx) {
     }
     //no transaction - should be overridden 
    protected Binder copyBinder_create(Binder source, Map ctx) {
@@ -1124,12 +1125,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 
    }
    //inside write transaction    
-   protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, Map params, Map ctx) {  
+   protected void copyBinder_fillIn(Binder source, Binder parent, Binder binder, Map ctx) {  
        binder.setLogVersion(Long.valueOf(1));
        binder.setPathName(parent.getPathName() + "/" + binder.getTitle());
 
    	//force a lock so contention on the sortKey is reduced
-       Object lock = params.get(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
+       Object lock = ctx.get(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
        if (Boolean.TRUE.equals(lock)) {
            getCoreDao().lock(parent);
        } 
@@ -1140,12 +1141,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		checkConstraintMirrored(parent, binder, binder.isLibrary(), null);
        
    }
-   protected void copyBinder_preSave(Binder source, Binder parent, Binder binder, Map params, Map ctx) {  
+   protected void copyBinder_preSave(Binder source, Binder parent, Binder binder, Map ctx) {  
    }
-   protected void copyBinder_save(Binder source, Binder parent, Binder binder, Map params, Map ctx) {   
+   protected void copyBinder_save(Binder source, Binder parent, Binder binder, Map ctx) {   
 	   getCoreDao().save(binder);
    }
-   protected void copyBinder_postSave(Binder source, Binder parent, Binder binder, Map params, Map ctx) {   
+   protected void copyBinder_postSave(Binder source, Binder parent, Binder binder, Map ctx) {   
 		EntityDashboard dashboard = getCoreDao().loadEntityDashboard(source.getEntityIdentifier());
 		if (dashboard != null) {
 			EntityDashboard myDashboard = new EntityDashboard(dashboard);
@@ -1170,18 +1171,18 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
    
     //inside write transaction    
-    protected void copyBinder_index(Binder binder, Map params, Map ctx) {  
+    protected void copyBinder_index(Binder binder, Map ctx) {  
 		getCoreDao().flush(); //get updates out 
 		//entries should be indexed already
     	indexBinder(binder, false, false, null); 
     }
 
     //********************************************************************************************************
-    public Map getBinders(Binder binder, Map options) {
+    public Map getBinders(Binder binder, Map searchOptions) {
         //search engine will only return binder you have access to
          //validate entry count
     	//do actual search index query
-        Hits hits = getBinders_doSearch(binder, options);
+        Hits hits = getBinders_doSearch(binder, searchOptions);
         //iterate through results
         List childBinders = SearchUtils.getSearchEntries(hits);
 
@@ -1200,15 +1201,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         return maxChildEntries;
     }
      
-    protected Hits getBinders_doSearch(Binder binder, Map options) {
+    protected Hits getBinders_doSearch(Binder binder, Map searchOptions) {
     	int maxResults = 0;
     	int searchOffset = 0;
-    	if (options != null) {
-    		if (options.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
-    			maxResults = (Integer) options.get(ObjectKeys.SEARCH_MAX_HITS);
+    	if (searchOptions != null) {
+    		if (searchOptions.containsKey(ObjectKeys.SEARCH_MAX_HITS)) 
+    			maxResults = (Integer) searchOptions.get(ObjectKeys.SEARCH_MAX_HITS);
         
-    		if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
-    			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);       
+    		if (searchOptions.containsKey(ObjectKeys.SEARCH_OFFSET)) 
+    			searchOffset = (Integer) searchOptions.get(ObjectKeys.SEARCH_OFFSET);       
     	}
     	maxResults = getBinders_maxEntries(maxResults); 
     
@@ -1216,15 +1217,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	
        	SearchFilter searchFilter = new SearchFilter(true);
 
-       	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) {
-       		org.dom4j.Document userSearchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_FILTER);
+       	if ((searchOptions != null) && searchOptions.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) {
+       		org.dom4j.Document userSearchFilter = (org.dom4j.Document) searchOptions.get(ObjectKeys.SEARCH_SEARCH_FILTER);
            	if (userSearchFilter != null) {
            		searchFilter.appendFilter(userSearchFilter);
            	}       		
        	}
 
-    	if ((options != null) && options.containsKey(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER)) {
-    		org.dom4j.Document userDynamicSearchFilter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER);
+    	if ((searchOptions != null) && searchOptions.containsKey(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER)) {
+    		org.dom4j.Document userDynamicSearchFilter = (org.dom4j.Document) searchOptions.get(ObjectKeys.SEARCH_SEARCH_DYNAMIC_FILTER);
         	if (userDynamicSearchFilter != null) {
         		searchFilter.appendFilter(userDynamicSearchFilter);
         	}
@@ -1234,9 +1235,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	
        	
        	getBinders_getSearchDocument(binder, searchFilter);
-       	org.dom4j.Document queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), options);
+       	org.dom4j.Document queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), searchOptions);
       	
-      	SearchUtils.getQueryFields(queryTree, options); 
+      	SearchUtils.getQueryFields(queryTree, searchOptions); 
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + queryTree.asXML());
     	}
@@ -1246,7 +1247,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order
-    	SortField[] fields = SearchUtils.getSortFields(options); 
+    	SortField[] fields = SearchUtils.getSortFields(searchOptions); 
     	so.setSortBy(fields);
     	Query soQuery = so.getQuery();    //Get the query into a variable to avoid doing this very slow operation twice
     	

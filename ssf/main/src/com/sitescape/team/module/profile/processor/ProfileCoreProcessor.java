@@ -37,7 +37,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.module.binder.processor.EntryProcessor;
 import com.sitescape.team.module.shared.InputDataAccessor;
 public interface ProfileCoreProcessor extends EntryProcessor {
-	public void syncEntry(Principal entry, InputDataAccessor inputData);
-	public void syncEntries(Map entries);
-	public List syncNewEntries(Binder binder, Definition definition, Class clazz, List inputAccessors); 
+	public void syncEntry(Principal entry, InputDataAccessor inputData, Map options);
+	public void syncEntries(Map entries, Map options);
+	public List syncNewEntries(Binder binder, Definition definition, Class clazz, List inputAccessors, Map options); 
 }

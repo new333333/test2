@@ -28,7 +28,6 @@
  */
 package com.sitescape.team.module.folder.impl;
 
-import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -117,11 +116,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
     //***********************************************************************************************************
     //no transaction    
-    public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
+    public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems, Map options) 
    		throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
                
     	final Map ctx = new HashMap();
+        if (options != null) ctx.putAll(options);
 
     	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems, ctx);
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
@@ -268,9 +268,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************
     //no write transaction    
-    protected Map deleteEntry_setCtx(Entry entry, Map ctx) {
+    protected void deleteEntry_setCtx(Entry entry, Map ctx) {
     	//need context to pass replies
-    	if (ctx == null) ctx = new HashMap();
       	FolderEntry fEntry = (FolderEntry)entry;
       	//save top cause remove of reply sets it to null
        	ctx.put("this.topEntry", fEntry.getTopEntry());
@@ -278,7 +277,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
      	//load in reverse hkey order so foreign keys constraints are handled correctly
      	List<FolderEntry> replies= getFolderDao().loadEntryDescendants((FolderEntry)fEntry);
         ctx.put("this.replies", replies);
-        return super.deleteEntry_setCtx(entry, ctx);
+        super.deleteEntry_setCtx(entry, ctx);
     }
     //no transaction
    	protected void deleteEntry_processChangeLogs(Binder parentBinder, Entry entry, Map ctx, List changeLogs) {
@@ -392,7 +391,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	   }
    }
    //***********************************************************************************************************
-   public Entry copyEntry(Binder binder, Entry source, Binder destination, Map params) {
+   public Entry copyEntry(Binder binder, Entry source, Binder destination, Map options) {
    	 
 	   if (destination.isZone() || 
 			   ObjectKeys.PROFILE_ROOT_INTERNALID.equals(destination.getInternalId()) ||
@@ -457,7 +456,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
    //***********************************************************************************************************
     //inside write transaction    
-    public void moveEntry(Binder binder, Entry entry, Binder destination) {
+    public void moveEntry(Binder binder, Entry entry, Binder destination, Map options) {
        	if (binder.equals(destination)) return;
     	Folder from = (Folder)binder;
     	if (!(destination instanceof Folder))
@@ -535,10 +534,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
          
     //***********************************************************************************************************
     //inside write transaction    
-   public void deleteBinder(Binder binder, boolean deleteMirroredSource) {
+   public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
     	if(logger.isDebugEnabled())
     		logger.debug("Deleting binder [" + binder.getPathName() + "]");
-    	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource);
+    	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource, options);
     	else {
     		//if binder is marked deleted, we are called from cleanup code without a transaction 
     		final Folder folder = (Folder)binder;
@@ -628,9 +627,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
     //***********************************************************************************************************
    //inside write transaction    
-    public void moveBinder(Binder source, Binder destination) {
+    public void moveBinder(Binder source, Binder destination, Map options) {
     	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
-    		super.moveBinder(source, destination);
+    		super.moveBinder(source, destination, options);
     	else throw new NotSupportedException("errorcode.notsupported.moveBinderDestination", new String[] {destination.getPathName()});
    	 
     }
@@ -647,21 +646,21 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	}
     //***********************************************************************************************************
     //no transaction
-    public Binder copyBinder(Binder source, Binder destination, Map params) {
+    public Binder copyBinder(Binder source, Binder destination, Map options) {
     	if ((destination instanceof Folder) || (destination instanceof Workspace)) 
-    		return super.copyBinder(source, destination, params);
+    		return super.copyBinder(source, destination, options);
     	else throw new NotSupportedException("errorcode.notsupported.copyBinderDestination", new String[] {destination.getPathName()});
    	 
     }
     //***********************************************************************************************************
    //no transaction
-    public void copyEntries(final Binder source, Binder binder, final Map params) { 
+    public void copyEntries(final Binder source, Binder binder, final Map options) { 
 		//now copy entries
 		final Folder folder = (Folder)binder;
 		getTransactionTemplate().execute(new TransactionCallback() {
 			public Object doInTransaction(TransactionStatus status) {
 		    	Boolean preserverDocNum = null;
-		    	if (params != null) preserverDocNum = (Boolean)params.get(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER);
+		    	if (options != null) preserverDocNum = (Boolean)options.get(ObjectKeys.INPUT_OPTION_PRESERVE_DOCNUMBER);
 		    	if (preserverDocNum == null) preserverDocNum=Boolean.FALSE;
 				getCoreDao().lock(folder);
 				FilterControls filter = new FilterControls();

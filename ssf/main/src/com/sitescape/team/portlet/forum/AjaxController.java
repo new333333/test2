@@ -1134,7 +1134,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
 			Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
 			ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
-			SortedSet principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+			SortedSet principals = getProfileModule().getPrincipals(ids);
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
@@ -1683,7 +1683,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			
 			try {
 				getFolderModule().modifyEntry(binderId, entryId, 
-						new MapInputData(formData), new HashMap(), new HashSet(), null);
+						new MapInputData(formData), null, null, null, null);
 				
 				model.put(WebKeys.ENTRY, entry);
 				model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, getDefinitionModule().getEntryDefinitionElements(entry.getEntryDef().getId()));
@@ -1954,7 +1954,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 		Map formData = new HashMap(); 
 		formData.put(attributeName, surveyAttrValue.toString());
-		getFolderModule().addVote(binderId, entryId, new MapInputData(formData));
+		getFolderModule().addVote(binderId, entryId, new MapInputData(formData), null);
 	}
 	
 	private ModelAndView ajaxVoteSurveyStatus(RenderRequest request, RenderResponse response) {
@@ -2236,7 +2236,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		
 		String strFilesErrors = "";
 		try {
-			getFolderModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, new HashSet(), null);
+			getFolderModule().modifyEntry(binderId, entryId, new MapInputData(formData), fileMap, null, null, null);
 		} catch (WriteFilesException wf) {
 			strFilesErrors = wf.toString();
 		}

@@ -28,19 +28,15 @@
  */
 package com.sitescape.team.module.workspace;
 
-import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
 
-import org.dom4j.Document;
-
-import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.NoWorkspaceByTheIdException;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.web.tree.DomTreeBuilder;
 /**
  * @author Jong Kim
  *
@@ -50,17 +46,63 @@ public interface WorkspaceModule {
 		addFolder,
 		addWorkspace
 	}
-    public boolean testAccess(Workspace workspace, WorkspaceOperation operation);
-    public void checkAccess(Workspace workspace, WorkspaceOperation operation) throws AccessControlException;
-    /**
-     * 
-     * @return
-     * @throws NoWorkspaceByTheIdException
-     * @throws AccessControlException
-     */
-    public Workspace getWorkspace() throws NoWorkspaceByTheIdException, AccessControlException;
-	public Workspace getWorkspace(Long workspaceId)	throws NoWorkspaceByTheIdException, AccessControlException;
-	public Workspace getTopWorkspace();
+	/**
+	 * Add a new folder under this workspace
+	 * @param workspaceId
+	 * @param definitionId
+	 * @param inputData
+	 * @param fileItems May be <code>null</code>
+     * @param options additional processing options or null
+	 * @return
+	 * @throws AccessControlException
+	 * @throws WriteFilesException
+	 */
+	public Long addFolder(Long workspaceId, String definitionId, InputDataAccessor inputData,
+			Map fileItems, Map options) throws AccessControlException, WriteFilesException;
+	/**
+	 * Add a new workspace under this workspace
+	 * @param workspaceId
+	 * @param definitionId
+	 * @param inputData
+	 * @param fileItems May be <code>null</code>
+     * @param options additional processing options or null
+ 	 * @return
+	 * @throws AccessControlException
+	 * @throws WriteFilesException
+	 */
+	public Long addWorkspace(Long workspaceId, String definitionId, InputDataAccessor inputData,
+			Map fileItems, Map options) throws AccessControlException, WriteFilesException;
+	/**
+	 * Check access to a workspace, throwing an exception if denied
+	 * @param workspace
+	 * @param operation
+	 * @throws AccessControlException
+	 */
+	public void checkAccess(Workspace workspace, WorkspaceOperation operation) 
+		throws AccessControlException;
+	/**
+	 * Return set of child binder titles
+	 * @param top
+	 * @return
+	 */
+   	public SortedSet<String> getChildrenTitles(Workspace top);
+	/**
+	 * Return a workspace
+	 * @param workspaceId
+	 * @return
+	 * @throws NoWorkspaceByTheIdException
+	 * @throws AccessControlException
+	 */
+	public Workspace getWorkspace(Long workspaceId)	
+		throws NoWorkspaceByTheIdException, AccessControlException;
+	/**
+	 * Return the top workspace
+	 * @return
+	 * @throws AccessControlException
+	 */
+	public Workspace getTopWorkspace()
+		throws AccessControlException;
+
   	/**
   	 * Return list of child binders, that have been verified for read access
   	 * and sorted by title
@@ -68,12 +110,16 @@ public interface WorkspaceModule {
   	 * @return
   	 * @throws AccessControlException
   	 */
-	public Collection getWorkspaceTree(Long id) throws AccessControlException; 
-   	public Set<String> getChildrenTitles(Workspace top);
+	public SortedSet<Binder> getWorkspaceTree(Long id) 
+		throws AccessControlException; 
 
-    public Long addWorkspace(Long folderId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems) throws AccessControlException, WriteFilesException;
-    public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems) throws AccessControlException, WriteFilesException;
+    /**
+     * Test access to a workspace
+     * @param workspace
+     * @param operation
+     * @return
+     */
+    public boolean testAccess(Workspace workspace, WorkspaceOperation operation);
+
 }
 

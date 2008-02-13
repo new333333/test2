@@ -49,7 +49,6 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.hibernate.NonUniqueObjectException;
-import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -87,8 +86,6 @@ import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.jobs.EmailNotification;
-import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.BinderModule;
@@ -97,7 +94,6 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
-import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -205,7 +201,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return binder;        
 	}
 
-	public boolean checkBinderAccess(Long binderId, User user) {
+	public boolean checkAccess(Long binderId, User user) {
 		boolean value = false;
 		Binder binder = null;
 		try {
@@ -304,13 +300,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     }
 
     //no transaction    
-    public void modifyBinder(Long binderId, final InputDataAccessor inputData) 
-    	throws AccessControlException, WriteFilesException {
-    	modifyBinder(binderId, inputData, new HashMap(),  null);
-    }
-    //no transaction    
     public void modifyBinder(Long binderId, InputDataAccessor inputData, 
-    		Map fileItems, Collection deleteAttachments) throws AccessControlException, WriteFilesException {
+    		Map fileItems, Collection deleteAttachments, Map options) throws AccessControlException, WriteFilesException {
     	final Binder binder = loadBinder(binderId);
     	
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_MIRRORED)) {
@@ -335,7 +326,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     			if (a != null) atts.add(a);
     		}
     	}
-    	loadBinderProcessor(binder).modifyBinder(binder, inputData, fileItems, atts);
+    	loadBinderProcessor(binder).modifyBinder(binder, inputData, fileItems, atts, options);
    		if (inputData.exists(ObjectKeys.FIELD_BINDER_LIBRARY)) {
    			final boolean newLibrary = Boolean.valueOf(inputData.getSingleValue(ObjectKeys.FIELD_BINDER_LIBRARY));
    			if (oldLibrary != newLibrary) {
@@ -436,23 +427,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    }    
    //inside write transaction    
     public Set<Exception> deleteBinder(Long binderId) {
-    	return deleteBinder(binderId, true);
+    	return deleteBinder(binderId, true, null);
     }
     //inside write transaction    
-   public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource) {
+   public Set<Exception> deleteBinder(Long binderId, boolean deleteMirroredSource, Map options) {
     	Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.deleteBinder);
-		
 		boolean deleteMirroredSourceForChildren = deleteMirroredSource;
 		if(binder.isMirrored() && deleteMirroredSource)
 			deleteMirroredSourceForChildren = false;
 			
-		Set<Exception> errors = deleteChildBinders(binder, deleteMirroredSourceForChildren);
+		Set<Exception> errors = deleteChildBinders(binder, deleteMirroredSourceForChildren, options);
    		if (!errors.isEmpty()) return errors;
-   		loadBinderProcessor(binder).deleteBinder(binder, deleteMirroredSource);
+   		loadBinderProcessor(binder).deleteBinder(binder, deleteMirroredSource, options);
    		return null;
     }
-    protected Set<Exception> deleteChildBinders(Binder binder, boolean deleteMirroredSource) {
+    protected Set<Exception> deleteChildBinders(Binder binder, boolean deleteMirroredSource, Map options) {
     	//First process all child folders
     	List binders = new ArrayList(binder.getBinders());
     	Set errors = new HashSet();
@@ -466,8 +456,8 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         		deleteMirroredSourceForChildren = deleteMirroredSource;
         		if(b.isMirrored() && deleteMirroredSource)
         			deleteMirroredSourceForChildren = false;
-        		Set<Exception> e = deleteChildBinders(b, deleteMirroredSourceForChildren);
-       			if (e.isEmpty()) loadBinderProcessor(b).deleteBinder(b, deleteMirroredSource);
+        		Set<Exception> e = deleteChildBinders(b, deleteMirroredSourceForChildren, options);
+       			if (e.isEmpty()) loadBinderProcessor(b).deleteBinder(b, deleteMirroredSource, options);
        			else errors.addAll(e);
         	} catch (Exception ex) {
         		errors.add(ex);
@@ -477,7 +467,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	return errors;
     }
     //inside write transaction    
-     public void moveBinder(Long fromId, Long toId) {
+     public void moveBinder(Long fromId, Long toId, Map options) {
        	Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.moveBinder);
        	Binder destination = loadBinder(toId);
@@ -487,11 +477,11 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        		getAccessControlManager().checkOperation(destination, WorkAreaOperation.CREATE_WORKSPACES);
        	}
        	//move whole tree at once
-     	loadBinderProcessor(source).moveBinder(source,destination);
+     	loadBinderProcessor(source).moveBinder(source,destination, options);
            	
     }
      //no transaction    
-     public Long copyBinder(Long fromId, Long toId, boolean cascade) {
+     public Long copyBinder(Long fromId, Long toId, Map options) {
        	Binder source = loadBinder(fromId);
 		checkAccess(source, BinderOperation.copyBinder);
        	Binder destinationParent = loadBinder(toId);
@@ -501,8 +491,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        		getAccessControlManager().checkOperation(destinationParent, WorkAreaOperation.CREATE_WORKSPACES);
        	}
        	Map params = new HashMap();
+       	if (options != null) params.putAll(options);
        	params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+       	//lock top level
    		Binder binder = loadBinderProcessor(source).copyBinder(source, destinationParent, params);
+   		Boolean cascade = (Boolean)params.get(ObjectKeys.INPUT_OPTION_COPY_BINDER_CASCADE);
+   		if (cascade == null) cascade = Boolean.TRUE;
        	if (cascade) doCopyChildren(source, binder);
        	return binder.getId();
      }
@@ -517,7 +511,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	 }
      }
      //inside write transaction    
-	public Binder setDefinitions(Long binderId, boolean inheritFromParent) {
+	public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageDefinitions); 
 		boolean oldInherit = binder.isDefinitionsInherited();
@@ -543,26 +537,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     //inside write transaction    
     public Binder setDefinitions(Long binderId, List<String> definitionIds, Map workflowAssociations) 
 	throws AccessControlException {
-    	//access checked in setDefinitions
-    	Binder binder = setDefinitions(binderId, definitionIds);
-		Map wf = new HashMap();
-		Definition def;
-		if (workflowAssociations != null) {
-			for (Iterator iter=workflowAssociations.entrySet().iterator(); iter.hasNext();) {
-				Map.Entry me = (Map.Entry)iter.next();
-				try {
-					def = getCoreDao().loadDefinition((String)me.getValue(), 
-							RequestContextHolder.getRequestContext().getZoneId());
-					wf.put(me.getKey(), def);
-				} catch (NoDefinitionByTheIdException nd) {}
-			}
-		}
-		binder.setWorkflowAssociations(wf);
-		binder.setDefinitionsInherited(false);
-		return binder;
-	}
-    //inside write transaction    
-	public Binder setDefinitions(Long binderId, List<String> definitionIds) throws AccessControlException {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageDefinitions); 
 		List definitions = new ArrayList(); 
@@ -571,6 +545,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		if (definitionIds != null) {
 			for (String id: definitionIds) {
 				try {
+					//should be cached
 					def = getCoreDao().loadDefinition(id, 
 							RequestContextHolder.getRequestContext().getZoneId());
 					definitions.add(def);
@@ -581,9 +556,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		binder.setDefinitions(definitions);
 		binder.setDefinitionsInherited(false);
 		
+		Map wf = new HashMap();
+		if (workflowAssociations != null) {
+			for (Iterator iter=workflowAssociations.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry me = (Map.Entry)iter.next();
+				try {
+					//should be cached
+					def = getCoreDao().loadDefinition((String)me.getValue(), 
+							RequestContextHolder.getRequestContext().getZoneId());
+					wf.put(me.getKey(), def);
+				} catch (NoDefinitionByTheIdException nd) {}
+			}
+		}
+		binder.setWorkflowAssociations(wf);
 		return binder;
 	}
-	/**
+ 	/**
 	 * Get tags owned by this binder or current user
 	 */	
 	public Collection<Tag> getTags(Binder binder) {
@@ -946,10 +934,6 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         if (hits == null) return new ArrayList();
     	return SearchUtils.getSearchEntries(hits);	    
     }	
-    //inside write transaction    
-    public void setPosting(Long binderId, String emailAddress) {
-    	setPosting(binderId, emailAddress, null);
-    }
     //inside write transaction    
     public void setPosting(Long binderId, String emailAddress, String password) {
         Binder binder = loadBinder(binderId); 

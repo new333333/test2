@@ -248,7 +248,7 @@ public class EditController extends SAbstractController {
 			String wsId = PortletPreferencesUtil.getValue(prefs, WebKeys.WORKSPACE_PREF_ID, null);
 			try {
 				Workspace ws;
-				if (Validator.isNull(wsId)) ws = getWorkspaceModule().getWorkspace();	
+				if (Validator.isNull(wsId)) ws = getWorkspaceModule().getTopWorkspace();	
 				else ws = getWorkspaceModule().getWorkspace(Long.valueOf(wsId));				
 				model.put(WebKeys.BINDER, ws);
 			} catch (Exception ex) {};

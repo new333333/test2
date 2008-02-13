@@ -63,7 +63,7 @@ public class ImportProfilesController extends  SAbstractController {
 		    	Document doc = xIn.read(fIn);   
 		    	fIn.close();
 		
-		    	getProfileModule().addEntries(binderId, doc);
+		    	getProfileModule().addEntries(binderId, doc, null);
 			} else {
 				response.setRenderParameters(formData);
 			}

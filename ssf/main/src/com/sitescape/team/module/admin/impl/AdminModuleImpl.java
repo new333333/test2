@@ -930,8 +930,6 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   }
 	   Map fileItems = new HashMap();
 	   Map entryData = new HashMap();
-	   //pass lock option in
-	   if (ctx != null && ctx.containsKey(ObjectKeys.INPUT_OPTION_FORCE_LOCK)) entryData.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, ctx.get(ObjectKeys.INPUT_OPTION_FORCE_LOCK));
 	   InputDataAccessor inputData = new MapInputData(entryData);
 	   if (Validator.isNull(title)) title = NLT.getDef(cfg.getTitle());
 	   if (Validator.isNull(title)) title = NLT.getDef(cfg.getTemplateTitle());
@@ -955,14 +953,14 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 	   //get binder created
 	   try {
 		   if (cfg.getDefinitionType() == Definition.WORKSPACE_VIEW) {
-			   binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinder.getId(), def.getId(), inputData, fileItems), zoneId);
+			   binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
 		   } else if (cfg.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
-			   binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinder.getId(), def.getId(), inputData, fileItems), zoneId);
+			   binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
 		   } else {
 			   if (parentBinder instanceof Workspace)
-				   binder = getCoreDao().loadBinder(getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), inputData, fileItems), zoneId);
+				   binder = getCoreDao().loadBinder(getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
 			   else
-				   binder = getCoreDao().loadBinder(getFolderModule().addFolder(parentBinder.getId(), def.getId(), inputData, fileItems), zoneId);
+				   binder = getCoreDao().loadBinder(getFolderModule().addFolder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
 		   }
 	   } catch (WriteFilesException wf) {
 		   //don't fail, but log it

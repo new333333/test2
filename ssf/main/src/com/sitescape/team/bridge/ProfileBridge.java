@@ -30,6 +30,7 @@ package com.sitescape.team.bridge;
 
 import java.util.HashMap;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.User;
@@ -63,8 +64,9 @@ public class ProfileBridge {
 		boolean deleteWS = 
 			SPropsUtil.getBoolean(PORTAL_PROFILE_DELETE_USER_WORKSPACE, 
 				PORTAL_PROFILE_DELETE_USER_WORKSPACE_DEFAULT_VALUE);
-		
-		getProfileModule().deleteUserByName(userName, deleteWS);
+		HashMap options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE, Boolean.valueOf(deleteWS));
+		getProfileModule().deleteUserByName(userName, options);
 	}
 	
 	private static ProfileModule getProfileModule() {

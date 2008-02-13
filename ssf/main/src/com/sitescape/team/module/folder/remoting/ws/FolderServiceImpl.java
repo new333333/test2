@@ -121,7 +121,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		SimpleProfiler.setProfiler(profiler);
 		try {
 			return getFolderModule().addEntry(new Long(binderId), definitionId, 
-				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} )).longValue();
+				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), null).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -141,7 +141,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		
 		try {
 			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-				new DomInputData(doc, getIcalModule()), new HashMap(), null, null);
+				new DomInputData(doc, getIcalModule()), null, null, null, null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -155,7 +155,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		
 		try {
 			return getFolderModule().addReply(new Long(binderId), new Long(parentId), 
-				definitionId, new DomInputData(doc, getIcalModule()), null).longValue();
+				definitionId, new DomInputData(doc, getIcalModule()), null, null).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

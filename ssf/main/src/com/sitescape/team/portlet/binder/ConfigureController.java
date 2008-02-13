@@ -70,7 +70,7 @@ public class ConfigureController extends AbstractBinderController {
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} else if (formData.containsKey("inheritanceBtn")) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
-			getBinderModule().setDefinitions(binderId, inherit);
+			getBinderModule().setDefinitionsInherited(binderId, inherit);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			setupViewBinder(response, binderId, binderType);

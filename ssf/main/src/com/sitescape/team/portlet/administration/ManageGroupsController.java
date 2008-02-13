@@ -84,7 +84,7 @@ public class ManageGroupsController extends  SAbstractController {
 				} else {
 					fileMap = new HashMap();
 				}
-				getProfileModule().addGroup(binderId, null, inputData, fileMap);
+				getProfileModule().addGroup(binderId, null, inputData, fileMap, null);
 			} catch (ObjectExistsException oee) {
 				response.setRenderParameter(WebKeys.EXCEPTION, oee.getLocalizedMessage() + ": [" + name + "].");
 			}
@@ -98,7 +98,7 @@ public class ManageGroupsController extends  SAbstractController {
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
 			Set ids = LongIdUtil.getIdsAsLongSet(request.getParameterValues("users"));
 			ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
-			SortedSet principals = getProfileModule().getPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId());
+			SortedSet principals = getProfileModule().getPrincipals(ids);
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
@@ -108,7 +108,7 @@ public class ManageGroupsController extends  SAbstractController {
 
 		} else if (formData.containsKey("deleteBtn")) {
 			Long groupId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
-			getProfileModule().deleteEntry(binderId, groupId, false);
+			getProfileModule().deleteEntry(binderId, groupId, null);
 			
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
 			response.setRenderParameter("redirect", "true");

@@ -54,7 +54,7 @@ public class ActivityReportController extends  AbstractReportController {
 		try {
 			binder = getBinderModule().getBinder(binderId);
 		} catch (Exception ex) {
-			binder = getWorkspaceModule().getWorkspace();				
+			binder = getWorkspaceModule().getTopWorkspace();				
 		}
 		//Initialize the acl bean
 		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);

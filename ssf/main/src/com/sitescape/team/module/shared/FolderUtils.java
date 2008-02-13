@@ -161,10 +161,10 @@ public class FolderUtils {
 		
 		if(parentBinder instanceof Workspace)
 			return getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), new HashMap());
+					new MapInputData(data), null, null);
 		else
 			return getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), new HashMap());
+					new MapInputData(data), null, null);
 	}
 
 	/**
@@ -192,23 +192,23 @@ public class FolderUtils {
 		
 		if(parentBinder instanceof Workspace)
 			return getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), new HashMap());
+					new MapInputData(data), null, null);
 		else
 			return getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), new HashMap());
+					new MapInputData(data), null, null);
 	}
 	
 	public static void deleteMirroredFolder(Folder folder, boolean deleteMirroredSource)
 	throws AccessControlException {
-		getBinderModule().deleteBinder(folder.getId(), deleteMirroredSource);
+		getBinderModule().deleteBinder(folder.getId(), deleteMirroredSource, null);
 	}
 	
 	public static void deleteMirroredEntry(Folder parentFolder, FolderEntry entry, boolean deleteMirroredSource) {
-		getFolderModule().deleteEntry(parentFolder.getId(), entry.getId(), deleteMirroredSource);
+		getFolderModule().deleteEntry(parentFolder.getId(), entry.getId(), deleteMirroredSource, null);
 	}
 	
 	public static void deleteMirroredEntry(Long folderId, Long entryId, boolean deleteMirroredSource) {
-		getFolderModule().deleteEntry(folderId, entryId, deleteMirroredSource);
+		getFolderModule().deleteEntry(folderId, entryId, deleteMirroredSource, null);
 	}
 	
 	public static boolean isMirroredFolder(Binder binder) {
@@ -259,7 +259,7 @@ public class FolderUtils {
 		Map data = new HashMap(); // Input data
 		data.put(ObjectKeys.FIELD_ENTITY_TITLE, fileName);
 				
-		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems);
+		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, null);
 	}
 	
 	private static Long createMirroredEntry(Folder folder, String fileName, 
@@ -287,7 +287,7 @@ public class FolderUtils {
 		if(elementNameAndRepository[1] != null)
 			data.put(elementNameAndRepository[1], ObjectKeys.FI_ADAPTER);
 		
-		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems);
+		return getFolderModule().addEntry(folder.getId(), def.getId(), new MapInputData(data), fileItems, null);
 	}
 
 	/**
@@ -326,7 +326,7 @@ public class FolderUtils {
 		InputDataAccessor inputData = new EmptyInputData(); // No non-file input data
 
 		getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
-				inputData, fileItems, null, null);
+				inputData, fileItems, null, null, null);
 	}
 	
 	private static void modifyMirroredEntry(FolderEntry entry, String fileName, 
@@ -356,7 +356,7 @@ public class FolderUtils {
 			data.put(elementNameAndRepository[1], ObjectKeys.FI_ADAPTER);
 	
 		getFolderModule().modifyEntry(folder.getId(), entry.getId(), 
-				new MapInputData(data), fileItems, null, null);
+				new MapInputData(data), fileItems, null, null, null);
 	}
 
 	private static String getDefinitionElementNameForNonMirroredFile(Definition definition) 

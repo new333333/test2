@@ -29,25 +29,16 @@
 package com.sitescape.team.module.workspace.impl;
 
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.SortField;
-import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.dom4j.Element;
 
-import com.sitescape.team.InternalException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.BinderComparator;
@@ -59,24 +50,14 @@ import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
-import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.LuceneSession;
-import com.sitescape.team.search.QueryBuilder;
-import com.sitescape.team.search.SearchObject;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.util.SPropsUtil;
-import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
 
 /**
@@ -133,11 +114,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		return (BinderProcessor)getProcessorManager().getProcessor(workspace, BinderProcessor.PROCESSOR_KEY);
 	}
 
-	public Workspace getWorkspace() 
-   		throws NoWorkspaceByTheIdException, AccessControlException {
-    	return getWorkspace(null);
-    }
-    public Workspace getWorkspace(Long workspaceId) 
+   public Workspace getWorkspace(Long workspaceId) 
     	throws NoWorkspaceByTheIdException, AccessControlException {
         Workspace workspace=null;        
          
@@ -154,14 +131,12 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     }
     public Workspace getTopWorkspace() {
 		Workspace top = getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
+		// Check if the user has "read" access to the workspace.
+		getAccessControlManager().checkOperation(top, WorkAreaOperation.READ_ENTRIES);
 		return top;
     }
-   	public Collection getWorkspaceTree(Long id) throws AccessControlException {
+   	public SortedSet<Binder> getWorkspaceTree(Long id) throws AccessControlException {
     	Workspace top = getWorkspace(id);
-        return getWorkspaceTree(top);
-    }
-   	
-   	public Collection getWorkspaceTree(Workspace top) {
         User user = RequestContextHolder.getRequestContext().getUser();
       	//order result
         Comparator c = new BinderComparator(user.getLocale(), BinderComparator.SortByField.title);
@@ -181,7 +156,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
      	return tree;
    	}
     	 
-   	public Set<String> getChildrenTitles(Workspace top) {
+   	public SortedSet<String> getChildrenTitles(Workspace top) {
        	TreeSet<String> titles = new TreeSet<String>();
      	for (Iterator iter=top.getBinders().iterator(); iter.hasNext();) {
     		Binder b = (Binder)iter.next();
@@ -201,7 +176,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
    	
     //no transaction by default     
     public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException {
+    		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
  
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
     	checkAccess(parentWorkspace, WorkspaceOperation.addFolder);
@@ -210,13 +185,13 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     		def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
     	}
     	        
-    	Binder binder = loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems);
+    	Binder binder = loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems, options);
     	return binder.getId();
    }
  
     //no transaction by default
     public Long addWorkspace(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems) throws AccessControlException, WriteFilesException {
+       		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
    		    
     	Definition def = null;
@@ -232,7 +207,7 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     		checkAccess(parentWorkspace, WorkspaceOperation.addWorkspace);
     	}
     	
-    	return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems).getId();
+    	return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems, options).getId();
     }
  
 }

@@ -303,9 +303,8 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		try {
 			binder = getWorkspaceModule().getWorkspace(Long.valueOf(binderId));
 		} catch (Exception ex) {
-			binder = getWorkspaceModule().getWorkspace();				
+			binder = getWorkspaceModule().getTopWorkspace();				
 		}
-		if (binder == null) binder = getWorkspaceModule().getWorkspace();
 		model.put(WebKeys.BINDER, binder);
 		if (binder == null) {
 			return new ModelAndView("mobile/show_workspace", model);

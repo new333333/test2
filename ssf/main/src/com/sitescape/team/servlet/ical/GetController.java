@@ -78,7 +78,7 @@ public class GetController extends SAbstractController {
 			Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		} else {
-			Map entries = getFolderModule().getFullEntries(binderId);
+			Map entries = getFolderModule().getFullEntries(binderId, null);
 			List folderEntries = (List)entries.get(ObjectKeys.FULL_ENTRIES);
 			
 			CalendarOutputter calendarOutputter = new CalendarOutputter();

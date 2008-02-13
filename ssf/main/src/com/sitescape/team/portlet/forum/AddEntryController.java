@@ -110,7 +110,7 @@ public class AddEntryController extends SAbstractController {
 			if (action.equals(WebKeys.ACTION_ADD_FOLDER_ENTRY)) {
 				MapInputData inputData = new MapInputData(formData);
 				
-				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap);
+				entryId= getFolderModule().addEntry(folderId, entryType, inputData, fileMap, null);
 				setupReloadOpener(response, folderId, entryId);
 				if (!addEntryFromIFrame.equals("")) {
 					response.setRenderParameter(WebKeys.NAMESPACE, namespace);
@@ -120,7 +120,7 @@ public class AddEntryController extends SAbstractController {
 			} else if (action.equals(WebKeys.ACTION_ADD_FOLDER_REPLY)) {
 				MapInputData inputData = new MapInputData(formData);
 				Long id = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));				
-				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap);
+				entryId = getFolderModule().addReply(folderId, id, entryType, inputData, fileMap, null);
 				//Show the parent entry when this operation finishes
 				setupReloadOpener(response, folderId, id);
 				if (!blogReply.equals("")) {
@@ -274,7 +274,7 @@ public class AddEntryController extends SAbstractController {
 	        	    	oneFileMap.put(nameValue+"1", mf);
 	        	    	entryNameOnly.put(ObjectKeys.FIELD_ENTITY_TITLE, utf8DecodedFileName);
 	        	    	MapInputData inputData = new MapInputData(entryNameOnly);
-	        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap);
+	        	    	entryId= getFolderModule().addEntry(folderId, null, inputData, oneFileMap, null);
 	        		} else {
 	        			blnCheckForAppletFile = false;
 	        		}
@@ -346,7 +346,7 @@ public class AddEntryController extends SAbstractController {
 					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 				}
 			
-				Workspace ws = getWorkspaceModule().getWorkspace();
+				Workspace ws = getWorkspaceModule().getTopWorkspace();
 				model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
 			
 				parseInitialCalendarEventData(model, request);

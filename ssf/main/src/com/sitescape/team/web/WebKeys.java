@@ -806,8 +806,6 @@ public class WebKeys {
     public static final String WORKFLOW_DEFINTION_STATE_DATA="ssWorkflowDefinitionStateData";
     public static final String WORKFLOW_DEFINITION_MAP="ssWorkflowDefinitionMap";
     public static final String WORKFLOW_QUESTIONS="ssWorkflowQuestions";
-    public static final String WORKFLOW_QUESTION_TEXT="ssWorkflowQuestionText";
-    public static final String WORKFLOW_QUESTION_RESPONSES="ssWorkflowQuestionResponses";
     public static final String WORKFLOW_TRANSITIONS="ssWorkflowTransitions";
     public static final String WORKSPACE="ssWorkspace";
     public static final String WORKSPACE_DOM_TREE="ssWsDomTree";

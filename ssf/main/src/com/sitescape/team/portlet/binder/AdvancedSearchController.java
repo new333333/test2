@@ -207,7 +207,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		DefinitionHelper.getDefinition(def, model, "//item[@name='forumView']");
     	model.put(WebKeys.SHOW_SEARCH_RESULTS, true);
     	
-		Workspace ws = getWorkspaceModule().getWorkspace();
+		Workspace ws = getWorkspaceModule().getTopWorkspace();
 		Document tree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
 		model.put(WebKeys.DOM_TREE, tree);
 	}	

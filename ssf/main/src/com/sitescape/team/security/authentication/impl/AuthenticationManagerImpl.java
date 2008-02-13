@@ -123,7 +123,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 						mods.put(userModify[i], val);
 					}					
 				}
-				if (!mods.isEmpty()) getProfileModule().modifyUserFromPortal(user, mods);
+				if (!mods.isEmpty()) getProfileModule().modifyUserFromPortal(user, mods, null);
 			}
 			if(authenticatorName != null)
 				getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
@@ -134,7 +134,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
  					// This password should be ignored. Use username as password instead.
  					password = userName;
  				}
- 				user=getProfileModule().addUserFromPortal(userName, password, updates);
+ 				user=getProfileModule().addUserFromPortal(userName, password, updates, null);
  				if(authenticatorName != null)
  					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
  			} 
@@ -185,7 +185,7 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	   				// 	Change the user's password to the value passed in. 
 	   				Map updates = new HashMap();
 	   				updates.put("password", password);
-	   				getProfileModule().modifyUserFromPortal(user, updates);
+	   				getProfileModule().modifyUserFromPortal(user, updates, null);
 	   			}
 	   			else {
 	   				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");

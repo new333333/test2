@@ -80,7 +80,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
 			user = AccessUtils.getZoneGuestUser(zoneId);
 			if (user == null || binderId.equals("") || 
-					!getBinderModule().checkBinderAccess(new Long(binderId), user)) {
+					!getBinderModule().checkAccess(new Long(binderId), user)) {
 				//User must log in to see this
 	 			response.setRenderParameters(request.getParameterMap());
 	 			return;
@@ -88,7 +88,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		} else {
 	        user = RequestContextHolder.getRequestContext().getUser();
 			if (binderId.equals("") || 
-					!getBinderModule().checkBinderAccess(new Long(binderId), user)) {
+					!getBinderModule().checkAccess(new Long(binderId), user)) {
 				//User must log in to see this
 	 			response.setRenderParameters(request.getParameterMap());
 	 			return;
@@ -158,7 +158,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
 			if (!zoneId.equals("")) user = AccessUtils.getZoneGuestUser(new Long(zoneId));
 			if (user == null || binderId.equals("") || 
-					!getBinderModule().checkBinderAccess(new Long(binderId), user)) {
+					!getBinderModule().checkAccess(new Long(binderId), user)) {
 				//User must log in to see this
 				model.put("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
 				model.put("ss_screens_to_login_screen", 

@@ -111,7 +111,7 @@ public class AddAttachmentController extends SAbstractController {
 			}
 			String strFilesErrors = "";
 			try {
-				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null);
+				getFolderModule().modifyEntry(folderId, entryId, new MapInputData(formData), fileMap, deleteAtts, null, null);
 			} catch (WriteFilesException wf) {
 				strFilesErrors = wf.toString();
 			}

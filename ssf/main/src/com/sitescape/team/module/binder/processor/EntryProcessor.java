@@ -37,7 +37,6 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.module.file.FilesErrors;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
@@ -52,22 +51,22 @@ public interface EntryProcessor extends BinderProcessor {
  
  	public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) throws AccessControlException;
     
-    public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems)
+    public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options)
     	throws WriteFilesException;
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition);  
-    public Entry copyEntry(Binder binder, Entry entry, Binder destination, Map params);
-    public void copyEntries(Binder source, Binder binder, Map params);
-    public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource);
+    public Entry copyEntry(Binder binder, Entry entry, Binder destination, Map options);
+    public void copyEntries(Binder source, Binder binder, Map options);
+    public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource, Map options);
     public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition);
     public Entry getEntry(Binder binder, Long entryId);
     public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
-    		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo)
+    		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options)
     	throws WriteFilesException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
     public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData);
   	public void indexEntries(Collection entries);
   	public void indexEntry(Entry entry);
-    public void moveEntry(Binder binder, Entry entry, Binder destination);
+    public void moveEntry(Binder binder, Entry entry, Binder destination, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
 
 }

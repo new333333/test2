@@ -123,7 +123,9 @@ public interface ObjectKeys {
     public static final String TOTAL_SEARCH_RECORDS_RETURNED="totalSearchRecordsReturned";
     public static final String FILES_FROM_APPLET_FOR_BINDER="ss_attachFile";
     public static final String FILES_FROM_APPLET_FOLDER_INFO_FOR_BINDER="filesFromAppletFolderInfo";
-    
+    public static final String WORKFLOW_QUESTION_TEXT="workflow_questionText";
+    public static final String WORKFLOW_QUESTION_RESPONSES="workflow_questionResponses";
+ 
     //map keys from definition module
     public static final String DEFINITION_ENTRY_DATA="entryData";
     public static final String DEFINITION_FILE_DATA="fileData";
@@ -148,8 +150,7 @@ public interface ObjectKeys {
     
     public static final int LISTING_MAX_PAGE_SIZE = 100;
     public static final int MAX_TAG_LENGTH = 60;
-    public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;
-    public static final long SEEN_HISTORY_MAP_TIMEOUT = (long)7*24*60*60*1000;
+    public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;  //older than 30 days return seen
     
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
     public static final String BINDER_PROPERTY_TEAM_MEMBERS = "teamMembers";
@@ -243,10 +244,15 @@ public interface ObjectKeys {
 	public static final String INPUT_FIELD_FUNCTIONMEMBERSHIPS="com.sitescape.team.workareaFunctionMemberships";
 	public static final String INPUT_FIELD_DEFINITIONS="com.sitescape.team.definitions";
 	public static final String INPUT_FIELD_WORKFLOWASSOCIATIONS="com.sitescape.team.workflows";
+
+	/********INPUT options parameters********/
 	//Passed to processors to force a database lock.  Used to reduce optimistic lock exceptions
 	public static final String INPUT_OPTION_FORCE_LOCK="com.sitescape.team.options.lock";
 	public static final String INPUT_OPTION_PRESERVE_DOCNUMBER="com.sitescape.team.options.preserve.docnum";
-
+	//default=Boolean.TRUE; Copy a binder and all its child binders if true
+	public static final String INPUT_OPTION_COPY_BINDER_CASCADE="com.sitescape.team.options.cascade.copy";
+	//Default=Boolean.FALSE; When deleteing a profile entry, delete the associated workspace and all source/sub binders
+	public static final String INPUT_OPTION_DELETE_USER_WORKSPACE="com.sitescape.team.options.delete.userworkspace";
 	//Reserved data field names
     public static final String FIELD_ID="id";
     public static final String FIELD_ZONE="zoneId";
