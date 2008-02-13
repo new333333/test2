@@ -535,7 +535,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		
 	}
     //inside write transaction    
-    public Binder setDefinitions(Long binderId, List<String> definitionIds, Map workflowAssociations) 
+    public Binder setDefinitions(Long binderId, List<String> definitionIds, Map<String,String> workflowAssociations) 
 	throws AccessControlException {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageDefinitions); 
