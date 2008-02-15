@@ -28,20 +28,33 @@
  */
 package com.sitescape.team.module.folder.remoting.ws;
 
-public interface FolderService {
+import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML);
+public class MigrationServiceEndpoint extends ServletEndpointSupport implements MigrationService {
 
-	public String getFolderEntriesAsXML(long binderId);
+	private MigrationService migrationService;
 	
-	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments);
+	protected void onInit() {
+		this.migrationService = (MigrationService) getWebApplicationContext().getBean("migrationService");
+	}
+	protected MigrationService getMigrationService() {
+		return migrationService;
+	}
 	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
+	public long addFolder(long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps) {
+		return getMigrationService().addFolder(parentId, definitionId, inputDataAsXML, timestamps);
+	}
 	
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML);
-	
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML);
+	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Timestamps timestamps) {
+		return getMigrationService().addFolderEntry(binderId, definitionId, inputDataAsXML, attachedFileName, timestamps);
+	}
 
-	public void uploadFolderFile(long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName);
+	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps) {
+		return getMigrationService().addReply(binderId, parentId, definitionId, inputDataAsXML, timestamps);
+	}
+
+	public void uploadFolderFile(long binderId, long entryId, String fileUploadDataItemName, String fileName, Timestamps timestamps) {
+		getMigrationService().uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName, timestamps);
+	}
+
 }

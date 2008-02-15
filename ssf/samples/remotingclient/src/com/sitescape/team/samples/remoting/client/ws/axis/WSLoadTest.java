@@ -60,6 +60,13 @@ import com.sitescape.util.PasswordEncryptor;
 public class WSLoadTest
 {
 	static String loremIpsum = "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Phasellus commodo. Duis nibh mauris, venenatis et, nonummy vitae, rutrum quis, massa. Vestibulum rutrum. Maecenas arcu est, venenatis eget, pellentesque sit amet, dignissim fringilla, ipsum. Maecenas neque pede, accumsan a, pellentesque a, fringilla lobortis, felis. Sed dapibus nonummy lorem. Aliquam adipiscing. Etiam porttitor sagittis arcu. Integer laoreet ipsum vitae lacus. Duis tempor quam vel pede. Nam ornare pede vel turpis.\n\nNulla sapien felis, cursus commodo, elementum id, tristique vel, mauris. Quisque pede. Etiam sit amet turpis in ligula congue suscipit. Nulla venenatis, lectus vel ornare tincidunt, odio ipsum vehicula mi, in cursus felis odio vitae est. Nulla nibh tellus, dignissim vel, laoreet ac, elementum vel, diam. Curabitur non eros. Sed tempor felis non pede. Sed imperdiet fermentum ante. Nulla fermentum, eros ultrices pulvinar malesuada, velit massa luctus risus, id convallis mi tortor lobortis leo. Etiam congue semper ipsum. Mauris sodales libero ut erat. Proin tellus. Quisque ullamcorper mauris a dui. Duis commodo. Quisque ac quam. Ut magna. Maecenas a neque ac augue feugiat convallis. Sed a tortor at magna dapibus porttitor. Phasellus quam purus, sagittis et, hendrerit sit amet, lacinia ut, mauris. In luctus.\n\nMauris urna. Quisque ipsum. Curabitur non sapien non mi facilisis lobortis. Nam id nibh at tellus faucibus nonummy. Duis congue mollis risus. Etiam gravida sodales tortor. Aenean gravida dui id pede. Proin quis mauris non leo luctus tempus. Praesent non ante. Praesent tempus libero id purus. Quisque faucibus. Etiam vulputate ipsum eu elit. Nam eget ante. Nullam elementum semper libero.\n\nIn hac habitasse platea dictumst. Curabitur metus. Duis vestibulum massa ullamcorper sem mollis placerat. Fusce metus odio, feugiat ac, cursus at, faucibus a, eros. Phasellus ligula elit, venenatis a, venenatis eget, pretium vel, augue. Donec sit amet diam. Suspendisse sit amet metus quis lectus ornare consequat. Pellentesque condimentum accumsan velit. Donec in mauris. Mauris varius orci vel ipsum. Fusce viverra ante nec diam. Mauris massa massa, fringilla tempus, pellentesque at, lobortis ut, orci. Pellentesque cursus mi sed nisi. Aliquam vulputate ultrices neque. Vivamus condimentum.\n\nNulla lacinia velit at lectus. Suspendisse vel urna tristique purus feugiat gravida. Vestibulum ullamcorper. Suspendisse potenti. Morbi suscipit mi vel turpis. Nulla quis neque. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Nam egestas elit in eros. Cras pede elit, rutrum et, pellentesque ut, euismod id, mauris. Morbi justo neque, accumsan non, suscipit et, consequat quis, sapien. Nulla egestas, turpis sit amet venenatis mattis, neque ante ultricies lacus, vel molestie orci purus ut justo. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer nibh enim, sollicitudin ac, vestibulum eget, mattis quis, est. In egestas scelerisque velit. Nulla accumsan mollis sem. Praesent tincidunt. Donec blandit. Integer lacinia ipsum vitae tortor. Aliquam ullamcorper placerat tellus.\n";
+	static Date start = null;
+	static Long templateId = null;
+	static String definitionId = null;
+	static String filename = null;
+	static int completed = 0;
+	static Date lastStatus = null;
+	
 	public static void main(String[] args) {
 		if(args.length < 3 || args.length > 4) {
 			System.err.println("Usage: WSLoadTest <count> <commaSeparatedFolderIdList> <definitionId> [<attachmentFilename>]");
@@ -67,27 +74,34 @@ public class WSLoadTest
 			System.err.println("           or you can specify 'auto:nnn:mmm' (without quotes), where 'nnn' is a folder number");
 			System.err.println("              and 'mmm' is a template id.  In this case, a new folder will be created for each");
 			System.err.println("              entry, with parent folder 'nnn' using template 'mmm'.  Also in this case, the count");
-			System.err.println("              can be of the form N:M, which will make M entries in each of the N folders created.");
+			System.err.println("              can be of the form N1:N2:...:M, which will make a tree of N1 folders, each");
+			System.err.println("              containing N2 sub-folders, etc, etc, finally each containing M entries");
 			return;
 		}
 		Integer count = null;
-		Integer repeat = new Integer(1);
 		Long[] folderIds = null;
 		String ids[] = null;
 		boolean autoFolder = false;
-		Long templateId = null;
+		templateId = null;
+		definitionId = args[2];
+		filename = null;
+		if(args.length == 4) { filename = args[3]; }
+		start = lastStatus = new Date();
+
 		if(args[1].startsWith("auto")) {
 			autoFolder = true;
 			ids = args[1].split(":");
-			folderIds = new Long[] {Long.parseLong(ids[1])};
+			Long parentFolder = Long.parseLong(ids[1]);
 			templateId = Long.parseLong(ids[2]);
-			if(args[0].contains(":")) {
-				String[] foo = args[0].split(":");
-				count = Integer.parseInt(foo[0]);
-				repeat = Integer.parseInt(foo[1]);
-			} else {
-				count = Integer.parseInt(args[0]);
+			String[] foo = args[0].split(":");
+			int[] counts = new int[foo.length];
+			int product = 1;
+			for(int i = 0; i < foo.length; i++) {
+				counts[i] = Integer.parseInt(foo[i]);
+				product = product * counts[i];
 			}
+			System.out.println("Creating " + product + " entries, total.");
+			createFolders(counts, 0, parentFolder, "");
 		} else {
 			count = Integer.parseInt(args[0]);
 			if(args[1].contains(",")) {
@@ -118,37 +132,47 @@ public class WSLoadTest
 				}
 			}
 			folderIds = generatedIds.toArray(new Long[0]);
+			createEntries(count, folderIds, "");
 		}
-		
-		String definitionId = args[2];
-		String filename = null;
-		if(args.length == 4) { filename = args[3]; }
-		Date start = new Date();
+
+		System.err.println("Total time: " + ((new Date()).getTime() - start.getTime()) + "ms");
+	}
+
+	static void createEntries(int count, Long[] folderIds, String prefix) {
 		try {
-			for(int i = 0; i < count.intValue(); i++) {
-				for(int j = 0; j < folderIds.length; j++) {
-					Long parentFolder = null;
-					if(autoFolder) {
-						parentFolder = (Long) fetch("addFolder", new Object[] {folderIds[j], templateId, "Generated folder " + (i+1)  + safeName(start.toString())}, null);
-					} else {
-						parentFolder = folderIds[j];
+			for(int j = 0; j < folderIds.length; j++) {
+				for(int i = 0; i < count; i++) {
+					String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><entry>  <attribute name=\"title\" type=\"title\">Load Test Entry " + prefix + i + " " + start.toString()  + "</attribute><attribute name=\"description\" type=\"description\">" + loremIpsum + "</attribute></entry>";
+					Long entryId = (Long) fetch("addFolderEntry", new Object[] {folderIds[j], definitionId, s, filename}, filename);
+					completed++;
+					Date now = new Date();
+					if(now.getTime() - lastStatus.getTime() > 60000) {
+						System.err.println(completed+1);
+						lastStatus = now;
 					}
-					for(int k = 0; k < repeat.intValue(); k++) {
-						String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><entry>  <attribute name=\"title\" type=\"title\">Load Test Entry " + j + "-" + i + "-" + k + " " + start.toString()  + "</attribute><attribute name=\"description\" type=\"description\">" + loremIpsum + "</attribute></entry>";
-						Long entryId = (Long) fetch("addFolderEntry", new Object[] {parentFolder, definitionId, s, filename}, filename);
-					}
-				}
-				if((i+1)%100 == 0) {
-					System.err.println(i+1);
 				}
 			}
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
-		System.err.println("Total time: " + ((new Date()).getTime() - start.getTime()) + "ms");
 	}
-
+	static void createFolders(int[] folderCounts, int depth, Long parentFolder, String prefix)
+	{
+		if(depth == folderCounts.length - 1) {
+			createEntries(folderCounts[depth], new Long[] {parentFolder}, prefix);
+		} else {
+			for(int i = 0; i < folderCounts[depth]; i++) {
+				try {
+					Long newFolder = (Long) fetch("addFolder", new Object[] {parentFolder, templateId, "Generated folder " + prefix + (i+1)  + safeName(start.toString())}, null);
+					createFolders(folderCounts, depth + 1, newFolder, prefix + (i+1) + "-");
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+	
 	static String safeName(String name)
 	{
 		return name.replaceAll("[\\p{Punct}\\p{Space}]", "_");
@@ -156,7 +180,7 @@ public class WSLoadTest
 
 	static Object fetch(String operation, Object[] args, String filename) throws Exception {
 		// Replace the hostname in the endpoint appropriately.
-		String endpoint = "http://localhost:8080/ssf/ws/Facade";
+		String endpoint = "http://marilyn9200:8080/ssf/ws/Facade";
 
 		// Make sure that the client_deploy.wsdd file is accessible to the program.
 		EngineConfiguration config = new FileProvider("client_deploy.wsdd");

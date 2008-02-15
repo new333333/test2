@@ -277,9 +277,9 @@ public class WorkspaceTreeHelper {
 		//Get the info for the "add a team" button
 		if (!ws.isRoot() && bs.getWorkspaceModule().testAccess(ws, WorkspaceOperation.addWorkspace)) {
 			Long cfgType = null;
-			List result = bs.getAdminModule().getTemplates(Definition.WORKSPACE_VIEW);
+			List result = bs.getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW);
 			if (result.isEmpty()) {
-				result.add(bs.getAdminModule().addDefaultTemplate(Definition.WORKSPACE_VIEW));	
+				result.add(bs.getTemplateModule().addDefaultTemplate(Definition.WORKSPACE_VIEW));	
 			}
 			for (int i = 0; i < result.size(); i++) {
 				TemplateBinder tb = (TemplateBinder) result.get(i);

@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
-	<globalConfiguration>
+	<beanMapping qname="ns:timestamps" xmlns:ns="http://sitescape.com/ssf/ws"
+    	languageSpecificType="java:com.sitescape.team.module.folder.remoting.ws.MigrationService$Timestamps"/>
+  	<globalConfiguration>
 		<parameter name="adminPassword" value="admin"/>
 		<parameter name="sendXsiTypes" value="true"/>
 		<parameter name="sendMultiRefs" value="true"/>
@@ -45,7 +47,7 @@
 		<parameter name="allowedMethods" value="*"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.JaxRpcFacade"/>
 	</service>
-	<service name="AdminService" provider="java:RPC" style="rpc" use="encoded">
+	<service name="TemplateService" provider="java:RPC" style="rpc" use="encoded">
 	 	<requestFlow>
    			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
     			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
@@ -54,10 +56,10 @@
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.admin.module.team.sitescape.com"/>
-		<parameter name="wsdlServiceElement" value="AdminService"/>
-		<parameter name="wsdlServicePort" value="AdminPort"/>
-		<parameter name="className" value="com.sitescape.team.module.admin.remoting.ws.AdminServiceEndpoint"/>
-		<parameter name="wsdlPortType" value="AdminPortType"/>
+		<parameter name="wsdlServiceElement" value="TemplateSoapService"/>
+		<parameter name="wsdlServicePort" value="TemplateService"/>
+		<parameter name="className" value="com.sitescape.team.module.template.remoting.ws.TemplateServiceEndpoint"/>
+		<parameter name="wsdlPortType" value="TemplateServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
 	</service>
@@ -106,6 +108,38 @@
 		<parameter name="wsdlServicePort" value="FolderPort"/>
 		<parameter name="className" value="com.sitescape.team.module.folder.remoting.ws.FolderServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="FolderPortType"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="MigrationService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.folder.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="MigrationSoapService"/>
+		<parameter name="wsdlServicePort" value="MigrationService"/>
+		<parameter name="className" value="com.sitescape.team.module.folder.remoting.ws.MigrationServiceEndpoint"/>
+		<parameter name="wsdlPortType" value="MigrationServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="WorkspaceService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.workspace.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="WorkspaceSoapService"/>
+		<parameter name="wsdlServicePort" value="WorkspaceService"/>
+		<parameter name="className" value="com.sitescape.team.module.workspace.remoting.ws.WorkspaceServiceEndpoint"/>
+		<parameter name="wsdlPortType" value="WorkspaceServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
 	</service>

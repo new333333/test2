@@ -26,30 +26,15 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.admin.remoting.ws;
+package com.sitescape.team.module.folder.remoting.ws.attachments;
 
-import javax.xml.rpc.ServiceException;
-import javax.xml.rpc.server.ServiceLifecycle;
+public class MigrationServiceImpl extends com.sitescape.team.module.folder.remoting.ws.MigrationServiceImpl {
 
-import com.sitescape.team.util.SpringContextUtil;
-
-public class AdminServiceEndpoint implements ServiceLifecycle, AdminService {
-
-	private AdminService adminService;
+	AttachmentUtilities attachmentUtilities = new AttachmentUtilities(this);
 	
-	protected AdminService getAdminService() {
-		return adminService;
+	@Override
+	public void uploadFolderFile(long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName, Timestamps timestamps) {
+		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
-	
-	public long addBinder(long parentBinderId, long binderConfigId, String title) {
-		return getAdminService().addBinder(parentBinderId, binderConfigId, title);
-	}
-
-	public void init(Object context) throws ServiceException {
-		this.adminService = (AdminService) SpringContextUtil.getBean("adminService");
-	}
-	
-	public void destroy() {
-	}
-
 }

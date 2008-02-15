@@ -49,6 +49,7 @@
 	<!-- Template for expressing dependencies on all modules.
 	     Do NOT ever add to this template any bean that is not a module. -->
 	<bean id="dependOnAllModulesTemplate" lazy-init="true" abstract="true">
+		<property name="templateModule"><ref bean="templateModule"/></property>
 		<property name="adminModule"><ref bean="adminModule"/></property>
 		<property name="binderModule"><ref bean="binderModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
@@ -441,7 +442,7 @@
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
-		<!-- addBinderFromTemplate, setWorkAreaFunctionMemberships, setWorkAreaFunctionMembershipInherited, setWorkAreaOwner provide transaction semantics at a finer
+		<!-- setWorkAreaFunctionMemberships, setWorkAreaFunctionMembershipInherited, setWorkAreaOwner provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>
@@ -459,6 +460,33 @@
 		</property>
 	</bean>
 
+	<bean id="templateModule" parent="baseTransactionProxy">
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.template.impl.TemplateModuleImpl">
+				<property name="adminModule"><ref local="adminModule"/></property>
+				<property name="definitionModule"><ref local="definitionModule"/></property>
+				<property name="folderModule"><ref local="folderModule"/></property>
+				<property name="workspaceModule"><ref local="workspaceModule"/></property>
+				<property name="binderModule"><ref local="binderModule"/></property>
+				<property name="dashboardModule"><ref local="dashboardModule"/></property>
+				<property name="fileModule"><ref local="fileModule"/></property>
+				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
+			</bean>
+		</property>
+		<!-- addBinder provides transaction semantics at a finer
+		granularity then the method. Handled by processor through transactionTemplate-->
+		<property name="transactionAttributes">
+			<props>
+				<prop key="addDefaultTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addTemplate">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addTemplateFromBinder">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="delete*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="modify*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED,readOnly,+com.sitescape.team.security.AccessControlException,+com.sitescape.team.exception.UncheckedCodedException</prop>
+			</props>
+		</property>
+	</bean>
 
 	<bean id="folderModule" parent="baseTransactionProxy" depends-on="zoneConfig" >
 		<property name="target"><ref bean="folderModuleTarget"/></property>
@@ -486,6 +514,7 @@
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.profile.impl.ProfileModuleImpl">
 				<property name="definitionModule"><ref bean="definitionModule"/></property>
+				<property name="templateModule"><ref local="templateModule"/></property>
 				<property name="adminModule"><ref local="adminModule"/></property>
 				<property name="binderModule"><ref local="binderModule"/></property>
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
@@ -793,13 +822,13 @@ text/calendar											  ics
 		</property>
 	</bean>
 	
-	<bean id="adminService" parent="wsProxyTemplate">
+	<bean id="templateService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.admin.remoting.ws.AdminServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.module.template.remoting.ws.TemplateServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.admin.remoting.ws.AdminService</value>
+			<value>com.sitescape.team.module.template.remoting.ws.TemplateService</value>
 		</property>
 	</bean>
 	
@@ -825,7 +854,7 @@ text/calendar											  ics
 	
 	<bean id="folderService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.folder.remoting.ws.FolderServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.module.folder.remoting.ws.attachments.FolderServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
@@ -833,9 +862,29 @@ text/calendar											  ics
 		</property>
 	</bean>
 	
+	<bean id="migrationService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.folder.remoting.ws.attachments.MigrationServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.folder.remoting.ws.MigrationService</value>
+		</property>
+	</bean>
+	
+	<bean id="workspaceService" parent="wsProxyTemplate">
+		<property name="target">
+			<bean class="com.sitescape.team.module.workspace.remoting.ws.WorkspaceServiceImpl" parent="dependOnAllModulesTemplate">
+			</bean>
+		</property>
+		<property name="proxyInterfaces">
+			<value>com.sitescape.team.module.workspace.remoting.ws.WorkspaceService</value>
+		</property>
+	</bean>
+	
 	<bean id="icalService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.ical.remoting.ws.IcalServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.module.ical.remoting.ws.attachments.IcalServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">

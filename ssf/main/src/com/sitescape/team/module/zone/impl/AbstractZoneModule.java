@@ -63,6 +63,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.module.template.TemplateModule;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.function.Function;
@@ -88,6 +89,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 	protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
 	}
+    protected TemplateModule templateModule;
+    protected TemplateModule getTemplateModule() {
+    	return templateModule;
+    }
+    public void setTemplateModule(TemplateModule templateModule) {
+    	this.templateModule = templateModule;
+    }
+
 	protected AdminModule adminModule;
 	/**
 	 * Setup by spring
@@ -459,7 +468,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		Function teamWsRole = addTeamWorkspaceRole(top);
     		//make sure allusers group and roles are defined, may be referenced by templates
     		getAdminModule().updateDefaultDefinitions(top.getId());
-    		getAdminModule().updateDefaultTemplates(top.getId());
+    		getTemplateModule().updateDefaultTemplates(top.getId());
 
     		//Update after import of definitions
     		getDefinitionModule().setDefaultBinderDefinition(top);

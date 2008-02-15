@@ -79,7 +79,7 @@ public class AddFolderController extends SAbstractController {
 		if (formData.containsKey("okBtn")) {
 			//The form was submitted. Go process it
 			Long cfgType = PortletRequestUtils.getRequiredLongParameter(request, "binderConfigId");
-			Long newId = getAdminModule().addBinderFromTemplate(cfgType, binderId, 
+			Long newId = getTemplateModule().addBinder(cfgType, binderId, 
 						PortletRequestUtils.getStringParameter(request, "title", ""), null);
 			Binder newBinder = getBinderModule().getBinder(newId);
 			
@@ -106,7 +106,7 @@ public class AddFolderController extends SAbstractController {
 					Map.Entry me = (Map.Entry) itFormData.next();
 					if (me.getKey().toString().startsWith("folderConfigId_")) {
 						String configId = me.getKey().toString().substring(15);
-						getAdminModule().addBinderFromTemplate(Long.valueOf(configId), newId, "", null);
+						getTemplateModule().addBinder(Long.valueOf(configId), newId, "", null);
 					}
 				}
 				
@@ -169,34 +169,34 @@ public class AddFolderController extends SAbstractController {
 						WorkspaceModule.WorkspaceOperation.addWorkspace));
 
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
-			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+			List result = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
 			if (result.isEmpty()) {
-				result.add(getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW));
+				result.add(getTemplateModule().addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_FOLDER)) {
-			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+			List result = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
 			if (result.isEmpty()) {
-				result.add(getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW));
+				result.add(getTemplateModule().addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_WORKSPACE)) {
-			List result = getAdminModule().getTemplates(Definition.WORKSPACE_VIEW);
+			List result = getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW);
 			if (result.isEmpty()) {
-				result.add(getAdminModule().addDefaultTemplate(Definition.WORKSPACE_VIEW));	
+				result.add(getTemplateModule().addDefaultTemplate(Definition.WORKSPACE_VIEW));	
 			}
 			model.put(WebKeys.BINDER_CONFIGS, result);
 			
 			//Get the list of folder types
-			result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+			result = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
 			if (result.isEmpty()) {
-				result.add(getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW));
+				result.add(getTemplateModule().addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.FOLDER_CONFIGS, result);
 		} else if (operation.equals(WebKeys.OPERATION_ADD_TEAM_WORKSPACE)) {
-			List result = getAdminModule().getTemplates(Definition.FOLDER_VIEW);
+			List result = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);
 			if (result.isEmpty()) {
-				result.add(getAdminModule().addDefaultTemplate(Definition.FOLDER_VIEW));
+				result.add(getTemplateModule().addDefaultTemplate(Definition.FOLDER_VIEW));
 			}
 			model.put(WebKeys.FOLDER_CONFIGS, result);
 			model.put("binderConfigId", PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_CONFIG_ID, ""));

@@ -1,3 +1,4 @@
+<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -26,22 +27,10 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.folder.remoting.ws;
-
-public interface FolderService {
-
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML);
-
-	public String getFolderEntriesAsXML(long binderId);
-	
-	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments);
-	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
-	
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML);
-	
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML);
-
-	public void uploadFolderFile(long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName);
-}
+%>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+  <div class="ss_portlet_style ss_portlet">
+  <div class="ss_style">
+<ssf:nlt tag="enterpriseOnly"/>
+  </div>
+  </div>

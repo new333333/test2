@@ -37,9 +37,9 @@ public class TemplateDownloadController extends  ZipDownloadController {
 	protected String getFilename() { return "exportTemplates.zip"; }
 	@Override
 	protected NamedDocument getDocumentForId(String defId) {
-		TemplateBinder binder = getAdminModule().getTemplate(Long.valueOf(defId));
+		TemplateBinder binder = getTemplateModule().getTemplate(Long.valueOf(defId));
 		String name = binder.getName();
 		if (Validator.isNull(name)) name = binder.getTemplateTitle();
-		return new NamedDocument(name, getAdminModule().getTemplateAsXml(binder));
+		return new NamedDocument(name, getTemplateModule().getTemplateAsXml(binder));
 	}
 }

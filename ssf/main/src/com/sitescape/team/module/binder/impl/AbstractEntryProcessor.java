@@ -769,7 +769,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
      protected void indexDeleteEntries(Binder binder) {
 		// Since all matches will be deleted, this will also delete the attachments 
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
-   	
     }
      //***********************************************************************************************************
      public void addEntryWorkflow(Binder binder, Entry entry, Definition definition) {
@@ -889,12 +888,21 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //If called from write transaction, make sure session is flushed cause this bypasses
     //hibernate loading of collections and goes to database directly.
     protected void indexEntries(Binder binder, boolean deleteIndex) {
+    	SimpleProfiler.startProfiler("indexEntries");
     	//may already have been handled with an optimized query
-    	if (deleteIndex) indexEntries_preIndex(binder);
-    	SFQuery query = indexEntries_getQuery(binder);
+    	if (deleteIndex) {
+        	SimpleProfiler.startProfiler("indexEntries_preIndex");
+    		indexEntries_preIndex(binder);
+        	SimpleProfiler.stopProfiler("indexEntries_preIndex");
+    	}
+  		//flush any changes so any exiting changes don't get lost on the evict
+ //   	SimpleProfiler.startProfiler("indexEntries_flush");
+ //   	getCoreDao().flush();
+ //   	SimpleProfiler.stopProfiler("indexEntries_flush");
+  		SFQuery query = indexEntries_getQuery(binder);
   		int threshhold = SPropsUtil.getInt("lucene.flush.threshhold", 100);
        	try {       
-  			List batch = new ArrayList();
+       		List batch = new ArrayList();
   			List docs = new ArrayList();
   			int total=0;
       		while (query.hasNext()) {
@@ -912,22 +920,30 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        			}
        			total += count;
        			//have 1000 entries, manually load their collections
+       			SimpleProfiler.startProfiler("indexEntries_load");
        			indexEntries_load(binder, batch);
+       			SimpleProfiler.stopProfiler("indexEntries_load");
        			logger.info("Indexing at " + total + "(" + binder.getPathName() + ")");
+       			SimpleProfiler.startProfiler("indexEntries_loadTags");
        			Map tags = indexEntries_loadTags(binder, batch);
+       			SimpleProfiler.stopProfiler("indexEntries_loadTags");
        			for (int i=0; i<batch.size(); ++i) {
        				Entry entry = (Entry)batch.get(i);
    					List entryTags = (List)tags.get(entry.getEntityIdentifier());
        				if (indexEntries_validate(binder, entry)) {
        					// 	Create an index document from the entry object. 
        					// Entry already deleted from index, so pretend we are new
+       	       			SimpleProfiler.startProfiler("indexEntries_indexEntryWithAttachments");
        				   	indexEntryWithAttachments(binder, entry, entry.getFileAttachments(), null, true, entryTags);
+       	       			SimpleProfiler.stopProfiler("indexEntries_indexEntryWithAttachments");
        				   	indexEntries_postIndex(binder, entry);
        				}
            			getCoreDao().evict(entryTags);
        				getCoreDao().evict(entry);
           	  		//apply after we have gathered a few
+   	       			SimpleProfiler.startProfiler("indexEntries_applyChanges");
            	   		IndexSynchronizationManager.applyChanges(threshhold);
+   	       			SimpleProfiler.stopProfiler("indexEntries_applyChanges");
        			}
        	 	            	            
        			// Register the index document for indexing.
@@ -938,6 +954,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         } finally {
         	//clear out anything remaining
         	query.close();
+        	SimpleProfiler.stopProfiler("indexEntries");
         }
  
     }
@@ -1231,6 +1248,24 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         EntityIndexUtils.addWorkflow(indexDoc, entry, fieldsOnly);
         fillInIndexDocWithCommonPart(indexDoc, binder, entry, fieldsOnly);
     }
+    
+    public void changeEntryTimestamps(final Binder binder, final Entry entry,
+    								  final HistoryStamp creation, final HistoryStamp modification)
+    {
+    	final User user = RequestContextHolder.getRequestContext().getUser();
+    	getTransactionTemplate().execute(new TransactionCallback() {
+    		public Object doInTransaction(TransactionStatus status) {
+    			entry.setCreation(creation);
+    			entry.setModification(modification);
+    			ChangeLog changes = new ChangeLog(entry, ChangeLog.CHANGETIMESTAMPS, user);
+    			ChangeLogUtils.buildLog(changes, entry);
+    			getCoreDao().save(changes);
+    			return null;
+    		}
+    	});
+    	indexEntry(binder, entry, null, null, false, null); 
+    }
+
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		return processChangeLog(entry, operation, true);
 	}

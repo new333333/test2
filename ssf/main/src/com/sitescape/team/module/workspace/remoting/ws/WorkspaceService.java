@@ -1,4 +1,3 @@
-<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -27,57 +26,9 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
-<body>
-</ssf:ifadapter>
+package com.sitescape.team.module.workspace.remoting.ws;
 
-<table class="ss_style" cellpadding="10" width="100%"><tr><td>
+public interface WorkspaceService {
 
-<form class="ss_form" method="post" style="display:inline;" enctype="multipart/form-data"
-	action="<ssf:url 
-	adapter="true" 
-	portletName="ss_forum" 
-	action="forum_import" 
-	actionUrl="true" ><ssf:param 
-	name="binderId" value="${ssBinder.id}"/><ssf:param 
-	name="binderType" value="${ssBinder.entityType}"/></ssf:url>">
-	
-<ssf:nlt tag="ihelp.forum_import.general"/><br/>
-
-  <input type="file" class="ss_text" name="forumFile" id="forumFile"/><br/>
-
-<c:if test="${!empty ssDefinitionChoices}">
-Create imported entries as: <select name="entryType">
-<c:forEach var="def" items="${ssDefinitionChoices}">
-	<option value="${def.key}">${def.value}</option>
-</c:forEach>
-</select>
-</li>
-</c:if>
-<c:if test="${empty ssDefinitionChoices}">
-Imported entries will be created as: <ssf:nlt tag="${ssDefinition.title}"/> (${ssDefinition.name})
-<input type="hidden" name="entryType" value="${ssDefinition.id}"/>
-</c:if>
-<br/>
-<input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" />
-
-</form>
-</td></tr></table>
-<c:if test="${!empty ssErrorList}">
-<span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
-<br/>
-<br/>
-<ul>
-<c:forEach var="err" items="${ssErrorList}">
-	<li>${err}</li>
-</c:forEach>
-</ul>
-</c:if>
-
-<ssf:ifadapter>
-</body>
-</html>
-</ssf:ifadapter>
+	public long addFolder(long parentId, String definitionId, String inputDataAsXML);
+}

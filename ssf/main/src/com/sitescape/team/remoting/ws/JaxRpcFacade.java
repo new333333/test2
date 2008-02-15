@@ -30,12 +30,12 @@ package com.sitescape.team.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-import com.sitescape.team.module.admin.remoting.ws.AdminService;
 import com.sitescape.team.module.binder.remoting.ws.BinderService;
 import com.sitescape.team.module.definition.remoting.ws.DefinitionService;
 import com.sitescape.team.module.folder.remoting.ws.FolderService;
 import com.sitescape.team.module.ical.remoting.ws.IcalService;
 import com.sitescape.team.module.profile.remoting.ws.ProfileService;
+import com.sitescape.team.module.template.remoting.ws.TemplateService;
 import com.sitescape.team.module.zone.remoting.ws.ZoneService;
 import com.sitescape.team.remoting.Facade;
 
@@ -51,7 +51,7 @@ import com.sitescape.team.remoting.Facade;
  */
 public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
-	private AdminService adminService;
+	private TemplateService templateService;
 	private DefinitionService definitionService;
 	private FolderService folderService;
 	private BinderService binderService;
@@ -60,7 +60,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	private ZoneService zoneService;
 	
 	protected void onInit() {
-		this.adminService = (AdminService) getWebApplicationContext().getBean("adminService");
+		this.templateService = (TemplateService) getWebApplicationContext().getBean("templateService");
 		this.definitionService = (DefinitionService) getWebApplicationContext().getBean("definitionService");
 		this.folderService = (FolderService) getWebApplicationContext().getBean("folderService");
 		this.binderService = (BinderService) getWebApplicationContext().getBean("binderService");
@@ -90,7 +90,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.module.admin.remoting.ws#addBinder}.
 	 */
 	public long addFolder(long parentBinderId, long binderConfigId, String title) {
-		return this.adminService.addBinder(parentBinderId, binderConfigId, title);
+		return this.templateService.addBinder(parentBinderId, binderConfigId, title);
 	}
 
 	/**

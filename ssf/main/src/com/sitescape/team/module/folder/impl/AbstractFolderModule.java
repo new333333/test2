@@ -46,6 +46,7 @@ import java.util.SortedSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
+import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.multipart.MultipartFile;
@@ -85,6 +86,7 @@ import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FileLockInfo;
@@ -210,6 +212,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 				break;
 			case addFolder:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_FOLDERS);
+				break;
+			case changeEntryTimestamps:
+				getAccessControlManager().checkOperation(folder, WorkAreaOperation.SITE_ADMINISTRATION);
 				break;
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
@@ -348,10 +353,20 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	arCount.incrementAndGet();
     	
         Folder folder = loadFolder(folderId);
-        Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         FolderCoreProcessor processor = loadProcessor(folder);
         //load parent entry
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId);
+
+        if(Validator.isNull(definitionId)) {
+			Definition parentDef = entry.getEntryDef();
+			Document defDoc = parentDef.getDefinition();
+			List replyStyles = DefinitionUtils.getPropertyValueList(defDoc.getRootElement(), "replyStyle");
+			if (!replyStyles.isEmpty()) {
+				definitionId = (String)replyStyles.get(0);
+			}
+        }
+
+        Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         checkAccess(entry, FolderOperation.addReply);
         FolderEntry reply = processor.addReply(entry, def, inputData, fileItems, options);
         return reply.getId();
@@ -375,6 +390,18 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	    //should never happen   
     	}
 	}
+    public void changeEntryTimstamps(Long folderId, Long entryId,
+    								 HistoryStamp creation, HistoryStamp modification)
+    				throws AccessControlException, WriteFilesException {
+        Folder folder = loadFolder(folderId);
+        checkAccess(folder, FolderOperation.changeEntryTimestamps);
+        
+        FolderCoreProcessor processor = loadProcessor(folder);
+        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+       
+        processor.changeEntryTimestamps(folder, entry, creation, modification);
+    }
+
     //no transaction    
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 

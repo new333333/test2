@@ -44,6 +44,7 @@ import com.sitescape.team.module.license.LicenseModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.rss.RssModule;
+import com.sitescape.team.module.template.TemplateModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.module.zone.ZoneModule;
@@ -54,6 +55,7 @@ public class AbstractAllModulesInjected implements AllModulesInjected {
 
 	private WorkspaceModule workspaceModule;
 	private FolderModule folderModule;
+	private TemplateModule templateModule;
 	private AdminModule adminModule;
 	private ProfileModule profileModule;
 	private DefinitionModule definitionModule;
@@ -93,6 +95,14 @@ public class AbstractAllModulesInjected implements AllModulesInjected {
 		return folderModule;
 	}
 	
+	public void setTemplateModule(TemplateModule templateModule) {
+		this.templateModule = templateModule;
+	}
+	
+	public TemplateModule getTemplateModule() {
+		return templateModule;
+	}
+
 	public void setAdminModule(AdminModule adminModule) {
 		this.adminModule = adminModule;
 	}

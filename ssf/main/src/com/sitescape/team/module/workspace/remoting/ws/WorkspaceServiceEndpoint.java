@@ -26,21 +26,22 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.admin.remoting.ws;
+package com.sitescape.team.module.workspace.remoting.ws;
 
-import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.remoting.RemotingException;
-import com.sitescape.team.remoting.ws.BaseService;
+import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-public class AdminServiceImpl extends BaseService implements AdminService {
+public class WorkspaceServiceEndpoint extends ServletEndpointSupport implements WorkspaceService {
 
-	public long addBinder(long parentBinderId, long binderConfigId, String title)
-	{
-		try {
-			return getAdminModule().addBinderFromTemplate(binderConfigId, parentBinderId, title, null);
-		} catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
+	private WorkspaceService workspaceService;
+	
+	protected void onInit() {
+		this.workspaceService = (WorkspaceService) getWebApplicationContext().getBean("workspaceService");
+	}
+	protected WorkspaceService getWorkspaceService() {
+		return workspaceService;
 	}
 	
+	public long addFolder(long parentId, String definitionId, String inputDataAsXML) {
+		return getWorkspaceService().addFolder(parentId, definitionId, inputDataAsXML);
+	}
 }

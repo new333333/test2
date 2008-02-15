@@ -196,6 +196,7 @@ public class WebKeys {
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ADMIN_ACTION_GET_LOG_FILES = "get_log_files";
+    public static final String ADMIN_FORUM_RESTORE = "forum_restore";
 	public static final String ACTION_ACTIVITY_REPORT="activity_report";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
     public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
@@ -559,6 +560,8 @@ public class WebKeys {
     public static final String ENTRY_ATTACHMENT_DIV_CLOSE_FUNCTION = "ssCloseDivFunctionName";
     public static final String FAVORITES_TREE = "ss_favoritesTree";
     public static final String FAVORITES_TREE_DELETE = "ss_favoritesTreeDelete";
+    public static final String FILE_HANDLE = "ss_fileHandle";
+    public static final String FILE_NAME = "ss_fileName";
     public static final String FILE_VIEW_TYPE_ATTACHMENT_FILE = "ss_viewAttachmentFile";
     public static final String FILE_VIEW_TYPE_SCALED = "scaled";
     public static final String FILE_VIEW_TYPE_THUMBNAIL = "thumbnail";
@@ -601,6 +604,8 @@ public class WebKeys {
     public static final String FOLDER_VIEW_TYPE="ssFolderViewType";
     public static final String FOLDER_ACTION_VERTICAL_OVERRIDE="ssFolderActionVerticalOverride";
     public static final String FOOTER_TOOLBAR="ssFooterToolbar";
+    public static final String FORUM_ARCHIVE_MAP="ssForumArchiveMap";
+    public static final String FORUM_ARCHIVE_TREE="ssForumArchiveTree";
     public static final String FORUM_ID_LIST = "ssForumIdList";
     public static final String FORUM_TOOLBAR="ssForumToolbar";
     public static final String FUNCTIONS="ssFunctions";
@@ -870,6 +875,7 @@ public class WebKeys {
     public static final String VIEW_DELETE_ENTRY="entry/delete_entry";
     public static final String VIEW_CONFIRM_DELETE_MIRRRED_BINDER="binder/confirm_delete_mirrored_binder";
     public static final String VIEW_FORUM_EDIT="forum/edit";
+    public static final String VIEW_ENTERPRISE_ONLY="enterpriseOnly";
     public static final String VIEW_ENTRY="entry/view_entry";
     public static final String VIEW_FORUM="forum/view";
     public static final String VIEW_FORUM_IMPORT = "forum/forum_import";
@@ -892,6 +898,7 @@ public class WebKeys {
     public static final String VIEW_LISTING_SEARCH_RESULTS_VERTICAL="entry/view_listing_search_results_vertical";
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
     public static final String VIEW_LOGIN_REPORT="administration/login_report";
+    public static final String VIEW_MIGRATION_FORUM_RESTORE="migration/forumRestore"; 
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";
     public static final String VIEW_MODIFY_TEMPLATE="administration/modifyTemplate";
