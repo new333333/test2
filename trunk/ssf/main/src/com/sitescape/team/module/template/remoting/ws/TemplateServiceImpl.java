@@ -26,22 +26,21 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.folder.remoting.ws;
+package com.sitescape.team.module.template.remoting.ws;
 
-public interface FolderService {
+import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.remoting.RemotingException;
+import com.sitescape.team.remoting.ws.BaseService;
 
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML);
+public class TemplateServiceImpl extends BaseService implements TemplateService {
 
-	public String getFolderEntriesAsXML(long binderId);
+	public long addBinder(long parentBinderId, long binderConfigId, String title)
+	{
+		try {
+			return getTemplateModule().addBinder(binderConfigId, parentBinderId, title, null);
+		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
 	
-	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments);
-	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
-	
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML);
-	
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML);
-
-	public void uploadFolderFile(long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName);
 }

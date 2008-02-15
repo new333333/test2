@@ -28,20 +28,46 @@
  */
 package com.sitescape.team.module.folder.remoting.ws;
 
-public interface FolderService {
+import java.util.Calendar;
 
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML);
+public interface MigrationService {
 
-	public String getFolderEntriesAsXML(long binderId);
+	public long addFolder(long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps);
 	
-	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments);
-	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
-	
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML);
-	
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML);
+	public long addFolderEntry(long binderId, String definitionId,
+							   String inputDataAsXML, String attachedFileName, Timestamps timestamps);
+		
+	public long addReply(long binderId, long parentId, String definitionId,
+					     String inputDataAsXML, Timestamps timestamps);
 
-	public void uploadFolderFile(long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName);
+	public void uploadFolderFile(long binderId, long entryId, String fileUploadDataItemName,
+								 String fileName, Timestamps timestamps);
+	
+	public static class Timestamps implements java.io.Serializable
+	{
+		String creator;
+		Calendar creationDate;
+		String modifier;
+		Calendar modificationDate;
+		
+		public Timestamps() {}
+		
+		public Timestamps(String creator, Calendar creationDate,
+						  String modifier, Calendar modificationDate)
+		{
+			this.creator = creator;
+			this.creationDate = creationDate;
+			this.modifier = modifier;
+			this.modificationDate = modificationDate;
+		}
+		
+		public String getCreator() { return creator; }
+		public void setCreator(String creator) { this.creator = creator; }
+		public Calendar getCreationDate() { return creationDate; }
+		public void setCreationDate(Calendar creationDate) { this.creationDate = creationDate; }
+		public String getModifier() { return modifier; }
+		public void setModifier(String modifier) { this.modifier = modifier; }
+		public Calendar getModificationDate() { return modificationDate; }
+		public void setModificationDate(Calendar modificationDate) { this.modificationDate = modificationDate; }
+	}
 }

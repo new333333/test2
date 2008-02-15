@@ -1651,6 +1651,11 @@
 			<rtexprvalue>true</rtexprvalue>
 			<type>boolean</type>
 		</attribute>		
+		<attribute>
+			<name>portletName</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
 	</tag>
 
 	<tag>

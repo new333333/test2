@@ -69,6 +69,7 @@ public class ChangeLog extends ZonedObject {
 	public static final String FILEDELETE="deleteFile";
 	public static final String FILEMOVE="moveFile";
 	public static final String ACCESSMODIFY="modifyAccess";
+	public static final String CHANGETIMESTAMPS="changeTimestamps";
 
 	protected static final Log logger = LogFactory.getLog(ChangeLog.class);
 	
@@ -89,7 +90,10 @@ public class ChangeLog extends ZonedObject {
 	public ChangeLog() {
 	}
 	public ChangeLog(DefinableEntity entity, String operation) {
-		
+		this(entity, operation, null);
+	}
+	
+	public ChangeLog(DefinableEntity entity, String operation, Principal principal) {	
 		Binder binder;
 		if (entity instanceof Binder) {
 			binder = (Binder)entity;
@@ -108,6 +112,11 @@ public class ChangeLog extends ZonedObject {
 			this.userName = wfEntry.getWorkflowChange().getPrincipal().getName();
 			this.userId = wfEntry.getWorkflowChange().getPrincipal().getId();
 			this.zoneId = wfEntry.getWorkflowChange().getPrincipal().getZoneId();
+		} else if(principal != null) {
+			this.operationDate = new Date();
+			this.userName = principal.getName();
+			this.userId = principal.getId();
+			this.zoneId = principal.getZoneId();
 		} else { 
 			this.operationDate = entity.getModification().getDate();
 			this.userName = entity.getModification().getPrincipal().getName();

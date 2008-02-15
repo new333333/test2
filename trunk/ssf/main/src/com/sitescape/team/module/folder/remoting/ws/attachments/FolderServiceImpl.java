@@ -66,82 +66,13 @@ import com.sitescape.util.FileUtil;
 
 public class FolderServiceImpl extends com.sitescape.team.module.folder.remoting.ws.FolderServiceImpl {
 
+	AttachmentUtilities attachmentUtilities = new AttachmentUtilities(this);
+	
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
-		fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
-		File originalFile = new File(fileName);
-		fileName = StringCheckUtil.check(originalFile.getName());
-
-		// Get all the attachments
-		AttachmentPart[] attachments;
-		try {
-			attachments = AttachmentsHelper.getMessageAttachments();
-		} catch (AxisFault e) {
-			throw new RemotingException(e);
-		}
-
-		//Extract the first attachment. (Since in this case we have only one attachment sent)
-		DataHandler dh;
-		try {
-			dh = attachments[0].getDataHandler();
-		} catch (SOAPException e) {
-			throw new RemotingException(e);
-		}
-
-		// Wrap it up in a datastructure expected by our app.
-		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh);
-		
-		// Create a map of file item names to items 
-		Map fileItems = new HashMap();
-		fileItems.put(fileUploadDataItemName, mf);
-		
-		try {
-			// Finally invoke the business method. 
-			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-				new EmptyInputData(), fileItems, null, null, null);
-		}
-		catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
+		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	
-	protected Map getFileAttachments(String fileUploadDataItemName, String[] fileNames) {
-
-		// Get all the attachments
-		AttachmentPart[] attachments;
-		try {
-			attachments = AttachmentsHelper.getMessageAttachments();
-		} catch (AxisFault e) {
-			throw new RemotingException(e);
-		}
-
-		// Create a map of file item names to items 
-		Map fileItems = new HashMap();
-		int i = 0;
-		for(AttachmentPart attachment : attachments) {
-			DataHandler dh;
-			try {
-					dh = attachment.getDataHandler();
-			} catch (SOAPException e) {
-				throw new RemotingException(e);
-			}
-	
-			// Wrap it up in a datastructure expected by our app.
-			String name = null;
-			if(i < fileNames.length) {
-				name = fileNames[i];
-			} else {
-				name = "attachment" + (i+1);
-			}
-			AxisMultipartFile mf = new AxisMultipartFile(name, dh);
-			
-			fileItems.put(fileUploadDataItemName + (i+1), mf);
-			i = i+1;
-		}
-		
-		return fileItems;
-	}
-
 	private static class CalendarDataSource implements DataSource
 	{
 		String data = "";

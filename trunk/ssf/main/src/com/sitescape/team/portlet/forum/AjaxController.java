@@ -1767,7 +1767,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.AJAX_ERROR_DETAIL, "");			
 		} else {
 			try {
-				TemplateBinder binder = getAdminModule().getTemplateByName(name);
+				TemplateBinder binder = getTemplateModule().getTemplateByName(name);
 				Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 				if (binderId == null || !binder.getId().equals(binderId)) {
 					model.put(WebKeys.AJAX_ERROR_MESSAGE, NLT.get("errorcode.notsupported.duplicateTemplateName", new Object[]{name}));

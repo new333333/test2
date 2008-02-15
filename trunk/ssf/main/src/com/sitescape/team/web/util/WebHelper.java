@@ -328,7 +328,7 @@ public class WebHelper {
 	 * @return
 	 * @throws IOException
 	 */
-	public static MultipartFile wrapFileHandleInMultipartFile(String fileHandle) 
+	public static SimpleMultipartFile wrapFileHandleInMultipartFile(String fileHandle) 
 		throws IOException {
 		int idx = fileHandle.indexOf("-");
 		int fileNameLength = Integer.parseInt(fileHandle.substring(0, idx));

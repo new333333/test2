@@ -33,6 +33,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dbunit.database.statement.SimplePreparedStatement;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.util.HashMap;
@@ -50,6 +51,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.util.AllModulesInjected;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
@@ -71,10 +73,13 @@ public class AccessControlController extends AbstractBinderController {
 		
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
+			SimpleProfiler profiler = new SimpleProfiler("lucene");
+			SimpleProfiler.setProfiler(profiler);
 			Map functionMemberships = new HashMap();
 			getAccessResults(request, functionMemberships);
 			getAdminModule().setWorkAreaFunctionMemberships((WorkArea) binder, functionMemberships);
-			
+			logger.info(profiler.toStr());
+			SimpleProfiler.clearProfiler();
 		} else if (formData.containsKey("inheritanceBtn")) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
 			getAdminModule().setWorkAreaFunctionMembershipInherited(binder,inherit);			

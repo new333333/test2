@@ -97,6 +97,7 @@ public class TreeTag extends TagSupport {
 	private boolean finished = false;
 	private String lastListStyle = "";
 	private String showIdRoutine = "";
+	private String portletName = "ss_forum";
 	private String namespace = "";
 	    
 	public int doStartTag() throws JspException {
@@ -126,7 +127,7 @@ public class TreeTag extends TagSupport {
 			this.contextPath = req.getContextPath();
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 		    setCommonImg(contextPath + "/i/" + colorTheme);
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, "ss_forum", Boolean.parseBoolean("true"));
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, this.portletName, Boolean.parseBoolean("true"));
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
 			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_WORKSPACE_TREE);
 			if (!namespace.equals("")) adapterUrl.setParameter(WebKeys.URL_NAMESPACE, namespace);
@@ -915,6 +916,11 @@ public class TreeTag extends TagSupport {
 	
 	public void setNoInit(boolean noInit) {
 	    this.noInit = noInit;
+	}
+	
+	public void setPortletName(String portletName)
+	{
+		this.portletName = portletName;
 	}
 	
 	public void setCommonImg(String commonImg) {

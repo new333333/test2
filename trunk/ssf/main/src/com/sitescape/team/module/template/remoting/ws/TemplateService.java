@@ -26,9 +26,9 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.admin.remoting.ws;
+package com.sitescape.team.module.template.remoting.ws;
 
-public interface AdminService {
+public interface TemplateService {
 
 	public long addBinder(long parentBinderId, long binderConfigId, String title);
 }

@@ -34,6 +34,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -307,7 +308,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	if (def != null) {
     		return getDefinitionModule().getEntryData(def.getDefinition(), inputData, fileItems);
     	} else {
-    		return new HashMap();
+    		HashMap map = new HashMap();
+    		map.put("entryData", new HashMap());
+    		map.put("fileData", new LinkedList());
+    		return map;
     	}
     }
     

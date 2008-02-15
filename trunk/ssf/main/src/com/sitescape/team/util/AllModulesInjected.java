@@ -40,6 +40,7 @@ import com.sitescape.team.module.ldap.LdapModule;
 import com.sitescape.team.module.license.LicenseModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.rss.RssModule;
+import com.sitescape.team.module.template.TemplateModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.workspace.WorkspaceModule;
@@ -67,6 +68,10 @@ public interface AllModulesInjected {
 	void setFolderModule(FolderModule folderModule);
 
 	FolderModule getFolderModule();
+
+	void setTemplateModule(TemplateModule templateModule);
+
+	TemplateModule getTemplateModule();
 
 	void setAdminModule(AdminModule adminModule);
 

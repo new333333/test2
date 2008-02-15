@@ -89,6 +89,7 @@ import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.module.template.TemplateModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
@@ -114,6 +115,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		this.definitionModule = definitionModule;
 	}
     
+    protected TemplateModule templateModule;
+    protected TemplateModule getTemplateModule() {
+    	return templateModule;
+    }
+    public void setTemplateModule(TemplateModule templateModule) {
+    	this.templateModule = templateModule;
+    }
+
     protected AdminModule adminModule;
     protected AdminModule getAdminModule() {
     	return adminModule;
@@ -672,7 +681,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   				if (!templates.isEmpty()) {
   					//	pick the first
   					TemplateBinder template = (TemplateBinder)templates.get(0);
-  					Long wsId = getAdminModule().addBinderFromTemplate(template.getId(), entry.getParentBinder().getId(), wsTitle, entry.getName());
+  					Long wsId = getTemplateModule().addBinder(template.getId(), entry.getParentBinder().getId(), wsTitle, entry.getName());
   					ws = (Workspace)getCoreDao().loadBinder(wsId, entry.getZoneId());
   				}
   			}
@@ -773,6 +782,10 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return getUsers(ids);
 	}
 
+	public User findUserByName(String username)  throws NoUserByTheNameException {
+		return getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneId());
+	}
+	
 	public class ElementInputData implements InputDataAccessor {
 		private Element source;
 		public ElementInputData(Element source) {

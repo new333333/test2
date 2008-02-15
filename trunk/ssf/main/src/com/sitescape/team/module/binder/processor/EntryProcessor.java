@@ -37,6 +37,9 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.module.file.FilesErrors;
+
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
@@ -68,5 +71,6 @@ public interface EntryProcessor extends BinderProcessor {
   	public void indexEntry(Entry entry);
     public void moveEntry(Binder binder, Entry entry, Binder destination, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
-
+    public void changeEntryTimestamps(final Binder binder, final Entry entry,
+			  final HistoryStamp creation, final HistoryStamp modification);
 }

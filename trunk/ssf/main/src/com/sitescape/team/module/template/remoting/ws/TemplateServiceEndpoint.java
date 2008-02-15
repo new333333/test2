@@ -26,22 +26,24 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.folder.remoting.ws;
+package com.sitescape.team.module.template.remoting.ws;
 
-public interface FolderService {
+import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML);
 
-	public String getFolderEntriesAsXML(long binderId);
-	
-	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments);
-	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
-	
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML);
-	
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML);
+public class TemplateServiceEndpoint extends ServletEndpointSupport implements TemplateService {
 
-	public void uploadFolderFile(long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName);
+	private TemplateService templateService;
+	
+	protected void onInit() {
+		this.templateService = (TemplateService) getWebApplicationContext().getBean("templateService");
+	}
+	protected TemplateService getTemplateService() {
+		return templateService;
+	}
+	
+	public long addBinder(long parentBinderId, long binderConfigId, String title) {
+		return getTemplateService().addBinder(parentBinderId, binderConfigId, title);
+	}
+
 }

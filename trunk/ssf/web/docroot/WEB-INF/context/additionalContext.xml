@@ -39,6 +39,7 @@
 	<!--  Initialize the zone and checks dependencies -->
 	<bean id="zoneModule"  parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.zone.impl.BaseZoneModule" depends-on="nlt, zoneConfig, binderAccessUtils" >
 		<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+		<property name="templateModule"><ref bean="templateModule"/></property>
 		<property name="adminModule"><ref bean="adminModule"/></property>
 		<property name="definitionModule"><ref bean="definitionModule"/></property>
 		<property name="profileModule"><ref bean="profileModule"/></property>

@@ -38,6 +38,7 @@ import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
@@ -74,7 +75,8 @@ public interface FolderModule {
 	   report,
 	   reserveEntry,
 	   overrideReserveEntry,
-	   synchronize
+	   synchronize,
+	   changeEntryTimestamps
    }
  
    /**
@@ -148,6 +150,9 @@ public interface FolderModule {
      */
     public void addVote(Long folderId, Long entryId, InputDataAccessor inputData, Map options) 
 		throws AccessControlException;
+
+    public void changeEntryTimstamps(Long folderId, Long entryId,
+			 HistoryStamp creation, HistoryStamp modification) throws AccessControlException, WriteFilesException;
 
     /**
      * Check access to a <code>Folder</code> throwing an exception if access is denied

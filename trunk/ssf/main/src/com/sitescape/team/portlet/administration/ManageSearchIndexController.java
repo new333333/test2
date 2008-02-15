@@ -50,6 +50,7 @@ import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -93,12 +94,20 @@ public class ManageSearchIndexController extends  SAbstractController {
 			
 			// Create a new status ticket
 			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
-			
+			SimpleProfiler profiler = null; 
+			if(profiler == null) {
+				profiler = new SimpleProfiler("manageSearchIndex");
+			}
+			SimpleProfiler.setProfiler(profiler);
+
 			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket);
 			//if people selected and not yet index; index content only, not the whole ws tree
 			if ((profileId != null) && !idsIndexed.contains(profileId))
 				getBinderModule().indexBinder(profileId, true);
 			
+			logger.info(SimpleProfiler.toStr());
+			SimpleProfiler.clearProfiler();
+
 			response.setRenderParameters(formData);
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn") ||
 				 btnClicked.equals("closeBtn")) {

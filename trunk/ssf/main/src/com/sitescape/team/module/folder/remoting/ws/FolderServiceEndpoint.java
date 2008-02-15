@@ -41,6 +41,10 @@ public class FolderServiceEndpoint implements ServiceLifecycle, FolderService {
 		return folderService;
 	}
 	
+	public long addFolder(long parentId, String definitionId, String inputDataAsXML) {
+		return getFolderService().addFolder(parentId, definitionId, inputDataAsXML);
+	}
+	
 	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		return getFolderService().addFolderEntry(binderId, definitionId, inputDataAsXML, attachedFileName);
 	}

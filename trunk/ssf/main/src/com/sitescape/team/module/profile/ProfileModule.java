@@ -41,6 +41,7 @@ import org.dom4j.Document;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
@@ -237,7 +238,8 @@ public interface ProfileModule {
 	 * @throws AccessControlException
 	 */
     public SortedSet<User> getUsers(Collection<Long> userIds);
-    
+    public User findUserByName(String username) throws NoUserByTheNameException;
+   
 	/**
 	 * Return a collection of user ids  They are either in the principal list
 	 * or members of groups in the principal list.
