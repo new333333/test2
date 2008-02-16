@@ -45,20 +45,20 @@ public class LicenseServiceEndpoint implements ServiceLifecycle, LicenseService 
 		return licenseService;
 	}
 
-	public long getExternalUsers() {
-		return getLicenseService().getExternalUsers();
+	public long getExternalUsers(String accessToken) {
+		return getLicenseService().getExternalUsers(accessToken);
 	}
 
-	public Collection<Document> getLicenses() {
-		return getLicenseService().getLicenses();
+	public Collection<Document> getLicenses(String accessToken) {
+		return getLicenseService().getLicenses(accessToken);
 	}
 
-	public long getRegisteredUsers() {
-		return getLicenseService().getRegisteredUsers();
+	public long getRegisteredUsers(String accessToken) {
+		return getLicenseService().getRegisteredUsers(accessToken);
 	}
 
-	public void updateLicense() {
-		getLicenseService().updateLicense();
+	public void updateLicense(String accessToken) {
+		getLicenseService().updateLicense(accessToken);
 	}
 
 	public void init(Object context) throws ServiceException {

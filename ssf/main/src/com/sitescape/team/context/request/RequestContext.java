@@ -29,6 +29,7 @@
 package com.sitescape.team.context.request;
 
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.util.SpringContextUtil;
@@ -54,7 +55,11 @@ public class RequestContext {
      */
     private String userName;
     /*
-     * Session Context
+     * (Optional) Application ID.
+     */
+    private Long applicationId;
+    /*
+     * (Optional) Session Context
      */
     private SessionContext sessionCtx; 
     /*
@@ -65,79 +70,41 @@ public class RequestContext {
     private boolean resolved = false;
     
     // IMPORTANT: This object is designed to contain only those properties that
-    //            are needed to fetch corresponding user or zone object. 
-    //            Do NOT cache user or zone object directly in this class.
+    //            are needed to fetch corresponding user, application, or zone object. 
+    //            Do NOT cache user, application or zone object directly in this class.
     
-    /**
-     * Create fully resolved request context.
-     */
     public RequestContext(String zoneName, Long zoneId, String userName, Long userId, SessionContext sessionCtx) {
     	this.zoneName = zoneName;
     	this.zoneId = zoneId;
     	this.userName = userName;
     	this.userId = userId;
     	this.sessionCtx = sessionCtx;
-    	this.resolved = true;
     }
     
-    /**
-     * Create request context with partial data.
-     * 
-     * @param zoneName
-     * @param userName
-     * @param sessionCtx
-     */
     public RequestContext(String zoneName, String userName, SessionContext sessionCtx) {
     	this.zoneName = zoneName;
     	this.userName = userName;
     	this.sessionCtx = sessionCtx;
     }
     
-    /**
-     * Create request context with partial data.
-     * 
-     * @param zoneId
-     * @param userId
-     * @param sessionCtx
-     */
     public RequestContext(Long zoneId, Long userId, SessionContext sessionCtx) {
     	this.zoneId = zoneId;
     	this.userId = userId;
     	this.sessionCtx = sessionCtx;
     }
     
-    /**
-     * Create request context with partial data.
-     * 
-     * @param zoneName
-     * @param userId
-     * @param sessionCtx
-     */
     public RequestContext(String zoneName, Long userId, SessionContext sessionCtx) {
     	this.zoneName = zoneName;
     	this.userId = userId;
     	this.sessionCtx = sessionCtx;
     }
     
-    /**
-     * Create request context with partial data.
-     * 
-     * @param zoneId
-     * @param userName
-     * @param sessionCtx
-     */
     public RequestContext(Long zoneId, String userName, SessionContext sessionCtx) {
     	this.zoneId = zoneId;
     	this.userName = userName;
     	this.sessionCtx = sessionCtx;
     }
     
-    /**
-     * Create fully resolved request context.
-     * 
-     * @param user
-     * @param sessionCtx
-     */
     public RequestContext(User user, SessionContext sessionCtx) {
     	setFromUser(user);
     	this.sessionCtx = sessionCtx;
@@ -146,39 +113,48 @@ public class RequestContext {
     public String getZoneName() {
     	return zoneName;
     }
-    public void setZoneName(String zoneName) {
+    public RequestContext setZoneName(String zoneName) {
     	this.zoneName = zoneName;
-    	checkResolved(); // recheck
+    	return this;
     }
     
     public String getUserName() {
     	return userName;
     }
-    public void setUserName(String userName) {
+    public RequestContext setUserName(String userName) {
     	this.userName = userName;
-    	checkResolved(); // recheck
+    	return this;
     }
    
     public Long getZoneId() {
     	return zoneId;
     }
 
-    public void setZoneId(Long zoneId) {
+    public RequestContext setZoneId(Long zoneId) {
     	this.zoneId = zoneId;
-    	checkResolved(); // recheck
+    	return this;
     }
     
     public Long getUserId() {
     	return userId;
     }
-    public void setUserId(Long userId) {
+    public RequestContext setUserId(Long userId) {
     	this.userId = userId;
-    	checkResolved(); // recheck
+    	return this;
+    }
+    
+    public Long getApplicationId() {
+    	return applicationId;
+    }
+    
+    public RequestContext setApplicationId(Long applicationId) {
+    	this.applicationId = applicationId;
+    	return this;
     }
     
     /**
      * Returns user object corresponding to the request context only if it is fully resolved.
-     * Returns <code>null</cde> otherwise.
+     * Returns <code>null</code> otherwise.
      * 
      * @return
      */
@@ -189,13 +165,14 @@ public class RequestContext {
     		return null;
     }
     
-    public void setUser(User user) {
+    public RequestContext setUser(User user) {
     	setFromUser(user);
+    	return this;
     }
     
     /**
      * Returns zone object corresponding to the request context only if it is fully resolved.
-     * Returns <code>null</cde> otherwise.
+     * Returns <code>null</code> otherwise.
      * 
      * @return
      */
@@ -206,12 +183,32 @@ public class RequestContext {
     		return null;
     }
     
+    /**
+     * Returns application object corresponding to the request context only if 
+     * application id is specified in the request context and it is fully resolved.
+     * Returns <code>null</code> otherwise.
+     * 
+     * @return
+     */
+    public Application getApplication() {
+    	if(resolved) {
+    		if(applicationId != null)
+    			return fetchApplication();
+    		else
+    			return null;
+    	}
+    	else {
+    		return null;
+    	}
+    }
+    
     public SessionContext getSessionContext() {
     	return sessionCtx;
     }
     
-    public void setAuthenticator(String authenticator) {
+    public RequestContext setAuthenticator(String authenticator) {
     	this.authenticator = authenticator;
+    	return this;
     }
     
     public String getAuthenticator() {
@@ -226,17 +223,13 @@ public class RequestContext {
      */
     public RequestContext resolve() {
     	if(!resolved) {
-    		User u = fetchUser();
-    		setFromUser(u);	
+    		if(zoneId == null || zoneName == null || userId == null || userName == null) {
+    			User u = fetchUser();
+    			setFromUser(u);
+    		}
+    		resolved = true;
     	}
     	return this;
-    }
-    
-    private void checkResolved() {
-    	if(zoneName != null && zoneId != null && userName != null && userId != null)
-    		resolved = true;
-    	else
-    		resolved = false;
     }
     
     private void setFromUser(User user) {
@@ -245,7 +238,6 @@ public class RequestContext {
 		this.userName = user.getName();
 		this.zoneId = user.getZoneId();
 		this.zoneName = user.getParentBinder().getRoot().getName(); // there might be more efficient way of getting the same info than doing this...
-    	this.resolved = true;
     }
     
 	private User fetchUser() {
@@ -276,6 +268,11 @@ public class RequestContext {
 			throw new IllegalStateException("Either user id or user name must be specified first");				
 		}
 		return u;
+	}
+
+	private Application fetchApplication() {
+		// TO BE WRITTEN $$$$$ TODO
+		return null;
 	}
 	
 	private static ProfileDao getProfileDao() {

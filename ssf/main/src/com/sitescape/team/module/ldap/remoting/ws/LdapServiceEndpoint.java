@@ -41,8 +41,8 @@ public class LdapServiceEndpoint implements ServiceLifecycle, LdapService {
 		return ldapService;
 	}
 
-	public void syncUser(Long userId) {
-		getLdapService().syncUser(userId);
+	public void syncUser(String accessToken, Long userId) {
+		getLdapService().syncUser(accessToken, userId);
 	}
 
 	public void init(Object context) throws ServiceException {

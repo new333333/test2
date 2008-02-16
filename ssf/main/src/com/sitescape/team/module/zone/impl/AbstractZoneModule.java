@@ -199,7 +199,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  			String superName = SZoneConfig.getAdminUserName(zone.getName());
  			//	get super user from config file - must exist or throws and error
  			User superU = getProfileDao().findUserByName(superName, zone.getName());
- 			RequestContextUtil.setThreadContext(superU);
+ 			RequestContextUtil.setThreadContext(superU).resolve();
  			//TODO: setZoneId as non=null, only do on based on version
 			getCoreDao().executeUpdate("update com.sitescape.team.domain.AuditTrail set zoneId=" + zone.getId() + 
 				" where zoneId is null");
@@ -360,7 +360,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		String superName = SZoneConfig.getAdminUserName(zone.getName());
 		//	get super user from config file - must exist or throws and error
 		User superU = getProfileDao().findUserByName(superName, zone.getName());
-		RequestContextUtil.setThreadContext(superU);
+		RequestContextUtil.setThreadContext(superU).resolve();
 		if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {
 			superU.setInternalId(ObjectKeys.SUPER_USER_INTERNALID);
 			//force update
@@ -455,7 +455,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		user.setParentBinder(profiles);
     		getCoreDao().save(user);
     		//indexing and other modules needs the user
-    		RequestContextHolder.getRequestContext().setUser(user);
+    		RequestContextHolder.getRequestContext().setUser(user).resolve();
     		HistoryStamp stamp = new HistoryStamp(user);
     		//add reserved group for use in import templates
     		Group group = addAllUserGroup(profiles, stamp);

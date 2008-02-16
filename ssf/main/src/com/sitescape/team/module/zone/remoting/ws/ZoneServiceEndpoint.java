@@ -41,16 +41,16 @@ public class ZoneServiceEndpoint implements ServiceLifecycle, ZoneService {
 		return zoneService;
 	}
 
-	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
-		getZoneService().addZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	public void addZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		getZoneService().addZoneUnderPortal(accessToken, zoneName, virtualHost, mailDomain);
 	}
 
-	public void deleteZoneUnderPortal(String zoneName) {
-		getZoneService().deleteZoneUnderPortal(zoneName);
+	public void deleteZoneUnderPortal(String accessToken, String zoneName) {
+		getZoneService().deleteZoneUnderPortal(accessToken, zoneName);
 	}
 
-	public void modifyZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
-		getZoneService().modifyZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	public void modifyZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		getZoneService().modifyZoneUnderPortal(accessToken, zoneName, virtualHost, mailDomain);
 	}
 
 	public void init(Object context) throws ServiceException {

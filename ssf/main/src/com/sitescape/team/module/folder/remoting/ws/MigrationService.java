@@ -32,15 +32,15 @@ import java.util.Calendar;
 
 public interface MigrationService {
 
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps);
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps);
 	
-	public long addFolderEntry(long binderId, String definitionId,
+	public long addFolderEntry(String accessToken, long binderId, String definitionId,
 							   String inputDataAsXML, String attachedFileName, Timestamps timestamps);
 		
-	public long addReply(long binderId, long parentId, String definitionId,
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId,
 					     String inputDataAsXML, Timestamps timestamps);
 
-	public void uploadFolderFile(long binderId, long entryId, String fileUploadDataItemName,
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName,
 								 String fileName, Timestamps timestamps);
 	
 	public static class Timestamps implements java.io.Serializable

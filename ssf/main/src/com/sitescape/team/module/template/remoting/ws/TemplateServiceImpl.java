@@ -34,7 +34,7 @@ import com.sitescape.team.remoting.ws.BaseService;
 
 public class TemplateServiceImpl extends BaseService implements TemplateService {
 
-	public long addBinder(long parentBinderId, long binderConfigId, String title)
+	public long addBinder(String accessToken, long parentBinderId, long binderConfigId, String title)
 	{
 		try {
 			return getTemplateModule().addBinder(binderConfigId, parentBinderId, title, null);

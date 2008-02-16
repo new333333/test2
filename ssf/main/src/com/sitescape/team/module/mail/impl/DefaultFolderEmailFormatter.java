@@ -679,7 +679,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 				RequestContext oldCtx = RequestContextHolder.getRequestContext();
 				try {
 					//need to setup user context for request
-					RequestContextUtil.setThreadContext(fromUser);
+					RequestContextUtil.setThreadContext(fromUser).resolve();
 					
 					inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, from.toString()); 
 					inputData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);

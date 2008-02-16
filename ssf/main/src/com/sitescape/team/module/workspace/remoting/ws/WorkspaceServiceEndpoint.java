@@ -41,7 +41,7 @@ public class WorkspaceServiceEndpoint extends ServletEndpointSupport implements 
 		return workspaceService;
 	}
 	
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML) {
-		return getWorkspaceService().addFolder(parentId, definitionId, inputDataAsXML);
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML) {
+		return getWorkspaceService().addFolder(accessToken, parentId, definitionId, inputDataAsXML);
 	}
 }

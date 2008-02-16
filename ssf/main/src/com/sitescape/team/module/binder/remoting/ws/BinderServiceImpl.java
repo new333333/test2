@@ -56,7 +56,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	public String search(String query, int offset, int maxResults)
+	public String search(String accessToken, String query, int offset, int maxResults)
 	{
 		query = StringCheckUtil.check(query);
 		
@@ -104,7 +104,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		return doc.getRootElement().asXML();
 	}
 
-	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
+	public String getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page) {
 		com.sitescape.team.domain.Binder binder = null;
 		
 		if(binderId == -1) {
@@ -133,7 +133,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		return xml;
 	}
 	
-	public String getTeamMembersAsXML(long binderId)
+	public String getTeamMembersAsXML(String accessToken, long binderId)
 	{
 		Binder binder = getBinderModule().getBinder(new Long(binderId));
 		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, true);
@@ -147,7 +147,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		return doc.getRootElement().asXML();
 	}
 	
-	public String getTeamsAsXML()
+	public String getTeamsAsXML(String accessToken)
 	{
 		User user = RequestContextHolder.getRequestContext().getUser();
 		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());

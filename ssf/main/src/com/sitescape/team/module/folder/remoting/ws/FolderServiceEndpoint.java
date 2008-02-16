@@ -41,32 +41,32 @@ public class FolderServiceEndpoint implements ServiceLifecycle, FolderService {
 		return folderService;
 	}
 	
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML) {
-		return getFolderService().addFolder(parentId, definitionId, inputDataAsXML);
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML) {
+		return getFolderService().addFolder(accessToken, parentId, definitionId, inputDataAsXML);
 	}
 	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
-		return getFolderService().addFolderEntry(binderId, definitionId, inputDataAsXML, attachedFileName);
+	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
+		return getFolderService().addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName);
 	}
 
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML) {
-		return getFolderService().addReply(binderId, parentId, definitionId, inputDataAsXML);
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML) {
+		return getFolderService().addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML);
 	}
 
-	public String getFolderEntriesAsXML(long binderId) {
-		return getFolderService().getFolderEntriesAsXML(binderId);
+	public String getFolderEntriesAsXML(String accessToken, long binderId) {
+		return getFolderService().getFolderEntriesAsXML(accessToken, binderId);
 	}
 
-	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments) {
-		return getFolderService().getFolderEntryAsXML(binderId, entryId, includeAttachments);
+	public String getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+		return getFolderService().getFolderEntryAsXML(accessToken, binderId, entryId, includeAttachments);
 	}
 
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
-		getFolderService().modifyFolderEntry(binderId, entryId, inputDataAsXML);
+	public void modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML) {
+		getFolderService().modifyFolderEntry(accessToken, binderId, entryId, inputDataAsXML);
 	}
 	
-	public void uploadFolderFile(long binderId, long entryId, String fileUploadDataItemName, String fileName) {
-		getFolderService().uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
+		getFolderService().uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName);
 	}
 
 	public void init(Object context) throws ServiceException {

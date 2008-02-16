@@ -30,5 +30,5 @@ package com.sitescape.team.module.workspace.remoting.ws;
 
 public interface WorkspaceService {
 
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML);
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML);
 }

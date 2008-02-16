@@ -32,11 +32,11 @@ import com.sitescape.team.remoting.ws.BaseService;
 
 public class DefinitionServiceImpl extends BaseService implements DefinitionService {
 
-	public String getDefinitionAsXML(String definitionId) {
+	public String getDefinitionAsXML(String accessToken, String definitionId) {
 		return getDefinitionModule().getDefinition(definitionId).getDefinition().getRootElement().asXML();
 	}
 	
-	public String getDefinitionConfigAsXML() {
+	public String getDefinitionConfigAsXML(String accessToken) {
 		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
 	}
 

@@ -30,6 +30,6 @@ package com.sitescape.team.module.ldap.remoting.ws;
 
 public interface LdapService {
 
-	public void syncUser(Long userId);
+	public void syncUser(String accessToken, Long userId);
 
 }

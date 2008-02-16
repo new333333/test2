@@ -354,15 +354,15 @@
 	<bean id="aclManager" class="com.sitescape.team.security.acl.impl.AclManagerImpl">
 	</bean>
 
-	<bean id="functionManager" class="com.sitescape.team.security.function.FunctionManagerImpl">
+	<bean id="functionManager" class="com.sitescape.team.security.function.impl.FunctionManagerImpl">
 		<property name="securityDao"><ref local="securityDao"/></property>
 	</bean>
 
-	<bean id="workAreaFunctionMembershipManager" class="com.sitescape.team.security.function.WorkAreaFunctionMembershipManagerImpl">
+	<bean id="workAreaFunctionMembershipManager" class="com.sitescape.team.security.function.impl.WorkAreaFunctionMembershipManagerImpl">
 		<property name="securityDao"><ref local="securityDao"/></property>		
 	</bean>
 	
-	<bean id="securityDao" class="com.sitescape.team.security.dao.SecurityDaoImpl">
+	<bean id="securityDao" class="com.sitescape.team.security.dao.impl.SecurityDaoImpl">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	
@@ -376,6 +376,9 @@
 	
 	<bean id="stringCheckUtil" class = "com.sitescape.team.util.stringcheck.StringCheckUtil" depends-on="sPropsUtil">
 	</bean>	
+	
+	<bean id="accessTokenManager" class="com.sitescape.team.security.accesstoken.impl.AccessTokenManagerImpl">
+	</bean>
 	
 	<!-- =========================== Business Components =========================== -->
 	
@@ -795,6 +798,11 @@ text/calendar											  ics
 		<property name="reportModule"><ref local="reportModule"/></property>
 	</bean>
 	
+	<bean id="accessTokenValidationInterceptor" class="com.sitescape.team.remoting.ws.interceptor.AccessTokenValidationInterceptor">
+		<property name="accessTokenManager"><ref local="accessTokenManager"/></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+	</bean>
+	
 	<bean id="wsProxyTemplate" class="org.springframework.aop.framework.ProxyFactoryBean" abstract="true">
 		<property name="interceptorNames">
 			<list>
@@ -812,8 +820,16 @@ text/calendar											  ics
 				     tool such as WSS4J, the hook is provided via a callback routine
 				     that the framework invokes to obtain password information for
 				     the user making the request. That's where we set up our request 
-				     context and that's why we do not have here in the interceptor
-				     chain the usual interceptor that sets up request context. -->
+				     context.
+				     For Web Services using Basic authentication, the request context
+				     is set up by the servlet serving each request. 
+				     For Web Services using token-based authentication, we have another
+				     interceptor dedicated to the processing of the tokens. And the
+				     request context is set up by the interceptor after it has 
+				     successfully validated the token.				     
+				     So, that's why we do not have here in the interceptor chain
+				     the usual interceptor that sets up request context. -->
+				<value>accessTokenValidationInterceptor</value>
 				<value>aopallianceOpenSessionInViewInterceptor</value>
 				<!-- This must come after open-session-in-view -->
 				<value>aopallianceResolveRequestContextInterceptor</value>

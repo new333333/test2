@@ -41,32 +41,32 @@ public class ProfileServiceEndpoint implements ServiceLifecycle, ProfileService 
 		return profileService;
 	}
 	
-	public long addGroup(long binderId, String definitionId, String inputDataAsXML) {
-		return getProfileService().addGroup(binderId, definitionId, inputDataAsXML);
+	public long addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
+		return getProfileService().addGroup(accessToken, binderId, definitionId, inputDataAsXML);
 	}
 	
-	public long addUser(long binderId, String definitionId, String inputDataAsXML) {
-		return getProfileService().addUser(binderId, definitionId, inputDataAsXML);
+	public long addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
+		return getProfileService().addUser(accessToken, binderId, definitionId, inputDataAsXML);
 	}
 	
-	public void addUserToGroup(long userId, String username, long groupId) {
-		getProfileService().addUserToGroup(userId, username, groupId);
+	public void addUserToGroup(String accessToken, long userId, String username, long groupId) {
+		getProfileService().addUserToGroup(accessToken, userId, username, groupId);
 	}
 	
-	public void deletePrincipal(long binderId, long principalId) {
-		getProfileService().deletePrincipal(binderId, principalId);
+	public void deletePrincipal(String accessToken, long binderId, long principalId) {
+		getProfileService().deletePrincipal(accessToken, binderId, principalId);
 	}
 	
-	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords) {
-		return getProfileService().getAllPrincipalsAsXML(firstRecord, maxRecords);
+	public String getAllPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
+		return getProfileService().getAllPrincipalsAsXML(accessToken, firstRecord, maxRecords);
 	}
 	
-	public String getPrincipalAsXML(long binderId, long principalId) {
-		return getProfileService().getPrincipalAsXML(binderId, principalId);
+	public String getPrincipalAsXML(String accessToken, long binderId, long principalId) {
+		return getProfileService().getPrincipalAsXML(accessToken, binderId, principalId);
 	}
 	
-	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
-		getProfileService().modifyPrincipal(binderId, principalId, inputDataAsXML);
+	public void modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML) {
+		getProfileService().modifyPrincipal(accessToken, binderId, principalId, inputDataAsXML);
 	}
 	
 	public void init(Object context) throws ServiceException {

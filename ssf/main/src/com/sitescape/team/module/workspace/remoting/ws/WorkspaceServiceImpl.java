@@ -49,7 +49,7 @@ import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class WorkspaceServiceImpl extends BaseService implements WorkspaceService {
 
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML)
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML)
 	{
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		

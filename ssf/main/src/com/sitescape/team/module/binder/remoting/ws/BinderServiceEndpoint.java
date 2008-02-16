@@ -46,20 +46,20 @@ public class BinderServiceEndpoint implements ServiceLifecycle, BinderService {
 		return binderService;
 	}
 	
-	public String getTeamMembersAsXML(long binderId) {
-		return getBinderService().getTeamMembersAsXML(binderId);
+	public String getTeamMembersAsXML(String accessToken, long binderId) {
+		return getBinderService().getTeamMembersAsXML(accessToken, binderId);
 	}
 	
-	public String getTeamsAsXML() {
-		return getBinderService().getTeamsAsXML();
+	public String getTeamsAsXML(String accessToken) {
+		return getBinderService().getTeamsAsXML(accessToken);
 	}
 	
-	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
-		return getBinderService().getWorkspaceTreeAsXML(binderId, levels, page);
+	public String getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page) {
+		return getBinderService().getWorkspaceTreeAsXML(accessToken, binderId, levels, page);
 	}
 	
-	public String search(String query, int offset, int maxResults) {
-		return getBinderService().search(query, offset, maxResults);
+	public String search(String accessToken, String query, int offset, int maxResults) {
+		return getBinderService().search(accessToken, query, offset, maxResults);
 	}
 
 	public void init(Object context) throws ServiceException {

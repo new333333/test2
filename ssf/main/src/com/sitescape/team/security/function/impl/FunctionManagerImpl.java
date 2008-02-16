@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.security.function;
+package com.sitescape.team.security.function.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -34,6 +34,9 @@ import java.util.List;
 
 import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.security.dao.SecurityDao;
+import com.sitescape.team.security.function.Function;
+import com.sitescape.team.security.function.FunctionManager;
+import com.sitescape.team.security.function.WorkAreaOperation;
 /**
  *
  * @author Jong Kim
