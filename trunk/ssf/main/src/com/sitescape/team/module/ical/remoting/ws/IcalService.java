@@ -30,5 +30,5 @@ package com.sitescape.team.module.ical.remoting.ws;
 
 public interface IcalService {
 
-	public void uploadCalendarEntries(long folderId, String iCalDataAsXML);
+	public void uploadCalendarEntries(String accessToken, long folderId, String iCalDataAsXML);
 }

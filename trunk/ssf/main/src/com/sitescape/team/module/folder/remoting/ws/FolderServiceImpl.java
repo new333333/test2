@@ -49,7 +49,7 @@ import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class FolderServiceImpl extends BaseService implements FolderService {
 
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML)
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML)
 	{
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
@@ -62,7 +62,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}
 	}
 	
-	public String getFolderEntriesAsXML(long binderId) {
+	public String getFolderEntriesAsXML(String accessToken, long binderId) {
 		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
 
 		Document doc = DocumentHelper.createDocument();
@@ -85,7 +85,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		return doc.getRootElement().asXML();
 	}
 
-	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments) {
+	public String getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);
 		
@@ -123,7 +123,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		return new HashMap();
 	}
 	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
+	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
@@ -147,7 +147,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}
 	}
 	
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
+	public void modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
@@ -161,7 +161,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}			
 	}
 
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML) {
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -175,7 +175,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}
 	}
 
-	public void uploadFolderFile(long binderId, long entryId, String fileUploadDataItemName, String fileName) {
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
 	

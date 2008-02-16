@@ -125,7 +125,7 @@ public abstract class SSStatefulJob implements StatefulJob {
   	   			removeJob(context); 
            	} else {
            		//	Setup thread context expected by business logic
-           		RequestContextUtil.setThreadContext(user);
+           		RequestContextUtil.setThreadContext(user).resolve();
             	//	do the real work
            		doExecute(context);
            	}

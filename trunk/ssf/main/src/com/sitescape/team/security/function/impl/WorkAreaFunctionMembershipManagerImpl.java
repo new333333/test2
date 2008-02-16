@@ -26,13 +26,17 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.security.function;
+package com.sitescape.team.security.function.impl;
 
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.sitescape.team.security.dao.SecurityDao;
+import com.sitescape.team.security.function.WorkArea;
+import com.sitescape.team.security.function.WorkAreaFunctionMembership;
+import com.sitescape.team.security.function.WorkAreaFunctionMembershipManager;
+import com.sitescape.team.security.function.WorkAreaOperation;
 
 /**
  *

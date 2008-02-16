@@ -32,13 +32,13 @@
 			<handler type="LocalResponder"/>
 		</responseFlow>
 	</transport>
-	<service name="AdminService" provider="java:RPC" style="rpc" use="encoded">
+	<service name="TemplateService" provider="java:RPC" style="rpc" use="encoded">
 		<parameter name="scope" value="application"/>	
 		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.admin.module.team.sitescape.com"/>
-		<parameter name="wsdlServiceElement" value="AdminService"/>
-		<parameter name="wsdlServicePort" value="AdminPort"/>
-		<parameter name="className" value="com.sitescape.team.module.admin.remoting.ws.AdminServiceEndpoint"/>
-		<parameter name="wsdlPortType" value="AdminPortType"/>
+		<parameter name="wsdlServiceElement" value="TemplateService"/>
+		<parameter name="wsdlServicePort" value="TemplatePort"/>
+		<parameter name="className" value="com.sitescape.team.module.template.remoting.ws.TemplateServiceEndpoint"/>
+		<parameter name="wsdlPortType" value="TemplatePortType"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
 	</service>
@@ -69,6 +69,26 @@
 		<parameter name="wsdlServicePort" value="FolderPort"/>
 		<parameter name="className" value="com.sitescape.team.module.folder.remoting.ws.FolderServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="FolderPortType"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="MigrationService" provider="java:RPC" style="rpc" use="encoded">
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.folder.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="MigrationService"/>
+		<parameter name="wsdlServicePort" value="MigrationPort"/>
+		<parameter name="className" value="com.sitescape.team.module.folder.remoting.ws.MigrationServiceEndpoint"/>
+		<parameter name="wsdlPortType" value="MigrationPortType"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+	</service>
+	<service name="WorkspaceService" provider="java:RPC" style="rpc" use="encoded">
+		<parameter name="scope" value="application"/>	
+		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.workspace.module.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="WorkspaceService"/>
+		<parameter name="wsdlServicePort" value="WorkspacePort"/>
+		<parameter name="className" value="com.sitescape.team.module.workspace.remoting.ws.WorkspaceServiceEndpoint"/>
+		<parameter name="wsdlPortType" value="WorkspacePortType"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
 	</service>

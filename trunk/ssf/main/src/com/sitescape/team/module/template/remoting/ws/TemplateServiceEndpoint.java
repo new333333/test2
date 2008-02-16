@@ -42,8 +42,8 @@ public class TemplateServiceEndpoint extends ServletEndpointSupport implements T
 		return templateService;
 	}
 	
-	public long addBinder(long parentBinderId, long binderConfigId, String title) {
-		return getTemplateService().addBinder(parentBinderId, binderConfigId, title);
+	public long addBinder(String accessToken, long parentBinderId, long binderConfigId, String title) {
+		return getTemplateService().addBinder(accessToken, parentBinderId, binderConfigId, title);
 	}
 
 }

@@ -34,12 +34,12 @@ import org.dom4j.Document;
 
 public interface LicenseService {
 
-	public void updateLicense();
+	public void updateLicense(String accessToken);
 	
-	public Collection<Document> getLicenses();
+	public Collection<Document> getLicenses(String accessToken);
 
-	public long getRegisteredUsers();
+	public long getRegisteredUsers(String accessToken);
 	
-	public long getExternalUsers();
+	public long getExternalUsers(String accessToken);
 
 }

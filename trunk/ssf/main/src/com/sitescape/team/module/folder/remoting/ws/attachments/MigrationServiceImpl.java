@@ -33,7 +33,7 @@ public class MigrationServiceImpl extends com.sitescape.team.module.folder.remot
 	AttachmentUtilities attachmentUtilities = new AttachmentUtilities(this);
 	
 	@Override
-	public void uploadFolderFile(long binderId, long entryId, 
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName, Timestamps timestamps) {
 		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}

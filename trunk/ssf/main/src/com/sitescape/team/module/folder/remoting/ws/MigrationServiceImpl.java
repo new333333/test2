@@ -39,30 +39,30 @@ import com.sitescape.team.remoting.RemotingException;
 public class MigrationServiceImpl extends FolderServiceImpl implements
 		MigrationService {
 
-	public long addFolder(long parentId, String definitionId,
+	public long addFolder(String accessToken, long parentId, String definitionId,
 			String inputDataAsXML, Timestamps timestamps) {
-		return super.addFolder(parentId, definitionId, inputDataAsXML);
+		return super.addFolder(accessToken, parentId, definitionId, inputDataAsXML);
 	}
 
-	public long addFolderEntry(long binderId, String definitionId,
+	public long addFolderEntry(String accessToken, long binderId, String definitionId,
 			String inputDataAsXML, String attachedFileName,
 			Timestamps timestamps) {
-		long entryId = super.addFolderEntry(binderId, definitionId, inputDataAsXML, attachedFileName);
+		long entryId = super.addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName);
 		alterTimestamps(binderId, entryId, timestamps);
 		return entryId;
 	}
 
-	public long addReply(long binderId, long parentId, String definitionId,
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId,
 			String inputDataAsXML, Timestamps timestamps) {
-		long entryId = super.addReply(binderId, parentId, definitionId, inputDataAsXML);
+		long entryId = super.addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML);
 		alterTimestamps(binderId, entryId, timestamps);
 		return entryId;
 	}
 
-	public void uploadFolderFile(long binderId, long entryId,
+	public void uploadFolderFile(String accessToken, long binderId, long entryId,
 			String fileUploadDataItemName, String fileName,
 			Timestamps timestamps) {
-		super.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
+		super.uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	
 	protected void alterTimestamps(long binderId, long entryId, Timestamps timestamps)

@@ -30,17 +30,17 @@ package com.sitescape.team.module.profile.remoting.ws;
 
 public interface ProfileService {
 
-	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords);
+	public String getAllPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords);
 	
-	public String getPrincipalAsXML(long binderId, long principalId);
+	public String getPrincipalAsXML(String accessToken, long binderId, long principalId);
 	
-	public long addUser(long binderId, String definitionId, String inputDataAsXML);
+	public long addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML);
 	
-	public long addGroup(long binderId, String definitionId, String inputDataAsXML);
+	public long addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML);
 	
-	public void addUserToGroup(long userId, String username, long groupId);
+	public void addUserToGroup(String accessToken, long userId, String username, long groupId);
 	
-	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML);
+	public void modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML);
 	
-	public void deletePrincipal(long binderId, long principalId);
+	public void deletePrincipal(String accessToken, long binderId, long principalId);
 }

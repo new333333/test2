@@ -68,7 +68,7 @@ public class FolderServiceImpl extends com.sitescape.team.module.folder.remoting
 
 	AttachmentUtilities attachmentUtilities = new AttachmentUtilities(this);
 	
-	public void uploadFolderFile(long binderId, long entryId, 
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
 		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
@@ -103,7 +103,7 @@ public class FolderServiceImpl extends com.sitescape.team.module.folder.remoting
 		}
 	}
 
-	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments) {
+	public String getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
 		if(includeAttachments) {
 			attachmentHandler = new AttachmentHandler() {
 				public void handleAttachment(FileAttachment att, String webUrl)
@@ -128,7 +128,7 @@ public class FolderServiceImpl extends com.sitescape.team.module.folder.remoting
 			attachmentHandler = new AttachmentHandler();
 		}
 
-		String xml = super.getFolderEntryAsXML(binderId, entryId, includeAttachments);
+		String xml = super.getFolderEntryAsXML(accessToken, binderId, entryId, includeAttachments);
 
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);

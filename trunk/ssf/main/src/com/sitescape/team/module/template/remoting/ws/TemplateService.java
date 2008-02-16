@@ -30,5 +30,5 @@ package com.sitescape.team.module.template.remoting.ws;
 
 public interface TemplateService {
 
-	public long addBinder(long parentBinderId, long binderConfigId, String title);
+	public long addBinder(String accessToken, long parentBinderId, long binderConfigId, String title);
 }

@@ -6,6 +6,10 @@
 		<param-name>axis.servicesPath</param-name>
 		<param-value>/ws/</param-value>
 	</context-param>
+	<context-param>
+		<param-name>token.servicesPath</param-name>
+		<param-value>/token/</param-value>
+	</context-param>
 	<servlet>
 		<servlet-name>AxisServlet</servlet-name>
 		<servlet-class>com.sitescape.team.asmodule.servlet.SSFClassLoaderServlet</servlet-class>
@@ -22,6 +26,10 @@
 	<servlet-mapping>
 		<servlet-name>AxisServlet</servlet-name>
 		<url-pattern>/secure/ws/*</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>AxisServlet</servlet-name>
+		<url-pattern>/token/ws/*</url-pattern>
 	</servlet-mapping>
 	<session-config>
 		<session-timeout>1</session-timeout>

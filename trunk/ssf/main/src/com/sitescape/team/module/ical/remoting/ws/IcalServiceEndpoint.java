@@ -41,8 +41,8 @@ public class IcalServiceEndpoint implements ServiceLifecycle, IcalService {
 		return icalService;
 	}
 
-	public void uploadCalendarEntries(long folderId, String iCalDataAsXML) {
-		getIcalService().uploadCalendarEntries(folderId, iCalDataAsXML);
+	public void uploadCalendarEntries(String accessToken, long folderId, String iCalDataAsXML) {
+		getIcalService().uploadCalendarEntries(accessToken, folderId, iCalDataAsXML);
 	}
 
 	public void init(Object context) throws ServiceException {

@@ -30,7 +30,7 @@ package com.sitescape.team.module.definition.remoting.ws;
 
 public interface DefinitionService {
 
-	public String getDefinitionAsXML(String definitionId);
+	public String getDefinitionAsXML(String accessToken, String definitionId);
 	
-	public String getDefinitionConfigAsXML();
+	public String getDefinitionConfigAsXML(String accessToken);
 }

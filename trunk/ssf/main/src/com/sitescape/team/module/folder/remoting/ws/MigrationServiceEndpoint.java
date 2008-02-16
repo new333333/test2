@@ -41,20 +41,20 @@ public class MigrationServiceEndpoint extends ServletEndpointSupport implements 
 		return migrationService;
 	}
 	
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps) {
-		return getMigrationService().addFolder(parentId, definitionId, inputDataAsXML, timestamps);
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps) {
+		return getMigrationService().addFolder(accessToken, parentId, definitionId, inputDataAsXML, timestamps);
 	}
 	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Timestamps timestamps) {
-		return getMigrationService().addFolderEntry(binderId, definitionId, inputDataAsXML, attachedFileName, timestamps);
+	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Timestamps timestamps) {
+		return getMigrationService().addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, timestamps);
 	}
 
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps) {
-		return getMigrationService().addReply(binderId, parentId, definitionId, inputDataAsXML, timestamps);
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps) {
+		return getMigrationService().addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, timestamps);
 	}
 
-	public void uploadFolderFile(long binderId, long entryId, String fileUploadDataItemName, String fileName, Timestamps timestamps) {
-		getMigrationService().uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName, timestamps);
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, Timestamps timestamps) {
+		getMigrationService().uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName, timestamps);
 	}
 
 }

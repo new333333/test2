@@ -30,11 +30,11 @@ package com.sitescape.team.module.binder.remoting.ws;
 
 public interface BinderService {
 
-	public String search(String query, int offset, int maxResults);
+	public String search(String accessToken, String query, int offset, int maxResults);
 
-	public String getWorkspaceTreeAsXML(long binderId, int levels, String page);
+	public String getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page);
 	
-	public String getTeamMembersAsXML(long binderId);
+	public String getTeamMembersAsXML(String accessToken, long binderId);
 	
-	public String getTeamsAsXML();
+	public String getTeamsAsXML(String accessToken);
 }

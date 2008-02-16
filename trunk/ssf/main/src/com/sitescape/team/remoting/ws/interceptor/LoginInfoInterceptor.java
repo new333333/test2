@@ -51,12 +51,14 @@ public class LoginInfoInterceptor implements MethodInterceptor {
 	public Object invoke(MethodInvocation invocation) throws Throwable {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		String authenticator = rc.getAuthenticator();
-		if(LoginInfo.AUTHENTICATOR_WS.equals(authenticator)) {	
-			// This is a WS with WS-Security authentication, meaning authentication
-			// must take place for every message invocation. The fact that you're
-			// here means that the authentication has already happended and it was
-			// successful. So we should report the fact.
-			getReportModule().addLoginInfo(new LoginInfo(LoginInfo.AUTHENTICATOR_WS,
+		if(LoginInfo.AUTHENTICATOR_WS.equals(authenticator) ||
+				LoginInfo.AUTHENTICATOR_REMOTING_T.equals(authenticator)) {	
+			// Message-level authentication is in use, for example, WS with WS-Security
+			// authentication or any remoting with token-based authentication. 
+			// These protocols require authentication to take place for every message
+			// invocation. The fact that you're here means that the authentication has 
+			// already happended and it was successful. So we should report the fact.
+			getReportModule().addLoginInfo(new LoginInfo(authenticator,
 					RequestContextHolder.getRequestContext().getUserId()));		
 		}
 		return invocation.proceed();

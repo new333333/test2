@@ -30,18 +30,18 @@ package com.sitescape.team.module.folder.remoting.ws;
 
 public interface FolderService {
 
-	public long addFolder(long parentId, String definitionId, String inputDataAsXML);
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML);
 
-	public String getFolderEntriesAsXML(long binderId);
+	public String getFolderEntriesAsXML(String accessToken, long binderId);
 	
-	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments);
+	public String getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments);
 	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
+	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
 	
-	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML);
+	public void modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML);
 	
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML);
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML);
 
-	public void uploadFolderFile(long binderId, long entryId, 
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 }

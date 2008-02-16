@@ -672,7 +672,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		String wsTitle = entry.getTitle() + " ("+ entry.getName()+")";
         RequestContext oldCtx = RequestContextHolder.getRequestContext();
         //want the user to be the creator
-        RequestContextUtil.setThreadContext(entry);
+        RequestContextUtil.setThreadContext(entry).resolve();
  		try {	
   			if (!entry.isReserved() || (!ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(entry.getInternalId()) &&
  					!ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(entry.getInternalId()))) {
@@ -850,7 +850,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		// build user
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		Binder top = getCoreDao().findTopWorkspace(RequestContextHolder.getRequestContext().getZoneName());
-		RequestContextUtil.setThreadContext(getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getZoneId()));
+		RequestContextUtil.setThreadContext(getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getZoneId())).resolve();
 		try {
 			ProfileBinder profiles = getProfileDao().getProfileBinder(top.getZoneId());
 			// indexing needs the user
@@ -883,7 +883,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		if (updates == null)
 			return; // nothing to update with
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
-		RequestContextUtil.setThreadContext(user);
+		RequestContextUtil.setThreadContext(user).resolve();
 		try {
 			//transaction handled in processor
 			//use processor to handle title changes

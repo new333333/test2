@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.security.dao;
+package com.sitescape.team.security.dao.impl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -45,6 +45,7 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.security.dao.SecurityDao;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 /**

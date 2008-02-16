@@ -43,7 +43,7 @@ import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class IcalServiceImpl extends BaseService implements IcalService {
 
-	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
+	public void uploadCalendarEntries(String accessToken, long folderId, String iCalDataAsXML)
 	{
 		iCalDataAsXML = StringCheckUtil.check(iCalDataAsXML);
 		

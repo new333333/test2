@@ -46,7 +46,7 @@ import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class ProfileServiceImpl extends BaseService implements ProfileService {
 
-	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords) {
+	public String getAllPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
 		Document doc = DocumentHelper.createDocument();
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
@@ -65,7 +65,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		
 		return xml;
 	}
-	public String getPrincipalAsXML(long binderId, long principalId) {
+	public String getPrincipalAsXML(String accessToken, long binderId, long principalId) {
 		Long bId = new Long(binderId);
 		Long pId = new Long(principalId);
 		
@@ -85,7 +85,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		return xml;
 	}
 	
-	public long addUser(long binderId, String definitionId, String inputDataAsXML) {
+	public long addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -99,7 +99,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 
 	}
 	
-	public long addGroup(long binderId, String definitionId, String inputDataAsXML) {
+	public long addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -113,11 +113,11 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 
 	}
 	
-	public void addUserToGroup(long userId, String username, long groupId) {
+	public void addUserToGroup(String accessToken, long userId, String username, long groupId) {
 		getProfileModule().addUserToGroup(Long.valueOf(userId), username, Long.valueOf(groupId));
 	}
 	
-	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
+	public void modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -131,7 +131,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 
 	}
 	
-	public void deletePrincipal(long binderId, long principalId) {
+	public void deletePrincipal(String accessToken, long binderId, long principalId) {
 		try {
 			getProfileModule().deleteEntry(new Long(binderId), new Long(principalId), null);
 		}
