@@ -66,6 +66,10 @@ public class RequestContext {
      * (Optional) Authenticator name.
      */
     private String authenticator;
+    /*
+     * (Optional) binder ID
+     */
+    private Long binderId;
     
     private boolean resolved = false;
     
@@ -213,6 +217,15 @@ public class RequestContext {
     
     public String getAuthenticator() {
     	return authenticator;
+    }
+    
+    public RequestContext setBinderId(Long binderId) {
+    	this.binderId = binderId;
+    	return this;
+    }
+    
+    public Long getBinderId() {
+    	return binderId;
     }
     
     /**

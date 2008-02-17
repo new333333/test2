@@ -1,5 +1,5 @@
 package com.sitescape.team.domain;
 
-public class Application {
+public class Application extends Principal {
 
 }
