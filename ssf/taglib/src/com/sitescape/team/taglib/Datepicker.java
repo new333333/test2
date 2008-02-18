@@ -401,6 +401,9 @@ public class Datepicker extends TagSupport {
 	            sb.append("onClick=\"");
 	            if (!popupDivId.equals("")) 
 	            		sb.append("ss_moveDivToBody('").append(popupDivId).append("');");
+	            sb.append("if (window.");
+	            sb.append(prefix);
+	            sb.append(") ");
 	            sb.append(prefix);
 				sb.append(".showCalendar('anchor_")
 				  .append(prefix)

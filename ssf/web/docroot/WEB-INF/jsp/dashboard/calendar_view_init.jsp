@@ -47,7 +47,7 @@
 			ss_calendar_${prefix}.switchView("datedirect", formObj.ss_goto${prefix}_year.value, formObj.ss_goto${prefix}_month.value - 1, formObj.ss_goto${prefix}_date.value);
 		}
 	}
-
+	
 	<c:set var="binderIds" value="" />
 	<c:set var="defaultCalendarId" value="" />
 	<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}" varStatus="status">
@@ -118,7 +118,12 @@
 						function() {
 							ss_calendar_${prefix}.ss_initializeCalendar();
 						});
-	if (!window.ssScope) { ssScope = {}; };
+	ss_addDashboardEvent("${componentId}", 
+						"onAfterHide",
+						function() {
+							ss_calendar_${prefix}.ss_uninitializeCalendar();
+						});						
+	if (!window["ssScope"]) { ssScope = {}; };
 	ssScope.refreshView = function (entryId) {
 		ss_calendar_${prefix}.refreshEntryEvents(entryId);
 	}

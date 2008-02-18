@@ -198,12 +198,51 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 							//Set up the workspace tree bean
 								getInstance().getWorkspaceTreeBean(binder, 
 									ssDashboard, model, id, component, false);
+					 } else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_CALENDAR_SUMMARY)) {
+						 getInstance().doCalendarSetup(ssDashboard, id, component);
 					 }
 				}
 			}
 		}
 		
 	}
+	
+	protected void doCalendarSetup(Map ssDashboard, String id, Map component) {
+		Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+    	if (beans == null) {
+    		beans = new HashMap();
+    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
+    	}
+    	
+    	Map idData;
+    	if (beans.containsKey(id)) {
+    		idData = (Map)beans.get(id);
+    	} else {
+    		idData = new HashMap();
+        	beans.put(id, idData);
+    	}
+	 
+ 		Map searchSearchFormData = new HashMap();      	
+ 		idData.put(WebKeys.SEARCH_FORM_DATA,searchSearchFormData);
+ 		
+    	Map data = (Map)component.get(Dashboard.DATA);
+    	if (data == null) data = new HashMap();
+    	
+		Set <Long> folderIds = new HashSet();
+		if (data.get(SearchFormSavedFolderIdList) instanceof String) 
+			folderIds = LongIdUtil.getIdsAsLongSet((String)data.get(SearchFormSavedFolderIdList));
+		searchSearchFormData.put(WebKeys.BINDER_ID_LIST, folderIds);
+
+		Collection folders=null;
+		if (folderIds != null && !folderIds.isEmpty()) {
+			folders = getBinderModule().getBinders(folderIds);		//may include have templates		
+			idData.put(WebKeys.FOLDER_LIST, folders);
+		}
+		
+	}
+	
+	
+	
     private static void doComponentSetup(Map ssDashboard, Map dashboard, Binder binder, Map model, String id) {
 		if (dashboard.containsKey(Dashboard.COMPONENTS)) {
 			Map components = (Map) dashboard.get(Dashboard.COMPONENTS);
