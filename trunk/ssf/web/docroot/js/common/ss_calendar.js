@@ -264,6 +264,11 @@ function ss_calendarEngine(
 		that.loadEventsByDate();
 	}
 	
+	this.ss_uninitializeCalendar = function() {
+		templateInitialized = false;
+		ss_cal_Events.removeAllEvents();
+	}
+	
 	this.createTemplate = function() {
 		var container = dojo.byId(containerId) || document.body;
 		container.innerHTML = that.template;
@@ -563,7 +568,9 @@ function ss_calendarEngine(
 	        } else if (this.currentType == "month") {
 	        	var monthViewInfo = ss_cal_CalData.getMonthViewInfo(this.currentDate);
 	    		this.firstDayToShow = monthViewInfo.beginView;
-	            dojo.html.hide(dojo.byId("ss_cal_DayGridMaster" + instanceId));
+				if (dojo.byId("ss_cal_DayGridMaster" + instanceId)) {
+	            	dojo.html.hide(dojo.byId("ss_cal_DayGridMaster" + instanceId));
+				}
 	            dojo.html.show(dojo.byId("ss_cal_MonthGridMaster" + instanceId));
 	            
 				this.drawMonthGrid(ss_cal_CalData.today, this.currentDate, monthViewInfo);
@@ -1195,6 +1202,23 @@ function ss_calendarEngine(
 	
 			this.reorderEvent();
 	    },
+		
+	    removeAllEvents: function() {
+			this.eventsType = 0;
+			
+		    this.displayId =  0;
+		    
+		    this.eventData =  {};
+		    this.eventIdsByEntryId = {};
+		    
+		    this.collisions =  {"event": {}, "creation": {}, "activity": {}};
+		    this.collisionI =  {};
+		    this.order =  {"event": {}, "creation": {}, "activity": {}};
+		    
+		    this.monthGridEvents = [];
+			this.monthEventIds = [];
+		    this.dayGridEvents = {};
+	    },		
 	    
 	    removeEntryEvents: function(entryId) {
 	    	if (!this.eventIdsByEntryId[entryId]) {
