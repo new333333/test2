@@ -33,7 +33,6 @@
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 <c:set var="ss_pageNumber" value="0"/>
 
-<!-- TITLE OR DESCRIPTION?  -->
 <p/>
 <c:if test="${ssConfigJspStyle != 'template'}">
 <div id="${ss_divId}">

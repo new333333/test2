@@ -4229,10 +4229,6 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 .ss_searchResult_dashboardHeader {
 	border-bottom: 1px solid #afc8e3;	
 	padding: 3px 0px 3px 12px;
-	position:relative;
-<c:if test="<%= isIE %>">	
-	zoom: 1; /* a workaround IE bug - parent border disappears */
-</c:if>
 }
 .ss_searchResult_dashboardNumbers {
 	float:right;
