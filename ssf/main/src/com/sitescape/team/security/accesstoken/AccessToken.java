@@ -32,11 +32,11 @@ import com.sitescape.util.StringUtil;
 
 public class AccessToken {
 
-	private Long applicationId; // required
-	private Long userId; // required
-	private Long expiration; // required - 0 indicates no expiration
-	private String digest; // required
-	private Long binderId; // optional
+	private Long applicationId; 		// required
+	private Long userId; 				// required
+	private String digest; 				// required
+	private Long binderId; 				// optional
+	private Boolean includeDescendants; // optional - meaningful iff binderId is specified
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -62,20 +62,20 @@ public class AccessToken {
 		this.digest = digest;
 	}
 
-	public Long getExpiration() {
-		return expiration;
-	}
-
-	public void setExpiration(Long expiration) {
-		this.expiration = expiration;
-	}
-
 	public Long getUserId() {
 		return userId;
 	}
 
 	public void setUserId(Long userId) {
 		this.userId = userId;
+	}
+
+	public Boolean getIncludeDescendants() {
+		return includeDescendants;
+	}
+
+	public void setIncludeDescendants(Boolean includeDescendants) {
+		this.includeDescendants = includeDescendants;
 	}
 
 	/**
@@ -93,18 +93,23 @@ public class AccessToken {
 		if(accessTokenStr == null)
 			throw new IllegalArgumentException();
 		// Access token str representation
-		// appId-userId-expiration-digest-[binderId]
+		// appId-userId-digest-[binderId]-[includeDescendants]
 		String[] s = StringUtil.split(accessTokenStr, "-");
-		if(s.length < 4)
+		if(s.length < 3)
 			throw new MalformedAccessTokenException("not enough pieces");
 		if(s.length > 5)
 			throw new MalformedAccessTokenException("too many pieces");
 		applicationId = Long.valueOf(s[0]);
 		userId = Long.valueOf(s[1]);
-		expiration = Long.valueOf(s[2]);
-		digest = s[3];
-		if(s.length > 4)
-			binderId = Long.valueOf(s[4]);
+		digest = s[2];
+		if(s.length > 3)
+			binderId = Long.valueOf(s[3]);
+		if(s.length > 4) {
+			if("1".equals(s[4]))
+				includeDescendants = Boolean.TRUE;
+			else if("0".equals(s[4]))
+				includeDescendants = Boolean.FALSE;
+		}
 	}
 	
 	/**
@@ -118,17 +123,19 @@ public class AccessToken {
 			throw new IllegalStateException("application id is missing");
 		if(userId == null)
 			throw new IllegalStateException("user id is missing");
-		if(expiration == null)
-			throw new IllegalStateException("expiration is missing");
 		if(digest == null)
 			throw new IllegalStateException("digest is missing");
 		StringBuilder sb = new StringBuilder()
 		.append(applicationId).append("-")
 		.append(userId).append("-")
-		.append(expiration).append("-")
 		.append(digest);
-		if(binderId != null)
+		if(binderId != null) {
 			sb.append("-").append(binderId);
+			if(Boolean.TRUE.equals(includeDescendants))
+				sb.append("-").append("1");
+			else if(Boolean.FALSE.equals(includeDescendants))
+				sb.append("-").append("0");
+		}
 		return sb.toString();
 	}
 
