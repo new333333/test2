@@ -70,6 +70,11 @@ public class RequestContext {
      * (Optional) binder ID
      */
     private Long binderId;
+    /*
+     * (Optional) a flag indicating whether all it's descendants should be included or not.
+     * This value is meaningful if and only if binderId field is non-null.
+     */
+    private boolean includeDescendants = true; // Make true the default.
     
     private boolean resolved = false;
     
@@ -228,7 +233,15 @@ public class RequestContext {
     	return binderId;
     }
     
-    /**
+    public boolean getIncludeDescendants() {
+		return includeDescendants;
+	}
+
+	public void setIncludeDescendants(boolean includeDescendants) {
+		this.includeDescendants = includeDescendants;
+	}
+
+	/**
      * Resolve the request context to full information.
      * If the request object is already resolved, this does nothing.
      * 
