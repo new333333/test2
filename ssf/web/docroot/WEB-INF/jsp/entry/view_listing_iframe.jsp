@@ -148,6 +148,18 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 	onLoad="ss_setWorkareaIframeSize${renderResponse.namespace}();" 
 	frameBorder="0" >xxx</iframe>
 </div>
+<ssf:ifnotadapter>
+<%
+	//Define the z-index offset for table columns to handle the overlays
+	int slidingTableColumnZ = 11;
+	int slidingTableInfoZ = 40;
+%>
+<script type="text/javascript" src="<html:rootPath/>js/sliding_table/sliding_table_common.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/sliding_table/sliding_table.js"></script>
+<div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup" style="z-index: <%= slidingTableInfoZ %>;"></div>
+<div id="ss_info_popup_sizer" style="position:absolute; visibility:hidden;"></div>
+</ssf:ifnotadapter>
+
 
 <!-- portlet iframe div -->
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>

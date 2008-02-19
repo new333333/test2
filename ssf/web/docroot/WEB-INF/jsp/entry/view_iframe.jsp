@@ -60,9 +60,9 @@
 	<% // Folder Sidebar %>
     <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
 
-    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
+	<c:if test="${!empty ssSidebarWsTree}">
+      <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
-		<c:if test="${!empty ssSidebarWsTree}">
 		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
 		  treeDocument="${ssSidebarWsTree}" 
 		  highlightNode="${ssBinder.id}" 
@@ -70,8 +70,8 @@
 		  namespace="${renderResponse.namespace}"
 		  rootOpen="true"
 		  nowrap="true"/>
-		</c:if>
-	</ssf:sidebarPanel>
+	  </ssf:sidebarPanel>
+	</c:if>
 
 	</td>
 	<td valign="top" class="ss_view_info">

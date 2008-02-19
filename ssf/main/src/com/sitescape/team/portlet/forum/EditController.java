@@ -80,18 +80,18 @@ public class EditController extends SAbstractController {
 		Map formData = request.getParameterMap();
 		PortletPreferences prefs= request.getPreferences();
 		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
+		String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, "");
+		if (Validator.isNull(displayType)) { 
+			displayType = BinderHelper.getDisplayType(request);
+			prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
+		}
 		if (Validator.isNull(ss_initialized)) {
 			prefs.setValue(WebKeys.PORTLET_PREF_INITIALIZED, "true");
 		}
 		//see if type is being set
 		if (formData.containsKey("applyBtn") || 
 				formData.containsKey("okBtn")) {
-			String displayType = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_TYPE, "");
 			//	if not on form, must already be set.  
-			if (Validator.isNull(displayType)) { 
-				displayType = BinderHelper.getDisplayType(request);
-				prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
-			}
 			if (ViewController.FORUM_PORTLET.equals(displayType) || 
 					ViewController.MOBILE_PORTLET.equals(displayType)) {
 				List forumPrefIdList = new ArrayList();
@@ -161,6 +161,23 @@ public class EditController extends SAbstractController {
 				}
 				DashboardHelper.saveComponentData(request, d);
 
+			} else if (ViewController.ACCESSORIES_PORTLET.equals(displayType)) {
+				//See if this portlet has been initialized yet. If not, add an empty dashboard
+				String id = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
+				DashboardPortlet d=null;
+				if (id != null) {
+					try {
+						d = (DashboardPortlet)getDashboardModule().getDashboard(id);
+					} catch (NoObjectByTheIdException no) {}
+				}
+				if (d == null) {
+					PortletConfig pConfig = (PortletConfig)request.getAttribute(WebKeys.JAVAX_PORTLET_CONFIG);
+					d = getDashboardModule().createDashboardPortlet( pConfig.getPortletName(), DashboardHelper.getNewDashboardMap());
+					prefs.setValue(WebKeys.PORTLET_PREF_DASHBOARD, d.getId());
+					prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
+				}
+				DashboardHelper.saveComponentData(request, d);
+
 			} else if (ViewController.PRESENCE_PORTLET.equals(displayType)) {
 				prefs.setValue(WebKeys.PRESENCE_PREF_USER_LIST, LongIdUtil.getIdsAsString(request.getParameterValues("users")));
 				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, LongIdUtil.getIdsAsString(request.getParameterValues("groups"))); 			
@@ -171,7 +188,23 @@ public class EditController extends SAbstractController {
 					prefs.setValue(WebKeys.WORKSPACE_PREF_ID, id);
 				}
 			}
+		} else if (ViewController.ACCESSORIES_PORTLET.equals(displayType)) {
+			//See if this portlet has been initialized yet. If not, add an empty dashboard
+			String id = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
+			DashboardPortlet d=null;
+			if (id != null) {
+				try {
+					d = (DashboardPortlet)getDashboardModule().getDashboard(id);
+				} catch (NoObjectByTheIdException no) {}
+			}
+			if (d == null) {
+				PortletConfig pConfig = (PortletConfig)request.getAttribute(WebKeys.JAVAX_PORTLET_CONFIG);
+				d = getDashboardModule().createDashboardPortlet( pConfig.getPortletName(), DashboardHelper.getNewDashboardMap());
+				prefs.setValue(WebKeys.PORTLET_PREF_DASHBOARD, d.getId());
+				prefs.setValue(WebKeys.PORTLET_PREF_TYPE, displayType);
+			}
 		}
+
 		prefs.store();
 	}
 	
@@ -216,6 +249,8 @@ public class EditController extends SAbstractController {
 			model.put(WebKeys.FOLDER_LIST, binders);
 			model.put(WebKeys.BINDER_ID_LIST, binderIds);
 			return new ModelAndView(WebKeys.VIEW_MOBILE_EDIT, model);
+		} else if (ViewController.ACCESSORIES_PORTLET.equals(displayType)) {
+			return setupAccessoryPortlet(request, prefs, model, "accessories");
 		} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_BLOG_EDIT, "blog");
 		} else if (ViewController.GALLERY_PORTLET.equals(displayType)) {
@@ -256,6 +291,26 @@ public class EditController extends SAbstractController {
 		}
 		return null;
 	}
+	private ModelAndView setupAccessoryPortlet(RenderRequest request, PortletPreferences prefs, Map model, String componentName) {
+		Map userProperties = (Map) getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		String id = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
+		if (id != null) {
+			try {
+				DashboardPortlet d = (DashboardPortlet)getDashboardModule().getDashboard(id);
+				DashboardHelper.getDashboardMap(d, userProperties, model, true);
+			} catch (NoObjectByTheIdException no) {
+				//setup dummy dashboard for config
+				DashboardHelper.initDashboardComponent(userProperties, model, componentName);				
+			}
+		} else {
+			//setup dummy dashboard for config
+			DashboardHelper.initDashboardComponent(userProperties, model, componentName);
+		}
+		return new ModelAndView(WebKeys.VIEW_ACCESSORIES_EDIT, model);
+		
+	}
+
 	private ModelAndView setupSummaryPortlet(RenderRequest request, PortletPreferences prefs, Map model, String view, String componentName) {
 		Map userProperties = (Map) getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);

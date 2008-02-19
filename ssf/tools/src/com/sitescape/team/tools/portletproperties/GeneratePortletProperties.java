@@ -53,7 +53,7 @@ public class GeneratePortletProperties {
 	private static void doMain(String pathname) throws Exception {
 		String outPath = pathname + "\\classes\\content";
 		
-        String []propNames = {"administration", "blog", "exception", "forum", 
+        String []propNames = {"accessories", "administration", "blog", "exception", "forum", 
         		"gallery", "guestbook", "mobile", "presence", "search", "task", 
         		"toolbar", "welcome", "widgettest",	"wiki",	"workspacetree", 
         		"workarea", "workarea_accessories", "workarea_context", "workarea_navigation"};

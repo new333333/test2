@@ -384,40 +384,55 @@
 			
 				<c:when test="${entry._docType == 'binder'}">
 							<div class="ss_thumbnail">
+								<c:set var="entryBinderId" value="${entry._binderId}"/>
+								<c:set var="entryDocId" value="${entry._docId}"/>
 								<c:if test="${entry._entityType == 'folder'}">
-								<img <ssf:alt tag="general.type.folder"/> src="<html:imagesPath/>pics/folder_icon.gif"/>
-								<c:set var="actionVar" value="view_folder_listing"/>
+								  <img <ssf:alt tag="general.type.folder"/> 
+								    src="<html:imagesPath/>pics/folder_icon.gif"/>
+								  <c:set var="actionVar" value="view_folder_listing"/>
+								  <c:set var="entryBinderId" value="${entry._docId}"/>
+								  <c:set var="entryDocId" value=""/>
 								</c:if>
 								<c:if test="${entry._entityType == 'workspace'}">
-								<img <ssf:alt tag="general.type.workspace"/> src="<html:imagesPath/>pics/workspace_icon.gif"/>
-								<c:set var="actionVar" value="view_ws_listing"/>
+								  <img <ssf:alt tag="general.type.workspace"/> 
+								    src="<html:imagesPath/>pics/workspace_icon.gif"/>
+								  <c:set var="actionVar" value="view_ws_listing"/>
+								  <c:set var="entryBinderId" value="${entry._docId}"/>
+								  <c:set var="entryDocId" value=""/>
 								</c:if>								
 								<c:if test="${entry._entityType == 'profiles'}">
-								<img <ssf:alt tag="general.type.workspace"/> src="<html:imagesPath/>pics/workspace_icon.gif"/>
-								<c:set var="actionVar" value="view_profile_listing"/>
+								  <img <ssf:alt tag="general.type.workspace"/> 
+								    src="<html:imagesPath/>pics/workspace_icon.gif"/>
+								  <c:set var="actionVar" value="view_profile_listing"/>
 								</c:if>								
 							</div>
 							<div class="ss_entry">
 								<div class="ss_entryHeader">
 									<h3 class="ss_entryTitle">
 										<ssf:titleLink 
-											entryId="${entry._docId}" binderId="${entry._binderId}" 
+											entryId="${entryDocId}" 
+											binderId="${entryBinderId}" 
 											entityType="${entry._entityType}"  
 											namespace="${ss_namespace}"  
-											useBinderFunction="<%= strUseBinderMethod %>" isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+											useBinderFunction="<%= strUseBinderMethod %>" 
+											isDashboard="${isDashboard}" 
+											dashboardType="${ssDashboard.scope}">
 											
 											<ssf:param name="url" useBody="true">
 											
 												<c:if test="${isDashboard == 'yes'}">
-													<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" 
-														binderId="${entry._binderId}" entryId="${entry._docId}">
+													<ssf:url adapter="true" portletName="ss_forum" 
+													    action="view_permalink" 
+														binderId="${entryBinderId}" 
+														entryId="${entryDocId}">
 														<ssf:param name="entityType" value="${entry._entityType}"/>
 														<ssf:param name="newTab" value="1"/>
 													</ssf:url>
 												</c:if>
 											
 												<c:if test="${empty isDashboard || isDashboard == 'no'}">
-													<ssf:url adapter="false" portletName="ss_forum" folderId="${entry._docId}" 
+													<ssf:url adapter="false" portletName="ss_forum" 
+													    folderId="${entry._docId}" 
 														action="${actionVar}" actionUrl="false" >
 						    							<ssf:param name="binderId" value="${entry._docId}"/>
 			  											<ssf:param name="newTab" value="1"/>
@@ -431,7 +446,7 @@
 									<div class="ss_clear">&nbsp;</div>
 								</div>
 								<p id="summary_${status.count}">
-									<ssf:markup binderId="${entry._binderId}" entryId="${entry._docId}">
+									<ssf:markup binderId="${entryBinderId}" entryId="${entryDocId}">
 										<ssf:textFormat formatAction="limitedDescription" textMaxWords="${summaryWordCount}">
 											${entry._desc}
 										</ssf:textFormat>
