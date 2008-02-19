@@ -105,6 +105,7 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.StatusTicket;
+import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
@@ -585,37 +586,23 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 */
     //inside write transaction    
 	public void setTag(Long binderId, String newTag, boolean community) {
-		ArrayList newTags = new ArrayList();
-		if (Validator.isNull(newTag)) return;
 		Binder binder = loadBinder(binderId);
 		if (community) checkAccess(binder, BinderOperation.manageTag); 
-		String lang = LanguageTaster.taste(newTag.toCharArray());
-		if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
-			newTags.add(newTag);
-		} else {
-			newTag = newTag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
-			newTags = new ArrayList(Arrays.asList(newTag.split(" ")));
-		}
+		if (Validator.isNull(newTag)) return;
+		Collection<String> newTags = TagUtil.buildTags(newTag);		
 		if (newTags.size() == 0) return;
-		List tags = new ArrayList();
 		User user = RequestContextHolder.getRequestContext().getUser();
 	   	EntityIdentifier uei = user.getEntityIdentifier();
 	   	EntityIdentifier bei = binder.getEntityIdentifier();
-	   	for (int i = 0; i < newTags.size(); i++) {
-	   		String tagName = ((String)newTags.get(i)).trim();
-	   		if (tagName.length() > ObjectKeys.MAX_TAG_LENGTH) {
-	   			//Truncate the tag so it fits in the database field
-	   			tagName = tagName.substring(0, ObjectKeys.MAX_TAG_LENGTH);
-	   		}
+	   	for (String tagName: newTags) {
 			Tag tag = new Tag();
 			//community tags belong to the binder - don't care who created it
 		   	if (!community) tag.setOwnerIdentifier(uei);
 		   	tag.setEntityIdentifier(bei);
 		   	tag.setPublic(community);
 	   		tag.setName(tagName);
-	   		tags.add(tag);
+	   		getCoreDao().save(tag);
 	   	}
-	   	coreDao.save(tags);
  	    loadBinderProcessor(binder).indexBinder(binder, false);
 	}
 	

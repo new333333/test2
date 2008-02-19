@@ -29,6 +29,8 @@
 package com.sitescape.team.util;
 
 import java.text.Collator;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Locale;
@@ -41,6 +43,7 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.lucene.LanguageTaster;
 
 
 public class TagUtil {
@@ -99,5 +102,26 @@ public class TagUtil {
     		//if want to remove duplicate tags, return equal
     		return 0;
     	}
+	}
+	public static Collection<String> buildTags(String newTag) {
+		ArrayList<String> newTags = new ArrayList();
+		String []tags = null;
+		String lang = LanguageTaster.taste(newTag.toCharArray());
+		if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
+			tags = new String[1];
+			tags[0] = newTag;
+		} else {
+			newTag = newTag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
+			tags = newTag.split(" ");
+		}
+		for (int i=0; i<tags.length; ++i) {
+			String tagName = tags[i].trim();
+			if (tagName.length() > ObjectKeys.MAX_TAG_LENGTH) {
+				//Truncate the tag so it fits in the database field
+				tagName = tagName.substring(0, ObjectKeys.MAX_TAG_LENGTH);
+			}
+			newTags.add(tagName);
+		}
+		return newTags;
 	}
 }
