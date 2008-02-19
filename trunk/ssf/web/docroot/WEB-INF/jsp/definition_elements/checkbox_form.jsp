@@ -49,5 +49,5 @@
 <c:set var="cb_checked" value="checked"/>
 </c:if>
 <div class="ss_entryContent">
-<input type="checkbox" name="<%= elementName %>" <c:out value="${cb_checked}"/>>&nbsp;<span class="ss_labelRight"><%= caption %><%= required %></span></input>
+<input type="checkbox" name="<%= elementName %>" id="checkbox_<%= elementName %>" <c:out value="${cb_checked}"/> /> <span class="ss_labelRight"><label for="checkbox_<%= elementName %>"><%= caption %></label><%= required %></span>
 </div>
