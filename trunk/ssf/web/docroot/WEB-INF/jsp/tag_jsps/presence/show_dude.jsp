@@ -101,21 +101,20 @@
 	<ssf:ifadapter>
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    action="view_permalink"
-	    binderId="${ss_presence_user.parentBinder.id}"
-	    entryId="${ss_presence_user.id}">
+	    binderId="${ss_presence_user.workspaceId}">
 	    <ssf:param name="entityType" value="workspace" />
 	    <ssf:param name="newTab" value="1" />
 		</ssf:url>"
-		onClick="self.parent.location.href = this.href;return false;"
+	  onClick="ss_openUrlInParentWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing');return false;"
 	  ><span id="${ss_presence_user.id}" 
 	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span></a>
 	</ssf:ifadapter>
 	<ssf:ifnotadapter>
-	  <a href="<portlet:renderURL windowState="maximized"><portlet:param 
-	  	name="action" value="view_ws_listing"/><portlet:param 
-	  	name="binderId" value="${ss_presence_user.parentBinder.id}"/><portlet:param 
-	  	name="entryId" value="${ss_presence_user.id}"/><portlet:param 
-	  	name="newTab" value="1"/></portlet:renderURL>"
+	  <a href="<ssf:url windowState="maximized"><ssf:param 
+	  	name="action" value="view_ws_listing"/><ssf:param 
+	  	name="binderId" value="${ss_presence_user.workspaceId}"/><ssf:param 
+	  	name="newTab" value="1"/></ssf:url>"
+	  onClick="ss_openUrlInWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing');return false;"
 	  ><span id="${ss_presence_user.id}"  
 	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span></a>
 	</ssf:ifnotadapter>

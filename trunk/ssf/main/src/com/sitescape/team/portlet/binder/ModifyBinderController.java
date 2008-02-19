@@ -146,10 +146,11 @@ public class ModifyBinderController extends AbstractBinderController {
 				// The delete-mirrored-binder form was submitted.
 				//retrieve binder so we can return to parent
 				Binder binder = getBinderModule().getBinder(binderId);			
+				Binder parentBinder = binder.getParentBinder();			
 				//get view data, before binder is deleted
 				setupViewOnDelete(response, binder, binderType);	
 				getBinderModule().deleteBinder(binderId, Boolean.parseBoolean(deleteSource), null);
-				response.setRenderParameter(WebKeys.RELOAD_URL_FORCED, "");
+				setupReloadOpener(response, parentBinder.getId());
 			} else {
 				setupReloadOpener(response, binderId);			
 			}	

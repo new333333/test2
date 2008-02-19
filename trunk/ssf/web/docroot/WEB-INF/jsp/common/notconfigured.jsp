@@ -37,7 +37,7 @@
 <div class="ss_style">
 <div align="right">
   <a class="ss_linkButton" 
-		    href="<portlet:renderURL 
+		    href="<portlet:actionURL 
 		      portletMode="edit" 
 		      windowState="maximized" />"><ssf:nlt tag="portlet.configure"/></a>
 </div>

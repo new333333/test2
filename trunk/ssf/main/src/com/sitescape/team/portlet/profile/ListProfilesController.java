@@ -118,6 +118,7 @@ public class ListProfilesController extends   SAbstractController {
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
+		String displayType = BinderHelper.getDisplayType(request);
  		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		HashMap model = new HashMap();
@@ -146,6 +147,18 @@ public class ListProfilesController extends   SAbstractController {
 		}
 
 	   	User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
+		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
+		
+		//Set up the standard beans
+		//These have been documented, so don't delete any
+		model.put(WebKeys.USER_PRINCIPAL, user);
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+
+		model.put(WebKeys.DISPLAY_TYPE, displayType);
+
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		//Build a reload url
 		PortletURL reloadUrl = response.createRenderURL();
@@ -157,9 +170,6 @@ public class ListProfilesController extends   SAbstractController {
 		
 		Map users = null;
 		Map options = new HashMap();
-		
-		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.LISTING_MAX_PAGE_SIZE));

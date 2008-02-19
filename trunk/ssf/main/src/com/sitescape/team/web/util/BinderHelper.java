@@ -68,6 +68,7 @@ import com.sitescape.team.comparator.PrincipalComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
+import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
@@ -112,6 +113,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.util.BrowserSniffer;
 import com.sitescape.util.Validator;
 public class BinderHelper {
+	public static final String ACCESSORIES_PORTLET="ss_accessories";
 	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
 	public static final String FORUM_PORTLET="ss_forum";
 	public static final String GALLERY_PORTLET="ss_gallery";
@@ -173,7 +175,6 @@ public class BinderHelper {
 		BinderHelper.getBinderAccessibleUrl(bs, null, null, request, response, model);
 
 		if (FORUM_PORTLET.equals(displayType)) {
-		
 			//This is the portlet view; get the configured list of folders to show
 			String[] preferredBinderIds = new String[0];
 			if (prefs != null) preferredBinderIds = PortletPreferencesUtil.getValues(prefs, WebKeys.FORUM_PREF_FORUM_ID_LIST, new String[0]);
@@ -250,6 +251,8 @@ public class BinderHelper {
 			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
  			return new ModelAndView(WebKeys.VIEW_TOOLBAR, model);		
+		} else if (ACCESSORIES_PORTLET.equals(displayType)) {
+			return setupAccessoriesPortlet(bs, request, response, prefs, model);		
 		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_BLOG_SUMMARY);		
 		} else if (WIKI_PORTLET.equals(displayType)) {
@@ -271,6 +274,77 @@ public class BinderHelper {
 		return null;
 	}
 	
+	protected static ModelAndView setupAccessoriesPortlet(AllModulesInjected bs, 
+			RenderRequest request, RenderResponse response, PortletPreferences prefs, Map model) {
+		String gId = null;
+		if (prefs != null) gId = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
+		if (gId != null) {
+			try {
+				Map userProperties = (Map) model.get(WebKeys.USER_PROPERTIES);
+				DashboardPortlet d = (DashboardPortlet)bs.getDashboardModule().getDashboard(gId);
+				model.put(WebKeys.DASHBOARD_PORTLET, d);
+				if (request.getWindowState().equals(WindowState.MAXIMIZED))
+					model.put(WebKeys.PAGE_SIZE, "20");
+				else
+					model.put(WebKeys.PAGE_SIZE, "5");						
+				DashboardHelper.getDashboardMap(d, userProperties, model, false);
+
+				Map ssDashboard = (Map)model.get(WebKeys.DASHBOARD);
+				boolean dashboardContentExists = DashboardHelper.checkIfAnyContentExists(ssDashboard);
+				
+				Toolbar dashboardToolbar = new Toolbar();
+				Map qualifiers = new HashMap();
+				qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.manageDashboard");
+				qualifiers.put("linkclass", "ss_dashboard_config_control");
+				dashboardToolbar.addToolbarMenu("3_manageDashboard", NLT.get("__dashboard_canvas"), "", qualifiers);
+				qualifiers = new HashMap();
+				qualifiers.put("onClick", "ss_addDashboardComponents('" + response.getNamespace() + "_dashboardAddContentPanel');return false;");
+				dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("toolbar.addPenlets"), "#", qualifiers);
+
+				if (dashboardContentExists) {
+					qualifiers = new HashMap();
+					qualifiers.put("textId", response.getNamespace() + "_dashboard_menu_controls");
+					qualifiers.put("onClick", "ss_toggle_dashboard_hidden_controls('" + response.getNamespace() + "');return false;");
+					dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.showHiddenControls"), "#", qualifiers);
+		
+					PortletURL url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DASHBOARD_TITLE);
+					url.setParameter("_scope", "local");
+					dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.setTitle"), url);
+	
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+					url.setParameter("_scope", "global");
+					dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.global"), url);
+
+					//Check the access rights of the user
+					url = response.createActionURL();
+					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_DASHBOARD);
+					url.setParameter("_scope", "binder");
+					dashboardToolbar.addToolbarMenuItem("3_manageDashboard", "dashboard", NLT.get("dashboard.configure.binder"), url);
+		
+					qualifiers = new HashMap();
+					qualifiers.put("onClick", "ss_showHideAllDashboardComponents(this, '" + 
+							response.getNamespace() + "_dashboardComponentCanvas', '');return false;");
+					
+					if (1 == 1) {
+						qualifiers.put("icon", "dashboard_hide.gif");
+						dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.hideDashboard"), "#", qualifiers);
+					} else {
+						qualifiers.put("icon", "dashboard_show.gif");
+						dashboardToolbar.addToolbarMenu("4_showHideDashboard", NLT.get("toolbar.showDashboard"), "#", qualifiers);
+					}
+				}
+				model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
+
+				return new ModelAndView(WebKeys.VIEW_ACCESSORIES, model);		
+			} catch (NoObjectByTheIdException no) {}
+		}
+		return new ModelAndView(WebKeys.VIEW_NOT_CONFIGURED);
+		
+	}
+
 	protected static ModelAndView setupSummaryPortlets(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
 		String gId = null;
 		if (prefs != null) gId = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
@@ -413,6 +487,8 @@ public class BinderHelper {
 			return ViewController.WORKAREA_PORTLET;
 		else if (pName.contains(ViewController.WELCOME_PORTLET))
 			return ViewController.WELCOME_PORTLET;
+		else if (pName.contains(ViewController.ACCESSORIES_PORTLET))
+			return ViewController.ACCESSORIES_PORTLET;
 		return null;
 
 	}

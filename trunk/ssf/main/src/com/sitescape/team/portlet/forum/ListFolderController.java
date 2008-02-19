@@ -45,6 +45,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.MapInputData;
@@ -56,6 +58,7 @@ import com.sitescape.team.web.util.ListFolderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.WorkspaceTreeHelper;
 
 /**
  * @author Peter Hurley
@@ -190,8 +193,37 @@ public class ListFolderController extends  SAbstractController {
         if (PortletAdapterUtil.isRunByAdapter(request)) {
         	namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
         }
-		if (binderId == null) 
+		Long parentBinderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
+		if (parentBinderId != null && binderId != null) {
+			try {
+				getBinderModule().getBinder(binderId);
+			} catch(NoBinderByTheIdException e) {
+				//The binder no longer exists, show the parent binder instead
+				request.setAttribute(WebKeys.URL_BINDER_ID, parentBinderId);
+				Binder parentBinder = getBinderModule().getBinder(parentBinderId);
+				if (parentBinder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
+					return WorkspaceTreeHelper.setupWorkspaceBeans(this, parentBinderId, request, response);
+				}
+				binderId = parentBinderId;
+			}
+			
+		} else if (binderId == null) {
 			binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, PortletSession.APPLICATION_SCOPE);
+		}
+		if (binderId == null) {
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_PARENT_ID);
+			if (binderId != null) {
+				try {
+					Binder binder = getBinderModule().getBinder(binderId);
+					if (binder.getEntityType().name().equals(EntityIdentifier.EntityType.workspace.name())) {
+						return WorkspaceTreeHelper.setupWorkspaceBeans(this, binderId, request, response);					}
+				} catch(NoBinderByTheIdException e) {
+				}
+				
+			} else {
+				binderId = (Long) portletSession.getAttribute(WebKeys.LAST_BINDER_VIEWED + namespace, PortletSession.APPLICATION_SCOPE);
+			}
+		}
 
 		return ListFolderHelper.BuildFolderBeans(this, request, response, binderId);
 		

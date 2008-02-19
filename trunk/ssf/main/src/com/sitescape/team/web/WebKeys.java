@@ -90,6 +90,7 @@ public class WebKeys {
     public static final String URL_ATTRIBUTE = "attr";
     public static final String URL_ATTRIBUTE_ID = "attrId";
     public static final String URL_BINDER_ID="binderId";
+    public static final String URL_BINDER_PARENT_ID="binderParentId";
     public static final String URL_BINDER_IDS="binderIds";
     public static final String URL_FOLDER_ID = "folderId";
     public static final String URL_IS_LIBRARY_BINDER="isLibraryBinder";
@@ -843,6 +844,8 @@ public class WebKeys {
     
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
+    public static final String VIEW_ACCESSORIES = "accessories/view";
+    public static final String VIEW_ACCESSORIES_EDIT = "accessories/edit";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
     public static final String VIEW_ADD_BINDER = "binder/add_binder";
     public static final String VIEW_ADD_BINDER_TYPE = "binder/add_binder_type";

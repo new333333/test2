@@ -291,7 +291,16 @@ function ss_gotoPermalink(binderId, entryId, entityType, namespace, useNewTab, u
 		} else if (self.parent) {
 			self.parent.location.href = url;		
 		} else {
-			self.location.href = url;
+			//See if this should be opened in ss_workarea
+			if (typeof ss_workarea_showId != "undefined" && entityType == "workspace") {
+				ss_workarea_showId(binderId, "view_ws_listing");
+			} else if (typeof ss_workarea_showId != "undefined" && entityType == "user") {
+				ss_workarea_showId(binderId, "view_ws_listing", entryId);
+			} else if (typeof ss_workarea_showId != "undefined" && entityType == "folder") {
+				ss_workarea_showId(binderId, "view_folder_listing");
+			} else {
+				self.location.href = url;
+			}
 		}
 	} else {
 		//See if this should be opened in ss_workarea
@@ -314,6 +323,14 @@ function ss_openUrlInWorkarea(url, id, action) {
 		ss_workarea_showId(id, action);
 	} else {
 		self.location.href = url;
+	}
+}
+
+function ss_openUrlInParentWorkarea(url, id, action) {
+	if (typeof self.parent.ss_workarea_showId != "undefined") {
+		self.parent.ss_workarea_showId(id, action);
+	} else {
+		self.parent.location.href = url;
 	}
 }
 

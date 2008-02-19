@@ -80,7 +80,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <% if ( useBinderFunction.equals("no") ) {  %>
 	onClick="ss_loadEntryFromMenu(this,  '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= namespace %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 
 <% } else if (useBinderFunction.equals("permalink")) { %>
-	onClick="ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');" 
+	onClick="return ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');" 
 <% //if useBinderFunction == yes, just use href
  }%>
 ><c:if test="<%= com.sitescape.util.Validator.isNull(title) %>">
@@ -107,7 +107,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 				<ssf:titleForEntityType entityType="<%= entityType %>" text="<%= "--" + NLT.get("entry.noTitle") + "--" %>" />
 			</c:otherwise>
 		</c:choose>
-		href="javascript:;" onClick="ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');"
+		href="javascript:;" onClick="return ss_gotoPermalink('<%= binderId %>','<%= entryId %>', '<%= entityType %>', '<%= namespace %>', 'yes');"
 	<% } %>
 ><c:if test="<%= (title == null || title.equals("")) %>">
 <span <%= seenStyleFine %>>--<ssf:nlt tag="entry.noTitle"/>--</span></c:if><span <%= seenStyle %>><%= title %></span></a>

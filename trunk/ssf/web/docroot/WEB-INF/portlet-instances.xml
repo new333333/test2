@@ -9,6 +9,12 @@
    </deployment>
    <deployment>
       <instance>
+         <instance-id>ss_accessories-instance</instance-id>
+         <portlet-ref>ss_accessories</portlet-ref>
+      </instance>
+   </deployment>
+   <deployment>
+      <instance>
          <instance-id>ss_toolbar-instance</instance-id>
          <portlet-ref>ss_toolbar</portlet-ref>
       </instance>

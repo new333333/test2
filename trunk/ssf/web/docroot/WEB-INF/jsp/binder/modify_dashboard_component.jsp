@@ -39,9 +39,9 @@
 
 <div class="ss_form">
 <form class="ss_form" method="post" 
-  action="<portlet:actionURL windowState="maximized"><portlet:param 
-  	name="action" value="modify_dashboard"/><portlet:param 
-  	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>" 
+  action="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
+  	name="action" value="modify_dashboard"/><ssf:param 
+  	name="binderId" value="${ssBinder.id}"/></ssf:url>" 
   	name="${ssSearchFormForm}" id="${ssSearchFormForm}">
 
 <div class="ss_form ss_buttonBarRight">
@@ -59,9 +59,9 @@
 <c:set var="ss_dashboard_config_form_name" value="${ssDashboard.ssComponentId}${renderResponse.namespace}form1" scope="request"/>
 <form method="post" name="${ss_dashboard_config_form_name}" 
   id="${ss_dashboard_config_form_name}" 
-  action="<portlet:actionURL windowState="maximized"><portlet:param 
-  	name="action" value="modify_dashboard"/><portlet:param 
-  	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>"
+  action="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
+  	name="action" value="modify_dashboard"/><ssf:param 
+  	name="binderId" value="${ssBinder.id}"/></ssf:url>"
   onSubmit="return ss_onSubmit(this);">
 <div style="width:100%;">
 	<span class="ss_bold"><ssf:nlt tag="dashboard.componentLayout" /></span>

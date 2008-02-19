@@ -272,16 +272,19 @@ public class ListFolderHelper {
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
 			reloadUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			if (binder != null) reloadUrl.setParameter(WebKeys.URL_BINDER_PARENT_ID, 
+					binder.getParentBinder().getId().toString());
 			reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 			reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
 			reloadUrl.setParameter(WebKeys.URL_RANDOM, WebKeys.URL_RANDOM_PLACEHOLDER);
 			model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 		
 			model.put(WebKeys.SEEN_MAP, bs.getProfileModule().getUserSeenMap(user.getId()));
-			if(binder != null) {
+			if (binder != null) {
 				DashboardHelper.getDashboardMap(binder, userProperties, model);
 				//See if the user has selected a specific view to use
-				DefinitionHelper.getDefinitions(binder, model, (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
+				DefinitionHelper.getDefinitions(binder, model, 
+						(String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_DISPLAY_DEFINITION));
 			}
 	
 			Tabs.TabEntry tab= BinderHelper.initTabs(request, binder);

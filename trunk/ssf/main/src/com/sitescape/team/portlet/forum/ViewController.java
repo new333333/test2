@@ -57,6 +57,7 @@ import com.sitescape.util.Validator;
  *
  */
 public class ViewController  extends SAbstractController {
+	public static final String ACCESSORIES_PORTLET="ss_accessories";
 	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
 	public static final String FORUM_PORTLET="ss_forum";
 	public static final String GALLERY_PORTLET="ss_gallery";
