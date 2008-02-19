@@ -107,6 +107,7 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleMultipartFile;
+import com.sitescape.team.util.TagUtil;
 import com.sitescape.util.Validator;
 /**
  *
@@ -728,34 +729,25 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	}
 	
     //inside write transaction    
-	public void setTag(Long binderId, Long entryId, String newtag, boolean community) {
-		ArrayList newTags = new ArrayList();
-		if (Validator.isNull(newtag)) return;
-		String lang = LanguageTaster.taste(newtag.toCharArray());
-		if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
-			newTags.add(newtag);
-		} else {
-			newtag = newtag.replaceAll("[\\p{Punct}]", " ").trim().replaceAll("\\s+"," ");
-			newTags = new ArrayList(Arrays.asList(newtag.split(" ")));
-		}
-		if (newTags.size() == 0) return;
-		List tags = new ArrayList();
+	public void setTag(Long binderId, Long entryId, String newTag, boolean community) {
 		//read access checked by getEntry
 		FolderEntry entry = getEntry(binderId, entryId);
 		if (community) checkAccess(entry, FolderOperation.manageTag);
+		if (Validator.isNull(newTag)) return;
+		Collection<String> newTags = TagUtil.buildTags(newTag);		
+		if (newTags.size() == 0) return;
 		User user = RequestContextHolder.getRequestContext().getUser();
 		EntityIdentifier uei = user.getEntityIdentifier();
 		EntityIdentifier eei = entry.getEntityIdentifier();
-		for (int i = 0; i < newTags.size(); i++) {
+		for (String tagName:newTags) {
 			Tag tag = new Tag();
 			//community tags belong to the binder - don't care who created it
 		   	if (!community) tag.setOwnerIdentifier(uei);
 		   	tag.setEntityIdentifier(eei);
 		    tag.setPublic(community);
-		   	tag.setName((String)newTags.get(i));
-		   	tags.add(tag);
+		   	tag.setName(tagName);
+			getCoreDao().save(tag);
 	   	}
-		coreDao.save(tags);
  	    loadProcessor(entry.getParentFolder()).indexEntry(entry);
 	}
 	
