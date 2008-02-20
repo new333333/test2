@@ -47,7 +47,6 @@ import java.util.TreeSet;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.util.EncryptUtil;
-import com.sitescape.team.util.NLT;
 import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
 import com.sitescape.team.ObjectKeys;
@@ -56,7 +55,7 @@ import com.sitescape.team.ObjectKeys;
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"
  *
  */
-public class User extends Principal {
+public class User extends UserPrincipal {
     protected String firstName="";//set by hibernate access="field"
     protected String middleName="";//set by hibernate access="field"
     protected String lastName="";//set by hibernate access="field"
@@ -355,7 +354,7 @@ public class User extends Principal {
         return principalIds;
     }
     
-    private void addPrincipalIds(Principal principal, Set ids) {
+    private void addPrincipalIds(UserPrincipal principal, Set ids) {
         // To prevent infinite loop resulting from possible cycle among
         // group membership, proceed only if the principal hasn't already
         // been processed. 
@@ -363,7 +362,7 @@ public class User extends Principal {
         if(ids.add(principal.getId())) {
             List memberOf = principal.getMemberOf();
             for(Iterator i = memberOf.iterator(); i.hasNext();) {
-                addPrincipalIds((Principal) i.next(), ids);
+                addPrincipalIds((UserPrincipal) i.next(), ids);
             }
         }
     }
@@ -408,4 +407,11 @@ public class User extends Principal {
     	return false;
     }
     
+    public boolean isSuper() {
+    	if (!isReserved()) return false;
+    	if (ObjectKeys.SUPER_USER_INTERNALID.equals(internalId)) return true;
+    	if (ObjectKeys.JOB_PROCESSOR_INTERNALID.equals(internalId)) return true;
+    	return false;
+    }
+
 }
