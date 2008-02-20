@@ -59,6 +59,8 @@ import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
+import com.sitescape.team.domain.Application;
+import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EmailAddress;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -550,6 +552,17 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 			throw new NoGroupByTheIdException(groupId);
 		}
 	}
+	public ApplicationGroup loadApplicationGroup(final Long groupId, Long zoneId)  {
+		try {
+			ApplicationGroup group = (ApplicationGroup)getHibernateTemplate().get(ApplicationGroup.class, groupId);
+			if (group == null) {throw new NoGroupByTheIdException(groupId);}
+			//make sure from correct zone
+			if (!group.getZoneId().equals(zoneId) || !group.isActive()) {throw new NoGroupByTheIdException(groupId);}
+			return group;
+		} catch (ClassCastException ce) {
+			throw new NoGroupByTheIdException(groupId);
+		}
+	}
 	public List<Group> loadGroups(Collection<Long> ids, Long zoneId) {
 		return loadPrincipals(ids, zoneId, Group.class, false, true);
 	}
@@ -721,6 +734,17 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	}
     	return loadGroup(id, zoneId);
     }
+    public ApplicationGroup getReservedApplicationGroup(String internalId, Long zoneId) {
+    	Long id = getReservedId(internalId, zoneId);
+    	if (id == null) {
+    		List<ApplicationGroup>objs = getCoreDao().loadObjects(ApplicationGroup.class, new FilterControls(ObjectKeys.FIELD_INTERNALID, internalId), zoneId);
+    		if ((objs == null) || objs.isEmpty()) throw new NoGroupByTheNameException(internalId);
+    		ApplicationGroup g = objs.get(0);
+    		setReservedId(internalId, zoneId, g.getId());
+    		return g;
+    	}
+    	return loadApplicationGroup(id, zoneId);
+    }
     public User getReservedUser(String internalId, Long zoneId) {
     	Long id = getReservedId(internalId, zoneId);
     	if (id == null) {
@@ -732,11 +756,14 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	}
     	return loadUser(id, zoneId);
    }
-   public Set<Long> getPrincipalIds(User user) {
-	   if (user.isAllUserMember()) return new HashSet(user.computePrincipalIds(getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
-	   return new HashSet(user.computePrincipalIds(null));
-   
-    }
+    public Set<Long> getPrincipalIds(User user) {
+ 	   if (user.isAllUserMember()) return new HashSet(user.computePrincipalIds(getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
+ 	   return new HashSet(user.computePrincipalIds(null));
+    
+     }
+    public Set<Long> getPrincipalIds(Application application) {
+ 	   return new HashSet(application.computePrincipalIds(getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, application.getZoneId())));
+     }
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 
 	 * the original list, or members of groups and their nested groups.

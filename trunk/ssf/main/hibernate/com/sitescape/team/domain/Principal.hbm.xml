@@ -49,11 +49,6 @@
 <property name="zoneId" update="false" insert="false"/>
 <property name="foreignName" update="false" insert="false"/>
 </properties>
-    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
-      <cache usage="read-write"/>
-      <key column="userId"/>
-      <many-to-many fetch="join" node="Group" class="com.sitescape.team.domain.Group" column="groupId" embed-xml="false"/>
-    </bag>
     <many-to-one name="parentBinder"/>
     <component name="description">
       <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
@@ -78,27 +73,49 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
-    <subclass name="com.sitescape.team.domain.Group" discriminator-value="group" dynamic-update="true">
-      <bag inverse="false" access="field" cascade="all" lazy="true" table="SS_PrincipalMembership" name="members">
-        <key column="groupId"/>
-        <many-to-many fetch="join" class="com.sitescape.team.domain.Principal" column="userId"/>
-      </bag>
-    </subclass>
-    <subclass name="com.sitescape.team.domain.User" node="User" discriminator-value="user" dynamic-update="true">
-      <property name="displayStyle" length="16"/>
-      <property name="loginDate"/>
-      <property name="firstName" access="field" length="64"/>
-      <property name="lastName" access="field" length="64"/>
-      <property name="middleName" access="field" length="64"/>
-      <property name="organization" length="256"/>
-      <property name="phone" length="128"/>
-      <property name="zonName" length="100"/>
-      <property name="skypeId" length="64"/>
-      <property name="password" access="field" length="64"/>
-	  <property name="timeZone" access="field" length="80"/>
-	  <property name="locale" access="field" length="32"/>
-	  <property name="digestSeed"/>
-    </subclass>
+  	<subclass dynamic-update="true" name="com.sitescape.team.domain.UserPrincipal">
+	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
+	      <cache usage="read-write"/>
+	      <key column="userId"/>
+	      <many-to-many fetch="join" node="Group" class="com.sitescape.team.domain.Group" column="groupId" embed-xml="false"/>
+	    </bag>
+	    <subclass name="com.sitescape.team.domain.Group" discriminator-value="group" dynamic-update="true">
+	      <bag inverse="false" access="field" cascade="all" lazy="true" table="SS_PrincipalMembership" name="members">
+	        <key column="groupId"/>
+	        <many-to-many fetch="join" class="com.sitescape.team.domain.UserPrincipal" column="userId"/>
+	      </bag>
+	    </subclass>
+	    <subclass name="com.sitescape.team.domain.User" node="User" discriminator-value="user" dynamic-update="true">
+	      <property name="displayStyle" length="16"/>
+	      <property name="loginDate"/>
+	      <property name="firstName" access="field" length="64"/>
+	      <property name="lastName" access="field" length="64"/>
+	      <property name="middleName" access="field" length="64"/>
+	      <property name="organization" length="256"/>
+	      <property name="phone" length="128"/>
+	      <property name="zonName" length="100"/>
+	      <property name="skypeId" length="64"/>
+	      <property name="password" access="field" length="64"/>
+		  <property name="timeZone" access="field" length="80"/>
+		  <property name="locale" access="field" length="32"/>
+		  <property name="digestSeed"/>
+	    </subclass>
+  	</subclass>
+  	<subclass dynamic-update="true" name="com.sitescape.team.domain.ApplicationPrincipal">
+	    <bag inverse="true" access="field" cascade="all" optimistic-lock="false" node="." lazy="true" table="SS_PrincipalMembership" name="memberOf">
+	      <cache usage="read-write"/>
+	      <key column="userId"/>
+	      <many-to-many fetch="join" node="ApplicationGroup" class="com.sitescape.team.domain.ApplicationGroup" column="groupId" embed-xml="false"/>
+	    </bag>
+	    <subclass name="com.sitescape.team.domain.ApplicationGroup" discriminator-value="appgroup" dynamic-update="true">
+	      <bag inverse="false" access="field" cascade="all" lazy="true" table="SS_PrincipalMembership" name="members">
+	        <key column="groupId"/>
+	        <many-to-many fetch="join" class="com.sitescape.team.domain.ApplicationPrincipal" column="userId"/>
+	      </bag>
+	    </subclass>
+	    <subclass name="com.sitescape.team.domain.Application" node="Application" discriminator-value="app" dynamic-update="true">
+	    </subclass>
+  	</subclass>
   </class>
   <query name="find-User-Company"><![CDATA[from com.sitescape.team.domain.User user where lower(user.name)=:userName and user.zoneId=:zoneId and user.deleted=false and user.disabled=false]]></query>
 </hibernate-mapping>

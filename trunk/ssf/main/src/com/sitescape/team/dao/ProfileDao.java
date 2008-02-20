@@ -31,13 +31,14 @@ package com.sitescape.team.dao;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.springframework.dao.DataAccessException;
 
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.SFQuery;
+import com.sitescape.team.domain.Application;
+import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoGroupByTheIdException;
@@ -107,11 +108,14 @@ public interface ProfileDao {
  	public Set<Long> getAllGroupMembership(Long principalId, Long zoneId);
  	public List<Long> getMembership(Long groupId, Long zoneId);
 	public Set<Long> getPrincipalIds(User user);
+	public Set<Long> getPrincipalIds(Application user);
 	public ProfileBinder getProfileBinder(Long zoneId);
 	public Group getReservedGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
+	public ApplicationGroup getReservedApplicationGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
 	public User getReservedUser(String internalId, Long zoneId) throws NoUserByTheNameException;
       
     public Group loadGroup(Long groupId, Long zoneId) throws NoGroupByTheIdException;
+    public ApplicationGroup loadApplicationGroup(Long groupId, Long zoneId) throws NoGroupByTheIdException;
     public List<Group> loadGroups(Collection<Long> groupsIds, Long zoneId);
     public List<Group> loadGroups(FilterControls filter, Long zoneId) throws DataAccessException; 
     public Principal loadPrincipal(Long prinId, Long zoneId, boolean checkActive);

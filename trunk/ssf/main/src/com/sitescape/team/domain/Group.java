@@ -46,7 +46,7 @@ import com.sitescape.util.Validator;
  * @hibernate.subclass discriminator-value="G" dynamic-update="true" 
  *
  */
-public class Group extends Principal  {
+public class Group extends UserPrincipal {
     private List members;  //initialized by hibernate access=field  
     
 	public EntityIdentifier.EntityType getEntityType() {
