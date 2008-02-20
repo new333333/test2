@@ -59,7 +59,6 @@
         <column name="definition" sql-type="char(32)"/>
       </many-to-many>
     </list>
-    <property name="type" length="16" update="false" insert="false"/>
     <property name="name" length="128" />
     <property name="pathName" length="1024"/>
     <component name="notificationDef">

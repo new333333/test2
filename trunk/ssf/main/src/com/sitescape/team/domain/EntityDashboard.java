@@ -30,7 +30,8 @@ package com.sitescape.team.domain;
 import org.dom4j.Element;
 
 /**
- * This object represents a dashboard configured for a binder
+ * This object represents a dashboard configured for an entity.
+ * Currently only <coe>Binders</code> are supported.
  *
  * @hibernate.subclass discriminator-value="E" dynamic-update="true"
  * 
@@ -58,7 +59,7 @@ public class EntityDashboard extends Dashboard {
 	}
 
 	/**
-     * The Entity that owns the tag
+     * The entity that owns the dashboard.
      * @hibernate.componenent
      * @return
      */

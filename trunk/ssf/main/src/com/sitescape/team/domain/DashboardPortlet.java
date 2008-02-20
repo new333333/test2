@@ -28,9 +28,9 @@
  */
 package com.sitescape.team.domain;
 /**
+ * This class is used to represent the summary portlets.
  * @hibernate.subclass discriminator-value="P" dynamic-update="true"
  * 
- * @author Jong Kim
  * 
  */
 public class DashboardPortlet extends Dashboard {

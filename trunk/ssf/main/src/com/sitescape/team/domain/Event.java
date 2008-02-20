@@ -65,10 +65,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -80,7 +78,6 @@ import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Transp;
 
-import org.apache.lucene.document.DateTools;
 import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
@@ -88,11 +85,9 @@ import org.joda.time.YearMonthDay;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.shared.XmlUtils;
-import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.util.cal.DayAndPosition;
 import com.sitescape.util.cal.Duration;
 import com.sitescape.team.ObjectKeys;
-import com.sun.star.beans.GetDirectPropertyTolerantResult;
 
 /**
  * <code>Recurrence</code> represents a recurring interval of time. It
@@ -121,7 +116,6 @@ import com.sun.star.beans.GetDirectPropertyTolerantResult;
  * 
  * This is based on the Recurrence class from edu.columbia.cpl.Recurrence
  * Changed to reduce cloning and persist with hibernate
- * @author Janet McCann
  * 
  */
 public class Event extends PersistentTimestampObject implements Cloneable, UpdateAttributeSupport {

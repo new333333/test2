@@ -32,13 +32,14 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 import com.sitescape.util.StringUtil;
-/*
+/**
  * This is a wrapper object that converts a set of objects to
- * a comma separated string for storage.  This is a bit of a hack.
- * We are trying to avoid having long lists of elements, stored as individual
- * rows in the customAttribute table.
- * This is used to store lists of users.
+ * a comma separated string for storage.  
+
+ * This is used to store lists of user ids.
  */
+//  We are trying to avoid having long lists of elements, stored as individual
+// rows in the customAttribute table.
 public class CommaSeparatedValue implements Serializable {
 	private final static long serialVersionUID=1;
 	private Set values=null;

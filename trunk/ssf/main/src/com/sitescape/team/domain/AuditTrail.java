@@ -31,6 +31,7 @@ package com.sitescape.team.domain;
 import java.util.Date;
 
 /**
+ * Provide auditting of significant events in the system.
  * @hibernate.class table="SS_AuditTrail"
  * @hibernate.discriminator type="char" discriminator-value="A" column="type"
  *
@@ -60,9 +61,15 @@ public class AuditTrail extends ZonedObject {
     protected AuditType auditType=AuditType.unknown;
     protected String fileId;
     
-    public AuditTrail() {
+    protected AuditTrail() {
 		
 	}
+    /**
+     * Add the owner information, start and end date of the event
+     * @param owner
+     * @param start
+     * @param end
+     */
 	public AuditTrail(AnyOwner owner, HistoryStamp start, HistoryStamp end) {
     	setEntityId(owner.getOwnerId());
     	setEntityType(owner.getOwnerType());
@@ -71,6 +78,12 @@ public class AuditTrail extends ZonedObject {
 		setStart(start);
 		setEnd(end);
 	}
+	/**
+	 * 
+	 * @param what
+	 * @param user
+	 * @param entity
+	 */
 	public AuditTrail(AuditType what, User user, DefinableEntity entity) {
 		setAuditType(what);
 		setStartBy(user.getId());
@@ -89,120 +102,138 @@ public class AuditTrail extends ZonedObject {
 		
 	}
 	/**
+	 * Audit database id. Automatically generated
 	 * @hibernate.id generator-class="uuid.hex" unsaved-value="null" node="@id"
 	 * @hibernate.column name="id" sql-type="char(32)"
 	 */    
     public String getId() {
         return id;
     }
-    public void setId(String id) {
+    protected void setId(String id) {
         this.id = id;
     }
     /**
+     * Return the id of the entity
      * @hibernate.property
      * @return
      */
     public Long getEntityId() {
     	return entityId;
     }
-    public void setEntityId(Long entityId) {
+    protected void setEntityId(Long entityId) {
     	this.entityId = entityId;
     }
     /**
+     * The entity type.  {@link com.sitescape.team.domain.EntityIdentifier.EntityType EntityType}
      * @hibernate.property length="16"
      * @return
      */
     public String getEntityType() {
     	return entityType;
     }
-    public void setEntityType(String entityType) {
+    protected void setEntityType(String entityType) {
     	this.entityType = entityType;
     }
     /**
-     * Binder owning the entity - may be null
+     * Return the id of the binder owning the entity.
+     * If the entity is a binder, the id is the binder's id.
      * @hibernate.property 
+     * @return
      */
     public Long getOwningBinderId() {
     	return this.owningBinderId;
     }
-    public void setOwningBinderId(Long owningBinderId) {
+    protected void setOwningBinderId(Long owningBinderId) {
     	this.owningBinderId = owningBinderId;
     }
     /**
-     * query key for owningbinder - may be null
+     * Return the sort key for the owning binder.
+     * If the entity is a binder, the key is the binder's sort key.
      * @hibernate.property length="255" 
      * @return
      */
     public String getOwningBinderKey() {
         return owningBinderKey;
     }
-    public void setOwningBinderKey(String owningBinderKey) {
+    protected void setOwningBinderKey(String owningBinderKey) {
         this.owningBinderKey = owningBinderKey;
     } 
     
     /**
-     * - may be null
+     * Return a description of the event.  
+     * May be <code>null</code>
      * @hibernate.property length="512"
      * @return
      */
     public String getDescription() {
         return this.description;
     }
+    /**
+     * Optional. Set the description.
+     * @param description
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 	/**
+	 * Start time of event
      * @hibernate.property
      */
     public Date getStartDate() {
         return this.startDate;
     }
-    public void setStartDate(Date start) {
+    protected void setStartDate(Date start) {
         this.startDate = start;
     }
 
 	/**
+	 * Return id of <code>Principal</code> that started the audit
      * @hibernate.property
      */
     public Long getStartBy() {
         return this.startBy;
     }
-    public void setStartBy(Long startBy) {
+    protected void setStartBy(Long startBy) {
         this.startBy = startBy;
     }
-    public void setStart(HistoryStamp start) {
+    protected void setStart(HistoryStamp start) {
     	this.startDate = start.getDate();
     	this.startBy = start.getPrincipal().getId();
     }
  	/**
+ 	 * Return the end date of the event.
+     * May be <code>null</code>
      * @hibernate.property
-     * - may be null
      */
     public Date getEndDate() {
         return this.endDate;
     }
-    public void setEndDate(Date endDate) {
+    protected void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
  	/**
+ 	 * Return the id of the <code>Principal</code> that ended the audit.
+     * May be <code>null</code>
      * @hibernate.property
-     * - may be null
      */
     public Long getEndBy() {
         return this.endBy;
     }
-    public void setEndBy(Long endBy) {
+    protected void setEndBy(Long endBy) {
         this.endBy = endBy;
     }
-    public void setEnd(HistoryStamp end) {
+    protected void setEnd(HistoryStamp end) {
     	this.endDate = end.getDate();
     	this.endBy = end.getPrincipal().getId();
     }
-   
+    /**
+     * Return the type of event being auditted.
+     * @return
+     */
     public AuditType getAuditType() {
         return auditType;
     }
-    public void setAuditType(AuditType auditType) {
+    protected void setAuditType(AuditType auditType) {
         this.auditType = auditType;
     }
     /**
@@ -223,6 +254,8 @@ public class AuditTrail extends ZonedObject {
 		}
    }
 	/**
+	 * Return the file attachment id.
+	 * Used with <code>AutitType.download</code>.
 	 * @hibernate.property
 	 * @return
 	 */

@@ -36,7 +36,6 @@ import java.util.ArrayList;
 public class ProfileBinder extends Workspace {
 
     public ProfileBinder() {
-    	setType(EntityIdentifier.EntityType.profiles.name());
     	setDefinitionsInherited(false);
     }
 	public EntityIdentifier.EntityType getEntityType() {

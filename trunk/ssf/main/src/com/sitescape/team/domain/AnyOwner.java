@@ -31,12 +31,13 @@ package com.sitescape.team.domain;
 
 
 /**
- * @author Janet McCann
- * Implement the hooks for the any key.  For each any type, there needs to be a field that
- * can serve as a foreign key for association mapping.
+ * 
+ * Implement the hooks for the any key.  The any key allows shared tables for common associations between
+ * <code>Binders, Principals, and FolderEntry</code>.  For each any type, there needs to be a field that
+ * can serve as a foreign key for association mapping.  
  * 
  * This class is closely related to EntityIdentifier.  New types
- * must be accounted for here and in any hibernate mapping files that user this.
+ * must be accounted for here and in any hibernate mapping files that reference this class.
  */
 public class AnyOwner {
     protected DefinableEntity entity;
@@ -53,16 +54,21 @@ public class AnyOwner {
      * This should be used only by hibernate
      *
      */
-    public AnyOwner() {		
+    protected AnyOwner() {		
 	}
+    /**
+     * Setup entity key
+     * @param entity
+     */
 	public AnyOwner(DefinableEntity entity) {
 		setBinderKey(entity);
 		setup(entity);
  	}
 	/**
-	 * Setup entity
+	 * Setup entity key.  
 	 * @param entity
-	 * @param setForeignKey
+	 * @param setForeignKey False if this object is not a member of the first level association with entry.  For example
+	 * 		VersionAttachments are not, but FileAttachments are.
 	 */
 	public AnyOwner(DefinableEntity entity, boolean setForeignKey) {
 		setBinderKey(entity);
@@ -200,12 +206,12 @@ public class AnyOwner {
     * @hibernate.property length="255" 
     * @return
     */
-   public String getOwningBinderKey() {
+   protected String getOwningBinderKey() {
        return owningBinderKey;
    }
    private void setOwningBinderKey(String owningBinderKey) {
        this.owningBinderKey = owningBinderKey;
-   }   
+   }  
    public boolean equals(Object obj) {
    		if(this == obj)
    			return true;
@@ -219,6 +225,7 @@ public class AnyOwner {
             
    		return false;
    }
+
    public int hashCode() {
    		return 31*entity.hashCode() + ownerType.hashCode();
    }   

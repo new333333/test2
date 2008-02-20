@@ -28,15 +28,15 @@
  */
 package com.sitescape.team.domain;
 /**
- * Component class
+ * Component class used to store user rating of entity
  */
 public class AverageRating {
-	Double rating=null; 
-	Long count=null;
+	protected Double rating=null; 
+	protected Long count=null;
 	public AverageRating() {
-		
 	}
 	/**
+	 * Return the average
 	 * @hibernate.property
 	 * @return
 	 */
@@ -46,10 +46,8 @@ public class AverageRating {
 	public void setAverage(Double rating) {
 		this.rating = rating;
 	}
-	public void setAverage(double rating) {
-		this.rating = Double.valueOf(rating);
-	}
 	/**
+	 * Return count of raters
 	 * @hibernate.property
 	 * @return
 	 */
@@ -58,9 +56,6 @@ public class AverageRating {
 	}
 	public void setCount(Long count) {
 		this.count = count;
-	}
-	public void setCount(long count) {
-		this.count = Long.valueOf(count);
 	}
 
 }

@@ -50,11 +50,9 @@ import com.sitescape.util.Validator;
 public class Workspace extends Binder  {
 	protected String searchTitle; //set by hibernate acccess=field
     public Workspace() {
-    	setType(EntityIdentifier.EntityType.workspace.name());
     }
     public Workspace(Workspace workspace) {
        	super(workspace);
-       	setType(EntityIdentifier.EntityType.workspace.name());
        	searchTitle = workspace.searchTitle;
     }
     public EntityIdentifier.EntityType getEntityType() {

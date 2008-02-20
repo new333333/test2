@@ -101,6 +101,7 @@ public class Definition extends PersistentTimestampObject  {
 
 
     /**
+     * Unique name of definition.
      * @hibernate.property length="64"
      */
     public String getName() {
@@ -110,6 +111,7 @@ public class Definition extends PersistentTimestampObject  {
     	this.name = name;
     }
     /**
+     * Title for definition.  
      * @hibernate.property length="128"
      */
     public String getTitle() {
@@ -130,6 +132,7 @@ public class Definition extends PersistentTimestampObject  {
     }
     
     /**
+     * All are currently visible.
      * @hibernate.property 
      */
     public int getVisibility() {
@@ -150,8 +153,7 @@ public class Definition extends PersistentTimestampObject  {
     
     /**
      * Internal id used to identify default definitions.  This id plus
-     * the zoneId are used to locate default definitions.  If we just used the primary key id
-     * the zones would need the same default and that may not be desirable.
+     * the zoneId are used to locate default definitions.  
      * @hibernate.property length="32"
      */
     public String getInternalId() {
@@ -206,16 +208,6 @@ public class Definition extends PersistentTimestampObject  {
  
     public String toString() {
     	return name;
-    }
-
-    public Long getOwnerId() {
-    	HistoryStamp creation = getCreation();
-    	if(creation != null) {
-    		Principal principal = creation.getPrincipal();
-    		if(principal != null)
-    			return principal.getId();
-    	}
-    	return null;
     }
 
 }

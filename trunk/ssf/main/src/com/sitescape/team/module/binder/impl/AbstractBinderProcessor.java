@@ -1011,12 +1011,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		//remove title from old parent
     	getCoreDao().updateFileName(source.getParentBinder(), source, source.getTitle(), null);
 		if (source.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(source.getParentBinder(), source, source.getNormalTitle(), null);		
-		source.getParentBinder().removeBinder(source);
-    	destination.addBinder(source);
+		source.move(destination);
     	//now add name to new parent 
 		if (destination.isUniqueTitles()) getCoreDao().updateTitle(destination, source, null, source.getNormalTitle());   	
 		getCoreDao().updateFileName(source.getParentBinder(), source, null, source.getTitle());
-		source.setPathName(destination.getPathName() + "/" + source.getTitle());
 		if (resourcePathAffected) {
 			String newPath = getResourceDriverManager().normalizedResourcePath
 			(source.getResourceDriverName(), source.getParentBinder().getResourcePath(), source.getTitle());
@@ -1036,8 +1034,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	children.remove(0);
         	children.addAll(b.getBinders());
     		//parent has moved, just fix up path and sortKey
-    		b.setPathName(b.getParentBinder().getPathName() + "/" + b.getTitle());
-    		b.setBinderKey(new HKey(b.getParentBinder().getBinderKey(), b.getBinderKey().getLastNumber()));
+        	b.move(b.getParentBinder());
 			if(resourcePathAffected) {
 				String newPath = getResourceDriverManager().normalizedResourcePath
 				(b.getResourceDriverName(), b.getParentBinder().getResourcePath(), b.getTitle());

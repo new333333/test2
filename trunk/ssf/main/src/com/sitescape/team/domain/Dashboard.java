@@ -48,7 +48,6 @@ import com.sitescape.util.Validator;
  * @hibernate.cache usage="read-write"
  * @hibernate.mapping auto-import="false"
  * need auto-import = false so names don't collide with jbpm
- * @author Jong Kim
  *
  */
 public abstract class Dashboard extends PersistentTimestampObject {

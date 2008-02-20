@@ -52,7 +52,6 @@ import org.dom4j.io.OutputFormat;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.survey.Survey;
-import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.util.Validator;
 /**
@@ -60,17 +59,13 @@ import com.sitescape.util.Validator;
  * @hibernate.discriminator type="char" column="type"
  * @hibernate.mapping auto-import="false"
  * need auto-import = false so names don't collide with jbpm
- * @author janet
  * 
- *  Object to represent user attributes in the database.  Since the definition must be
- *  generic, we try to optimize by defining 2 columns.  1 is a varchar the other is a clob
- *  Assume the varchar is more efficient.
- *  Hide whether data is stored as clob or varchar.
+ *  Object to represent user attributes in the database. 
  * 
  * Sets are stored in multiple entries.  Because all elements have the same name, we
  * don't set the foreign key on list elements.  
  * The name can remain the same, so user reporting can find the name of list members.
- * The folder/owner/ownerType fields should be used to walk up the object hierarchy.
+ * The owner field should be used to walk up the object hierarchy.
  */
 public class CustomAttribute extends ZonedObject {
     protected String stringValue;
@@ -127,6 +122,7 @@ public class CustomAttribute extends ZonedObject {
    		setValue(value);
    }
    /**
+    * Return the entity that this attribute is associated with.
     * @hibernate.component class="com.sitescape.team.domain.AnyOwner"
     * @return
     */
@@ -140,6 +136,7 @@ public class CustomAttribute extends ZonedObject {
    		owner = new AnyOwner(entity); 		
   	}   	
     /**
+     * Return the name of the attribute.
      * @hibernate.property access="field" length="64"
      * @return
      */
@@ -168,10 +165,10 @@ public class CustomAttribute extends ZonedObject {
     /**
      * @hibernate.component prefix="description_"
      */
-    public Description getDescription() {
+    private Description getDescription() {
         return this.description;
     }
-    public void setDescription(Description description) {
+    private void setDescription(Description description) {
         this.description = description; 
     }
     
@@ -272,6 +269,11 @@ public class CustomAttribute extends ZonedObject {
         if (values != null) values.clear();
         
     }
+    /**
+     * The value may be any valueType.
+     * @param value
+     * @return
+     */
     public boolean setValue(Object value) {
     	if (value == null) {
        		setValue(value, true);
@@ -515,6 +517,10 @@ public class CustomAttribute extends ZonedObject {
  	    }
 	    return null;
 	}
+	/**
+	 * Return the value as a set.
+	 * @return
+	 */
 	public Set getValueSet() {
 		Object result = getValue();
 		if (result instanceof Set) return (Set)result;
@@ -540,8 +546,8 @@ public class CustomAttribute extends ZonedObject {
             return true;
         return false;
     }	
-    /*
-     * The following methods are used for performance optimization during indexing.
+    /**
+     * This method is used for performance optimization during indexing.
      * The values of each collection are loaded and built by hand.  
      * They are not persisted.  This allows us to load greater than the 
      * hibernate "batch-size" number of collections at once.
