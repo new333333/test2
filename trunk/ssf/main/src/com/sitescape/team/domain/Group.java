@@ -74,22 +74,22 @@ public class Group extends UserPrincipal {
 		this.members.addAll(newM);
 		this.members.removeAll(remM);
 		for (Iterator iter=newM.iterator(); iter.hasNext();) {
-			Principal p = (Principal)iter.next();
+			UserPrincipal p = (UserPrincipal)iter.next();
 			p.getMemberOf().add(this);
 		}
 		for (Iterator iter=remM.iterator(); iter.hasNext();) {
-			Principal p = (Principal)iter.next();
+			UserPrincipal p = (UserPrincipal)iter.next();
 			p.getMemberOf().remove(this);
 		}
   	} 	
     
-    public void addMember(Principal member) {
+    public void addMember(UserPrincipal member) {
 		if (members == null) members = new ArrayList();
     	if (members.contains(member)) return;
     	members.add(member);
     	member.getMemberOf().add(this);
     }
-    public void removeMember(Principal member) {
+    public void removeMember(UserPrincipal member) {
 		if (members == null) members = new ArrayList();
     	members.remove(member);
     	member.getMemberOf().remove(this);
