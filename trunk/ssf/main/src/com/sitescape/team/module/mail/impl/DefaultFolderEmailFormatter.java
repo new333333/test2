@@ -86,6 +86,7 @@ import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.mail.MailHelper;
@@ -769,23 +770,23 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					
 				}
 			} catch (Exception ex) {
-				logger.error("Cannot post the message from: " + from + "Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
+				logger.error("Error posting the message from: " + from + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
 				//if fails and from self, don't reply or we will get it back
-				errors.add(postError(pDef, msgs[i], from, (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage())));
+				errors.add(postError(pDef, msgs[i], from, ex));
 			}
 		}
 		return errors;
 	}
-	private Message postError(PostingDef pDef, Message msg, InternetAddress from, String error) {
+	private Message postError(PostingDef pDef, Message msg, InternetAddress from, Exception error) {
 		try {
 			msg.setFlag(Flags.Flag.DELETED, true);
 			if (!pDef.getEmailAddress().equals(from.getAddress())) {
-				String errorMsg = NLT.get("errorcode.postMessage.failed", new Object[]{Html.stripHtml(error)});
+				String errorMsg = NLT.get("errorcode.postMessage.failed", new Object[]{Html.stripHtml((error.getLocalizedMessage()==null? error.getMessage():error.getLocalizedMessage()))});
 				Message reject = msg.reply(false);
 				reject.setText(errorMsg);
 				reject.setFrom(new InternetAddress(pDef.getEmailAddress()));
 				reject.setContent(msg.getContent(), msg.getContentType());
-				reject.setSubject(reject.getSubject() + " (" + errorMsg + ")");
+				reject.setSubject(reject.getSubject() + " " + errorMsg); 
 				return reject;
 			} 
 		} catch (Exception ex2) {}
