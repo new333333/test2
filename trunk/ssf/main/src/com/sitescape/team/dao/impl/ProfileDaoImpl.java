@@ -78,6 +78,7 @@ import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserEntityPK;
+import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.UserPropertiesPK;
 import com.sitescape.team.domain.Visits;
@@ -422,19 +423,19 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
      *  (non-Javadoc)
      * @see com.sitescape.team.dao.CoreDao#loadPrincipal(java.lang.Long, java.lang.Long)
      */
-    public Principal loadPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
-        Principal principal = (Principal)getHibernateTemplate().execute(
+    public UserPrincipal loadUserPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
+        UserPrincipal principal = (UserPrincipal)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                     	//hoping for cache hit
-                    	Principal principal = (Principal)session.get(Principal.class, prinId);
+                    	UserPrincipal principal = (UserPrincipal)session.get(UserPrincipal.class, prinId);
                         if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
                         //Get the real object, not a proxy to abstract class
                         try {
-                        	principal = (Principal)session.get(User.class, prinId);
+                        	principal = (UserPrincipal)session.get(User.class, prinId);
                         } catch (Exception ex) {};  // group proxies will force an exception, didn't expect with session.get? 
                         if (principal==null) 
-                            principal = (Principal)session.get(Group.class, prinId);
+                            principal = (UserPrincipal)session.get(Group.class, prinId);
                         //make sure from correct zone
                         if (!principal.getZoneId().equals(zoneId) ||
                         		(checkActive && !principal.isActive())) {throw new NoPrincipalByTheIdException(prinId);}
@@ -446,14 +447,14 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         return principal;
               
     }
-    public List<Principal> loadPrincipals(final Collection ids, final Long zoneId, boolean checkActive) {
-    	List<Principal> result = loadPrincipals(ids, zoneId, Principal.class, true, checkActive);
+    public List<UserPrincipal> loadUserPrincipals(final Collection ids, final Long zoneId, boolean checkActive) {
+    	List<UserPrincipal> result = loadPrincipals(ids, zoneId, UserPrincipal.class, true, checkActive);
 		//remove proxies
 		for (int i=0; i<result.size(); ++i) {
-			Principal p = result.get(i);
+			UserPrincipal p = result.get(i);
 			if (!(p instanceof User) && !(p instanceof Group)) {
-				Principal principal = (Principal)getHibernateTemplate().get(User.class, p.getId());
-				if (principal==null) principal = (Principal)getHibernateTemplate().get(Group.class, p.getId());
+				UserPrincipal principal = (UserPrincipal)getHibernateTemplate().get(User.class, p.getId());
+				if (principal==null) principal = (UserPrincipal)getHibernateTemplate().get(Group.class, p.getId());
    				result.set(i, principal);
             }
         }
@@ -928,4 +929,22 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 				}
 		);    		             		 
 	}
+	public Application loadApplication(Long applicationId, Long zoneId) throws NoUserByTheIdException {
+    	try {
+    		Application application = (Application)getHibernateTemplate().get(Application.class, applicationId);
+    		if (application == null) {throw new NoUserByTheIdException(applicationId);}
+    		//	make sure from correct zone
+    		if (!application.getZoneId().equals(zoneId) || !application.isActive()) {
+    			throw new NoUserByTheIdException(applicationId);
+    		}
+    		return application;
+    	} catch (ClassCastException ce) {
+   			throw new NoUserByTheIdException(applicationId);   		
+    	}
+	}
+	public Application loadApplication(Long applicationId, String zoneName) throws NoUserByTheIdException {
+		Binder top = getCoreDao().findTopWorkspace(zoneName);
+		return loadApplication(applicationId, top.getZoneId());
+	}
+
 }

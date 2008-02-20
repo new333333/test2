@@ -23,13 +23,13 @@
 </properties>
    <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.team.domain.Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" name="principal">
         <column name="creation_principal"/>
       </many-to-one>
     </component>
     <component name="modification" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="modification_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.team.domain.Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" name="principal">
         <column name="modification_principal"/>
       </many-to-one>
     </component>

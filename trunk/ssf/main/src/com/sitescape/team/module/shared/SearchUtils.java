@@ -59,6 +59,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -279,7 +280,7 @@ public class SearchUtils {
     				ids.add(Long.parseLong((String)entry.get(userField)));
     			} catch (Exception ex) {}
     	}
-    	List<Principal> principles = profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
+    	List<UserPrincipal> principles = profileDao.loadUserPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), false);
 		Map users = new HashMap();
 		for (Principal p:principles) {
 			users.put(p.getId(), p);

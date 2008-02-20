@@ -41,6 +41,7 @@ import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -54,7 +55,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  */
 public class ShowUser extends BodyTagSupport {
 
-	private Principal user = null;
+	private UserPrincipal user = null;
 	private String titleStyle = "";
     private Boolean showPresence = Boolean.TRUE;
 
@@ -78,7 +79,7 @@ public class ShowUser extends BodyTagSupport {
 					//this will remove the proxy and return a real user or group
 					//currently looks like this code is expecting a User
 					//get user even if deleted.
-					user = profileDao.loadPrincipal(user.getId(), user.getZoneId(), false);
+					user = profileDao.loadUserPrincipal(user.getId(), user.getZoneId(), false);
 				} catch (Exception e) {
 				}
 			}
@@ -110,7 +111,7 @@ public class ShowUser extends BodyTagSupport {
 		return EVAL_PAGE;
 	}
 
-	public void setUser(Principal user) {
+	public void setUser(UserPrincipal user) {
 		this.user = user;
 	}
 	public void setShowPresence(Boolean showPresence) {

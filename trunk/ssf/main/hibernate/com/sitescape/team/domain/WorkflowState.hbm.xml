@@ -30,7 +30,7 @@
     </component>
     <component name="workflowChange" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="wrk_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">
         <column name="wrk_principal"/>
       </many-to-one>
     </component>

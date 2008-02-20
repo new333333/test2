@@ -66,7 +66,7 @@
       <property name="style" column="notify_style"/>
 	  <bag inverse="false" access="field" cascade="all" optimistic-lock="false" lazy="true" table="SS_Notifications" name="distribution">
       	<key column="binderId" />
- 	     <many-to-many fetch="join" class="com.sitescape.team.domain.Principal" column="principalId"/>
+ 	     <many-to-many fetch="join" class="com.sitescape.team.domain.UserPrincipal" column="principalId"/>
     	</bag>
        <property name="emailAddress" column="notify_email" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
       <property name="fromAddress" length="128" column="notify_fromAddress"/>
@@ -105,13 +105,13 @@
     </many-to-one>
     <component name="creation" node="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">
         <column name="creation_principal"/>
       </many-to-one>
     </component>
     <component name="modification" node="modification" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="modification_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">
         <column name="modification_principal"/>
       </many-to-one>
     </component>

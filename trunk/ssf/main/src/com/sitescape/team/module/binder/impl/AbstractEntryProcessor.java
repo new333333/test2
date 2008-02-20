@@ -1103,7 +1103,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	//get the entry
     	Entry entry = entry_load(parentBinder, entryId);
         //Initialize users
-    	getProfileDao().loadPrincipals(getPrincipalIds(entry), RequestContextHolder.getRequestContext().getZoneId(), false);
+    	getProfileDao().loadUserPrincipals(getPrincipalIds(entry), RequestContextHolder.getRequestContext().getZoneId(), false);
         return entry;
     }
           

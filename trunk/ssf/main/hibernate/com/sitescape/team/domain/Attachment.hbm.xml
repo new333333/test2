@@ -35,13 +35,13 @@
     <property name="name" length="64"/>
     <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.team.domain.Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" name="principal">
         <column name="creation_principal"/>
       </many-to-one>
     </component>
     <component name="modification" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="modification_date" type="timestamp"/>
-      <many-to-one class="com.sitescape.team.domain.Principal" name="principal">
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" name="principal">
         <column name="modification_principal"/>
       </many-to-one>
     </component>
@@ -62,7 +62,7 @@
       <component name="fileLock" class="com.sitescape.team.domain.FileAttachment$FileLock">
       	<property name="id" length="128" column="filelock_id"/>
       	<property name="subject" length="192" column="filelock_subject"/>
-        <many-to-one class="com.sitescape.team.domain.Principal" embed-xml="false" node="Principal" name="owner">
+        <many-to-one class="com.sitescape.team.domain.UserPrincipal" embed-xml="false" node="Principal" name="owner">
           <column name="filelock_owner"/>
         </many-to-one>
         <property name="expirationDate" column="filelock_expirationDate" type="timestamp"/>

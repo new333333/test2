@@ -94,7 +94,7 @@ public interface ObjectKeys {
 	//shared guest account
 	public static final String GUEST_USER_INTERNALID="402883b90d0de1f3010d0df5582b0013";
 	//reserverd internalids for allapplication group
-	public static final String ALL_APPLICATIONS_GROUP_INTERNALID=""; // TODO $$$
+	public static final String ALL_APPLICATIONS_GROUP_INTERNALID="402883b90d0de1f3010d0df5582b0014";
 	//reserved id put in acls/membership to indicate owner of object has access
 	//search engine stores the ownerId of the entity in place of this
 	public static final Long OWNER_USER_ID = Long.valueOf(-1);

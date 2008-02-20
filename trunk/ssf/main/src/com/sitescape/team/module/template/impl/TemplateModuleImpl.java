@@ -34,6 +34,7 @@ import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TemplateBinder;
+import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
@@ -522,7 +523,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		if (!binder.isTeamMembershipInherited()) {
 			//store as names, not ids
 			Set<Long> ids = binder.getTeamMemberIds();
-			List<Principal> members = getProfileDao().loadPrincipals(ids, binder.getZoneId(), true);
+			List<UserPrincipal> members = getProfileDao().loadUserPrincipals(ids, binder.getZoneId(), true);
 			for (Principal p:members) {
 				XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_TEAMMEMBER_NAME, p.getName());	    				 
 			}
@@ -539,7 +540,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	    	 List<WorkAreaFunctionMembership> wfms = getAdminModule().getWorkAreaFunctionMemberships(binder);
 	    	 for (WorkAreaFunctionMembership fm: wfms) {
 	    		 Set ids = fm.getMemberIds();
-	    		 List<Principal> members = getProfileDao().loadPrincipals(ids, binder.getZoneId(), true);
+	    		 List<UserPrincipal> members = getProfileDao().loadUserPrincipals(ids, binder.getZoneId(), true);
 	    		 try {
 	    			 Element e = element.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP);
 	    			 Function function = getFunctionManager().getFunction(binder.getZoneId(), fm.getFunctionId());

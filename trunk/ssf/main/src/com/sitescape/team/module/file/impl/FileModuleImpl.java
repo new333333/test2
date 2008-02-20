@@ -75,6 +75,7 @@ import com.sitescape.team.domain.Reservable;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.TitleException;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.FileAttachment.FileLock;
 import com.sitescape.team.lucene.Hits;
@@ -1499,7 +1500,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     }
 
     private void updateFileAttachment(FileAttachment fAtt, 
-			Principal user, String versionName, Long contentLength,
+			UserPrincipal user, String versionName, Long contentLength,
 			Date modDate) {
     	HistoryStamp now = new HistoryStamp(user);
     	HistoryStamp mod;

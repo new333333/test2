@@ -47,16 +47,16 @@ import com.sitescape.team.ObjectKeys;
  */
 public class HistoryStamp {
     protected Date date;
-    protected Principal principal;
+    protected UserPrincipal principal;
    
     public HistoryStamp() {
         
     }
-    public HistoryStamp(Principal principal, Date date) {
+    public HistoryStamp(UserPrincipal principal, Date date) {
         setPrincipal(principal);
         setDate(date);
     }
-    public HistoryStamp(Principal principal) {
+    public HistoryStamp(UserPrincipal principal) {
         setPrincipal(principal);
         setDate(new Date());
     }
@@ -75,10 +75,10 @@ public class HistoryStamp {
      * @hibernate.column name="principal"
      * @return
      */
-    public Principal getPrincipal() {
+    public UserPrincipal getPrincipal() {
         return principal;
     }
-    public void setPrincipal(Principal principal) {
+    public void setPrincipal(UserPrincipal principal) {
         this.principal = principal;
     }
     
