@@ -539,7 +539,8 @@ public class WorkspaceTreeHelper {
 		toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
 			
 		// Sendmail
-		if (!user.getEmailAddress().equals("") && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (user.getEmailAddress() != null && !user.getEmailAddress().equals("") && 
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL((PortletRequest) null, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
@@ -596,7 +597,8 @@ public class WorkspaceTreeHelper {
 		}
 		
 		// send mail
-		if (!user.getEmailAddress().equals("") && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+		if (user.getEmailAddress() != null && !user.getEmailAddress().equals("") && 
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
