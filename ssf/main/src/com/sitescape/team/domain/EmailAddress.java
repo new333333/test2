@@ -29,7 +29,10 @@
 package com.sitescape.team.domain;
 
 import java.io.Serializable;
-
+/**
+ * This class represents an email address for a principal.
+ *
+ */
 //This could be a composite element, but then the primary key contains all fields, and don't want that.
 public class EmailAddress extends ZonedObject implements Serializable {
 

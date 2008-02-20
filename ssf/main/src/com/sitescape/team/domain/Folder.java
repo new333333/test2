@@ -45,12 +45,10 @@ public class Folder extends Binder {
     //We don't maintain a list of entries because it is to big and expensive to 
     //maintain.
     public Folder() {
-    	setType(EntityIdentifier.EntityType.folder.name());
     	setLibrary(true);
     }
     public Folder(Folder folder) {
        	super(folder);
-       	setType(EntityIdentifier.EntityType.folder.name());
     }
  	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.folder;

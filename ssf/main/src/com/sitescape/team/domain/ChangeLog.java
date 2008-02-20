@@ -41,7 +41,6 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.util.XmlFileUtil;
 /**
  * @hibernate.class table="SS_ChangeLogs" 
- * @author Janet McCann
  * 
  * Log changes for reporting
  * We only update rows in this table if a binder moves
@@ -132,16 +131,18 @@ public class ChangeLog extends ZonedObject {
 
 	}
 	/**
+	 * Log id
 	 * @hibernate.id generator-class="uuid.hex" unsaved-value="null"
 	 * @hibernate.column name="id" sql-type="char(32)"
 	 */    
 	public String getId() {
 		return id;
 	}
-	public void setId(String id) {
+	protected void setId(String id) {
 		this.id = id;
 	}
     /**
+     * Return id of entity
      * @hibernate.property
      * @return
      */
@@ -152,6 +153,8 @@ public class ChangeLog extends ZonedObject {
     	this.entityId = entityId;
     }
     /**
+     * Return string representation of entity type.  
+     * @see com.sitescape.team.domain.EntityIdentifier.EntityType
      * @hibernate.property length="16"
      * @return
      */
@@ -162,6 +165,7 @@ public class ChangeLog extends ZonedObject {
     	this.entityType = entityType;
     }
     /**
+     * Return zone id
      * @hibernate.property 
      */
     public Long getZoneId() {
@@ -171,6 +175,7 @@ public class ChangeLog extends ZonedObject {
     	this.zoneId = zoneId;
     }
     /**
+     * Return id of owning binder.  If the entity is a binder, return binder id.
      * @hibernate.property 
      */
     public Long getOwningBinderId() {
@@ -180,6 +185,7 @@ public class ChangeLog extends ZonedObject {
     	this.owningBinderId = owningBinderId;
     }
     /**
+     * Return the sort key of the owning binder.
      * @hibernate.property length="255" 
      * @return
      */
@@ -190,6 +196,7 @@ public class ChangeLog extends ZonedObject {
         this.owningBinderKey = owningBinderKey;
     } 
     /**
+     * Return the document number for <code>folderEntries</code>.
      * @hibernate.property length="512"
      */
     public String getDocNumber() {
@@ -199,6 +206,7 @@ public class ChangeLog extends ZonedObject {
     	this.docNumber = docNumber;
     }
     /**
+     * Return entity version number when this log entry was created.
      * @hibernate.property not-null="true"
      */
     public Long getVersion() {
@@ -208,6 +216,7 @@ public class ChangeLog extends ZonedObject {
     	this.version = version;
     }
     /**
+     * Return the operation being logged
      * @hibernate.property length="32"
      * @return
      */
@@ -218,6 +227,7 @@ public class ChangeLog extends ZonedObject {
 		this.operation = operation;
 	}
     /**
+     * Return the name of the user that generated the log.
      * @hibernate.property length="82"
      * @return
      */
@@ -228,7 +238,8 @@ public class ChangeLog extends ZonedObject {
 		this.userName = userName;
 	}
     /**
-     * @hibernate.property 
+      * Return the id of the user that generated the log.
+      * @hibernate.property 
      */
     public Long getUserId() {
     	return this.userId;
@@ -246,6 +257,10 @@ public class ChangeLog extends ZonedObject {
 	public void setOperationDate(Date operationDate) {
 		this.operationDate = operationDate;
 	}
+	/**
+	 * Return the root of the XML document.
+	 * @return
+	 */
 	public Element getEntityRoot() {
 		Element root = getDocument().getRootElement();
 		if (root == null) {
@@ -261,6 +276,7 @@ public class ChangeLog extends ZonedObject {
 	}
 	
     /**
+     * Return the XML document as a string.
      * @hibernate.property type="org.springframework.orm.hibernate3.support.ClobStringType"
      */
     public String getXmlString() {

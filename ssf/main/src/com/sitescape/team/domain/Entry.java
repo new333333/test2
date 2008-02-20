@@ -30,8 +30,7 @@ package com.sitescape.team.domain;
 
 
 /**
- * @author Jong Kim
- * Mostly a marker class
+ * Mostly a marker class.
  */
 public abstract class Entry extends DefinableEntity  {
  

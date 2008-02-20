@@ -53,17 +53,15 @@ import com.sitescape.util.Validator;
  * @hibernate.cache usage="read-write"
  * @hibernate.mapping auto-import="false"
  * need auto-import = false so names don't collide with jbpm
- * @author Jong Kim
  *
  */
-public abstract class Binder extends DefinableEntity implements DefinitionArea, WorkArea, InstanceLevelProcessorSupport  {
+public abstract class Binder extends DefinableEntity implements WorkArea, InstanceLevelProcessorSupport  {
 	protected String name="";
     protected Principal owner; //initialized by hibernate access=field  
     protected Map properties;
     protected NotificationDef notificationDef;
     protected PostingDef posting;
     protected Integer upgradeVersion=1; //initialzed by hiberaten access=field
-    protected String type;
     protected String pathName;
     protected List definitions;	//initialized by hiberate access=field
     protected List binders;//initialized by hibernate access="field"
@@ -88,6 +86,10 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     
     public Binder() {
     }
+    /**
+     * Populate binder with source binder
+     * @param source
+     */
     public Binder(Binder source) {
     	super(source);
  		if (source.definitions != null)
@@ -98,7 +100,6 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
   			 workflowAssociations = new HashMap(source.workflowAssociations);
 		 //don't copy names		 name = source.name;
 		 zoneId = source.zoneId;
-		 type = source.type;
 		 definitionsInherited=source.definitionsInherited;
 		 functionMembershipInherited=source.functionMembershipInherited;
 		 teamMembershipInherited=source.teamMembershipInherited;
@@ -114,6 +115,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
  
      }
     /**
+     * Return the zone id
      * @hibernate.property not-null="true"
      */
     public Long getZoneId() {
@@ -122,26 +124,47 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setZoneId(Long zoneId) {
     	this.zoneId = zoneId;
     }
+    /**
+     * Return true if this binder is the top workspace
+     * @return
+     */
     public boolean isZone() {
     	if (getZoneId().equals(getId())) return true;
     	return false;
     }
+    /**
+     * Return true if this binder is to root of a tree
+     * @return
+     */
     public boolean isRoot() {
     	return getParentBinder() == null;
     }
+    /**
+     * Return the top parent of the binder, the top of the tree
+     * @return
+     */
     public Binder getRoot() {
     	if (getParentBinder() == null) return this;
     	return getParentBinder().getRoot();
     }
-
+    /**
+     * Initialize the sort key for the top of a tree. 
+     * Used during zone initialization
+     *
+     */
     public void setupRoot() {
     	if (isRoot()) setBinderKey(new HKey(HKey.generateRootKey(getId()) + "00001"));
     }
+    /**
+     * Return the title. Sub-classes should override.
+     * @return
+     */
     public String getSearchTitle() {
     	return getTitle();
     }
    
     /**
+     * Return true if all file names of all entries must be unique
      * @hibernate.property
      */
     public boolean isLibrary() {
@@ -151,6 +174,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     	this.library = library;
     }
     /**
+     * Return true if titles on entries must be unique
      * @hibernate.property
      */
     public boolean isUniqueTitles() {
@@ -161,8 +185,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
     /**
      * Internal id used to identify default binders.  This id plus
-     * the zoneId are used to locate default binders.  If we just used the primary key id
-     * the zones would need the same default and that may not be desirable.
+     * the zoneId are used to locate default binders. 
      * @hibernate.property length="32"
      */
     public String getInternalId() {
@@ -171,10 +194,15 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setInternalId(String internalId) {
     	this.internalId = internalId;
     }
+    /**
+     * Return true if the binder is a 'system binder'
+     * @return
+     */
     public boolean isReserved() {
     	return Validator.isNotNull(internalId);
     }
     /**
+     * Return the path name of this binder from the root of the binder tree.
      * @hibernate.property length="1024" 
      */
     public String getPathName() {
@@ -185,23 +213,32 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
 
     /**
+     * Return all sub-binders.  Controllers should use the modules to retrieve a list
+     * that has been access checked. 
      * @hibernate.bag access="field" lazy="true" cascade="all" inverse="true" optimistic-lock="false" 
 	 * @hibernate.key column="parentBinder" 
 	 * @hibernate.one-to-many class="com.sitescape.team.domain.Binder" 
      * @hibernate.cache usage="read-write"
-     * Returns a List of binders.
      * @return
      */
     public List getBinders() {
     	if (binders == null) binders = new ArrayList();
     	return binders;
     }
+    /**
+     * Add a child binder
+     * @param binder
+     */
     public void addBinder(Binder binder) {
     	getBinders().add(binder);
  		binder.setParentBinder(this);
  		++binderCount;
  		binder.setBinderKey(new HKey(getBinderKey(), nextBinderNumber++));
 	}
+    /**
+     * Remove a child binder
+     * @param binder
+     */
     public void removeBinder(Binder binder) {
  		getBinders().remove(binder);
  		binder.setParentBinder(null);
@@ -209,26 +246,19 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		//we don't clear to binderKey, cause logging/audits need it
     }
     /**
+     * Optimization to determine the number of subbinders, without
+     * forcing database lookup.
      * @hibernate.property
      */
     public int getBinderCount() {
     	return binderCount;
     }
-    public void setBinderCount(int binderCount) {
+    protected void setBinderCount(int binderCount) {
     	this.binderCount = binderCount;
     }
+ 
     /**
-     * @hibernate.property length="16" insert="false" update="false"
-     *
-     */
-    public String getType() {
-    	return type;
-    }
-    public void setType(String type) {
-    	this.type = type;
-    }
-
-    /**
+     * Only used on top workspace.
      * @hibernate.property length="128" 
      * @return
      */
@@ -242,23 +272,42 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
      * @hibernate.property 
      * @return
      */
-    public int getNextBinderNumber() {
+    protected int getNextBinderNumber() {
     	return nextBinderNumber;
     }
-    public void setNextBinderNumber(int nextBinderNumber) {
+    protected void setNextBinderNumber(int nextBinderNumber) {
     	this.nextBinderNumber = nextBinderNumber;
     }   
 
     /**
+     * Return the hierarchical key.
      * @hibernate.component class="com.sitescape.team.domain.HKey" prefix="binderRoot_"
      */
     public HKey getBinderKey() {
     	return binderKey;
     }
-    public void setBinderKey(HKey binderKey) {
+    protected void setBinderKey(HKey binderKey) {
         this.binderKey = binderKey;
     }
     /**
+     * Fix up fields relative to parent chain during a move.
+     * @param to
+     */
+    public void move(Binder to) {
+    	//assume a parent has moved, so fixup path and hKey
+    	if (getParentBinder().equals(to)) {
+           	setPathName(to.getPathName() + "/" + getTitle());
+           	//relative position remains the same
+    		setBinderKey(new HKey(to.getBinderKey(), this.getBinderKey().getLastNumber()));
+    	} else {
+    		//top level of move.  
+    		getParentBinder().removeBinder(this);
+        	to.addBinder(this);
+           	setPathName(to.getPathName() + "/" + getTitle());
+    	}
+    }
+    /**
+     * Return the notifications 
      * @hibernate.component prefix="notify_"
      * @return
      */
@@ -270,6 +319,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
         this.notificationDef = notificationDef;
     }
     /**
+     * Return the posting
      * @hibernate.many-to-one 
      * @return
      */
@@ -281,8 +331,10 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     }
 
     /**
+     * Return the owner of the binder.
+     * The owner default to the creator.
+     * Used in access management.
      * @hibernate.many-to-one
-     * This is for acl management.
      */
  	public Principal getOwner() {
 		if (owner != null) return owner;
@@ -298,6 +350,7 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 	}
 
     /**
+     * Return all binder properties.
      * @hibernate.property type="org.springframework.orm.hibernate3.support.BlobSerializableType"
      * @return
      */
@@ -307,24 +360,40 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setProperties(Map properties) {
         this.properties = properties;
     }
+    /**
+     * Remove a binder property.
+     * @param name
+     */
     public void removeProperty(String name) {
     	if (properties == null) return;
     	properties.remove(name);
     	if (properties.isEmpty()) properties = null;
     }
+    /**
+     * Set a binder property.
+     * @param name
+     * @param value If null, remove property
+     */
     public void setProperty(String name, Object value) {
  	   if (value instanceof Object[]) throw new IllegalArgumentException("Arrays not supported");
  	   if (value == null) removeProperty(name);
     	if (properties == null) properties = new HashMap();
     	properties.put(name, value);
     }
+    /**
+     * Return a property value.
+     * Return property
+     * @param name
+     * @return
+     */
     public Object getProperty(String name) {
     	if (properties == null) return null;
     	return properties.get(name);
     }
     
     /**
-     * hibernate.property 
+     * Set on top workspace to track object versions
+     * @hibernate.property 
      */
     public Integer getUpgradeVersion() {
         return this.upgradeVersion;
@@ -333,96 +402,23 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
         this.upgradeVersion = upgradeVersion;
     }
     
-
+    /**
+     * Return the pathName
+     */
     public String toString() {
     	return getPathName(); 
     }
 
-    public Long getWorkAreaId() {
-        return getId();
-    }
-    public String getWorkAreaType() {
-        return getEntityType().name();
-    }
-    public WorkArea getParentWorkArea() {
-        return this.getParentBinder();
-    }
-    public Set getChildWorkAreas() {
-    	return new HashSet(getBinders());
-    }
-	/**
-	 * @hibernate.property not-null="true"
-	 * @return
-	 */
-    public boolean isFunctionMembershipInherited() {
-    	if (isRoot()) return false;
-        return functionMembershipInherited;
-    }
-    public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
-        this.functionMembershipInherited = functionMembershipInherited;
-    }
-    //this is needed for templates, which may inherit from a yet to be determined parent
-    public boolean isFunctionMembershipInheritanceSupported() {
-    	if (isRoot()) return false;
-    	return true;
-    }
-
-
-    public Long getOwnerId() {
-    	Principal owner = getOwner();
-    	if (owner == null)	return null;
-    	return owner.getId();
-    }
-    public boolean isTeamMembershipInherited() {
-    	return teamMembershipInherited;   	
-    }
-    public void setTeamMembershipInherited(boolean teamMembershipInherited) {
-    	this.teamMembershipInherited = teamMembershipInherited;
-    }
-    public Set getTeamMemberIds() {
-    	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberIds();
-    	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
-    	return LongIdUtil.getIdsAsLongSet(members);
-    	
-    }
-    public String getTeamMemberString() {
-    	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberString();
-    	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
-    	if (Validator.isNull(members)) return BasicIndexUtils.EMPTY_ACL_FIELD;
-    	return members;
-    	
-    }
-     public void setTeamMemberIds(Set memberIds) {
-    	//setting inherited flag handled separate
-    	if ((memberIds == null) || memberIds.isEmpty()) removeProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
-    	else setProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS, LongIdUtil.getIdsAsString(memberIds));
-     }
-
-    public String getProcessorClassName(String processorKey) {
-        return (String) getProperty(processorKey);
-    }
-    
-    public void setProcessorClassName(String processorKey, String processorClassName) {
-        setProperty(processorKey, processorClassName);
-    }
+    /**
+     * The <code>BinderProcessor</code> key
+     * @return
+     */
     public String getProcessorKey(String processorKey) {
     	return processorKey;
     }
-    
-    //Support for DefinitionArea interface
-    public Long getDefinitionAreaId() {
-    	return getId();
-    }
-    
-    public String getDefinitionAreaType() {
-    	return getEntityType().name();
-    }
-    
-    public DefinitionArea getParentDefinitionArea() {
-    	return getParentBinder();
-    }
-    
+       
     /**
+     * Return true if definitions are inherited from parent binder.
      * @hibernate.property
      * @return
      */
@@ -433,10 +429,14 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     public void setDefinitionsInherited(boolean definitionsInherited) {
     	this.definitionsInherited = definitionsInherited;
     }
+    /**
+     * Return true if definitions can be inheritted.
+     * @return
+     */
     public boolean isDefinitionInheritanceSupported() {
     	return false;
     }
-    protected List getDefs(int type) {
+    protected List<Definition> getDefs(int type) {
        	if (isDefinitionInheritanceSupported() && isDefinitionsInherited())
     		return new ArrayList(getParentBinder().getDefs(type));
       	Definition def;
@@ -450,16 +450,23 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
        	}
        	return result;
     }
-
+    /**
+     * Return configured definitions.
+     * @return
+     */
     // Setup by hibernate
-    public List getDefinitions() {
+    public List<Definition> getDefinitions() {
     	if (isDefinitionsInherited() && !isRoot())
     		return new ArrayList(getParentBinder().getDefinitions());
      	if (definitions == null) definitions = new ArrayList();
      	return definitions;
      }
+    /**
+     * Replace current configured definitions.
+     * @param definitions
+     */
     //definitions doesn't keep an inverse collection so just update here
-    public void setDefinitions(List definitions) {
+    public void setDefinitions(List<Definition> definitions) {
      	if (this.definitions == null) this.definitions = new ArrayList();
  		//order matters. = don't squash self
      	if (definitions != this.definitions) {
@@ -467,11 +474,19 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
      		if (definitions != null) this.definitions.addAll(definitions);
      	}
     }
+    /**
+     * Remove a definition from the list of definitions and workflowAssociations
+     * @param def
+     */
     public void removeDefinition(Definition def) {
     	getDefinitions().remove(def);
     	Map myDefs = getWorkflowAssociations();
     	myDefs.remove(def.getId());
     }
+    /**
+     * Return a definition to use for entries. 
+     * @return
+     */
      public Definition getDefaultEntryDef() {
     	
     	List eDefinitions = getEntryDefinitions();
@@ -479,6 +494,10 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
     		return (Definition)eDefinitions.get(0);
     	return null;
 	}
+     /**
+      * Return a definition to use for viewing the binder.
+      * @return
+      */
      public Definition getDefaultViewDef() {
      	
      	List eDefinitions = getViewDefinitions();
@@ -487,48 +506,61 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
      	//return original so have something.
      	return entryDef;
  	}
+     /**
+      * @see #getDefaultViewDef()
+      */
      public Definition getEntryDef() {
     	 //Peter wants the currently configured default for binders.
     	 //doesn't care what it was created with
      	return getDefaultViewDef();
      }
+     /**
+      * Returning mapping of definition ids to workflows definitions.
+      * @return
+      */
        // Setup by hibernate
-     public Map getWorkflowAssociations() {
+     public Map<String, Definition>getWorkflowAssociations() {
      	if (isDefinitionsInherited() && !isRoot())
     		return new HashMap(getParentBinder().getWorkflowAssociations());
     	if (workflowAssociations == null) workflowAssociations = new HashMap();
     	return workflowAssociations;
     }
-    public void setWorkflowAssociations(Map workflowAssociations) {
+    public void setWorkflowAssociations(Map<String, Definition> workflowAssociations) {
        	if (this.workflowAssociations == null) this.workflowAssociations = new HashMap();
        	if (workflowAssociations != this.workflowAssociations) {
        		this.workflowAssociations.clear(); 
        		if (workflowAssociations != null) this.workflowAssociations.putAll(workflowAssociations);
        	}
     }
-    /** 
-     * Remove the mapping from an definition to a workflow.
-     * The same workflow may be mapped to multiple times. 
+    /**
+     * Remove the mapping from a definition to a workflow.
+     * @param def
      */
     public void removeWorkflow(Definition def) {
     	Map myDefs = getWorkflowAssociations();
     	//make a copy since we are altering the contents
-    	Map defs = new HashMap(myDefs);
+    	Map<String, Definition> defs = new HashMap(myDefs);
+        //The same workflow may be mapped to multiple times. 
     	for (Iterator iter=defs.entrySet().iterator(); iter.hasNext();) {
     		Map.Entry e =(Map.Entry)iter.next();
     		if (def.equals(e.getValue())) myDefs.remove(e.getKey()); 
     	}
     }
-    
     /**
-     * String appended to processorKeys to allow for customizations
-     */   
-    public String getProcessorTag() {
-    	return null;
-    }
-    public abstract List getEntryDefinitions();
-    public abstract List getViewDefinitions();
-    public List getWorkflowDefinitions() {
+     * Return a list of definitions for entries
+     * @return
+     */
+    public abstract List<Definition> getEntryDefinitions();
+    /**
+     * Return a list of definitions for views
+     * @return
+     */
+    public abstract List<Definition> getViewDefinitions();
+    /**
+     * Return a list of definitions for workflows
+     * @return
+     */
+    public List<Definition> getWorkflowDefinitions() {
     	return getDefs(Definition.WORKFLOW);
     }	
     public boolean isMirroredAllowed() {
@@ -558,4 +590,80 @@ public abstract class Binder extends DefinableEntity implements DefinitionArea, 
 		// Just a convenience method
 		return ResourceDriverManagerUtil.findResourceDriver(getResourceDriverName());
 	}
+    //*****************WorkArea interface stuff***********/
+    public Long getWorkAreaId() {
+        return getId();
+    }
+    public String getWorkAreaType() {
+        return getEntityType().name();
+    }
+    public WorkArea getParentWorkArea() {
+        return this.getParentBinder();
+    }
+    public Set getChildWorkAreas() {
+    	return new HashSet(getBinders());
+    }
+	/**
+	 * @hibernate.property not-null="true"
+	 * @return
+	 */
+    public boolean isFunctionMembershipInherited() {
+    	if (isRoot()) return false;
+        return functionMembershipInherited;
+    }
+    public void setFunctionMembershipInherited(boolean functionMembershipInherited) {
+        this.functionMembershipInherited = functionMembershipInherited;
+    }
+     public boolean isFunctionMembershipInheritanceSupported() {
+    	if (isRoot()) return false;
+    	return true;
+    }
+     public Long getOwnerId() {
+    	Principal owner = getOwner();
+    	if (owner == null)	return null;
+    	return owner.getId();
+    }
+     public boolean isTeamMembershipInherited() {
+    	return teamMembershipInherited;   	
+    }
+    public void setTeamMembershipInherited(boolean teamMembershipInherited) {
+    	this.teamMembershipInherited = teamMembershipInherited;
+    }
+    /**
+     * Return the team member ids
+     * @return
+     */
+    public Set<Long> getTeamMemberIds() {
+    	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberIds();
+    	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
+    	return LongIdUtil.getIdsAsLongSet(members);
+    	
+    }
+     public void setTeamMemberIds(Set<Long> memberIds) {
+    	//setting inherited flag handled separate
+    	if ((memberIds == null) || memberIds.isEmpty()) removeProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
+    	else setProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS, LongIdUtil.getIdsAsString(memberIds));
+     }
+     /*****************End WorkArea interface stuff***********/
+    
+     /**
+      * Return acl index string representing team membership
+      * @return
+      */
+     public String getTeamMemberString() {
+     	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberString();
+     	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
+     	if (Validator.isNull(members)) return BasicIndexUtils.EMPTY_ACL_FIELD;
+     	return members;
+     	
+     }
+    /*****************InstanceLevelProcessorSupport interface stuff***********/
+    public String getProcessorClassName(String processorKey) {
+        return (String) getProperty(processorKey);
+    }
+    
+    public void setProcessorClassName(String processorKey, String processorClassName) {
+        setProperty(processorKey, processorClassName);
+    }
+    /*****************End InstanceLevelProcessorSupport interface stuff***********/	
 }

@@ -44,7 +44,11 @@ import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.comparator.FileAttachmentComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
-
+/**
+ * Abstract class used to define both binders and entries.  All <code>AnyOwner</code> associations refer to
+ * this class.
+ *
+ */
 public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     protected String title=""; //initialized by hibernate access=field
     protected String normalTitle=""; 
@@ -128,6 +132,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
         this.normalTitle = normalTitle;
     }
     /** 
+     * The definition used to create the entity.
      * @hibernate.many-to-one access="field" class="com.sitescape.team.domain.Definition"
      * @hibernate.column name="entryDef" sql-type="char(32)"
      * @return
@@ -159,6 +164,8 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     	this.deleted = deleted;
     }
    /**
+     * Current version number.  This value is incremented when
+     * a new <code>ChangeLog</code> is created
      * @hibernate.property
      * @return
      */
@@ -172,6 +179,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     	logVersion = logVersion + 1;
     }
     /**
+     * The type of definition used to create this entity.
      * @hibernate.property
      * @return
      */
@@ -266,7 +274,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     	return events;
     }
     /**
-     * Return all attachments 
+     * Return all attachments.
      * 
 	 */
     public Set getAttachments() {
@@ -447,7 +455,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     	return customAttributes;
     }
 	/**
-	 * Create a new custom attribute and add it to this entry
+	 * Create a new custom attribute and add it to this entity.
 	 * @param name
 	 * @param value
 	 * @return
@@ -480,7 +488,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
         if (c != null) removeCustomAttribute(c);
      }
     /**
-     * Retrieve named customAttibute
+     * Retrieve named <code>CustomAttibute</code>
      * @param name
      * @return
      */
@@ -488,7 +496,7 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     	return (CustomAttribute)getCustomAttributes().get(name);
    }
     /**
-     * Retrieve customAttibute
+     * Retrieve <code>CustomAttibute</code> by its id.
      * @param name
      * @return
      */
@@ -524,6 +532,10 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
     		}
     	}
     }
+    /**
+     * Unique identifier for indexing.
+     * @return
+     */
     public String getIndexDocumentUid() {
         return BasicIndexUtils.makeUid(this.getClass().getName(), this.getId());
     }
@@ -533,19 +545,31 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
      * They are not persisted.  This allows us to load greater than the 
      * hibernate "batch-size" number of collections at once.
      */
-     public void setIndexEvents(Set iEvents) {
+    /**
+     * Internal use for optimized indexing only.
+     */
+    public void setIndexEvents(Set iEvents) {
     	this.iEvents = iEvents;
     }    
+    /**
+     * Internal use for optimized indexing only.
+     */
     public void setIndexAttachments(Set iAttachments) {
     	this.iAttachments = iAttachments;
     }
-    public void setIndexCustomAttributes(Map iCustomAttributes) {
+    /**
+      * Internal use for optimized indexing only.
+     */
+   public void setIndexCustomAttributes(Map iCustomAttributes) {
     	this.iCustomAttributes = iCustomAttributes;
     }
     
     public String getTypedId() {
     	return getEntityType().name() + "_" + getEntityIdentifier().getEntityId();
     }
+    /**
+     * Return the title.
+     */
     public String toString() {
     	return title;
     }

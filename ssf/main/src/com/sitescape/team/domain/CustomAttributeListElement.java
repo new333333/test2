@@ -30,8 +30,8 @@
 package com.sitescape.team.domain;
 
 /**
+ * An element in a set of {@link com.sitescape.team.domain.CustomAttribute CustomAttribute} values.
  * @hibernate.subclass discriminator-value="L" dynamic-update="true" lazy="false"
- * @author Janet McCann
  *
  */
 public class CustomAttributeListElement extends CustomAttribute {

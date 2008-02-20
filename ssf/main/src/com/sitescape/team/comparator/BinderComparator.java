@@ -75,7 +75,7 @@ public class BinderComparator implements Comparator {
 		} else if ((t1==null) && (t2 != null)) return -1;
 		else if ((t1 != null) && (t2 == null)) return 1;
 		//if titles match - compare type
-		result = f1.getType().compareTo(f2.getType());
+		result = f1.getEntityType().compareTo(f2.getEntityType());
 		if (result != 0) return result;
 		//if titles and type match - compare ids
 		return f1.getId().compareTo(f2.getId());

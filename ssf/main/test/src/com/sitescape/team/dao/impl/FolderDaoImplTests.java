@@ -72,7 +72,6 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	public void testAddFolder() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
-		assertEquals(folder.getNextBinderNumber(), 1);
 		assertNull(folder.getTopFolder());
 		assertNull(folder.getParentFolder());
 		assertEquals(folder.getParentBinder(), top);
@@ -82,34 +81,26 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	public void testAddSubFolder() {
 		Workspace top = createZone(zoneName);
 		Folder folder = createFolder(top, "testFolder");
-		int oldCount = folder.getNextBinderNumber();
  		Folder sub = createFolder(folder, "subFolder1");
-		assertEquals(folder.getNextBinderNumber(), oldCount+1);
 		assertEquals(sub.getTopFolder(), folder);
 		assertEquals(sub.getParentFolder(), folder);
 		assertEquals(sub.getBinderKey().getLevel(), 3);
 		assertEquals(folder.getBinderKey().getSortKey() + "00001", sub.getBinderKey().getSortKey());
 		//add another
-		oldCount = folder.getNextBinderNumber();
 		sub = createFolder(folder, "subFolder2");
-		assertEquals(folder.getNextBinderNumber(), oldCount+1);
 		assertEquals(sub.getTopFolder(), folder);
 		assertEquals(sub.getParentFolder(), folder);
 		assertEquals(sub.getBinderKey().getLevel(), 3);
 		assertEquals(folder.getBinderKey().getSortKey() + "00002", sub.getBinderKey().getSortKey());
 
-		oldCount = sub.getNextBinderNumber();
 		Folder sub2 = createFolder(sub, "subFolder2.1");
-		assertEquals(sub.getNextBinderNumber(), oldCount+1);
 		assertEquals(sub2.getTopFolder(), folder);
 		assertEquals(sub2.getParentFolder(), sub);
 		assertEquals(sub2.getBinderKey().getLevel(), 4);
 		assertEquals(sub.getBinderKey().getSortKey() + "00001", sub2.getBinderKey().getSortKey());
 		assertEquals(folder.getBinderKey().getSortKey() + "0000200001", sub2.getBinderKey().getSortKey());
 
-		oldCount = sub.getNextBinderNumber();
 		sub2 = createFolder(sub, "subFolder2.2");
-		assertEquals(sub.getNextBinderNumber(), oldCount+1);
 		assertEquals(sub2.getTopFolder(), folder);
 		assertEquals(sub2.getParentFolder(), sub);
 		assertEquals(sub2.getBinderKey().getLevel(), 4);

@@ -34,7 +34,6 @@
  */
 package com.sitescape.team.domain;
 
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 
@@ -43,7 +42,6 @@ import org.dom4j.Element;
  * @hibernate.discriminator column="type" type="char"  
  * @hibernate.mapping auto-import="false"
  * need auto-import = false so names don't collide with jbpm
- * @author janet
  */
 public abstract class Attachment extends PersistentTimestampObject 
 	implements UpdateAttributeSupport {
@@ -85,8 +83,9 @@ public abstract class Attachment extends PersistentTimestampObject
   		owner = new AnyOwner(entity);
   	}
     /**
+     * Return the name of the custom attribute this attachment is associated with. 
+     * May be <code>null</code>
      * @hibernate.property length="64"
-     * Used to tie event to command fields
      * @return
      */
     public String getName() {
@@ -95,11 +94,17 @@ public abstract class Attachment extends PersistentTimestampObject
     public void setName(String name) {
         this.name = name;
     } 	
-
+    /**
+     * @override
+     */
     public boolean update(Object obj) {
-    	return true;
+    	return false;
     	
     }
-
+    /**
+     * Add change log elements for this attachment
+     * @param parent
+     * @return
+     */
     public abstract Element addChangeLog(Element parent); 
 }

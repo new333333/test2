@@ -28,7 +28,10 @@
  */
 package com.sitescape.team.domain;
 
-
+/**
+ * An entity is uniquely identified by its id and a type.
+ *
+ */
 public class EntityIdentifier {
 	protected EntityType entityType=EntityType.none;
 	protected Long entityId;

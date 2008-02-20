@@ -117,8 +117,18 @@
 			additionalparam="-J-Xmx128m"
 			classpathref="project.classpath"
 			destdir="${javadoc.dir}"
-			packagenames="*.*"
+			packagenames="com.sitescape.team.domain,
+							com.sitescape.team.security.function,
+							com.sitescape.team.module.binder,
+							com.sitescape.team.module.folder,
+							com.sitescape.team.module.profile,
+							com.sitescape.team.module.workspace"
+			excludepackagenames="com.sitescape.team.module.binder.impl,
+				com.sitescape.team.module.folder.impl,
+				com.sitescape.team.module.profile.impl,
+				com.sitescape.team.module.workspace.impl"
 			sourcepath="${source.dir}"
+			public="true"
 			stylesheetfile="${project.dir}/tools/javadoc.css"
 		/>
 	</target>
