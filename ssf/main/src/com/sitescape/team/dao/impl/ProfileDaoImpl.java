@@ -947,4 +947,40 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		return loadApplication(applicationId, top.getZoneId());
 	}
 
+    public Principal loadPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
+        Principal principal = (Principal)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	//hoping for cache hit
+                    	Principal principal = (Principal)session.get(Principal.class, prinId);
+                        if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
+                        //Get the real object, not a proxy to abstract class
+                        try {
+                        	principal = (Principal)session.get(User.class, prinId);
+                        } catch (Exception ex) {};  // group proxies will force an exception, didn't expect with session.get? 
+                        if (principal==null) {
+                        	try {
+                        		principal = (Principal)session.get(Group.class, prinId);
+                        	} catch (Exception ex) {};
+                        }
+                        if (principal==null) {
+                        	try {
+                        		principal = (Principal)session.get(Application.class, prinId);
+                        	} catch (Exception ex) {};
+                        }
+                        if (principal==null) {
+                        	principal = (Principal)session.get(ApplicationGroup.class, prinId);
+                        }
+                        //make sure from correct zone
+                        if (!principal.getZoneId().equals(zoneId) ||
+                        		(checkActive && !principal.isActive())) {throw new NoPrincipalByTheIdException(prinId);}
+                        return principal;
+                    }
+                }
+        );
+       
+        return principal;
+              
+    }
+
 }

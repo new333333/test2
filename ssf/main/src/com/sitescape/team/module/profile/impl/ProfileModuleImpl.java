@@ -75,6 +75,7 @@ import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.UserPropertiesPK;
 import com.sitescape.team.domain.Workspace;
@@ -950,7 +951,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		ProfileBinder binder = getProfileBinder();
 		Group group = (Group)getEntry(binder.getId(), groupId);		
 		checkAccess(group, ProfileOperation.modifyEntry);   
-		Principal user;
+		UserPrincipal user;
 		if (Validator.isNotNull(username)) {			
 			user = getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneName());
 		} else {

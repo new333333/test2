@@ -392,7 +392,7 @@ public class User extends UserPrincipal {
     	return groupNames;
     }
     
-    private void addGroupNames(Principal principal, SortedSet names) {
+    private void addGroupNames(UserPrincipal principal, SortedSet names) {
         List memberOf = principal.getMemberOf();
     	for(Iterator i = memberOf.iterator(); i.hasNext();) {
     		Group group = (Group) i.next();
