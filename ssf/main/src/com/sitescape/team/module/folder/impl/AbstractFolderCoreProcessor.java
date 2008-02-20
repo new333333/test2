@@ -790,7 +790,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
         //Initialize users
         List<DefinableEntity> allE = new ArrayList(lineage);
         allE.add(entry);
-    	getProfileDao().loadPrincipals(getPrincipalIds(allE), RequestContextHolder.getRequestContext().getZoneId(), false);
+    	getProfileDao().loadUserPrincipals(getPrincipalIds(allE), RequestContextHolder.getRequestContext().getZoneId(), false);
         return model;
     }
          

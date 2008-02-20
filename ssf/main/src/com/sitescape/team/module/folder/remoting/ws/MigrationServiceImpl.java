@@ -68,14 +68,14 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 	protected void alterTimestamps(long binderId, long entryId, Timestamps timestamps)
 	{
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Principal creator = null;
+		User creator = null;
 		try {
 			creator = getProfileModule().findUserByName(timestamps.getCreator());
 		} catch(NoUserByTheNameException e) {
 			creator = user;
 		}
 		HistoryStamp creation = new HistoryStamp(creator, timestamps.getCreationDate().getTime());
-		Principal modifier = user;
+		User modifier = user;
 		try {
 			modifier = getProfileModule().findUserByName(timestamps.getModifier());
 		} catch(NoUserByTheNameException e) {

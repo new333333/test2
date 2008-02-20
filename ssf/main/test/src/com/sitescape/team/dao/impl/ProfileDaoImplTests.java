@@ -207,7 +207,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 			cdi.evict(g);
 		}
 		
-		List prins = pdi.loadPrincipals(ids, top.getZoneId(), true);
+		List prins = pdi.loadUserPrincipals(ids, top.getZoneId(), true);
 		if (prins.size() != (users.size() + groups.size())) {
 			fail("Principals don't add up " + prins.size());
 		}

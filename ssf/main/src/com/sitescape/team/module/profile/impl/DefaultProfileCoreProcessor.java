@@ -65,6 +65,7 @@ import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.jobs.UserTitleChange;
@@ -191,7 +192,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
     		Principal u = binder.getCreation().getPrincipal(); //creator is user
     		if (!(u instanceof User)) {
-    			u = getProfileDao().loadPrincipal(u.getId(), u.getZoneId(), false);
+    			u = getProfileDao().loadUserPrincipal(u.getId(), u.getZoneId(), false);
     		}
     		if (u instanceof User) {
     			((Workspace)binder).setSearchTitle(((User)u).getSearchTitle());
@@ -205,7 +206,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     	if ((type != null) && (type.intValue() == Definition.USER_WORKSPACE_VIEW)) {
     		Principal u = binder.getCreation().getPrincipal(); //creator is user
     		if (!(u instanceof User)) {
-    			u = getProfileDao().loadPrincipal(u.getId(), u.getZoneId(), false);
+    			u = getProfileDao().loadUserPrincipal(u.getId(), u.getZoneId(), false);
     		}
     		if (u instanceof User) {
     			//do this here, since we have a transaction running
@@ -454,7 +455,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 
     //***********************************************************************************************************           
     protected  Entry entry_load(Binder parentBinder, Long entryId) {
-        return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneId(), false);        
+        return getProfileDao().loadUserPrincipal(entryId, parentBinder.getZoneId(), false);        
     }
           
     //***********************************************************************************************************
@@ -664,7 +665,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		getCoreDao().evict(newEntries);
 
 		//since we changed the creation/modification principal need reload
-		List<Principal> ps = getProfileDao().loadPrincipals(ids, binder.getZoneId(), false);
+		List<UserPrincipal> ps = getProfileDao().loadUserPrincipals(ids, binder.getZoneId(), false);
 		//we don't have any tags yet, so set to null to prevent database lookup 
 		ctx.put(ObjectKeys.INPUT_FIELD_TAGS, new ArrayList());
 		for (Principal p:ps) {

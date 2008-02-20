@@ -242,7 +242,7 @@ public class FileAttachment extends Attachment {
 
     	private String id;
     	private String subject;
-    	private Principal owner;
+    	private UserPrincipal owner;
     	private Date expirationDate;
     	private String ownerInfo;
     	private Boolean dirty;
@@ -250,7 +250,7 @@ public class FileAttachment extends Attachment {
     	public FileLock() {
     	}
 
-    	public FileLock(String id, String subject, Principal owner, 
+    	public FileLock(String id, String subject, UserPrincipal owner, 
     			Date expirationDate, String ownerInfo) {
     		this.id = id;
     		this.subject = subject;
@@ -275,11 +275,11 @@ public class FileAttachment extends Attachment {
     		this.subject = subject;
     	}
     	
-    	public Principal getOwner() {
+    	public UserPrincipal getOwner() {
     		return owner;
     	}
     	
-    	public void setOwner(Principal owner) {
+    	public void setOwner(UserPrincipal owner) {
     		this.owner = owner; 
     	}
     	

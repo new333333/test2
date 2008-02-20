@@ -779,7 +779,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			//empty teams can end up in the list of ids, this will prune them
 			result.addAll(getProfileDao().loadUsers(ids, RequestContextHolder.getRequestContext().getZoneId()));
 		} else {
-			result.addAll(getProfileDao().loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true));
+			result.addAll(getProfileDao().loadUserPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true));
 		}
 		return result;
 	}
@@ -983,7 +983,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	ObjectBuilder.updateObject(current, updates);
     	if (principalIds == null) return;
   		//	Pre-load for performance
-    	List notifyUsers = getProfileDao().loadPrincipals(principalIds, binder.getZoneId(), true);
+    	List notifyUsers = getProfileDao().loadUserPrincipals(principalIds, binder.getZoneId(), true);
    		current.setDistribution(notifyUsers);
     }
 	

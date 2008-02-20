@@ -404,7 +404,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  	    User user = RequestContextHolder.getRequestContext().getUser();
         Comparator c = new PrincipalComparator(user.getLocale());
        	TreeSet<Principal> result = new TreeSet(c);
- 		result.addAll(getProfileDao().loadPrincipals(ids, user.getZoneId(), false));
+ 		result.addAll(getProfileDao().loadUserPrincipals(ids, user.getZoneId(), false));
  		return result;
 	}
     
@@ -954,7 +954,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		if (Validator.isNotNull(username)) {			
 			user = getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneName());
 		} else {
-			user = getProfileDao().loadPrincipal(userId, binder.getZoneId(), true);
+			user = getProfileDao().loadUserPrincipal(userId, binder.getZoneId(), true);
 		}
 		group.addMember(user);
 	}

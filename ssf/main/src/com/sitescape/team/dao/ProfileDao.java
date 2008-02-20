@@ -52,6 +52,7 @@ import com.sitescape.team.domain.Rating;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Visits;
 
@@ -108,18 +109,15 @@ public interface ProfileDao {
  	public Set<Long> getAllGroupMembership(Long principalId, Long zoneId);
  	public List<Long> getMembership(Long groupId, Long zoneId);
 	public Set<Long> getPrincipalIds(User user);
-	public Set<Long> getPrincipalIds(Application user);
 	public ProfileBinder getProfileBinder(Long zoneId);
 	public Group getReservedGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
-	public ApplicationGroup getReservedApplicationGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
 	public User getReservedUser(String internalId, Long zoneId) throws NoUserByTheNameException;
       
     public Group loadGroup(Long groupId, Long zoneId) throws NoGroupByTheIdException;
-    public ApplicationGroup loadApplicationGroup(Long groupId, Long zoneId) throws NoGroupByTheIdException;
     public List<Group> loadGroups(Collection<Long> groupsIds, Long zoneId);
     public List<Group> loadGroups(FilterControls filter, Long zoneId) throws DataAccessException; 
-    public Principal loadPrincipal(Long prinId, Long zoneId, boolean checkActive);
-    public List<Principal> loadPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
+    public UserPrincipal loadUserPrincipal(Long prinId, Long zoneId, boolean checkActive);
+    public List<UserPrincipal> loadUserPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
 	public Rating loadRating(Long userId, EntityIdentifier entityId);
     public SeenMap loadSeenMap(Long userId);
 	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);
@@ -145,4 +143,10 @@ public interface ProfileDao {
     public SFQuery queryGroups(FilterControls filter, Long zoneId) throws DataAccessException; 
     public SFQuery queryUsers(FilterControls filter, Long zoneId) throws DataAccessException;    
      
+	public Set<Long> getPrincipalIds(Application application);
+	public ApplicationGroup getReservedApplicationGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
+    public ApplicationGroup loadApplicationGroup(Long groupId, Long zoneId) throws NoGroupByTheIdException;
+    public Application loadApplication(Long applicationId, Long zoneId) throws NoUserByTheIdException;
+    public Application loadApplication(Long applicationId, String zoneName) throws NoUserByTheIdException;
+
  }
