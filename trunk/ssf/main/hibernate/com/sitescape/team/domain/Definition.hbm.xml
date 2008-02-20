@@ -15,7 +15,8 @@
     <property name="type"/>
     <property name="internalId" length="32"/>
     <property name="visibility"/>
-    <property name="encoding" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
+<!-- use length to force medium blob in mysql -->
+    <property name="encoding" length="2000000" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
  <properties name="nameKey" unique="true" update="false" insert="false">
 <property name="zoneId" update="false" insert="false"/>
 <property name="name" update="false" insert="false"/>
