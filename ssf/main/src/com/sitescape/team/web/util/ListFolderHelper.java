@@ -1488,7 +1488,7 @@ public class ListFolderHelper {
 		folderToolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
 			
 		//Sendmail
-		if (!user.getEmailAddress().equals("") && 
+		if (user.getEmailAddress() != null && !user.getEmailAddress().equals("") && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL((PortletRequest) null, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
@@ -1754,7 +1754,7 @@ public class ListFolderHelper {
 		}
 		
 		// email
-		if (!user.getEmailAddress().equals("") && 
+		if (user.getEmailAddress() != null && !user.getEmailAddress().equals("") && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
