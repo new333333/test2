@@ -46,7 +46,7 @@ import com.sitescape.util.Validator;
  * @hibernate.subclass discriminator-value="G" dynamic-update="true" 
  *
  */
-public class Group extends UserPrincipal {
+public class Group extends UserPrincipal implements GroupPrincipal {
     private List members;  //initialized by hibernate access=field  
     
 	public EntityIdentifier.EntityType getEntityType() {
@@ -83,13 +83,13 @@ public class Group extends UserPrincipal {
 		}
   	} 	
     
-    public void addMember(UserPrincipal member) {
+    public void addMember(IPrincipal member) {
 		if (members == null) members = new ArrayList();
     	if (members.contains(member)) return;
     	members.add(member);
     	member.getMemberOf().add(this);
     }
-    public void removeMember(UserPrincipal member) {
+    public void removeMember(IPrincipal member) {
 		if (members == null) members = new ArrayList();
     	members.remove(member);
     	member.getMemberOf().remove(this);

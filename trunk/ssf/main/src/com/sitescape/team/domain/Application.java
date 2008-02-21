@@ -33,7 +33,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-public class Application extends ApplicationPrincipal {
+import com.sitescape.util.Validator;
+
+public class Application extends ApplicationPrincipal implements IndividualPrincipal {
 
     private Set principalIds; // set of Long; this field is computed 
 
@@ -41,7 +43,15 @@ public class Application extends ApplicationPrincipal {
 		return EntityIdentifier.EntityType.app;
 	}
 
-    public Set computePrincipalIds(ApplicationGroup reservedGroup) {
+	public String getTitle() {
+		// title is set by hibernate access=field
+		//title is only kept in the db for sql queries
+		String val = super.getTitle();
+    	if (Validator.isNotNull(val)) return val;
+    	return getName();		
+	}
+
+    public Set computePrincipalIds(GroupPrincipal reservedGroup) {
     	// Each thread serving a user request has its own copy of user object.
     	// Therefore we do not have to use synchronization around principalIds.
         if (!isActive()) return new HashSet();
@@ -58,7 +68,11 @@ public class Application extends ApplicationPrincipal {
         return principalIds;
     }
     
-    private void addPrincipalIds(ApplicationPrincipal principal, Set ids) {
+    public boolean isAllIndividualMember() {
+    	return true; // any situation where this shouldn't be the case?
+    }
+
+    private void addPrincipalIds(IPrincipal principal, Set ids) {
         // To prevent infinite loop resulting from possible cycle among
         // group membership, proceed only if the principal hasn't already
         // been processed. 
@@ -66,7 +80,7 @@ public class Application extends ApplicationPrincipal {
         if(ids.add(principal.getId())) {
             List memberOf = principal.getMemberOf();
             for(Iterator i = memberOf.iterator(); i.hasNext();) {
-                addPrincipalIds((ApplicationPrincipal) i.next(), ids);
+                addPrincipalIds((IPrincipal) i.next(), ids);
             }
         }
     }

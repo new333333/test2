@@ -37,7 +37,7 @@ import java.util.Set;
 import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.util.Validator;
 
-public class ApplicationGroup extends ApplicationPrincipal {
+public class ApplicationGroup extends ApplicationPrincipal implements GroupPrincipal {
 
     private List members;  //initialized by hibernate access=field  
     
@@ -76,13 +76,13 @@ public class ApplicationGroup extends ApplicationPrincipal {
 		}
   	} 	
     
-    public void addMember(Principal member) {
+    public void addMember(IPrincipal member) {
 		if (members == null) members = new ArrayList();
     	if (members.contains(member)) return;
     	members.add(member);
     	member.getMemberOf().add(this);
     }
-    public void removeMember(Principal member) {
+    public void removeMember(IPrincipal member) {
 		if (members == null) members = new ArrayList();
     	members.remove(member);
     	member.getMemberOf().remove(this);

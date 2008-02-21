@@ -65,6 +65,8 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EmailAddress;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.GroupPrincipal;
+import com.sitescape.team.domain.IndividualPrincipal;
 import com.sitescape.team.domain.Membership;
 import com.sitescape.team.domain.NoGroupByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheNameException;
@@ -757,14 +759,23 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	}
     	return loadUser(id, zoneId);
    }
-    public Set<Long> getPrincipalIds(User user) {
- 	   if (user.isAllUserMember()) return new HashSet(user.computePrincipalIds(getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, user.getZoneId())));
- 	   return new HashSet(user.computePrincipalIds(null));
     
-     }
-    public Set<Long> getPrincipalIds(Application application) {
- 	   return new HashSet(application.computePrincipalIds(getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, application.getZoneId())));
-     }
+    public Set<Long> getPrincipalIds(IndividualPrincipal p) {
+    	if(p.isAllIndividualMember()) {
+        	GroupPrincipal gp;
+        	if(p instanceof User)
+        		gp = getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, p.getZoneId());
+        	else if(p instanceof Application)
+        		gp = getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, p.getZoneId());
+        	else
+        		throw new IllegalArgumentException(p.getClass().getName());
+        	
+    		return new HashSet(p.computePrincipalIds(gp));
+    	}
+    	else {
+    		return new HashSet(p.computePrincipalIds(null));
+    	}
+    }
 	/**
 	 * Given a set of principal ids, return all userIds that represent userIds in 
 	 * the original list, or members of groups and their nested groups.

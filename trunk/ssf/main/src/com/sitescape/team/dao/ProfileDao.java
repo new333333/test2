@@ -41,6 +41,7 @@ import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.IndividualPrincipal;
 import com.sitescape.team.domain.NoGroupByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoUserByTheIdException;
@@ -108,7 +109,7 @@ public interface ProfileDao {
 
  	public Set<Long> getAllGroupMembership(Long principalId, Long zoneId);
  	public List<Long> getMembership(Long groupId, Long zoneId);
-	public Set<Long> getPrincipalIds(User user);
+	public Set<Long> getPrincipalIds(IndividualPrincipal user);
 	public ProfileBinder getProfileBinder(Long zoneId);
 	public Group getReservedGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
 	public User getReservedUser(String internalId, Long zoneId) throws NoUserByTheNameException;
@@ -144,7 +145,6 @@ public interface ProfileDao {
     public SFQuery queryGroups(FilterControls filter, Long zoneId) throws DataAccessException; 
     public SFQuery queryUsers(FilterControls filter, Long zoneId) throws DataAccessException;    
      
-	public Set<Long> getPrincipalIds(Application application);
 	public ApplicationGroup getReservedApplicationGroup(String internalId, Long zoneId) throws NoGroupByTheNameException;	   
     public ApplicationGroup loadApplicationGroup(Long groupId, Long zoneId) throws NoGroupByTheIdException;
     public Application loadApplication(Long applicationId, Long zoneId) throws NoUserByTheIdException;
