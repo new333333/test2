@@ -622,6 +622,11 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     	}
     	//mark for delete now and continue in the background
     	binder.setDeleted(true);
+    	//release posting now so name is available
+    	if (binder.getPosting() != null) {
+    		getCoreDao().delete(binder.getPosting());
+    		binder.setPosting(null);
+    	}
     }
 
  
