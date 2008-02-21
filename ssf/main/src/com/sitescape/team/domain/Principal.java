@@ -55,7 +55,7 @@ import com.sitescape.team.NotSupportedException;
 * @author Jong Kim
 *
 */
-public abstract class Principal extends Entry {
+public abstract class Principal extends Entry implements IPrincipal {
 	//use _ to reserve names, perhaps allow customized additions later
 	public static final String PRIMARY_EMAIL="_primary";
 	public static final String TEXT_EMAIL="_text";

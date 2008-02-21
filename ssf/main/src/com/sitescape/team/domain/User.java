@@ -55,7 +55,7 @@ import com.sitescape.team.ObjectKeys;
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"
  *
  */
-public class User extends UserPrincipal {
+public class User extends UserPrincipal implements IndividualPrincipal {
     protected String firstName="";//set by hibernate access="field"
     protected String middleName="";//set by hibernate access="field"
     protected String lastName="";//set by hibernate access="field"
@@ -337,7 +337,7 @@ public class User extends UserPrincipal {
      * 
      * @return
      */
-    public Set computePrincipalIds(Group reservedGroup) {
+    public Set computePrincipalIds(GroupPrincipal reservedGroup) {
     	// Each thread serving a user request has its own copy of user object.
     	// Therefore we do not have to use synchronization around principalIds.
         if (!isActive()) return new HashSet();
@@ -354,7 +354,7 @@ public class User extends UserPrincipal {
         return principalIds;
     }
     
-    private void addPrincipalIds(UserPrincipal principal, Set ids) {
+    private void addPrincipalIds(IPrincipal principal, Set ids) {
         // To prevent infinite loop resulting from possible cycle among
         // group membership, proceed only if the principal hasn't already
         // been processed. 
@@ -362,11 +362,11 @@ public class User extends UserPrincipal {
         if(ids.add(principal.getId())) {
             List memberOf = principal.getMemberOf();
             for(Iterator i = memberOf.iterator(); i.hasNext();) {
-                addPrincipalIds((UserPrincipal) i.next(), ids);
+                addPrincipalIds((IPrincipal) i.next(), ids);
             }
         }
     }
-    public boolean isAllUserMember() {
+    public boolean isAllIndividualMember() {
     	if (!isReserved()) return true;
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(getInternalId())) return false;
     	if (ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID.equals(getInternalId())) return false;
