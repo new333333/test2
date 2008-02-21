@@ -846,7 +846,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     /**
      * Index binder and its entries
      */
-    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, List tags) {
+    public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
     	super.indexBinder(binder, includeEntries, deleteIndex, tags);
     	if (includeEntries == false) return;
     	indexEntries(binder, deleteIndex);

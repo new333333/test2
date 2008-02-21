@@ -29,6 +29,7 @@
 package com.sitescape.team.module.binder;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.sitescape.team.domain.Binder;
@@ -57,7 +58,8 @@ public interface BinderProcessor {
     public void indexTeamMembership(Binder binder, boolean cascade);
     public void indexOwner(Binder binder);
 	public void indexBinder(Binder binder, boolean includeEntries);	
-    public Collection indexTree(Binder binder, Collection exclusions);
+    public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags);
+   public Collection indexTree(Binder binder, Collection exclusions);
     public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket);
    
  	public void modifyBinder(Binder binder, InputDataAccessor inputData, Map fileItems, Collection deleteAttachments) 
