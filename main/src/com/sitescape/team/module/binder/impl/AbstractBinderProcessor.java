@@ -61,6 +61,7 @@ import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HKey;
@@ -1029,9 +1030,8 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     protected void moveBinder_index(Binder binder, Map ctx) {
     	//delete tree first
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
-		//delete actual binder
-		IndexSynchronizationManager.deleteDocument(binder.getIndexDocumentUid());
-    	indexTree(binder, null);
+		getCoreDao().flush(); //get updates out for optimized indexTree
+	    indexTree(binder, null);
     }
     //somewhere up the parent chain we have a new parent
     //don't have to do all the work immediate parent had to do
@@ -1140,6 +1140,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }    
     //***********************************************************************************************************
     //not really meant to be overridden, but here to share code
+ 
     public void indexFunctionMembership(Binder binder, boolean cascade) {
 		String value = EntityIndexUtils.getFolderAclString(binder);
     	if (cascade) {
@@ -1256,10 +1257,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      }
      
      //this will update the binder, its attachments and entries, and subfolders and entries that inherit
-     private void doFieldUpdate(Binder binder, List<Long>binders, String field, String value) {
+     private void doFieldUpdate(Binder binder, List<Long>notBinders, String field, String value) {
  		// Now, create a query which can be used by the index update method to modify all the
 		// entries, replies, attachments, and binders(workspaces) in the index 
-		org.dom4j.Document qTree = buildQueryforUpdate(binder, binders);
+		org.dom4j.Document qTree = buildQueryforUpdate(binder, notBinders);
 		//don't need to add access check to update of acls
 		//access to entries is not required to update the team acl
 		QueryBuilder qb = new QueryBuilder(null);
@@ -1276,10 +1277,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
   	private org.dom4j.Document buildQueryforUpdate(Binder binder, List<Long> notBinders) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
-		//get all the entrys, replies, subBinders and their attachments
-		// __entryAncestry: and not __entryAncestry:{} 
-		Element ancestorElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
+		//get the binder and all the entrys, replies, subBinders and their attachments
+		// or (__entryAncestry: and not __entryAncestry:{} )
+		Element ancestorElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
 	 
 		Element ancestors = ancestorElement.addElement(QueryBuilder.FIELD_ELEMENT);
 		ancestors.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
@@ -1287,17 +1287,15 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		child.setText(binder.getId().toString());
 		if (!notBinders.isEmpty()) {	
 			Element notAncestors = ancestorElement.addElement(QueryBuilder.NOT_ELEMENT);
-			Element idsOrElement = notAncestors.addElement(QueryBuilder.OR_ELEMENT);
+			Element ancestorOrElement = notAncestors.addElement(QueryBuilder.OR_ELEMENT);
 			for (Long id:notBinders) {
-				Element fieldI = idsOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+				Element fieldI = ancestorOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
 				fieldI.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_ANCESTRY);
 				Element childI = fieldI.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 				childI.setText(id.toString());
 			}
+			
 		}
-	   	//Get this binder which won't get captured by ancestor search
-	   	// Get the binder and its attachments
-		buildQueryForBinder(qTreeOrElement, binder);
 
 	   	return qTree;
 	}
@@ -1360,6 +1358,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	Element qTreeAndElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
  
     	Element idsOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
+    	List binderIds = new ArrayList();
     	//get all the entrys, replies and their attachments
     	// _binderId and doctypes:{entry, attachment}
     	for (Binder b:binders) {
@@ -1367,6 +1366,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
 			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 			child.setText(b.getId().toString());
+			binderIds.add(b.getId());
     	}
     	
     	Element typeOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
@@ -1377,38 +1377,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			child.setText(docTypes[i]);
     	}
     	// Get all the binder's themselves
-    	// (Doctype=binder OR (DocType=attachment and attType=binder)) and binder id's
-    	Element andElement = qTreeOrElement.addElement((QueryBuilder.AND_ELEMENT));
-    	Element bOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
-    	Element field = bOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
-
-		Element aAndElement = bOrElement.addElement(QueryBuilder.AND_ELEMENT);
-    	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
-		
-    	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
-		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
-		
-		Element orOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
-	   	for (Binder b:binders) {
-    		field = orOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
-			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-			child.setText(b.getId().toString());
-    	}
-	   	return qTree;
+     	// (_docType=binder OR _attType=binder) AND (_docId= OR _docId= OR ... ) 
+    	buildQueryForBinders(qTreeOrElement, binderIds);
+    	return qTree;
 	}
 	
 	private void buildQueryForBinder(Element parent, Binder binder) {
     	// Get the binder and its attachments
-     	// docId= AND (Doctype=binder OR (DocType=attachment and attType=binder)) 
+     	// _docId= AND (_docType=binder OR _attType=binder)) 
      	Element andElement = parent.addElement((QueryBuilder.AND_ELEMENT));
      	Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
     	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
@@ -1420,18 +1396,38 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
  		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
  		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
-
- 		Element aAndElement = bOrElement.addElement(QueryBuilder.AND_ELEMENT);
-     	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
- 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
- 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
- 		child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
- 		
-     	field = aAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
+		
+     	field = bOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
  		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
  		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
  		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
  		
+     }
+  	     
+	private void buildQueryForBinders(Element parent, Collection<Long> binderIds) {
+    	// Get the binder and its attachments
+     	// (_docType=binder OR _attType=binder) AND (_docId= OR _docId- OR  ... ) 
+     	Element andElement = parent.addElement((QueryBuilder.AND_ELEMENT));
+     	   	 
+     	Element typeOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+     	Element field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+ 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+ 		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+ 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+		
+     	field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+ 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
+ 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+ 		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
+ 
+ 		Element binderOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+	   	for (Long id:binderIds) {
+    		field = binderOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
+			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
+			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			child.setText(id.toString());
+    	}
+
      }
 
     //***********************************************************************************************************
@@ -1439,43 +1435,54 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	//call overloaded methods
    		indexBinder(binder, includeEntries, true, null);    	
     }
-    protected void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, List tags) {
-   		indexBinder(binder, null, null, !deleteIndex, tags);    	
+    public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags) {
+   		indexBinder(binder, null, null, !deleteIndex, (List)tags);    	
     	
     }
+
     //***********************************************************************************************************
     //It is assumed that the index has been deleted for each binder to be index
     public Collection indexTree(Binder binder, Collection exclusions) {
-    	return indexTree(binder, exclusions, StatusTicket.NULL_TICKET);
+    	return loadIndexTree(binder, exclusions, StatusTicket.NULL_TICKET);
     }
-    public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
-       	TreeSet indexedIds = new TreeSet();
-       	if (exclusions == null) exclusions = new TreeSet();
-   		String oldStatus = statusTicket.getStatus();
-   		if(oldStatus != null) {
-   			statusTicket.setStatus(oldStatus + " // " + binder.getTitle());
-   		} else {
-   			statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {binder.getTitle()}));
-   		}
-       	if (!exclusions.contains(binder.getId())) {
-        	//index self.
-       		indexBinder(binder, true, false, null);
-        	indexedIds.add(binder.getId());
-        }
-       	List binders = binder.getBinders();
-   		for (int i=0; i<binders.size(); ++i) {
-   	    	Binder b = (Binder)binders.get(i);
-   	    	if (b.isDeleted()) continue;
-   	    	//index children
-   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
-   	    	indexedIds.addAll(processor.indexTree(b, exclusions, statusTicket));
-   	   	 }
-   		//apply after we have gathered a few
-   		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshhold", 100));
-   		statusTicket.setStatus(oldStatus);
+   	public Collection indexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
+   		return loadIndexTree(binder, exclusions, statusTicket);
+   	}
+   	private Collection loadIndexTree(Binder binder, Collection exclusions, StatusTicket statusTicket) {
+   		//get all the ids of child binders. order for statusTicket to make some sense
+   		List<Long> ids = getCoreDao().loadObjects("select x.id from com.sitescape.team.domain.Binder x where x.binderKey.sortKey like '" +
+				binder.getBinderKey().getSortKey() + "%' order by x.binderKey.sortKey", null);
+		int inClauseLimit=SPropsUtil.getInt("db.clause.limit", 1000);
+		if (exclusions != null) ids.removeAll(exclusions);
+		Map params = new HashMap();
+		for (int i=0; i<ids.size(); i+=inClauseLimit) {
+			List subList = ids.subList(i, Math.min(ids.size(), i+inClauseLimit));
+			params.put("pList", subList);
+			List<Binder> binders = getCoreDao().loadObjects("from com.sitescape.team.domain.Binder x where x.id in (:pList) order by x.binderKey.sortKey", params);
+			getCoreDao().bulkLoadCollections(binders);
+			List<EntityIdentifier> entityIds = new ArrayList();
+			for (Binder e: binders) {
+				entityIds.add(e.getEntityIdentifier());
+			}
+			Map tagMap = getCoreDao().loadAllTagsByEntity(entityIds);
 
-   		return indexedIds;	
-    }
+			for (Binder b:binders) {
+				if (b.isDeleted()) continue;
+	   	    	BinderProcessor processor = (BinderProcessor)getProcessorManager().getProcessor(b, b.getProcessorKey(BinderProcessor.PROCESSOR_KEY));
+				
+	   	    	Collection tags = (Collection)tagMap.get(b.getEntityIdentifier());
+	   	    	statusTicket.setStatus(NLT.get("index.indexingBinder", new Object[] {b.getPathName()}));
+	   	   		
+	   	    	processor.indexBinder(b, true, false, tags);
+	   	    	getCoreDao().evict(tags);
+	   	    	getCoreDao().evict(b);
+			}
+	  		IndexSynchronizationManager.applyChanges(SPropsUtil.getInt("lucene.flush.threshhold", 100));
+		}
+   		return ids;
+
+   	}
+    
     //***********************************************************************************************************
     protected Principal getPrincipal(List users, String userId) {
     	Principal p;
