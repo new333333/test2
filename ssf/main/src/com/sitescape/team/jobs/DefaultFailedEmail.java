@@ -55,6 +55,7 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.module.mail.JavaMailSender;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.util.Validator;
 
 /**
  * @author Janet McCann
@@ -77,8 +78,10 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 		try {
 			fs = new FileInputStream(file);
 			String name = (String)jobDataMap.get("mailSender");
+			String account = (String)jobDataMap.get("mailAccount");
+			String password = (String)jobDataMap.get("mailPwd");
 			try {
-				mail.sendMail(name, fs);
+				mail.sendMail(name, account, password, fs);
 				context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
 				try {
 					fs.close();
@@ -140,6 +143,9 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 
 		
     public void schedule(Binder binder, JavaMailSender mailSender, MimeMessage mail, File fileDir) {
+    	schedule(binder, mailSender, null, null, mail, fileDir);
+    }
+    public void schedule(Binder binder, JavaMailSender mailSender, String account, String password, MimeMessage mail, File fileDir) {
 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		//each job is new = don't use verify schedule, cause this a unique
 		GregorianCalendar start = new GregorianCalendar();
@@ -170,6 +176,10 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 			}
 			data.put("mailMessage", file.getPath());
 			data.put("mailSender", mailSender.getName());
+			if (Validator.isNotNull(account)) {
+				data.put("mailAccount", account);
+				data.put("mailPwd", password);
+			}
 			jobDetail.setJobDataMap(data);
 			jobDetail.addJobListener(getDefaultCleanupListener());
 	  		SimpleTrigger trigger = new SimpleTrigger(jobName, RETRY_GROUP, jobName, RETRY_GROUP, start.getTime(), null, 24, 1000*60*60);
