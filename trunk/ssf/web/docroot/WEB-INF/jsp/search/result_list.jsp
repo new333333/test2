@@ -384,21 +384,17 @@
 			
 				<c:when test="${entry._docType == 'binder'}">
 							<div class="ss_thumbnail">
-								<c:set var="entryBinderId" value="${entry._binderId}"/>
+								<c:set var="entryBinderId" value="${entry._docId}"/>
 								<c:set var="entryDocId" value="${entry._docId}"/>
 								<c:if test="${entry._entityType == 'folder'}">
 								  <img <ssf:alt tag="general.type.folder"/> 
 								    src="<html:imagesPath/>pics/folder_icon.gif"/>
 								  <c:set var="actionVar" value="view_folder_listing"/>
-								  <c:set var="entryBinderId" value="${entry._docId}"/>
-								  <c:set var="entryDocId" value=""/>
 								</c:if>
 								<c:if test="${entry._entityType == 'workspace'}">
 								  <img <ssf:alt tag="general.type.workspace"/> 
 								    src="<html:imagesPath/>pics/workspace_icon.gif"/>
 								  <c:set var="actionVar" value="view_ws_listing"/>
-								  <c:set var="entryBinderId" value="${entry._docId}"/>
-								  <c:set var="entryDocId" value=""/>
 								</c:if>								
 								<c:if test="${entry._entityType == 'profiles'}">
 								  <img <ssf:alt tag="general.type.workspace"/> 
