@@ -168,7 +168,7 @@ public abstract class Principal extends Entry implements IPrincipal {
     public String getEmailAddress(String type) {
        	if (emailAddresses == null) return null;
        	EmailAddress a = emailAddresses.get(type);
-       	return (a==null ? null:a.getAddress());
+       	return (a==null ? "":a.getAddress());
     }
     public void setEmailAddress(String type, String address) {
     	if (emailAddresses == null) emailAddresses = new HashMap();
