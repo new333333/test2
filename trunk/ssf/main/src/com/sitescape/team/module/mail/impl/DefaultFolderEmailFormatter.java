@@ -86,7 +86,6 @@ import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.mail.MailHelper;

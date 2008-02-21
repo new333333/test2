@@ -31,7 +31,6 @@ package com.sitescape.team.module.mail;
 import java.util.Date;
 import java.util.Map;
 import javax.mail.internet.MimeMessage;
-import java.util.Collection;
 
 import com.sitescape.team.domain.Binder;
 
@@ -58,6 +57,7 @@ public interface MailModule {
 	public void sendMail(MimeMessage msg);
 	public void sendMail(String mailSenderName, MimeMessage msg);
 	public void sendMail(String mailSenderName, java.io.InputStream input);
+	public void sendMail(String mailSenderName, String account, String password, java.io.InputStream input);
     public void sendMail(String mailSenderName, MimeMessagePreparator preparer);
     public boolean sendMail(Binder binder, Map message, String comment);
     public void scheduleMail(Binder binder, Map message, String comment);

@@ -43,9 +43,11 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.mail.AuthenticationFailedException;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Session;
@@ -55,7 +57,6 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.search.OrTerm;
 import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
-import javax.mail.AuthenticationFailedException;
 
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;
@@ -88,13 +89,9 @@ import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.team.dao.util.OrderBy;
-import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.ical.util.ICalUtils;
 import com.sitescape.team.jobs.FailedEmail;
 import com.sitescape.team.jobs.FillEmailSubscription;
-import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.jobs.SendEmail;
 import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.mail.MailHelper;
@@ -130,7 +127,7 @@ import com.sitescape.util.Validator;
 public class MailModuleImpl extends CommonDependencyInjection implements MailModule, ZoneSchedule, InitializingBean {
 	protected Log logger = LogFactory.getLog(getClass());
 	protected Map zoneProps = new HashMap();
-	protected Map mailPosters = new HashMap();
+	protected ConcurrentHashMap<String, List> mailPosters = new ConcurrentHashMap();
 	protected Map<String, JavaMailSender> mailSenders = new HashMap();
 	protected JavaMailSender mailSender;
 	protected JndiAccessor jndiAccessor;
@@ -189,8 +186,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		useAliases = SPropsUtil.getBoolean("mail.posting.useAliases", false);
 		//Get send tasks in email
 		sendVTODO = SPropsUtil.getBoolean("mail.sendVTODO", true);
-		//preload mailSenders so retry mail will work.  Needs name availailable 
-		List<Element> senders = SZoneConfig.getAllElements("//mailConfiguration//notify");
+		//preload mailSenders so retry mail will work.  Needs name available.  Posters are also senders, when replying on failures.
+		List<Element> senders = SZoneConfig.getAllElements("//mailConfiguration/notify | //mailConfiguration/posting");
 		for (Element sEle:senders) {
 			String jndiName = sEle.attributeValue("session");
 			if (Validator.isNotNull(jndiName)) {
@@ -208,10 +205,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					mailSenders.put(jndiName, sender);
 				
 				} catch (Exception ex) {
-					logger.error("Error locating " + jndiName + " " + ex.getLocalizedMessage());
+					logger.error("Error locating " + jndiName + " " + getMessage(ex));
 				}
 			}		
 		}
+
 		//get mail posting accounts - possible alternative to storing passwords in database
 /*		List<Element>accounts = SZoneConfig.getAllElements("//mailConfiguration//account");
 		for (Element sEle:accounts) {
@@ -303,23 +301,20 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	}
 
 
-	public synchronized List getMailPosters(String zoneName) {
-		//posting map is indexed by zoneName.  Value is a list of mail sessions
-		List result = (List)mailPosters.get(zoneName);
+	protected List<String> getMailPosters(String zoneName) {
+		//posting map is indexed by zoneName.  
+		List<String> result = mailPosters.get(zoneName);
 	    if (result != null) return result;
-		List posters = SZoneConfig.getElements("mailConfiguration/posting");
+		List<Element> posters = SZoneConfig.getElements("mailConfiguration/posting");
 		if (posters == null) posters = new ArrayList();
 		result = new ArrayList();
-		for (int i=0; i<posters.size(); ++i) {
-			Element nElement = (Element)posters.get(i);
+		for (Element nElement:posters) {
 			String jndiName = PortabilityUtil.getJndiName(nElement.attributeValue("session"));
-			try {
-				result.add((javax.mail.Session)jndiAccessor.getJndiTemplate().lookup(jndiName));
-			} catch (Exception ex) {
-				logger.error("Error locating " + jndiName + " " + ex.getLocalizedMessage());
-				return null;
+			if (mailSenders.containsKey(jndiName)) {
+				result.add(jndiName); 
+			} else {
+				logger.error("Error locating mail poster " + jndiName);
 			}
-
 		}
 		mailPosters.put(zoneName, result);
 		return result;
@@ -330,7 +325,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 */
 	public void receivePostings() {
 		String prefix, auth;
-		List posters = getMailPosters(RequestContextHolder.getRequestContext().getZoneName());
+		List<String> posters = getMailPosters(RequestContextHolder.getRequestContext().getZoneName());
 		List<PostingDef> allPostings = getCoreDao().loadPostings(RequestContextHolder.getRequestContext().getZoneId());
 		/* There are 3 types of posting
 		 * 1. Using aliases, where mail is sent to different address which are aliases for the address configured in ssf.xml
@@ -351,8 +346,14 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		
 		SearchTerm[] aliasSearch = new SearchTerm[2];
 		
-		for (int i=0; i<posters.size(); ++i) {  //multiple aren't tested
-			Session session = (Session)posters.get(i);
+		for (String jndiName:posters) {  //multiple aren't tested
+			JavaMailSender sender;
+			try {
+				sender = getMailSender(jndiName);
+			} catch (Exception ex) {
+				continue;
+			}
+			Session session = sender.getSession();
 			String protocol = session.getProperty("mail.store.protocol");
 			// see if need password
 			prefix = "mail." + protocol + ".";
@@ -399,7 +400,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								if (aliasMsgs.length == 0) continue;
 								Folder folder = (Folder)postingDef.getBinder();
 								FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
-								sendErrors(folder, postingDef, session, processor.postMessages(folder,postingDef, aliasMsgs, session));
+								sendErrors(folder, postingDef, sender, processor.postMessages(folder,postingDef, aliasMsgs, session));
 							} catch (Exception ex) {
 								logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
 							}
@@ -421,7 +422,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								if ("inbox".equals(mFolder.getFullName())) {
 									try {
 										mFolder.open(javax.mail.Folder.READ_WRITE);
-										sendErrors(folder, postingDef,  session, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
+										sendErrors(folder, postingDef,  sender, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
 									} finally {
 										mFolder.close(true);
 									}
@@ -453,7 +454,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					store.connect(null, postingDef.getEmailAddress(), postingDef.getPassword());
 					mFolder = store.getFolder("inbox");				
 					mFolder.open(javax.mail.Folder.READ_WRITE);
-					sendErrors(folder, postingDef, session, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
+					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
 				} catch (AuthenticationFailedException ax) {
 					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(ax));
 					continue;
@@ -474,15 +475,17 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		if (Validator.isNotNull(ex.getLocalizedMessage())) return ex.getLocalizedMessage();
 		return ex.getMessage();
 	}
-	private void sendErrors(Binder binder, PostingDef postingDef, Session session, List errors) {
+	private void sendErrors(Binder binder, PostingDef postingDef, JavaMailSender srcSender, List errors) {
 		if (!errors.isEmpty()) {
 			try	{
-				JavaMailSender sender = (JavaMailSender)mailSender.getClass().newInstance();				
-				SpringContextUtil.applyDependencies(sender, "mailSender");	
+				JavaMailSender sender;
 				if (!useAliases && !Validator.isNull(postingDef.getPassword()))  {
-					sender.setSession(session, postingDef.getEmailAddress(), postingDef.getPassword());
+					//need our own sender, so we can change the username/password
+					 sender = (JavaMailSender)mailSender.getClass().newInstance();				
+					 SpringContextUtil.applyDependencies(sender, "mailSender");	
+					 sender.setSession(srcSender.getSession(), postingDef.getEmailAddress(), postingDef.getPassword());
 				} else {
-					sender.setSession(session);
+					sender = srcSender;
 				}
 				sender.send((MimeMessage[])errors.toArray(new MimeMessage[errors.size()]));
 			} catch (MailAuthenticationException ax) {
@@ -494,9 +497,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					FailedEmail process = (FailedEmail)processorManager.getProcessor(binder, FailedEmail.PROCESSOR_KEY);
 					for (Iterator iter=failures.entrySet().iterator(); iter.hasNext();) {
 						Map.Entry me = (Map.Entry)iter.next();
-						//TODO retries will have to be on the outgoing side of posters because it is a reply.
-						//this isn't set to work yet
-//						process.schedule(binder, mailSender, (MimeMessage)me.getKey(), getMailDirPath(binder));			
+						if (!useAliases && !Validator.isNull(postingDef.getPassword()))  {
+							process.schedule(binder, srcSender, postingDef.getEmailAddress(), postingDef.getPassword(), (MimeMessage)me.getKey(), getMailDirPath(binder));
+						} else {
+							process.schedule(binder, srcSender, (MimeMessage)me.getKey(), getMailDirPath(binder));							
+						}
 						logger.error("Error sending posting reject:" + getMessage((Exception)me.getValue()));						
 					}
 				}
@@ -614,10 +619,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
  			}
 
 		} catch (MailSendException sx) {
-    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
+    		logger.error("Error sending mail:" + getMessage(sx));
     		throw sx;
 		} catch (MailAuthenticationException ax) {
-    		logger.error("Error sending mail:" + ax.getLocalizedMessage());
+    		logger.error("Error sending mail:" + getMessage(ax));
     		throw ax;
 		} finally {
 			if (ctx !=null) mailSender.releaseConnection(ctx);
@@ -634,12 +639,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				mHelper.setToAddrs((Set)e.getValue());
 				mailSender.send(mHelper, ctx);
 			} catch (MailSendException sx) {
-	    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
+	    		logger.error("Error sending mail:" + getMessage(sx));
 		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
 		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
 		   	} catch (Exception ex) {
 		   		//message gets thrown away here
-	       		logger.error(ex.getLocalizedMessage());
+	       		logger.error(getMessage(ex));
 	    	} 
 		}
 
@@ -750,10 +755,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			}
 
 		} catch (MailSendException sx) {
-    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
+    		logger.error("Error sending mail:" + getMessage(sx));
     		throw sx;
 		} catch (MailAuthenticationException ax) {
-    		logger.error("Error sending mail:" + ax.getLocalizedMessage());
+    		logger.error("Error sending mail:" + getMessage(ax));
     		throw ax;
 		} finally {
 			if (ctx !=null) mailSender.releaseConnection(ctx);
@@ -769,10 +774,30 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
         	MimeMessage mailMsg = new MimeMessage(mailSender.getSession(), input);
 			mailSender.send(mailMsg);
  		} catch (MessagingException mx) {
-			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {mx.getLocalizedMessage()}));
+			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
 		}
     }
-    //prepare mail and send it - caller must retry if desired
+    //used for re-try mail.  MimeMessage has been serialized 
+        public void sendMail(String mailSenderName, String account, String password, java.io.InputStream input) {
+    	JavaMailSender mailSender = getMailSender(mailSenderName);
+    	try {
+    	   	if (Validator.isNotNull(account)) {
+    			//need to get our own sender, so the account/password can be changed
+				//need our own sender, so we can change the username/password
+    	   		Session session = mailSender.getSession();
+    	   		mailSender = (JavaMailSender)mailSender.getClass().newInstance();				
+    	   		SpringContextUtil.applyDependencies(mailSender, "mailSender");	
+    	   		mailSender.setSession(session, account, password);
+    		}
+        	MimeMessage mailMsg = new MimeMessage(mailSender.getSession(), input);
+			mailSender.send(mailMsg);
+ 		} catch (MessagingException mx) {
+			throw new MailPreparationException(NLT.get("errorcode.sendMail.badInputStream", new Object[] {getMessage(mx)}));
+		} catch (Exception ex) {
+			logger.error("Error on mail retry:" + getMessage(ex));
+		}
+    }
+   //prepare mail and send it - caller must retry if desired
     public void sendMail(String mailSenderName, MimeMessagePreparator mHelper) {
     	JavaMailSender mailSender = getMailSender(mailSenderName);
 		mHelper.setDefaultFrom(mailSender.getDefaultFrom());

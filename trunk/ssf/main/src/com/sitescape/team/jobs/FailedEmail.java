@@ -43,5 +43,6 @@ public interface FailedEmail {
 	public static final String RETRY_GROUP="retry-send-email";
 
     public void schedule(Binder binder, JavaMailSender mailSender, MimeMessage mail, File fileDir);
+    public void schedule(Binder binder, JavaMailSender mailSender, String account, String password, MimeMessage mail, File fileDir);
 
 }
