@@ -51,7 +51,7 @@ public class AuthenticationManager {
 	 * @throws Exception 
 	 */
 	public static void authenticate(String zoneName, String userName, String password, Map updates) throws Exception {		
-		BridgeClient.invoke(zoneName, userName, SERVICE_CLASS_NAME, 
+		BridgeClient.invoke(zoneName, null, SERVICE_CLASS_NAME, 
 				SERVICE_METHOD_NAME, SERVICE_METHOD_ARG_TYPES,
 				new Object[] {zoneName, userName, password, updates, "portal"});
 	}
