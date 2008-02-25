@@ -5089,6 +5089,14 @@ table.ssMeetingRecords .ssHeader {
   background-position:100% -42px;
   }
 
+div.ss_canvas {
+	border-left: solid 1px ${ss_toolbar1_background_color};
+	border-right: solid 1px ${ss_toolbar1_background_color};
+	border-bottom: solid .3px ${ss_toolbar1_background_color};
+	padding-bottom: 0px;
+	margin-bottom: 10px;
+	background-color: ${ss_style_background_color_side_panel};
+	}
 
 
 <% // Place all CSS code above this line %>

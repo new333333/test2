@@ -39,3 +39,35 @@
 	<li><a href="#"><span>Vistors</span></a></li>
   </ul>
 </div>
+<div class="ss_clear_float"></div>
+<div style="margin:4px 10px 10px 10px;">
+<table width="100%">
+<tr>
+<td width="50%" valign="top">
+	<ssf:canvas id="relevanceDocuments" type="inline">
+	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
+	  Recent documents<br/>
+	  Recent documents<br/>
+	  Recent documents<br/>
+	</ssf:canvas>
+	<ssf:canvas id="relevanceTasks" type="inline">
+	<ssf:param name="title" value="<%= NLT.get("relevance.tasks") %>"/>
+	  Tasks<br/>
+	  Tasks<br/>
+	  Tasks<br/>
+	  Tasks<br/>
+	  Tasks<br/>
+	</ssf:canvas>
+</td>
+<td width="50%" valign="top" style="padding-left:10px;">
+	<ssf:canvas id="relevanceMail" type="inline">
+	<ssf:param name="title" value="<%= NLT.get("relevance.email") %>"/>
+		<iframe src="https://webacc.innerweb.novell.com/gw/webacc?merge=iwwebacc&gadget=Mail" 
+		name="gwmail" title="gwmail" frameborder="0" scrolling="Auto" 
+		width="100%" height="360">mail</iframe>	
+	</ssf:canvas>
+</td>
+</tr>
+</table>
+
+</div>
