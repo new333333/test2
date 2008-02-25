@@ -47,6 +47,8 @@
 	    <value>com/sitescape/team/domain/WorkflowResponse.hbm.xml</value>
 	    <value>com/sitescape/team/domain/WorkflowState.hbm.xml</value>
 	    <value>com/sitescape/team/domain/ZoneInfo.hbm.xml</value>
+		<value>com/sitescape/team/security/accesstoken/impl/TokenInfoInteractive.hbm.xml</value>
+		<value>com/sitescape/team/security/accesstoken/impl/TokenInfoBackground.hbm.xml</value>
 
 			</list>
 		</property>

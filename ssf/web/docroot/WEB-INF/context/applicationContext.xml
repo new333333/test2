@@ -378,6 +378,7 @@
 	</bean>	
 	
 	<bean id="accessTokenManager" class="com.sitescape.team.security.accesstoken.impl.AccessTokenManagerImpl">
+		<property name="securityDao"><ref local="securityDao"/></property>							
 	</bean>
 	
 	<!-- =========================== Business Components =========================== -->
@@ -404,6 +405,7 @@
 		<property name="workAreaFunctionMembershipManager"><ref local="workAreaFunctionMembershipManager"/></property>
 		<property name="resourceDriverManager"><ref bean="resourceDriverManager"/></property>
 		<property name="licenseManager"><ref bean="licenseManager"/></property>
+		<property name="accessTokenManager"><ref bean="accessTokenManager"/></property>
 	</bean>
 	
 	<bean id="processorDependencyTemplate" parent="dependOnCommonServicesTemplate" abstract="true">
