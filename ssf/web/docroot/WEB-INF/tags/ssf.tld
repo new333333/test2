@@ -120,6 +120,22 @@
 	</tag>
 	
 	<tag>
+		<name>canvas</name>
+		<tag-class>com.sitescape.team.taglib.CanvasTag</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>type</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>id</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>	
+
+	<tag>
 		<name>clipboard</name>
 		<tag-class>com.sitescape.team.taglib.ClipboardTag</tag-class>
 		<body-content>JSP</body-content>
