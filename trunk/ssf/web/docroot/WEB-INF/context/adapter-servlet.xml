@@ -71,7 +71,7 @@
 				<value>ss_task</value>
 				<value>ss_toolbar</value>
 				<value>ss_workarea</value>
-				<value>ss_accessories</value>
+				<value>ss_relevance_dashboard</value>
 			</list>
 		</property>
 	</bean>
