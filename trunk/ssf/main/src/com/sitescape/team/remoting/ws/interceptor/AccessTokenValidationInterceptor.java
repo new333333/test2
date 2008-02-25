@@ -78,7 +78,7 @@ public class AccessTokenValidationInterceptor implements MethodInterceptor {
 				AccessToken token = new AccessToken((String) args[0]);
 				// If you're still here, the token is well formed.
 				// Now let's see if the token is a valid one.
-				getAccessTokenManager().validate(token);
+				getAccessTokenManager().validate((String) args[0], token);
 				// If you're still here, the validation was successful.
 				// Update the request context with the newly obtained information 
 				// (performed as side effect of this interceptor)
@@ -101,5 +101,4 @@ public class AccessTokenValidationInterceptor implements MethodInterceptor {
 		return invocation.proceed();
 	}
 
-	
 }

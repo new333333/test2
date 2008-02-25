@@ -41,6 +41,7 @@ import com.sitescape.team.modelprocessor.ProcessorManager;
 import com.sitescape.team.presence.PresenceManager;
 import com.sitescape.team.search.LuceneSessionFactory;
 import com.sitescape.team.security.AccessControlManager;
+import com.sitescape.team.security.accesstoken.AccessTokenManager;
 import com.sitescape.team.security.acl.AclManager;
 import com.sitescape.team.security.function.FunctionManager;
 import com.sitescape.team.security.function.WorkAreaFunctionMembershipManager;
@@ -75,6 +76,7 @@ public abstract class CommonDependencyInjection {
 	protected WorkAreaFunctionMembershipManager workAreaFunctionMembershipManager;
 	protected ResourceDriverManager resourceDriverManager;
 	protected LicenseManager licenseManager;
+	protected AccessTokenManager accessTokenManager;
 	
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -153,6 +155,12 @@ public abstract class CommonDependencyInjection {
 	}
 	public void setLicenseManager(LicenseManager licenseManager) {
 		this.licenseManager = licenseManager;
+	}
+	public AccessTokenManager getAccessTokenManager() {
+		return accessTokenManager;
+	}
+	public void setAccessTokenManager(AccessTokenManager accessTokenManager) {
+		this.accessTokenManager = accessTokenManager;
 	}
 
 }

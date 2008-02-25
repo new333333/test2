@@ -32,6 +32,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.security.accesstoken.impl.TokenInfoBackground;
+import com.sitescape.team.security.accesstoken.impl.TokenInfoInteractive;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 
@@ -85,4 +87,9 @@ public interface SecurityDao {
     public List findWorkAreaByOperation( Long zoneId,
              String workAreaOperationName,  Set membersToLookup);
 
+    public TokenInfoInteractive loadTokenInfoInteractive(Long zoneId, Long userId);
+
+    public TokenInfoBackground loadTokenInfoBackground(Long zoneId, Long applicationId, Long userId, Long binderId);
+
+    public void deleteAll(Class clazz);
 }

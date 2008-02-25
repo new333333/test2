@@ -26,18 +26,42 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.security.accesstoken;
+package com.sitescape.team.web.servlet.listener;
 
-import com.sitescape.team.security.AccessControlException;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+import javax.servlet.http.HttpSessionListener;
 
-public class InvalidAccessTokenException extends AccessControlException {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private static final String InvalidAccessTokenlException_ErrorCode = "errorcode.invalid.accesstoken";
-	
-	public InvalidAccessTokenException(String accessToken) {
-		super(InvalidAccessTokenlException_ErrorCode, new Object[] {accessToken});
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
+import com.sitescape.team.security.accesstoken.AccessTokenManager;
+import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.web.WebKeys;
+
+public class SessionListener implements HttpSessionListener {
+
+	public void sessionCreated(HttpSessionEvent se) {
+	}
+
+	public void sessionDestroyed(HttpSessionEvent se) {
+		HttpSession ses = se.getSession();
+		
+		final Long userId = (Long) ses.getAttribute(WebKeys.USER_ID);
+		
+		if(userId != null) {
+			Boolean sharedUser = (Boolean) ses.getAttribute(WebKeys.USER_SHARED);
+			if(Boolean.FALSE.equals(sharedUser)) {
+				final AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
+				Long zoneId = (Long) ses.getAttribute(WebKeys.ZONE_ID);
+				// Make sure to run it in the user's context.	
+				RunasTemplate.runas(new RunasCallback() {
+					public Object doAs() {
+						accessTokenManager.updateSeedForInteractive(userId);
+						return null;
+					}
+				}, zoneId, userId);
+			}
+		}
 	}
 
 }

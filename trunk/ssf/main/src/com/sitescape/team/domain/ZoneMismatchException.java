@@ -26,18 +26,18 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.security.accesstoken;
+package com.sitescape.team.domain;
 
-import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.exception.UncheckedCodedException;
 
-public class InvalidAccessTokenException extends AccessControlException {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private static final String InvalidAccessTokenlException_ErrorCode = "errorcode.invalid.accesstoken";
-	
-	public InvalidAccessTokenException(String accessToken) {
-		super(InvalidAccessTokenlException_ErrorCode, new Object[] {accessToken});
-	}
-
+/**
+ * @author Jong Kim
+ *
+ */
+public class ZoneMismatchException extends UncheckedCodedException {
+    private static final String ZoneMismatchException_ErrorCode = "errorcode.zone.mismatch";
+    
+    public ZoneMismatchException(Long foundZoneId, Long expectedZoneId) {
+        super(ZoneMismatchException_ErrorCode, new Object[]{foundZoneId, expectedZoneId});
+    }
 }

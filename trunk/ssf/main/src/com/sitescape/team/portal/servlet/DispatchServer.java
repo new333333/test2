@@ -29,6 +29,7 @@
 package com.sitescape.team.portal.servlet;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 import javax.servlet.GenericServlet;
 import javax.servlet.RequestDispatcher;
@@ -47,6 +48,9 @@ import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.portal.CrossContextConstants;
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
+import com.sitescape.team.security.accesstoken.AccessTokenManager;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
@@ -60,6 +64,7 @@ public class DispatchServer extends GenericServlet {
 	private static final String SSF_CONTEXT_PATH_DEFAULT = "/ssf";
 	
 	private ProfileDao profileDao;
+	private AccessTokenManager accessTokenManager;
 	
 	public void init(ServletConfig config) throws ServletException {
 		RequestDispatcher rd = config.getServletContext().getNamedDispatcher(PORTAL_CC_DISPATCHER);
@@ -75,9 +80,15 @@ public class DispatchServer extends GenericServlet {
 			new ServletException(e);
 		}
 		profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
+		accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
 	}
 	
 	public void service(ServletRequest req, ServletResponse res) throws ServletException, IOException {
+		// This method is invoked only once for each regular user after successful
+		// authentication. However, unfortunately, the same is called for every
+		// access through the guest account. This is because there is no "explicit"
+		// login event for anonymous access. So, any modification to this method
+		// should be done carefully with the understanding.
 		String operation = req.getParameter(CrossContextConstants.OPERATION);
 
 		if(operation.equals(CrossContextConstants.OPERATION_SETUP_SESSION)) {
@@ -91,13 +102,13 @@ public class DispatchServer extends GenericServlet {
 				zoneName = SZoneConfig.getDefaultZoneName();
 			}
 					
-			HttpSession ses = ((HttpServletRequest) req).getSession();
-			
 			String userName = req.getParameter(CrossContextConstants.USER_NAME);
 			if(userName == null)
 				userName = SZoneConfig.getGuestUserName(zoneName);
 			
-			User user = profileDao.findUserByName(userName, zoneName);
+			final User user = profileDao.findUserByName(userName, zoneName);
+			
+			HttpSession ses = ((HttpServletRequest) req).getSession();
 			
 			WebHelper.putContext(ses, user);
 
@@ -106,11 +117,23 @@ public class DispatchServer extends GenericServlet {
 				ses.setAttribute(WebKeys.SERVER_PORT, Integer.valueOf(req.getServerPort()));
 				if(logger.isDebugEnabled())
 					logger.debug("Server name:port is " + req.getServerName().toLowerCase() + ":" + req.getServerPort() + " for user " + userName + " at the time of login");
-			}
+				
+				// Do this here to make sure we call it only once per new session.
+				// Also do it only for regular authenticated users, not anonymous ones.
+				if(!user.isShared()) {
+					// Make sure to run it in the user's context since it needs it.			
+					RunasTemplate.runas(new RunasCallback() {
+						public Object doAs() {
+							accessTokenManager.updateSeedForInteractive(user.getId());
+							return null;
+						}
+					}, user);	
+				}
+			}			
 		}
 		else {
 			logger.error("Unrecognized operation [" + operation + "]");
 		}
 	}
-	
+
 }
