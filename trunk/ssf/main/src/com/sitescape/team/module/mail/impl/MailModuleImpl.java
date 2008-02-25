@@ -135,6 +135,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	private String mailRootDir;
 	protected boolean useAliases=false;
 	protected boolean sendVTODO = true;
+	protected int rcptToLimit = 500;
 //	protected Map<String,String> mailAccounts = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 	public MailModuleImpl() {
 		defaultProps.put(MailModule.POSTING_JOB, "com.sitescape.team.jobs.DefaultEmailPosting");
@@ -186,6 +187,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		useAliases = SPropsUtil.getBoolean("mail.posting.useAliases", false);
 		//Get send tasks in email
 		sendVTODO = SPropsUtil.getBoolean("mail.sendVTODO", true);
+		rcptToLimit = SPropsUtil.getInt("mail.rcpt.limit", 500);
 		//preload mailSenders so retry mail will work.  Needs name available.  Posters are also senders, when replying on failures.
 		List<Element> senders = SZoneConfig.getAllElements("//mailConfiguration/notify | //mailConfiguration/posting");
 		for (Element sEle:senders) {
@@ -633,19 +635,24 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	private void doSubscription (Folder folder, JavaMailSender mailSender, MimeHelper mHelper, Map results, Object ctx) {
 		for (Iterator iter=results.entrySet().iterator(); iter.hasNext();) {			
 			//Use spring callback to wrap exceptions into something more useful than javas 
-			try {
-				Map.Entry e = (Map.Entry)iter.next();
-				mHelper.setLocale((Locale)e.getKey());
-				mHelper.setToAddrs((Set)e.getValue());
-				mailSender.send(mHelper, ctx);
-			} catch (MailSendException sx) {
-	    		logger.error("Error sending mail:" + getMessage(sx));
-		  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
-		   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
-		   	} catch (Exception ex) {
-		   		//message gets thrown away here
-	       		logger.error(getMessage(ex));
-	    	} 
+			Map.Entry e = (Map.Entry)iter.next();
+			mHelper.setLocale((Locale)e.getKey());
+			//break to list into pieces if big
+			ArrayList rcpts = new ArrayList((Set)e.getValue());
+			for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
+				try {
+					List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
+					mHelper.setToAddrs(subList);
+					mailSender.send(mHelper, ctx);
+				} catch (MailSendException sx) {
+		    		logger.error("Error sending mail:" + getMessage(sx));
+			  		FailedEmail process = (FailedEmail)processorManager.getProcessor(folder, FailedEmail.PROCESSOR_KEY);
+			   		process.schedule(folder, mailSender, mHelper.getMessage(), getMailDirPath(folder));
+			   	} catch (Exception ex) {
+			   		//message gets thrown away here
+		       		logger.error(getMessage(ex));
+		    	}
+			}
 		}
 
 	}
