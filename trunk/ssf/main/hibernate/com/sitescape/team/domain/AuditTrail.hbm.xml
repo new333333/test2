@@ -9,9 +9,9 @@
     </id>
     <discriminator type="char" column="type"/>
     <property name="zoneId" access="field"/>
- 	<property name="entityId"/>
-   	<property name="entityType" length="16"/>
-    <property name="owningBinderId"/>
+ 	<property name="entityId" index="entityOwner_audit"/>
+   	<property name="entityType" length="16" index="entityOwner_audit"/>
+    <property name="owningBinderId" index="owningBinder_audit"/>
  	<property name="owningBinderKey" length="255" />
     <property name="startBy"/>
     <property name="startDate"/>
@@ -22,6 +22,7 @@
  	<property name="fileId">
  		<column name="fileId" sql-type="char(32)"/>
  	</property>
+
     <subclass name="com.sitescape.team.domain.WorkflowStateHistory" discriminator-value="W">
  		<property name="tokenId"/>
     	<property name="state" length="64"/>
