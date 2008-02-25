@@ -51,6 +51,7 @@ function ss_checkSlidingTableLayout200() {
 }
 
 function ss_checkSlidingTableLayout() {
+    if (typeof ss_slidingTableId_2 == "undefined") return;
 	if (ss_getSlidingTableY(ss_slidingTableId_2) != ss_sTableLastTop || 
 			ss_getSlidingTableX(ss_slidingTableId_2) != ss_sTableLastLeft || 
 			ss_getDivWidth(ss_slidingTableParentId) != ss_sTableLastParentWidth) {
@@ -72,6 +73,7 @@ function ss_showSlidingTableCols200() {
 }
 
 function ss_showSlidingTableCols() {
+    if (typeof ss_slidingTableId_2 == "undefined") return;
 	ss_sTableMarginLeft = parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginRight)
 	ss_sTableMarginRight =  parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginLeft)
 	ss_sTableMarginTop = parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginTop)
@@ -228,6 +230,7 @@ function ss_clearMouseOverInfo(obj) {
 }
 
 function ss_saveSlidingTableCoords() {
+    if (typeof ss_slidingTableId_2 == "undefined") return true;
 	ss_setupStatusMessageDiv()
     var s = ""
     var ss_sTableLeft = ss_getDivLeft(ss_slidingTableId_2);

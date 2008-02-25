@@ -846,8 +846,6 @@ public class WebKeys {
     
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
-    public static final String VIEW_ACCESSORIES = "accessories/view";
-    public static final String VIEW_ACCESSORIES_EDIT = "accessories/edit";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
     public static final String VIEW_ADD_BINDER = "binder/add_binder";
     public static final String VIEW_ADD_BINDER_TYPE = "binder/add_binder_type";
@@ -920,6 +918,8 @@ public class WebKeys {
     public static final String VIEW_PRESENCE_EDIT="presence/edit";
     public static final String VIEW_PROFILE="profile/view";
     public static final String VIEW_QUOTA_REPORT="administration/quota_report";
+    public static final String VIEW_RELEVANCE_DASHBOARD = "relevance_dashboard/view";
+    public static final String VIEW_RELEVANCE_DASHBOARD_EDIT = "relevance_dashboard/edit";
     public static final String VIEW_REPORT="administration/report";
     public static final String VIEW_SEARCH="search/view";
     public static final String VIEW_SEARCH_EDIT="search/edit";

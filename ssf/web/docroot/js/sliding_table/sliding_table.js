@@ -35,6 +35,7 @@ function ss_getSlidingTableY(divId) {
 	return ss_getDivTop(divId);
 }
 function ss_position_sTableCol(divName, x, y, w) {
+    if (typeof ss_slidingTableId_2 == "undefined") return;
     var divObj = self.document.getElementById(divName)
     //ss_debug('Position cols: ' + divName +', '+ x +', '+ y +', '+ w + ', z-index: '+divObj.style.zIndex)
     if (divObj.style.position == "absolute") ss_moveDivToBody(divName);
@@ -49,6 +50,7 @@ function ss_position_sTableCol(divName, x, y, w) {
 }
 
 function ss_slidingTableDrag(evt) {
+    if (typeof ss_slidingTableId_2 == "undefined" || typeof ss_slidingTableId == "undefined") return true;
     var ss_sTableLeft = ss_getSlidingTableX(ss_slidingTableId_2)
     var ss_sTableWidth = ss_getDivWidth(ss_slidingTableId_2)
     if (ss_sTableWidth == 0) ss_sTableWidth = parseInt(ss_defTableWidth);

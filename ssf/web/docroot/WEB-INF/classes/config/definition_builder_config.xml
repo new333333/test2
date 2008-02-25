@@ -1290,6 +1290,7 @@
 			<option name="workspaceTitleView"/>
 			<option name="userWorkspaceBusinessCard" initial="true"/>
 			<option name="descriptionView" initial="true" />
+			<option name="relevanceDashboard" initial="true" />
 			<option name="dashboardCanvas" initial="true" />
 			<option name="workspaceDataItem" caption="__workspace_data_item" 
 				definitionType="12" />
@@ -1304,6 +1305,12 @@
 		</jsps>
 	</item>
 	
+	<item name="relevanceDashboard" caption="__relevance_dashboard" display="view">	
+		<jsps>
+			<jsp name="view" value="/WEB-INF/jsp/definition_elements/relevance_dashboard.jsp" />
+		</jsps>
+	</item>
+			
 	<item name="userWorkspaceBusinessCard" caption="__user_workspace_businessCard" category="userWorkspaceViewData" display="view">	
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__user_workspace_businessCard"/>

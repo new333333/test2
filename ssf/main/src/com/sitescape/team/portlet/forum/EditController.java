@@ -161,7 +161,7 @@ public class EditController extends SAbstractController {
 				}
 				DashboardHelper.saveComponentData(request, d);
 
-			} else if (ViewController.ACCESSORIES_PORTLET.equals(displayType)) {
+			} else if (ViewController.RELEVANCE_DASHBOARD_PORTLET.equals(displayType)) {
 				//See if this portlet has been initialized yet. If not, add an empty dashboard
 				String id = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
 				DashboardPortlet d=null;
@@ -188,7 +188,7 @@ public class EditController extends SAbstractController {
 					prefs.setValue(WebKeys.WORKSPACE_PREF_ID, id);
 				}
 			}
-		} else if (ViewController.ACCESSORIES_PORTLET.equals(displayType)) {
+		} else if (ViewController.RELEVANCE_DASHBOARD_PORTLET.equals(displayType)) {
 			//See if this portlet has been initialized yet. If not, add an empty dashboard
 			String id = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
 			DashboardPortlet d=null;
@@ -249,8 +249,8 @@ public class EditController extends SAbstractController {
 			model.put(WebKeys.FOLDER_LIST, binders);
 			model.put(WebKeys.BINDER_ID_LIST, binderIds);
 			return new ModelAndView(WebKeys.VIEW_MOBILE_EDIT, model);
-		} else if (ViewController.ACCESSORIES_PORTLET.equals(displayType)) {
-			return setupAccessoryPortlet(request, prefs, model, "accessories");
+		} else if (ViewController.RELEVANCE_DASHBOARD_PORTLET.equals(displayType)) {
+			return setupRelevanceDashboardPortlet(request, prefs, model, "relevance_dashboard");
 		} else if (ViewController.BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlet(request, prefs, model, WebKeys.VIEW_BLOG_EDIT, "blog");
 		} else if (ViewController.GALLERY_PORTLET.equals(displayType)) {
@@ -291,7 +291,7 @@ public class EditController extends SAbstractController {
 		}
 		return null;
 	}
-	private ModelAndView setupAccessoryPortlet(RenderRequest request, PortletPreferences prefs, Map model, String componentName) {
+	private ModelAndView setupRelevanceDashboardPortlet(RenderRequest request, PortletPreferences prefs, Map model, String componentName) {
 		Map userProperties = (Map) getProfileModule().getUserProperties(RequestContextHolder.getRequestContext().getUserId()).getProperties();
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		String id = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
@@ -307,8 +307,8 @@ public class EditController extends SAbstractController {
 			//setup dummy dashboard for config
 			DashboardHelper.initDashboardComponent(userProperties, model, componentName);
 		}
-		return new ModelAndView(WebKeys.VIEW_ACCESSORIES_EDIT, model);
-		
+		return new ModelAndView(WebKeys.VIEW_RELEVANCE_DASHBOARD_EDIT, model); 
+		 
 	}
 
 	private ModelAndView setupSummaryPortlet(RenderRequest request, PortletPreferences prefs, Map model, String view, String componentName) {

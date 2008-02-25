@@ -178,7 +178,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 			    </div>
 			  </ssHelpSpot>
 			  <div id="ss_navbar_myteams${renderResponse.namespace}"
-			      style="visibility:hidden;margin:20px 0px 0px -40px;padding:0px;"></div>
+			      style="visibility:hidden;margin:20px 0px 0px -130px;padding:0px;"></div>
 
           </li>
           <li><a title="<ssf:nlt tag="navigation.favorites"/>"
@@ -190,7 +190,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 		          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 			  </ssHelpSpot>
 		      <div align="right" id="ss_navbar_favorites${renderResponse.namespace}" 
-		      style="visibility:hidden;margin:20px 0px 0px -70px;padding:0px;"
+		      style="visibility:hidden;margin:20px 0px 0px -150px;padding:0px;"
 		      ></div>
           </li>
         </ul>

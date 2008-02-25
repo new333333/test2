@@ -9,8 +9,8 @@
    </deployment>
    <deployment>
       <instance>
-         <instance-id>ss_accessories-instance</instance-id>
-         <portlet-ref>ss_accessories</portlet-ref>
+         <instance-id>ss_relevance_dashboard-instance</instance-id>
+         <portlet-ref>ss_relevance_dashboard</portlet-ref>
       </instance>
    </deployment>
    <deployment>

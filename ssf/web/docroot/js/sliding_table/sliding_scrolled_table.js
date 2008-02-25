@@ -35,6 +35,7 @@ function ss_getSlidingTableY(divId) {
 	return ss_getObjAbsY(divId);
 }
 function ss_position_sTableCol(divName, x, y, w) {
+    if (typeof ss_slidingTableId_2 == "undefined") return;
     var ss_sTableHeight = ss_getDivHeight(ss_slidingTableId_2)
     var ss_sTableInnerHeight = parseInt(ss_sTableHeight- ss_sTableMarginTop - ss_sTableMarginBottom)
 
@@ -50,6 +51,7 @@ function ss_position_sTableCol(divName, x, y, w) {
 }
 
 function ss_slidingTableDrag(evt) {
+    if (typeof ss_slidingTableId_2 == "undefined" || typeof ss_slidingTableId == "undefined") return true;
     var ss_sTableLeft = ss_getSlidingTableX(ss_slidingTableId_2)
     var ss_sTableWidth = ss_getDivWidth(ss_slidingTableId_2)
     if (ss_sTableWidth == 0) ss_sTableWidth = parseInt(ss_defTableWidth);
@@ -98,6 +100,7 @@ function ss_slidingTableDrag(evt) {
 ss_createEventObj('ss_slidingTableDrag', 'MOUSEMOVE');
 
 function ss_showMouseOverInfo(obj) {
+    if (typeof ss_slidingTableId == "undefined") return;
 	if (ss_slidingTableMouseOverInfoDisabled) return;
 	
 	if (obj != ss_slidingTableMosueOverObj) {
