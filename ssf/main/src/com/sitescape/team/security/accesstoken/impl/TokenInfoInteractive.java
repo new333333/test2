@@ -26,18 +26,59 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.security.accesstoken;
+package com.sitescape.team.security.accesstoken.impl;
 
-import com.sitescape.team.security.AccessControlException;
+import java.io.Serializable;
 
-public class InvalidAccessTokenException extends AccessControlException {
-	
+import com.sitescape.team.domain.ZonedObject;
+
+public class TokenInfoInteractive extends ZonedObject implements TokenInfo, Serializable {
+
 	private static final long serialVersionUID = 1L;
 	
-	private static final String InvalidAccessTokenlException_ErrorCode = "errorcode.invalid.accesstoken";
+	private Long userId;
+	private Long seed;
 	
-	public InvalidAccessTokenException(String accessToken) {
-		super(InvalidAccessTokenlException_ErrorCode, new Object[] {accessToken});
+	public TokenInfoInteractive(Long userId, Long seed) {
+		this(userId);
+		this.seed = seed;
 	}
+	
+	public TokenInfoInteractive(Long userId) {
+		this.userId = userId;
+	}
+	
+	public TokenInfoInteractive() {	
+	}
+	
+	public Long getSeed() {
+		return seed;
+	}
+	public void setSeed(Long seed) {
+		this.seed = seed;
+	}
+	public Long getUserId() {
+		return userId;
+	}
+	public void setUserId(Long userId) {
+		this.userId = userId;
+	}
+	
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+
+        if ((obj == null) || !(obj instanceof TokenInfoInteractive))
+            return false;
+            
+        TokenInfoInteractive info = (TokenInfoInteractive) obj;
+        if (userId.equals(info.getUserId())) 
+        	return true;
+        else
+        	return false;
+    }
+    public int hashCode() {
+    	return userId.hashCode();
+    }
 
 }

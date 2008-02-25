@@ -32,11 +32,50 @@ import com.sitescape.util.StringUtil;
 
 public class AccessToken {
 
+	public enum TokenType {
+		interactive (1),
+		background (2);
+		int number;
+		TokenType(int number) {
+			this.number = number;
+		}
+		public int getNumber() {return number;}
+		public static TokenType valueOf(int number) {
+			switch (number) {
+			case 1: return TokenType.interactive;
+			case 2: return TokenType.background;
+			default: throw new IllegalArgumentException(String.valueOf(number));
+			}
+		}
+	};
+
+	private TokenType type;				// required
 	private Long applicationId; 		// required
 	private Long userId; 				// required
 	private String digest; 				// required
 	private Long binderId; 				// optional
 	private Boolean includeDescendants; // optional - meaningful iff binderId is specified
+	
+	public AccessToken(TokenType type, Long applicationId, Long userId, String digest) {
+		this.type = type;
+		this.applicationId = applicationId;
+		this.userId = userId;
+		this.digest = digest;
+	}
+	
+	public AccessToken(TokenType type, Long applicationId, Long userId, String digest, Long binderId, Boolean includeDescendants) {
+		this(type, applicationId, userId, digest);
+		this.binderId = binderId;
+		this.includeDescendants = includeDescendants;
+	}
+	
+	public TokenType getType() {
+		return type;
+	}
+
+	public void setType(TokenType type) {
+		this.type = type;
+	}
 
 	public Long getApplicationId() {
 		return applicationId;
@@ -92,22 +131,23 @@ public class AccessToken {
 	MalformedAccessTokenException, NumberFormatException {
 		if(accessTokenStr == null)
 			throw new IllegalArgumentException();
-		// Access token str representation
-		// appId-userId-digest-[binderId]-[includeDescendants]
+		// Access token string encoded representation
+		// typeNumber-appId-userId-digest-[binderId]-[includeDescendantsNumber]
 		String[] s = StringUtil.split(accessTokenStr, "-");
-		if(s.length < 3)
+		if(s.length < 4)
 			throw new MalformedAccessTokenException("not enough pieces");
-		if(s.length > 5)
+		if(s.length > 6)
 			throw new MalformedAccessTokenException("too many pieces");
-		applicationId = Long.valueOf(s[0]);
-		userId = Long.valueOf(s[1]);
-		digest = s[2];
-		if(s.length > 3)
-			binderId = Long.valueOf(s[3]);
-		if(s.length > 4) {
-			if("1".equals(s[4]))
+		type = TokenType.valueOf(s[0]);
+		applicationId = Long.valueOf(s[1]);
+		userId = Long.valueOf(s[2]);
+		digest = s[3];
+		if(s.length > 4)
+			binderId = Long.valueOf(s[4]);
+		if(s.length > 5) {
+			if("1".equals(s[5]))
 				includeDescendants = Boolean.TRUE;
-			else if("0".equals(s[4]))
+			else if("0".equals(s[5]))
 				includeDescendants = Boolean.FALSE;
 		}
 	}
@@ -119,6 +159,8 @@ public class AccessToken {
 	 * This method does NOT validate the token itself.
 	 */
 	public String toStringRepresentation() throws IllegalStateException {
+		if(type == null)
+			throw new IllegalStateException("type is missing");
 		if(applicationId == null)
 			throw new IllegalStateException("application id is missing");
 		if(userId == null)
@@ -126,6 +168,7 @@ public class AccessToken {
 		if(digest == null)
 			throw new IllegalStateException("digest is missing");
 		StringBuilder sb = new StringBuilder()
+		.append(type.getNumber()).append("-")
 		.append(applicationId).append("-")
 		.append(userId).append("-")
 		.append(digest);

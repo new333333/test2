@@ -233,6 +233,7 @@ public class WebHelper {
 		ses.setAttribute(WebKeys.ZONE_ID, user.getZoneId());
 		ses.setAttribute(WebKeys.USER_NAME, user.getName());
 		ses.setAttribute(WebKeys.USER_ID, user.getId());
+		ses.setAttribute(WebKeys.USER_SHARED, user.isShared());
 	}
 	
 	private static void putContext(PortletSession ses, User user) {
@@ -241,6 +242,7 @@ public class WebHelper {
 		ses.setAttribute(WebKeys.ZONE_ID, user.getZoneId(), PortletSession.APPLICATION_SCOPE);
 		ses.setAttribute(WebKeys.USER_NAME, user.getName(), PortletSession.APPLICATION_SCOPE);
 		ses.setAttribute(WebKeys.USER_ID, user.getId(), PortletSession.APPLICATION_SCOPE);
+		ses.setAttribute(WebKeys.USER_SHARED, user.isShared(), PortletSession.APPLICATION_SCOPE);
 	}
 	
 	/**

@@ -26,18 +26,23 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.security.accesstoken;
+package com.sitescape.team.web.servlet.listener;
 
-import com.sitescape.team.security.AccessControlException;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
-public class InvalidAccessTokenException extends AccessControlException {
-	
-	private static final long serialVersionUID = 1L;
-	
-	private static final String InvalidAccessTokenlException_ErrorCode = "errorcode.invalid.accesstoken";
-	
-	public InvalidAccessTokenException(String accessToken) {
-		super(InvalidAccessTokenlException_ErrorCode, new Object[] {accessToken});
+import com.sitescape.team.security.accesstoken.AccessTokenManager;
+import com.sitescape.team.util.SpringContextUtil;
+
+public class ContextListener implements ServletContextListener {
+
+	public void contextInitialized(ServletContextEvent sce) {
+		AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
+		
+		//$$$$ accessTokenManager.emptyAllInteractive();
+	}
+
+	public void contextDestroyed(ServletContextEvent sce) {
 	}
 
 }

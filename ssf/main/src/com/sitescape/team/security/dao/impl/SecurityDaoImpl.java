@@ -45,6 +45,11 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.domain.LibraryEntry;
+import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.domain.ZoneMismatchException;
+import com.sitescape.team.security.accesstoken.impl.TokenInfoBackground;
+import com.sitescape.team.security.accesstoken.impl.TokenInfoInteractive;
 import com.sitescape.team.security.dao.SecurityDao;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
@@ -251,4 +256,41 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
             );
     	return matches;
     }
+
+	public void deleteAll(final Class clazz) {
+		getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException {
+				session.createQuery("DELETE " + clazz.getName())
+						.executeUpdate();
+				return null;
+			}
+		});
+	}
+
+	public TokenInfoBackground loadTokenInfoBackground(Long zoneId, Long applicationId, Long userId, Long binderId) {
+		TokenInfoBackground info = (TokenInfoBackground) getHibernateTemplate().get
+		(TokenInfoBackground.class, new TokenInfoBackground(applicationId, userId, binderId));
+		
+		if(info != null) {
+			if(!zoneId.equals(info.getZoneId()))
+				throw new ZoneMismatchException(info.getZoneId(), zoneId);
+		}
+
+		return info;
+	}
+
+	public TokenInfoInteractive loadTokenInfoInteractive(Long zoneId, Long userId) {
+		TokenInfoInteractive info = (TokenInfoInteractive) getHibernateTemplate().get
+		(TokenInfoInteractive.class, userId);
+		
+		if(info != null) {
+			if(!zoneId.equals(info.getZoneId()))
+				throw new ZoneMismatchException(info.getZoneId(), zoneId);
+		}
+
+		return info;
+
+	}
+
  }
