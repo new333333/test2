@@ -48,28 +48,17 @@ function ss_toggleShowTeamMembersIcon(iconId) {
 	}	
 }
 
-function ss_toggleTeamMembersList(objId) {
-	var obj = $(objId);
-	if (obj && obj.style.display == "block") {
-		obj.style.display = "none";
-		obj.style.visibility = 'hidden';
-	} else if (obj && (obj.style.display == "none" || obj.style.display == "")) {
-		obj.style.display = "block";
-		obj.style.visibility = 'visible';
-	}
-}
 
-function ss_loadTeamMembersList (url, prefix, checkAll) {
+function ss_loadTeamMembersList (binderId, prefix, checkAll) {
 	var ajaxLoadingIndicatorPane = "ss_teamMembersList_" + prefix;
 	ss_toggleShowTeamMembersIcon("ss_teamIcon_" + prefix);
 	
 	if (window.ss_teamMembersLoaded[prefix]) {
-		ss_toggleTeamMembersList(ajaxLoadingIndicatorPane);
+		ss_showHide(ajaxLoadingIndicatorPane);
 	} else {
 		ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-		url += "\&randomNumber="+ss_random++;
 		var bindArgs = {
-	    	url: url,
+			url : ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_team_members",binderId:binderId}),
 			error: function(type, data, evt) {
 				ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
 			},
@@ -78,6 +67,7 @@ function ss_loadTeamMembersList (url, prefix, checkAll) {
 				ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
 				ss_buildTeamMembersListTable(ajaxLoadingIndicatorPane, data, prefix, checkAll);
 			},
+			preventCache: true,				
 			mimetype: "text/json",
 			method: "get"
 		};

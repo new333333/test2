@@ -772,7 +772,7 @@ function ss_checkIfParentDivHidden(divId) {
 function ss_showHide(objId){
 	var obj = document.getElementById(objId);
 	if (obj && obj.style) {
-		if (obj.style.visibility == "visible") {
+		if (obj.style.visibility == "visible" || obj.style.visibility == "") {
 			obj.style.visibility="hidden";
 			obj.style.display="none";
 		} else {
