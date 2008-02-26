@@ -46,12 +46,14 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.ProjectionList;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.Expression;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
@@ -79,6 +81,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected Set enabledTypes=new HashSet();
 	protected boolean allEnabled=false;
 	protected CoreDao coreDao;
+	protected ProfileDao profileDao;
 	protected AccessControlManager accessControlManager;
 	protected BinderModule binderModule;
 	protected AdminModule adminModule;
@@ -88,6 +91,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public void setCoreDao(CoreDao coreDao) {
 		this.coreDao = coreDao;
 	}
+	public void setProfileDao(ProfileDao profileDao) {
+		this.profileDao = profileDao;
+	}
 	protected AccessControlManager getAccessControlManager() {
 		return accessControlManager;
 	}
@@ -95,6 +101,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return coreDao;
 	}
 	
+	protected ProfileDao getProfileDao() {
+		return profileDao;
+	}
 	public void setBinderModule(BinderModule binderModule) {
 		this.binderModule = binderModule;
 	}
@@ -164,7 +173,24 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public void addLicenseStats(LicenseStats stats) {
 		getCoreDao().save(stats);
 	}
-	
+	public Collection<User> getUsersActivity(final DefinableEntity entity, final AuditType type, final Date startDate, final Date endDate) {
+		
+		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(AuditTrail.class)
+					.setProjection(Projections.distinct(Projections.projectionList() 
+                                                          .add(Projections.property("startBy"))))
+				.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, entity.getZoneId()))
+				.add(Restrictions.eq("entityId", entity.getEntityIdentifier().getEntityId()))
+				.add(Restrictions.eq("entityType", entity.getEntityIdentifier().getEntityType().name()))
+				.add(Restrictions.eq("transactionType", type.name()))
+				.add(Restrictions.ge("startDate", startDate))
+				.add(Restrictions.lt("startDate", endDate));
+				return crit.list();
+				
+			}});
+		return getProfileDao().loadUsers(ids, entity.getZoneId());
+	}
 	public LicenseStats getLicenseHighWaterMark(final Calendar startDate, final Calendar endDate)
 	{
 		List marks = (List) getHibernateTemplate().execute(new HibernateCallback() {

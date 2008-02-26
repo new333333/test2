@@ -80,4 +80,6 @@ public interface ReportModule {
 	public List<Map<String, Object>> generateQuotaReport(QuotaOption option, Long threshold);
 
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
+	public Collection<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
+
 }
