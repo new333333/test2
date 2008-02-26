@@ -50,6 +50,7 @@ public class EmailAddress extends ZonedObject implements Serializable {
 		this.principal = principal;
 	}
 	/**
+	 * Return the owning principal
 	 * @hibernate.key-many-to-one
 	 */
 	public Principal getPrincipal() {
@@ -59,6 +60,7 @@ public class EmailAddress extends ZonedObject implements Serializable {
 		this.principal = principal;
 	}
 	/**
+	 * Return the type of address. 
 	 * @hibernate.key-property length="64"
 	 * @return
 	 */
@@ -69,6 +71,7 @@ public class EmailAddress extends ZonedObject implements Serializable {
 		this.type = type;
 	}
 	/**
+	 * Return email address.
 	 * @hibernate.property length="356"
 	 * @return
 	 */

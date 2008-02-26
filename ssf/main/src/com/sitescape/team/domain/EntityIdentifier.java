@@ -38,7 +38,12 @@ public class EntityIdentifier {
 	
 	
 	public EntityIdentifier () {}
-	
+	/**
+	 * The database identifiers of entity are not unique alone.
+	 * An additional type is needed.  The string values of the type
+	 * are used by {@com.sitescape.team.domain.AnyOwner AnyOwner}
+	 *
+	 */
 	public enum EntityType {
 		none (0),
 		profiles (1),
@@ -77,7 +82,7 @@ public class EntityIdentifier {
 		this.entityType = entityType;
 	}
 	/**
-	 * The id of the item being tagged
+	 * The id of the item being tagged.
 	 * @hibernate.property
 	 * @return
 	 */
@@ -103,6 +108,10 @@ public class EntityIdentifier {
 			}
 		}
 	}
+	/**
+	 * Return the type of entity
+	 * @return
+	 */
 	public EntityType getEntityType() {
 		return entityType;
 	}

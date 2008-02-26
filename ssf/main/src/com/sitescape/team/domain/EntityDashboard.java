@@ -31,7 +31,7 @@ import org.dom4j.Element;
 
 /**
  * This object represents a dashboard configured for an entity.
- * Currently only <coe>Binders</code> are supported.
+ * Currently only <code>Binders</code> are supported.
  *
  * @hibernate.subclass discriminator-value="E" dynamic-update="true"
  * 

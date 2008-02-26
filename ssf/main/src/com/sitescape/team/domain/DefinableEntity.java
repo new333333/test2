@@ -155,6 +155,8 @@ public abstract class DefinableEntity extends PersistentLongIdTimestampObject {
    	 this.parentBinder = parentBinder;
     }    
     /**
+     * Objects may be in this state, awaiting final audit logging
+     * before being purged from the system.
      * @hibernate.property
      */
     public boolean isDeleted() {
