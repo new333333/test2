@@ -30,44 +30,65 @@
 %>
 <% //Relevance dashboard %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<script type="text/javascript">
+var ss_Loading = "<ssf:nlt tag="Loading"/>";
+var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" portletName="ss_forum" 
+		action="__ajax_relevance" actionUrl="false"><ssf:param 
+		name="operation" value="get_relevance_dashboard" /><ssf:param 
+		name="type" value="ss_typePlaceHolder" /></ssf:url>";
+function ss_selectRelevanceTab(obj, type, namespace) {
+	//Clear "current" tab
+	var currentTab = null;
+	eval("currentTab = ss_relevanceTabCurrent_"+namespace+";");
+	if (currentTab != null) {
+		currentTab.parentNode.className = "";
+	}
+	eval("ss_relevanceTabCurrent_"+namespace+" = obj;");
+	obj.parentNode.className = "ss_profileCurrent";
+	
+	//Switch to the new tab
+	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);
+	canvasObj.innerHTML = ss_Loading;
+	var url = "";
+	eval("url = ss_relevanceAjaxUrl"+namespace);
+	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
+	ss_fetch_url(url, ss_showRelevanceTab, namespace)
+}
+function ss_showRelevanceTab(s, namespace) {
+	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);
+	canvasObj.innerHTML = s;
+}
+</script>
+
+<% //Tabs %>
+
 <div id="ss_profileTab" sytle="margin-top:10px;">
   <ul>
 	<!-- CSS Tabs -->
-	<li id="current"><a href="#"><span>My stuff</span></a></li>
-	<li><a href="#"><span>My friends' stuff</span></a></li>
-	<li><a href="#"><span>Everyone else's stuff</span></a></li>
-	<li><a href="#"><span>Vistors</span></a></li>
+	<li class="ss_profileCurrent"><a id="ss_relevancePersonalTab${renderResponse.namespace}" href="javascript: ;"
+		onClick="ss_selectRelevanceTab(this, 'personal', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.personal"/></span></a></li>
+	<li><a href="javascript: ;"
+		onClick="ss_selectRelevanceTab(this, 'friends', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.friends"/></span></a></li>
+	<li><a href="javascript: ;"
+		onClick="ss_selectRelevanceTab(this, 'everyone', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.everyone"/></span></a></li>
+	<li><a href="javascript: ;"
+		onClick="ss_selectRelevanceTab(this, 'visitors', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.visitors"/></span></a></li>
+	<li><a href="javascript: ;"
+		onClick="ss_selectRelevanceTab(this, 'friendList', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.friendList"/></span></a></li>
   </ul>
 </div>
 <div class="ss_clear_float"></div>
-<div style="margin:4px 10px 10px 10px;">
-<table width="100%">
-<tr>
-<td width="50%" valign="top">
-	<ssf:canvas id="relevanceDocuments" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	</ssf:canvas>
-	<ssf:canvas id="relevanceTasks" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.tasks") %>"/>
-	  Tasks<br/>
-	  Tasks<br/>
-	  Tasks<br/>
-	  Tasks<br/>
-	  Tasks<br/>
-	</ssf:canvas>
-</td>
-<td width="50%" valign="top" style="padding-left:10px;">
-	<ssf:canvas id="relevanceMail" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.email") %>"/>
-		<iframe src="https://webacc.innerweb.novell.com/gw/webacc?merge=iwwebacc&gadget=Mail" 
-		name="gwmail" title="gwmail" frameborder="0" scrolling="Auto" 
-		width="100%" height="360">mail</iframe>	
-	</ssf:canvas>
-</td>
-</tr>
-</table>
+<script type="text/javascript">
+var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElementById('ss_relevancePersonalTab${renderResponse.namespace}');
+</script>
 
+<% //Changeable tab canvas; this gets replaced when a tab is clicked %>
+
+<div id="relevanceCanvas_${renderResponse.namespace}" style="margin:4px 10px 10px 10px;">
+<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard_my_info.jsp" />
 </div>
