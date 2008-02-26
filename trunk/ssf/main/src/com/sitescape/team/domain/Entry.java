@@ -30,7 +30,7 @@ package com.sitescape.team.domain;
 
 
 /**
- * Mostly a marker class.
+ * This class is used to marker a class that is not a <code>Binder</code>
  */
 public abstract class Entry extends DefinableEntity  {
  

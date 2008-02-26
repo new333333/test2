@@ -44,7 +44,6 @@ import com.sitescape.util.Validator;
  * @hibernate.cache usage="nonstrict-read-write"
  * @hibernate.mapping auto-import="false"
  * need auto-import = false so names don't collide with jbpm
- * @author Janet McCann
  *
  */
 public class Definition extends PersistentTimestampObject  {
@@ -122,6 +121,7 @@ public class Definition extends PersistentTimestampObject  {
     	this.title = title;
     }
     /**
+     * Return the definition type.
      * @hibernate.property 
      */
     public int getType() {
@@ -174,7 +174,7 @@ public class Definition extends PersistentTimestampObject  {
         xmlencoding=definition;
     }
     /**
-     * Changes to this object will not be reflected in the database until
+     * Changes to the document object will not be reflected in the database until
      * a setDefinition call is made.
      * @return
      */
@@ -205,7 +205,9 @@ public class Definition extends PersistentTimestampObject  {
     	this.doc = doc;
     }
 
- 
+    /**
+     * Return the definition name.
+     */
     public String toString() {
     	return name;
     }
