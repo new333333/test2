@@ -624,6 +624,7 @@
 		<property name="target">
 			<bean class="com.sitescape.team.module.report.impl.ReportModuleImpl" depends-on="sPropsUtil">
 				<property name="coreDao"><ref bean="coreDao"/></property>
+				<property name="profileDao"><ref bean="profileDao"/></property>
 				<property name="accessControlManager"><ref local="accessControlManager"/></property>
 				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 				<property name="binderModule"><ref bean="binderModule"/></property>
