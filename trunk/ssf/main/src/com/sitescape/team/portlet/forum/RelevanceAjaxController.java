@@ -199,8 +199,8 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			   Collection users = getReportModule().getUsersActivity(binder, AuditType.view, 
 					   start.getTime(), new java.util.Date());
 			   model.put(WebKeys.USERS, users);
+			}
 		}
-		
 	}
 	
 }
