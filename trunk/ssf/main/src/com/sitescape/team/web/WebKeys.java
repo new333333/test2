@@ -159,6 +159,7 @@ public class WebKeys {
 	public static final String URL_TREE_SELECT_TYPE = "tree_select_type";
 	public static final String URL_TREE_SELECT_ID = "tree_select_id";
 	public static final String URL_TREE_MULTI_SELECT = "ss_tree_select";
+	public static final String URL_TYPE = "type";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
@@ -333,6 +334,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_ELEMENT_VALUE_DATA = "get_element_value_data";
 	public static final String OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
 	public static final String OPERATION_GET_FILTER_TYPE = "get_filter_type";
+	public static final String OPERATION_GET_RELEVANCE_DASHBOARD = "get_relevance_dashboard";
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
 	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";
@@ -711,6 +713,11 @@ public class WebKeys {
     public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String RECORDS_DIV_ID="ss_recordsDivId";
+    public static final String RELEVANCE_TYPE_PERSONAL="personal";
+    public static final String RELEVANCE_TYPE_FRIENDS="friends";
+    public static final String RELEVANCE_TYPE_EVERYONE="everyone";
+    public static final String RELEVANCE_TYPE_VISITORS="visitors";
+    public static final String RELEVANCE_TYPE_FRIEND_LIST="friendList";
     public static final String RELOAD_URL="ss_reloadUrl";
     public static final String RELOAD_URL_FORCED="ssReloadUrl";
     public static final String REPLY_BLOG_URL="replyBlogUrl";
@@ -772,6 +779,7 @@ public class WebKeys {
     public static final String TAG_DIV_NUMBER="ss_tagDivNumber";
     public static final String TEAM_MEMBER="ssTeamMember";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
+    public static final String TYPE="ss_type";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";

@@ -5082,10 +5082,10 @@ table.ssMeetingRecords .ssHeader {
   background-position:100% -42px;
   }
 
-#ss_profileTab #current a {
+#ss_profileTab .ss_profileCurrent a {
   background-position:0% -42px;
   }
-#ss_profileTab #current a span {
+#ss_profileTab .ss_profileCurrent a span {
   background-position:100% -42px;
   }
 
