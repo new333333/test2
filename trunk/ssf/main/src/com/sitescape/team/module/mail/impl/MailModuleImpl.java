@@ -53,6 +53,7 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.mail.search.OrTerm;
 import javax.mail.search.RecipientStringTerm;
@@ -824,8 +825,22 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     //send mail now, if fails, reschedule
     public boolean sendMail(Binder binder, Map message, String comment) {
   		SendEmail process = (SendEmail)processorManager.getProcessor(binder, SendEmail.PROCESSOR_KEY);
-   		return process.sendMail(getMailSender(binder).getName(), message, comment);
-	}
+		Collection<InternetAddress> addrs = (Collection)message.get(SendEmail.TO);
+		if ((addrs == null) || addrs.size() <= rcptToLimit) {
+			return process.sendMail(getMailSender(binder).getName(), message, comment);
+		}
+		//recipient list to big, break it up
+		boolean sent = true;
+		ArrayList rcpts = new ArrayList(addrs);
+		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
+			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
+			message.put(SendEmail.TO, subList);
+			if (!process.sendMail(getMailSender(binder).getName(), message, comment)) sent = false;
+		}
+		//replace list with original
+		message.put(SendEmail.TO, addrs);
+		return sent;
+    }
     // schedule mail delivery - message cannot contain attachments
     public void scheduleMail(Binder binder, Map message, String comment) {
   		SendEmail process = (SendEmail)processorManager.getProcessor(binder, SendEmail.PROCESSOR_KEY);
