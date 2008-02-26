@@ -48,28 +48,17 @@ function ss_toggleShowClipboardUsersIcon(iconId) {
 	}	
 }
 
-function ss_toggleClipboardUsersList(objId) {
-	var obj = $(objId);
-	if (obj && obj.style.display == "block") {
-		obj.style.display = "none";
-		obj.style.visibility = 'hidden';
-	} else if (obj && (obj.style.display == "none" || obj.style.display == "")) {
-		obj.style.display = "block";
-		obj.style.visibility = 'visible';
-	}
-}
 
-function ss_loadClipboardUsersList (url, prefix) {
+function ss_loadClipboardUsersList (prefix) {
 	var ajaxLoadingIndicatorPane = "ss_clipboardUsersList_" + prefix;
 	ss_toggleShowClipboardUsersIcon("ss_clipboardUsersIcon_" + prefix);
 	
 	if (window.ss_clipboardUsersLoaded[prefix]) {
-		ss_toggleClipboardUsersList(ajaxLoadingIndicatorPane);
+		ss_showHide(ajaxLoadingIndicatorPane);
 	} else {
 		ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-		url += "\&randomNumber="+ss_random++;
 		var bindArgs = {
-	    	url: url,
+			url: ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users"}, "clipboard"),
 			error: function(type, data, evt) {
 				ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
 			},
@@ -78,6 +67,7 @@ function ss_loadClipboardUsersList (url, prefix) {
 				ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
 				ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, data, prefix);
 			},
+			preventCache: true,				
 			mimetype: "text/json",
 			method: "get"
 		};
