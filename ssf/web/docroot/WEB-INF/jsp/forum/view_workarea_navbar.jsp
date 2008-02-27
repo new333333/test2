@@ -168,7 +168,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
           </li>
           <li><a title="<ssf:nlt tag="navigation.myTeams"/>"
 			  href="javascript:;" 
-			  onClick="ssMyTeams${renderResponse.namespace}.show();"
+			  onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
               ><ssf:nlt tag="navigation.myTeams"/> <img border="0" 
               src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
 		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
@@ -183,7 +183,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
           </li>
           <li><a title="<ssf:nlt tag="navigation.favorites"/>"
 	  			href="javascript: ;" 
-	  			onClick="ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
+	  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
               ><ssf:nlt tag="navigation.favorites"/> <img border="0" 
               src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
 		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
