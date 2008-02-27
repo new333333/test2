@@ -194,7 +194,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 		      ></div>
           </li>
         </ul>
-      </div>
+      </div><div class="ss_clear_float"></div>
     </td>
   </tr>
 </table>
