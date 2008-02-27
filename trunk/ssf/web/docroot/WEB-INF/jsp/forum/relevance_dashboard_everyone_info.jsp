@@ -36,8 +36,9 @@
 <td width="50%" valign="top">
 	<ssf:canvas id="relevanceDocuments" type="inline">
 	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
-	  Recent documents<br/>
-	  Recent documents<br/>
+	  Recent everyone documents<br/>
+	  Recent everyone documents<br/>
+	  Recent everyone documents<br/>
 	  Recent documents<br/>
 	</ssf:canvas>
 	<ssf:canvas id="relevanceTasks" type="inline">
@@ -52,7 +53,8 @@
 <td width="50%" valign="top" style="padding-left:10px;">
 	<ssf:canvas id="relevanceMail" type="inline">
 	<ssf:param name="title" value="<%= NLT.get("relevance.email") %>"/>
-		<iframe src="http://sitescape.com" frameborder="0" scrolling="Auto" 
+		<iframe src="http://moneycentral.msn.com/community/rss/generate_feed.aspx?feedType=0&symbol=novl" 
+		frameborder="0" scrolling="Auto" 
 		width="100%" height="360">mail</iframe>	
 	</ssf:canvas>
 </td>
