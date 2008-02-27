@@ -590,6 +590,10 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		// Just a convenience method
 		return ResourceDriverManagerUtil.findResourceDriver(getResourceDriverName());
 	}
+	
+	public boolean isMirroredAndReadOnly() {
+		return isMirrored() && getResourceDriver().isReadonly();
+	}
     //*****************WorkArea interface stuff***********/
     public Long getWorkAreaId() {
         return getId();
