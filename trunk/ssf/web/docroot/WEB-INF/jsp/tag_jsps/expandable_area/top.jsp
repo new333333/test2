@@ -29,10 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ page import="com.sitescape.util.ParamUtil" %>
-<portletadapter:defineObjects1/>
-<ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
-<ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
+
 <%
 
 // General variables
@@ -44,44 +41,26 @@ nameCount = new Integer(nameCount.intValue() + 1);
 renderRequest.setAttribute("ss_expandable_area_name_count", new Integer(nameCount.intValue()));
 
 String name = "ss_expandableAreaDiv" + nameCount.toString();
-String title = ParamUtil.get(request, "title", "");
-String titleClass = ParamUtil.get(request, "titleClass", "");
-String openAction = ParamUtil.get(request, "openAction", "");
-boolean initOpen = ParamUtil.getBoolean(request, "initOpen", false);
-
 %>
-<jsp:useBean id="ss_expandable_area_name_count" type="java.lang.Integer" scope="request" />
-<div class="ss_expandable_area_title">${openAction}
+
+<div class="ss_expandable_area_title">
 
 <table class="ss_style" cellspacing="0" cellpadding="2">
 <tr>
 <td valign="middle"><a href="javascript: ;" 
-onClick="ss_toggleExpandableArea('${renderResponse.namespace}<%= name %>', '${renderResponse.namespace}img_<%= name %>', '<%= openAction %>'); return false;"><img 
+onClick="ss_toggleImage('${renderResponse.namespace}img_<%= name %>', 'sym_s_expand.gif', 'sym_s_collapse.gif');ss_showHide('${renderResponse.namespace}<%= name %>'); return false;"><img 
 border="0" 
-<%
-	if (initOpen) {
-%>
-<ssf:alt tag="alt.hide"/> src="<html:imagesPath />pics/sym_s_collapse.gif" 
-<%
-	} else {
-%>
-<ssf:alt tag="alt.expand"/> src="<html:imagesPath />pics/sym_s_expand.gif" 
-<%
-	}
-%>
+<c:if test="${initOpen}"><ssf:alt tag="alt.hide"/> src="<html:imagesPath />pics/sym_s_collapse.gif"</c:if>
+<c:if test="${!initOpen}"><ssf:alt tag="alt.expand"/> src="<html:imagesPath />pics/sym_s_expand.gif"</c:if>
+
 id="${renderResponse.namespace}img_<%= name %>" name="${renderResponse.namespace}img_<%= name %>" /></td>
 <td valign="middle"><a href="javascript: ;" 
-  onClick="ss_toggleExpandableArea('${renderResponse.namespace}<%= name %>', '${renderResponse.namespace}img_<%= name %>', '<%= openAction %>'); return false;"
-><span class="<%= titleClass %>"><%= title %></span></a></td>
+onClick="ss_toggleImage('${renderResponse.namespace}img_<%= name %>', 'sym_s_expand.gif', 'sym_s_collapse.gif');ss_showHide('${renderResponse.namespace}<%= name %>'); return false;"
+><span class="${titleClass}">${title}</span></a></td>
 </tr>
 </table>
 </div>
 <div id="${renderResponse.namespace}<%= name %>" class="ss_expandable_area_content"
-<%
-	if (initOpen) {
-%>
-style="display:block; visibility:visible;"
-<%
-	}
-%>
+<c:if test="${initOpen}">style="display:block; visibility:visible;"</c:if>
+
 >

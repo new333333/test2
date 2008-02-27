@@ -29,15 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%
-	String instanceCount = (String) request.getAttribute("instanceCount");
-	String clipboardUsersCount = ((Integer) request.getAttribute("clipboard_user_count")).toString();
-	String formElement = (String) request.getAttribute("formElement");
-%>
-<c:set var="iCount" value="<%= instanceCount %>"/>
-<c:set var="clipboardUsersCount" value="<%= clipboardUsersCount %>"/>
-<c:set var="formElement" value="<%= formElement %>"/>
-<c:set var="prefix" value="${iCount}" />
+
+<c:set var="prefix" value="${instanceCount}" />
 
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/clipboard/clipboard.js"></script>
 

@@ -182,14 +182,17 @@ function ss_fetch_div(url, divId, signal) {
 //suggest moving towards ss_get_url so errors can be handled consistantly
 //Updated to dojo, result is text/plain
 //used to fetch plain data
-function ss_fetch_url(url, callbackRoutine, callbackData) {
+function ss_fetch_url(url, callbackRoutine, callbackData, toggleCall) {
 	ss_fetch_url_debug("Request to fetch url: " + url)
+	eval(toggleCall);
 	var bindArgs = {
 	    	url: url,
 			error: function(type, data, evt) {
+				eval(toggleCall);
 				alert(data.message);
 			},
 			load: function(type, data, evt) {
+				eval(toggleCall);
 			    try {
 					ss_fetch_url_debug("received " + data);
 					if (callbackRoutine) callbackRoutine(data, callbackData);
@@ -228,13 +231,16 @@ function ss_post(url, formId, callBackRoutine, callbackData) {
 }     
 //Use dojo to get a url.  Results in text/json. 
 //When result contains failure, message display
-function ss_get_url(url, callBackRoutine, callbackData) {
+function ss_get_url(url, callBackRoutine, callbackData, toggleCall) {
+	eval(toggleCall);
 	var bindArgs = {
     	url: url,
 		error: function(type, data, evt) {
+			eval(toggleCall);
 			alert(data.error);
 		},
 		load: function(type, data, evt) {
+			eval(toggleCall);
 			if (data.failure) {
 				alert(data.failure);
 			} else { 
@@ -623,13 +629,6 @@ function ss_reloadOpener(fallBackUrl) {
 	return false;
 }
 
-// Replace an image (e.g. expand/collapse arrows)
-function ss_replaceImage(imgName, imgPath) {
-    if (document.images) {
-        eval('if (document.images[\''+imgName+'\']) {document.images[\''+imgName+'\'].src = imgPath}');
-    }
-}
-
 //Routines to move an object (or a div) to the "body"
 //  This is usefull for any absolutly positioned div.
 //  The positioning of that div will work correctly when using absolute coordinates.
@@ -768,66 +767,48 @@ function ss_checkIfParentDivHidden(divId) {
     return false;
 }
 
-// TODO find the same method somewhere in common....
 function ss_showHide(objId){
 	var obj = document.getElementById(objId);
 	if (obj && obj.style) {
-		if (obj.style.visibility == "visible" || obj.style.visibility == "") {
-			obj.style.visibility="hidden";
-			obj.style.display="none";
-		} else {
+	    if (obj.style.display == 'none' || 
+	    		obj.style.visibility == 'hidden' || 
+	    		obj.style.display == '') {
 			obj.style.visibility="visible";
 			obj.style.display="block";
-		}
+			return true;
+		} else {	
+			obj.style.visibility="hidden";
+			obj.style.display="none";
+			return false;
+		} 
 	}
+	return false;
 }
 
-function ss_showHideRatingBox(id, imgObj) {
-	ss_showHide(id);
-	if (imgObj.src.indexOf("flip_down16H.gif") > -1) {
-		imgObj.src=ss_imagesPath + "pics/flip_up16H.gif";
-	} else {
-		imgObj.src=ss_imagesPath + "pics/flip_down16H.gif";
-	}
-}
 function ss_showHideSidebarBox(divId, imgObj, sticky, id) {
 	var urlParams = {id:id};
-	ss_showHide(divId);
-	if (imgObj.src.indexOf("flip_down16H.gif") > -1) {
-		imgObj.src=ss_imagesPath + "pics/flip_up16H.gif";
-		urlParams.operation = "hide_sidebar_panel";
-	} else {
-		imgObj.src=ss_imagesPath + "pics/flip_down16H.gif";
+	if (ss_showHide(divId)) {
 		urlParams.operation="show_sidebar_panel";
-	}
+	} else {
+		urlParams.operation = "hide_sidebar_panel";
+	}		
+	ss_toggleImage(imgObj, "flip_up16H.gif", "flip_down16H.gif");
 	if (sticky) {
 		ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
 	}
 }
 
-function ss_toggleExpandableArea(divName, imgName, action) {
-	var divObj = self.document.getElementById(divName);
-    if (action == 'wipe') {
-	    if (divObj.style.display == 'none' || 
-	    		divObj.style.visibility == 'hidden' || 
-	    		divObj.style.display == '') {
-		    ss_replaceImage(imgName, ss_imagesPath + 'pics/sym_s_collapse.gif');
-        	ss_showDivWipe(divName);
-		} else {
-        	ss_hideDivWipe(divName);
-		    ss_replaceImage(imgName, ss_imagesPath + 'pics/sym_s_expand.gif');
-	    }
-    } else {        
-	    if (divObj.style.display == 'none' || 
-	    		divObj.style.visibility == 'hidden' || 
-	    		divObj.style.display == '') {
-		    ss_showHideObj(divName, 'visible', 'block');
-		    ss_replaceImage(imgName, ss_imagesPath + 'pics/sym_s_collapse.gif');
-		} else {
-		    ss_showHideObj(divName, 'hidden', 'none');
-		    ss_replaceImage(imgName, ss_imagesPath + 'pics/sym_s_expand.gif');
-	    }
-	}
+
+function ss_toggleImage(iconId, img1, img2) {
+	var img = iconId;
+	if (typeof iconId == "string")
+		img = $(iconId);
+	if (!img) return;
+	if (img && (img.src.indexOf(img1) > -1)) {
+		img.src = ss_imagesPath + "pics/" + img2;
+	} else if (img && (img.src.indexOf(img1) == -1)) {
+		img.src = ss_imagesPath + "pics/" + img1;
+	}	
 }
 function ss_showHideBusinessCard(op, scope) {
 	var urlParams = {scope:scope};
@@ -1773,26 +1754,6 @@ function ss_hideDivNone(divName) {
 	}
 }
 
-function ss_toggleDivWipe(divName) {
-	var divObj = self.document.getElementById(divName);
-	if (divObj.style.display == "block" || divObj.style.display == "inline") {
-		ss_hideDivWipe(divName);
-	} else {
-		ss_showDivWipe(divName);
-	}
-}
-function ss_showDivWipe(divName) {
-	var divObj = self.document.getElementById(divName);
-	divObj.style.display = "block"
-	divObj.style.visibility = "visible"
-	//setTimeout("dojo.lfx.html.wipeIn('" + divName + "', 400).play();", 100);
-}
-function ss_hideDivWipe(divName) {
-	var divObj = self.document.getElementById(divName);
-	divObj.style.visibility = "hidden"
-	divObj.style.display = "none"
-	//setTimeout("dojo.lfx.html.wipeOut('" + divName + "', 400).play();", 100);
-}
 
 function ss_positionDiv(divName, x, y) {
 	if (self.document.getElementById(divName) && self.document.getElementById(divName).offsetParent) {
@@ -4681,17 +4642,13 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 		true - append loading indicator as child to objId
 		false - replace objId content with loading indicator
 */
+
 function ss_toggleAjaxLoadingIndicator(obj, append) {
 	var divObj = obj;
 	if (typeof obj == "string")
 		divObj = $(obj);
 	if (!divObj) return;
 			
-	var imgObj = document.createElement("img");
-	imgObj.setAttribute("src", ss_imagesPath + "pics/spinner_small.gif");
-	imgObj.setAttribute("border", "0");
-	imgObj.setAttribute("style" , "vertical-align: middle; ");
-
 	var wasAjaxLoaderThere = false;
 	for (var i = divObj.childNodes.length; i > 0; --i) {
 		if (divObj.childNodes[i - 1] && divObj.childNodes[i - 1].src && divObj.childNodes[i - 1].src.indexOf("spinner_small.gif") > -1) {
@@ -4706,6 +4663,10 @@ function ss_toggleAjaxLoadingIndicator(obj, append) {
 				divObj.removeChild(divObj.childNodes[0]);
            	} 			
 		}
+		var imgObj = document.createElement("img");
+		imgObj.setAttribute("src", ss_imagesPath + "pics/spinner_small.gif");
+		imgObj.setAttribute("border", "0");
+		imgObj.setAttribute("style" , "vertical-align: middle; ");
 		divObj.appendChild(imgObj);
 	}
 }
