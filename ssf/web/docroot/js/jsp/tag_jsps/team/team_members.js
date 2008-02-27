@@ -40,44 +40,28 @@ function ss_setTeamMembersVariables(prefix, formElement) {
 }
 
 function ss_toggleShowTeamMembersIcon(iconId) {
-	var img = $(iconId);
-	if (img && (img.src.indexOf("sym_s_expand") > -1)) {
-		img.src = ss_imagesPath + "pics/sym_s_down.gif";
-	} else if (img && (img.src.indexOf("sym_s_expand") == -1)) {
-		img.src = ss_imagesPath + "pics/sym_s_expand.gif";
-	}	
+	ss_toggleImage(iconId, "sym_s_expand.gif", "sym_s_down.gif");
 }
 
 
 function ss_loadTeamMembersList (binderId, prefix, checkAll) {
 	var ajaxLoadingIndicatorPane = "ss_teamMembersList_" + prefix;
-	ss_toggleShowTeamMembersIcon("ss_teamIcon_" + prefix);
 	
 	if (window.ss_teamMembersLoaded[prefix]) {
+		ss_toggleShowTeamMembersIcon("ss_teamIcon_" + prefix);
 		ss_showHide(ajaxLoadingIndicatorPane);
 	} else {
-		ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-		var bindArgs = {
-			url : ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_team_members",binderId:binderId}),
-			error: function(type, data, evt) {
-				ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-			},
-			load: function(type, data, evt) {
-				window.ss_teamMembersLoaded[prefix] = true;
-				ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-				ss_buildTeamMembersListTable(ajaxLoadingIndicatorPane, data, prefix, checkAll);
-			},
-			preventCache: true,				
-			mimetype: "text/json",
-			method: "get"
-		};
-	   
-		dojo.io.bind(bindArgs);
+		var callData = {prefix:prefix,checkAll:checkAll};
+		ss_get_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_team_members",binderId:binderId}),
+					ss_buildTeamMembersListTable, callData, "ss_toggleAjaxLoadingIndicator('" + ajaxLoadingIndicatorPane + "')");
 	}
 }
 
-function ss_buildTeamMembersListTable(ajaxLoadingIndicatorPane, members, prefix, checkAll) {
+function ss_buildTeamMembersListTable(members, callbackData) {
 try {
+	var prefix = callbackData['prefix'];
+	ss_toggleShowTeamMembersIcon("ss_teamIcon_" + prefix);
+	var checkAll = callbackData['checkAll'];
 	var cols = members.length <= 3 ? 1 : (members.length <= 6 ? 2 : 3);
 	var rows = Math.ceil(members.length / cols);
 
@@ -117,7 +101,7 @@ try {
 	}
 
 	ss_teamMembersCheckboxes[prefix] = checkboxes;
-	
+	var ajaxLoadingIndicatorPane = "ss_teamMembersList_" + prefix;
 	if (members.length > 0) {
 						
 		var hrefSelectAllObj = document.createElement("a");
@@ -152,6 +136,7 @@ try {
 	} else {
 		$(ajaxLoadingIndicatorPane).innerHTML = ss_noTeamMembersText;
 	}
+	window.ss_teamMembersLoaded[prefix] = true;
 	
 } catch (e){alert(e)}	
 }

@@ -28,8 +28,6 @@
  */
 package com.sitescape.team.taglib;
 
-import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 
 import javax.portlet.RenderRequest;
@@ -40,14 +38,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
-import org.dom4j.Document;
-
-import com.sitescape.team.dao.ProfileDao;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.User;
-import com.sitescape.team.util.SpringContextUtil;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.Clipboard;
 import com.sitescape.util.servlet.StringServletResponse;
 
 /**
@@ -80,10 +70,6 @@ public class ClipboardTag extends BodyTagSupport {
 			this.instanceCount = UUID.randomUUID().toString();
 			
 			RenderRequest renderRequest = (RenderRequest) httpReq.getAttribute("javax.portlet.request");
-			Clipboard clipboard = new Clipboard(renderRequest);
-			
-			httpReq.setAttribute("type", this.type);			
-			httpReq.setAttribute("clipboard_user_count", ((Set) clipboard.get(Clipboard.USERS)).size());
 			httpReq.setAttribute("instanceCount", this.instanceCount);
 			httpReq.setAttribute("formElement", this.formElement);
 			

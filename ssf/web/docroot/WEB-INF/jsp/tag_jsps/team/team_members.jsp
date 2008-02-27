@@ -29,17 +29,8 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%
-	String instanceCount = (String) request.getAttribute("instanceCount");
-	String formElement = (String) request.getAttribute("formElement");
-	String appendAll = ((Boolean) request.getAttribute("appendAll")).toString();
-	String checkOnLoad = ((Boolean) request.getAttribute("checkOnLoad")).toString();
-%>
-<c:set var="iCount" value="<%= instanceCount %>"/>
-<c:set var="formElement" value="<%= formElement %>"/>
-<c:set var="appendAll" value="<%= appendAll %>"/>
-<c:set var="checkOnLoad" value="<%= checkOnLoad %>"/>
-<c:set var="prefix" value="${iCount}" />
+
+<c:set var="prefix" value="${instanceCount}" />
 <script type="text/javascript">
 	// Setup text strings for team_members.js
 	// Team memmbers text

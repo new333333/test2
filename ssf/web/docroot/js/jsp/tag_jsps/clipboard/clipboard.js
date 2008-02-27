@@ -40,43 +40,26 @@ function ss_setClipboardUsersVariables(prefix, formElement) {
 }
 
 function ss_toggleShowClipboardUsersIcon(iconId) {
-	var img = $(iconId);
-	if (img && (img.src.indexOf("sym_s_expand") > -1)) {
-		img.src = ss_imagesPath + "pics/sym_s_down.gif";
-	} else if (img && (img.src.indexOf("sym_s_expand") == -1)) {
-		img.src = ss_imagesPath + "pics/sym_s_expand.gif";
-	}	
+	ss_toggleImage(iconId, "sym_s_expand.gif", "sym_s_down.gif");
 }
 
 
-function ss_loadClipboardUsersList (prefix) {
+function ss_loadClipboardUsersList(prefix) {
 	var ajaxLoadingIndicatorPane = "ss_clipboardUsersList_" + prefix;
-	ss_toggleShowClipboardUsersIcon("ss_clipboardUsersIcon_" + prefix);
 	
 	if (window.ss_clipboardUsersLoaded[prefix]) {
+		ss_toggleShowClipboardUsersIcon("ss_clipboardUsersIcon_" + prefix);
 		ss_showHide(ajaxLoadingIndicatorPane);
 	} else {
-		ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-		var bindArgs = {
-			url: ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users"}, "clipboard"),
-			error: function(type, data, evt) {
-				ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-			},
-			load: function(type, data, evt) {
-				window.ss_clipboardUsersLoaded[prefix] = true;
-				ss_toggleAjaxLoadingIndicator(ajaxLoadingIndicatorPane);
-				ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, data, prefix);
-			},
-			preventCache: true,				
-			mimetype: "text/json",
-			method: "get"
-		};
-	   
-		dojo.io.bind(bindArgs);
+		var callData = {prefix:prefix};
+		ss_get_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"get_clipboard_users"}, "clipboard"),
+					ss_buildClipboardUsersListTable, callData, "ss_toggleAjaxLoadingIndicator('" + ajaxLoadingIndicatorPane + "')");
 	}
 }
 
-function ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, members, prefix) {
+function ss_buildClipboardUsersListTable(members, callbackData) {
+	var prefix = callbackData['prefix'];
+	ss_toggleShowClipboardUsersIcon("ss_clipboardUsersIcon_" + prefix);
 	var cols = members.length <= 3 ? 1 : (members.length <= 6 ? 2 : 3);
 	var rows = Math.ceil(members.length / cols);
 	
@@ -116,6 +99,8 @@ function ss_buildClipboardUsersListTable(ajaxLoadingIndicatorPane, members, pref
 	}
 	
 	ss_clipboardUsersCheckboxes[prefix] = checkboxes;
+	window.ss_clipboardUsersLoaded[prefix] = true;
+	var ajaxLoadingIndicatorPane = "ss_clipboardUsersList_" + prefix;
 	
 	if (members.length > 0) {
 	
