@@ -51,7 +51,7 @@
 </td>
 <td width="50%" valign="top" style="padding-left:10px;">
 	<ssf:canvas id="relevanceMail" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.email") %>"/>
+	<ssf:param name="title" value="Maynard weather"/>
 		<iframe src="http://m.wund.com/cgi-bin/findweather/getForecast?brand=mobile&query=01754" 
 		frameborder="0" scrolling="Auto" 
 		width="100%" height="360">mail</iframe>	
