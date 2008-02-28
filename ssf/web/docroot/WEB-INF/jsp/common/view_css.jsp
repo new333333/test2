@@ -282,10 +282,10 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 }
 </script>
 
-<c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
+<ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
   <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
     <ssf:alt tag="accessible.enableAccessibleMode"/> 
     src="<html:imagesPath/>pics/1pix.gif" /></a><%--
-		--%></c:if><%--
+		--%></c:if></ssf:ifLoggedIn><%--
 	--%></c:if><%--
 --%></c:if>

@@ -754,11 +754,15 @@ public class ListFolderHelper {
 			String strUserDisplayStyle = user.getDisplayStyle();
 			if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
 			
-			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
+			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && 
+					!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 				// do it with ajax
-			} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && !ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
+			} else if (viewType.equals(Definition.VIEW_STYLE_TASK) && 
+					!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
 				folderEntries = findTaskEntries(bs, req, response, (Binder) folder, model, options);
-			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) && ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
+			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) 
+					&& ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle) &&
+					!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 				folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);
 			}
 			else {
@@ -1799,7 +1803,8 @@ public class ListFolderHelper {
         
         boolean isAccessible = false;
 		String displayStyle = user.getDisplayStyle();
-		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
+				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 			isAccessible = true;
 		}
 		

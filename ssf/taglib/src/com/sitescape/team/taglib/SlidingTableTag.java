@@ -100,7 +100,8 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				pageContext.getOut().print(res.getString());
 				
 			} else if (_type == null || _type.equals("") || (displayStyle != null && 
-					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE))) {
+					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
+					!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID))) {
 				String jspStart = "/WEB-INF/jsp/tag_jsps/sliding_table/table_start.jsp";
 				String jspEnd = "/WEB-INF/jsp/tag_jsps/sliding_table/table_end.jsp";
 				String jspRow = "/WEB-INF/jsp/tag_jsps/sliding_table/table_row.jsp";

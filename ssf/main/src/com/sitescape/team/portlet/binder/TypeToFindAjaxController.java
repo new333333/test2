@@ -165,7 +165,8 @@ public class TypeToFindAjaxController extends SAbstractController {
 				model.put(WebKeys.TAG_LENGTH_WARNING, NLT.get("tags.maxLengthWarning"));
 				model.put(WebKeys.TAGS, thelist);
 				
-				if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
+				if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
+						!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 					view = viewAccessible;
 				} else {
 					response.setContentType("text/xml");
@@ -274,7 +275,8 @@ public class TypeToFindAjaxController extends SAbstractController {
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
 		
 		model.put(WebKeys.NAMESPACE, namespace);
-		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
+		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
+				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 			view = viewAccessible;
 		} else {
 			response.setContentType("text/xml");

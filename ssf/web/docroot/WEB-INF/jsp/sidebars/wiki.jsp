@@ -37,7 +37,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <%
 	boolean useAdaptor = true;
-	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle())) {
+	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
+			!ssUser.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 		useAdaptor = false;
 	}
 
