@@ -37,25 +37,11 @@
 
 String title = ParamUtil.get(request, "title", "");
 String divClass = ParamUtil.get(request, "divClass", "");
-Boolean initOpen = ParamUtil.getBoolean(request, "initOpen", true);
-Boolean sticky = ParamUtil.getBoolean(request, "sticky", true);
 
-%><%--
---%><c:set var="initOpen" value="<%= initOpen %>" /><%--
---%><c:set var="sticky" value="<%= sticky %>" /><%--
---%><c:set var="divClass" value="<%= divClass %>" /><%--
---%><div class="ss_canvas"><%--
-    --%><div class="ss_base_title_bar"><%--
-        --%><img <ssf:alt tag="alt.expand"/> src="<%--
-        --%><c:if test="${initOpen}"><html:imagesPath/>pics/flip_down16H.gif</c:if><%--
-        --%><c:if test="${!initOpen}"><html:imagesPath/>pics/flip_up16H.gif</c:if><%--
-        --%>" onClick="ss_showHideSidebarBox('${renderResponse.namespace}_${id}', this, ${sticky}, '${id}');" class="ss_toggler"/><%--
-        --%><%= title %><%--
-        --%><div><img alt="" src="<html:imagesPath/>pics/1pix.gif" height="1" width="200"/></div><%--
-    --%></div><%--
---%><div id="${renderResponse.namespace}_${id}" style="overflow: hidden; <%--
---%><c:if test="${initOpen}">visibility: visible; display: block;</c:if><%--
---%><c:if test="${!initOpen}">visibility: hidden; display: none;</c:if><%--
---%>"<%--
---%><c:if test="${!empty divClass}"> class="${divClass}"</c:if><%--
---%>>
+%>
+
+<div class="ss_canvas">
+<div class="ss_base_title_bar">
+   <span><%= title %></span>
+</div>
+<div id="${renderResponse.namespace}_${id}" >
