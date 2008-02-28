@@ -46,7 +46,8 @@
 			ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 
 	boolean useAdaptor = true;
-	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle())) {
+	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
+			!ssUser.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 		useAdaptor = false;
 	}
 %>

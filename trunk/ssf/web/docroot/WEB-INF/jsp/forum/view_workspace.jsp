@@ -237,16 +237,18 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 				  <ssHelpSpot helpId="workspaces_folders/misc_tools/accessible_mode" offsetX="-17" 
                   offsetY="-12" title="<ssf:nlt tag="helpSpot.accessibleMode" text="My Workspace"/>">
 				  </ssHelpSpot>
-				<ssf:ifaccessible>
+				<ssf:ifLoggedIn>
+				 <ssf:ifaccessible>
 				  <a href="${ss_accessibleUrl}">
 				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.disableAccessibleMode"/></span>
 				  </a>
-				</ssf:ifaccessible>
-				<ssf:ifnotaccessible>
+				 </ssf:ifaccessible>
+				 <ssf:ifnotaccessible>
 				  <a href="${ss_accessibleUrl}">
 				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>
 				  </a>
-				</ssf:ifnotaccessible>
+				 </ssf:ifnotaccessible>
+				</ssf:ifLoggedIn>
 				</div>
 			</c:if>
 

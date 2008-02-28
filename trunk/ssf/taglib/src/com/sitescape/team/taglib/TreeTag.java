@@ -51,6 +51,7 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.domain.User;
@@ -174,6 +175,10 @@ public class TreeTag extends TagSupport {
 				}
 				String displayStyle = user.getDisplayStyle();
 				if (displayStyle == null) displayStyle = "";
+				if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
+							user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) 
+					//Never show guest in accessible mode
+					displayStyle = "";
 				sb.append("var ss_treeDisplayStyle = '" + displayStyle + "';\n");
 				sb.append("var ss_treeButtonClose = '" + NLT.get("button.close") + "';\n");
 				sb.append("var ss_treeSelectId = '");

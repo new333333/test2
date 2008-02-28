@@ -68,7 +68,9 @@ public class SkipLinkTag extends BodyTagSupport {
 			Boolean isAccessible = Boolean.FALSE;
 			if (rc != null) user = rc.getUser();
 			if (user != null) {
-				if (user.getDisplayStyle() != null && user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+				if (user.getDisplayStyle() != null && 
+						user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
+						!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 					isAccessible = Boolean.TRUE;
 				}
 			}

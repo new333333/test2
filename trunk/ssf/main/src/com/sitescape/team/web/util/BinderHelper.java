@@ -478,7 +478,8 @@ public class BinderHelper {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_IFRAME;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_POPUP;
-			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
+					!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 				/** Vertical mode has been removed
@@ -498,7 +499,8 @@ public class BinderHelper {
 			viewListingJspName = WebKeys.VIEW_LISTING_IFRAME;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_POPUP;
-		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
+				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 			/** Vertical mode has been removed
@@ -558,7 +560,9 @@ public class BinderHelper {
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String displayStyle = user.getDisplayStyle();
-		if (displayStyle == null || displayStyle.equals("")) {
+		if (displayStyle == null || displayStyle.equals("") || 
+				(displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
+				user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID))) {
 			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 		}
 		model.put(WebKeys.DISPLAY_STYLE, displayStyle);
@@ -572,7 +576,8 @@ public class BinderHelper {
 			if (entryId != null) url.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
 		}
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
-		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || 
+				user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		} else {
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);
