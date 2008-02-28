@@ -131,10 +131,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 <table border="0" cellpadding="0" cellspacing="0" >
   <tr>
     <td align="center" valign="top">
-      <div id="ss_portalViewButtons${renderResponse.namespace}" style="display:none;">
       <div id="ss_top_nav_buttontwo">
         <ul>
-          <li>
+          <li style="display:none;">
 			  <ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
 			      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
 			  </ssHelpSpot>
@@ -143,18 +142,13 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 	            onClick="ss_goToMyParentPortletNormalView${renderResponse.namespace}();return false;"
 	          title="<ssf:nlt tag="navigation.goToPortalView"/>"
 	          ><ssf:nlt tag="navigation.portalView"/></a></li>
-          <li>
+          <li style="display:none;">
  			  <a id="ss_portalViewMaximizedButton${renderResponse.namespace}" 
 				href="javascript: ;"
 	            onClick="ss_goToMyParentPortletMaximizedView${renderResponse.namespace}();return false;"
 	          title="<ssf:nlt tag="navigation.goToMaximizedView"/>"
               ><ssf:nlt tag="navigation.expandedView"/></a>
           </li>
-        </ul>
-      </div>
-      </div>
-      <div id="ss_top_nav_buttonthree">
-        <ul>
           <li>
 			  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
 			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
@@ -203,12 +197,14 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 	var windowName = self.window.name    
 	if (windowName.indexOf("ss_workareaIframe") == 0) {
 		//We are running inside a portlet iframe
-		var divObj = document.getElementById('ss_portalViewButtons${renderResponse.namespace}')
-		divObj.style.display = "block";
 		var windowState = "";
 		try {
 			eval('windowState = self.parent.ss_portal_view_window_state'+namespace)
 		} catch(e) {}
+		var pbObj = document.getElementById('ss_portalViewPortalButton${renderResponse.namespace}')
+		pbObj.parentNode.style.display = "block";
+		var ebObj = document.getElementById('ss_portalViewMaximizedButton${renderResponse.namespace}')
+		ebObj.parentNode.style.display = "block";
 		if (windowState == "normal") {
 			var aObj = document.getElementById('ss_portalViewPortalButton${renderResponse.namespace}')
 			aObj.className = "current"
