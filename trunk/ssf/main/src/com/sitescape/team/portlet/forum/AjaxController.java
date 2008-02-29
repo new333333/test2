@@ -999,7 +999,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String view = "tag_jsps/tree/get_tree_div";
 		if (user.getDisplayStyle() != null && 
 				user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
-				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			view = "tag_jsps/tree/get_tree_div_accessible";
 		} else {
 			response.setContentType("text/xml");

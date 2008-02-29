@@ -119,7 +119,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
 			String displayStyle = user.getDisplayStyle();
 			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-					!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");
 			} else {
 				try {
@@ -234,7 +234,7 @@ public class ViewPermalinkController  extends SAbstractController {
 		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
 			String displayStyle = user.getDisplayStyle();
 			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-					!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");
 			} else {
 				try {

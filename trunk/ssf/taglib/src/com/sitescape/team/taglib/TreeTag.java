@@ -176,7 +176,7 @@ public class TreeTag extends TagSupport {
 				String displayStyle = user.getDisplayStyle();
 				if (displayStyle == null) displayStyle = "";
 				if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-							user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) 
+						ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) 
 					//Never show guest in accessible mode
 					displayStyle = "";
 				sb.append("var ss_treeDisplayStyle = '" + displayStyle + "';\n");

@@ -38,7 +38,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <%
 	boolean useAdaptor = true;
 	if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
-			!ssUser.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+			!ObjectKeys.GUEST_USER_INTERNALID.equals(ssUser.getInternalId())) {
 		useAdaptor = false;
 	}
 

@@ -69,6 +69,7 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected String password; //set by hibernate access="field"
     protected Long digestSeed;
     protected String skypeId="";
+    protected String status="";
     private Set principalIds; // set of Long; this field is computed 
     private SortedSet groupNames; // sorted set of group names; this field is computed
 	public User() {
@@ -276,6 +277,21 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		this.password = PasswordEncryptor.encrypt(clearTextPassword);
 	}
 	
+    /**
+     * Returns status value or <code>null</code> if it was never set.
+     * 
+     * @hibernate.property length="256"
+     * @return
+     */
+	public String getStatus() {
+		return status;
+	}
+	/**
+	 * @param status The status to set.
+	 */
+	public void setStatus(String status) {
+		this.status = status;
+	}	
     /**
      * Returns digest seed value or <code>null</code> if it was never set.
      * 
