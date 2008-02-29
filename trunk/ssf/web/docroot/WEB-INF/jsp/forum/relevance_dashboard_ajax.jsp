@@ -28,7 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <c:if test="${ss_type == 'personal'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard_my_info.jsp" />
 </c:if>
