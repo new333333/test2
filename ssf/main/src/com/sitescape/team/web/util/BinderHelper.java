@@ -479,7 +479,7 @@ public class BinderHelper {
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_POPUP;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-					!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				viewListingJspName = WebKeys.VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE;
 			} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 				/** Vertical mode has been removed
@@ -500,7 +500,7 @@ public class BinderHelper {
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_POPUP)) {
 			viewListingJspName = WebKeys.VIEW_LISTING_POPUP;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
-				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			viewListingJspName = WebKeys.VIEW_LISTING_ACCESSIBLE;
 		} else if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_VERTICAL)) {
 			/** Vertical mode has been removed
@@ -562,7 +562,7 @@ public class BinderHelper {
 		String displayStyle = user.getDisplayStyle();
 		if (displayStyle == null || displayStyle.equals("") || 
 				(displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-				user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID))) {
+				ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
 			displayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
 		}
 		model.put(WebKeys.DISPLAY_STYLE, displayStyle);
@@ -577,7 +577,7 @@ public class BinderHelper {
 		}
 		url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 		if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) || 
-				user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+				ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
 		} else {
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE);

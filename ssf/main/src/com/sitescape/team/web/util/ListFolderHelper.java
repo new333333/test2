@@ -762,7 +762,7 @@ public class ListFolderHelper {
 				folderEntries = findTaskEntries(bs, req, response, (Binder) folder, model, options);
 			} else if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) 
 					&& ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle) &&
-					!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 				folderEntries = findCalendarEvents(bs, req, response, (Binder) folder, model);
 			}
 			else {
@@ -1804,7 +1804,7 @@ public class ListFolderHelper {
         boolean isAccessible = false;
 		String displayStyle = user.getDisplayStyle();
 		if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
-				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			isAccessible = true;
 		}
 		

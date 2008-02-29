@@ -166,7 +166,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 				model.put(WebKeys.TAGS, thelist);
 				
 				if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
-						!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 					view = viewAccessible;
 				} else {
 					response.setContentType("text/xml");
@@ -276,7 +276,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		
 		model.put(WebKeys.NAMESPACE, namespace);
 		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
-				!user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID)) {
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			view = viewAccessible;
 		} else {
 			response.setContentType("text/xml");

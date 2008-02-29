@@ -433,6 +433,59 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 </table>
 </td>
 </tr>
+
+<!-- Start of Status line -->
+<tr>
+<td align="center" style="padding:5px 0px 5px 0px;">
+<table class="ss_global_toolbar_maximized" cellspacing="0" cellpadding="0" border="0">
+<tbody>
+<tr>
+<td>
+<script type="text/javascript">
+var ss_statusCurrent = "${ssUser.status}";
+var ss_statusTimer = null;
+var ss_statusObj = null;
+function ss_updateStatusSoon(obj) {
+	ss_statusObj = obj;
+	if (ss_statusTimer != null) {
+		clearTimeout(ss_statusTimer)
+		ss_statusTimer = null;
+	}
+	ss_statusTimer = setTimeout('ss_updateStatusNow(ss_statusObj);', 10000);
+}
+function ss_updateStatusNow(obj) {
+	if (ss_statusTimer != null) {
+		clearTimeout(ss_statusTimer)
+		ss_statusTimer = null;
+	}
+	if (ss_statusCurrent != obj.value) {
+		alert('Update status: '+obj.value);
+		ss_statusCurrent = obj.value;
+	}
+}
+</script>
+<span class="ss_smallprint"><ssf:nlt tag="user.status"/></span>
+<input type="text" size="40" style="font-size:8;" value="${ssUser.status}"
+  onKeyPress="ss_updateStatusSoon(this);"
+  onChange="ss_updateStatusNow(this);"
+  />
+</td>
+<td>
+<a href="javascript: ;" 
+  onClick="alert('This place will now be tracked. (${ssBinder.id})');ss_trackThisPlace('${ssBinder.id}');return false;"
+><span class="ss_smallprint"><ssf:nlt tag="track.thisBinder"/></span></a>
+</td>
+<td>
+<a href="javascript: ;" 
+  onClick="alert('This place is being recommended. (${ssBinder.id})');ss_recommendThisPlace('${ssBinder.id}');return false;"
+><span class="ss_smallprint"><ssf:nlt tag="recommend.thisBinder"/></span></a>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+
+<td>
 </table>
 </div>
 
