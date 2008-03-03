@@ -376,6 +376,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
    }  	
 
+   //RW transaction
+   public void setStatus(String status) {
+	    User user = RequestContextHolder.getRequestContext().getUser();
+	    user.setStatus(status);
+   }  	
+
 	//RO transaction
    public Map getGroups(Long binderId) {
 	   Map options = new HashMap();

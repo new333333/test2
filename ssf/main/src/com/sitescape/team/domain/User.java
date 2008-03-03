@@ -290,7 +290,11 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 	 * @param status The status to set.
 	 */
 	public void setStatus(String status) {
-		this.status = status;
+		if (status != null && status.length() > 256) {
+			this.status = status.substring(0,255);
+		} else {
+			this.status = status;
+		}
 	}	
     /**
      * Returns digest seed value or <code>null</code> if it was never set.

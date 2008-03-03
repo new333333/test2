@@ -30,31 +30,57 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<table width="100%">
+<table>
 <tbody>
-<tr>
-<td width="50%" valign="top">
-	<ssf:canvas id="relevanceDocuments" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
-	  Recent friend documents<br/>
-	  Recent friend documents<br/>
-	  Recent friend documents<br/>
-	</ssf:canvas>
-	<ssf:canvas id="relevanceTasks" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.tasks") %>"/>
-	  Friend Tasks<br/>
-	  Friend Tasks<br/>
-	  Friend Tasks<br/>
-	  Friend Tasks<br/>
-	  Friend Tasks<br/>
-	</ssf:canvas>
-</td>
-<td width="50%" valign="top" style="padding-left:10px;">
-	<ssf:canvas id="relevanceMail" type="inline">
-	other stuff
-	</ssf:canvas>
-</td>
-</tr>
+<th><ssf:nlt tag="relevance.trackedWorkspaces"/></th>
+<c:forEach var="binder" items="${ss_trackedBinders}">
+  <c:if test="${binder.entityType == 'workspace' && binder.definitionType == 8}">
+	<tr>
+	  <td>
+	    <a
+	      href="<ssf:url action="view_ws_listing" binderId="${binder.id}"/>"
+	    >${binder.title}</a>
+	  </td>
+	</tr>
+  </c:if>
+</c:forEach>
 </tbody>
 </table>
+
+<br/>
+<table>
+<tbody>
+<th><ssf:nlt tag="relevance.trackedFolders"/></th>
+<c:forEach var="binder" items="${ss_trackedBinders}">
+  <c:if test="${binder.entityType == 'folder'}">
+	<tr>
+	  <td>
+	    <a
+	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
+	    >${binder.title}</a>
+	  </td>
+	</tr>
+  </c:if>
+</c:forEach>
+</tbody>
+</table>
+
+<br/>
+<table>
+<tbody>
+<th><ssf:nlt tag="relevance.trackedPeople"/></th>
+<c:forEach var="binder" items="${ss_trackedBinders}">
+  <c:if test="${binder.entityType == 'workspace' && binder.definitionType == 12}">
+	<tr>
+	  <td>
+	    <a
+	      href="<ssf:url action="view_ws_listing" binderId="${binder.id}"/>"
+	    >${binder.title}</a>
+	  </td>
+	</tr>
+  </c:if>
+</c:forEach>
+</tbody>
+</table>
+
 

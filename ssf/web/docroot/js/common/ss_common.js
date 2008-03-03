@@ -128,6 +128,9 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	
 	var ss_currentTab = 0;
 		
+	var ss_statusCurrent = "";
+	var ss_statusTimer = null;
+	var ss_statusObj = null;
 }
 var ss_common_loaded = 1;
 
@@ -691,6 +694,47 @@ function ss_moveDivToTopOfBody(divId) {
 	ssf_onresize_event_handler();
 }
 
+//Functions to save the user status
+function ss_updateStatusSoon(obj) {
+	ss_statusObj = obj;
+	if (ss_statusTimer != null) {
+		clearTimeout(ss_statusTimer)
+		ss_statusTimer = null;
+	}
+	ss_statusTimer = setTimeout('ss_updateStatusNow(ss_statusObj);', 10000);
+}
+function ss_updateStatusNow(obj) {
+	if (ss_statusTimer != null) {
+		clearTimeout(ss_statusTimer)
+		ss_statusTimer = null;
+	}
+	if (ss_statusCurrent != obj.value) {
+		ss_statusCurrent = obj.value;
+		var status = ss_replaceSubStrAll(obj.value, "\"", "&quot;");
+		
+		ss_setupStatusMessageDiv();
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_status", status:status}, "");
+		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+		ajaxRequest.setPostRequest(ss_postRequestAlertError);
+		ajaxRequest.sendRequest();  //Send the request
+	}
+}
+
+function ss_trackThisBinder(id) {
+	ss_setupStatusMessageDiv();
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"track_this_binder", binderId:id}, "__ajax_relevance");
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.setPostRequest(ss_postRequestAlertError);
+	ajaxRequest.sendRequest();  //Send the request
+}
+
+function ss_shareThisBinder(id) {
+	ss_setupStatusMessageDiv();
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"share_this_binder", binderId:id}, "__ajax_relevance");
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.setPostRequest(ss_postRequestAlertError);
+	ajaxRequest.sendRequest();  //Send the request
+}
 
 //Function to create a named div in the body
 function ss_createDivInBody(divId, className) {

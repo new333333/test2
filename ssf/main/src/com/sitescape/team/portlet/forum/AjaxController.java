@@ -180,6 +180,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
 				Map formData = request.getParameterMap();
 				if (formData.containsKey("okBtn")) ajaxDoSubscription(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SAVE_UESR_STATUS)) {
+				ajaxSaveUserStatus(request, response);
 			}
 		}
 	}
@@ -1847,6 +1849,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 				getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SAVED_SEARCH_QUERIES, userQueries);
 			}
 		}
+	}
+	
+	private void ajaxSaveUserStatus(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		String status = PortletRequestUtils.getStringParameter(request, "status", "");
+		getProfileModule().setStatus(status);
 	}
 	
 	private ModelAndView ajaxGetSearchQueryName(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {

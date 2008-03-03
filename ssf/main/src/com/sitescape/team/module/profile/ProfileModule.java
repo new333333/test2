@@ -254,6 +254,11 @@ public interface ProfileModule {
 	 */
     public SeenMap getUserSeenMap(Long userId);
     /**
+     * Set status.  Sets the status of the current user
+     * @param status
+     */
+    public void setStatus(String status);
+    /**
      * Update index.  Should be handled by all other operations automatically
      * @param entry
      */
