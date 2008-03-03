@@ -38,14 +38,13 @@
 		          src="<html:imagesPath/>${selection.value.iconName}" />
 				<a       
 		          <ssf:ifadapter>
-			          href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${selection.key}" entryId="${selection.key}">
-							<ssf:param name="entityType" value="folder"/><ssf:param name="newTab" value="1"/></ssf:url>"
-						onClick="return ss_gotoPermalink('${selection.key}','${selection.key}', 'folder', '${portletNamespace}', 'yes', true);"
+			          href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${selection.key}">
+							<ssf:param name="entityType" value="folder"/></ssf:url>"
+						onclick="ss_openUrlInParentWorkarea(this.href, '', 'view_ws_listing'); return false;"
 		          </ssf:ifadapter>
 		          <ssf:ifnotadapter>
 				     href="<ssf:url adapter="false" portletName="ss_forum" folderId="${selection.key}" action="view_folder_listing" actionUrl="false" >
 		    			<ssf:param name="binderId" value="${selection.key}"/>
-						<ssf:param name="newTab" value="1"/>
 						</ssf:url>" 		          
 		          </ssf:ifnotadapter>
 		          class="ss_parentPointer"><c:out value="${selection.value.title}" escapeXml="false"/></a>
