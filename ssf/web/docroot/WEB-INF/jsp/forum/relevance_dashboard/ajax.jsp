@@ -30,17 +30,17 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <c:if test="${ss_type == 'dashboard'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard_my_info.jsp" />
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_info.jsp" />
 </c:if>
 <c:if test="${ss_type == 'siteDashboard'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard_site_info.jsp" />
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/site_info.jsp" />
 </c:if>
 <c:if test="${ss_type == 'visitors'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard_visitor_info.jsp" />
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/visitor_info.jsp" />
 </c:if>
 <c:if test="${ss_type == 'trackedItems'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard_tracked_items.jsp" />
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_items.jsp" />
 </c:if>
 <c:if test="${ss_type == 'sharedItems'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard_shared_items.jsp" />
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
 </c:if>
