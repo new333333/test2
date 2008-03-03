@@ -111,11 +111,20 @@
 										<%@ include file="/WEB-INF/jsp/search/advanced_search_form.jsp" %>
 									</c:if>		
 							
-									<!-- Search result header -->
-									<%@ include file="/WEB-INF/jsp/search/result_header.jsp" %>
-								
+									<!-- Search results navigation -->
+									<div class="ss_searchResult_header_top ssPageNavi">
+										<%@ include file="/WEB-INF/jsp/search/results_navigation.jsp" %>
+									</div>
+																
 									<!-- Search result list -->
 									<%@ include file="/WEB-INF/jsp/search/result_list.jsp" %>
+
+									<c:if test="${ss_pageNumber != 1 || ssPageEndIndex != ssTotalRecords}">
+										<!-- Search results navigation -->
+										<div class="ss_searchResult_header_bottom ssPageNavi">
+											<%@ include file="/WEB-INF/jsp/search/results_navigation.jsp" %>
+										</div>
+									</c:if>
 								</div>
 							</div>
 						</div>
