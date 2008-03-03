@@ -26,15 +26,47 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.remoting.ws.service.binder;
+package com.sitescape.team.remoting.ws.service.search;
 
-public interface BinderService {
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-	public String search(String accessToken, String query, int offset, int maxResults);
+import com.sitescape.team.util.SpringContextUtil;
 
-	public String getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page);
+public class BinderServiceEndpoint implements ServiceLifecycle, BinderService {
+
+	// Implementation note: NEVER extend org.springframework.remoting.jaxrpc.ServletEndpointSupport
+	// to get a handle on the application context from it. Our system design requires it to be
+	// possible to invoke this service endpoint across app boundaries, that is, from different 
+	// servlet context. Therefore we must obtain the application context through our own
+	// SpringContextUtil class. 
+	private BinderService binderService;
 	
-	public String getTeamMembersAsXML(String accessToken, long binderId);
+	protected BinderService getBinderService() {
+		return binderService;
+	}
 	
-	public String getTeamsAsXML(String accessToken);
+	public String getTeamMembersAsXML(String accessToken, long binderId) {
+		return getBinderService().getTeamMembersAsXML(accessToken, binderId);
+	}
+	
+	public String getTeamsAsXML(String accessToken) {
+		return getBinderService().getTeamsAsXML(accessToken);
+	}
+	
+	public String getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page) {
+		return getBinderService().getWorkspaceTreeAsXML(accessToken, binderId, levels, page);
+	}
+	
+	public String search(String accessToken, String query, int offset, int maxResults) {
+		return getBinderService().search(accessToken, query, offset, maxResults);
+	}
+
+	public void init(Object context) throws ServiceException {
+		this.binderService = (BinderService) SpringContextUtil.getBean("binderService");
+	}
+	
+	public void destroy() {
+	}
+
 }
