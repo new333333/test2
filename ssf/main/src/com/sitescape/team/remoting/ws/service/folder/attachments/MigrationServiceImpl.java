@@ -26,19 +26,15 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.rss;
+package com.sitescape.team.remoting.ws.service.folder.attachments;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public class MigrationServiceImpl extends com.sitescape.team.remoting.ws.service.folder.MigrationServiceImpl {
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
-
-public interface RssModule {
+	AttachmentUtilities attachmentUtilities = new AttachmentUtilities(this);
 	
-	public void updateRssFeed(Entry entry);
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
-	public String AuthError(HttpServletRequest request, HttpServletResponse response);
-	public String BinderExistenceError(HttpServletRequest request, HttpServletResponse response);
+	@Override
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName, Timestamps timestamps) {
+		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
+	}
 }

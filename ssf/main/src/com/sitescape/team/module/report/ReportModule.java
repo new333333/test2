@@ -36,6 +36,7 @@ import java.util.Collection;
 
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.AuditTrail;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.HistoryStamp;
@@ -59,6 +60,23 @@ public interface ReportModule {
 	public static final String COUNT = "count";
 	public static final String SIZE = "size";
 	
+	public static class VisitInfo
+	{
+		Entry whoOrWhat;
+		int visitCount;
+		Date lastVisit;
+		
+		public VisitInfo(Entry whoOrWhat, int visitCount, Date lastVisit)
+		{
+			this.whoOrWhat = whoOrWhat;
+			this.visitCount = visitCount;
+			this.lastVisit = lastVisit;
+		}
+		public Entry getWhoOrWhat() { return whoOrWhat; }
+		public int getVisitCount() { return visitCount; }
+		public Date getLastVisit() { return lastVisit; }
+	};
+	
 	public enum QuotaOption { UsersOnly, WorkspacesOnly, UsersAndWorkspaces };
 	
 	public void addAuditTrail(AuditTrail auditTrail);
@@ -81,5 +99,6 @@ public interface ReportModule {
 
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 	public Collection<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
+	public Collection<VisitInfo> culaEsCaliente(Date startDate, Date endDate);
 
 }

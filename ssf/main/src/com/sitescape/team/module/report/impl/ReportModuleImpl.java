@@ -71,7 +71,9 @@ import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.report.ReportModule;
+import com.sitescape.team.module.report.ReportModule.VisitInfo;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -84,6 +86,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected ProfileDao profileDao;
 	protected AccessControlManager accessControlManager;
 	protected BinderModule binderModule;
+	protected FolderModule folderModule;
 	protected AdminModule adminModule;
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
@@ -110,6 +113,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 	public BinderModule getBinderModule() {
 		return this.binderModule;
+	}
+
+	public void setFolderModule(FolderModule folderModule) {
+		this.folderModule = folderModule;
+	}
+
+	public FolderModule getFolderModule() {
+		return this.folderModule;
 	}
 
 	//circular dependencies prevent spring from setting this up
@@ -191,6 +202,33 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			}});
 		return getProfileDao().loadUsers(ids, entity.getZoneId());
 	}
+	
+	public Collection<VisitInfo> culaEsCaliente(final Date startDate, final Date endDate)
+	{
+		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(AuditTrail.class)
+					.setProjection(Projections.projectionList() 
+												.add(Projections.groupProperty("owningBinderId"))
+												.add(Projections.groupProperty("entityId"))
+												.add(Projections.rowCount())
+												.add(Projections.max("startDate")))
+					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+				    .add(Restrictions.eq("transactionType", AuditType.view))
+				    .add(Restrictions.ge("startDate", startDate))
+				    .add(Restrictions.lt("startDate", endDate));
+				return crit.list();
+				
+			}});
+		
+		List<VisitInfo> list = new LinkedList<VisitInfo>();
+		for(Object o : data) {
+			Object[] col = (Object []) o;
+			list.add(new VisitInfo(getFolderModule().getEntry((Long) col[0], (Long) col[1]), (Integer) col[2], (Date) col[3]));
+		}
+		return list;
+	}
+	
 	public LicenseStats getLicenseHighWaterMark(final Calendar startDate, final Calendar endDate)
 	{
 		List marks = (List) getHibernateTemplate().execute(new HibernateCallback() {

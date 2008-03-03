@@ -26,19 +26,35 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.rss;
+package com.sitescape.team.remoting.ws.service.folder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
+public class MigrationServiceEndpoint extends ServletEndpointSupport implements MigrationService {
 
-public interface RssModule {
+	private MigrationService migrationService;
 	
-	public void updateRssFeed(Entry entry);
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
-	public String AuthError(HttpServletRequest request, HttpServletResponse response);
-	public String BinderExistenceError(HttpServletRequest request, HttpServletResponse response);
+	protected void onInit() {
+		this.migrationService = (MigrationService) getWebApplicationContext().getBean("migrationService");
+	}
+	protected MigrationService getMigrationService() {
+		return migrationService;
+	}
+	
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps) {
+		return getMigrationService().addFolder(accessToken, parentId, definitionId, inputDataAsXML, timestamps);
+	}
+	
+	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Timestamps timestamps) {
+		return getMigrationService().addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, timestamps);
+	}
+
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps) {
+		return getMigrationService().addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, timestamps);
+	}
+
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, Timestamps timestamps) {
+		getMigrationService().uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName, timestamps);
+	}
+
 }

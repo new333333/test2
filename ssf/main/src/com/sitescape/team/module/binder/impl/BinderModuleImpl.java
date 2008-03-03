@@ -654,7 +654,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 
 	public Map executeSearchQuery(Document query, int offset, int maxResults) {
        	//Create the Lucene query
-	   	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+	   	QueryBuilder qb = new QueryBuilder(true);
 	   	SearchObject so = qb.buildQuery(query);
 
 	   	return executeSearchQuery(so, offset, maxResults);
@@ -665,7 +665,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	SearchUtils.getQueryFields(qTree, options); 
 
        	//Create the Lucene query
-	   	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+	   	QueryBuilder qb = new QueryBuilder(true);
 	   	SearchObject so = qb.buildQuery(qTree);
 		    	
 	   	//Set the sort order
@@ -729,7 +729,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			Document qTree = DocumentHelper.createDocument();				
 			qTree.addElement(QueryBuilder.QUERY_ELEMENT);
 	    	//Create the query
-	    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+	    	QueryBuilder qb = new QueryBuilder(true);
 			so = qb.buildQuery(qTree);
 		}
     	LuceneSession luceneSession = getLuceneSessionFactory().openSession();
@@ -898,7 +898,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
    			child.setText(userId.toString());
        		
        	}
-    	QueryBuilder qb = new QueryBuilder(ids);
+    	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(qTree);
 	   	//Set the sort order
 	   	SortField[] fields = new SortField[] {new SortField(EntityIndexUtils.SORT_TITLE_FIELD, SortField.AUTO, false)};
@@ -1195,8 +1195,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
       	//Create the Lucene query
-    	Set pids = getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser());
-    	QueryBuilder qb = new QueryBuilder(pids);
+    	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(queryTree);
     	if(logger.isDebugEnabled()) {
     		logger.debug("Query is: " + queryTree.asXML());
@@ -1228,7 +1227,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
 
-		QueryBuilder qbFinal = new QueryBuilder(pids);
+		QueryBuilder qbFinal = new QueryBuilder(true);
     	SearchObject singleBucketSO = qbFinal.buildQuery(queryTreeFinal);
 		
    		Element range = qTreeAndElement.addElement(QueryBuilder.RANGE_ELEMENT);

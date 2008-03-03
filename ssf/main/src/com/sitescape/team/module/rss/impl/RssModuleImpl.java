@@ -343,7 +343,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	 * @param user
 	 */
 	public String filterRss(HttpServletRequest request,
-			HttpServletResponse response, Binder binder, User user) {
+			HttpServletResponse response, Binder binder) {
 
 		boolean rssEnabled = SPropsUtil.getBoolean("rss.enable", true);
 		if (!rssEnabled) {
@@ -354,55 +354,48 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		String indexPath = getRssPathName(binder);
 		RssFeedLock rfl = new RssFeedLock(rssRootDir, binder);
 
-		if (user != null) { // Normal situation
-			try {
-				// See if the feed already exists
+		try {
+			// See if the feed already exists
 
-				File rf = new File(indexPath);
-				if (!rf.exists())
-					this.generateRssFeed(binder);
+			File rf = new File(indexPath);
+			if (!rf.exists())
+				this.generateRssFeed(binder);
 
-				if (!rfl.getFeedLock()) {
-					logger.info("Couldn't get the RssFeedLock");
-				}
-
-				updateTimestamp(indexPath);
-
-				IndexSearcher indexSearcher = new IndexSearcher(indexPath);
-
-				// this will add acls to the query
-				Query q = buildRssQuery(user);
-
-				// get the matching entries
-				Hits hits = indexSearcher.search(q);
-
-				// create the return string, add the channel info
-				String rss = addRssHeader(binder.getTitle());
-				// step thru the hits and add them to the rss return string
-				int count = 0;
-				while (count < hits.length()) {
-					org.apache.lucene.document.Document doc = hits.doc(count);
-					rss += doc.getField("rssItem").stringValue();
-					count++;
-				}
-				indexSearcher.close();
-				rss += addRssFooter();
-				rss = WebHelper.markupStringReplacement(null, null, request,
-						response, null, rss, WebKeys.MARKUP_VIEW);
-
-				return rss;
-
-			} catch (Exception e) {
-				logger.info("filterRss: " + e.toString());
-				return "";
-			} finally {
-				rfl.releaseFeedLock();
+			if (!rfl.getFeedLock()) {
+				logger.info("Couldn't get the RssFeedLock");
 			}
 
-		} else {
-			// This request is being made without appropriate user authentication.
-			// Do NOT use binder in this case, since it may be null in this situation.
-			return AuthError(request, response);
+			updateTimestamp(indexPath);
+
+			IndexSearcher indexSearcher = new IndexSearcher(indexPath);
+
+			// this will add acls to the query
+			Query q = buildRssQuery();
+
+			// get the matching entries
+			Hits hits = indexSearcher.search(q);
+
+			// create the return string, add the channel info
+			String rss = addRssHeader(binder.getTitle());
+			// step thru the hits and add them to the rss return string
+			int count = 0;
+			while (count < hits.length()) {
+				org.apache.lucene.document.Document doc = hits.doc(count);
+				rss += doc.getField("rssItem").stringValue();
+				count++;
+			}
+			indexSearcher.close();
+			rss += addRssFooter();
+			rss = WebHelper.markupStringReplacement(null, null, request,
+					response, null, rss, WebKeys.MARKUP_VIEW);
+
+			return rss;
+
+		} catch (Exception e) {
+			logger.info("filterRss: " + e.toString());
+			return "";
+		} finally {
+			rfl.releaseFeedLock();
 		}
 	}
 
@@ -449,7 +442,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 
 	}
 
-	private Query buildRssQuery(User user) {
+	private Query buildRssQuery() {
 		SearchObject so = new SearchObject();
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
@@ -459,8 +452,7 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, ALL_FIELD);
 		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 		child.setText("all");
-		Set<Long> userAcls = getProfileDao().getPrincipalIds(user);
-		QueryBuilder qb = new QueryBuilder(userAcls);
+		QueryBuilder qb = new QueryBuilder(true);
 		so = qb.buildQuery(qTree);
 
 		return so.getQuery();

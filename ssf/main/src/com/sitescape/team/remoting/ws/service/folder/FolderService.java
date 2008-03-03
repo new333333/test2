@@ -26,19 +26,22 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.rss;
+package com.sitescape.team.remoting.ws.service.folder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public interface FolderService {
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML);
 
-public interface RssModule {
+	public String getFolderEntriesAsXML(String accessToken, long binderId);
 	
-	public void updateRssFeed(Entry entry);
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
-	public String AuthError(HttpServletRequest request, HttpServletResponse response);
-	public String BinderExistenceError(HttpServletRequest request, HttpServletResponse response);
+	public String getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments);
+	
+	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
+	
+	public void modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML);
+	
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML);
+
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName);
 }

@@ -26,19 +26,21 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.rss;
+package com.sitescape.team.remoting.ws.service.profile;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public interface ProfileService {
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
-
-public interface RssModule {
+	public String getAllPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords);
 	
-	public void updateRssFeed(Entry entry);
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
-	public String AuthError(HttpServletRequest request, HttpServletResponse response);
-	public String BinderExistenceError(HttpServletRequest request, HttpServletResponse response);
+	public String getPrincipalAsXML(String accessToken, long binderId, long principalId);
+	
+	public long addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML);
+	
+	public long addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML);
+	
+	public void addUserToGroup(String accessToken, long userId, String username, long groupId);
+	
+	public void modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML);
+	
+	public void deletePrincipal(String accessToken, long binderId, long principalId);
 }

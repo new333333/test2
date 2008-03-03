@@ -26,19 +26,39 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.rss;
+package com.sitescape.team.remoting.ws.service.ical;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.StringBufferInputStream;
+import java.util.List;
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
+import net.fortuna.ical4j.data.ParserException;
 
-public interface RssModule {
+import org.dom4j.Document;
+import org.dom4j.Node;
+
+import com.sitescape.team.remoting.RemotingException;
+import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
+
+public class IcalServiceImpl extends BaseService implements IcalService {
+
+	public void uploadCalendarEntries(String accessToken, long folderId, String iCalDataAsXML)
+	{
+		iCalDataAsXML = StringCheckUtil.check(iCalDataAsXML);
+		
+		Document doc = getDocument(iCalDataAsXML);
+		List<Node> entryNodes = (List<Node>) doc.selectNodes("//entry");
+		for(Node entryNode : entryNodes) {
+			String iCal = entryNode.getText();
+			try {
+				getIcalModule().parseToEntries(folderId, new StringBufferInputStream(iCal));
+			} catch(IOException e) {
+				throw new RemotingException(e);
+			} catch(ParserException e) {
+				throw new RemotingException(e);
+			}
+		}
+	}
 	
-	public void updateRssFeed(Entry entry);
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
-	public String AuthError(HttpServletRequest request, HttpServletResponse response);
-	public String BinderExistenceError(HttpServletRequest request, HttpServletResponse response);
 }

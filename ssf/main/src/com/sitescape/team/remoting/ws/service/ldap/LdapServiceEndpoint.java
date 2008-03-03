@@ -26,19 +26,30 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.rss;
+package com.sitescape.team.remoting.ws.service.ldap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
+import com.sitescape.team.util.SpringContextUtil;
 
-public interface RssModule {
+public class LdapServiceEndpoint implements ServiceLifecycle, LdapService {
+
+	private LdapService ldapService;
 	
-	public void updateRssFeed(Entry entry);
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
-	public String AuthError(HttpServletRequest request, HttpServletResponse response);
-	public String BinderExistenceError(HttpServletRequest request, HttpServletResponse response);
+	protected LdapService getLdapService() {
+		return ldapService;
+	}
+
+	public void syncUser(String accessToken, Long userId) {
+		getLdapService().syncUser(accessToken, userId);
+	}
+
+	public void init(Object context) throws ServiceException {
+		this.ldapService = (LdapService) SpringContextUtil.getBean("ldapService");
+	}
+	
+	public void destroy() {
+	}
+
 }

@@ -921,7 +921,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
     	child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
 
-    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+    	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(qTree);
     	
     	// create Lucene query    	

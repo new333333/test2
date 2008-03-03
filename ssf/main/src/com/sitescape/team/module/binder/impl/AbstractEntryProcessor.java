@@ -1063,7 +1063,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
        	}       	
     	
        	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+    	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order

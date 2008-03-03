@@ -26,19 +26,39 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.rss;
+package com.sitescape.team.remoting.ws.service.workspace;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
 
-public interface RssModule {
-	
-	public void updateRssFeed(Entry entry);
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
-	public String AuthError(HttpServletRequest request, HttpServletResponse response);
-	public String BinderExistenceError(HttpServletRequest request, HttpServletResponse response);
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.remoting.RemotingException;
+import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.util.DomInputData;
+import com.sitescape.team.util.SimpleProfiler;
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
+
+public class WorkspaceServiceImpl extends BaseService implements WorkspaceService {
+
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML)
+	{
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
+		
+		try {
+			Document doc = getDocument(inputDataAsXML);
+			return getWorkspaceModule().addFolder(new Long(parentId), definitionId, 
+					new DomInputData(doc, getIcalModule()), new HashMap(), null).longValue();
+		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
 }

@@ -26,19 +26,21 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.rss;
+package com.sitescape.team.remoting.ws.service.ldap;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.naming.NamingException;
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
+import com.sitescape.team.remoting.RemotingException;
+import com.sitescape.team.remoting.ws.BaseService;
 
-public interface RssModule {
-	
-	public void updateRssFeed(Entry entry);
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
-	public String AuthError(HttpServletRequest request, HttpServletResponse response);
-	public String BinderExistenceError(HttpServletRequest request, HttpServletResponse response);
+public class LdapServiceImpl extends BaseService implements LdapService {
+
+	public void syncUser(String accessToken, Long userId) {
+		try {
+			getLdapModule().syncUser(userId);
+		} catch (NamingException e) {
+			throw new RemotingException(e);
+		}
+	}
+
 }

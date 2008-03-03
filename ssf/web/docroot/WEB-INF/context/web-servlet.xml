@@ -57,7 +57,6 @@
 			<map>
 				<entry key="/viewFile"><ref local="viewFile"/></entry>
 				<entry key="/viewFile/*"><ref local="viewFile"/></entry>
-				<entry key="/rssFeed"><ref local="rssFeed"/></entry>
 				<entry key="/viewiCal"><ref local="viewiCal"/></entry>				
 				<entry key="/viewCss"><ref local="viewCss"/></entry>				
 				<entry key="/viewDefinitionXml"><ref local="viewDefinitionXml"/></entry>				
@@ -95,9 +94,6 @@
 
 	<bean id="viewFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewFileController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
-	</bean>
-	<bean id="rssFeed" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewRssController">
-		<property name="rssModule"><ref bean="rssModule"/></property>
 	</bean>
 	<bean id="viewiCal" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ViewICalController">
 		<property name="icalModule"><ref bean="icalModule"/></property>

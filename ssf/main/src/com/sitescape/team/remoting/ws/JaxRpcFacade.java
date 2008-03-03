@@ -30,14 +30,14 @@ package com.sitescape.team.remoting.ws;
 
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-import com.sitescape.team.module.binder.remoting.ws.BinderService;
-import com.sitescape.team.module.definition.remoting.ws.DefinitionService;
-import com.sitescape.team.module.folder.remoting.ws.FolderService;
-import com.sitescape.team.module.ical.remoting.ws.IcalService;
-import com.sitescape.team.module.profile.remoting.ws.ProfileService;
-import com.sitescape.team.module.template.remoting.ws.TemplateService;
-import com.sitescape.team.module.zone.remoting.ws.ZoneService;
 import com.sitescape.team.remoting.Facade;
+import com.sitescape.team.remoting.ws.service.binder.BinderService;
+import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
+import com.sitescape.team.remoting.ws.service.folder.FolderService;
+import com.sitescape.team.remoting.ws.service.ical.IcalService;
+import com.sitescape.team.remoting.ws.service.profile.ProfileService;
+import com.sitescape.team.remoting.ws.service.template.TemplateService;
+import com.sitescape.team.remoting.ws.service.zone.ZoneService;
 
 /**
  * JAX-RPC compliant implementation that simply delegates to the Facade 
@@ -71,7 +71,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.definition.remoting.ws#getDefinitionAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.definition#getDefinitionAsXML}.
 	 */
 	public String getDefinitionAsXML(String definitionId) {
 		return this.definitionService.getDefinitionAsXML(null, definitionId);
@@ -79,7 +79,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.definition.remoting.ws#getDefinitionConfigAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.definition#getDefinitionConfigAsXML}.
 	 */
 	public String getDefinitionConfigAsXML() {
 		return this.definitionService.getDefinitionConfigAsXML(null);
@@ -95,7 +95,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.folder.remoting.ws#getFolderEntriesAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#getFolderEntriesAsXML}.
 	 */
 	public String getFolderEntriesAsXML(long binderId) {
 		return this.folderService.getFolderEntriesAsXML(null, binderId);
@@ -103,7 +103,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.folder.remoting.ws#getFolderEntriesAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#getFolderEntriesAsXML}.
 	 */
 	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments) {
 		return this.folderService.getFolderEntryAsXML(null, binderId, entryId, includeAttachments);
@@ -111,7 +111,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.folder.remoting.ws#addFolderEntry}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#addFolderEntry}.
 	 */
 	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		return this.folderService.addFolderEntry(null, binderId, definitionId, inputDataAsXML, attachedFileName);
@@ -119,7 +119,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.folder.remoting.ws#modifyFolderEntry}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#modifyFolderEntry}.
 	 */
 	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
 		this.folderService.modifyFolderEntry(null, binderId, entryId, inputDataAsXML);
@@ -127,7 +127,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.folder.remoting.ws#uploadFolderFile}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#uploadFolderFile}.
 	 */
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
@@ -136,7 +136,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.ical.remoting.ws#uploadCalendarEntries}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.ical#uploadCalendarEntries}.
 	 */
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
 	{
@@ -145,7 +145,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.binder.remoting.ws#search}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#search}.
 	 */
 	public String search(String query, int offset, int maxResults)
 	{
@@ -164,14 +164,14 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.profile.remoting.ws#getAllPrincipalsAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#getAllPrincipalsAsXML}.
 	 */
 	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords) {
 		return this.profileService.getAllPrincipalsAsXML(null, firstRecord, maxRecords);
 	}
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.profile.remoting.ws#getPrincipalAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#getPrincipalAsXML}.
 	 */
 	public String getPrincipalAsXML(long binderId, long principalId) {
 		return this.profileService.getPrincipalAsXML(null, binderId, principalId);
@@ -179,7 +179,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.profile.remoting.ws#addUserToGroup}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#addUserToGroup}.
 	 */
 	public void addUserToGroup(long userId, String username, long groupId) {
 		this.profileService.addUserToGroup(null, userId, username, groupId);
@@ -205,7 +205,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.binder.remoting.ws#getWorkspaceTreeAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#getWorkspaceTreeAsXML}.
 	 */
 	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
 		return this.binderService.getWorkspaceTreeAsXML(null, binderId, levels, page);
@@ -213,7 +213,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.binder.remoting.ws#getTeamMembersAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#getTeamMembersAsXML}.
 	 */
 	public String getTeamMembersAsXML(long binderId) {
 		return this.binderService.getTeamMembersAsXML(null, binderId);
@@ -221,7 +221,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.binder.remoting.ws#getTeamsAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#getTeamsAsXML}.
 	 */
 	public String getTeamsAsXML() {
 		return this.binderService.getTeamsAsXML(null);
@@ -229,7 +229,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.zone.remoting.ws#addZoneUnderPortal}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.zone#addZoneUnderPortal}.
 	 */
 	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
 		this.zoneService.addZoneUnderPortal(null, zoneName, virtualHost, mailDomain);
@@ -237,7 +237,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.zone.remoting.ws#modifyZoneUnderPortal}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.zone#modifyZoneUnderPortal}.
 	 */
 	public void modifyZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
 		this.zoneService.modifyZoneUnderPortal(null, zoneName, virtualHost, mailDomain);
@@ -245,7 +245,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.zone.remoting.ws#deleteZoneUnderPortal}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.zone#deleteZoneUnderPortal}.
 	 */
 	public void deleteZoneUnderPortal(String zoneName) {
 		this.zoneService.deleteZoneUnderPortal(null, zoneName);

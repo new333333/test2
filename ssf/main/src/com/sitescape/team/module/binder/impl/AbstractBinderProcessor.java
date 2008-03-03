@@ -1244,7 +1244,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	}
        	
        	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+    	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(queryTree);
     	
     	//Set the sort order
@@ -1401,7 +1401,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		org.dom4j.Document qTree = buildQueryforUpdate(binder, notBinders);
 		//don't need to add access check to update of acls
 		//access to entries is not required to update the team acl
-		QueryBuilder qb = new QueryBuilder(null);
+		QueryBuilder qb = new QueryBuilder(false);
 		// add this query and list of ids to the lists we'll pass to updateDocs.
    		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
    		try {
@@ -1445,7 +1445,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		org.dom4j.Document qTree = buildQueryforUpdate(binder);
  		//don't need to add access check to update of acls
  		//access to entries is not required to update the team acl
- 		QueryBuilder qb = new QueryBuilder(null);
+ 		QueryBuilder qb = new QueryBuilder(false);
  		// add this query and list of ids to the lists we'll pass to updateDocs.
     		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
     		try {
@@ -1479,7 +1479,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		org.dom4j.Document qTree = buildQueryforUpdate(binders);
  		//don't need to add access check to update of acls
  		//access to entries is not required to update the team acl
- 		QueryBuilder qb = new QueryBuilder(null);
+ 		QueryBuilder qb = new QueryBuilder(false);
  		// add this query and list of ids to the lists we'll pass to updateDocs.
     		LuceneSession luceneSession = getLuceneSessionFactory().openSession();
     		try {
