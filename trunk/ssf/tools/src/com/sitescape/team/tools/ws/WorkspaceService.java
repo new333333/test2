@@ -26,15 +26,20 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.remoting.ws.service.search;
+package com.sitescape.team.tools.ws;
 
-public interface BinderService {
+public class WorkspaceService extends WebServiceClient implements
+		com.sitescape.team.remoting.ws.service.workspace.WorkspaceService {
 
-	public String search(String accessToken, String query, int offset, int maxResults);
-
-	public String getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page);
+	public WorkspaceService()
+	{
+		super("WorkspaceService");
+	}
 	
-	public String getTeamMembersAsXML(String accessToken, long binderId);
-	
-	public String getTeamsAsXML(String accessToken);
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML)
+	{
+		Long folderId = (Long)
+			fetch("addFolder", new Object[] {accessToken, new Long(parentId), definitionId, inputDataAsXML});
+		return folderId.longValue();
+	}
 }

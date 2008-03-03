@@ -47,7 +47,7 @@
 		<parameter name="wsdlTargetNamespace" value="urn:binder.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="BinderService"/>
 		<parameter name="wsdlServicePort" value="BinderPort"/>
-		<parameter name="className" value="com.sitescape.team.remoting.ws.service.binder.BinderServiceEndpoint"/>
+		<parameter name="className" value="com.sitescape.team.remoting.ws.service.search.SearchServiceEndpoint"/>
 		<parameter name="wsdlPortType" value="BinderPortType"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>

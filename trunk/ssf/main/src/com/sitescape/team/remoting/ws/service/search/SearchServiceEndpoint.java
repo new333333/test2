@@ -33,37 +33,41 @@ import javax.xml.rpc.server.ServiceLifecycle;
 
 import com.sitescape.team.util.SpringContextUtil;
 
-public class BinderServiceEndpoint implements ServiceLifecycle, BinderService {
+public class SearchServiceEndpoint implements ServiceLifecycle, SearchService {
 
 	// Implementation note: NEVER extend org.springframework.remoting.jaxrpc.ServletEndpointSupport
 	// to get a handle on the application context from it. Our system design requires it to be
 	// possible to invoke this service endpoint across app boundaries, that is, from different 
 	// servlet context. Therefore we must obtain the application context through our own
 	// SpringContextUtil class. 
-	private BinderService binderService;
+	private SearchService searchService;
 	
-	protected BinderService getBinderService() {
-		return binderService;
+	protected SearchService getSearchService() {
+		return searchService;
 	}
 	
 	public String getTeamMembersAsXML(String accessToken, long binderId) {
-		return getBinderService().getTeamMembersAsXML(accessToken, binderId);
+		return getSearchService().getTeamMembersAsXML(accessToken, binderId);
 	}
 	
 	public String getTeamsAsXML(String accessToken) {
-		return getBinderService().getTeamsAsXML(accessToken);
+		return getSearchService().getTeamsAsXML(accessToken);
 	}
 	
 	public String getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page) {
-		return getBinderService().getWorkspaceTreeAsXML(accessToken, binderId, levels, page);
+		return getSearchService().getWorkspaceTreeAsXML(accessToken, binderId, levels, page);
 	}
 	
 	public String search(String accessToken, String query, int offset, int maxResults) {
-		return getBinderService().search(accessToken, query, offset, maxResults);
+		return getSearchService().search(accessToken, query, offset, maxResults);
 	}
 
+	public String getHotContent(String accessToken) {
+		return getSearchService().getHotContent(accessToken);
+	}
+	
 	public void init(Object context) throws ServiceException {
-		this.binderService = (BinderService) SpringContextUtil.getBean("binderService");
+		this.searchService = (SearchService) SpringContextUtil.getBean("searchService");
 	}
 	
 	public void destroy() {
