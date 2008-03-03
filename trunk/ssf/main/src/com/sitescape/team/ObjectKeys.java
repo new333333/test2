@@ -177,6 +177,9 @@ public interface ObjectKeys {
     
     public static final String FOLDER_ENTRY_TO_BE_SHOWN = "folder_entry_to_be_shown";
     
+    public static final String RELEVANCE_SHARED_BINDERS = "sharedBinders";
+    public static final String RELEVANCE_TRACKED_BINDERS = "trackedBinders";
+    
     public static final String SEARCH_OFFSET = "offset";
     public static final String SEARCH_MAX_HITS = "maxHits";
     public static final String SEARCH_USER_MAX_HITS = "userMaxHits";
@@ -218,6 +221,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_DISPLAY_STYLE = "displayStyle";
     public static final String USER_PROPERTY_DISPLAY_DEFINITION = "displayDefinition";
     public static final String USER_PROPERTY_HELP_CPANEL_SHOW = "help_cpanel_show";
+    public static final String USER_PROPERTY_RELEVANCE_MAP = "relevanceMap";
     public static final String USER_PROPERTY_SEARCH_FILTERS = "searchFilters";
     public static final String USER_PROPERTY_USER_FILTER = "userFilter";
     public static final String USER_PROPERTY_FAVORITES = "userFavorites";

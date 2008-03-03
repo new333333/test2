@@ -157,6 +157,10 @@
 <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
 <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
 </c:if>
+<c:if test="${!empty ssDefinitionEntry.status}">
+<br/>
+<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
+</c:if>
 </div>
 
  <table class="ss_transparent" style="border-spacing: 10px 2px;">
@@ -239,5 +243,9 @@
  <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.title}"/></span> 
  <span class="ss_normalprint ss_light">(<c:out value="${ssDefinitionEntry.name}"/>)</span>
  </c:if>
+<c:if test="${!empty ssDefinitionEntry.status}">
+<br/>
+<span class="ss_normalprint ss_italic">${ssDefinitionEntry.status}</span>
+</c:if>
  </div>
 </div>

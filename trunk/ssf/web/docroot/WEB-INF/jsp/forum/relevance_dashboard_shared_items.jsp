@@ -30,33 +30,37 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<table width="100%">
+<table>
 <tbody>
-<tr>
-<td width="50%" valign="top">
-	<ssf:canvas id="relevanceDocuments" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	</ssf:canvas>
-	<ssf:canvas id="relevanceTasks" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.tasks") %>"/>
-	  Tasks<br/>
-	  Tasks<br/>
-	  Tasks<br/>
-	  Tasks<br/>
-	  Tasks<br/>
-	</ssf:canvas>
-</td>
-<td width="50%" valign="top" style="padding-left:10px;">
-	<ssf:canvas id="relevanceMail" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.email") %>"/>
-		<iframe src="http://sitescape.com" frameborder="0" scrolling="Auto" 
-		width="100%" height="360">mail</iframe>	
-	</ssf:canvas>
-</td>
-</tr>
+<th><ssf:nlt tag="relevance.sharedWorkspaces"/></th>
+<c:forEach var="binder" items="${ss_sharedBinders}">
+  <c:if test="${binder.entityType == 'workspace'}">
+	<tr>
+	  <td>
+	    <a
+	      href="<ssf:url action="view_ws_listing" binderId="${binder.id}"/>"
+	    >${binder.title}</a>
+	  </td>
+	</tr>
+  </c:if>
+</c:forEach>
 </tbody>
 </table>
 
+<br/>
+<table>
+<tbody>
+<th><ssf:nlt tag="relevance.sharedFolders"/></th>
+<c:forEach var="binder" items="${ss_sharedBinders}">
+  <c:if test="${binder.entityType == 'folder'}">
+	<tr>
+	  <td>
+	    <a
+	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
+	    >${binder.title}</a>
+	  </td>
+	</tr>
+  </c:if>
+</c:forEach>
+</tbody>
+</table>

@@ -95,6 +95,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
+import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.OperationAccessControlException;
@@ -136,6 +137,11 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		response.setRenderParameters(request.getParameterMap());
 		if (WebHelper.isUserLoggedIn(request)) {
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+			if (op.equals(WebKeys.OPERATION_TRACK_THIS_BINDER)) {
+				ajaxSaveTrackThisBinder(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SHARE_THIS_BINDER)) {
+				ajaxSaveShareThisBinder(request, response);
+			}
 		}
 	}
 	
@@ -163,30 +169,79 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/fetch_url_return");
 	} 	
 	
+	private void ajaxSaveTrackThisBinder(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long userWorkspaceId = user.getWorkspaceId();
+		if (userWorkspaceId != null) {
+			UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
+			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+			if (relevanceMap == null) relevanceMap = new HashMap();
+			List trackedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
+			if (trackedBinders == null) {
+				trackedBinders = new ArrayList();
+				relevanceMap.put(ObjectKeys.RELEVANCE_TRACKED_BINDERS, trackedBinders);
+			}
+			if (!trackedBinders.contains(binderId)) trackedBinders.add(binderId);
+			
+			//Save the updated list
+			getProfileModule().setUserProperty(user.getId(), userWorkspaceId, 
+					ObjectKeys.USER_PROPERTY_RELEVANCE_MAP, relevanceMap);
+		}
+	}
+	
+	private void ajaxSaveShareThisBinder(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Long userWorkspaceId = user.getWorkspaceId();
+		if (userWorkspaceId != null) {
+			UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
+			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+			if (relevanceMap == null) relevanceMap = new HashMap();
+			List sharedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_SHARED_BINDERS);
+			if (sharedBinders == null) {
+				sharedBinders = new ArrayList();
+				relevanceMap.put(ObjectKeys.RELEVANCE_SHARED_BINDERS, sharedBinders);
+			}
+			if (!sharedBinders.contains(binderId)) sharedBinders.add(binderId);
+			
+			//Save the updated list
+			getProfileModule().setUserProperty(user.getId(), userWorkspaceId, 
+					ObjectKeys.USER_PROPERTY_RELEVANCE_MAP, relevanceMap);
+		}
+	}
+	
 	private ModelAndView ajaxGetRelevanceDashboard(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
 		Map model = new HashMap();
 		model.put(WebKeys.TYPE, type);
-		if (type.equals(WebKeys.RELEVANCE_TYPE_PERSONAL)) {
-			setupPersonalBeans(model);
-		} else if (type.equals(WebKeys.RELEVANCE_TYPE_FRIENDS)) {
-			setupFriendsBeans(model);
+		if (type.equals(WebKeys.RELEVANCE_TYPE_DASHBOARD)) {
+			setupDashboardBeans(model);
+		} else if (type.equals(WebKeys.RELEVANCE_TYPE_SITE_DASHBOARD)) {
+			setupSiteDashboardBeans(model);
 		} else if (type.equals(WebKeys.RELEVANCE_TYPE_VISITORS)) {
-			setupVisitorsBeans(model);
+			setupVisitorsBeans(model, request, response);
+		} else if (type.equals(WebKeys.RELEVANCE_TYPE_TRACKED_ITEMS)) {
+			setupTrackedItemsBeans(model, request, response);
+		} else if (type.equals(WebKeys.RELEVANCE_TYPE_SHARED_ITEMS)) {
+			setupSharedItemsBeans(model, request, response);
 		}
 		return new ModelAndView("forum/relevance_dashboard_ajax", model);
 	}
 	
-	private void setupPersonalBeans(Map model) {
+	private void setupDashboardBeans(Map model) {
 		
 	}
 	
-	private void setupFriendsBeans(Map model) {
+	private void setupSiteDashboardBeans(Map model) {
 		
 	}
 	
-	private void setupVisitorsBeans(Map model) {
+	private void setupVisitorsBeans(Map model, RenderRequest request, 
+			RenderResponse response) {
 		//Who has visited my page?
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long workspaceId = user.getWorkspaceId();
@@ -199,6 +254,50 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			   Collection users = getReportModule().getUsersActivity(binder, AuditType.view, 
 					   start.getTime(), new java.util.Date());
 			   model.put(WebKeys.USERS, users);
+			}
+		}
+	}
+	
+	private void setupTrackedItemsBeans(Map model, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		//What is this user workspace tracking?
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		if (binderId != null && getBinderModule().checkAccess(binderId, user)) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			if (binder != null && binder.getEntityType().equals(EntityType.workspace) && 
+					binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+				UserProperties userForumProperties = getProfileModule().getUserProperties(binder.getOwnerId(), binderId);
+				Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+				if (relevanceMap != null) {
+					List trackedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
+					if (trackedBinders != null) {
+						SortedSet binders = getBinderModule().getBinders(trackedBinders);
+						model.put(WebKeys.RELEVANCE_TRACKED_BINDERS, binders);
+					}
+				}
+			}
+		}
+	}
+	
+	private void setupSharedItemsBeans(Map model, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		//What is this user workspace tracking?
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		if (binderId != null && getBinderModule().checkAccess(binderId, user)) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			if (binder != null && binder.getEntityType().equals(EntityType.workspace) && 
+					binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+				UserProperties userForumProperties = getProfileModule().getUserProperties(binder.getOwnerId(), binderId);
+				Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+				if (relevanceMap != null) {
+					List sharedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_SHARED_BINDERS);
+					if (sharedBinders != null) {
+						SortedSet binders = getBinderModule().getBinders(sharedBinders);
+						model.put(WebKeys.RELEVANCE_SHARED_BINDERS, binders);
+					}
+				}
 			}
 		}
 	}

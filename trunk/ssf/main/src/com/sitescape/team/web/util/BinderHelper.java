@@ -278,6 +278,9 @@ public class BinderHelper {
 	
 	protected static ModelAndView setupRelevanceDashboardPortlet(AllModulesInjected bs, 
 			RenderRequest request, RenderResponse response, PortletPreferences prefs, Map model) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Binder userWorkspace = bs.getBinderModule().getBinder(user.getWorkspaceId());
+		model.put(WebKeys.BINDER, userWorkspace);
 		return new ModelAndView(WebKeys.VIEW_RELEVANCE_DASHBOARD, model); 		
 	}
 

@@ -30,13 +30,15 @@
 %>
 <% //Relevance dashboard %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<ssf:ifLoggedIn>
 <script type="text/javascript">
 var ss_Loading = "<ssf:nlt tag="Loading"/>";
 var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" portletName="ss_forum" 
 		action="__ajax_relevance" actionUrl="false"><ssf:param 
 		name="operation" value="get_relevance_dashboard" /><ssf:param 
-		name="type" value="ss_typePlaceHolder" /></ssf:url>";
-function ss_selectRelevanceTab(obj, type, namespace) {
+		name="type" value="ss_typePlaceHolder" /><ssf:param 
+		name="binderId" value="ss_binderIdPlaceHolder" /></ssf:url>";
+function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 	//Clear "current" tab
 	var currentTab = null;
 	eval("currentTab = ss_relevanceTabCurrent_"+namespace+";");
@@ -52,6 +54,7 @@ function ss_selectRelevanceTab(obj, type, namespace) {
 	var url = "";
 	eval("url = ss_relevanceAjaxUrl"+namespace);
 	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
+	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
 	ss_fetch_url(url, ss_showRelevanceTab, namespace)
 }
 function ss_showRelevanceTab(s, namespace) {
@@ -66,20 +69,20 @@ function ss_showRelevanceTab(s, namespace) {
   <ul>
 	<!-- CSS Tabs -->
 	<li class="ss_profileCurrent"><a id="ss_relevancePersonalTab${renderResponse.namespace}" href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'personal', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.personal"/></span></a></li>
+		onClick="ss_selectRelevanceTab(this, 'dashboard', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.dashboard"/></span></a></li>
 	<li><a href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'friends', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.friends"/></span></a></li>
+		onClick="ss_selectRelevanceTab(this, 'siteDashboard', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.siteDashboard"/></span></a></li>
 	<li><a href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'everyone', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.everyone"/></span></a></li>
-	<li><a href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'visitors', '${renderResponse.namespace}');return false;"
+		onClick="ss_selectRelevanceTab(this, 'visitors', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.visitors"/></span></a></li>
 	<li><a href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'friendList', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.friendList"/></span></a></li>
+		onClick="ss_selectRelevanceTab(this, 'trackedItems', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.trackedItems"/></span></a></li>
+	<li><a href="javascript: ;"
+		onClick="ss_selectRelevanceTab(this, 'sharedItems', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.sharedItems"/></span></a></li>
   </ul>
 </div>
 <div class="ss_clear_float"></div>
@@ -92,3 +95,4 @@ var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElemen
 <div id="relevanceCanvas_${renderResponse.namespace}" style="margin:4px 10px 10px 10px;">
 <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard_my_info.jsp" />
 </div>
+</ssf:ifLoggedIn>

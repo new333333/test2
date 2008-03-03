@@ -343,6 +343,7 @@ public class WebKeys {
 	public static final String OPERATION_SET_DISPLAY_DEFINITION = "set_display_definition";
 	public static final String OPERATION_SET_LAST_VIEWED_BINDER = "set_last_viewed_binder";
 	public static final String OPERATION_SET_WIKI_HOMEPAGE = "set_wiki_homepage";
+	public static final String OPERATION_SHARE_THIS_BINDER = "share_this_binder";
 	public static final String OPERATION_SHOW_BLOG_REPLIES = "show_blog_replies";
 	public static final String OPERATION_SHOW_MY_TEAMS = "show_my_teams";
 	public static final String OPERATION_CALENDAR_GOTO_DATE = "cal_goto_date";
@@ -359,6 +360,7 @@ public class WebKeys {
 	public static final String OPERATION_START_MEETING = "start_meeting";
 	public static final String OPERATION_SCHEDULE_MEETING = "schedule_meeting";
 	public static final String OPERATION_SELECT_FILTER = "select_filter";
+	public static final String OPERATION_TRACK_THIS_BINDER = "track_this_binder";
 	public static final String OPERATION_USER_FILTER = "user_filter";
 	public static final String OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String OPERATION_UPLOAD_IMAGE_FILE = "upload_image_file";
@@ -400,20 +402,14 @@ public class WebKeys {
 	public static final String OPERATION_LIST_SAVED_QUERIES="list_saved_queries";
 	
 	public static final String OPERATION_REMOVE_TEAM_MEMBERS = "remove_team_members";
-	
 	public static final String OPERATION_REMOVE_SEARCH_QUERY = "remove_search_query";
-	
 	public static final String OPERATION_SYNCHRONIZE_MIRRORED_FOLDER = "synchronize_mirrored_folder";
-	
 	public static final String OPERATION_SAVE_SEARCH_QUERY="save_search_query";
-	
 	public static final String OPERATION_VOTE_SURVEY = "vote_survey";
-	
 	public static final String OPERATION_MODIFY_ENTRY="modifyEntry";
-	
 	public static final String OPERATION_GET_MEETING_RECORDS = "get_meeting_records";
-	
 	public static final String OPERATION_ATTACHE_MEETING_RECORDS = "attache_meeting_records";
+	public static final String OPERATION_SAVE_UESR_STATUS = "save_user_status";
 
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";
@@ -713,11 +709,13 @@ public class WebKeys {
     public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String RECORDS_DIV_ID="ss_recordsDivId";
-    public static final String RELEVANCE_TYPE_PERSONAL="personal";
-    public static final String RELEVANCE_TYPE_FRIENDS="friends";
-    public static final String RELEVANCE_TYPE_EVERYONE="everyone";
+    public static final String RELEVANCE_SHARED_BINDERS="ss_sharedBinders";
+    public static final String RELEVANCE_TRACKED_BINDERS="ss_trackedBinders";
+    public static final String RELEVANCE_TYPE_DASHBOARD="dashboard";
+    public static final String RELEVANCE_TYPE_SITE_DASHBOARD="siteDashboard";
     public static final String RELEVANCE_TYPE_VISITORS="visitors";
-    public static final String RELEVANCE_TYPE_FRIEND_LIST="friendList";
+    public static final String RELEVANCE_TYPE_SHARED_ITEMS="sharedItems";
+    public static final String RELEVANCE_TYPE_TRACKED_ITEMS="trackedItems";
     public static final String RELOAD_URL="ss_reloadUrl";
     public static final String RELOAD_URL_FORCED="ssReloadUrl";
     public static final String REPLY_BLOG_URL="replyBlogUrl";
