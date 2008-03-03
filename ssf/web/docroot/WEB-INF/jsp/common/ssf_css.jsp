@@ -4212,14 +4212,26 @@ a.ss_parentPointer:visited, a.ss_parentPointer:hover {
 	margin:12px 12px 12px 12px;	
 }
 
-.ss_searchResult_header {
-	border-bottom: 1px solid #afc8e3;	
+.ss_searchResult li.last {
+	border-bottom: none;
+}
+
+.ss_searchResult_header_top, .ss_searchResult_header_bottom {
 	margin: 0px 0px 24px 0px;
 	padding: 3px 24px 3px 12px;
 <c:if test="<%= isIE %>">	
 	zoom: 1; /* a workaround IE bug - parent border disappears */
 </c:if>
 }
+
+.ss_searchResult_header_top {
+	border-bottom: 1px solid #afc8e3;	
+}
+
+.ss_searchResult_header_bottom {
+	border-top: 1px solid #afc8e3;	
+}
+
 .ss_searchResult_numbers {
 	float:left;
 	padding: 3px 24px 3px 0px;

@@ -61,7 +61,7 @@
 				}
 			%>
 				
-			<li>
+			<li <c:if test="${status.last}">class="last"</c:if>>
 				<c:choose>
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'entry'}">
 							<div class="ss_thumbnail">

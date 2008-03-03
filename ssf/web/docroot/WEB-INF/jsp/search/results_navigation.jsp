@@ -29,7 +29,7 @@
  */
 %>
 
-		<div class="ss_searchResult_header ssPageNavi">
+
 			<div class="ss_searchResult_numbers ssVisibleEntryNumbers">			
 				<c:choose>
 				  <c:when test="${ssTotalRecords == '0'}">
@@ -57,19 +57,41 @@
 				</c:if>
 				
 				<span class="ss_pageNumber">
-				<c:forEach var="page" items="${ssPageNumbers}" varStatus="status">
-				
-				<c:if test="${ss_pageNumber > 1 || ssPageEndIndex < ssTotalRecords}">	
-					<c:if test="${page == ss_pageNumber}">
-						<span class="ssCurrentPage">${page}</span>
+					<c:if test="${ss_pageNumber >= 7}">
+						<a href="javascript: // ;" onclick="ss_goToSearchResultPage(1);return false;" 
+									class="ssPageNumber">1</a>
+						...
 					</c:if>
-					<c:if test="${page != ss_pageNumber}">
-						<a href="javascript: // ;" onclick="ss_goToSearchResultPage(${page});return false;" 
-							class="ssPageNumber">${page}</a>
+									
+					<c:set var="lastPage" value="1" />
+					<c:forEach var="page" items="${ssPageNumbers}" varStatus="status">
+						<c:if test="${ss_pageNumber > 1 || ssPageEndIndex < ssTotalRecords}">	
+							<c:if test="${page == ss_pageNumber}">
+								<span class="ssCurrentPage">${page}</span>
+							</c:if>
+							<c:if test="${page != ss_pageNumber}">
+								<a href="javascript: // ;" onclick="ss_goToSearchResultPage(${page});return false;" 
+									class="ssPageNumber">${page}</a>
+							</c:if>
+							<c:set var="lastPage" value="${page}" />
+						</c:if>
+					</c:forEach>
+					
+					<c:if test="${ssPageCount > lastPage}">
+						<c:choose>
+							<c:when test="${ssPageCount == lastPage + 2}">
+								<a href="javascript: // ;" onclick="ss_goToSearchResultPage(${ssPageCount-1});return false;" 
+									class="ssPageNumber">${ssPageCount-1}</a>
+							</c:when>
+							<c:otherwise>
+								<c:if test="${ssPageCount > lastPage + 2}">
+									...
+								</c:if>
+							</c:otherwise>
+						</c:choose>
+						<a href="javascript: // ;" onclick="ss_goToSearchResultPage(${ssPageCount});return false;" 
+									class="ssPageNumber">${ssPageCount}</a>
 					</c:if>
-				</c:if>
-				
-				</c:forEach>
 				</span>
 				
 				<c:if test="${ssPageEndIndex < ssTotalRecords}">
@@ -85,14 +107,13 @@
 				</c:if>
 				<c:if test="${ss_pageNumber > 0}">
 					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '$renderResponse.namespace}', '${ss_divId}', '${componentId}', 'search');"
-					>&gt;&gt;</a>
+						<ssf:alt tag="general.previousPage"/> >&gt;&gt;</a>
 				</c:if>
 				<span class="ss_pageNumber">${ss_pageNumber+1}</span>
 				<c:if test="${ssPageEndIndex < ssTotalRecords}">
 					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '$renderResponse.namespace}', '${ss_divId}', '${componentId}', 'search');"
-					>&lt;&lt;</a>
+						<ssf:alt tag="general.nextPage"/> >&lt;&lt;</a>
 				</c:if>
 			</c:if>
 			</div>
 			<div class="ss_clear"></div>
-		</div>

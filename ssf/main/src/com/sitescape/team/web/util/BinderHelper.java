@@ -2098,17 +2098,23 @@ public class BinderHelper {
 		model.put(WebKeys.PAGE_NUMBER, currentPageNo);
 		
 		List pageNos = new ArrayList();
-		for (int i = currentPageNo - 2; i <= currentPageNo; i++) {
+		int startFrom = 1;
+		if (currentPageNo >= 7) {
+			startFrom = currentPageNo - 3;
+		}
+		for (int i = startFrom; i <= currentPageNo; i++) {
 			if (i > 0) {
 				pageNos.add(i);
 			}
 		}
 		
-		for (int i = currentPageNo+1; i <= currentPageNo+2; i++) {
+		for (int i = currentPageNo+1; i <= currentPageNo+3; i++) {
 			if (i <= pagesCount) {
 				pageNos.add(i);
 			}
 		}
+		
+		model.put(WebKeys.PAGE_COUNT, pagesCount);
 		model.put(WebKeys.PAGE_NUMBERS, pageNos);
 		model.put(WebKeys.PAGE_TOTAL_RECORDS, totalRecordsFound);
 		model.put(WebKeys.PAGE_START_INDEX, firstOnCurrentPage+1);
