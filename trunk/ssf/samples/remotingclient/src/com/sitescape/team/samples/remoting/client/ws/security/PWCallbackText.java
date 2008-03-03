@@ -57,15 +57,9 @@ public class PWCallbackText implements CallbackHandler {
             if (callbacks[i] instanceof WSPasswordCallback) {
                 WSPasswordCallback pc = (WSPasswordCallback)callbacks[i];
                 String id = pc.getIdentifer();
-                //System.out.println("Identifier [" + id + "]");
-                if ("admin".equals(id)) {
+                	String clearPassword = "test";
                 	//System.out.println("Client: Cleartext password is [" + clearPassword + "]");
-        			pc.setPassword("test");
-                }
-                else {
-                	// Leave the password as blank
-                	//System.out.println("Password is not set");
-                }
+        			pc.setPassword(clearPassword);
             } else {
                 throw new UnsupportedCallbackException(callbacks[i], "Unrecognized Callback");
             }

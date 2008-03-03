@@ -62,17 +62,17 @@ public interface ReportModule {
 	
 	public static class VisitInfo
 	{
-		Entry whoOrWhat;
+		DefinableEntity whoOrWhat;
 		int visitCount;
 		Date lastVisit;
 		
-		public VisitInfo(Entry whoOrWhat, int visitCount, Date lastVisit)
+		public VisitInfo(DefinableEntity whoOrWhat, int visitCount, Date lastVisit)
 		{
 			this.whoOrWhat = whoOrWhat;
 			this.visitCount = visitCount;
 			this.lastVisit = lastVisit;
 		}
-		public Entry getWhoOrWhat() { return whoOrWhat; }
+		public DefinableEntity getWhoOrWhat() { return whoOrWhat; }
 		public int getVisitCount() { return visitCount; }
 		public Date getLastVisit() { return lastVisit; }
 	};

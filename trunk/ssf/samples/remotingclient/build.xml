@@ -229,7 +229,7 @@
 				<include name="axis.jar" />
 				<include name="axis-ant.jar" />
 				<include name="jaxrpc.jar" />
-				<include name="commons-httpclient.jar" />
+				<include name="commons-httpclient-3.1.jar" />
 				<include name="commons-logging.jar" />
 				<include name="commons-discovery.jar" />
 				<include name="saaj.jar" />
@@ -241,6 +241,9 @@
 				<include name="opensaml.jar" />
 				<include name="xalan.jar" />
 				<include name="xmlsec.jar" />
+			</fileset>
+			<fileset dir="${project.dir}/tools">
+				<include name="ssf-tools.jar" />
 			</fileset>
 		</copy>
 		<zip destfile="${project.dir}/samples/${remotingclient.zip.file}"

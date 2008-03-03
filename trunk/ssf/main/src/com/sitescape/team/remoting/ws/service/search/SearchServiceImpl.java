@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.search;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
@@ -44,9 +45,13 @@ import org.dom4j.Element;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.report.ReportModule.VisitInfo;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.search.BasicIndexUtils;
@@ -166,12 +171,31 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 	
 	public String getHotContent(String accessToken)
 	{
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		Document doc = DocumentHelper.createDocument();
 		Element entries = doc.addElement("entries");
-		   GregorianCalendar start = new GregorianCalendar();
-		    //get users over last 2 weeks
-		   start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
-		   Collection results = getReportModule().culaEsCaliente(start.getTime(), new java.util.Date());
-		   return doc.getRootElement().asXML();
+		GregorianCalendar start = new GregorianCalendar();
+		//get users over last 2 weeks
+		start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
+		Collection<VisitInfo> results = getReportModule().culaEsCaliente(start.getTime(), new java.util.Date());
+		for(VisitInfo info : results) {
+			Element resultElem = null;
+			if(info.getWhoOrWhat().getEntityType().equals(EntityType.folderEntry)) {
+				resultElem = entries.addElement("entry");
+				addEntryAttributes(resultElem, (FolderEntry) info.getWhoOrWhat());
+			} else if(info.getWhoOrWhat().getEntityType().equals(EntityType.folder)) {
+				resultElem = entries.addElement("folder");
+				resultElem.addAttribute("id", info.getWhoOrWhat().getId().toString());
+				resultElem.addAttribute("title", info.getWhoOrWhat().getTitle());
+			} else if(info.getWhoOrWhat().getEntityType().equals(EntityType.workspace)) {
+				resultElem = entries.addElement("workspace");
+				resultElem.addAttribute("id", info.getWhoOrWhat().getId().toString());
+				resultElem.addAttribute("title", info.getWhoOrWhat().getTitle());
+			}
+			resultElem.addAttribute("visits", "" + info.getVisitCount());
+			resultElem.addAttribute("lastVisit", sdf.format(info.getLastVisit()));
+		}
+
+		return doc.getRootElement().asXML();
 	}
 }

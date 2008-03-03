@@ -67,6 +67,7 @@ import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowStateHistory;
 import com.sitescape.team.domain.AuditTrail.AuditType;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule;
@@ -211,12 +212,17 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					.setProjection(Projections.projectionList() 
 												.add(Projections.groupProperty("owningBinderId"))
 												.add(Projections.groupProperty("entityId"))
-												.add(Projections.rowCount())
+												.add(Projections.groupProperty("entityType"))
+												.add(Projections.alias(Projections.rowCount(), "visits"))
 												.add(Projections.max("startDate")))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				    .add(Restrictions.eq("transactionType", AuditType.view))
+				    .add(Restrictions.eq("transactionType", AuditType.view.name()))
 				    .add(Restrictions.ge("startDate", startDate))
-				    .add(Restrictions.lt("startDate", endDate));
+				    .add(Restrictions.lt("startDate", endDate))
+				    .add(Restrictions.in("entityType", new Object[] {EntityType.folder.name(), EntityType.workspace.name(),
+				    												 EntityType.folderEntry.name()}))
+				    .addOrder(Order.desc("visits"));
+;
 				return crit.list();
 				
 			}});
@@ -224,7 +230,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		List<VisitInfo> list = new LinkedList<VisitInfo>();
 		for(Object o : data) {
 			Object[] col = (Object []) o;
-			list.add(new VisitInfo(getFolderModule().getEntry((Long) col[0], (Long) col[1]), (Integer) col[2], (Date) col[3]));
+			String entityType = (String) col[2];
+			DefinableEntity entity = null;
+			if(entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name())) {
+				entity = getBinderModule().getBinder((Long) col[1]);
+			} else {
+				entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
+			}
+			list.add(new VisitInfo(entity, (Integer) col[3], (Date) col[4]));
 		}
 		return list;
 	}

@@ -55,7 +55,7 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.admin.module.team.sitescape.com"/>
+		<parameter name="wsdlTargetNamespace" value="urn:template.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="TemplateSoapService"/>
 		<parameter name="wsdlServicePort" value="TemplateService"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.template.TemplateServiceEndpoint"/>
@@ -63,7 +63,7 @@
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
 	</service>
-	<service name="BinderService" provider="java:RPC" style="rpc" use="encoded">
+	<service name="SearchService" provider="java:RPC" style="rpc" use="encoded">
 	 	<requestFlow>
    			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
     			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
@@ -71,11 +71,11 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.binder.module.team.sitescape.com"/>
-		<parameter name="wsdlServiceElement" value="BinderService"/>
-		<parameter name="wsdlServicePort" value="BinderPort"/>
+		<parameter name="wsdlTargetNamespace" value="urn:search.service.ws.remoting.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="SearchService"/>
+		<parameter name="wsdlServicePort" value="SearchPort"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.search.SearchServiceEndpoint"/>
-		<parameter name="wsdlPortType" value="BinderPortType"/>
+		<parameter name="wsdlPortType" value="SearchPortType"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
 	</service>
@@ -87,7 +87,7 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.definition.module.team.sitescape.com"/>
+		<parameter name="wsdlTargetNamespace" value="urn:definition.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="DefinitionService"/>
 		<parameter name="wsdlServicePort" value="DefinitionPort"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.definition.DefinitionServiceEndpoint"/>
@@ -103,7 +103,7 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.folder.module.team.sitescape.com"/>
+		<parameter name="wsdlTargetNamespace" value="urn:folder.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="FolderService"/>
 		<parameter name="wsdlServicePort" value="FolderPort"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.folder.FolderServiceEndpoint"/>
@@ -119,7 +119,7 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.folder.module.team.sitescape.com"/>
+		<parameter name="wsdlTargetNamespace" value="urn:folder.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="MigrationSoapService"/>
 		<parameter name="wsdlServicePort" value="MigrationService"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.folder.MigrationServiceEndpoint"/>
@@ -135,7 +135,7 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.workspace.module.team.sitescape.com"/>
+		<parameter name="wsdlTargetNamespace" value="urn:workspace.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="WorkspaceSoapService"/>
 		<parameter name="wsdlServicePort" value="WorkspaceService"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.workspace.WorkspaceServiceEndpoint"/>
@@ -151,7 +151,7 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.ical.module.team.sitescape.com"/>
+		<parameter name="wsdlTargetNamespace" value="urn:ical.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="IcalService"/>
 		<parameter name="wsdlServicePort" value="IcalPort"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.ical.IcalServiceEndpoint"/>
@@ -167,7 +167,7 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.ldap.module.team.sitescape.com"/>
+		<parameter name="wsdlTargetNamespace" value="urn:ldap.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="LdapService"/>
 		<parameter name="wsdlServicePort" value="LdapPort"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.ldap.LdapServiceEndpoint"/>
@@ -183,7 +183,7 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.license.module.team.sitescape.com"/>
+		<parameter name="wsdlTargetNamespace" value="urn:license.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="LicenseService"/>
 		<parameter name="wsdlServicePort" value="LicensePort"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.license.LicenseServiceEndpoint"/>
@@ -199,7 +199,7 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.profile.module.team.sitescape.com"/>
+		<parameter name="wsdlTargetNamespace" value="urn:profile.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="ProfileService"/>
 		<parameter name="wsdlServicePort" value="ProfilePort"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.profile.ProfileServiceEndpoint"/>
@@ -215,7 +215,7 @@
    			</handler>
   		</requestFlow>
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:ws.remoting.zone.module.team.sitescape.com"/>
+		<parameter name="wsdlTargetNamespace" value="urn:zone.service.ws.remoting.team.sitescape.com"/>
 		<parameter name="wsdlServiceElement" value="ZoneService"/>
 		<parameter name="wsdlServicePort" value="ZonePort"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.zone.ZoneServiceEndpoint"/>
