@@ -628,7 +628,7 @@
 				<property name="accessControlManager"><ref local="accessControlManager"/></property>
 				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 				<property name="binderModule"><ref bean="binderModule"/></property>
-				<property name="foldderModule"><ref bean="folderModule"/></property>
+				<property name="folderModule"><ref bean="folderModule"/></property>
 			</bean>
 		</property>
 	</bean>			
@@ -844,111 +844,111 @@ text/calendar											  ics
 	
 	<bean id="templateService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.template.remoting.ws.TemplateServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.template.TemplateServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.template.remoting.ws.TemplateService</value>
+			<value>com.sitescape.team.remoting.ws.service.template.TemplateService</value>
 		</property>
 	</bean>
 	
-	<bean id="binderService" parent="wsProxyTemplate">
+	<bean id="searchService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.binder.remoting.ws.BinderServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.search.SearchServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.binder.remoting.ws.BinderService</value>
+			<value>com.sitescape.team.remoting.ws.service.search.SearchService</value>
 		</property>
 	</bean>
 	
 	<bean id="definitionService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.definition.remoting.ws.DefinitionServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.definition.DefinitionServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.definition.remoting.ws.DefinitionService</value>
+			<value>com.sitescape.team.remoting.ws.service.definition.DefinitionService</value>
 		</property>
 	</bean>
 	
 	<bean id="folderService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.folder.remoting.ws.attachments.FolderServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.folder.attachments.FolderServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.folder.remoting.ws.FolderService</value>
+			<value>com.sitescape.team.remoting.ws.service.folder.FolderService</value>
 		</property>
 	</bean>
 	
 	<bean id="migrationService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.folder.remoting.ws.attachments.MigrationServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.folder.attachments.MigrationServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.folder.remoting.ws.MigrationService</value>
+			<value>com.sitescape.team.remoting.ws.service.folder.MigrationService</value>
 		</property>
 	</bean>
 	
 	<bean id="workspaceService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.workspace.remoting.ws.WorkspaceServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.workspace.WorkspaceServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.workspace.remoting.ws.WorkspaceService</value>
+			<value>com.sitescape.team.remoting.ws.service.workspace.WorkspaceService</value>
 		</property>
 	</bean>
 	
 	<bean id="icalService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.ical.remoting.ws.attachments.IcalServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.ical.attachments.IcalServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.ical.remoting.ws.IcalService</value>
+			<value>com.sitescape.team.remoting.ws.service.ical.IcalService</value>
 		</property>
 	</bean>
 	
 	<bean id="ldapService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.ldap.remoting.ws.LdapServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.ldap.LdapServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.ldap.remoting.ws.LdapService</value>
+			<value>com.sitescape.team.remoting.ws.service.ldap.LdapService</value>
 		</property>
 	</bean>
 	
 	<bean id="licenseService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.license.remoting.ws.LicenseServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.license.LicenseServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.license.remoting.ws.LicenseService</value>
+			<value>com.sitescape.team.remoting.ws.service.license.LicenseService</value>
 		</property>
 	</bean>
 	
 	<bean id="profileService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.profile.remoting.ws.ProfileServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.profile.ProfileServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.profile.remoting.ws.ProfileService</value>
+			<value>com.sitescape.team.remoting.ws.service.profile.ProfileService</value>
 		</property>
 	</bean>
 	
 	<bean id="zoneService" parent="wsProxyTemplate">
 		<property name="target">
-			<bean class="com.sitescape.team.module.zone.remoting.ws.ZoneServiceImpl" parent="dependOnAllModulesTemplate">
+			<bean class="com.sitescape.team.remoting.ws.service.zone.ZoneServiceImpl" parent="dependOnAllModulesTemplate">
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.module.zone.remoting.ws.ZoneService</value>
+			<value>com.sitescape.team.remoting.ws.service.zone.ZoneService</value>
 		</property>
 	</bean>
 	

@@ -31,11 +31,11 @@ package com.sitescape.team.remoting.ws;
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
 import com.sitescape.team.remoting.Facade;
-import com.sitescape.team.remoting.ws.service.binder.BinderService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
 import com.sitescape.team.remoting.ws.service.ical.IcalService;
 import com.sitescape.team.remoting.ws.service.profile.ProfileService;
+import com.sitescape.team.remoting.ws.service.search.SearchService;
 import com.sitescape.team.remoting.ws.service.template.TemplateService;
 import com.sitescape.team.remoting.ws.service.zone.ZoneService;
 
@@ -54,7 +54,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	private TemplateService templateService;
 	private DefinitionService definitionService;
 	private FolderService folderService;
-	private BinderService binderService;
+	private SearchService searchService;
 	private IcalService icalService;
 	private ProfileService profileService;
 	private ZoneService zoneService;
@@ -63,7 +63,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.templateService = (TemplateService) getWebApplicationContext().getBean("templateService");
 		this.definitionService = (DefinitionService) getWebApplicationContext().getBean("definitionService");
 		this.folderService = (FolderService) getWebApplicationContext().getBean("folderService");
-		this.binderService = (BinderService) getWebApplicationContext().getBean("binderService");
+		this.searchService = (SearchService) getWebApplicationContext().getBean("searchService");
 		this.icalService = (IcalService) getWebApplicationContext().getBean("icalService");
 		this.profileService = (ProfileService) getWebApplicationContext().getBean("profileService");
 		this.zoneService = (ZoneService) getWebApplicationContext().getBean("zoneService");
@@ -145,11 +145,11 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#search}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.search#search}.
 	 */
 	public String search(String query, int offset, int maxResults)
 	{
-		return this.binderService.search(null, query, offset, maxResults);
+		return this.searchService.search(null, query, offset, maxResults);
 	}
 
 	/*
@@ -205,26 +205,26 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#getWorkspaceTreeAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.search#getWorkspaceTreeAsXML}.
 	 */
 	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
-		return this.binderService.getWorkspaceTreeAsXML(null, binderId, levels, page);
+		return this.searchService.getWorkspaceTreeAsXML(null, binderId, levels, page);
 	}
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#getTeamMembersAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.search#getTeamMembersAsXML}.
 	 */
 	public String getTeamMembersAsXML(long binderId) {
-		return this.binderService.getTeamMembersAsXML(null, binderId);
+		return this.searchService.getTeamMembersAsXML(null, binderId);
 	}
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#getTeamsAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.search#getTeamsAsXML}.
 	 */
 	public String getTeamsAsXML() {
-		return this.binderService.getTeamsAsXML(null);
+		return this.searchService.getTeamsAsXML(null);
 	}
 	
 	/**

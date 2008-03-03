@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.remoting.ws.service.search;
 
+import java.util.Collection;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +54,7 @@ import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.tree.WebSvcTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 
-public class BinderServiceImpl extends BaseService implements BinderService {
+public class SearchServiceImpl extends BaseService implements SearchService {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
@@ -162,4 +164,14 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		return doc.getRootElement().asXML();
 	}
 	
+	public String getHotContent(String accessToken)
+	{
+		Document doc = DocumentHelper.createDocument();
+		Element entries = doc.addElement("entries");
+		   GregorianCalendar start = new GregorianCalendar();
+		    //get users over last 2 weeks
+		   start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
+		   Collection results = getReportModule().culaEsCaliente(start.getTime(), new java.util.Date());
+		   return doc.getRootElement().asXML();
+	}
 }
