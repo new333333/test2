@@ -603,7 +603,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 
      	
     	//Create the Lucene query
-    	QueryBuilder qb = new QueryBuilder(getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser()));
+    	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(qTree);
     	
     	if(logger.isDebugEnabled())

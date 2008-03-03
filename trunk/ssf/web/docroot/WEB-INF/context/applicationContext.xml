@@ -628,6 +628,7 @@
 				<property name="accessControlManager"><ref local="accessControlManager"/></property>
 				<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 				<property name="binderModule"><ref bean="binderModule"/></property>
+				<property name="foldderModule"><ref bean="folderModule"/></property>
 			</bean>
 		</property>
 	</bean>			

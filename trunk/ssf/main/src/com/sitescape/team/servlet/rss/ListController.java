@@ -53,7 +53,6 @@ public class ListController extends SAbstractController {
 		// Get the list of RSS items and write it to servlet response as XML.
 		Long binderId = new Long(RequestUtils.getRequiredStringParameter(request, "bi"));
 		Binder binder = null;
-		User user = null;
 		authErr = false;
 		binderExists = true;
 		
@@ -67,7 +66,6 @@ public class ListController extends SAbstractController {
 			} catch (NoBinderByTheIdException nbe) {
 				binderExists = false;
 			}
-			user = RequestContextHolder.getRequestContext().getUser();
 		} else {
 			// the authentication key is incorrect, make them wait
 			// a bit (to stop immediate retries from hackers), and 
@@ -87,7 +85,7 @@ public class ListController extends SAbstractController {
 		} else if (!binderExists) {
 			response.getWriter().write(getRssModule().BinderExistenceError(request, response));
 		} else {
-			response.getWriter().write(getRssModule().filterRss(request, response, binder,user)); 
+			response.getWriter().write(getRssModule().filterRss(request, response, binder)); 
 		}
 		response.flushBuffer();
 		return null;

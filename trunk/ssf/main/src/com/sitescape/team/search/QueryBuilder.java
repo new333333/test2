@@ -41,9 +41,12 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SpringContextUtil;
 
 public class QueryBuilder {
 
@@ -103,13 +106,29 @@ public class QueryBuilder {
 	private static final String ENTRY_ALL=ENTRY_PREFIX+BasicIndexUtils.READ_ACL_ALL;
 	private static final String BINDER_OWNER_PREFIX=BasicIndexUtils.BINDER_OWNER_ACL_FIELD + ":";
 
-	private Set principalIds;
+	private Set userPrincipals;
+	private Set applicationPrincipals;
 
 	private QueryBuilder() {
 	}
 
-	public QueryBuilder(Set principalIds) {
-		this.principalIds = principalIds;
+	public QueryBuilder(boolean useAcls) {
+		if(useAcls) {
+			this.userPrincipals = getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser());
+			Application app = RequestContextHolder.getRequestContext().getApplication();
+			if(app != null) {
+				this.applicationPrincipals = getProfileDao().getPrincipalIds(app);
+			} else {
+				this.applicationPrincipals = null;
+			}
+		} else {
+			this.userPrincipals = null;
+			this.applicationPrincipals = null;
+		}
+	}
+
+	protected ProfileDao getProfileDao() {
+		return (ProfileDao)SpringContextUtil.getBean("profileDao");
 	}
 
 	public SearchObject buildQuery(Document domQuery) {
@@ -349,14 +368,25 @@ public class QueryBuilder {
 		return termText;
 	}
 
-
-	private String getAclClause() {
-		//KEEP IN SYNC WITH ACCESSUTILS.CHECKACCESS 
+	private String getAclClause()
+	{
+		//KEEP THIS AND getAclClauseForIds IN SYNC WITH ACCESSUTILS.CHECKACCESS 
 		
-		//if this is the super user, then don't add any acl controls.
+		//if this is the super user, but not a remote application, then don't add any acl controls.
+		
 		User user = RequestContextHolder.getRequestContext().getUser();
-		
-		if (user.isSuper()) return "";
+		if (user.isSuper() && applicationPrincipals == null) return "";
+
+		String clause = getAclClauseForIds(userPrincipals, user.getId());
+		if(applicationPrincipals != null) {
+			String otherClause = getAclClauseForIds(applicationPrincipals, null);
+			clause = clause + " AND " + otherClause;
+		}
+		return clause;
+	}
+
+	private String getAclClauseForIds(Set principalIds, Long userId)
+	{
 		StringBuffer qString = new StringBuffer();
 		
 		/*
@@ -379,10 +409,12 @@ public class QueryBuilder {
 			qString.append("(" + idField(principalIds, FOLDER_PREFIX)+ "))"); //(folderAcl:1 OR folderAcl:2))
 			qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:team AND (teamAcl:1 OR teamAcl:2))
 								FOLDER_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " +
-								"(" + idField(principalIds, TEAM_PREFIX) + "))");								
-			qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:own AND bOwnerAcl:<user>)
-					FOLDER_PREFIX + BasicIndexUtils.READ_ACL_BINDER_OWNER + " AND " +
-					BINDER_OWNER_PREFIX + user.getId().toString() + ")");								
+								"(" + idField(principalIds, TEAM_PREFIX) + "))");
+			if(userId != null) {
+				qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:own AND bOwnerAcl:<user>)
+						FOLDER_PREFIX + BasicIndexUtils.READ_ACL_BINDER_OWNER + " AND " +
+						BINDER_OWNER_PREFIX + userId.toString() + ")");
+			}
 			qString.append(" OR (" + idField(principalIds, ENTRY_PREFIX) + ")"); //OR (entryAcl:1 OR entryAcl:2)
 			qString.append(" OR (" + ENTRY_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
 								"(" + idField(principalIds, TEAM_PREFIX) + "))");
@@ -393,8 +425,10 @@ public class QueryBuilder {
 			qString.append(" OR ");
 			qString.append("(" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (folderAcl:team AND (teamAcl:1 OR teamAcl:2))
 					"(" + idField(principalIds, TEAM_PREFIX) + "))");
-			qString.append(" OR (" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
-					BINDER_OWNER_PREFIX + user.getId().toString() + ")");
+			if(userId != null) {
+				qString.append(" OR (" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
+						BINDER_OWNER_PREFIX + userId.toString() + ")");
+			}
 			qString.append(") AND (");												//) AND (
 			qString.append("(" + ENTRY_ALL + " OR " +						//(entryAcl:all OR entryAcl:1 OR entryAcl:2)
 						idField(principalIds, ENTRY_PREFIX) + ")");

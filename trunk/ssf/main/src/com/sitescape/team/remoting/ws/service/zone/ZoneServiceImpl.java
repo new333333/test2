@@ -26,19 +26,21 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.rss;
+package com.sitescape.team.remoting.ws.service.zone;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import com.sitescape.team.remoting.ws.BaseService;
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
+public class ZoneServiceImpl extends BaseService implements ZoneService {
 
-public interface RssModule {
-	
-	public void updateRssFeed(Entry entry);
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
-	public String AuthError(HttpServletRequest request, HttpServletResponse response);
-	public String BinderExistenceError(HttpServletRequest request, HttpServletResponse response);
+	public void addZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		getZoneModule().addZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	}
+
+	public void modifyZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		getZoneModule().modifyZoneUnderPortal(zoneName, virtualHost, mailDomain);
+	}
+
+	public void deleteZoneUnderPortal(String accessToken, String zoneName) {
+		getZoneModule().deleteZoneUnderPortal(zoneName);
+	}
 }

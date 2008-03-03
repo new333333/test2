@@ -182,7 +182,12 @@ public class LocalLuceneSession implements LuceneSession {
 								"Document must contain a UID with field name "
 										+ BasicIndexUtils.UID_FIELD);
 					String tastingText = getTastingText(doc);
-					indexWriter.addDocument(doc, getAnalyzer(tastingText));
+					try {
+						SimpleProfiler.startProfiler("LocalLuceneSession.single_document");
+						indexWriter.addDocument(doc, getAnalyzer(tastingText));
+					} finally {
+						SimpleProfiler.stopProfiler("LocalLuceneSession.single_document");
+					}
 				}
 			} catch (IOException e) {
 				throw new LuceneException(
@@ -612,6 +617,7 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	private void updateDocs(Query q, String fieldname, String fieldvalue) {
+		SimpleProfiler.startProfiler("localLucene_updateDocs");
 		long start = 0L;
 		// block every read/write while updateDocs is in progress
 		synchronized (getRWLockObject()) {
@@ -629,7 +635,7 @@ public class LocalLuceneSession implements LuceneSession {
 				throw new LuceneException("Could not open writer on the index [" + this.indexPath
 								+ "]", e);
 			}
-
+			
 			try {
 				// open a searcher for use by other threads while we're updating
 				// the index.
@@ -655,6 +661,8 @@ public class LocalLuceneSession implements LuceneSession {
 						"Could not update fields on the index ["
 								+ this.indexPath + " ], query is: "
 								+ q.toString() + " field: " + fieldname);
+			} finally {
+				SimpleProfiler.stopProfiler("localLucene_updateDocs");
 			}
 
 		}

@@ -26,19 +26,15 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.module.rss;
+package com.sitescape.team.remoting.ws.service.binder;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+public interface BinderService {
 
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
-import com.sitescape.team.domain.User;
+	public String search(String accessToken, String query, int offset, int maxResults);
 
-public interface RssModule {
+	public String getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page);
 	
-	public void updateRssFeed(Entry entry);
-	public String filterRss(HttpServletRequest request, HttpServletResponse response, Binder binder);
-	public String AuthError(HttpServletRequest request, HttpServletResponse response);
-	public String BinderExistenceError(HttpServletRequest request, HttpServletResponse response);
+	public String getTeamMembersAsXML(String accessToken, long binderId);
+	
+	public String getTeamsAsXML(String accessToken);
 }
