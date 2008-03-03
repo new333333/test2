@@ -51,11 +51,14 @@ import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.handler.WSHandlerConstants;
 import org.apache.ws.security.message.token.UsernameToken;
 
+import com.sitescape.team.tools.ws.SearchService;
 import com.sitescape.team.samples.remoting.client.util.FacadeClientHelper;
 import com.sitescape.util.PasswordEncryptor;
 
 public class WSClient
 {
+	static SearchService searchService = new SearchService();
+	
 	public static void main(String[] args) {
 		if(args.length == 0) {
 			printUsage();
@@ -125,6 +128,8 @@ public class WSClient
 				justDoIt("modifyZoneUnderPortal", new Object[] {args[1], args[2], mailDomain});
 			} else if(args[0].equals("deleteZoneUnderPortal")) {
 				justDoIt("deleteZoneUnderPortal", new Object[] {args[1]});
+			} else if(args[0].equals("getHotContent")) {
+				FacadeClientHelper.printXML(searchService.getHotContent(null));
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -142,7 +147,7 @@ public class WSClient
 	
 	static Object fetch(String operation, Object[] args, String filename) throws Exception {
 		// Replace the hostname in the endpoint appropriately.
-		String endpoint = "http://localhost:8080/ssf/ws/Facade";
+		String endpoint = "http://localhost.sitescape.com/ssf/ws/Facade";
 
 		// Make sure that the client_deploy.wsdd file is accessible to the program.
 		EngineConfiguration config = new FileProvider("client_deploy.wsdd");

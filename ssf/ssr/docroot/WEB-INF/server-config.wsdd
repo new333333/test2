@@ -42,13 +42,13 @@
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
 	</service>
-	<service name="BinderService" provider="java:RPC" style="rpc" use="encoded">
+	<service name="SearchService" provider="java:RPC" style="rpc" use="encoded">
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:binder.service.ws.remoting.team.sitescape.com"/>
-		<parameter name="wsdlServiceElement" value="BinderService"/>
-		<parameter name="wsdlServicePort" value="BinderPort"/>
+		<parameter name="wsdlTargetNamespace" value="urn:search.service.ws.remoting.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="SearchService"/>
+		<parameter name="wsdlServicePort" value="SearchPort"/>
 		<parameter name="className" value="com.sitescape.team.remoting.ws.service.search.SearchServiceEndpoint"/>
-		<parameter name="wsdlPortType" value="BinderPortType"/>
+		<parameter name="wsdlPortType" value="SearchPortType"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
 	</service>
