@@ -657,6 +657,10 @@ public class WebKeys {
     public static final String MARKUP_VIEW="view"; 
     public static final String MOBILE_BINDER_LIST="ss_mobileBinderList"; 
     public static final String MOBILE_PAGE_SIZE="15"; 
+	public static final String MY_CALENDAR_ENTRIES = "ss_myCalendarEntries";
+	public static final String MY_DOCUMENTS = "ss_myDocs";
+	public static final String MY_ENTRIES = "ss_myEntries";
+	public static final String MY_TASKS = "ss_myTasks";
     public static final String MY_TEAMS="ss_myTeams"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
@@ -711,6 +715,7 @@ public class WebKeys {
     public static final String RECORDS_DIV_ID="ss_recordsDivId";
     public static final String RELEVANCE_SHARED_BINDERS="ss_sharedBinders";
     public static final String RELEVANCE_TRACKED_BINDERS="ss_trackedBinders";
+    public static final String RELEVANCE_TRACKED_PEOPLE="ss_trackedPeople";
     public static final String RELEVANCE_TYPE_DASHBOARD="dashboard";
     public static final String RELEVANCE_TYPE_SITE_DASHBOARD="siteDashboard";
     public static final String RELEVANCE_TYPE_VISITORS="visitors";

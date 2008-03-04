@@ -33,6 +33,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -140,6 +141,11 @@ public class EntityIndexUtils {
     public static final String RATING_FIELD="_rating";
     public static final String DEFINITION_TYPE_FIELD="_definitionType"; 
     public static final String FAMILY_FIELD="_family"; 
+    public static final String FAMILY_FIELD_TASK="task"; 
+    public static final String FAMILY_FIELD_CALENDAR="calendar"; 
+    public static final String FAMILY_FIELD_FILE="file"; 
+    public static final String FAMILY_FIELD_MILESTONE="milestone"; 
+    public static final String FAMILY_FIELD_PHOTO="photo"; 
     public static final String TEAM_MEMBERS_FIELD="_teamMembers";
  //   public static final String GROUP_SEE_COMMUNITY="groupCommunity";
  //   public static final String GROUP_SEE_ANY="groupAny";
@@ -355,7 +361,7 @@ public class EntityIndexUtils {
 		Map customAttrs = entry.getCustomAttributes();
 		Set keyset = customAttrs.keySet();
 		Iterator attIt = keyset.iterator();
-		// look through the custom attrs of this entry for any of type EVENT
+		// look through the custom attrs of this entry for any of type EVENT, DATE, or DATE_TIME
 
 		Set entryEventsDates = new HashSet();
 
@@ -375,6 +381,10 @@ public class EntityIndexUtils {
 					count++;
 				}
 				doc.add(getRecurrenceDatesField(event, recurencesDates));
+			} else if (att.getValueType() == CustomAttribute.DATE) {
+				Calendar dateAttr = new GregorianCalendar();
+				dateAttr.setTime((Date)att.getValue());
+				entryEventsDates.add(dateAttr);
 			}
 		}
 		

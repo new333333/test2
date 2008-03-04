@@ -87,18 +87,23 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
+import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.search.filter.SearchFilter;
+import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
@@ -254,7 +259,14 @@ public class BinderHelper {
 			model.put(WebKeys.WORKSPACE_DOM_TREE_BINDER_ID, binder.getId().toString());
  			return new ModelAndView(WebKeys.VIEW_TOOLBAR, model);		
 		} else if (RELEVANCE_DASHBOARD_PORTLET.equals(displayType)) {
-			return setupRelevanceDashboardPortlet(bs, request, response, prefs, model);		
+			model.put(WebKeys.NAMESPACE, response.getNamespace());
+	        if (PortletAdapterUtil.isRunByAdapter(request)) {
+	        	String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+	    		model.put(WebKeys.NAMESPACE, namespace);
+	        }
+	        Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+	        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, binderId, ObjectKeys.RELEVANCE_DASHBOARD_DASHBOARD, model);
+	    	return new ModelAndView(WebKeys.VIEW_RELEVANCE_DASHBOARD, model); 		
 		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_BLOG_SUMMARY);		
 		} else if (WIKI_PORTLET.equals(displayType)) {
@@ -276,14 +288,6 @@ public class BinderHelper {
 		return null;
 	}
 	
-	protected static ModelAndView setupRelevanceDashboardPortlet(AllModulesInjected bs, 
-			RenderRequest request, RenderResponse response, PortletPreferences prefs, Map model) {
-        User user = RequestContextHolder.getRequestContext().getUser();
-		Binder userWorkspace = bs.getBinderModule().getBinder(user.getWorkspaceId());
-		model.put(WebKeys.BINDER, userWorkspace);
-		return new ModelAndView(WebKeys.VIEW_RELEVANCE_DASHBOARD, model); 		
-	}
-
 	protected static ModelAndView setupSummaryPortlets(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
 		String gId = null;
 		if (prefs != null) gId = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);

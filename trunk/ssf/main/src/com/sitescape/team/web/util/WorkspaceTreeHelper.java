@@ -251,6 +251,9 @@ public class WorkspaceTreeHelper {
 			return new ModelAndView("binder/deleted_binder", model);
 		}
 		
+		//Set up the relevance dashboard beans
+		RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, binderId, ObjectKeys.RELEVANCE_DASHBOARD_DASHBOARD, model);
+		
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
 			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);

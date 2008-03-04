@@ -5111,5 +5111,359 @@ div.ss_canvas {
 	}
 
 
+#ss_wrap
+{
+	border: 1px #333333 solid;
+	margin: auto;
+	background-color: #FFF;
+	min-height:100%;
+	position:relative;		/* This fixes the IE7 overflow hidden bug */
+	clear:both;
+	float:left;
+    width:100%;			/* width of whole page */
+	overflow:hidden;	/* This chops off any overhanging divs */
+	text-align:left;
+	color:#666666;
+}	
+
+/* Box styles */	
+    }
+
+
+#ss_Box
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+}
+#ss_Box_1
+{
+	padding: 0;
+	margin: 2% 0 2% 0;
+	color:#333333;
+
+}
+#ss_Box_2
+{
+	padding: 0;
+	margin: 2% 0 2% 0;
+	color:#333333;
+
+}
+#ss_Box_3
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#444444;
+
+}
+#ss_Box_4
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#444444;
+
+}
+#ss_Box_5
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#444444;
+
+}
+#ss_Box_6
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#444444;
+
+}
+#ss_Box_7
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#444444;
+
+}
+#ss_Box_8
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#444444;
+
+}
+#ss_Box_9
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#444444;
+
+}
+#ss_Box_10
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#444444;
+
+}
+#ss_Box_11
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#444444;
+
+}
+#ss_Box_12
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#444444;
+
+}
+
+#ss_title
+{
+	padding: 0;
+	margin: 0 0 1% 0;
+	font-size: 16px;
+	font-weight: 400;
+	color: #333;
+}
+#ss_subtitle
+{
+	margin:0;
+	padding: 0.5% 0 1% 6px;
+	font-size:14px;
+	color:#555555;
+
+}
+#ss_para 
+{
+	margin: 0px 0 1% 0px;
+	padding: 0.5% 0 1% 5px;
+	border: 1px dotted #cccccc;
+	color: #666666;
+	line-height: 2em;
+}
+/* time block styles */	
+#ss_today 
+{
+	margin: 0px 0 0 10px;
+}
+
+#ss_yesterday
+{
+	margin: 0px 0 0 10px;
+}
+
+#ss_lastweek
+{
+	margin: 0px 0 0 10px;
+}
+ .ss_closed				/*use when a box is compressed*/	
+{
+	height:20px;
+}
+	
+/* Link styles */	
+
+#ss_para a		 		/* Link style active for links */	
+	{
+	text-decoration:underline;
+	}
+#ss_para a:hover 		 		/* Link style hover for links */	
+	{
+	text-decoration:underline;
+	color:#E67814;
+	background-color:#FFFFFF;
+	}		
+	
+.ss_link_1 						/* link_1 Link style for links */ 
+	{ 
+	color: #00AEEF; 
+	}
+
+	
+.ss_link_2		 		/* link_2 Link style for links */	
+	{
+	color:#7ac142;
+	}
+		
+/* Header styles */
+  	#ss_topper {
+		height:150px;
+		width:100%;
+		}
+	#ss_BC_nav {
+	
+		background-color:#FFF;
+		text-align:left;
+		padding:3px 0px 3px 20px;
+		width:100%;
+		position:relative;
+		float:left;
+		
+	
+	}
+	
+	#ss_BC_nav li
+	{
+		text-decoration: none;
+		display: inline;
+	
+	}	
+	#ss_toolbar_basic
+	{
+		position: relative;
+		float: right;		
+		text-align: right;
+		background-color: #cccccc;
+		padding: 7px 20px 3px 0px;
+		width: 100%;
+		height:18px;
+		vertical-align: middle;
+		color:#FFFFFF;
+	}
+
+/*- Menu Tabs C--------------------------- */
+
+    #ss_tabsC {
+      float:left;
+      width:100%;
+      background:#EDF7E7;
+      font-size:93%;
+      line-height:normal;
+      }
+    #ss_tabsC ul {
+        margin:0;
+        padding:10px 10px 0 20px;
+        list-style:none;
+      }
+    #ss_tabsC li {
+      display:inline;
+      margin:0;
+      padding:0;
+      }
+    #ss_tabsC a {
+      float:left;
+      background:url("<html:rootPath/>images/pics/tableftC.gif") no-repeat left top;
+      margin:0;
+      padding:0 0 0 4px;
+      text-decoration:none;
+      }
+    #ss_tabsC a span {
+      float:left;
+      display:block;
+      background:url("<html:rootPath/>images/pics/tabrightC.gif") no-repeat right top;
+      padding:5px 15px 4px 6px;
+      color:#464E42;
+      }
+    /* Commented Backslash Hack hides rule from IE5-Mac \*/
+    #ss_tabsC a span {float:none;}
+    /* End IE5-Mac hack */
+    #ss_tabsC a:hover span {
+      color:#FFF;
+      }
+    #ss_tabsC a:hover {
+      background-position:0% -42px;
+      }
+    #ss_tabsC a:hover span {
+      background-position:100% -42px;
+      }
+
+    #ss_tabsC #current a {
+                background-position:0% -42px;
+        }
+    #ss_tabsC #current a span {
+                background-position:100% -42px;
+        }
+		
+
+	
+	/* column container */
+#ss_dashboard_content {
+	    position:relative;		/* This fixes the IE7 overflow hidden bug */
+	    clear:both;
+	    float:left;
+        width:100%;				/* width of whole page */
+		overflow:hidden;		/* This chops off any overhanging divs */
+	}
+	/* common column settings */
+	.ss_colright,
+	.ss_colmid,
+	.ss_colleft {
+		float:left;
+		width:100%;				/* width of page */
+		position:relative;
+	}
+	.ss_col1,
+	.ss_col2,
+	.ss_col3 {
+		float:left;
+		position:relative;
+		padding:1em 0 1em 0;		/* no left and right padding on columns, we just make them narrower instead 
+								only padding top and bottom is included here, make it whatever value you need */
+		overflow:hidden;
+	}
+	/* 3 Column blog style settings */
+	.ss_blogstyle
+	{
+		/* right column background colour */
+		background-color: #CF9;
+	}
+	.ss_blogstyle .ss_colmid {
+		right:25%;				/* width of the right column */
+		background:#f4f4f4;		/* center column background colour */
+	}
+	.ss_blogstyle .ss_colleft {
+		right:25%;				/* width of the middle column */
+		background:#fff;		/* left column background colour */
+	}
+	.ss_blogstyle .ss_col1 {
+		width:46%;				/* width of center column content (column width minus padding on either side) */
+		left:52%;				/* 100% plus left padding of center column */
+	}
+	.ss_blogstyle .ss_col2 {
+		width:21%;				/* Width of left column content (column width minus padding on either side) */
+		left:56%;				/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
+	}
+	.ss_blogstyle .ss_col3 {
+		width:21%;				/* Width of right column content (column width minus padding on either side) */
+		left:60%;				/* Please make note of the brackets here:
+								(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
+	}
+	/* Footer styles */
+
+	#ss_footer
+	{
+		float:left;
+		overflow:hidden;
+		background: #fff;
+		position: relative;
+		padding-bottom: 5px;
+		width: 100%;
+		margin: 10px auto auto auto;
+		height: 60px;
+		/* Height of the footer */
+	}
+	#ss_footer li
+	{
+		text-decoration: none;
+		display: inline;
+	
+	}
+	#ss_footer a 
+	{ 
+	color: #C00;
+	text-decoration:none;
+	}
+	
+	#ss_footer a:hover {
+		color:#444444;
+		text-decoration:none;
+		background-color:#fff;
+	}	
+
+
+
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>
