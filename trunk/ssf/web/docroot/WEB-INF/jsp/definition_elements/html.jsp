@@ -30,8 +30,20 @@
 %>
 <% // html %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${empty ss_html_element}">
+  <c:set var="ss_html_element" value="0" scope="request"/>
+  <c:set var="ss_html_element_map" value="<%= new java.util.HashMap() %>" scope="request"/>
+</c:if>
+<c:set var="ss_html_element" value="${ss_html_element + 1}" scope="request"/>
+<jsp:useBean id="ss_html_element" type="java.lang.Long" scope="request" />
+<jsp:useBean id="property_htmlBottom" type="String" scope="request" />
+<jsp:useBean id="ss_html_element_map" type="java.util.HashMap" scope="request" />
+<%
+ss_html_element_map.put(ss_html_element.toString(), property_htmlBottom);
+%>
 <c:out value="${property_htmlTop}" escapeXml="false"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" />
-<c:out value="${property_htmlBottom}" escapeXml="false"/>
+<c:out value="<%= ss_html_element_map.get(ss_html_element.toString()) %>" escapeXml="false"/>
+<c:set var="ss_html_element" value="${ss_html_element - 1}" scope="request"/>
