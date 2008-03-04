@@ -78,14 +78,10 @@ public abstract class SSStatefulJob implements StatefulJob {
 	public static String USERID="userId";
 		
 	public static String trimJobName(String jobName) {
-		if (jobName.length() > JOBNAME_MAX)
-			return jobName.substring(0, Math.max(jobName.length(), JOBNAME_MAX));
-		return jobName;
+		return jobName.substring(0, Math.min(jobName.length(), JOBNAME_MAX));
 	}
 	public static String trimDescription(String description) {
-		if (description.length() > DESCRIPTION_MAX)
-			return description.substring(0, Math.max(description.length(), DESCRIPTION_MAX));
-		return description;
+		return description.substring(0, Math.min(description.length(), DESCRIPTION_MAX));
 	}
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
 		setupSession();

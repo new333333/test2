@@ -56,8 +56,8 @@ public class SearchService extends WebServiceClient implements
 		return (String) fetch("getTeamsAsXML", new Object[] {accessToken});
 	}
 	
-	public String getHotContent(String accessToken)
+	public String getHotContent(String accessToken, String howHot)
 	{
-		return (String) fetch("getHotContent", new Object[] {accessToken});
+		return (String) fetch("getHotContent", new Object[] {accessToken, howHot});
 	}
 }

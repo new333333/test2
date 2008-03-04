@@ -44,6 +44,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowStateHistory;
+import com.sitescape.team.domain.AuditTrail.AuditType;
 public interface ReportModule {
 
 	public static final String BINDER_ID = "binder_id";
@@ -60,21 +61,21 @@ public interface ReportModule {
 	public static final String COUNT = "count";
 	public static final String SIZE = "size";
 	
-	public static class VisitInfo
+	public static class ActivityInfo
 	{
 		DefinableEntity whoOrWhat;
-		int visitCount;
-		Date lastVisit;
+		int count;
+		Date last;
 		
-		public VisitInfo(DefinableEntity whoOrWhat, int visitCount, Date lastVisit)
+		public ActivityInfo(DefinableEntity whoOrWhat, int count, Date last)
 		{
 			this.whoOrWhat = whoOrWhat;
-			this.visitCount = visitCount;
-			this.lastVisit = lastVisit;
+			this.count = count;
+			this.last = last;
 		}
 		public DefinableEntity getWhoOrWhat() { return whoOrWhat; }
-		public int getVisitCount() { return visitCount; }
-		public Date getLastVisit() { return lastVisit; }
+		public int getCount() { return count; }
+		public Date getLast() { return last; }
 	};
 	
 	public enum QuotaOption { UsersOnly, WorkspacesOnly, UsersAndWorkspaces };
@@ -99,6 +100,6 @@ public interface ReportModule {
 
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 	public Collection<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
-	public Collection<VisitInfo> culaEsCaliente(Date startDate, Date endDate);
+	public Collection<ActivityInfo> culaEsCaliente(AuditType type, Date startDate, Date endDate);
 
 }
