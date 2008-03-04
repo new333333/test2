@@ -129,7 +129,11 @@ public class WSClient
 			} else if(args[0].equals("deleteZoneUnderPortal")) {
 				justDoIt("deleteZoneUnderPortal", new Object[] {args[1]});
 			} else if(args[0].equals("getHotContent")) {
-				FacadeClientHelper.printXML(searchService.getHotContent(null));
+				String howHot = "view";
+				if(args.length > 1) {
+					howHot = args[1];
+				}
+				FacadeClientHelper.printXML(searchService.getHotContent(null, howHot));
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();

@@ -74,7 +74,7 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.report.ReportModule;
-import com.sitescape.team.module.report.ReportModule.VisitInfo;
+import com.sitescape.team.module.report.ReportModule.ActivityInfo;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -204,7 +204,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return getProfileDao().loadUsers(ids, entity.getZoneId());
 	}
 	
-	public Collection<VisitInfo> culaEsCaliente(final Date startDate, final Date endDate)
+	public Collection<ActivityInfo> culaEsCaliente(final AuditType type, final Date startDate, final Date endDate)
 	{
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
@@ -213,21 +213,21 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 												.add(Projections.groupProperty("owningBinderId"))
 												.add(Projections.groupProperty("entityId"))
 												.add(Projections.groupProperty("entityType"))
-												.add(Projections.alias(Projections.rowCount(), "visits"))
+												.add(Projections.alias(Projections.rowCount(), "hits"))
 												.add(Projections.max("startDate")))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				    .add(Restrictions.eq("transactionType", AuditType.view.name()))
+				    .add(Restrictions.eq("transactionType", type.name()))
 				    .add(Restrictions.ge("startDate", startDate))
 				    .add(Restrictions.lt("startDate", endDate))
 				    .add(Restrictions.in("entityType", new Object[] {EntityType.folder.name(), EntityType.workspace.name(),
 				    												 EntityType.folderEntry.name()}))
-				    .addOrder(Order.desc("visits"));
-;
+				    .addOrder(Order.desc("hits"));
+
 				return crit.list();
 				
 			}});
 		
-		List<VisitInfo> list = new LinkedList<VisitInfo>();
+		List<ActivityInfo> list = new LinkedList<ActivityInfo>();
 		for(Object o : data) {
 			Object[] col = (Object []) o;
 			String entityType = (String) col[2];
@@ -237,7 +237,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			} else {
 				entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
 			}
-			list.add(new VisitInfo(entity, (Integer) col[3], (Date) col[4]));
+			list.add(new ActivityInfo(entity, (Integer) col[3], (Date) col[4]));
 		}
 		return list;
 	}

@@ -38,5 +38,8 @@ public interface SearchService {
 	
 	public String getTeamsAsXML(String accessToken);
 	
-	public String getHotContent(String accessToken);
+	/*
+	 * howTo can be one of "view", "modify", or "download"
+	 */
+	public String getHotContent(String accessToken, String howHot);
 }

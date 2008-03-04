@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws;
 
+import java.text.SimpleDateFormat;
 import java.util.Map;
 
 import org.dom4j.Branch;
@@ -76,7 +77,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	
 	protected void addEntryAttributes(Element entryElem, FolderEntry entry)
 	{
-		entryElem.addAttribute("id", entry.getId().toString());
+        entryElem.addAttribute("id", entry.getId().toString());
 		entryElem.addAttribute("binderId", entry.getParentBinder().getId().toString());
 		if(entry.getEntryDef() != null) {
 			entryElem.addAttribute("definitionId", entry.getEntryDef().getId());
