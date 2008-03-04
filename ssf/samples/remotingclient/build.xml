@@ -11,6 +11,7 @@
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
 		<pathelement path="${classes.dir};${project.dir}/util/classes" />
+		<pathelement location="${project.dir}/main/ssf-main.jar" />
 		<pathelement location="${project.dir}/tools/ssf-tools.jar" />
 		<pathelement location="${project.dir}/lib/activation.jar" />
 		<pathelement location="${project.dir}/lib/mail.jar" />
@@ -244,6 +245,9 @@
 			</fileset>
 			<fileset dir="${project.dir}/tools">
 				<include name="ssf-tools.jar" />
+			</fileset>
+			<fileset dir="${project.dir}/main">
+				<include name="ssf-main.jar" />
 			</fileset>
 		</copy>
 		<zip destfile="${project.dir}/samples/${remotingclient.zip.file}"
