@@ -121,6 +121,7 @@ public class EntityIndexUtils {
     public static final String EVENT_DATES_FIELD = "_eventDates";
     public static final String EVENT_RECURRENCE_DATES_FIELD = "RecurrenceDates";
     public static final String EVENT_ID = "ID";
+    public static final String EVENT_DATES= "EventDates";
     public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
     public static final String WORKFLOW_STATE_FIELD = "_workflowState";
     public static final String WORKFLOW_STATE_CAPTION_FIELD = "_workflowStateCaption";
@@ -370,13 +371,14 @@ public class EntityIndexUtils {
 				if (att.getValue() != null) {
 					doc.add(new Field(EVENT_FIELD + count, att.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED));
 					doc.add(new Field(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_ID, event.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+					doc.add(getEntryEventDaysField(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_DATES, new HashSet(allEventDays)));
 					count++;
 				}
 				doc.add(getRecurrenceDatesField(event, recurencesDates));
 			}
 		}
 		
-		doc.add(getEntryEventDaysField(entryEventsDates));
+		doc.add(getEntryEventDaysField(EVENT_DATES_FIELD, entryEventsDates));
 		
 		// Add event count field
     	Field eventCountField = new Field(EVENT_COUNT_FIELD, Integer.toString(count), Field.Store.YES, Field.Index.UN_TOKENIZED);
@@ -384,7 +386,7 @@ public class EntityIndexUtils {
     }
     
     
-	private static Field getEntryEventDaysField(Set dates) {
+	private static Field getEntryEventDaysField(String fieldName, Set dates) {
 		StringBuilder sb = new StringBuilder();
 		Iterator datesIt = dates.iterator();
 		while (datesIt.hasNext()) {
@@ -398,7 +400,7 @@ public class EntityIndexUtils {
 		if (sb.length() > 0)
 			sb.deleteCharAt(sb.length() - 1);
 		
-		return new Field(EVENT_DATES_FIELD, sb.toString(), Field.Store.YES, Field.Index.TOKENIZED);
+		return new Field(fieldName, sb.toString(), Field.Store.YES, Field.Index.TOKENIZED);
 	}
 	
 	private static Field getRecurrenceDatesField(Event event, List recurencesDates) {
