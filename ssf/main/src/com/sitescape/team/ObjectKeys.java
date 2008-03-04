@@ -177,8 +177,13 @@ public interface ObjectKeys {
     
     public static final String FOLDER_ENTRY_TO_BE_SHOWN = "folder_entry_to_be_shown";
     
+    public static final String RELEVANCE_DASHBOARD_DASHBOARD = "dashboard";
+    public static final String RELEVANCE_DASHBOARD_SITE_DASHBOARD = "siteDashboard";
+    public static final String RELEVANCE_DASHBOARD_VISITORS = "visitors";
+    public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
     public static final String RELEVANCE_SHARED_BINDERS = "sharedBinders";
     public static final String RELEVANCE_TRACKED_BINDERS = "trackedBinders";
+    public static final String RELEVANCE_TRACKED_PEOPLE = "trackedPeople";
     
     public static final String SEARCH_OFFSET = "offset";
     public static final String SEARCH_MAX_HITS = "maxHits";

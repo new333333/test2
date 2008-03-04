@@ -41,7 +41,8 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_isIE = ((navigator.userAgent.indexOf("IE ") > -1));
 	
 	//Random number seed (for building urls that are unique)
-	var ss_random = Math.round(Math.random()*999999);
+	var ss_now = new Date();
+	var ss_random = Math.round(Math.random()*ss_now.getTime());
 	
 	//Files that don't pop-up in a new window when viewing them (space separated)
 	var ss_files_that_do_not_pop_up = "doc xls";

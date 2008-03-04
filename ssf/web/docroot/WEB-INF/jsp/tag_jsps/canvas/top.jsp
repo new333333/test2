@@ -40,8 +40,7 @@ String divClass = ParamUtil.get(request, "divClass", "");
 
 %>
 
-<div class="ss_canvas">
-<div class="ss_base_title_bar">
-   <span><%= title %></span>
-</div>
+<div id="ss_Box_1">
+  <div id="ss_title"><%= title %></div>
+        
 <div id="${renderResponse.namespace}_${id}" >

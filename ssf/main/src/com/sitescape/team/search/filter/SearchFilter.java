@@ -279,6 +279,10 @@ public class SearchFilter {
 		addFieldFilter(ProfileIndexUtils.LOGINNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
+	public void addFamilyFilter(String searchTerm) {
+		addFieldFilter(EntityIndexUtils.FAMILY_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+	}
+	
 	public void addTagsFilter(String tagsType, String searchTerm) {
 		if (tagsType != null && tagsType == SearchFilterKeys.FilterTypeCommunityTagSearch) { 
 			addTermInCurrentFilter(tagsType, searchTerm);

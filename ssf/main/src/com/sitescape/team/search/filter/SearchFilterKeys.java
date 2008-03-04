@@ -94,6 +94,7 @@ public class SearchFilterKeys {
    	public final static String FilterTypePersonalTagSearch = "personalTag";
    	public final static String FilterTypeEntryDefinition = "entry";
    	public final static String FilterTypeEntryId = "entryId";
+   	public final static String FilterTypeTaskEntry = "task";
    	public final static String FilterTypeTopEntry = "topEntry";
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";

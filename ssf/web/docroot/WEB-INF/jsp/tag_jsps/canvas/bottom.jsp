@@ -30,3 +30,4 @@
 %>
  </div>
 </div>
+<div class="ss_clear_float"></div>

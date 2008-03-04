@@ -37,7 +37,9 @@ var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" po
 		action="__ajax_relevance" actionUrl="false"><ssf:param 
 		name="operation" value="get_relevance_dashboard" /><ssf:param 
 		name="type" value="ss_typePlaceHolder" /><ssf:param 
-		name="binderId" value="ss_binderIdPlaceHolder" /></ssf:url>";
+		name="binderId" value="ss_binderIdPlaceHolder" /><ssf:param 
+		name="namespace" value="${renderResponse.namespace}" /><ssf:param 
+		name="rn" value="ss_rnPlaceHolder" /></ssf:url>";
 function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 	//Clear "current" tab
 	var currentTab = null;
@@ -55,6 +57,7 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 	eval("url = ss_relevanceAjaxUrl"+namespace);
 	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
 	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
 	ss_fetch_url(url, ss_showRelevanceTab, namespace)
 }
 function ss_showRelevanceTab(s, namespace) {
@@ -65,7 +68,7 @@ function ss_showRelevanceTab(s, namespace) {
 
 <% //Tabs %>
 
-<div id="ss_profileTab" sytle="margin-top:10px;">
+<div id="ss_tabsC" sytle="margin-top:10px;">
   <ul>
 	<!-- CSS Tabs -->
 	<li class="ss_profileCurrent"><a id="ss_relevancePersonalTab${renderResponse.namespace}" href="javascript: ;"
@@ -93,6 +96,6 @@ var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElemen
 <% //Changeable tab canvas; this gets replaced when a tab is clicked %>
 
 <div id="relevanceCanvas_${renderResponse.namespace}" style="margin:4px 10px 10px 10px;">
-<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard_my_info.jsp" />
+<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_info.jsp" />
 </div>
 </ssf:ifLoggedIn>
