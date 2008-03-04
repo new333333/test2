@@ -1798,10 +1798,10 @@ public class BinderHelper {
 		}
 		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
 		
+		
+		// it should be always 0, this method is(should be) used to only on first result page
 		Integer searchUserOffset = PortletRequestUtils.getIntParameter(request, ObjectKeys.SEARCH_USER_OFFSET, 0);
 			
-		// TODO - implement it better(?) this stuff is to get from lucene proper entries,  
-		// to get the ~ proper rankings we get from lucene MoreEntriesCounter more hits as max on page
 		Integer searchLuceneOffset = 0;
 		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
@@ -1812,8 +1812,8 @@ public class BinderHelper {
 		Integer summaryWords = PortletRequestUtils.getIntParameter(request, WebKeys.SEARCH_FORM_SUMMARY_WORDS, new Integer(20));
 		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWords);
 		
-		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits + 200;
-		if (searchUserOffset > 200) {
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits + ObjectKeys.SEARCH_RESULTS_TO_CREATE_STATISTICS;
+		if (searchUserOffset > ObjectKeys.SEARCH_RESULTS_TO_CREATE_STATISTICS) {
 			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
 		}
 		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
@@ -1852,8 +1852,15 @@ public class BinderHelper {
 		if (summaryWords.length > 0) {summaryWordsCount = summaryWords[0];}
 		
 		Integer searchLuceneOffset = 0;
+		int maxPageToSee = (ObjectKeys.SEARCH_RESULTS_TO_CREATE_STATISTICS + maxOnPage) / maxOnPage; 
+		if (pageNo > maxPageToSee) { // pageNo <= 21
+			searchLuceneOffset += (pageNo - maxPageToSee) * maxOnPage;
+			userOffset = ObjectKeys.SEARCH_RESULTS_TO_CREATE_STATISTICS;
+		}
 		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
 		options.put(ObjectKeys.SEARCH_USER_OFFSET, userOffset);
+		
+		
 		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxOnPage);
 		options.put(WebKeys.URL_PAGE_NUMBER, pageNo);
 		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWordsCount);
@@ -2074,10 +2081,29 @@ public class BinderHelper {
 		
 		int pagesCount = (int)Math.ceil((double)totalRecordsFound / pageInterval);
 		
-		int firstOnCurrentPage = 0;
+		
+		List allResultsList = (List) results.get(ObjectKeys.SEARCH_ENTRIES);  
+		
+		int userOffsetStart = 0;
 		if (options != null && options.containsKey(ObjectKeys.SEARCH_USER_OFFSET)) {
-			firstOnCurrentPage = (Integer) options.get(ObjectKeys.SEARCH_USER_OFFSET);
+			userOffsetStart = (Integer) options.get(ObjectKeys.SEARCH_USER_OFFSET);
 		}
+		if (userOffsetStart > allResultsList.size() || userOffsetStart < 0) {
+			userOffsetStart = 0;
+		}
+		int userOffsetEnd = userOffsetStart + pageInterval;
+		if ((allResultsList.size() - userOffsetStart) < pageInterval) {
+			userOffsetEnd = userOffsetStart + (allResultsList.size() - userOffsetStart);
+		}		
+		
+		List shownOnPage = allResultsList.subList(userOffsetStart, userOffsetEnd);
+		checkFileIds(shownOnPage);
+		
+		int pageNo = 1;
+		if (options != null && options.get(WebKeys.URL_PAGE_NUMBER) != null) {
+			pageNo = (Integer) options.get(WebKeys.URL_PAGE_NUMBER);
+		}
+		int firstOnCurrentPage = (pageNo - 1) * pageInterval;;
 		
 		if (firstOnCurrentPage > totalRecordsFound || firstOnCurrentPage < 0) {
 			firstOnCurrentPage = 0;
@@ -2085,15 +2111,11 @@ public class BinderHelper {
 
 		int currentPageNo = firstOnCurrentPage / pageInterval + 1;
 		int lastOnCurrentPage = firstOnCurrentPage + pageInterval;
-		if ((countReturned - firstOnCurrentPage)<pageInterval) {
-			//If asking for more than search results returned, don't go beyond the ammount returned
-			//TODO Make the search request ask for the proper results (i.e., set the "starting count" properly on the search)
-			lastOnCurrentPage = firstOnCurrentPage + (countReturned-firstOnCurrentPage);
+		if ((totalRecordsFound - firstOnCurrentPage) < pageInterval) {
+			lastOnCurrentPage = firstOnCurrentPage + (totalRecordsFound - firstOnCurrentPage);
 			if (firstOnCurrentPage < 0) firstOnCurrentPage = 0;
 		}
 		
-		List shownOnPage = ((List) results.get(ObjectKeys.SEARCH_ENTRIES)).subList(firstOnCurrentPage, lastOnCurrentPage);
-		checkFileIds(shownOnPage);
 		model.put(WebKeys.FOLDER_ENTRIES, shownOnPage);
 		model.put(WebKeys.PAGE_NUMBER, currentPageNo);
 		

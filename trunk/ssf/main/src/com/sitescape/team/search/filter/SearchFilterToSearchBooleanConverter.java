@@ -199,14 +199,28 @@ public class SearchFilterToSearchBooleanConverter {
 
 	private static void addEventField(Element block, Element filterTerm) {
 		Element andField = block;
-		Element orField2 = andField.addElement(QueryBuilder.OR_ELEMENT);
+		Element orField2 = andField.addElement(QueryBuilder.AND_ELEMENT);
+		String attributeName = filterTerm.attributeValue(SearchFilterKeys.FilterElementName, "");
+		String defId = filterTerm.attributeValue(SearchFilterKeys.FilterEntryDefId, "");
 		Iterator itEventDate = filterTerm.selectNodes(SearchFilterKeys.FilterEventDate).iterator();
 		while (itEventDate.hasNext()) {
 			String eventDate = ((Element) itEventDate.next()).getText();
 			if (!eventDate.equals("")) {
 				Element range = orField2.addElement(QueryBuilder.RANGE_ELEMENT);
-				range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
+				if (attributeName != null && !"".equals(attributeName)) { 
+					range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, attributeName + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_DATES);
+				} else {
+					// only for compatibility with old saved searches
+					range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
+				}
 				range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
+				if (defId != null && !defId.equals("")) {
+					Element andField2 = orField2.addElement(QueryBuilder.AND_ELEMENT);
+					Element field = andField2.addElement(QueryBuilder.FIELD_ELEMENT);
+					field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+					Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			    	child.setText(defId);
+				}				
 				Element start = range.addElement(QueryBuilder.RANGE_START);
 				start.addText(formatStartDate(eventDate, DateTools.Resolution.MINUTE));
 				Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
