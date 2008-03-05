@@ -89,11 +89,12 @@ public class RelevanceDashboardHelper {
 		setupInitialSearchOptions(options);
 		
 		//Set up the task search filter
-		SearchFilter searchFilter = new SearchFilter();
+		SearchFilter searchFilter = new SearchFilter(true);
 		searchFilter.addFamilyFilter(EntityIndexUtils.FAMILY_FIELD_TASK);	
 		searchFilter.addDocumentType(BasicIndexUtils.DOC_TYPE_ENTRY);
+		searchFilter.addAssignmentFilter(binder.getOwnerId().toString());
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter.getFilter());
-		//searchTermFilter.getFilter().asXML();		
+		//searchFilter.getFilter().asXML();		
 		Map results =  bs.getBinderModule().executeSearchQuery(searchFilter.getFilter(), options);
 		model.put(WebKeys.MY_TASKS, results.get(ObjectKeys.SEARCH_ENTRIES));
 
