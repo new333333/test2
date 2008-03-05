@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-
+<div class="ss_style ss_portal">
 <h2><ssf:nlt tag="relevance.shareThisWithWhom"/></h2
 
 <form class="ss_style ss_form" 
@@ -73,3 +73,4 @@
 <input type="button" value="<ssf:nlt tag="button.cancel"/>" onClick="self.window.close();return false;"/>
 
 </form>
+</div>
