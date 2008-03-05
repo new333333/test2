@@ -100,6 +100,6 @@ public interface ReportModule {
 
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 	public Collection<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
-	public Collection<ActivityInfo> culaEsCaliente(AuditType type, Date startDate, Date endDate);
+	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate);
 
 }

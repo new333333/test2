@@ -62,8 +62,8 @@ public class SearchServiceEndpoint implements ServiceLifecycle, SearchService {
 		return getSearchService().search(accessToken, query, offset, maxResults);
 	}
 
-	public String getHotContent(String accessToken, String howHot) {
-		return getSearchService().getHotContent(accessToken, howHot);
+	public String getHotContent(String accessToken, String limitType) {
+		return getSearchService().getHotContent(accessToken, limitType);
 	}
 	
 	public void init(Object context) throws ServiceException {

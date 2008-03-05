@@ -170,14 +170,20 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 		return doc.getRootElement().asXML();
 	}
 	
-	public String getHotContent(String accessToken, String howHot)
+	public String getHotContent(String accessToken, String limitType)
 	{
 		Document doc = DocumentHelper.createDocument();
 		Element entries = doc.addElement("entries");
 
-		AuditType type = AuditType.valueOf(howHot);
-		if(!(type.equals(AuditType.view) || type.equals(AuditType.modify) || type.equals(AuditType.download))) {
-			return doc.getRootElement().asXML();
+		AuditType type = null;
+		if(limitType != null && !limitType.equals("activity")) {
+			type = AuditType.valueOf(limitType);
+			if(!(type.equals(AuditType.view) || type.equals(AuditType.modify) || type.equals(AuditType.download))) {
+				type = null;
+			}
+		}
+		if(type == null) {
+			limitType = "activity";
 		}
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		GregorianCalendar start = new GregorianCalendar();
@@ -205,8 +211,8 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 				resultElem.addAttribute("id", info.getWhoOrWhat().getId().toString());
 				resultElem.addAttribute("title", info.getWhoOrWhat().getTitle());
 			}
-			resultElem.addAttribute(howHot + "Count", "" + info.getCount());
-			resultElem.addAttribute("last" + howHot.substring(0, 1).toUpperCase() + howHot.substring(1), sdf.format(info.getLast()));
+			resultElem.addAttribute(limitType + "Count", "" + info.getCount());
+			resultElem.addAttribute("last" + limitType.substring(0, 1).toUpperCase() + limitType.substring(1), sdf.format(info.getLast()));
 		}
 
 		return doc.getRootElement().asXML();
