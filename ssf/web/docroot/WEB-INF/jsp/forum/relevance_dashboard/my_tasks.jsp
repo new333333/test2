@@ -30,6 +30,10 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${empty ss_myTasks}">
+<span><ssf:nlt tag="relevance.tasks.none"/></span>
+</c:if>
+<c:if test="${!empty ss_myTasks}">
 <table class="ss_tasks_list" >
 <tbody>
 	<tr>
@@ -37,7 +41,6 @@
 		<th><ssf:nlt tag="task.priority"/></th>
 		<th><ssf:nlt tag="task.dueDate"/></th>
 		<th><ssf:nlt tag="task.status"/></th>
-		<th><ssf:nlt tag="task.assigned"/></th>
 		<th><ssf:nlt tag="task.done"/></th>		
 		<th><ssf:nlt tag="task.location"/></th>
 	</tr>
@@ -81,8 +84,8 @@
 						<c:when test="${!empty entry['start_end#TimeZoneID']}">
 							<fmt:formatDate 
 									timeZone="${ssUser.timeZone.ID}"
-									value="${entry['start_end#EndDate']}" type="both" 
-									dateStyle="short" timeStyle="short" />						
+									value="${entry['start_end#EndDate']}" type="date" 
+									dateStyle="short" />						
 						</c:when>	
 						<c:otherwise>
 							<fmt:formatDate 
@@ -113,21 +116,6 @@
 		  </c:if>
 		</td>
 		<td>
-			<c:set var="assignment" value="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>" />
-			<c:choose>
-				<c:when test="${!empty assignment}">
-					<ul>
-						<c:forEach var="assigned" items="${assignment}">
-							<li><ssf:showUser user="${assigned}"/></li>
-						</c:forEach>
-					</ul>
-				</c:when>
-				<c:otherwise>
-				&nbsp;
-				</c:otherwise>
-			</c:choose>			
-		</td>
-		<td>
 			<c:if test="${! empty entry.completed && !empty entry.ssEntryDefinitionElementData.completed.values}">
 				<ssf:progressBar currentValue="${entry.completed}" 
 					valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
@@ -140,13 +128,9 @@
 
 			<c:set var="path" value=""/>
 
-			<c:if test="${!empty ssDashboard.beans[componentId].ssFolderList}">
-				<c:forEach var="folder" items="${ssDashboard.beans[componentId].ssFolderList}">
-					<c:if test="${folder.id == entry._binderId}">
-						<c:set var="path" value="${folder}"/>
-						<c:set var="title" value="${folder.title}"/>
-					</c:if>
-				</c:forEach>
+			<c:if test="${!empty ss_myTasksFolders[entry._binderId]}">
+				<c:set var="path" value="${ss_myTasksFolders[entry._binderId]}"/>
+				<c:set var="title" value="${ss_myTasksFolders[entry._binderId].title}"/>
 			</c:if>
 			<c:set var="isDashboard" value="yes"/>
 
@@ -163,3 +147,4 @@
 </c:forEach>
 </tbody>
 </table>
+</c:if>
