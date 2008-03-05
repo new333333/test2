@@ -61,6 +61,18 @@
 		</operations>
 	</definition>
 
+	<definition name="applicationEntryViewDefinition" definitionType="13" caption="__application_entry_view" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="applicationEntryViewType" caption="__add_a_new_application_entry_view" />
+		</operations>
+	</definition>
+
+	<definition name="applicationGroupEntryViewDefinition" definitionType="14" caption="__application_group_entry_view" canBeDeleted="false">
+		<operations>
+			<operation name="addDefinition" item="applicationGroupEntryViewType" caption="__add_a_new_application_group_entry_view" />
+		</operations>
+	</definition>
+	
 	
 <!-- Items -->
 	<item name="title" caption="__title" type="data" canBeDeleted="false" 
@@ -703,6 +715,108 @@
 		</jsps>
 	</item>
 	<item name="groupEntryView" caption="__group_entry_view_definition" canBeDeleted="false" multipleAllowed="false" display="view">
+		<options optionCaption="__standard_entry_options">
+			<option name="titleView" initial="true"/>
+			<option name="descriptionView" initial="true" />
+		</options>
+		
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_view.jsp" />
+		</jsps>
+	</item>
+	
+<!-- Application definition: we don't allow creation of new application definitions.  This is here so common code works -->
+	<item name="applicationEntryViewType" definitionType="13" caption="__application_entry_view">		
+		<properties>
+			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
+		</properties>
+		
+		<options>
+			<option name="applicationEntryForm" initial="true" />
+			<option name="applicationEntryView" initial="true" />
+		</options>
+	</item>
+
+	<item name="applicationEntryForm" caption="__application_entry_form_definition" type="form" 
+		canBeDeleted="false" multipleAllowed="false" display="form">
+
+		<options>
+			<option name="applicationEntryFormForm" initial="true" />
+		</options>
+		
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
+		</jsps>
+	</item>
+	
+
+	<item name="applicationEntryFormForm" caption="__form" canBeDeleted="false" 
+		  multipleAllowed="false" display="form">
+		<properties>
+			<property name="name" caption="__form_name" type="text" 
+				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" setAttribute="formName" value="form1"/>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+		</jsps>
+	</item>
+	<item name="applicationEntryView" caption="__application_entry_view_definition" canBeDeleted="false" multipleAllowed="false" display="view">
+		<options optionCaption="__standard_entry_options">
+			<option name="titleView" initial="true"/>
+			<option name="descriptionView" initial="true" />
+		</options>
+		
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_view.jsp" />
+		</jsps>
+	</item>
+	
+<!-- Application group definition: we don't allow creation of application group definitions.  This is here so common code works -->
+	<item name="applicationGroupEntryViewType" definitionType="14" caption="__application_group_entry_view">		
+		<properties>
+			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__name" type="text" />
+		</properties>
+		
+		<options>
+			<option name="applicationGroupEntryForm" initial="true" />
+			<option name="applicationGroupEntryView" initial="true" />
+		</options>
+	</item>
+
+	<item name="applicationGroupEntryForm" caption="__application_group_entry_form_definition" type="form" 
+		canBeDeleted="false" multipleAllowed="false" display="form">
+
+		<options>
+			<option name="applicationGroupEntryFormForm" initial="true" />
+		</options>
+		
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
+		</jsps>
+	</item>
+	
+
+	<item name="applicationGroupEntryFormForm" caption="__form" canBeDeleted="false" 
+		  multipleAllowed="false" display="form">
+		<properties>
+			<property name="name" caption="__form_name" type="text" 
+				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" setAttribute="formName" value="form1"/>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="title" initial="true" />
+			<option name="description" initial="true" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/form_form.jsp" />
+		</jsps>
+	</item>
+	<item name="applicationGroupEntryView" caption="__application_group_entry_view_definition" canBeDeleted="false" multipleAllowed="false" display="view">
 		<options optionCaption="__standard_entry_options">
 			<option name="titleView" initial="true"/>
 			<option name="descriptionView" initial="true" />

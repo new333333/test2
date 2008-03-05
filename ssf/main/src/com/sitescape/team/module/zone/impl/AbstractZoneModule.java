@@ -46,6 +46,7 @@ import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
+import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
@@ -420,6 +421,16 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 			getProfileDao().getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, zone.getId());
 			getProfileModule().indexEntry(g);
 		}
+		//make sure allApplications exists
+		try {
+			getProfileDao().getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, zone.getId());
+		} catch (NoGroupByTheNameException nu) {
+			//need to add it
+			ApplicationGroup g = addAllApplicationGroup(superU.getParentBinder(), new HistoryStamp(superU));
+			//	updates cache
+			getProfileDao().getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, zone.getId());
+			getProfileModule().indexEntry(g);
+		}
 
 	}
 
@@ -459,6 +470,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		HistoryStamp stamp = new HistoryStamp(user);
     		//add reserved group for use in import templates
     		Group group = addAllUserGroup(profiles, stamp);
+    		addAllApplicationGroup(profiles, stamp);
 	
     		Function visitorsRole = addVisitorsRole(top);
     		Function participantsRole = addParticipantsRole(top);
@@ -537,6 +549,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		//reload user as side effect after index flush
     		user = getProfileDao().getReservedUser(ObjectKeys.SUPER_USER_INTERNALID, top.getId());
     		getProfileDao().getReservedUser(ObjectKeys.JOB_PROCESSOR_INTERNALID, top.getId());
+    		getProfileDao().getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, top.getId());
 
     		ScheduleInfo info = getAdminModule().getNotificationSchedule();
    			info.getSchedule().setDaily(true);
@@ -590,6 +603,21 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		group.setZoneId(parent.getZoneId());
 		group.setParentBinder(parent);
 		group.setInternalId(ObjectKeys.ALL_USERS_GROUP_INTERNALID);
+		getDefinitionModule().setDefaultEntryDefinition(group);
+		getCoreDao().save(group);
+		group.setCreation(stamp);
+		group.setModification(stamp);
+		return group;
+	}
+    private ApplicationGroup addAllApplicationGroup(Binder parent, HistoryStamp stamp) {
+		//build allApplications group
+		ApplicationGroup group = new ApplicationGroup();
+		group.setName("allApplications");
+		group.setForeignName(group.getName());
+		group.setTitle(NLT.get("administration.initial.applicationgroup.allapplication.title", group.getName()));
+		group.setZoneId(parent.getZoneId());
+		group.setParentBinder(parent);
+		group.setInternalId(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID);
 		getDefinitionModule().setDefaultEntryDefinition(group);
 		getCoreDao().save(group);
 		group.setCreation(stamp);

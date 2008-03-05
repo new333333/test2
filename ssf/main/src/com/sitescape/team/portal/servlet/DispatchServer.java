@@ -51,6 +51,7 @@ import com.sitescape.team.portal.CrossContextConstants;
 import com.sitescape.team.runas.RunasCallback;
 import com.sitescape.team.runas.RunasTemplate;
 import com.sitescape.team.security.accesstoken.AccessTokenManager;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
@@ -108,7 +109,7 @@ public class DispatchServer extends GenericServlet {
 			
 			final User user = profileDao.findUserByName(userName, zoneName);
 			
-			HttpSession ses = ((HttpServletRequest) req).getSession();
+			final HttpSession ses = ((HttpServletRequest) req).getSession();
 			
 			WebHelper.putContext(ses, user);
 
@@ -117,19 +118,21 @@ public class DispatchServer extends GenericServlet {
 				ses.setAttribute(WebKeys.SERVER_PORT, Integer.valueOf(req.getServerPort()));
 				if(logger.isDebugEnabled())
 					logger.debug("Server name:port is " + req.getServerName().toLowerCase() + ":" + req.getServerPort() + " for user " + userName + " at the time of login");
-				
-				// Do this here to make sure we call it only once per new session.
-				// Also do it only for regular authenticated users, not anonymous ones.
-				if(!user.isShared()) {
-					// Make sure to run it in the user's context since it needs it.			
+			}	
+			
+			if(ses.getAttribute(WebKeys.TOKEN_INFO_ID) == null) {
+				if(!user.isShared() || 
+						SPropsUtil.getBoolean("interactive.token.support.guest", true)) {
+					// Make sure to run it in the user's context.			
 					RunasTemplate.runas(new RunasCallback() {
 						public Object doAs() {
-							accessTokenManager.updateSeedForInteractive(user.getId());
+							String infoId = accessTokenManager.createTokenInfoInteractive(user.getId());
+							ses.setAttribute(WebKeys.TOKEN_INFO_ID, infoId);
 							return null;
 						}
-					}, user);	
+					}, user);						
 				}
-			}			
+			}
 		}
 		else {
 			logger.error("Unrecognized operation [" + operation + "]");

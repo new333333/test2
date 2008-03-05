@@ -50,21 +50,32 @@ public class AccessToken {
 	};
 
 	private TokenType type;				// required
+	private String infoId;				// required for interactive, null for background
 	private Long applicationId; 		// required
 	private Long userId; 				// required
 	private String digest; 				// required
 	private Long binderId; 				// optional
 	private Boolean includeDescendants; // optional - meaningful iff binderId is specified
 	
-	public AccessToken(TokenType type, Long applicationId, Long userId, String digest) {
+	public static AccessToken interactiveToken(String infoId, Long applicationId, 
+			Long userId, String digest, Long binderId, Boolean includeDescendants) {
+		return new AccessToken(TokenType.interactive, infoId, applicationId,
+				userId, digest, binderId, includeDescendants);
+	}
+	
+	public static AccessToken backgroundToken(Long applicationId, 
+			Long userId, String digest, Long binderId, Boolean includeDescendants) {
+		return new AccessToken(TokenType.background, null, applicationId,
+				userId, digest, binderId, includeDescendants);
+	}
+	
+	private AccessToken(TokenType type, String infoId, Long applicationId, 
+			Long userId, String digest, Long binderId, Boolean includeDescendants) {
 		this.type = type;
+		this.infoId = infoId;
 		this.applicationId = applicationId;
 		this.userId = userId;
 		this.digest = digest;
-	}
-	
-	public AccessToken(TokenType type, Long applicationId, Long userId, String digest, Long binderId, Boolean includeDescendants) {
-		this(type, applicationId, userId, digest);
 		this.binderId = binderId;
 		this.includeDescendants = includeDescendants;
 	}
@@ -75,6 +86,14 @@ public class AccessToken {
 
 	public void setType(TokenType type) {
 		this.type = type;
+	}
+
+	public String getInfoId() {
+		return infoId;
+	}
+
+	public void setInfoId(String infoId) {
+		this.infoId = infoId;
 	}
 
 	public Long getApplicationId() {
@@ -131,14 +150,33 @@ public class AccessToken {
 	MalformedAccessTokenException, NumberFormatException {
 		if(accessTokenStr == null)
 			throw new IllegalArgumentException();
-		// Access token string encoded representation
-		// typeNumber-appId-userId-digest-[binderId]-[includeDescendantsNumber]
+		// Access token string encoded representation:
+		// 
+		// typeNumber[.infoId]-appId-userId-digest-[binderId]-[includeDescendantsNumber]
+		// 
+		// where [.infoId] is present only for interactive type token 
 		String[] s = StringUtil.split(accessTokenStr, "-");
 		if(s.length < 4)
-			throw new MalformedAccessTokenException("not enough pieces");
+			throw new MalformedAccessTokenException(accessTokenStr);
 		if(s.length > 6)
-			throw new MalformedAccessTokenException("too many pieces");
-		type = TokenType.valueOf(s[0]);
+			throw new MalformedAccessTokenException(accessTokenStr);
+		String[] s2 = StringUtil.split(s[0], ".");
+		if(s2.length < 1)
+			throw new MalformedAccessTokenException(accessTokenStr);
+		if(s2.length > 2)
+			throw new MalformedAccessTokenException(accessTokenStr);
+		type = TokenType.valueOf(s2[0]);
+		if(s2.length == 2)
+			infoId = s2[1];
+		if(TokenType.interactive.equals(type)) {
+			if(infoId == null)
+				throw new MalformedAccessTokenException(accessTokenStr);
+		} else if(TokenType.background.equals(type)) {
+			if(infoId != null)
+				throw new MalformedAccessTokenException(accessTokenStr);
+		} else {
+			throw new MalformedAccessTokenException(accessTokenStr);
+		}
 		applicationId = Long.valueOf(s[1]);
 		userId = Long.valueOf(s[2]);
 		digest = s[3];
@@ -161,6 +199,15 @@ public class AccessToken {
 	public String toStringRepresentation() throws IllegalStateException {
 		if(type == null)
 			throw new IllegalStateException("type is missing");
+		if(TokenType.interactive.equals(type)) {
+			if(infoId == null)
+				throw new IllegalStateException("info id is missing");
+		} else if(TokenType.background.equals(type)) {
+			if(infoId != null)
+				throw new IllegalStateException("info id is present");
+		} else {
+			throw new IllegalStateException("something's serious broken");
+		}
 		if(applicationId == null)
 			throw new IllegalStateException("application id is missing");
 		if(userId == null)
@@ -168,7 +215,10 @@ public class AccessToken {
 		if(digest == null)
 			throw new IllegalStateException("digest is missing");
 		StringBuilder sb = new StringBuilder()
-		.append(type.getNumber()).append("-")
+		.append(type.getNumber());
+		if(infoId != null)
+			sb.append(".").append(infoId);
+		sb.append("-")
 		.append(applicationId).append("-")
 		.append(userId).append("-")
 		.append(digest);
@@ -182,4 +232,9 @@ public class AccessToken {
 		return sb.toString();
 	}
 
+	
+	public static void main(String[] args) {
+		String[] s = StringUtil.split("a.", ".");
+		int i = 10;
+	}
 }

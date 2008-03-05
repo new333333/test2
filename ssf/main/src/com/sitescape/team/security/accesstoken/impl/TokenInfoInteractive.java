@@ -36,10 +36,11 @@ public class TokenInfoInteractive extends ZonedObject implements TokenInfo, Seri
 
 	private static final long serialVersionUID = 1L;
 	
+	private String id;
 	private Long userId;
-	private Long seed;
+	private String seed;
 	
-	public TokenInfoInteractive(Long userId, Long seed) {
+	public TokenInfoInteractive(Long userId, String seed) {
 		this(userId);
 		this.seed = seed;
 	}
@@ -51,10 +52,18 @@ public class TokenInfoInteractive extends ZonedObject implements TokenInfo, Seri
 	public TokenInfoInteractive() {	
 	}
 	
-	public Long getSeed() {
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getSeed() {
 		return seed;
 	}
-	public void setSeed(Long seed) {
+	public void setSeed(String seed) {
 		this.seed = seed;
 	}
 	public Long getUserId() {

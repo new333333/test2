@@ -61,6 +61,7 @@ import com.sitescape.team.dao.util.ObjectControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
+import com.sitescape.team.domain.ApplicationPrincipal;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.EmailAddress;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -364,9 +365,18 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
             			.setBoolean("deleted", Boolean.TRUE)
             			.setParameterList("pList", ids)
        	   				.executeUpdate();
+ 		   			//delete applications
+ 		   			session.createQuery("Delete com.sitescape.team.domain.Principal where id in (:pList) and type='application'")
+            			.setParameterList("pList", ids)
+       	   				.executeUpdate();
+ 		   			//delete application groups
+ 		   			session.createQuery("Delete com.sitescape.team.domain.Principal where id in (:pList) and type='applicationGroup'")
+            			.setParameterList("pList", ids)
+       	   				.executeUpdate();
 		   			//this flushes secondary cache
 		   			session.getSessionFactory().evict(Principal.class);			   			
-		   			session.getSessionFactory().evictCollection("com.sitescape.team.domain.Principal.memberOf");
+		   			session.getSessionFactory().evictCollection("com.sitescape.team.domain.UserPrincipal.memberOf");
+		   			session.getSessionFactory().evictCollection("com.sitescape.team.domain.ApplicationPrincipal.memberOf");
       	   				
            	   		return null;
         	   		}
@@ -972,9 +982,9 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                         	principal = (Principal)session.get(User.class, prinId);
                         else if(principal.getEntityType() == EntityIdentifier.EntityType.group)
                         	principal = (Principal)session.get(Group.class, prinId);
-                        else if(principal.getEntityType() == EntityIdentifier.EntityType.app)
+                        else if(principal.getEntityType() == EntityIdentifier.EntityType.application)
                         	principal = (Principal)session.get(Application.class, prinId);
-                        else if(principal.getEntityType() == EntityIdentifier.EntityType.appgroup)
+                        else if(principal.getEntityType() == EntityIdentifier.EntityType.applicationGroup)
                         	principal = (Principal)session.get(ApplicationGroup.class, prinId);
                         else
                         	throw new NoPrincipalByTheIdException(prinId);
@@ -1007,5 +1017,107 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         return principal;
               
     }
+    
+	public List<ApplicationGroup> loadApplicationGroups(Collection<Long> groupsIds, Long zoneId) {
+		return loadPrincipals(groupsIds, zoneId, ApplicationGroup.class, false, true);
+	}
 
+	public ApplicationPrincipal loadApplicationPrincipal(final Long prinId, final Long zoneId, final boolean checkActive) {
+		ApplicationPrincipal principal = (ApplicationPrincipal)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	//hoping for cache hit
+                    	ApplicationPrincipal principal = (ApplicationPrincipal)session.get(ApplicationPrincipal.class, prinId);
+                        if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
+                        //Get the real object, not a proxy to abstract class
+                        try {
+                        	principal = (ApplicationPrincipal)session.get(Application.class, prinId);
+                        } catch (Exception ex) {};  // group proxies will force an exception, didn't expect with session.get? 
+                        if (principal==null) 
+                            principal = (ApplicationPrincipal)session.get(ApplicationGroup.class, prinId);
+                        //make sure from correct zone
+                        if (!principal.getZoneId().equals(zoneId) ||
+                        		(checkActive && !principal.isActive())) {throw new NoPrincipalByTheIdException(prinId);}
+                        return principal;
+                    }
+                }
+        );
+       
+        return principal;
+	}
+	
+	public List<ApplicationPrincipal> loadApplicationPrincipals(Collection<Long> ids, Long zoneId, boolean checkActive) {
+    	List<ApplicationPrincipal> result = loadPrincipals(ids, zoneId, ApplicationPrincipal.class, true, checkActive);
+		//remove proxies
+		for (int i=0; i<result.size(); ++i) {
+			ApplicationPrincipal p = result.get(i);
+			if (!(p instanceof Application) && !(p instanceof ApplicationGroup)) {
+				ApplicationPrincipal principal = (ApplicationPrincipal)getHibernateTemplate().get(Application.class, p.getId());
+				if (principal==null) principal = (ApplicationPrincipal)getHibernateTemplate().get(ApplicationGroup.class, p.getId());
+   				result.set(i, principal);
+            }
+        }
+		return result;
+	}
+	
+	public List loadGroupPrincipals(Collection<Long> ids, Long zoneId, boolean checkActive) {
+    	List<Principal> result = loadPrincipals(ids, zoneId, Principal.class, false, checkActive);
+		//remove proxies
+		for (int i=0; i<result.size(); ++i) {
+			Principal p = result.get(i);
+			if (!(p instanceof Group) && !(p instanceof ApplicationGroup)) {
+				Principal principal = (Principal)getHibernateTemplate().get(Group.class, p.getId());
+				if (principal==null) principal = (Principal)getHibernateTemplate().get(ApplicationGroup.class, p.getId());
+				if(principal != null) {					
+	   				result.set(i, principal);
+				}
+				else { // what we got is not of the right type
+					result.remove(i);
+					--i;
+				}
+            }
+        }
+		return result;
+	}
+	
+	public List loadIndividualPrincipals(Collection<Long> ids, Long zoneId, boolean checkActive) {
+    	List<Principal> result = loadPrincipals(ids, zoneId, Principal.class, false, checkActive);
+		//remove proxies
+		for (int i=0; i<result.size(); ++i) {
+			Principal p = result.get(i);
+			if (!(p instanceof User) && !(p instanceof Application)) {
+				Principal principal = (Principal)getHibernateTemplate().get(User.class, p.getId());
+				if (principal==null) principal = (Principal)getHibernateTemplate().get(Application.class, p.getId());
+				if(principal != null) {					
+	   				result.set(i, principal);
+				}
+				else { // what we got is not of the right type
+					result.remove(i);
+					--i;
+				}
+            }
+        }
+		return result;
+	}
+
+    public List<Application> loadApplications(Collection<Long> applicationIds, Long zoneId) {
+		return loadPrincipals(applicationIds, zoneId, Application.class, false, true);	
+    }
+    
+    public List<Principal> loadPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive) {
+    	List<Principal> result = loadPrincipals(ids, zoneId, Principal.class, true, checkActive);
+		//remove proxies
+		for (int i=0; i<result.size(); ++i) {
+			Principal p = result.get(i);
+			if (!(p instanceof User) && !(p instanceof Group) && !(p instanceof Application) && !(p instanceof ApplicationGroup)) {
+				Principal principal = (Principal)getHibernateTemplate().get(User.class, p.getId());
+				if (principal==null) principal = (Principal)getHibernateTemplate().get(Group.class, p.getId());
+				if (principal==null) principal = (Principal)getHibernateTemplate().get(Application.class, p.getId());
+				if (principal==null) principal = (Principal)getHibernateTemplate().get(ApplicationGroup.class, p.getId());
+   				result.set(i, principal);
+            }
+        }
+		return result;
+	
+    }
 }

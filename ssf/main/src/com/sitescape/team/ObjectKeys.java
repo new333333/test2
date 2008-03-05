@@ -55,6 +55,8 @@ public interface ObjectKeys {
 	public static final String DEFAULT_PROFILES_DEF="402883b90cc53079010cc539bf260006";
 	public static final String DEFAULT_USER_DEF="402883b90cc53079010cc539bf260007";
 	public static final String DEFAULT_GROUP_DEF="402883b90cc53079010cc539bf260008";
+	public static final String DEFAULT_APPLICATION_DEF="402883b90cc53079010cc539bf26000c";
+	public static final String DEFAULT_APPLICATION_GROUP_DEF="402883b90cc53079010cc539bf26000d";
 
 	//reserved databaseIds for Definitions
 	public static final String DEFAULT_ENTRY_TASK_DEF="402883c1129b1f8101129b28bbe50002";
@@ -252,7 +254,7 @@ public interface ObjectKeys {
     //reserved input tags
     public static final String INPUT_FIELD_POSTING_FROM="__poster";
     public static final String INPUT_FIELD_ENTITY_ATTACHMENTS="ss_attachFile";
-    public static final String INPUT_FIELD_GROUP_MEMBERNAME="memberName";
+    public static final String INPUT_FIELD_GROUP_PRINCIPAL_MEMBERNAME="memberName";
     public static final String INPUT_FIELD_TAGS="_tags";
     public static final String INPUT_FIELD_ORDER_SUFFIX="__order";
 	public static final String INPUT_FIELD_FUNCTIONMEMBERSHIPS="com.sitescape.team.workareaFunctionMemberships";
@@ -284,6 +286,7 @@ public interface ObjectKeys {
 
     public static final String FIELD_FILE_ID="_fileID";
     
+    public static final String FIELD_APPLICATION_POST_URL="postUrl";
     public static final String FIELD_BINDER_LIBRARY="library";
     public static final String FIELD_BINDER_NAME="name";
     public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";
@@ -307,7 +310,7 @@ public interface ObjectKeys {
     public static final String FIELD_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String FIELD_PRINCIPAL_NAME="name";
     public static final String FIELD_PRINCIPAL_DISABLED="disabled";
-    public static final String FIELD_GROUP_MEMBERS="members";
+    public static final String FIELD_GROUP_PRINCIPAL_MEMBERS="members";
     public static final String FIELD_PRINCIPAL_THEME="theme";
     public static final String TASK_FIELD_ASSIGNMENT="assignment";
     public static final String TASK_FIELD_EVENT="start_end#EndDate";
@@ -437,6 +440,8 @@ public interface ObjectKeys {
     public static final String XTAG_WFR_RESPONSEDATE="responseDate";
     public static final String XTAG_WFR_RESPONSE="response";
     
+    public static final String XTAG_APPLICATION_GROUP_MEMBERS="appMembers";
+
 	public static final String FI_ADAPTER = "fiAdapter";
 	
 	public static final String PI_SYNCH_TO_SOURCE = "_synchToSource";

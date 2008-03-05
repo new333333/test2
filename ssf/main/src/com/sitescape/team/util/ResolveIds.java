@@ -100,7 +100,7 @@ public class ResolveIds {
 			return Collections.EMPTY_LIST;
 		}
 		ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-		return profileDao.loadUserPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true);
+		return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true);
 	}
 	
 	public static Map getBinderTitlesAndIcons(Object binderIds) {

@@ -38,9 +38,10 @@ import com.sitescape.util.Validator;
 public class Application extends ApplicationPrincipal implements IndividualPrincipal {
 
     private Set principalIds; // set of Long; this field is computed 
-
+    private String postUrl;
+    
 	public EntityIdentifier.EntityType getEntityType() {
-		return EntityIdentifier.EntityType.app;
+		return EntityIdentifier.EntityType.application;
 	}
 
 	public String getTitle() {
@@ -51,7 +52,15 @@ public class Application extends ApplicationPrincipal implements IndividualPrinc
     	return getName();		
 	}
 
-    public Set computePrincipalIds(GroupPrincipal reservedGroup) {
+    public String getPostUrl() {
+		return postUrl;
+	}
+
+	public void setPostUrl(String postUrl) {
+		this.postUrl = postUrl;
+	}
+
+	public Set computePrincipalIds(GroupPrincipal reservedGroup) {
     	// Each thread serving a user request has its own copy of user object.
     	// Therefore we do not have to use synchronization around principalIds.
         if (!isActive()) return new HashSet();

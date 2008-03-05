@@ -45,8 +45,11 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.team.NoObjectByTheIdException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.LibraryEntry;
 import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.domain.NoWorkspaceByTheNameException;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.ZoneMismatchException;
 import com.sitescape.team.security.accesstoken.impl.TokenInfoBackground;
 import com.sitescape.team.security.accesstoken.impl.TokenInfoInteractive;
@@ -280,9 +283,9 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 		return info;
 	}
 
-	public TokenInfoInteractive loadTokenInfoInteractive(Long zoneId, Long userId) {
+	public TokenInfoInteractive loadTokenInfoInteractive(Long zoneId, String infoId) {
 		TokenInfoInteractive info = (TokenInfoInteractive) getHibernateTemplate().get
-		(TokenInfoInteractive.class, userId);
+		(TokenInfoInteractive.class, infoId);
 		
 		if(info != null) {
 			if(!zoneId.equals(info.getZoneId()))
@@ -290,7 +293,19 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 		}
 
 		return info;
+	}
 
+	public void deleteUserTokenInfoInteractive(final Long userId) {
+	   	getHibernateTemplate().execute(
+	    	   	new HibernateCallback() {
+	    	   		public Object doInHibernate(Session session) throws HibernateException {
+		     	   		session.createQuery("Delete com.sitescape.team.security.accesstoken.impl.TokenInfoInteractive where userId=:userId")
+		   				.setLong("userId", userId)
+	     	   			.executeUpdate();
+	       	   		return null;
+	       	   		}
+	       	   	}
+	    	 );    	
 	}
 
  }

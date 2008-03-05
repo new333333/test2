@@ -39,9 +39,9 @@ public class TokenInfoBackground extends ZonedObject implements TokenInfo, Seria
 	private Long applicationId; 
 	private Long userId; 
 	private Long binderId; // 0 value in DB represents null in memory
-	private Long seed;
+	private String seed;
 	
-	public TokenInfoBackground(Long applicationId, Long userId, Long binderId, Long seed) {
+	public TokenInfoBackground(Long applicationId, Long userId, Long binderId, String seed) {
 		this(applicationId, userId, binderId);
 		this.seed = seed;
 	}
@@ -73,10 +73,10 @@ public class TokenInfoBackground extends ZonedObject implements TokenInfo, Seria
 		else
 			this.binderId = Long.valueOf(0L);
 	}
-	public Long getSeed() {
+	public String getSeed() {
 		return seed;
 	}
-	public void setSeed(Long seed) {
+	public void setSeed(String seed) {
 		this.seed = seed;
 	}
 	public Long getUserId() {

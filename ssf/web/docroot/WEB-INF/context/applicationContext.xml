@@ -525,7 +525,7 @@
 				<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 			</bean>
 		</property>
-		<!-- addUser, addGroup, addEntries, modifyEntry, addUserFromPortal,modifyUserFromPortal, addUserWorkspace provide transaction semantics at a finer
+		<!-- addUser, addGroup, addEntries, modifyEntry, addUserFromPortal,modifyUserFromPortal, addUserWorkspace, addApplication, addApplicationGroup provide transaction semantics at a finer
 		granularity then the method. Handled by processor through transactionTemplate-->
 		<property name="transactionAttributes">
 			<props>

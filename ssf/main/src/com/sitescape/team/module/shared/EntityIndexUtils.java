@@ -49,6 +49,8 @@ import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.Application;
+import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
@@ -85,6 +87,8 @@ public class EntityIndexUtils {
     public final static String ENTRY_TYPE_REPLY = "reply";
     public final static String ENTRY_TYPE_USER = "user";
     public final static String ENTRY_TYPE_GROUP = "group";
+    public final static String ENTRY_TYPE_APPLICATION = "application";
+    public final static String ENTRY_TYPE_APPLICATION_GROUP = "applicationGroup";
     public static final String ENTITY_FIELD="_entityType"; //correspondes to EntityIdentifier.EntityType
     public static final String DOCID_FIELD = "_docId"; //id field
     
@@ -251,6 +255,12 @@ public class EntityIndexUtils {
         	doc.add(entryTypeField);
     	} else if (entry instanceof Group) {
     		Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_GROUP, Field.Store.YES, Field.Index.UN_TOKENIZED);
+    		doc.add(entryTypeField);
+    	} else if (entry instanceof Application) {
+        	Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_APPLICATION, Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	doc.add(entryTypeField);
+    	} else if (entry instanceof ApplicationGroup) {
+    		Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_APPLICATION_GROUP, Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(entryTypeField);
     	} 
    }

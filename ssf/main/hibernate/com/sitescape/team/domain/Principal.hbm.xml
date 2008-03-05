@@ -108,13 +108,14 @@
 	      <key column="userId"/>
 	      <many-to-many fetch="join" node="ApplicationGroup" class="com.sitescape.team.domain.ApplicationGroup" column="groupId" embed-xml="false"/>
 	    </bag>
-	    <subclass name="com.sitescape.team.domain.ApplicationGroup" discriminator-value="appgroup" dynamic-update="true">
+	    <subclass name="com.sitescape.team.domain.ApplicationGroup" discriminator-value="applicationGroup" dynamic-update="true">
 	      <bag inverse="false" access="field" cascade="all" lazy="true" table="SS_PrincipalMembership" name="members">
 	        <key column="groupId"/>
 	        <many-to-many fetch="join" class="com.sitescape.team.domain.ApplicationPrincipal" column="userId"/>
 	      </bag>
 	    </subclass>
-	    <subclass name="com.sitescape.team.domain.Application" node="Application" discriminator-value="app" dynamic-update="true">
+	    <subclass name="com.sitescape.team.domain.Application" node="Application" discriminator-value="application" dynamic-update="true">
+	      <property name="postUrl" length="256"/>
 	    </subclass>
   	</subclass>
   </class>

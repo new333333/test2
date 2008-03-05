@@ -1141,7 +1141,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
-			updates.put(ObjectKeys.FIELD_GROUP_MEMBERS, principals);
+			updates.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, principals);
 			getProfileModule().modifyEntry(binderId, groupId, new MapInputData(updates));
 		}
 	}
