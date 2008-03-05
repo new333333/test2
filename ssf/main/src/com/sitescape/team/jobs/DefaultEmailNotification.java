@@ -34,9 +34,7 @@ import java.util.TimeZone;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
-import com.sitescape.team.jobs.DefaultEmailPosting.MailJobDescription;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
 /**
@@ -47,7 +45,12 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
     	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		try {
-			Long binderId = new Long(jobDataMap.getLong("binder"));
+			Long binderId = null;
+			try {
+				binderId = new Long(jobDataMap.getLong("binder"));
+			} catch (Exception ex) {
+				binderId = zoneId;
+			}
 			Date end = mail.sendNotifications(binderId, (Date)jobDataMap.get("lastNotification") );
 			//In v1 top level folders had their own schedules.  In v.1.X they don't
 			if (!zoneId.equals(binderId)) {
@@ -98,6 +101,7 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
     	public ScheduleInfo getDefaultScheduleInfo() {
     		ScheduleInfo info = new ScheduleInfo(zoneId);
     		info.getDetails().put("lastNotification", new Date());
+    		info.getDetails().put("binder", zoneId);
     		return info;
     	}
        	
