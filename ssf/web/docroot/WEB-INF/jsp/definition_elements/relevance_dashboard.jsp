@@ -68,10 +68,11 @@ function ss_showRelevanceTab(s, namespace) {
 
 <% //Tabs %>
 
+<div id="ss_wrap" align="center">
 <div id="ss_tabsC" sytle="margin-top:10px;">
   <ul>
 	<!-- CSS Tabs -->
-	<li class="ss_profileCurrent"><a id="ss_relevancePersonalTab${renderResponse.namespace}" href="javascript: ;"
+	<li class="ss_tabsCCurrent"><a id="ss_relevancePersonalTab${renderResponse.namespace}" href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'dashboard', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.dashboard"/></span></a></li>
 	<li><a href="javascript: ;"
@@ -97,5 +98,6 @@ var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElemen
 
 <div id="relevanceCanvas_${renderResponse.namespace}" style="margin:4px 10px 10px 10px;">
 <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_info.jsp" />
+</div>
 </div>
 </ssf:ifLoggedIn>

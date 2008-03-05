@@ -31,7 +31,7 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<div id="ss_dashboard_content" class="ss_blogstyle">
+<div id="ss_dashboard_content" class="ss_tricolumn">
   <div class="ss_colmid">
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
