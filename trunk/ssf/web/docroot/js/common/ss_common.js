@@ -213,14 +213,17 @@ function ss_fetch_url_debug(str) {
 }
 //Use dojo to post a form, results in text/json
 //When result contains failure, message display
-function ss_post(url, formId, callBackRoutine, callbackData) {
+function ss_post(url, formId, callBackRoutine, callbackData, toggleCall) {
+	eval(toggleCall);
 	var bindArgs = {
     	url: url,
     	formNode: dojo.byId(formId),
 		error: function(type, data, evt) {
+			eval(toggleCall);
 			alert(data.error);
 		},
 		load: function(type, data, evt) {
+			eval(toggleCall);
 			if (data.failure) {
 				alert(data.failure);
 			} else { 
@@ -276,7 +279,7 @@ function ss_buildAdapterUrl(base, paramMap, action) {
 	return url;
 }
 
-//use for callbacks into objects
+//use for callbacks into objects.  Keeps object references from hanging around.
 function ss_createDelegate(object, method)
 {
     var shim = function() {
@@ -813,7 +816,7 @@ function ss_checkIfParentDivHidden(divId) {
 }
 
 function ss_showHide(objId){
-	var obj = document.getElementById(objId);
+	var obj = dojo.byId(objId);
 	if (obj && obj.style) {
 	    if (obj.style.display == 'none' || 
 	    		obj.style.visibility == 'hidden' || 
@@ -1816,25 +1819,6 @@ function ss_getClickPositionX() {
 
 function ss_getClickPositionY() {
     return ss_mousePosY
-}
-
-//Routines to get an object handle given the id name of a div
-function getNN4DivObject(divName) {
-    for (var n = 0; n < self.document.layers.length; n++) {
-        var obj = getNN4DivObjectObj(self.document.layers[n], divName)
-        if (obj != null) {return obj}
-    }
-    alert('getNN4DivObject error: unknown div id - '+divName)
-    return self.document
-}
-
-function getNN4DivObjectObj(obj, divName) {
-    if (obj.name == divName) {return obj}
-    for (var n = 0; n < obj.document.layers.length; n++) {
-        var obj1 = getNN4DivObjectObj(obj.document.layers[n], divName)
-        if (obj1 != null) {return obj1}
-    }
-    return null
 }
 
 function captureXY(e) {
@@ -4689,9 +4673,7 @@ function ss_startMeeting(url, formId, ajaxLoadingIndicatorPane) {
 */
 
 function ss_toggleAjaxLoadingIndicator(obj, append) {
-	var divObj = obj;
-	if (typeof obj == "string")
-		divObj = $(obj);
+	var divObj = dojo.byId(obj);
 	if (!divObj) return;
 			
 	var wasAjaxLoaderThere = false;
