@@ -204,7 +204,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return getProfileDao().loadUsers(ids, entity.getZoneId());
 	}
 	
-	public Collection<ActivityInfo> culaEsCaliente(final AuditType type, final Date startDate, final Date endDate)
+	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, final Date startDate, final Date endDate)
 	{
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
@@ -216,12 +216,16 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 												.add(Projections.alias(Projections.rowCount(), "hits"))
 												.add(Projections.max("startDate")))
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
-				    .add(Restrictions.eq("transactionType", type.name()))
 				    .add(Restrictions.ge("startDate", startDate))
 				    .add(Restrictions.lt("startDate", endDate))
 				    .add(Restrictions.in("entityType", new Object[] {EntityType.folder.name(), EntityType.workspace.name(),
-				    												 EntityType.folderEntry.name()}))
-				    .addOrder(Order.desc("hits"));
+				    												 EntityType.folderEntry.name()}));
+				if(limitType != null) {
+					crit.add(Restrictions.eq("transactionType", limitType.name()));
+				} else {
+					crit.add(Restrictions.in("transactionType", new Object[] {AuditType.view.name(), AuditType.modify.name(), AuditType.download.name()}));
+				}
+				crit.addOrder(Order.desc("hits"));
 
 				return crit.list();
 				
