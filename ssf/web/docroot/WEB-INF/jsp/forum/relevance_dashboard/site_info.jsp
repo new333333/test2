@@ -30,10 +30,12 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<table width="100%">
-<tbody>
-<tr>
-<td width="50%" valign="top">
+
+<div id="ss_dashboard_content" class="ss_blogstyle">
+  <div class="ss_colmid">
+    <div class="ss_colleft">
+      <div id="ss_col1" class="ss_col1">
+
 	<ssf:canvas id="relevanceDocuments" type="inline">
 	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
 	  Recent everyone documents<br/>
@@ -41,8 +43,17 @@
 	  Recent everyone documents<br/>
 	  Recent documents<br/>
 	</ssf:canvas>
-</td>
-<td width="50%" valign="top" style="padding-left:10px;">
+
+	<ssf:canvas id="relevanceMail" type="inline">
+	<ssf:param name="title" value="News"/>
+		<iframe src="http://news.bbc.co.uk/nolpda/ifs_news/hi/default.stm?ifs=1" 
+		frameborder="0" scrolling="Auto" 
+		width="100%" height="360">mail</iframe>	
+	</ssf:canvas>
+
+        </div><!-- end of ss_col 1 -->
+      <div id="ss_col2" class="ss_col2">
+
 	<ssf:canvas id="relevanceTasks" type="inline">
 	<ssf:param name="title" value="<%= NLT.get("relevance.tasks") %>"/>
 	  Tasks<br/>
@@ -51,18 +62,12 @@
 	  Tasks<br/>
 	  Tasks<br/>
 	</ssf:canvas>
-</td>
-</tr>
-<tr>
-<td colspan="2">
-	<ssf:canvas id="relevanceMail" type="inline">
-	<ssf:param name="title" value="News"/>
-		<iframe src="http://news.bbc.co.uk/nolpda/ifs_news/hi/default.stm?ifs=1" 
-		frameborder="0" scrolling="Auto" 
-		width="100%" height="360">mail</iframe>	
-	</ssf:canvas>
-</td>
-</tr>
-</tbody>
-</table>
 
+      </div><!-- end of col2 -->
+      <div id="ss_col3" class="ss_col3">
+
+      </div><!-- end of col3 -->
+    </div><!-- end of col left -->
+  </div><!-- end of col mid -->
+</div><!-- end of content -->
+<div class="ss_clear_float"></div>

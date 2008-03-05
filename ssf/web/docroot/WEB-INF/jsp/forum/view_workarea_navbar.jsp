@@ -192,6 +192,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
     </td>
   </tr>
 </table>
+<div class="ss_clear_float"></div>
 <script type="text/javascript">
 	//See if we are in an iframe inside a portlet 
 	var windowName = self.window.name    

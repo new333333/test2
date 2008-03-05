@@ -30,10 +30,11 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<table width="100%">
-<tbody>
-<tr>
-<td width="50%" valign="top">
+<div id="ss_dashboard_content" class="ss_blogstyle">
+  <div class="ss_colmid">
+    <div class="ss_colleft">
+      <div id="ss_col1" class="ss_col1">
+
 	<ssf:canvas id="relevanceVisitors" type="inline">
 	<ssf:param name="title" value="<%= NLT.get("relevance.visitedInPastTwoWeeks") %>"/>
 		<ul class="ss_nobullet">
@@ -42,10 +43,16 @@
 		</c:forEach>
 		</ul>
 	</ssf:canvas>
-</td>
-<td width="50%" valign="top" style="padding-left:10px;">
-</td>
-</tr>
-</tbody>
-</table>
+
+        </div><!-- end of ss_col 1 -->
+      <div id="ss_col2" class="ss_col2">
+
+      </div><!-- end of col2 -->
+      <div id="ss_col3" class="ss_col3">
+
+      </div><!-- end of col3 -->
+    </div><!-- end of col left -->
+  </div><!-- end of col mid -->
+</div><!-- end of content -->
+<div class="ss_clear_float"></div>
 

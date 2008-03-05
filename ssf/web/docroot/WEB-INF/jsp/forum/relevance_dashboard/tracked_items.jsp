@@ -30,56 +30,66 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<table>
-<tbody>
-<table>
-<tbody>
-<th><ssf:nlt tag="relevance.trackedPeople"/></th>
+<div id="ss_dashboard_content" class="ss_blogstyle">
+  <div class="ss_colmid">
+    <div class="ss_colleft">
+      <div id="ss_col1" class="ss_col1">
+      
+	<ssf:canvas id="relevanceVisitors" type="inline">
+	<ssf:param name="title" value="<%= NLT.get("relevance.trackedPeople") %>"/>
+<ul>
 <c:forEach var="user" items="${ss_trackedPeople}">
-	<tr>
-	  <td>
+	<li>
 	    <ssf:showUser user="${user}" />
 	    <c:if test="${!empty user.status}">
 	    <br/><span class="ss_smallprint ss_italic" style="padding-left:20px;">${user.status}</span>
 	    </c:if>
-	  </td>
-	</tr>
+	</li>
 </c:forEach>
-</tbody>
-</table>
+</ul>
+	</ssf:canvas>
 
-<br/>
-<th><ssf:nlt tag="relevance.trackedWorkspaces"/></th>
+        </div><!-- end of ss_col 1 -->
+      <div id="ss_col2" class="ss_col2">
+
+	<ssf:canvas id="relevanceVisitors" type="inline">
+	<ssf:param name="title" value="<%= NLT.get("relevance.trackedWorkspaces") %>"/>
+<ul>
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'workspace' && binder.definitionType == 8}">
-	<tr>
-	  <td>
+	<li>
 	    <a
 	      href="<ssf:url action="view_ws_listing" binderId="${binder.id}"/>"
 	    >${binder.title}</a>
-	  </td>
-	</tr>
+	</li>
   </c:if>
 </c:forEach>
-</tbody>
-</table>
+</ul>
+	</ssf:canvas>
 
-<br/>
-<table>
-<tbody>
-<th><ssf:nlt tag="relevance.trackedFolders"/></th>
+      </div><!-- end of col2 -->
+      <div id="ss_col3" class="ss_col3">
+
+	<ssf:canvas id="relevanceVisitors" type="inline">
+	<ssf:param name="title" value="<%= NLT.get("relevance.trackedFolders") %>"/>
+<ul>
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'folder'}">
-	<tr>
-	  <td>
+	<li>
 	    <a
 	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
 	    >${binder.title}</a>
-	  </td>
-	</tr>
+	</li>
   </c:if>
 </c:forEach>
-</tbody>
-</table>
+</ul>
+	</ssf:canvas>
 
+      </div><!-- end of col2 -->
+      <div id="ss_col3" class="ss_col3">
 
+      </div><!-- end of col3 -->
+    </div><!-- end of col left -->
+  </div><!-- end of col mid -->
+</div><!-- end of content -->
+<div class="ss_clear_float"></div>
