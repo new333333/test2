@@ -5127,40 +5127,42 @@ div.ss_canvas {
 }	
 
 /* Box styles */	
-    }
-
 
 #ss_Box
 {
 	padding: 0;
 	margin: 1% 0 2% 0;
 }
-#ss_Box_1
+#ss_networkupdates
 {
 	padding: 0;
 	margin: 2% 0 2% 0;
 	color:#333333;
 
 }
-#ss_Box_2
+#ss_whatsnew
 {
 	padding: 0;
 	margin: 2% 0 2% 0;
 	color:#333333;
 
 }
-#ss_Box_3
+#ss_personaltracker
 {
-	padding: 0;
+	padding: 0%;
 	margin: 1% 0 2% 0;
 	color:#444444;
+	border:1px solid #B2CEE7;
 
 }
-#ss_Box_4
+
+#ss_shared
 {
 	padding: 0;
 	margin: 1% 0 2% 0;
 	color:#444444;
+	background-color:#FFF;
+	border:1px solid #B2CEE7;	
 
 }
 #ss_Box_5
@@ -5222,7 +5224,7 @@ div.ss_canvas {
 
 #ss_title
 {
-	padding: 0;
+	
 	margin: 0 0 1% 0;
 	font-size: 16px;
 	font-weight: 400;
@@ -5238,12 +5240,36 @@ div.ss_canvas {
 }
 #ss_para 
 {
-	margin: 0px 0 1% 0px;
+	margin-top: 1%;
 	padding: 0.5% 0 1% 5px;
 	border: 1px dotted #cccccc;
 	color: #666666;
 	line-height: 2em;
 }
+#ss_para ul
+{
+	
+	color:#555555;
+}
+#ss_para ul li
+{
+
+	list-style-type: square;
+	margin-left:-20px;
+}
+.ss_pt_title
+{
+	background-color: #B2CEE7;
+	color: #000000;
+	font-size:14px;
+	padding: 2px 0px 2px 5px;
+	width:100%;
+}
+
+.ss_pt_para 
+{ 	margin: 1%; 
+}
+
 /* time block styles */	
 #ss_today 
 {
@@ -5275,8 +5301,17 @@ div.ss_canvas {
 	text-decoration:underline;
 	color:#E67814;
 	background-color:#FFFFFF;
-	}		
-	
+	}	
+.ss_summary						/*to use when need to display summary of an entry */
+{
+	padding: 0 0 0 15px;
+	font-style: italic;
+}
+.ss_status						/*to use when need to display twitter status of person */
+{
+	padding: 0 0 0 15px;
+	font-style: italic;
+}	
 .ss_link_1 						/* link_1 Link style for links */ 
 	{ 
 	color: #00AEEF; 
@@ -5366,14 +5401,16 @@ div.ss_canvas {
     #ss_tabsC a:hover {
       background-position:0% -42px;
       }
+
     #ss_tabsC a:hover span {
       background-position:100% -42px;
       }
 
-    #ss_tabsC #current a {
+    #ss_tabsC .ss_tabsCCurrent a {
                 background-position:0% -42px;
+               
         }
-    #ss_tabsC #current a span {
+    #ss_tabsC .ss_tabsCcurrent a span {
                 background-position:100% -42px;
         }
 		
@@ -5404,29 +5441,33 @@ div.ss_canvas {
 								only padding top and bottom is included here, make it whatever value you need */
 		overflow:hidden;
 	}
-	/* 3 Column blog style settings */
-	.ss_blogstyle
+	/* 3 Column page style settings */
+	.ss_tricolumn				/* 3 Column page style */
 	{
-		/* right column background colour */
-		background-color: #CF9;
+		background-color: #EDF7E7;
+		/* right column background color */
+		border-top: 1px #A7A9AC solid;
 	}
-	.ss_blogstyle .ss_colmid {
-		right:25%;				/* width of the right column */
-		background:#f4f4f4;		/* center column background colour */
+	.ss_tricolumn .ss_colmid
+	{
+		right: 25%;
+		/* width of the right column */
+		/* center column background color */
+		background-color: #FFFFFC;
 	}
-	.ss_blogstyle .ss_colleft {
+	.ss_tricolumn .ss_colleft {
 		right:25%;				/* width of the middle column */
-		background:#fff;		/* left column background colour */
+		background:#fff;		/* left column background color */
 	}
-	.ss_blogstyle .ss_col1 {
+	.ss_tricolumn .ss_col1 {
 		width:46%;				/* width of center column content (column width minus padding on either side) */
 		left:52%;				/* 100% plus left padding of center column */
 	}
-	.ss_blogstyle .ss_col2 {
+	.ss_tricolumn .ss_col2 {
 		width:21%;				/* Width of left column content (column width minus padding on either side) */
 		left:56%;				/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
 	}
-	.ss_blogstyle .ss_col3 {
+	.ss_tricolumn .ss_col3 {
 		width:21%;				/* Width of right column content (column width minus padding on either side) */
 		left:60%;				/* Please make note of the brackets here:
 								(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
@@ -5462,8 +5503,6 @@ div.ss_canvas {
 		text-decoration:none;
 		background-color:#fff;
 	}	
-
-
 
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>
