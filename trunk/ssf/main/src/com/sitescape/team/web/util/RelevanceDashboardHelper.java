@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.web.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -53,6 +54,7 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.BinderHelper.Place;
 
 public class RelevanceDashboardHelper {
 	
@@ -99,6 +101,7 @@ public class RelevanceDashboardHelper {
 		model.put(WebKeys.MY_TASKS, results.get(ObjectKeys.SEARCH_ENTRIES));
 
 		Map<String, Map> cacheEntryDef = new HashMap();
+		Map places = new HashMap();
     	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
     	if (items != null) {
 	    	Iterator it = items.iterator();
@@ -109,8 +112,15 @@ public class RelevanceDashboardHelper {
 	    			cacheEntryDef.put(entryDefId, bs.getDefinitionModule().getEntryDefinitionElements(entryDefId));
 	    		}
 	    		entry.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, cacheEntryDef.get(entryDefId));
+				String id = (String)entry.get("_binderId");
+				if (id != null) {
+					Long bId = new Long(id);
+					Binder place = bs.getBinderModule().getBinder(bId);
+					places.put(id, place);
+				}
 	    	}
     	}
+    	model.put(WebKeys.MY_TASKS_FOLDERS, places);
 	}
 	
 	private static void setupVisitorsBeans(AllModulesInjected bs, Binder binder, Map model) {
