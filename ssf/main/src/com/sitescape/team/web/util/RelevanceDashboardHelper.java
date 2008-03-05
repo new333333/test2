@@ -136,7 +136,7 @@ public class RelevanceDashboardHelper {
 	}
 	
 	private static void setupTrackedItemsBeans(AllModulesInjected bs, Binder binder, Map model) {
-		if (binder != null && EntityType.workspace.equals(binder.getEntityType().name()) && 
+		if (binder != null && EntityType.workspace.equals(binder.getEntityType()) && 
 				binder.getDefinitionType() != null && Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
@@ -157,7 +157,7 @@ public class RelevanceDashboardHelper {
 	
 	private static void setupSharedItemsBeans(AllModulesInjected bs, Binder binder, Map model) {
 		//What is this user workspace tracking?
-		if (binder != null && EntityType.workspace.equals(binder.getEntityType().name()) && 
+		if (binder != null && EntityType.workspace.equals(binder.getEntityType()) && 
 				binder.getDefinitionType() != null && Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
@@ -195,6 +195,12 @@ public class RelevanceDashboardHelper {
 			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
 		}
 		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+	}
+	
+	public static void setupMyTeamsBeans(AllModulesInjected bs, Map model) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
+		model.put(WebKeys.MY_TEAMS, myTeams);
 	}
 
 }

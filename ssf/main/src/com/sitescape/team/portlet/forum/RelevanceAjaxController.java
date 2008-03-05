@@ -149,6 +149,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		Map formData = request.getParameterMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 
 		if (!WebHelper.isUserLoggedIn(request)) {
@@ -166,6 +167,13 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		//The user is logged in
 		if (op.equals(WebKeys.OPERATION_GET_RELEVANCE_DASHBOARD)) {
 			return ajaxGetRelevanceDashboard(request, response);
+		} else if (op.equals(WebKeys.OPERATION_SHARE_THIS_BINDER)) {
+			if (formData.containsKey("okBtn")) {
+				Map model = new HashMap();
+				return new ModelAndView("forum/close_window", model);
+			} else {
+				return ajaxShareThisBinder(this, request, response);
+			}
 		}
 
 		return new ModelAndView("forum/fetch_url_return");
@@ -208,24 +216,14 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 	
 	private void ajaxSaveShareThisBinder(ActionRequest request, 
 			ActionResponse response) throws Exception {
-		User user = RequestContextHolder.getRequestContext().getUser();
+		//TODO Add more code to store the share request
+		Map formData = request.getParameterMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Long userWorkspaceId = user.getWorkspaceId();
-		if (userWorkspaceId != null) {
-			UserProperties userForumProperties = getProfileModule().getUserProperties(user.getId(), userWorkspaceId);
-			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
-			if (relevanceMap == null) relevanceMap = new HashMap();
-			List sharedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_SHARED_BINDERS);
-			if (sharedBinders == null) {
-				sharedBinders = new ArrayList();
-				relevanceMap.put(ObjectKeys.RELEVANCE_SHARED_BINDERS, sharedBinders);
-			}
-			if (!sharedBinders.contains(binderId)) sharedBinders.add(binderId);
-			
-			//Save the updated list
-			getProfileModule().setUserProperty(user.getId(), userWorkspaceId, 
-					ObjectKeys.USER_PROPERTY_RELEVANCE_MAP, relevanceMap);
-		}
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		
+		//The list of users is in "users"
+		//The list of groups is in "groups"
+		//The team workspace ids are in "cb_" concatenated with the binderId of the team
 	}
 	
 	private ModelAndView ajaxGetRelevanceDashboard(RenderRequest request, 
@@ -235,6 +233,15 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.TYPE, type);
 		setupDashboardBeans(this, type, request, response, model);
 		return new ModelAndView("forum/relevance_dashboard/ajax", model);
+	}
+	
+	private ModelAndView ajaxShareThisBinder(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
+		Map model = new HashMap();
+		model.put(WebKeys.BINDER_ID, binderId);
+		RelevanceDashboardHelper.setupMyTeamsBeans(bs, model);
+		return new ModelAndView("forum/relevance_dashboard/share_this_item", model);
 	}
 	
 	private void setupDashboardBeans(AllModulesInjected bs, String type, RenderRequest request, 
