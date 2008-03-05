@@ -136,8 +136,8 @@ public class RelevanceDashboardHelper {
 	}
 	
 	private static void setupTrackedItemsBeans(AllModulesInjected bs, Binder binder, Map model) {
-		if (binder != null && binder.getEntityType().equals(EntityType.workspace) && 
-				binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+		if (binder != null && EntityType.workspace.equals(binder.getEntityType().name()) && 
+				binder.getDefinitionType() != null && Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
 			if (relevanceMap != null) {
@@ -157,8 +157,8 @@ public class RelevanceDashboardHelper {
 	
 	private static void setupSharedItemsBeans(AllModulesInjected bs, Binder binder, Map model) {
 		//What is this user workspace tracking?
-		if (binder != null && binder.getEntityType().equals(EntityType.workspace) && 
-				binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
+		if (binder != null && EntityType.workspace.equals(binder.getEntityType().name()) && 
+				binder.getDefinitionType() != null && Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
 			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
 			if (relevanceMap != null) {
