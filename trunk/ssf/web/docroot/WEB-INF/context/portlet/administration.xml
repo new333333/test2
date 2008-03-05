@@ -16,6 +16,8 @@
 	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureConfigurationController" />
 	<bean id="adminImportProfilesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportProfilesController" />
 	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageGroupsController" />
+	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageApplicationsController" />
+	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageApplicationGroupsController" />
 	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ViewChangeLogController" />
 	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.AccessControlController" />
 	<bean id="configureController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" />
@@ -47,6 +49,8 @@
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
 						<entry key="import_profiles"><ref bean="adminImportProfilesController"/></entry>
 						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
+						<entry key="manage_applications"><ref bean="adminManageApplicationsController"/></entry>
+						<entry key="manage_application_groups"><ref bean="adminManageApplicationGroupsController"/></entry>
 						<entry key="view_change_log"><ref bean="adminViewChangeLogController"/></entry>
 						<entry key="configure_access_control"><ref bean="accessControlController"/></entry>
 						<entry key="configure_definitions"><ref bean="configureController"/></entry>

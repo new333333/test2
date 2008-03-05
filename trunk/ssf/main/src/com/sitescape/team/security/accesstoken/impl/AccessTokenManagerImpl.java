@@ -28,9 +28,7 @@
  */
 package com.sitescape.team.security.accesstoken.impl;
 
-import java.security.SecureRandom;
-
-import org.springframework.beans.factory.InitializingBean;
+import java.util.UUID;
 
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -41,10 +39,9 @@ import com.sitescape.team.security.accesstoken.AccessToken.TokenType;
 import com.sitescape.team.security.dao.SecurityDao;
 import com.sitescape.team.util.EncryptUtil;
 
-public class AccessTokenManagerImpl implements AccessTokenManager, InitializingBean {
+public class AccessTokenManagerImpl implements AccessTokenManager {
 
 	private SecurityDao securityDao;
-	private SecureRandom random;
 	
 	protected SecurityDao getSecurityDao() {
 		return securityDao;
@@ -53,16 +50,12 @@ public class AccessTokenManagerImpl implements AccessTokenManager, InitializingB
 	public void setSecurityDao(SecurityDao securityDao) {
 		this.securityDao = securityDao;
 	}
-
-	public void afterPropertiesSet() throws Exception {
-		random = SecureRandom.getInstance("SHA1PRNG");
-	}
 	
 	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		TokenInfo info;
 		if(token.getType() == AccessToken.TokenType.interactive) {
-			info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), token.getUserId());
+			info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), token.getInfoId());
 		}
 		else {
 			info = getSecurityDao().loadTokenInfoBackground(rc.getZoneId(), token.getApplicationId(), token.getUserId(), token.getBinderId());	
@@ -77,60 +70,118 @@ public class AccessTokenManagerImpl implements AccessTokenManager, InitializingB
 		}
 	}
 
-	public AccessToken newAccessToken(TokenType type, Long applicationId, Long userId) {
-		return newAccessToken(type, applicationId, userId, null);
+	public AccessToken newBackgroundToken(Long applicationId, Long userId) {
+		return newBackgroundToken(applicationId, userId, null);
 	}
 
-	public AccessToken newAccessToken(TokenType type, Long applicationId, Long userId, Long binderId) {
-		return newAccessToken(type, applicationId, userId, binderId, ((binderId == null)? null : Boolean.TRUE));
+	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId) {
+		return newBackgroundToken(applicationId, userId, binderId, ((binderId == null)? null : Boolean.TRUE));
 	}
 
-	public AccessToken newAccessToken(TokenType type, Long applicationId, Long userId, Long binderId, Boolean includeDescendants) {
-		TokenInfo info = loadOrCreate(type, applicationId, userId, binderId);
+	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId, Boolean includeDescendants) {
+		TokenInfoBackground info = loadOrCreateBackground(applicationId, userId, binderId);
 		
-		String digest = computeDigest(type, applicationId, userId, binderId, includeDescendants, info.getSeed());
+		String digest = computeDigest(TokenType.background, applicationId, userId, binderId, includeDescendants, info.getSeed());
 		
-		return new AccessToken(type, applicationId, userId, digest, binderId, includeDescendants);
+		return AccessToken.backgroundToken(applicationId, userId, digest, binderId, includeDescendants);
 	}
 
-	public void updateSeedForInteractive(Long userId) {
-		RequestContext rc = RequestContextHolder.getRequestContext();
-		TokenInfoInteractive info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), userId);
-		if(info != null) {
-			info.setSeed(Long.valueOf(getRandomNumber()));
-			getSecurityDao().update(info);
-		}
-	}
-
-	public void updateSeedForBackground(Long applicationId, Long userId, Long binderId) {
+	public void invalidateBackgroundTokens(Long applicationId, Long userId, Long binderId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		TokenInfoBackground info = getSecurityDao().loadTokenInfoBackground(rc.getZoneId(), applicationId, userId, binderId);
 		if(info != null) {
-			info.setSeed(Long.valueOf(getRandomNumber()));
+			info.setSeed(getRandomSeed());
 			getSecurityDao().update(info);
 		}
 	}
 
-	public void emptyAllInteractive() {
+	public void destroyAllTokenInfoInteractive() {
 		getSecurityDao().deleteAll(TokenInfoInteractive.class);
 	}
 
-	private String computeDigest(AccessToken token, Long seed) {
+	public void destroyUserTokenInfoInteractive(Long userId) {
+		getSecurityDao().deleteUserTokenInfoInteractive(userId);
+	}
+
+	public void destroyTokenInfoInteractive(String infoId) {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		TokenInfoInteractive info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), infoId);	
+		if(info != null)
+			getSecurityDao().delete(info);
+	}
+
+	public AccessToken newInteractiveToken(Long applicationId, String infoId) {
+		return newInteractiveToken(applicationId, infoId, null);
+	}
+
+	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId) {
+		return newInteractiveToken(applicationId, infoId, binderId, ((binderId == null)? null : Boolean.TRUE));
+	}
+
+	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId, Boolean includeDescendants) {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		TokenInfoInteractive info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), infoId);	
+		
+		String digest = computeDigest(TokenType.background, applicationId, info.getUserId(), binderId, includeDescendants, info.getSeed());
+		
+		return AccessToken.interactiveToken(infoId, applicationId, info.getUserId(), digest, binderId, includeDescendants);
+	}
+
+	public String createTokenInfoInteractive(Long userId) {
+		/*
+		 * Implementation note:
+		 * 
+		 * 1. The application needs a handle to map the user's HTTP session to 
+		 * the corresponding TokenInfoInteractive object in the dabase.
+		 * We could use either the session id or the database internal id for
+		 * the purpose. The latter has at least two advantages over the former: 
+		 * (a) The object id remains the same for the duration of the session, 
+		 * whereas the HTTP session id can change when the system configuration
+		 * involves session replication and transparent fail over. 
+		 * (b) By using database id for record lookup (as opposed to querying 
+		 * it by session id), the chance of cache hit is much higher. 
+		 * 
+		 * 2. Although we could use the session id as the input to the digest
+		 * computation, we simply use random seed so that we could re-use the
+		 * same code for both interactive and background tokens. 
+		 */
+		
+		TokenInfoInteractive info = new TokenInfoInteractive(userId, getRandomSeed());
+		getSecurityDao().save(info);
+		return info.getId();	
+	}
+
+	private String computeDigest(AccessToken token, String seed) {
 		return computeDigest(token.getType(), token.getApplicationId(), token.getUserId(), token.getBinderId(), token.getIncludeDescendants(), seed);
 	}
 	
-	private String computeDigest(TokenType type, Long applicationId, Long userId, Long binderId, Boolean includeDescendants, Long seed) {
+	private String getRandomSeed() {
+		return UUID.randomUUID().toString();
+	}
+	
+	private String computeDigest(TokenType type, Long applicationId, Long userId, Long binderId, Boolean includeDescendants, String seed) {
 		if(binderId == null) {
-			return EncryptUtil.encryptSHA1(type.name(), applicationId.toString(), userId.toString(), seed.toString());
+			return EncryptUtil.encryptSHA1(type.name(), applicationId.toString(), userId.toString(), seed);
 		}
 		else if(includeDescendants == null) {
-			return EncryptUtil.encryptSHA1(type.name(), applicationId.toString(), userId.toString(), binderId.toString(), seed.toString());
+			return EncryptUtil.encryptSHA1(type.name(), applicationId.toString(), userId.toString(), binderId.toString(), seed);
 		}
 		else {
-			return EncryptUtil.encryptSHA1(type.name(), applicationId.toString(), userId.toString(), binderId.toString(), includeDescendants.toString(), seed.toString());
+			return EncryptUtil.encryptSHA1(type.name(), applicationId.toString(), userId.toString(), binderId.toString(), includeDescendants.toString(), seed);
 		}
 	}
 	
+	private TokenInfoBackground loadOrCreateBackground(Long applicationId, Long userId, Long binderId) {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		TokenInfoBackground info = getSecurityDao().loadTokenInfoBackground(rc.getZoneId(), applicationId, userId, binderId);	
+		if(info == null) {
+			info = new TokenInfoBackground(applicationId, userId, binderId, getRandomSeed());
+			getSecurityDao().save(info);
+		}
+		return info;
+	}
+
+	/*
 	private TokenInfo loadOrCreate(TokenType type, Long applicationId, Long userId, Long binderId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		if(type == AccessToken.TokenType.interactive) {
@@ -149,9 +200,6 @@ public class AccessTokenManagerImpl implements AccessTokenManager, InitializingB
 			}
 			return info;
 		}
-	}
+	}*/
 
-	private Long getRandomNumber() {
-		return random.nextLong();
-	}
 }

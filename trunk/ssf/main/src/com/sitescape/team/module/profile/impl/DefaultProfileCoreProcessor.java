@@ -50,6 +50,8 @@ import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.SFQuery;
+import com.sitescape.team.domain.Application;
+import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
@@ -61,6 +63,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.GroupPrincipal;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
@@ -236,8 +239,8 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
        
     //***********************************************************************************************************	
     protected void modifyEntry_setCtx(Entry entry, Map ctx) {
-    	if (entry instanceof Group) {
-    		ctx.put(ObjectKeys.FIELD_GROUP_MEMBERS, new HashSet(((Group)entry).getMembers()));
+    	if (entry instanceof GroupPrincipal) {
+    		ctx.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, new HashSet(((GroupPrincipal)entry).getMembers()));
     	}
     	super.modifyEntry_setCtx(entry, ctx);
     }
@@ -336,7 +339,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
      * @param inputData
      * @param entryData
      */
-    protected void doProfileEntryFillin(Entry entry, InputDataAccessor inputData, Map entryData) {  
+    protected void doProfileEntryFillin(Entry entry, InputDataAccessor inputData, Map entryData) {
     	if (entry instanceof User) {
     		if (inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE) && !entryData.containsKey(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) {
     			entryData.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, inputData.getSingleValue(ObjectKeys.FIELD_USER_DISPLAYSTYLE));
@@ -371,19 +374,22 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     		if (inputData.exists(ObjectKeys.FIELD_USER_SKYPEID) && !entryData.containsKey(ObjectKeys.FIELD_USER_SKYPEID)) {
     			entryData.put(ObjectKeys.FIELD_USER_SKYPEID, inputData.getSingleValue(ObjectKeys.FIELD_USER_SKYPEID));
     		}
-    	} else {
-    		//must be a group
-        	if (inputData.exists(ObjectKeys.FIELD_GROUP_MEMBERS) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_MEMBERS)) {
-    			entryData.put(ObjectKeys.FIELD_GROUP_MEMBERS, inputData.getSingleObject(ObjectKeys.FIELD_GROUP_MEMBERS));
+    	} else if(entry instanceof Application) {
+        	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_POST_URL) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_POST_URL)) {
+    			entryData.put(ObjectKeys.FIELD_APPLICATION_POST_URL, inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_POST_URL));
+        	}
+    	} else { // Group or ApplicationGroup 
+        	if (inputData.exists(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS)) {
+    			entryData.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, inputData.getSingleObject(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS));
         	}
         	//hack to get member names from input and convert to set - Mostly for user/group load
-        	if (inputData.exists(ObjectKeys.INPUT_FIELD_GROUP_MEMBERNAME) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_MEMBERS)) {
-        		String[] sNames = inputData.getValues(ObjectKeys.INPUT_FIELD_GROUP_MEMBERNAME);
+        	if (inputData.exists(ObjectKeys.INPUT_FIELD_GROUP_PRINCIPAL_MEMBERNAME) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS)) {
+        		String[] sNames = inputData.getValues(ObjectKeys.INPUT_FIELD_GROUP_PRINCIPAL_MEMBERNAME);
         		
          		//see if they exist
         		Map params = new HashMap();
         		params.put("plist", sNames);
-        		params.put("zoneId", ((Group)entry).getZoneId());
+        		params.put("zoneId", ((GroupPrincipal)entry).getZoneId());
         		List exists;
         		if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_FOREIGNNAME))
         			exists = getCoreDao().loadObjects("from com.sitescape.team.domain.Principal where zoneId=:zoneId and foreignName in (:plist)", params);
@@ -394,10 +400,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 				   Principal p = (Principal)exists.get(x);
 				   if (p.isActive()) members.add(p);
         		}
-	   			entryData.put(ObjectKeys.FIELD_GROUP_MEMBERS, members);
+	   			entryData.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, members);
         	}
-
-    	}
+    	} 
+    	
    		if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_THEME) && !entryData.containsKey(ObjectKeys.FIELD_PRINCIPAL_THEME)) {
 			entryData.put(ObjectKeys.FIELD_PRINCIPAL_THEME, inputData.getSingleValue(ObjectKeys.FIELD_PRINCIPAL_THEME));
 		}
@@ -490,8 +496,12 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			ProfileIndexUtils.addEmail(indexDoc, user, false);
 			ProfileIndexUtils.addZonName(indexDoc, user, false);
 			ProfileIndexUtils.addWorkspaceId(indexDoc, user);
-		} else {
+		} else if(entry instanceof Group) {
 	        ProfileIndexUtils.addName(indexDoc, (Group)entry, false);	
+		} else if(entry instanceof Application) {
+	        ProfileIndexUtils.addName(indexDoc, (Application)entry, false);	
+		} else if(entry instanceof ApplicationGroup) {
+	        ProfileIndexUtils.addName(indexDoc, (ApplicationGroup)entry, false);			
 		}
         ProfileIndexUtils.addReservedId(indexDoc, (Principal)entry, false);	
 		
@@ -713,9 +723,15 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_STATUS, user.getStatus());
 					XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOGINDATE, user.getLoginDate());
 
-		} else {
+		} else if(prin instanceof Group) {
 			Group group = (Group)prin;
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_GROUP_MEMBERS, LongIdUtil.getIdsAsString(group.getMembers()));
+		} else if(prin instanceof Application) {
+			Application application = (Application)prin;
+			// $$$$$
+		} else if(prin instanceof ApplicationGroup) {
+			ApplicationGroup group = (ApplicationGroup)prin;
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_APPLICATION_GROUP_MEMBERS, LongIdUtil.getIdsAsString(group.getMembers()));			
 		}
 		getCoreDao().save(changes);
 		return changes;

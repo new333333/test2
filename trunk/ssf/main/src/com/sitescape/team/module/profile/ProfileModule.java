@@ -38,9 +38,13 @@ import java.util.SortedSet;
 
 import org.dom4j.Document;
 
+import com.sitescape.team.domain.Application;
+import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.GroupPrincipal;
+import com.sitescape.team.domain.IndividualPrincipal;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
@@ -167,7 +171,7 @@ public interface ProfileModule {
 	 */
 	public Long getEntryWorkspaceId(Long binderId, Long principaId);
 	/**
-	 * Return search results for groups
+	 * Return search results for user groups
 	 * @param binderId - id of profileBinder
 	 * @return
 	 * @throws AccessControlException
@@ -184,7 +188,7 @@ public interface ProfileModule {
     public Map getGroups(Long binderId, Map searchOptions)
     	throws AccessControlException;
     /**
-     * Return set of groups, sorted by title
+     * Return set of user groups, sorted by title
      * @param groupIds
      * @return
      * @throws AccessControlException
@@ -357,5 +361,130 @@ public interface ProfileModule {
 	 */
 	public boolean testAccess(Principal entry, ProfileOperation operation);
 
-	
+	 /**
+	  * Add a new application group
+	  * @param binderId
+	  * @param definitionId
+	  * @param inputData
+	  * @param fileItems - may be null
+	  * @param options - additional processing options or null
+	  * @return
+	  * @throws AccessControlException
+	  * @throws WriteFilesException
+	  */
+	 public Long addApplicationGroup(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+		throws AccessControlException, WriteFilesException;
+	 
+	 /**
+	  * Add a new application
+	  * @param binderId
+	  * @param definitionId
+	  * @param inputData
+	  * @param fileItems - may be null
+	  * @param options - additional processing options or null
+	  * @return
+	  * @throws AccessControlException
+	  * @throws WriteFilesException
+	  */
+	 public Long addApplication(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems, Map options) 
+		throws AccessControlException, WriteFilesException;
+
+	/**
+	 * Return search results for application groups
+	 * @param binderId - id of profileBinder
+	 * @return
+	 * @throws AccessControlException
+	 */
+	public Map getApplicationGroups(Long binderId)
+			throws AccessControlException;
+
+	/**
+	 * Same as {@link getApplicationGroups(Long) getApplicationGroups} except additional search options may be supplied
+	 * @param binderId - id of profileBinder
+	 * @param searchOptions
+	 * @return
+	 * @throws AccessControlException
+	 */
+	public Map getApplicationGroups(Long binderId, Map searchOptions)
+			throws AccessControlException;
+
+	/**
+	 * Return set of application groups, sorted by title
+	 * @param groupIds
+	 * @return
+	 * @throws AccessControlException
+	 */
+	public SortedSet<ApplicationGroup> getApplicationGroups(
+			Collection<Long> groupIds) throws AccessControlException;
+
+	/**
+	 * Return search results for group principals (includes both user groups and application groups)
+	 * @param binderId - id of profileBinder
+	 * @return
+	 * @throws AccessControlException
+	 */
+    public Map getGroupPrincipals(Long binderId) 
+    	throws AccessControlException;
+    /**
+     * Same as {@link getGroupPrincipals(Long) getGroupPrincipals} except additional search options may be supplied
+     * @param binderId - id of profileBinder
+     * @param searchOptions
+     * @return
+     * @throws AccessControlException
+     */
+    public Map getGroupPrincipals(Long binderId, Map searchOptions)
+    	throws AccessControlException;
+    /**
+     * Return set of group principals, sorted by title (includes both user groups and application groups)
+     * @param groupIds
+     * @return
+     * @throws AccessControlException
+     */
+	public SortedSet<GroupPrincipal> getGroupPrincipals(Collection<Long> groupIds)
+		throws AccessControlException;
+
+    /**
+	 * Return search results for applications
+     * @param binderId - id of profileBinder
+     * @return
+     */
+	public Map getApplications(Long binderId);
+    /**
+     * Same as {@link #getApplications(Long)} except additional search options may be supplied
+     * 
+     * @param binderId - id of profileBinder
+     * @param searchOptions
+     * @return
+     */
+	public Map getApplications(Long binderId, Map searchOptions);
+	/**
+	 * Return set of applications, sorted by title
+	 * @param ids
+	 * @return
+	 * @throws AccessControlException
+	 */
+    public SortedSet<Application> getApplications(Collection<Long> applicationIds);
+
+    /**
+	 * Return search results for individual principals (includes both users and applications)
+     * @param binderId - id of profileBinder
+     * @return
+     */
+	public Map getIndividualPrincipals(Long binderId);
+    /**
+     * Same as {@link #getIndividualPrincipals(Long)} except additional search options may be supplied
+     * 
+     * @param binderId - id of profileBinder
+     * @param searchOptions
+     * @return
+     */
+	public Map getIndividualPrincipals(Long binderId, Map searchOptions);
+	/**
+	 * Return set of individual principals, sorted by title (includes both users and applications)
+	 * @param ids
+	 * @return
+	 * @throws AccessControlException
+	 */
+    public SortedSet<IndividualPrincipal> getIndividualPrincipals(Collection<Long> individualIds);
+
 }

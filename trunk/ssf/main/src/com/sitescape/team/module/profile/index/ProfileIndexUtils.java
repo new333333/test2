@@ -34,6 +34,8 @@ import org.apache.lucene.document.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import com.sitescape.team.domain.Application;
+import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
@@ -57,7 +59,8 @@ public class ProfileIndexUtils  {
     public static final String ORGANIZATION_FIELD="_org";
     public static final String ZONNAME_FIELD="_zonName";
     public static final String RESERVEDID_FIELD="_reservedId";    
-    public static final String WORKSPACE_ID_FIELD="_workspaceId";    
+    public static final String WORKSPACE_ID_FIELD="_workspaceId";
+    public static final String APPLICATION_NAME_FIELD = "_applicationName";
     
     public static void addName(Document doc, User user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
@@ -120,6 +123,15 @@ public class ProfileIndexUtils  {
     		doc.add(docNumField);
     	}
     } 
+    public static void addName(Document doc, Application application, boolean fieldsOnly) {
+        Field docNumField = new Field(APPLICATION_NAME_FIELD, application.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        doc.add(docNumField);
+    }    
+    public static void addName(Document doc, ApplicationGroup appGroup, boolean fieldsOnly) {
+    	// share the same field name with Group, no good reason to create separate name
+        Field docNumField = new Field(GROUPNAME_FIELD, appGroup.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+        doc.add(docNumField);
+    }      
 
 
 }

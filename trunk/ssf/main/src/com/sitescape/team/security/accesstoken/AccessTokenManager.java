@@ -38,68 +38,117 @@ public interface AccessTokenManager {
 	 */
 	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException;
 	
-
 	/**
-	 * Generates an access token of given type.
+	 * Generates an access token of background type.
 	 * 
-	 * @param type
 	 * @param applicationId
 	 * @param userId
 	 * @return
 	 */
-	public AccessToken newAccessToken(AccessToken.TokenType type, 
-			Long applicationId, Long userId);
+	public AccessToken newBackgroundToken(Long applicationId, Long userId);
 	
 	/**
-	 * Generates an access token of given type.
+	 * Generates an access token of background type.
 	 * If <code>binderId</code> is specified, its <code>includeDescendants</code> 
 	 * flag is set to <code>true</code>.
 	 * 
-	 * @param type
 	 * @param applicationId
 	 * @param userId
 	 * @param binderId optional
 	 * @return
 	 */
-	public AccessToken newAccessToken(AccessToken.TokenType type, 
-			Long applicationId, Long userId, Long binderId);
+	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId);
 	
 	/**
-	 * Generates an access token of given type.
+	 * Generates an access token of background type.
 	 * 
-	 * @param type
 	 * @param applicationId
 	 * @param userId
 	 * @param binderId optional
 	 * @param includeDescendants ignored if <code>binderId</code> is <code>null</code>
 	 * @return
 	 */
-	public AccessToken newAccessToken(AccessToken.TokenType type, 
-			Long applicationId, Long userId, Long binderId, Boolean includeDescendants);
+	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId, Boolean includeDescendants);
 	
 	/**
-	 * Update the seed value, if exists, used for generating interactive tokens for the specified user.
-	 * Effectively this invalidates all outstanding interactive tokens issued on behalf of the user.
-	 * 
-	 * @param userId
-	 */
-	public void updateSeedForInteractive(Long userId);
-	
-	/**
-	 * Update the seed value, if exists, used for generating background tokens for the
-	 * specified application/user/binder combination.
-	 * Effectively this invalidates all outstanding background tokens issued for the
-	 * combination.
+	 * This invalidates all existing/outstanding background tokens issued for
+	 * the combination.
 	 * 
 	 * @param applicationId
 	 * @param userId
 	 * @param binderId optional
 	 */
-	public void updateSeedForBackground(Long applicationId, Long userId, Long binderId);
+	public void invalidateBackgroundTokens(Long applicationId, Long userId, Long binderId);
 	
 	/**
-	 * Empty all states used for generating interactive tokens. 
-	 * Effectively this invalidates all outstanding interactive tokens for all users.
+	 * Generates an access token of interactive type.
+	 * 
+	 * @param applicationId
+	 * @param infoId
+	 * @return
 	 */
-	public void emptyAllInteractive();
+	public AccessToken newInteractiveToken(Long applicationId, String infoId);
+	
+	/**
+	 * Generates an access token of interactive type.
+	 * If <code>binderId</code> is specified, its <code>includeDescendants</code> 
+	 * flag is set to <code>true</code>.
+	 * 
+	 * @param applicationId
+	 * @param infoId
+	 * @param binderId optional
+	 * @return
+	 */
+	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId);
+	
+	/**
+	 * Generates an access token of interactive type.
+	 * 
+	 * @param applicationId
+	 * @param infoId
+	 * @param binderId optional
+	 * @param includeDescendants ignored if <code>binderId</code> is <code>null</code>
+	 * @return
+	 */
+	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId, Boolean includeDescendants);
+	
+	/**
+	 * Create a <code>TokenInfoInteractive</code> object that the system 
+	 * will use to manage the interactive tokens issued during the user's
+	 * specific interactive session. Typically this is called as a 
+	 * notification that a HTTP session was created for the user.
+	 * 
+	 * @param userId
+	 * @return ID of the created object.
+	 */
+	public String createTokenInfoInteractive(Long userId);
+	
+	/**
+	 * Destroy all <code>TokenInfoInteractive</code> objects that belong
+	 * to any user in the system. 
+	 */
+	public void destroyAllTokenInfoInteractive();
+	
+	/**
+	 * Destroy all <code>TokenInfoInteractive</code> objects that belong
+	 * to the user. Effectively this invalidates all existing/outstanding
+	 * interactive tokens bound to any of the interactive sessions held
+	 * by the user.
+	 * 
+	 * @param userId
+	 */
+	public void destroyUserTokenInfoInteractive(Long userId);
+	
+	/**
+	 * Destroy the <code>TokenInfoInteractive</code> object represented by the
+	 * ID. Effectively this invalidates all existing/outstanding interactive
+	 * tokens bound to the specific session. 
+	 * <p>
+	 * Typically this is called as a notification that the user's HTTP session
+	 * was destroyed.
+	 * 
+	 * @param infoId
+	 */
+	public void destroyTokenInfoInteractive(String infoId);
+	
 }

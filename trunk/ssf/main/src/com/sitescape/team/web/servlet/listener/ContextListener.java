@@ -39,7 +39,7 @@ public class ContextListener implements ServletContextListener {
 	public void contextInitialized(ServletContextEvent sce) {
 		AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
 		
-		accessTokenManager.emptyAllInteractive();
+		accessTokenManager.destroyAllTokenInfoInteractive();
 	}
 
 	public void contextDestroyed(ServletContextEvent sce) {

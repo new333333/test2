@@ -145,7 +145,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map options = new HashMap();
-		String view, viewAccessible;
+		String view = "", viewAccessible = "";
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
 		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
@@ -263,8 +263,20 @@ public class TypeToFindAjaxController extends SAbstractController {
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			view = "forum/find_user_search";
 			viewAccessible = "forum/find_user_search_accessible";
-		} else {
+		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER)) {
 			Map entries = getProfileModule().getUsers(user.getParentBinder().getId(), options);
+			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
+			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			view = "forum/find_user_search";
+			viewAccessible = "forum/find_user_search_accessible";
+		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_APPLICATION_GROUP)) {
+			Map entries = getProfileModule().getApplicationGroups(user.getParentBinder().getId(), options);
+			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
+			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+			view = "forum/find_user_search";
+			viewAccessible = "forum/find_user_search_accessible";
+		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_APPLICATION)) {
+			Map entries = getProfileModule().getApplications(user.getParentBinder().getId(), options);
 			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 			view = "forum/find_user_search";

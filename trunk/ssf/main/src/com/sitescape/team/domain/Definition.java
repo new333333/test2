@@ -66,6 +66,8 @@ public class Definition extends PersistentTimestampObject  {
 	public static final int WORKSPACE_VIEW=8;
 	public static final int PROFILE_GROUP_VIEW=11;
 	public static final int USER_WORKSPACE_VIEW=12;
+	public static final int PROFILE_APPLICATION_VIEW=13;
+	public static final int PROFILE_APPLICATION_GROUP_VIEW=14;
 	
 	public static final String VIEW_STYLE_DEFAULT="folder"; 
 	public static final String VIEW_STYLE_TABLE="table"; 

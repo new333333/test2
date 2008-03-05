@@ -10,6 +10,6 @@
 	      <key-property name="binderId" />
 	    </composite-id>
     	<property name="zoneId" access="field"/>
-    	<property name="seed" />
+    	<property name="seed" length="128"/>
 	</class>
 </hibernate-mapping>

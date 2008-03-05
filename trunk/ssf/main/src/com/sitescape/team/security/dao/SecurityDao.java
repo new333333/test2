@@ -87,9 +87,12 @@ public interface SecurityDao {
     public List findWorkAreaByOperation( Long zoneId,
              String workAreaOperationName,  Set membersToLookup);
 
-    public TokenInfoInteractive loadTokenInfoInteractive(Long zoneId, Long userId);
+    public TokenInfoInteractive loadTokenInfoInteractive(Long zoneId, String infoId);
 
+    public void deleteUserTokenInfoInteractive(Long userId);
+    
     public TokenInfoBackground loadTokenInfoBackground(Long zoneId, Long applicationId, Long userId, Long binderId);
 
     public void deleteAll(Class clazz);
+    
 }

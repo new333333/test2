@@ -66,6 +66,8 @@ import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.PrincipalComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Application;
+import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.Dashboard;
@@ -1041,6 +1043,8 @@ public class BinderHelper {
 		Map allowedFunctions = new HashMap();
 		Map sortedGroupsMap = new TreeMap();
 		Map sortedUsersMap = new TreeMap();
+		Map sortedApplicationsMap = new TreeMap();
+		Map sortedApplicationGroupsMap = new TreeMap();
 
 		String[] btnClicked = new String[] {""};
  		if (formData.containsKey("btnClicked")) btnClicked = (String[])formData.get("btnClicked");
@@ -1121,8 +1125,12 @@ public class BinderHelper {
 				functionMap.put(f, pMap);
 				Map groups = new HashMap();
 				Map users = new HashMap();
+				Map applicationGroups = new HashMap();
+				Map applications = new HashMap();
 				pMap.put(WebKeys.USERS, users);
 				pMap.put(WebKeys.GROUPS, groups);
+				pMap.put(WebKeys.APPLICATIONS, applications);
+				pMap.put(WebKeys.APPLICATION_GROUPS, applicationGroups);
 				
 				//Populate the map with data from the form instead of getting it from the database
 				List members = (List)roleMembers.get(f.getId());
@@ -1139,8 +1147,12 @@ public class BinderHelper {
 							Principal p = (Principal)principalMap.get(pId);
 							if (p instanceof Group) {
 								groups.put(p.getId(), p);
-							} else {
+							} else if (p instanceof User) {
 								users.put(p.getId(), p);
+							} else if (p instanceof Application) {
+								applications.put(p.getId(), p);
+							} else if (p instanceof ApplicationGroup) {
+								applicationGroups.put(p.getId(), p);
 							}
 						}
 					}
@@ -1150,10 +1162,15 @@ public class BinderHelper {
 			for (Iterator iter = membership.iterator();iter.hasNext();) {
 				Long pId = (Long)iter.next();
 				Principal p = (Principal)principalMap.get(pId);
-				if (p != null && p instanceof Group) {
+				if(p == null) continue;
+				if (p instanceof Group) {
 					sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
-				} else if (p != null && p instanceof User) {
+				} else if (p instanceof User) {
 					sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+				} else if (p instanceof Application) {
+					sortedApplicationsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+				} else if (p instanceof ApplicationGroup) {
+					sortedApplicationGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 				}
 			}
 
@@ -1164,8 +1181,12 @@ public class BinderHelper {
 				functionMap.put(f, pMap);
 				Map groups = new HashMap();
 				Map users = new HashMap();
+				Map applicationGroups = new HashMap();
+				Map applications = new HashMap();
 				pMap.put(WebKeys.USERS, users);
 				pMap.put(WebKeys.GROUPS, groups);
+				pMap.put(WebKeys.APPLICATIONS, applications);
+				pMap.put(WebKeys.APPLICATION_GROUPS, applicationGroups);
 				for (int j=0; j<membership.size(); ++j) {
 					WorkAreaFunctionMembership m = (WorkAreaFunctionMembership)membership.get(j);
 					if (f.getId().equals(m.getFunctionId())) {
@@ -1178,12 +1199,19 @@ public class BinderHelper {
 						Collection ids = ResolveIds.getPrincipals(m.getMemberIds());
 						for (Iterator iter=ids.iterator(); iter.hasNext();) {
 							Principal p = (Principal)iter.next();
-							if (p != null && p instanceof Group) {
+							if(p == null) continue;
+							if (p instanceof Group) {
 								groups.put(p.getId(), p);
 								sortedGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
-							} else if (p != null && p instanceof User) {
+							} else if (p instanceof User) {
 								users.put(p.getId(), p);
 								sortedUsersMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+							} else if (p instanceof Application) {
+								applications.put(p.getId(), p);
+								sortedApplicationsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
+							} else if (p instanceof ApplicationGroup) {
+								applicationGroups.put(p.getId(), p);
+								sortedApplicationGroupsMap.put(p.getTitle().toLowerCase() + p.getName().toString(), p);
 							}
 						}
 						break;
@@ -1199,7 +1227,13 @@ public class BinderHelper {
 			Map pMap = (Map)functionMap.get(f);
 			Map users = (Map)pMap.get(WebKeys.USERS);
 			Map groups = (Map)pMap.get(WebKeys.GROUPS);
-			if (users.size() > 0 || groups.size() > 0 || pMap.containsKey(WebKeys.OWNER) || 
+			Map applications = (Map)pMap.get(WebKeys.APPLICATIONS);
+			Map applicationGroups = (Map)pMap.get(WebKeys.APPLICATION_GROUPS);
+			if (users.size() > 0 || 
+					groups.size() > 0 || 
+					applications.size() > 0 || 
+					applicationGroups.size() > 0 || 
+					pMap.containsKey(WebKeys.OWNER) || 
 					pMap.containsKey(WebKeys.TEAM_MEMBER) ||
 					newRoleIds.contains(f.getId())) {
 				//This function has some membership; add it to the sorted list
@@ -1213,6 +1247,10 @@ public class BinderHelper {
 		List sortedGroups = new ArrayList(sortedGroupsMap.values());
 
 		List sortedUsers = new ArrayList(sortedUsersMap.values());
+		
+		List sortedApplicationGroups = new ArrayList(sortedApplicationGroupsMap.values());
+
+		List sortedApplications = new ArrayList(sortedApplicationsMap.values());
 		
 		//Build list of allowed roles
 		for (int i=0; i<functions.size(); ++i) {
@@ -1232,6 +1270,13 @@ public class BinderHelper {
 		model.put(WebKeys.ACCESS_SORTED_GROUPS_MAP, sortedGroupsMap);
 		model.put(WebKeys.ACCESS_SORTED_GROUPS, sortedGroups);
 		model.put(WebKeys.ACCESS_GROUPS_COUNT, Integer.valueOf(sortedGroups.size()));
+
+		model.put(WebKeys.ACCESS_SORTED_APPLICATIONS_MAP, sortedApplicationsMap);
+		model.put(WebKeys.ACCESS_SORTED_APPLICATIONS, sortedApplications);
+		model.put(WebKeys.ACCESS_APPLICATIONS_COUNT, Integer.valueOf(sortedApplications.size()));
+		model.put(WebKeys.ACCESS_SORTED_APPLICATION_GROUPS_MAP, sortedApplicationGroupsMap);
+		model.put(WebKeys.ACCESS_SORTED_APPLICATION_GROUPS, sortedApplicationGroups);
+		model.put(WebKeys.ACCESS_APPLICATION_GROUPS_COUNT, Integer.valueOf(sortedApplicationGroups.size()));
 	}
 	
 	public static void mergeAccessControlTableBeans(Map model) {

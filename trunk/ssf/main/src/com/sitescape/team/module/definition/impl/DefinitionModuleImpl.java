@@ -54,6 +54,8 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.domain.Application;
+import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CommaSeparatedValue;
 import com.sitescape.team.domain.DefinableEntity;
@@ -603,6 +605,24 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				definitionName="_group";
 				break;				
 			}
+			case Definition.PROFILE_APPLICATION_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_APPLICATION_DEF, Integer.valueOf(type)}), zoneId);
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				internalId = ObjectKeys.DEFAULT_APPLICATION_DEF;
+				definitionTitle = "__definition_default_application";
+				definitionName="_application";
+				break;				
+			}
+			case Definition.PROFILE_APPLICATION_GROUP_VIEW: {
+				List result = getCoreDao().loadObjects(Definition.class, 
+						new FilterControls(defaultDefAttrs, new Object[]{ObjectKeys.DEFAULT_APPLICATION_GROUP_DEF, Integer.valueOf(type)}), zoneId);
+				if (!result.isEmpty()) return (Definition)result.get(0);
+				internalId = ObjectKeys.DEFAULT_APPLICATION_GROUP_DEF;
+				definitionTitle = "__definition_default_application_group";
+				definitionName="_applicationGroup";
+				break;				
+			}
 		}
 		Document doc = getInitialDefinition(definitionName, definitionTitle, type, new MapInputData(new HashMap()));
 		doc.getRootElement().addAttribute("internalId", internalId);
@@ -684,6 +704,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			definitionType = Definition.PROFILE_ENTRY_VIEW;
 		} else	if (entry instanceof Group) {
 			definitionType = Definition.PROFILE_GROUP_VIEW;
+		} else	if (entry instanceof Application) {
+			definitionType = Definition.PROFILE_APPLICATION_VIEW;
+		} else	if (entry instanceof ApplicationGroup) {
+			definitionType = Definition.PROFILE_APPLICATION_GROUP_VIEW;
 		} else {
 			definitionType = Definition.FOLDER_ENTRY;
 		}

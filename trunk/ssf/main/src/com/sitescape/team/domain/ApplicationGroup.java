@@ -42,7 +42,7 @@ public class ApplicationGroup extends ApplicationPrincipal implements GroupPrinc
     private List members;  //initialized by hibernate access=field  
     
 	public EntityIdentifier.EntityType getEntityType() {
-		return EntityIdentifier.EntityType.appgroup;
+		return EntityIdentifier.EntityType.applicationGroup;
 	}
 
     public String getTitle() {

@@ -57,6 +57,12 @@
 	<c:when test="${list_type == 'group'}">
 		<c:set var="accessibilityText" value="navigation.findGroup" />
 	</c:when>
+	<c:when test="${list_type == 'application'}">
+		<c:set var="accessibilityText" value="navigation.findApplication" />
+	</c:when>
+	<c:when test="${list_type == 'applicationGroup'}">
+		<c:set var="accessibilityText" value="navigation.findGroup" />
+	</c:when>
 	<c:otherwise>">
 		<c:set var="accessibilityText" value="" />
 	</c:otherwise>
@@ -84,6 +90,12 @@
       <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span></div>
     </c:if>
     <c:if test="${list_type == 'group'}">
+      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findGroup"/></span></div>
+    </c:if>
+    <c:if test="${list_type == 'application'}">
+      <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findApplication"/></span></div>
+    </c:if>
+    <c:if test="${list_type == 'applicationGroup'}">
       <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findGroup"/></span></div>
     </c:if>
 </td>

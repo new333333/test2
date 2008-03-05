@@ -247,6 +247,8 @@ public class WebKeys {
 	public static final String ACTION_MANAGE_GROUPS="manage_groups";
 	public static final String ACTION_MANAGE_LICENSE="manage_license";
 	public static final String ACTION_MANAGE_ZONES="manage_zones";
+	public static final String ACTION_MANAGE_APPLICATIONS="manage_applications";
+	public static final String ACTION_MANAGE_APPLICATION_GROUPS="manage_application_groups";
 	public static final String ACTION_PROFILES_IMPORT="import_profiles";
 	public static final String ACTION_QUOTA_REPORT="quota_report";
 	public static final String ACTION_SEND_EMAIL="send_email";
@@ -416,6 +418,8 @@ public class WebKeys {
 	public static final String ACCESS_FUNCTIONS_COUNT = "ss_accessFunctionsCount";
 	public static final String ACCESS_GROUPS_COUNT = "ss_accessGroupsCount";
 	public static final String ACCESS_USERS_COUNT = "ss_accessUsersCount";
+	public static final String ACCESS_APPLICATION_GROUPS_COUNT = "ss_accessApplicationGroupsCount";
+	public static final String ACCESS_APPLICATIONS_COUNT = "ss_accessApplicationsCount";
 	public static final String ACCESS_PARENT = "ss_accessParent";
 	public static final String ACCESS_SORTED_FUNCTIONS = "ss_accessSortedFunctions";
 	public static final String ACCESS_SORTED_FUNCTIONS_MAP = "ss_accessSortedFunctionsMap";
@@ -423,6 +427,10 @@ public class WebKeys {
 	public static final String ACCESS_SORTED_GROUPS_MAP = "ss_accessSortedGroupsMap";
 	public static final String ACCESS_SORTED_USERS = "ss_accessSortedUsers";
 	public static final String ACCESS_SORTED_USERS_MAP = "ss_accessSortedUsersMap";
+	public static final String ACCESS_SORTED_APPLICATION_GROUPS = "ss_accessSortedApplicationGroups";
+	public static final String ACCESS_SORTED_APPLICATION_GROUPS_MAP = "ss_accessSortedApplicationGroupsMap";
+	public static final String ACCESS_SORTED_APPLICATIONS = "ss_accessSortedApplications";
+	public static final String ACCESS_SORTED_APPLICATIONS_MAP = "ss_accessSortedApplicationsMap";
 	public static final String ACCESS_SUPER_USER = "ss_superUser";
 	public static final String ACCESSIBLE_URL = "ss_accessibleUrl";
 	public static final String ACTION = "action";
@@ -434,6 +442,10 @@ public class WebKeys {
 	public static final String ADMIN_TREE="ssAdminDomTree";
 	public static final String AJAX_ERROR_MESSAGE="ssAjaxErrorMessage";
 	public static final String AJAX_ERROR_DETAIL="ssAjaxErrorDetail";
+    public static final String APPLICATION="ssApplication";
+	public static final String APPLICATIONS="ssApplications";
+	public static final String APPLICATION_GROUPS="ssApplicationGroups";
+    public static final String APPLICATION_LIST="ss_applicationList";
 	public static final String ATTACHMENTS_TYPE="attachments";
 	public static final String BINDER="ssBinder";
 	public static final String BINDER_ID="ssBinderId";
@@ -652,6 +664,7 @@ public class WebKeys {
     public static final String NAMESPACE="ss_namespace";
     public static final String MAIL_POSTING_USE_ALIASES="mail_posting_use_aliases"; 
     public static final String MAIL_POSTING_DUMMY_PASSWORD="_____"; 
+    public static final String MANAGE_GROUPS_PAGE_TITLE_TAG="ssPageTitleTag";
     public static final String MARKUP_FORM="form"; 
     public static final String MARKUP_FILE="file"; 
     public static final String MARKUP_VIEW="view"; 
@@ -806,7 +819,6 @@ public class WebKeys {
     public static final String TAG_SIGN="ssTagSign";
 	public static final String UPLOAD_FILE_URL = "ss_upload_file_url";
 	public static final String USER_ID = "com.sitescape.userId";
-	public static final String USER_SHARED = "com.sitescape.user.shared";
 	public static final String USER_LIST = "ss_userList";
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
@@ -818,6 +830,8 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS="communityTags";
     public static final String USER_SEARCH_USER_GROUP_TYPE_ENTRIES="entries";
     public static final String USER_SEARCH_USER_GROUP_TYPE_PLACES="places";
+    public static final String USER_SEARCH_USER_GROUP_TYPE_APPLICATION_GROUP="applicationGroup";
+    public static final String USER_SEARCH_USER_GROUP_TYPE_APPLICATION="application";
     public static final String USER_WORKSPACE="ss_userWorkspace";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
     public static final String WINDOW_STATE="ss_windowState";
@@ -836,6 +850,7 @@ public class WebKeys {
     public static final String ZONE_ID = "com.sitescape.zoneId";
     public static final String SERVER_NAME = "com.sitescape.server.name";
     public static final String SERVER_PORT = "com.sitescape.server.port";
+    public static final String TOKEN_INFO_ID = "ssTokenInfoId";
     
     public static final String FOLDER_SORT_BY = "ssFolderSortBy";
     public static final String FOLDER_SORT_DESCEND = "ssFolderSortDescend";
@@ -871,6 +886,8 @@ public class WebKeys {
     public static final String VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM ="administration/importAllDefinitionsConfirm"; 
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
     public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
+    public static final String VIEW_ADMIN_MANAGE_APPLICATIONS="administration/manage_applications";
+    public static final String VIEW_ADMIN_MANAGE_APPLICATION_GROUPS="administration/manage_application_groups";
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
     public static final String VIEW_ADMIN_MANAGE_ZONES="administration/manage_zones";
     public static final String VIEW_ADMIN_REDIRECT="administration/view_admin_redirect";

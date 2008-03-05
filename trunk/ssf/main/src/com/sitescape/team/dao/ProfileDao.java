@@ -39,8 +39,10 @@ import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.SFQuery;
 import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
+import com.sitescape.team.domain.ApplicationPrincipal;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.GroupPrincipal;
 import com.sitescape.team.domain.IndividualPrincipal;
 import com.sitescape.team.domain.NoGroupByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheNameException;
@@ -149,5 +151,13 @@ public interface ProfileDao {
     public ApplicationGroup loadApplicationGroup(Long groupId, Long zoneId) throws NoGroupByTheIdException;
     public Application loadApplication(Long applicationId, Long zoneId) throws NoUserByTheIdException;
     public Application loadApplication(Long applicationId, String zoneName) throws NoUserByTheIdException;
+    public List<ApplicationGroup> loadApplicationGroups(Collection<Long> groupsIds, Long zoneId);
+    public ApplicationPrincipal loadApplicationPrincipal(Long prinId, Long zoneId, boolean checkActive);
+    public List<ApplicationPrincipal> loadApplicationPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
+    public List<GroupPrincipal> loadGroupPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
+    public List<IndividualPrincipal> loadIndividualPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
+    public List<Application> loadApplications(Collection<Long> applicationIds, Long zoneId);
+
+    public List<Principal> loadPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
 
  }

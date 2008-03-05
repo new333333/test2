@@ -46,21 +46,19 @@ public class SessionListener implements HttpSessionListener {
 	public void sessionDestroyed(HttpSessionEvent se) {
 		HttpSession ses = se.getSession();
 		
-		final Long userId = (Long) ses.getAttribute(WebKeys.USER_ID);
+		final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
 		
-		if(userId != null) {
-			Boolean sharedUser = (Boolean) ses.getAttribute(WebKeys.USER_SHARED);
-			if(Boolean.FALSE.equals(sharedUser)) {
-				final AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
-				Long zoneId = (Long) ses.getAttribute(WebKeys.ZONE_ID);
-				// Make sure to run it in the user's context.	
-				RunasTemplate.runas(new RunasCallback() {
-					public Object doAs() {
-						accessTokenManager.updateSeedForInteractive(userId);
-						return null;
-					}
-				}, zoneId, userId);
-			}
+		if(infoId != null) {
+			Long userId = (Long) ses.getAttribute(WebKeys.USER_ID);
+			final AccessTokenManager accessTokenManager = (AccessTokenManager) SpringContextUtil.getBean("accessTokenManager");
+			Long zoneId = (Long) ses.getAttribute(WebKeys.ZONE_ID);
+			// Make sure to run it in the user's context.	
+			RunasTemplate.runas(new RunasCallback() {
+				public Object doAs() {
+					accessTokenManager.destroyTokenInfoInteractive(infoId);
+					return null;
+				}
+			}, zoneId, userId);
 		}
 	}
 

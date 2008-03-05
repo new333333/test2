@@ -726,6 +726,11 @@ public class SearchFilterToSearchBooleanConverter {
 				addEntityType(subAnd, EntityType.folderEntry.name());
 				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_REPLY);
 				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ENTRY);
+			} else if (itemType.equals("application")) {
+				Element subAnd = subOr.addElement(QueryBuilder.AND_ELEMENT);
+				addEntityType(subAnd, EntityType.application.name());
+				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ENTRY);
+				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_APPLICATION);
 			}
 		}
 	}
