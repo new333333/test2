@@ -466,8 +466,12 @@ ss_statusCurrent = "${ssUser.status}";
 </td>
 <td style="padding-left:20px;">
 <c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-<a class="ss_linkButton ss_smallprint" href="javascript: ;" 
-  onClick="ss_shareThisBinder('${ssBinder.id}');return false;">
+<a class="ss_linkButton ss_smallprint" 
+  href="<ssf:url adapter="true" portletName="ss_forum" 
+		action="__ajax_relevance" actionUrl="false"><ssf:param 
+		name="operation" value="share_this_binder" /><ssf:param 
+		name="binderId" value="${ssBinder.id}" /></ssf:url>" 
+  onClick="ss_openUrlInWindow(this, '_blank', 450, 600);return false;">
 <c:if test="${ssBinder.entityType == 'workspace'}"><span class="ss_smallprint"><ssf:nlt tag="relevance.shareThisWorkspace"/></span></c:if>
 <c:if test="${ssBinder.entityType == 'folder'}"><span class="ss_smallprint"><ssf:nlt tag="relevance.shareThisFolder"/></span></c:if>
 </a>

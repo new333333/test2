@@ -424,13 +424,15 @@ function ss_openTitleUrl(obj) {
 }
 
 //Routine to open a url in a new window
-function ss_openUrlInWindow(obj,windowName) {
-	if (windowName == "") {
+function ss_openUrlInWindow(obj, windowName, width, height) {
+	if (typeof width == "undefined") width = ss_getWindowWidth();
+	if (typeof height == "undefined") height = ss_getWindowHeight();
+	if (typeof windowName == "undefined" || windowName == "") {
 		//There is no window, so open it in this window
 		return true;
 	} else {
 		var url = obj.href
-		var win = self.window.open(url, windowName, 'directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no')
+		var win = self.window.open(url, windowName, 'directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no,width='+width+',height='+height)
 		if (win.focus) win.focus();
 	}
 	return false;
@@ -727,14 +729,6 @@ function ss_updateStatusNow(obj) {
 function ss_trackThisBinder(id) {
 	ss_setupStatusMessageDiv();
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"track_this_binder", binderId:id}, "__ajax_relevance");
-	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.setPostRequest(ss_postRequestAlertError);
-	ajaxRequest.sendRequest();  //Send the request
-}
-
-function ss_shareThisBinder(id) {
-	ss_setupStatusMessageDiv();
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"share_this_binder", binderId:id}, "__ajax_relevance");
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
 	ajaxRequest.sendRequest();  //Send the request
