@@ -310,5 +310,162 @@
 </c:forEach>
 
 </TBODY>
+
+<THEAD>
+<TR>
+  <TH class="ss_table_paragraph_bld">
+	<c:if test="${ssBinder.functionMembershipInherited}">
+	  <ssf:nlt tag="access.application.groups"/>
+	</c:if>
+	<c:if test="${!ssBinder.functionMembershipInherited}">
+	  <ssf:ifnotaccessible>
+	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationGroupsMenu${ss_namespace}', 40, 40);return false;">
+	      <ssf:nlt tag="access.addApplicationGroup"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
+	        src="<html:imagesPath/>pics/menudown.gif"/>
+	    </a>
+	  </ssf:ifnotaccessible>
+  
+      <ssf:ifaccessible>
+        <ssf:nlt tag="access.application.groups"/>
+      </ssf:ifaccessible>
+    </c:if>
+  </TH>
+  <TH class="ss_table_smheaders"><ssf:nlt tag="access.application.groupTitle"/></TH>
+  <TH class="ss_table_smheaders"><ssf:nlt tag="access.application.groupName"/></TH>
+<c:forEach var="function" items="${ss_accessSortedFunctions}">
+  <TH class="ss_table_smheaders"><a href="javascript:;" 
+  onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
+  ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
+  <c:if test="${empty ssFunctionsAllowed[function.id]}">
+  *
+  </c:if>
+  </span></a></TH>
+</c:forEach>
+</TR>
+</THEAD>
+
+<TBODY>
+<c:set var="counter" value="0"/>
+<c:forEach var="group" items="${ss_accessSortedApplicationGroups}">
+<c:set var="rowClass" value="ss_table_tr_even"/>
+<c:if test="${counter%2 != 0}"><c:set var="rowClass" value="ss_table_tr_odd"/></c:if>
+<c:set var="counter" value="${counter + 1}"/>
+<input type="hidden" name="principalIds" value="${group.id}"/>
+<TR class="${rowClass}">
+  <TD class="ss_table_paragraph"></TD>
+  <TD class="ss_table_paragraph">${group.title}</TD>
+  <TD class="ss_table_paragraph">${group.name}</TD>
+<c:forEach var="function" items="${ss_accessSortedFunctions}">
+<TD class="ss_table_paragraph" align="center" noWrap="noWrap">
+<c:if test="${!ssBinder.functionMembershipInherited}">
+  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/>
+  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssApplicationGroups[group.id]}">
+    src="<html:imagesPath/>pics/sym_s_checkmark.gif"
+  </c:if>
+  <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssApplicationGroups[group.id]}">
+    src="<html:imagesPath/>pics/1pix.gif"
+  </c:if>
+  style="padding-right:10px;"/>
+</c:if>
+<c:if test="${!empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
+    <input type="checkbox" 
+    <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+      disabled="disabled"
+    </c:if>
+    name="role_id${function.id}_${group.id}" 
+   checked="checked" />
+</c:if>
+<c:if test="${empty ssFunctionMap[function].ssApplicationGroups[group.id]}">
+    <input type="checkbox" 
+    <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+      disabled="disabled"
+    </c:if>
+    name="role_id${function.id}_${group.id}" />
+</c:if>
+</TD>
+</c:forEach>
+  
+</TR>
+</c:forEach>
+</TBODY>
+
+<THEAD>
+<TR>
+  <TH class="ss_table_paragraph_bld">
+	<c:if test="${ssBinder.functionMembershipInherited}">
+	  <ssf:nlt tag="access.applications"/>
+	</c:if>
+	<c:if test="${!ssBinder.functionMembershipInherited}">
+	  <ssf:ifnotaccessible>
+	    <a href="javascript:;" onClick="${ss_namespace}accessObj.showMenu(this, 'ss_addApplicationsMenu${ss_namespace}', 40, 40);return false;">
+	      <ssf:nlt tag="access.addApplication"/><img style="margin-left:4px;" <ssf:alt tag="alt.showMenu"/>
+	      src="<html:imagesPath/>pics/menudown.gif"/></a>
+	  </ssf:ifnotaccessible>
+  
+      <ssf:ifaccessible>
+        <ssf:nlt tag="access.applications"/>
+      </ssf:ifaccessible>
+    </c:if>
+  </TH>
+  <TH class="ss_table_smheaders"><ssf:nlt tag="access.applicationTitle"/></TH>
+  <TH class="ss_table_smheaders"><ssf:nlt tag="access.applicationName"/></TH>
+<c:forEach var="function" items="${ss_accessSortedFunctions}">
+  <TH class="ss_table_smheaders"><a href="javascript:;" 
+  onClick="ss_showDivAtXY('${ss_namespace}ss_operations${function.id}');return false;"
+  ><span class="ss_table_smalltext"><ssf:nlt tag="${function.name}" checkIfTag="true"/>
+  <c:if test="${empty ssFunctionsAllowed[function.id]}">
+  *
+  </c:if>
+  </span></a></TH>
+</c:forEach>
+</TR>
+</THEAD>
+
+<TBODY>
+<c:set var="counter" value="0"/>
+<c:forEach var="application" items="${ss_accessSortedApplications}">
+<c:set var="rowClass" value="ss_table_tr_even"/>
+<c:if test="${counter%2 != 0}"><c:set var="rowClass" value="ss_table_tr_odd"/></c:if>
+<c:set var="counter" value="${counter + 1}"/>
+<input type="hidden" name="principalIds" value="${application.id}"/>
+<TR class="${rowClass}">
+  <TD class="ss_table_paragraph"></TD>
+  <TD class="ss_table_paragraph">${application.title}</TD>
+  <TD class="ss_table_paragraph">${application.name}</TD>
+<c:forEach var="function" items="${ss_accessSortedFunctions}">
+<TD class="ss_table_paragraph" align="center" noWrap="noWrap">
+<c:if test="${!ssBinder.functionMembershipInherited}">
+  <img height="13" width="13" <ssf:alt tag="alt.selectedByParent"/> 
+  <c:if test="${!empty ss_accessParent.ssFunctionMap[function].ssApplications[application.id]}">
+    src="<html:imagesPath/>pics/sym_s_checkmark.gif"
+  </c:if>
+  <c:if test="${empty ss_accessParent.ssFunctionMap[function].ssApplications[application.id]}">
+    src="<html:imagesPath/>pics/1pix.gif"
+  </c:if>
+    style="padding-right:10px;"/>
+</c:if>
+<c:if test="${!empty ssFunctionMap[function].ssApplications[application.id]}">
+    <input type="checkbox" 
+    <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+      disabled="disabled"
+    </c:if>
+    name="role_id${function.id}_${application.id}" 
+    checked="checked" />
+</c:if>
+<c:if test="${empty ssFunctionMap[function].ssApplications[application.id]}">
+    <input type="checkbox" 
+    <c:if test="${ssBinder.functionMembershipInherited || empty ssFunctionsAllowed[function.id]}">
+      disabled="disabled"
+    </c:if>
+    name="role_id${function.id}_${application.id}" />
+</c:if>
+</TD>
+</c:forEach>
+  
+</TR>
+</c:forEach>
+
+</TBODY>
+
 </TABLE>
 </div>

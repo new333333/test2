@@ -252,6 +252,42 @@ var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse
   </div>
 </div>
 
+<div id="ss_addApplicationGroupsMenu${renderResponse.namespace}" 
+  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+  <div align="right">
+    <a href="javascript:;" onClick="ss_hideDiv('ss_addApplicationGroupsMenu${renderResponse.namespace}');return false;">
+      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
+    </a>
+  </div>
+  <div style="padding:0px 10px 10px 10px;">
+  <span class="ss_bold"><ssf:nlt tag="access.addApplicationGroup"/></span><br/>
+  <ssf:find formName="${renderResponse.namespace}rolesForm" 
+    formElement="addPrincipalText${renderResponse.namespace}" 
+    type="applicationGroup"
+    leaveResultsVisible="false"
+    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
+    width="100px" singleItem="true"/> 
+  </div>
+</div>
+
+<div id="ss_addApplicationsMenu${renderResponse.namespace}" 
+  style="position:absolute; display:none; border:1px solid black; background-color:#FFFFFF;">
+  <div align="right">
+    <a href="javascript:;" onClick="ss_hideDiv('ss_addApplicationsMenu${renderResponse.namespace}');return false;">
+      <img border="0" src="<html:imagesPath/>icons/close_off.gif" <ssf:alt tag="alt.hideThisMenu"/>/>
+    </a>
+  </div>
+  <div style="padding:0px 10px 10px 10px;">
+  <span class="ss_bold"><ssf:nlt tag="access.addApplication"/></span><br/>
+  <ssf:find formName="${renderResponse.namespace}rolesForm" 
+    formElement="addPrincipalText${renderResponse.namespace}" 
+    type="application"
+    leaveResultsVisible="false"
+    clickRoutine="ss_accessSelectPrincipal${renderResponse.namespace}"
+    width="100px" singleItem="true"/>
+  </div>
+</div>
+
 <span class="ss_bold"><a href="javascript: ${renderResponse.namespace}accessObj.addClipboardUsers();"><ssf:nlt tag="access.addClipboardUsers"/></a></span><br/>
 
   <ssf:ifnotaccessible>
