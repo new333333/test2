@@ -264,11 +264,13 @@ public class SearchFilter {
 		Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 		filterTermValueEle.setText(searchTerm.replaceFirst("\\*", "").trim());
 		
-		filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
-		filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
-		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
-		filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
-		filterTermValueEle.setText(searchTerm.trim());
+		if (searchTerm.contains("*")) {
+			filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, type);
+			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, field);
+			filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
+			filterTermValueEle.setText(searchTerm.trim());
+		}
 		
 	}
 	public void addTitleFilter(String searchTerm) {
@@ -281,6 +283,10 @@ public class SearchFilter {
 	
 	public void addFamilyFilter(String searchTerm) {
 		addFieldFilter(EntityIndexUtils.FAMILY_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+	}
+	
+	public void addAssignmentFilter(String searchTerm) {
+		addFieldFilter(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
 	public void addTagsFilter(String tagsType, String searchTerm) {
