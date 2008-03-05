@@ -471,7 +471,7 @@ ss_statusCurrent = "${ssUser.status}";
 		action="__ajax_relevance" actionUrl="false"><ssf:param 
 		name="operation" value="share_this_binder" /><ssf:param 
 		name="binderId" value="${ssBinder.id}" /></ssf:url>" 
-  onClick="ss_openUrlInWindow(this, '_blank', 450, 600);return false;">
+  onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;">
 <c:if test="${ssBinder.entityType == 'workspace'}"><span class="ss_smallprint"><ssf:nlt tag="relevance.shareThisWorkspace"/></span></c:if>
 <c:if test="${ssBinder.entityType == 'folder'}"><span class="ss_smallprint"><ssf:nlt tag="relevance.shareThisFolder"/></span></c:if>
 </a>
