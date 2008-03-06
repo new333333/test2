@@ -30,37 +30,35 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<table>
-<tbody>
-<th><ssf:nlt tag="relevance.sharedWorkspaces"/></th>
-<c:forEach var="binder" items="${ss_sharedBinders}">
-  <c:if test="${binder.entityType == 'workspace'}">
-	<tr>
-	  <td>
-	    <a
-	      href="<ssf:url action="view_ws_listing" binderId="${binder.id}"/>"
-	    >${binder.title}</a>
-	  </td>
-	</tr>
-  </c:if>
-</c:forEach>
-</tbody>
-</table>
 
-<br/>
-<table>
-<tbody>
-<th><ssf:nlt tag="relevance.sharedFolders"/></th>
-<c:forEach var="binder" items="${ss_sharedBinders}">
-  <c:if test="${binder.entityType == 'folder'}">
-	<tr>
-	  <td>
-	    <a
-	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
-	    >${binder.title}</a>
-	  </td>
-	</tr>
-  </c:if>
-</c:forEach>
-</tbody>
-</table>
+<div id="ss_dashboard_content" class="ss_tricolumn">
+  <div class="ss_colmid">
+    <div class="ss_colleft">
+      <div id="ss_col1" class="ss_col1">
+
+	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_whatsnew">
+	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
+	  Recent everyone documents<br/>
+	  Recent everyone documents<br/>
+	  Recent everyone documents<br/>
+	  Recent documents<br/>
+	</ssf:canvas>
+
+	<ssf:canvas id="relevanceMail" type="inline" styleId="ss_mail">
+	<ssf:param name="title" value="News"/>
+		<iframe src="http://news.bbc.co.uk/nolpda/ifs_news/hi/default.stm?ifs=1" 
+		frameborder="0" scrolling="Auto" 
+		width="100%" height="360">mail</iframe>	
+	</ssf:canvas>
+
+        </div><!-- end of ss_col 1 -->
+      <div id="ss_col2" class="ss_col2">
+
+      </div><!-- end of col2 -->
+      <div id="ss_col3" class="ss_col3">
+
+      </div><!-- end of col3 -->
+    </div><!-- end of col left -->
+  </div><!-- end of col mid -->
+</div><!-- end of content -->
+<div class="ss_clear_float"></div>
