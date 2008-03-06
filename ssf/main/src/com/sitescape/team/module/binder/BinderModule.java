@@ -45,6 +45,7 @@ import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
+import com.sitescape.team.search.Criteria;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -145,6 +146,14 @@ public interface BinderModule {
 	 * @return
 	 */
     public Map executeSearchQuery(Document searchQuery);
+    /**
+     * Same as {@link #executeSearchQuery(Document) executeSearchQuery}.
+     * @param query
+     * @param offset
+     * @param maxResults
+     * @return
+     */
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults);
     /**
      * Same as {@link #executeSearchQuery(Document) executeSearchQuery}.
      * @param query

@@ -97,6 +97,7 @@ import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.search.Criteria;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
@@ -648,16 +649,21 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Subscription s = getProfileDao().loadSubscription(user.getId(), binder.getEntityIdentifier());
 		if (s != null) getCoreDao().delete(s);
     }
-	public Map executeSearchQuery(Document searchQuery) {
-		return executeSearchQuery(searchQuery, null);
-	}
 
+    public Map executeSearchQuery(Criteria crit, int offset, int maxResults)
+	{
+		return executeSearchQuery(crit.toQuery(), offset, maxResults);
+	}
 	public Map executeSearchQuery(Document query, int offset, int maxResults) {
        	//Create the Lucene query
 	   	QueryBuilder qb = new QueryBuilder(true);
 	   	SearchObject so = qb.buildQuery(query);
 
 	   	return executeSearchQuery(so, offset, maxResults);
+	}
+
+	public Map executeSearchQuery(Document searchQuery) {
+		return executeSearchQuery(searchQuery, null);
 	}
 
 	public Map executeSearchQuery(Document searchQuery, Map options) {
