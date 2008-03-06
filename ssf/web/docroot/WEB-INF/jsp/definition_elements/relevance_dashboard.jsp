@@ -48,7 +48,7 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 		currentTab.parentNode.className = "";
 	}
 	eval("ss_relevanceTabCurrent_"+namespace+" = obj;");
-	obj.parentNode.className = "ss_profileCurrent";
+	obj.parentNode.className = "ss_tabsCCurrent";
 	
 	//Switch to the new tab
 	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);

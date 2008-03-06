@@ -5410,7 +5410,7 @@ div.ss_canvas {
                 background-position:0% -42px;
                
         }
-    #ss_tabsC .ss_tabsCcurrent a span {
+    #ss_tabsC .ss_tabsCCurrent a span {
                 background-position:100% -42px;
         }
 		

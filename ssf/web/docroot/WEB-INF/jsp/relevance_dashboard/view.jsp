@@ -35,5 +35,6 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/relevance_dashboard.jsp" %>
 
 </div>
+<div class="ss_clear_float"></div>
 </c:if>
 
