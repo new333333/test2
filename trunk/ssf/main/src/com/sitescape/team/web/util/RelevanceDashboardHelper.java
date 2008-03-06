@@ -46,9 +46,12 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.filter.SearchFilter;
+import static com.sitescape.team.module.shared.EntityIndexUtils.*;
+import static com.sitescape.team.search.BasicIndexUtils.*;
+import com.sitescape.team.search.Criteria;
+
+import static com.sitescape.team.search.Restrictions.*;
+import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
@@ -84,19 +87,19 @@ public class RelevanceDashboardHelper {
 	
 	protected static void setupTasksBeans(AllModulesInjected bs, Binder binder, Map model) {		
 		//Get the tasks bean
-		Map options = new HashMap();
-		
 		//Prepare for a standard dashboard search operation
+		Map options = new HashMap();
 		setupInitialSearchOptions(options);
-		
-		//Set up the task search filter
-		SearchFilter searchFilter = new SearchFilter(true);
-		searchFilter.addFamilyFilter(EntityIndexUtils.FAMILY_FIELD_TASK);	
-		searchFilter.addDocumentType(BasicIndexUtils.DOC_TYPE_ENTRY);
-		searchFilter.addAssignmentFilter(binder.getOwnerId().toString());
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter.getFilter());
-		//searchFilter.getFilter().asXML();		
-		Map results =  bs.getBinderModule().executeSearchQuery(searchFilter.getFilter(), options);
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+
+		Criteria crit = new Criteria();
+		crit.add(eq(FAMILY_FIELD,FAMILY_FIELD_TASK))
+			.add(eq(DOC_TYPE_FIELD, DOC_TYPE_ENTRY))
+			.add(eq(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,binder.getOwnerId().toString()));
+
+		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
 		model.put(WebKeys.MY_TASKS, results.get(ObjectKeys.SEARCH_ENTRIES));
 
 		Map<String, Map> cacheEntryDef = new HashMap();
@@ -106,7 +109,7 @@ public class RelevanceDashboardHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
-	    		String entryDefId = (String)entry.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+	    		String entryDefId = (String)entry.get(COMMAND_DEFINITION_FIELD);
 	    		if (cacheEntryDef.get(entryDefId) == null) {
 	    			cacheEntryDef.put(entryDefId, bs.getDefinitionModule().getEntryDefinitionElements(entryDefId));
 	    		}
@@ -128,14 +131,15 @@ public class RelevanceDashboardHelper {
 		
 		//Prepare for a standard dashboard search operation
 		setupInitialSearchOptions(options);
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
-		//Set up the docs search filter
-		SearchFilter searchFilter = new SearchFilter(true);
-		searchFilter.addEntryTypes(new String[] {"attachment", "entry", "reply"});
-		searchFilter.addCreatorById(binder.getOwnerId().toString());
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter.getFilter());
-		//searchFilter.getFilter().asXML();		
-		Map results =  bs.getBinderModule().executeSearchQuery(searchFilter.getFilter(), options);
+		Criteria crit = new Criteria();
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"attachment", "entry", "reply"}))
+			.add(eq(CREATORID_FIELD,binder.getOwnerId().toString()));
+	
+		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
 		model.put(WebKeys.MY_DOCUMENTS, results.get(ObjectKeys.SEARCH_ENTRIES));
 
 		Map places = new HashMap();
@@ -159,19 +163,15 @@ public class RelevanceDashboardHelper {
 		//Get the documents bean for the documents th the user just authored or modified
 		Map options = new HashMap();
 		
-		//Prepare for a standard dashboard search operation
-		setupInitialSearchOptions(options);
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
-		//Set up the tracked places search filter
-		SearchFilter searchFilter = new SearchFilter(true);
-		searchFilter.addEntryTypes(new String[] {"attachment", "entry", "reply"});
-		
-		//Get the list of places to be tracked		
-		searchFilter.setJoiner(false);
-		searchFilter.addAncestryIds(getTrackedPlacesIds(bs, binder));
-		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter.getFilter());
-		//searchFilter.getFilter().asXML();		
-		Map results =  bs.getBinderModule().executeSearchQuery(searchFilter.getFilter(), options);
+		Criteria crit = new Criteria();
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"attachment", "entry", "reply"}))
+			.add(in(ENTRY_ANCESTRY, getTrackedPlacesIds(bs, binder)));
+	
+		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
 		model.put(WebKeys.WHATS_NEW_TRACKED_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
 
 		Map places = new HashMap();
@@ -267,8 +267,8 @@ public class RelevanceDashboardHelper {
 		model.put(WebKeys.MY_TEAMS, myTeams);
 	}
 	
-	private static List getTrackedPlacesIds(AllModulesInjected bs, Binder binder) {
-		List sIdList = new ArrayList();
+	private static List<String> getTrackedPlacesIds(AllModulesInjected bs, Binder binder) {
+		List<String> sIdList = new ArrayList<String>();
 		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
 		if (relevanceMap != null) {
