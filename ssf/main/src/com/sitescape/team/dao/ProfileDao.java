@@ -30,6 +30,7 @@ package com.sitescape.team.dao;
 
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -53,6 +54,7 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Rating;
 import com.sitescape.team.domain.SeenMap;
+import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserPrincipal;
@@ -124,7 +126,8 @@ public interface ProfileDao {
     public List<UserPrincipal> loadUserPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
 	public Rating loadRating(Long userId, EntityIdentifier entityId);
     public SeenMap loadSeenMap(Long userId);
-	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);
+    public List<SharedEntity> loadSharedEntities(Collection ids, Collection binderIds, Date after, Long zoneId); 	
+   	public Subscription loadSubscription(Long userId, EntityIdentifier entityId);
   /**
      * Load a user that is neither deleted or disabled. Check that user is in zone.
      * @param userId

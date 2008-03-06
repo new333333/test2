@@ -47,6 +47,7 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.transaction.TransactionStatus;
@@ -65,6 +66,8 @@ import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
@@ -77,6 +80,7 @@ import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
+import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserPrincipal;
@@ -1106,6 +1110,55 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        	result.addAll(getProfileDao().loadIndividualPrincipals(individualIds, user.getZoneId(), true));
 		return result;	
 	}
+    //RO transaction
+    public Collection<SharedEntity> getShares(Long userId, Date after) {
+	    User user = getUser(userId, false);
+	    //get list of all groups user is a member of.
+	    Set<Long> accessIds = getProfileDao().getPrincipalIds(user);
+		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
+		Set<Long>binderIds = new HashSet();
+		for(Map binder : myTeams) {
+			try {
+				binderIds.add(Long.valueOf((String)binder.get(EntityIndexUtils.DOCID_FIELD)));
+			} catch (Exception ignore) {};
+		}
 
+	  List<SharedEntity> shares = getProfileDao().loadSharedEntities(accessIds, binderIds, after, user.getZoneId());
+	  //need to check access
+	  for (int i=0; i<shares.size();) {
+		  SharedEntity se = shares.get(i);
+		  if (se.getEntity() instanceof Binder) {
+				if (!getAccessControlManager().testOperation(user, (Binder)se.getEntity(), WorkAreaOperation.READ_ENTRIES)) {
+					shares.remove(i);
+				} else {
+					++i;
+				}
+		  } else {
+			  try {
+				  AccessUtils.readCheck((Entry)se.getEntity());
+				  ++i;
+			  } catch (Exception ex) {
+					shares.remove(i);
+			  }
+		  }
+	  }
+	  return shares;
+    }
+    //RW transaction
+    public void setShares(DefinableEntity entity, Collection<Long> principalIds, Collection<Long> binderIds) {
+	    User user = RequestContextHolder.getRequestContext().getUser();
+    	if (principalIds != null) {
+    		for (Long p: principalIds) {
+    			SharedEntity shared = new SharedEntity(user, entity, p, SharedEntity.ACCESS_TYPE_PRINCIPAL);
+   	   			getCoreDao().save(shared);
+      		}
+    	}
+    	if (binderIds != null) {
+    		for (Long p: binderIds) {
+    			SharedEntity shared = new SharedEntity(user, entity, p, SharedEntity.ACCESS_TYPE_TEAM);
+    			getCoreDao().save(shared);
+    		}
+    	}
+    }
 }
 

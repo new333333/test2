@@ -252,6 +252,12 @@ public interface FolderModule {
     public FolderEntry getEntry(Long parentFolderId, Long entryId) 
     	throws AccessControlException;
     /**
+     * Get the  <code>FolderEntries</code> 
+     * @param ids
+     * @return
+     */
+    public SortedSet<FolderEntry>getEntries(Collection<Long>ids);
+    /**
      * 
      * @param parentFolderId
      * @param entryId

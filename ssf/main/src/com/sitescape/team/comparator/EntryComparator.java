@@ -1,4 +1,3 @@
-<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -27,50 +26,58 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<div class="ss_style ss_portal">
-<h2><ssf:nlt tag="relevance.shareThisWithWhom"/></h2
 
-<form class="ss_style ss_form" 
-  action="<ssf:url adapter="true" portletName="ss_forum" 
-		action="__ajax_relevance" actionUrl="true"><ssf:param 
-		name="operation" value="share_this_binder" /><ssf:param 
-		name="binderId" value="${ssBinderId}" /><c:if test=""><ssf:param 
-		name="entryId" value="${ssEntryId}" /></c:if></ssf:url>"
-  name="$renderResponse.namespace}fm" 
-  id="$renderResponse.namespace}fm" 
-  method="post">
-  
-<span class="ss_bold"><ssf:nlt tag="relevance.selectUsers"/></span>
-<br/>
-  <ssf:find formName="${renderResponse.namespace}fm" formElement="users" 
-    type="user" userList="${ssUsers}" binderId="${ssBinderId}"/>
+package com.sitescape.team.comparator;
 
-<br/>
+import java.text.Collator;
+import java.util.Comparator;
+import java.util.Locale;
 
-<span class="ss_bold"><ssf:nlt tag="relevance.selectGroups"/></span>
-<br/>
-  <ssf:find formName="${renderResponse.namespace}fm" formElement="groups" 
-    type="group" userList="${ssGroups}"/>
-    
-<br/>
-<br/>
+import com.sitescape.team.domain.DefinableEntity;
 
-<span class="ss_bold"><ssf:nlt tag="relevance.selectTeams"/></span>
-<br/>
-<ul>
-  <c:forEach var="team" items="${ss_myTeams}">
-	<li><input type="checkbox" name="cb_${team._docId}"/>
-	    <span style="padding-left:6px;">${team.title}</span>
-	</li>
-  </c:forEach>
-</ul>
+/**
+ * This comparator is used to produce a sorted collection based on pathName
+ * @author Janet McCann
+ *
+ */
+public class EntryComparator implements Comparator {
+   	private Collator c;
+   	private SortByField type;
+	public enum SortByField {
+		title ,
+		pathName };
 
-<br/>
-
-<input type="submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>" />
-<input type="button" value="<ssf:nlt tag="button.cancel"/>" onClick="self.window.close();return false;"/>
-
-</form>
-</div>
+	public EntryComparator(Locale locale, SortByField type) {
+		c = Collator.getInstance(locale);
+		this.type = type;
+	}
+	public int compare(Object obj1, Object obj2) {
+		DefinableEntity f1,f2;
+		f1 = (DefinableEntity)obj1;
+		f2 = (DefinableEntity)obj2;
+				
+		if (f1 == f2) return 0;
+		if (f1==null) return -1;
+		if (f2 == null) return 1;
+		String t1,t2;
+		if (type.equals(SortByField.title)) {
+			t1 = f1.getTitle().toLowerCase();
+			t2 = f2.getTitle().toLowerCase();
+		} else {
+			t1 = f1.getParentBinder().getPathName().toLowerCase() + "/" + f1.getTitle().toLowerCase();
+			t2 = f2.getParentBinder().getPathName().toLowerCase() + "/" + f2.getTitle().toLowerCase();
+			
+		}
+		int result=0;
+		if ((t1!=null) && (t2 != null)) {
+			result = c.compare(t1, t2);
+			if (result != 0) return result;
+		} else if ((t1==null) && (t2 != null)) return -1;
+		else if ((t1 != null) && (t2 == null)) return 1;
+		//if titles match - compare type
+		result = f1.getEntityType().compareTo(f2.getEntityType());
+		if (result != 0) return result;
+		//if titles and type match - compare ids
+		return f1.getId().compareTo(f2.getId());
+	}
+}

@@ -60,6 +60,11 @@ public class EntityIdentifier {
 			this.dbValue = dbValue;
 		}
 		public int getValue() {return dbValue;}
+		public boolean isBinder() {
+			if ((dbValue == 1) || (dbValue == 2) || (dbValue == 3))
+				return true;
+			return false;
+		}
 		public static EntityType valueOf(int type) {
 			switch (type) {
 			case 0: return EntityType.none;
