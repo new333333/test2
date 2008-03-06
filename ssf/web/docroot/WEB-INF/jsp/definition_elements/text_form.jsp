@@ -37,7 +37,7 @@
 	if (width == null || width.equals("")) {
 		width = "";
 	} else {
-		width = "width=\""+width+"\"";
+		width = "size=\""+width+"\" maxlength=\""+width+"\"";
 	}
 	if (caption == null || caption.equals("")) {
 		caption = "";
