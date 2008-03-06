@@ -5165,21 +5165,21 @@ div.ss_canvas {
 	border:1px solid #B2CEE7;	
 
 }
-#ss_Box_5
+#ss_tasks
 {
 	padding: 0;
 	margin: 1% 0 2% 0;
 	color:#444444;
 
 }
-#ss_Box_6
+#ss_trackedItems
 {
 	padding: 0;
 	margin: 1% 0 2% 0;
 	color:#444444;
 
 }
-#ss_Box_7
+#ss_people
 {
 	padding: 0;
 	margin: 1% 0 2% 0;

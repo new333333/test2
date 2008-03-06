@@ -28,7 +28,7 @@
  */
 package com.sitescape.team.web.util;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -36,9 +36,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -54,7 +51,6 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.BinderHelper.Place;
 
 public class RelevanceDashboardHelper {
 	
@@ -71,9 +67,10 @@ public class RelevanceDashboardHelper {
 		
 		if (ObjectKeys.RELEVANCE_DASHBOARD_DASHBOARD.equals(type)) {
 			setupTasksBeans(bs, userWorkspace, model);
+			setupDocumentsBeans(bs, userWorkspace, model);
 			setupSharedItemsBeans(bs, userWorkspace, model);
 			
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_SITE_DASHBOARD.equals(type)) {
+		} else if (ObjectKeys.RELEVANCE_DASHBOARD_NETWORK_DASHBOARD.equals(type)) {
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_VISITORS.equals(type)) {
 			setupVisitorsBeans(bs, userWorkspace, model);
@@ -121,6 +118,39 @@ public class RelevanceDashboardHelper {
 	    	}
     	}
     	model.put(WebKeys.MY_TASKS_FOLDERS, places);
+	}
+	
+	protected static void setupDocumentsBeans(AllModulesInjected bs, Binder binder, Map model) {		
+		//Get the documents bean for the documents th the user just authored or modified
+		Map options = new HashMap();
+		
+		//Prepare for a standard dashboard search operation
+		setupInitialSearchOptions(options);
+		
+		//Set up the docs search filter
+		SearchFilter searchFilter = new SearchFilter(true);
+		searchFilter.addEntryTypes(new String[] {"attachment", "entry", "reply"});
+		searchFilter.addCreatorById(binder.getOwnerId().toString());
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter.getFilter());
+		//searchFilter.getFilter().asXML();		
+		Map results =  bs.getBinderModule().executeSearchQuery(searchFilter.getFilter(), options);
+		model.put(WebKeys.MY_DOCUMENTS, results.get(ObjectKeys.SEARCH_ENTRIES));
+
+		Map places = new HashMap();
+    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+    	if (items != null) {
+	    	Iterator it = items.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+				String id = (String)entry.get("_binderId");
+				if (id != null) {
+					Long bId = new Long(id);
+					Binder place = bs.getBinderModule().getBinder(bId);
+					places.put(id, place);
+				}
+	    	}
+    	}
+    	model.put(WebKeys.MY_DOCUMENTS_FOLDERS, places);
 	}
 	
 	private static void setupVisitorsBeans(AllModulesInjected bs, Binder binder, Map model) {

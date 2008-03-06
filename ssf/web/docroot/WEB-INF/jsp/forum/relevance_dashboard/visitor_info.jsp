@@ -35,7 +35,7 @@
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
 
-	<ssf:canvas id="relevanceVisitors" type="inline">
+	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_people">
 	<ssf:param name="title" value="<%= NLT.get("relevance.visitedInPastTwoWeeks") %>"/>
 		<ul class="ss_nobullet">
 		<c:forEach var="user" items="${ssUsers}">

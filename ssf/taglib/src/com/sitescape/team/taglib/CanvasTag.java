@@ -46,6 +46,7 @@ public class CanvasTag extends BodyTagSupport implements ParamAncestorTag {
 	private String type = "";
 	private String _bodyContent;
 	private String id;
+	private String styleId;
 	private Map _params;
 
 	public int doStartTag() {
@@ -101,6 +102,7 @@ public class CanvasTag extends BodyTagSupport implements ParamAncestorTag {
 			}
 			this.type = "";
 			this.id = "";
+			this.styleId = "";
 		}
 	}
 
@@ -110,6 +112,10 @@ public class CanvasTag extends BodyTagSupport implements ParamAncestorTag {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public void setStyleId(String styleId) {
+		this.styleId = styleId;
 	}
 
 	public void addParam(String name, String value) {
