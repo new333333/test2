@@ -38,6 +38,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 
 import javax.portlet.ActionRequest;
 
@@ -703,9 +704,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     		}
     		idData.put(WebKeys.PAGE_SIZE, String.valueOf(pageSize));
     		idData.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
-   			Collection users = getBinderModule().getTeamMembers(binder, true);
+    		SortedSet<Principal> users = getBinderModule().getTeamMembers(binder, true);
    			Object[] usersSet = users.toArray();
-   			Collection usersPage = new HashSet();
+   			List usersPage = new ArrayList(); //use list to maintain order
    			int iEnd = pageSize*pageNumber + pageSize;
    			if (iEnd > usersSet.length) iEnd = usersSet.length;
    			for (int i = pageSize*pageNumber; i < iEnd; i++) {
