@@ -35,7 +35,7 @@
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
       
-	<ssf:canvas id="relevanceVisitors" type="inline">
+	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_trackedItems">
 	<ssf:param name="title" value="<%= NLT.get("relevance.trackedPeople") %>"/>
 <ul>
 <c:forEach var="user" items="${ss_trackedPeople}">
@@ -52,7 +52,7 @@
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 
-	<ssf:canvas id="relevanceVisitors" type="inline">
+	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_people">
 	<ssf:param name="title" value="<%= NLT.get("relevance.trackedWorkspaces") %>"/>
 <ul>
 <c:forEach var="binder" items="${ss_trackedBinders}">
@@ -70,7 +70,7 @@
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
 
-	<ssf:canvas id="relevanceVisitors" type="inline">
+	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_trackedItems">
 	<ssf:param name="title" value="<%= NLT.get("relevance.trackedFolders") %>"/>
 <ul>
 <c:forEach var="binder" items="${ss_trackedBinders}">

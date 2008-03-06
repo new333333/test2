@@ -35,13 +35,12 @@
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
       
-	<ssf:canvas id="relevanceDocuments" type="inline">
+	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_whatsnew">
 	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	  Recent documents<br/>
+		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
 	</ssf:canvas>
-	<ssf:canvas id="relevanceTasks" type="inline">
+	
+	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
 	<ssf:param name="title" value="<%= NLT.get("relevance.tasks") %>"/>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
 	</ssf:canvas>
@@ -49,29 +48,8 @@
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 	
-	<ssf:canvas id="relevanceDocuments" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	</ssf:canvas>
-
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
-
-	<ssf:canvas id="relevanceDocuments" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	</ssf:canvas>
-
-	<ssf:canvas id="relevanceDocuments" type="inline">
-	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	  Recent documents<br/>
-	</ssf:canvas>
 
       </div><!-- end of col3 -->
     </div><!-- end of col left -->

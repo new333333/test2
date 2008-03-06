@@ -672,6 +672,7 @@ public class WebKeys {
     public static final String MOBILE_PAGE_SIZE="15"; 
 	public static final String MY_CALENDAR_ENTRIES = "ss_myCalendarEntries";
 	public static final String MY_DOCUMENTS = "ss_myDocs";
+	public static final String MY_DOCUMENTS_FOLDERS = "ss_myDocsFolders";
 	public static final String MY_ENTRIES = "ss_myEntries";
 	public static final String MY_TASKS = "ss_myTasks";
 	public static final String MY_TASKS_FOLDERS = "ss_myTasksFolders";
@@ -731,9 +732,8 @@ public class WebKeys {
     public static final String RELEVANCE_TRACKED_BINDERS="ss_trackedBinders";
     public static final String RELEVANCE_TRACKED_PEOPLE="ss_trackedPeople";
     public static final String RELEVANCE_TYPE_DASHBOARD="dashboard";
-    public static final String RELEVANCE_TYPE_SITE_DASHBOARD="siteDashboard";
+    public static final String RELEVANCE_TYPE_SITE_DASHBOARD="networkDashboard";
     public static final String RELEVANCE_TYPE_VISITORS="visitors";
-    public static final String RELEVANCE_TYPE_SHARED_ITEMS="sharedItems";
     public static final String RELEVANCE_TYPE_TRACKED_ITEMS="trackedItems";
     public static final String RELOAD_URL="ss_reloadUrl";
     public static final String RELOAD_URL_FORCED="ssReloadUrl";

@@ -76,17 +76,14 @@ function ss_showRelevanceTab(s, namespace) {
 		onClick="ss_selectRelevanceTab(this, 'dashboard', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.dashboard"/></span></a></li>
 	<li><a href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'siteDashboard', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.siteDashboard"/></span></a></li>
+		onClick="ss_selectRelevanceTab(this, 'networkDashboard', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.networkDashboard"/></span></a></li>
 	<li><a href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'visitors', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.visitors"/></span></a></li>
 	<li><a href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'trackedItems', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.trackedItems"/></span></a></li>
-	<li><a href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'sharedItems', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.sharedItems"/></span></a></li>
   </ul>
 </div>
 <div class="ss_clear_float"></div>
