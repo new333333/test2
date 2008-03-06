@@ -75,6 +75,7 @@ public class RelevanceDashboardHelper {
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_NETWORK_DASHBOARD.equals(type)) {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
+			setupTrackedPeopleBeans(bs, userWorkspace, model);
 			setupSharedItemsBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_VISITORS.equals(type)) {
@@ -135,7 +136,7 @@ public class RelevanceDashboardHelper {
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"attachment", "entry", "reply"}))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"entry", "reply"}))
 			.add(eq(CREATORID_FIELD,binder.getOwnerId().toString()));
 	
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
@@ -163,16 +164,55 @@ public class RelevanceDashboardHelper {
 		//Get the documents bean for the documents th the user just authored or modified
 		Map options = new HashMap();
 		
+		//Prepare for a standard dashboard search operation
+		setupInitialSearchOptions(options);
+
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"attachment", "entry", "reply"}))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"entry", "reply"}))
 			.add(in(ENTRY_ANCESTRY, getTrackedPlacesIds(bs, binder)));
 	
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 		model.put(WebKeys.WHATS_NEW_TRACKED_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
+
+		Map places = new HashMap();
+    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+    	if (items != null) {
+	    	Iterator it = items.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+				String id = (String)entry.get("_binderId");
+				if (id != null) {
+					Long bId = new Long(id);
+					if (!places.containsKey(id)) {
+						Binder place = bs.getBinderModule().getBinder(bId);
+						places.put(id, place);
+					}
+				}
+	    	}
+    	}
+    	model.put(WebKeys.WHATS_NEW_TRACKED_PLACES_FOLDERS, places);
+	}
+	
+	private static void setupTrackedPeopleBeans(AllModulesInjected bs, Binder binder, Map model) {
+		//Get the documents bean for the documents th the user just authored or modified
+		Map options = new HashMap();
+		
+		//Prepare for a standard dashboard search operation
+		setupInitialSearchOptions(options);
+		
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		Criteria crit = new Criteria();
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"entry", "reply"}))
+			.add(in(CREATORID_FIELD, getTrackedPeopleIds(bs, binder)));
+	
+		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+		model.put(WebKeys.WHATS_NEW_TRACKED_PEOPLE, results.get(ObjectKeys.SEARCH_ENTRIES));
 
 		Map places = new HashMap();
     	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);

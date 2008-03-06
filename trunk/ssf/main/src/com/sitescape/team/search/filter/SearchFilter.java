@@ -651,6 +651,22 @@ public class SearchFilter {
 		}
 	}
 	
+	public void addCreatorsByStringIds(List<String> ids) {
+		if (ids == null || ids.isEmpty()) {
+			return;
+		}
+		
+		checkCurrent();
+		
+		Element creatorsListParent = newFilterTermsBlock(currentFilterTerms, false);
+		
+		Iterator<String> it = ids.iterator();
+		while (it.hasNext()) {
+			String id = it.next();
+			addCreatorById(creatorsListParent, id, "");
+		}
+	}
+	
 	public void addTaskStatuses(String[] statuses) {
 		if (statuses == null) {
 			return;
