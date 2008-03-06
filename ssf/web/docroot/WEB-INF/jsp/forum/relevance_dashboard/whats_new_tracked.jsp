@@ -30,32 +30,49 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${empty ss_whatsNewTracked}">
+<span><ssf:nlt tag="relevance.docs.none"/></span>
+</c:if>
+<c:if test="${!empty ss_whatsNewTrackedPlaces}">
+<ul>
+  <c:forEach var="entry" items="${ss_whatsNewTrackedPlaces}">
+    <jsp:useBean id="entry" type="java.util.Map" />
+    <li>
+	  <ssf:nlt tag="relevance.searchResultLine">
+	  <ssf:param name="value" useBody="true">
+		<c:set var="isDashboard" value="yes"/>
+		<ssf:titleLink 
+			entryId="${entry._docId}" binderId="${entry._binderId}" 
+			entityType="${entry._entityType}" 
+			namespace="${ss_namespace}" 
+			isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+			<ssf:param name="url" useBody="true">
+				<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+				  action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+			</ssf:param>
+			<c:out value="${entry.title}" escapeXml="false"/>
+		</ssf:titleLink>
+	  </ssf:param>
+	  <ssf:param name="value" useBody="true">
+		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" /> 
+	  </ssf:param>
+	  <ssf:param name="value" useBody="true">
+		<c:set var="path" value=""/>
 
-<div id="ss_dashboard_content" class="ss_tricolumn">
-  <div class="ss_colmid">
-    <div class="ss_colleft">
-      <div id="ss_col1" class="ss_col1">
-
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_whatsnew">
-	<ssf:param name="title" value="<%= NLT.get("relevance.whatsNewTracked") %>"/>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tracked.jsp" />
-	</ssf:canvas>
-
-	<ssf:canvas id="relevanceMail" type="inline" styleId="ss_mail">
-	<ssf:param name="title" value="News"/>
-		<iframe src="http://news.bbc.co.uk/nolpda/ifs_news/hi/default.stm?ifs=1" 
-		frameborder="0" scrolling="Auto" 
-		width="100%" height="360">mail</iframe>	
-	</ssf:canvas>
-
-        </div><!-- end of ss_col 1 -->
-      <div id="ss_col2" class="ss_col2">
-
-      </div><!-- end of col2 -->
-      <div id="ss_col3" class="ss_col3">
-
-      </div><!-- end of col3 -->
-    </div><!-- end of col left -->
-  </div><!-- end of col mid -->
-</div><!-- end of content -->
-<div class="ss_clear_float"></div>
+		<c:if test="${!empty ss_whatsNewTrackedPlacesFolders[entry._binderId]}">
+			<c:set var="path" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId]}"/>
+			<c:set var="title" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId].title}"/>
+		</c:if>
+		<c:set var="isDashboard" value="yes"/>
+		<c:if test="${!empty path}">
+    		<a href="javascript: ;"
+				onClick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+				title="${path}"
+				><span>${title}</span></a>
+		</c:if>
+	  </ssf:param>
+	  </ssf:nlt>
+    </li>
+  </c:forEach>
+</ul>
+</c:if>
