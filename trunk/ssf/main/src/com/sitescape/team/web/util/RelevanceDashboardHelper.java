@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.web.util;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.GregorianCalendar;
@@ -68,9 +69,10 @@ public class RelevanceDashboardHelper {
 		if (ObjectKeys.RELEVANCE_DASHBOARD_DASHBOARD.equals(type)) {
 			setupTasksBeans(bs, userWorkspace, model);
 			setupDocumentsBeans(bs, userWorkspace, model);
-			setupSharedItemsBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_NETWORK_DASHBOARD.equals(type)) {
+			setupTrackedPlacesBeans(bs, userWorkspace, model);
+			setupSharedItemsBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_VISITORS.equals(type)) {
 			setupVisitorsBeans(bs, userWorkspace, model);
@@ -153,6 +155,44 @@ public class RelevanceDashboardHelper {
     	model.put(WebKeys.MY_DOCUMENTS_FOLDERS, places);
 	}
 	
+	protected static void setupTrackedPlacesBeans(AllModulesInjected bs, Binder binder, Map model) {		
+		//Get the documents bean for the documents th the user just authored or modified
+		Map options = new HashMap();
+		
+		//Prepare for a standard dashboard search operation
+		setupInitialSearchOptions(options);
+		
+		//Set up the tracked places search filter
+		SearchFilter searchFilter = new SearchFilter(true);
+		searchFilter.addEntryTypes(new String[] {"attachment", "entry", "reply"});
+		
+		//Get the list of places to be tracked		
+		searchFilter.setJoiner(false);
+		searchFilter.addAncestryIds(getTrackedPlacesIds(bs, binder));
+		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter.getFilter());
+		//searchFilter.getFilter().asXML();		
+		Map results =  bs.getBinderModule().executeSearchQuery(searchFilter.getFilter(), options);
+		model.put(WebKeys.WHATS_NEW_TRACKED_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
+
+		Map places = new HashMap();
+    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+    	if (items != null) {
+	    	Iterator it = items.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+				String id = (String)entry.get("_binderId");
+				if (id != null) {
+					Long bId = new Long(id);
+					if (!places.containsKey(id)) {
+						Binder place = bs.getBinderModule().getBinder(bId);
+						places.put(id, place);
+					}
+				}
+	    	}
+    	}
+    	model.put(WebKeys.WHATS_NEW_TRACKED_PLACES_FOLDERS, places);
+	}
+	
 	private static void setupVisitorsBeans(AllModulesInjected bs, Binder binder, Map model) {
 		//Who has visited my page?
 		if (binder != null) {
@@ -188,16 +228,10 @@ public class RelevanceDashboardHelper {
 	private static void setupSharedItemsBeans(AllModulesInjected bs, Binder binder, Map model) {
 		//What is this user workspace tracking?
 		if (binder != null && EntityType.workspace.equals(binder.getEntityType()) && 
-				binder.getDefinitionType() != null && Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
-			UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
-			Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
-			if (relevanceMap != null) {
-				List sharedBinders = (List) relevanceMap.get(ObjectKeys.RELEVANCE_SHARED_BINDERS);
-				if (sharedBinders != null) {
-					SortedSet binders = bs.getBinderModule().getBinders(sharedBinders);
-					model.put(WebKeys.RELEVANCE_SHARED_BINDERS, binders);
-				}
-			}
+				binder.getDefinitionType() != null && 
+				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
+			
+			//TODO build the bean that lists all of the "share" for the owner of this binder
 		}
 	}
 
@@ -231,6 +265,39 @@ public class RelevanceDashboardHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
 		model.put(WebKeys.MY_TEAMS, myTeams);
+	}
+	
+	private static List getTrackedPlacesIds(AllModulesInjected bs, Binder binder) {
+		List sIdList = new ArrayList();
+		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
+		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		if (relevanceMap != null) {
+			List<Long> idList = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
+			if (idList != null) {
+				for (Long id: idList) {
+					sIdList.add(String.valueOf(id));
+				}
+			}
+		}
+		return sIdList;
+	}
+
+	private static List getTrackedPeopleIds(AllModulesInjected bs, Binder binder) {
+		List sIdList = new ArrayList();
+		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
+		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		if (relevanceMap != null) {
+			List trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
+			if (trackedPeople != null) {
+				List<Long> idList = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_BINDERS);
+				if (idList != null) {
+					for (Long id: idList) {
+						sIdList.add(String.valueOf(id));
+					}
+				}
+			}
+		}
+		return sIdList;
 	}
 
 }
