@@ -38,6 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -63,6 +64,7 @@ import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.ApplicationPrincipal;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EmailAddress;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Group;
@@ -74,10 +76,12 @@ import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoPrincipalByTheIdException;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
+import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Rating;
 import com.sitescape.team.domain.SeenMap;
+import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserEntityPK;
@@ -1119,5 +1123,32 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         }
 		return result;
 	
+    }
+
+    //get list representing entities that have been shared with ids and binderIds
+    public List<SharedEntity> loadSharedEntities(final Collection ids, final Collection binderIds, final Date after, Long zoneId) {   	
+      	List result = (List)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                    	Criteria crit = session.createCriteria(SharedEntity.class)
+                    	.add(Expression.gt("sharedDate", after))
+                         .add(Expression.disjunction()
+              					.add(Expression.conjunction()
+              							.add(Expression.in("accessId", ids))
+              							.add(Expression.eq("accessType", SharedEntity.ACCESS_TYPE_PRINCIPAL)))
+              					.add(Expression.conjunction()
+              							.add(Expression.in("accessId", binderIds))
+              							.add(Expression.eq("accessType", SharedEntity.ACCESS_TYPE_TEAM)))
+              			)
+              			.addOrder(Order.desc("sharedDate"));
+              			
+                       return crit.list();
+                    }
+                }
+            );
+      	
+       return result;   	
+      	
+    	
     }
 }

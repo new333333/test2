@@ -31,7 +31,6 @@ package com.sitescape.team.module.folder.impl;
 import java.io.InputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
@@ -41,8 +40,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.lucene.document.DateTools;
@@ -56,6 +55,7 @@ import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.BinderComparator;
+import com.sitescape.team.comparator.EntryComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
@@ -83,7 +83,6 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.FolderDelete;
 import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.lucene.Hits;
-import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -646,6 +645,19 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         AccessUtils.readCheck(entry);
        return processor.getEntryTree(folder, entry);   	
+    }
+    public SortedSet<FolderEntry>getEntries(Collection<Long>ids) {
+        User user = RequestContextHolder.getRequestContext().getUser();
+        Comparator c = new EntryComparator(user.getLocale(), EntryComparator.SortByField.pathName);
+       	TreeSet<FolderEntry> sEntries = new TreeSet<FolderEntry>(c);
+       	List<FolderEntry>entries = getCoreDao().loadObjects(ids, FolderEntry.class, RequestContextHolder.getRequestContext().getZoneId());
+    	for (FolderEntry e:entries) {
+            try {
+            	AccessUtils.readCheck(e);
+            	sEntries.add(e);
+            } catch (Exception ignoreMe) {};
+    	}
+    	return sEntries;
     }
     //no transaction        
     public void deleteEntry(Long parentFolderId, Long entryId) {

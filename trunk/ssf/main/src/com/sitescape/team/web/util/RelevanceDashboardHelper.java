@@ -29,7 +29,7 @@
 package com.sitescape.team.web.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -41,7 +41,9 @@ import java.util.SortedSet;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.AuditTrail.AuditType;
@@ -270,11 +272,13 @@ public class RelevanceDashboardHelper {
 		if (binder != null && EntityType.workspace.equals(binder.getEntityType()) && 
 				binder.getDefinitionType() != null && 
 				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
-			
+			GregorianCalendar since = new GregorianCalendar();
+			since.add(Calendar.WEEK_OF_MONTH, -2);
+			Collection<SharedEntity>sharedEntities = bs.getProfileModule().getShares(binder.getOwnerId(), since.getTime());
 			//TODO build the bean that lists all of the "share" for the owner of this binder
 		}
 	}
-
+    
 	private static void setupInitialSearchOptions(Map options) {
 		//Getting the entries per page from the user properties
 		String entriesPerPage = SPropsUtil.getString("relevance.entriesPerBox");

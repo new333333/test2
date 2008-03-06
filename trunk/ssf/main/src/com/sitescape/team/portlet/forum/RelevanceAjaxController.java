@@ -68,6 +68,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
@@ -220,10 +221,27 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		Map formData = request.getParameterMap();
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
-		
-		//The list of users is in "users"
-		//The list of groups is in "groups"
-		//The team workspace ids are in "cb_" concatenated with the binderId of the team
+		DefinableEntity entity;
+		if (entryId == null) {
+			entity = getBinderModule().getBinder(binderId);
+		} else {
+			entity = getFolderModule().getEntry(binderId, entryId);
+		}
+		Set<Long> ids = new HashSet();
+		ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
+		ids.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
+		Set<Long>teams = new HashSet();
+		for (Iterator iter=formData.entrySet().iterator(); iter.hasNext();) {
+			Map.Entry e = (Map.Entry)iter.next();
+			String key = (String)e.getKey();
+			if (key.startsWith("cb_")) {
+				try {
+					teams.add(Long.valueOf(key.substring(3)));
+				} catch (Exception ignoreIt) {}
+			}
+		}
+
+		getProfileModule().setShares(entity, ids, teams);
 	}
 	
 	private ModelAndView ajaxGetRelevanceDashboard(RenderRequest request, 

@@ -33,6 +33,7 @@
 package com.sitescape.team.module.profile;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Map;
 import java.util.SortedSet;
 
@@ -40,6 +41,8 @@ import org.dom4j.Document;
 
 import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Group;
@@ -49,6 +52,7 @@ import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
+import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
@@ -204,10 +208,17 @@ public interface ProfileModule {
  	public SortedSet<Principal> getPrincipals(Collection<Long> ids)
  		throws AccessControlException;
  	/**
- 	 * Returnt the profileBinder
+ 	 * Return the profileBinder
  	 * @return
  	 */
 	public ProfileBinder getProfileBinder();
+	/**
+	 * Return collection
+	 * @param userId
+	 * @param after
+	 * @return
+	 */
+    public Collection<SharedEntity> getShares(Long userId, Date after);
 	/**
 	 * Return general user properties
 	 * @param userId - null for current user
@@ -257,11 +268,6 @@ public interface ProfileModule {
 	 * @return
 	 */
     public SeenMap getUserSeenMap(Long userId);
-    /**
-     * Set status.  Sets the status of the current user
-     * @param status
-     */
-    public void setStatus(String status);
     /**
      * Update index.  Should be handled by all other operations automatically
      * @param entry
@@ -347,6 +353,18 @@ public interface ProfileModule {
      */
     public void setSeen(Long userId, Collection<Entry> entries);
     /**
+     * Share an entry 
+     * @param entity
+     * @param principalIds
+     * @param binderIds
+     */
+    public void setShares(DefinableEntity entity, Collection<Long> principalIds, Collection<Long> bindersIds);
+    /**
+     * Set status.  Sets the status of the current user
+     * @param status
+     */
+    public void setStatus(String status);
+     /**
      * Test access to a binder
      * @param binder
      * @param operation
