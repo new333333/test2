@@ -282,7 +282,7 @@ public class RelevanceDashboardHelper {
 			GregorianCalendar since = new GregorianCalendar();
 			since.add(Calendar.WEEK_OF_MONTH, -2);
 			Collection<SharedEntity>sharedEntities = bs.getProfileModule().getShares(binder.getOwnerId(), since.getTime());
-			//TODO build the bean that lists all of the "share" for the owner of this binder
+			model.put(WebKeys.RELEVANCE_SHARED_ENTITIES, sharedEntities);
 		}
 	}
     

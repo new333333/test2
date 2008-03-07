@@ -728,7 +728,7 @@ public class WebKeys {
     public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String RECORDS_DIV_ID="ss_recordsDivId";
-    public static final String RELEVANCE_SHARED_BINDERS="ss_sharedBinders";
+    public static final String RELEVANCE_SHARED_ENTITIES="ss_sharedEntities";
     public static final String RELEVANCE_TRACKED_BINDERS="ss_trackedBinders";
     public static final String RELEVANCE_TRACKED_PEOPLE="ss_trackedPeople";
     public static final String RELEVANCE_TYPE_DASHBOARD="dashboard";

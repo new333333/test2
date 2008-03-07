@@ -30,42 +30,29 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-
-<div id="ss_dashboard_content" class="ss_tricolumn">
-  <div class="ss_colmid">
-    <div class="ss_colleft">
-      <div id="ss_col1" class="ss_col1">
-
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_whatsnew">
-	<ssf:param name="title" value="<%= NLT.get("relevance.whatsNewTracked") %>"/>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tracked.jsp" />
-	</ssf:canvas>
-
-	<ssf:canvas id="relevanceMail" type="inline" styleId="ss_mail">
-	<ssf:param name="title" value="News"/>
-		<iframe src="http://news.bbc.co.uk/nolpda/ifs_news/hi/default.stm?ifs=1" 
-		frameborder="0" scrolling="Auto" 
-		width="100%" height="360">mail</iframe>	
-	</ssf:canvas>
-
-        </div><!-- end of ss_col 1 -->
-      <div id="ss_col2" class="ss_col2">
-
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_whatsnew">
-	<ssf:param name="title" value="<%= NLT.get("relevance.whatsHot") %>"/>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
-	</ssf:canvas>
-
-      </div><!-- end of col2 -->
-      <div id="ss_col3" class="ss_col3">
-
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_shared_items">
-	<ssf:param name="title" value="<%= NLT.get("relevance.sharedItems") %>"/>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
-	</ssf:canvas>
-
-      </div><!-- end of col3 -->
-    </div><!-- end of col left -->
-  </div><!-- end of col mid -->
-</div><!-- end of content -->
-<div class="ss_clear_float"></div>
+<c:if test="${empty ss_sharedEntities}">
+<span><ssf:nlt tag="relevance.none"/></span>
+</c:if>
+<c:if test="${!empty ss_sharedEntities}">
+<ul>
+  <c:forEach var="sharedItem" items="${ss_sharedEntities}">
+    <li>
+	  <ssf:nlt tag="relevance.sharedEntityLine">
+	  <ssf:param name="value" useBody="true">
+	    <ssf:showUser user="${sharedItem.referer}" />
+	  </ssf:param>
+	  <ssf:param name="value" useBody="true">
+    	<a href="javascript: ;"
+    	  <c:if test="${sharedItem.entity.entityType == 'workspace' || sharedItem.entity.entityType == 'folder'}">
+			onClick="return ss_gotoPermalink('${sharedItem.entity.id}', '${sharedItem.entity.id}', '${sharedItem.entity.entityType}', '${ss_namespace}', 'yes');"
+		  </c:if>
+    	  <c:if test="${sharedItem.entity.entityType == 'folderEntry'}">
+			onClick="return ss_gotoPermalink('${sharedItem.entity.parentBinder.id}', '${sharedItem.entity.id}', '${sharedItem.entity.entityType}', '${ss_namespace}', 'yes');"
+		  </c:if>
+			><span>${sharedItem.entity.title}</span></a>
+	  </ssf:param>
+	  </ssf:nlt>
+    </li>
+  </c:forEach>
+</ul>
+</c:if>
