@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.web.util;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -38,11 +39,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
+import org.dom4j.Element;
+
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -50,6 +54,8 @@ import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import static com.sitescape.team.module.shared.EntityIndexUtils.*;
 import static com.sitescape.team.search.BasicIndexUtils.*;
+
+import com.sitescape.team.module.report.ReportModule.ActivityInfo;
 import com.sitescape.team.search.Criteria;
 
 import static com.sitescape.team.search.Restrictions.*;
@@ -79,6 +85,7 @@ public class RelevanceDashboardHelper {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
 			setupTrackedPeopleBeans(bs, userWorkspace, model);
 			setupSharedItemsBeans(bs, userWorkspace, model);
+			setupWhatsHotBean(bs, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_VISITORS.equals(type)) {
 			setupVisitorsBeans(bs, userWorkspace, model);
@@ -309,6 +316,24 @@ public class RelevanceDashboardHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Collection myTeams = bs.getBinderModule().getTeamMemberships(user.getId());
 		model.put(WebKeys.MY_TEAMS, myTeams);
+	}
+	
+	public static void setupWhatsHotBean(AllModulesInjected bs, Map model) {
+		List hotEntries = new ArrayList();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+		GregorianCalendar start = new GregorianCalendar();
+		//get users over last 2 weeks
+		start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
+		Collection<ActivityInfo> results = bs.getReportModule().culaEsCaliente(AuditType.view, 
+				start.getTime(), new java.util.Date());
+		for(ActivityInfo info : results) {
+			Element resultElem = null;
+			if (info.getWhoOrWhat().getEntityType().equals(EntityType.folderEntry)) {
+				FolderEntry entry = (FolderEntry) info.getWhoOrWhat();
+				hotEntries.add(entry);
+			}
+		}
+		model.put(WebKeys.WHATS_HOT, hotEntries);
 	}
 	
 	private static List<String> getTrackedPlacesIds(AllModulesInjected bs, Binder binder) {
