@@ -150,8 +150,9 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	}
 	//pass the original ownerId in.  Recursive calls need the original
 	private boolean testOperation(User user, WorkArea workAreaStart, WorkArea workArea, WorkAreaOperation workAreaOperation) {
-
-		Application application = RequestContextHolder.getRequestContext().getApplication();
+		Application application = null;
+		if(RequestContextHolder.getRequestContext() != null)
+			application = RequestContextHolder.getRequestContext().getApplication();
 		if (user.isSuper() && application == null) return true;
 		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && !getLicenseManager().validLicense())return false;
 		if (workArea.isFunctionMembershipInherited()) {
