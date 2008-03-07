@@ -31,7 +31,7 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${empty ss_myTasks}">
-<span><ssf:nlt tag="relevance.tasks.none"/></span>
+<span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_myTasks}">
 <table class="ss_tasks_list" >

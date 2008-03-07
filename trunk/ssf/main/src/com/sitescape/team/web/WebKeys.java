@@ -834,6 +834,8 @@ public class WebKeys {
     public static final String USER_SEARCH_USER_GROUP_TYPE_APPLICATION_GROUP="applicationGroup";
     public static final String USER_SEARCH_USER_GROUP_TYPE_APPLICATION="application";
     public static final String USER_WORKSPACE="ss_userWorkspace";
+    public static final String WHATS_HOT="ss_whatsHot";
+    public static final String WHATS_HOT_FOLDERS="ss_whatsHotFolders";
     public static final String WHATS_NEW_TRACKED_PEOPLE="ss_whatsNewTrackedPeople";
     public static final String WHATS_NEW_TRACKED_PEOPLE_FOLDERS="ss_whatsNewTrackedPeopleFolders";
     public static final String WHATS_NEW_TRACKED_PLACES="ss_whatsNewTrackedPlaces";
