@@ -35,19 +35,41 @@
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
       
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_whatsnew">
-	<ssf:param name="title" value="<%= NLT.get("relevance.documents") %>"/>
+	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
+	
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"> <ssf:nlt tag="relevance.documents"/> </div>
+	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
+		
+	</ssf:canvas>
+	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_email">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"> <ssf:nlt tag="relevance.email"/> </div>
+	</ssf:param>
+		
+      
+        <div id="ss_today">
+       <div id="ss_hints"><em>This is my email for today </em>  </div>
+        <div id="ss_para">
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a> RE: <a href="#" class="ss_link_2">My Itinerary</a><br>
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Quality Control Guidelines</a><br>
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Gerry Kimball</a> RE: <a href="#" class="ss_link_2">Rental space</a><br>
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Ensemble Practice</a><br>
+          </div>
+          </div><!-- end of today -->
+         
+          
+		
 	</ssf:canvas>
 	
+
+        </div><!-- end of ss_col 1 -->
+      <div id="ss_col2" class="ss_col2">
 	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
 	<ssf:param name="title" value="<%= NLT.get("relevance.tasks") %>"/>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
 	</ssf:canvas>
-
-        </div><!-- end of ss_col 1 -->
-      <div id="ss_col2" class="ss_col2">
-	
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
 
