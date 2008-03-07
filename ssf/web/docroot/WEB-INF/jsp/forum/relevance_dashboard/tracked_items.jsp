@@ -35,16 +35,17 @@
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
       
-	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_trackedItems">
-	<ssf:param name="title" value="<%= NLT.get("relevance.trackedPeople") %>"/>
+	<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
+	<ssf:param name="title" value="<%= NLT.get("relevance.trackedFolders") %>"/>
 <ul>
-<c:forEach var="user" items="${ss_trackedPeople}">
+<c:forEach var="binder" items="${ss_trackedBinders}">
+  <c:if test="${binder.entityType == 'folder'}">
 	<li>
-	    <ssf:showUser user="${user}" />
-	    <c:if test="${!empty user.status}">
-	    <br/><span class="ss_smallprint ss_italic" style="padding-left:20px;">${user.status}</span>
-	    </c:if>
+	    <a
+	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
+	    >${binder.title}</a>
 	</li>
+  </c:if>
 </c:forEach>
 </ul>
 	</ssf:canvas>
@@ -52,7 +53,7 @@
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 
-	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_people">
+	<ssf:canvas id="relevanceWorkspaces" type="inline" styleId="ss_people">
 	<ssf:param name="title" value="<%= NLT.get("relevance.trackedWorkspaces") %>"/>
 <ul>
 <c:forEach var="binder" items="${ss_trackedBinders}">
@@ -70,23 +71,19 @@
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
 
-	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_trackedItems">
-	<ssf:param name="title" value="<%= NLT.get("relevance.trackedFolders") %>"/>
+	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedItems">
+	<ssf:param name="title" value="<%= NLT.get("relevance.trackedPeople") %>"/>
 <ul>
-<c:forEach var="binder" items="${ss_trackedBinders}">
-  <c:if test="${binder.entityType == 'folder'}">
+<c:forEach var="user" items="${ss_trackedPeople}">
 	<li>
-	    <a
-	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
-	    >${binder.title}</a>
+	    <ssf:showUser user="${user}" />
+	    <c:if test="${!empty user.status}">
+	    <br/><span class="ss_smallprint ss_italic" style="padding-left:20px;">${user.status}</span>
+	    </c:if>
 	</li>
-  </c:if>
 </c:forEach>
 </ul>
 	</ssf:canvas>
-
-      </div><!-- end of col2 -->
-      <div id="ss_col3" class="ss_col3">
 
       </div><!-- end of col3 -->
     </div><!-- end of col left -->

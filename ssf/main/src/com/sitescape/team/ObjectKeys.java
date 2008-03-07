@@ -184,7 +184,6 @@ public interface ObjectKeys {
     public static final String RELEVANCE_DASHBOARD_NETWORK_DASHBOARD = "networkDashboard";
     public static final String RELEVANCE_DASHBOARD_VISITORS = "visitors";
     public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
-    public static final String RELEVANCE_SHARED_BINDERS = "sharedBinders";
     public static final String RELEVANCE_TRACKED_BINDERS = "trackedBinders";
     public static final String RELEVANCE_TRACKED_PEOPLE = "trackedPeople";
     
