@@ -100,7 +100,7 @@ body.ss_style_body {
 }
 
 .ss_style_trans , .ss_style_trans td, .ss_style_trans th{
-  font-family: ${ss_style_font_family};
+  font-family: arial, sans serif;
   font-weight: inherit;
   font-size: ${ss_style_font_size}; 
   background-color: transparent;
@@ -322,9 +322,9 @@ div.ss_global_toolbar_quick input {
   background-color: #FFFFFF;
   background-image: none;
   color: ${ss_form_element_text_color};
-  font-size: ${ss_style_font_smallprint};
+  font-size: ${ss_style_font_fineprint};
   font-family: ${ss_style_folder_view_font_family};  
-  border: solid 1px #CCCCCC;
+  border: solid .01em #B5CEE7;
 }
 div.ss_style textarea {
   padding: 0px;
@@ -2004,8 +2004,8 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_labe
 
 div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_quick_advanced {
 	text-align: right;
-	font-size: 10px;
-	padding-left: 10px;
+	font-size: 5px;
+	padding-left: 5px;
 	vertical-align: top;
 }
 
@@ -2020,8 +2020,8 @@ div.ss_global_toolbar table tr.ss_row_last td {
 }
 div.ss_global_toolbar table td {
 	white-space: nowrap;
-	padding-left: 10px;
-	padding-right: 10px;
+	padding-left: 5px;
+	padding-right: 5px;
 }
 
 div.ss_global_toolbar_maximized table.ss_global_toolbar_maximized td {
@@ -2147,6 +2147,7 @@ span.ss_global_toolbar_label_text_quickSearch {
 }
 span.ss_global_toolbar_label_text {
 	font-size: 10px;
+	font-style: Arial, sans serif;
 }
 div.ss_global_toolbar_findUser_text span {
 }
@@ -4951,7 +4952,7 @@ table.ssMeetingRecords .ssHeader {
 #ss_top_nav_wrapper{
 	position: relative;
 	width: 100%;
-	height: 74px;
+	height: 84px;
 	width: auto;
 	background-image: url(<html:rootPath/>images/pics/subbanner.png);
 	display: table;
@@ -4962,15 +4963,16 @@ table.ssMeetingRecords .ssHeader {
 	position:relative;
 	display:block;
 	height:20px;
-	background-color:#333;
-	border:solid
-	font-family:"Lucida Sans", Arial, sans-serif;
+	background-color:#A7A9AC;
+	border:solid;
+	padding-top:4px;	
 }
 
 #ss_top_nav_buttontwo a {
-	font-family: "Lucida Sans", Arial, sans-serif;
+	font-family:  Arial, sans-serif;
 	font-size: 10px;
-	background-color: #999999;
+	background-color: #A7A9AC;
+	font-color: white!important;
 	display: block;
 	font-weight: bold;
 	letter-spacing: 0px;
@@ -4986,30 +4988,39 @@ table.ssMeetingRecords .ssHeader {
 #ss_top_nav_buttontwo ul li{
 	display:block;
 	float:left;
-	margin:0px 2px 0px 0px;
+	margin:6px 3px 0px 0px;
 	}
 
 #ss_top_nav_buttontwo ul li a{
 	display:block;
 	float:left;
 	color:#333;
+	border-style: solid;
+	border-color: white;
+	border-width: .01em;
 	text-decoration:none;
 	padding:6px 20px 0px 20px;
-	height:20px;
+	height:18px;
 	}
 
 #ss_top_nav_buttontwo ul li a:hover{
-	color:#333;
-	background-color: #E1E1E1;
+	font-color: #white;
+	background-color: #CCC;
+	border-style: solid;
+	border-color: #white;
+	border-width: .01em;
 	
 	/*blue buttons for navigation*/
 	}
 #ss_top_nav_buttontwo ul li a.current{	
 	color:#333;
-	background-color: #E1E1E1;
+	background-color: #B2CBE7;
+	border-style: solid;
+	border-color: #white;
+	border-width: .01em;
 }
 #ss_top_nav_buttonthree a {
-	font-family: "Lucida Sans", Arial, sans-serif;
+	font-family:  Arial, sans-serif;
 	font-size: 10px;
 	background-color: #7986A1;
 	display: block;
@@ -5113,7 +5124,6 @@ div.ss_canvas {
 
 #ss_wrap
 {
-	border: 1px #333333 solid;
 	margin: auto;
 	background-color: #FFF;
 	min-height:100%;
@@ -5432,7 +5442,7 @@ div.ss_canvas {
 		color:#FFFFFF;
 	}
 
-/*- Menu Tabs C--------------------------- */
+/*- Menu Tabs for Relevance--------------------------- */
 
     #ss_tabsC {
       float:left;
