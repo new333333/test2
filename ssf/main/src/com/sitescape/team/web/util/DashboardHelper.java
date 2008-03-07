@@ -271,6 +271,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, false);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY)){
 					getInstance().getTasksBean(binder, ssDashboard, model, id, component, false);
+				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_REMOTE_APPLICATION)){
+					getInstance().getRemoteApplicationBean(ssDashboard, id, component);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_SEARCH) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
@@ -331,6 +333,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				} else if (componentName.equals(
 						ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY)) {
 					getInstance().getWikiHomepageEntryBean(null, ssDashboard, model, id, component, true);
+				} else if (componentName.equals(
+						ObjectKeys.DASHBOARD_COMPONENT_REMOTE_APPLICATION)) {
+					getInstance().getRemoteApplicationBean(ssDashboard, id, component);
 				} else if (componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_BLOG_SUMMARY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_GALLERY) ||
 						componentName.equals(ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY) ||
@@ -1683,4 +1688,17 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
 		return dashboardContentExists;
 	}
+	
+	protected void getRemoteApplicationBean(Map ssDashboard, String id, Map component) {
+    	Map beans = (Map) ssDashboard.get(WebKeys.DASHBOARD_BEAN_MAP);
+    	if (beans == null) {
+    		beans = new HashMap();
+    		ssDashboard.put(WebKeys.DASHBOARD_BEAN_MAP, beans);
+    	}
+    	Map idData = new HashMap();
+    	beans.put(id, idData);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		idData.put(WebKeys.APPLICATIONS, getProfileModule().getApplications((Collection) null));
+	}
+
 }

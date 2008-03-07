@@ -1105,7 +1105,16 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	}
 
     public List<Application> loadApplications(Collection<Long> applicationIds, Long zoneId) {
-		return loadPrincipals(applicationIds, zoneId, Application.class, false, true);	
+    	// If applicationIds is null, load all principals of the specified type rather
+    	// than returning an empty list. This symantics differs from the counterpart 
+    	// methods returning users and groups. I decided to introduce this inconsistency
+    	// rather than risking breaking the existing system by changing the symantics of 
+    	// the other methods for the sake of consistency. 
+    	// 
+    	if(applicationIds != null)
+    		return loadPrincipals(applicationIds, zoneId, Application.class, false, true);
+    	else
+    		return loadAllPrincipals(zoneId, Application.class, true, true);
     }
     
     public List<Principal> loadPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive) {
@@ -1124,6 +1133,32 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 		return result;
 	
     }
+    
+    private List loadAllPrincipals(final Long zoneId, final Class clazz, final boolean cacheable, final boolean checkActive) {
+        List result = (List)getHibernateTemplate().execute(
+           	new HibernateCallback() {
+        		public Object doInHibernate(Session session) throws HibernateException {
+       					Criteria crit = session.createCriteria(clazz)
+    					.add(Expression.eq(ObjectKeys.FIELD_ZONE, zoneId))
+    					.setFetchMode("emailAddresses", FetchMode.JOIN)
+                		.setCacheable(cacheable);
+    					if (checkActive) {
+    						crit.add(Expression.eq(ObjectKeys.FIELD_ENTITY_DELETED, Boolean.FALSE));
+    						crit.add(Expression.eq(ObjectKeys.FIELD_PRINCIPAL_DISABLED, Boolean.FALSE));
+    					}  
+    					List result = crit.list();
+                        //eagar select results in duplicates
+                        Set res = new HashSet(result);
+                        result.clear();
+                        result.addAll(res);
+    					return result;
+        		}
+           	}
+        );
+        return result;
+    	
+    }
+
 
     //get list representing entities that have been shared with ids and binderIds
     public List<SharedEntity> loadSharedEntities(final Collection ids, final Collection binderIds, final Date after, Long zoneId) {   	

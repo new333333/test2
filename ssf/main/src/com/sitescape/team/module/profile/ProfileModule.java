@@ -476,7 +476,8 @@ public interface ProfileModule {
      */
 	public Map getApplications(Long binderId, Map searchOptions);
 	/**
-	 * Return set of applications, sorted by title
+	 * Return set of applications, sorted by title.
+	 * If <code>ids</code> is <code>null</code>, it returns all applications.
 	 * @param ids
 	 * @return
 	 * @throws AccessControlException
