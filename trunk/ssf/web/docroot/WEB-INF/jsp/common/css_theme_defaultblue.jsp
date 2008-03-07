@@ -35,7 +35,7 @@
  --
  -- FONT STYLES
  --
---%><c:set var="ss_style_font_family" value="Lucida Sans Unicode, Arial, sans-serif" scope="request"/><%--
+--%><c:set var="ss_style_font_family" value="Arial, sans-serif" scope="request"/><%--
 <%-- Do NOT change ss_style_folder_view_font_family without a very good reason. --%><%--
 --%><c:set var="ss_style_folder_view_font_family" value="Arial, sans-serif" scope="request"/><%--
 --%><c:set var="ss_style_title_font_family" value="Arial, Helvetica, sans-serif" scope="request"/><%--
