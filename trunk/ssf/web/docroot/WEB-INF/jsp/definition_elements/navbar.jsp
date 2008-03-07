@@ -746,7 +746,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 <div class="ss_style_trans" id="ss_favorites_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">
 
-<ssf:popupPane width="250px" titleTag="favorites"
+<ssf:popupPane width="225px" titleTag="favorites"
       closeScript="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();return false;">
 
 
