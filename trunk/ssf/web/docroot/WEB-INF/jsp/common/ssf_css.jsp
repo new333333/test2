@@ -5140,26 +5140,12 @@ div.ss_canvas {
 	color:#333333;
 
 }
-#ss_whatsnew
-{
-	padding: 0;
-	margin: 2% 0 2% 0;
-	color:#333333;
 
-}
-#ss_personaltracker
-{
-	padding: 0%;
-	margin: 1% 0 2% 0;
-	color:#444444;
-	border:1px solid #B2CEE7;
-
-}
 
 #ss_shared
 {
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 1% 0 5% 0;
 	color:#444444;
 	background-color:#FFF;
 	border:1px solid #B2CEE7;	
@@ -5169,7 +5155,7 @@ div.ss_canvas {
 {
 	padding: 0;
 	margin: 1% 0 2% 0;
-	color:#444444;
+	color:#333333;
 
 }
 #ss_trackedItems
@@ -5184,6 +5170,80 @@ div.ss_canvas {
 	padding: 0;
 	margin: 1% 0 2% 0;
 	color:#444444;
+
+}
+	#ss_hints
+{
+	font-size: 12px;
+	font-style: italic;
+	padding-left:10px;
+}
+
+	#ss_calendar
+{
+	padding: 0;
+	margin: 1% 0 5% 0;
+	color:#444444;
+	border:1px solid #B2CEE7;
+	background-color:#ffffff;
+
+}
+	#ss_survey
+{
+	padding: 0;
+	margin: 1% 0 5% 0;
+	color:#444444;
+	border:1px solid #B2CEE7;
+	background-color:#ffffff;
+
+}
+	#ss_notes
+{
+	padding: 0;
+	margin: 1% 0 5% 0;
+	color:#444444;
+	border:1px solid #B2CEE7;
+	background-color:#ffffff;
+
+}
+	#ss_bookmarks
+{
+	padding: 0;
+	margin: 1% 0 5% 0;
+	color:#444444;
+	border:1px solid #B2CEE7;
+	background-color:#ffffff;
+
+}
+#ss_whatsnew
+{
+	padding: 0;
+	margin: 2% 0 5% 0;
+	color:#333333;
+
+}
+	#ss_personaltracker
+{
+	padding: 0%;
+	margin: 1% 0 5% 0;
+	color:#444444;
+	border:1px solid #B2CEE7;
+	background-color:#ffffff;
+
+}
+
+	#ss_email
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#333333;
+
+}
+	#ss_documents
+{
+	padding: 0;
+	margin: 1% 0 2% 0;
+	color:#333333;
 
 }
 #ss_Box_8
@@ -5230,9 +5290,9 @@ div.ss_canvas {
 	font-weight: 400;
 	color: #333;
 }
+
 #ss_subtitle
 {
-	margin:0;
 	padding: 0.5% 0 1% 6px;
 	font-size:14px;
 	color:#555555;
@@ -5269,6 +5329,18 @@ div.ss_canvas {
 .ss_pt_para 
 { 	margin: 1%; 
 }
+.ss_pt_para ul
+{
+	
+	color:#555555;
+}
+.ss_pt_para ul li
+{
+	margin-left: -10px;
+	list-style-type: disc;
+	border-bottom:1px dotted #666666;
+	
+}
 
 /* time block styles */	
 #ss_today 
@@ -5302,6 +5374,7 @@ div.ss_canvas {
 	color:#E67814;
 	background-color:#FFFFFF;
 	}	
+
 .ss_summary						/*to use when need to display summary of an entry */
 {
 	padding: 0 0 0 15px;
@@ -5367,6 +5440,7 @@ div.ss_canvas {
       background:#EDF7E7;
       font-size:93%;
       line-height:normal;
+      border-bottom: 1px #A7A9AC solid;
       }
     #ss_tabsC ul {
         margin:0;
@@ -5446,8 +5520,8 @@ div.ss_canvas {
 	{
 		background-color: #EDF7E7;
 		/* right column background color */
-		border-top: 1px #A7A9AC solid;
-	}
+
+	} 
 	.ss_tricolumn .ss_colmid
 	{
 		right: 25%;
@@ -5503,6 +5577,61 @@ div.ss_canvas {
 		text-decoration:none;
 		background-color:#fff;
 	}	
+	
+	#ss_task_list
+{
+	padding: 0;
+	margin: 1% 0 2% 2%;
+	color:#333333;
+	background-color:#FFF;
+	border:1px solid #B2CEE7;
+}
+
+	#ss_task_list p
+{
+	border-top: 1px solid #B2CEE7;
+	padding:4px 5px 7px 5px;
+	line-height:2em;
+
+}
+	#ss_task_list_hdr
+{
+	background-color: #B2CEE7;
+	color: #000000;
+	font-size:12px;
+	padding: 5px 5px 3px 2px;
+	width:100%;
+	border-right:1px solid #777777;
+	margin:0 auto;
+
+}
+
+	.ss_para_lists
+{
+	margin-top: 1%;
+	padding: 0.5% 1% 1% 5px;
+	border: 1px dotted #cccccc;
+
+}
+	.ss_para_lists ul
+{
+	
+	color:#555555;
+}
+	.ss_para_lists ul li
+{
+
+	list-style-type: square;
+	margin-left:-20px;
+	border-bottom:1px dashed #444444;
+	line-height:2.5em;
+	padding-bottom:10px;
+	padding-right:1%;
+}
+
+
+
+     
 
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>
