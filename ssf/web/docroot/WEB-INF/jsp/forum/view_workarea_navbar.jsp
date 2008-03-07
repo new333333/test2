@@ -124,7 +124,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 
 <div id="ss_top_nav_wrapper" style="width:100%;">
 <table width="100%" align="center" cellspacing="0" cellpadding="0" border="0" 
-  style="background-image: url(<html:rootPath/>images/pics/subbanner.png);">
+  >
 <tbody>
 <tr>
 <td align="center">
@@ -168,7 +168,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
 		          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
 			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}">
-			      	    <img src="<html:imagesPath/>pics/1pix.gif"/>
+			      	
 			    </div>
 			  </ssHelpSpot>
 			  <div id="ss_navbar_myteams${renderResponse.namespace}"
@@ -219,7 +219,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 </td>
 </tr>
 <tr>
-<td align="center" style="padding:5px 0px 5px 0px;">
+<td align="center" style="padding:5px 0px 2px 0px;">
 <table class="ss_global_toolbar_maximized" cellspacing="0" cellpadding="0" border="0">
 <tbody>
 <tr>
@@ -228,7 +228,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 <ssf:ifnotaccessible>
 <span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findUser"/></span>
 </ssf:ifnotaccessible>
-	<!-- Find people -->
+	<!-- Find People -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_findUser"  id="ss_navbarFindUserButton${renderResponse.namespace}"
      onMouseOver="this.style.cursor = 'pointer';">
@@ -261,11 +261,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 	</div>
 </ssf:ifaccessible>
 </td>
-<td style="padding-left:10px;">
+<td style="padding-left:0px;">
 <ssf:ifnotaccessible>
 <span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findPlace"/></span>
 </ssf:ifnotaccessible>
-	<!-- Find place -->
+	<!-- Find Place -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton${renderResponse.namespace}"
      onMouseOver="this.style.cursor = 'pointer';">
@@ -302,11 +302,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 	</div>
 </ssf:ifaccessible>
 </td>
-<td style="padding-left:10px;">
+<td style="padding-left:4px;">
 <ssf:ifnotaccessible>
 <span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findTag"/></span>
 </ssf:ifnotaccessible>
-		<!-- Find tag -->
+		<!-- Find Tag -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_findUser" id="ss_navbarFindTagsButton${renderResponse.namespace}"
      onMouseOver="this.style.cursor = 'pointer';">
@@ -344,7 +344,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 </ssf:ifaccessible>
 </td>
 
-<td style="padding-left:10px;">
+<td style="padding-left:20px;">
 
 	<!-- Search -->
 <ssf:ifnotaccessible>
@@ -513,7 +513,7 @@ ss_statusCurrent = "${ssUser.status}";
 			<ssf:param name="operation" value="add_favorite_binder" />
 			<ssf:param name="binderId" value="${ssBinder.id}" />
 			<ssf:param name="viewAction" value="${action}" /></ssf:url>');return false;"
-		><img <ssf:alt tag="favorites.addCurrentPage"/> src="<html:brandedImagesPath/>icons/button_new_bookmark.gif" />
+		><img <ssf:alt tag="favorites.addCurrentPage"/> src="<html:brandedImagesPath/>icons/button_new_bookmark.gif" border="0" />
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
 			text="Add the current page to the favorites list..."/></span></a>
   	</div>
@@ -521,7 +521,7 @@ ss_statusCurrent = "${ssUser.status}";
   <div class="ss_style_trans">
 		<a href="javascript: ;" 
 		 onClick="ssMyFavorites${renderResponse.namespace}.showhideFavoritesEditor()"
-		><img <ssf:alt tag="favorites.edit"/> src="<html:brandedImagesPath/>icons/button_edit_bookmark.gif" />
+		><img <ssf:alt tag="favorites.edit"/> src="<html:brandedImagesPath/>icons/button_edit_bookmark.gif" border="0" />
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" 
 			text="Edit Favorites"/></span></a>
   </div>
@@ -571,7 +571,7 @@ ss_statusCurrent = "${ssUser.status}";
 <!-- Start of myteams pane -->
 <div class="ss_style_trans" id="ss_myteams_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">
-<ssf:popupPane width="250px" titleTag="navigation.myTeams"
+<ssf:popupPane width="230px" titleTag="navigation.myTeams"
       closeScript="ssMyTeams${renderResponse.namespace}.hide();return false;">
 <div style="padding: 5px 10px 5px 10px;">
   <div class="ss_style_trans" id="ss_myteams${renderResponse.namespace}" align="left">
