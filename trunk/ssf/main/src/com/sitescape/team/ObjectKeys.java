@@ -176,6 +176,7 @@ public interface ObjectKeys {
     public static final String DASHBOARD_COMPONENT_GALLERY = "gallery";    
     public static final String DASHBOARD_COMPONENT_WIKI_SUMMARY = "wiki";    
     public static final String DASHBOARD_COMPONENT_WORKSPACE_TREE = "workspaceTree";
+    public static final String DASHBOARD_COMPONENT_REMOTE_APPLICATION = "remoteApplication";
     
     public static final String FOLDER_ENTRY_TO_BE_SHOWN = "folder_entry_to_be_shown";
     
