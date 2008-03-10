@@ -66,7 +66,7 @@
 	  <span class="ss_link_2">
     	<a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
-			><span>${entry.parentBinder.parentBinder.title} // ${entry.parentBinder.title}</span></a>
+			><span>${entry.parentBinder.title} (${entry.parentBinder.parentBinder.title})</span></a>
 	  </span>
 	  <c:if test="${!empty entry.description}">
 	    <br/>
@@ -125,7 +125,7 @@
 	  <span class="ss_link_2">
     	<a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${entry2.parentBinder.id}', '${entry2.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
-			><span>${entry2.parentBinder.parentBinder.title} // ${entry2.parentBinder.title}</span></a>
+			><span>${entry2.parentBinder.title} (${entry2.parentBinder.parentBinder.title})</span></a>
 	  </span>
 	  <c:if test="${!empty entry2.description}">
 	    <br/>
