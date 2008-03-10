@@ -130,7 +130,9 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 			hc.setHost(hrl.getHost(), hrl.getPort(), protocol);
 		else
 			hc.setHost(hrl);
-		PostMethod method = new PostMethod(application.getPostUrl());
+		// Use relative url only, otherwise, SSL connection won't work even with 
+		// EasySSLProtocolSocketFactory. 
+		PostMethod method = new PostMethod(hrl.getPathQuery());
 		try {
 			method.addParameter(PARAMETER_NAME_ACTION, action.name());
 			if(params != null) {
@@ -191,4 +193,16 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		return byteCount;
 	}
 
+	/*
+	public static void main(String[] args) throws Exception {
+		String url = "https://localhost:8443/remoteapp/namesearch";
+		HttpURL hrl = new HttpsURL(url);
+		HttpClient client = new HttpClient();
+		HostConfiguration hc = client.getHostConfiguration();
+		hc.setHost(hrl.getHost(), hrl.getPort(), protocol);
+		PostMethod method = new PostMethod(hrl.getPathQuery()); // User relative url only!!!
+		int statusCode = client.executeMethod(method);
+		System.out.println("STATUS CODE: " + statusCode);
+		System.out.println(method.getStatusLine());
+	}*/
 }
