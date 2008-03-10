@@ -28,18 +28,23 @@
  */
 package com.sitescape.team.web.util;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TimeZone;
 import java.util.TreeMap;
 
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
@@ -104,6 +109,10 @@ public class RelevanceDashboardHelper {
 		setupInitialSearchOptions(options);
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		java.util.Date now = new java.util.Date();
+		java.util.Date future = new java.util.Date(now.getTime() + 14*24*60*60*1000);
+		String endDateTarget = DateTools.dateToString(future, DateTools.Resolution.DAY);
 
 		Criteria crit = new Criteria();
 		crit.add(eq(FAMILY_FIELD,FAMILY_FIELD_TASK))
@@ -121,6 +130,13 @@ public class RelevanceDashboardHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
+	    		DateFormat fmt = DateFormat.getDateInstance(DateFormat.FULL,  Locale.US);
+	    		fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
+	    		Date endDate = null;
+	    		try {
+	    			endDate = fmt.parse((String)entry.get("start_end#EndDate"));
+	    		} catch(Exception e) {}
+
 	    		String entryDefId = (String)entry.get(COMMAND_DEFINITION_FIELD);
 	    		if (cacheEntryDef.get(entryDefId) == null) {
 	    			cacheEntryDef.put(entryDefId, bs.getDefinitionModule().getEntryDefinitionElements(entryDefId));
@@ -369,8 +385,10 @@ public class RelevanceDashboardHelper {
 		GregorianCalendar start = new GregorianCalendar();
 		//get users over last 2 weeks
 		start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
+		Object[] entityTypes = new Object[] {EntityType.folderEntry.name()};
 		Collection<ActivityInfo> results = bs.getReportModule().culaEsCaliente(AuditType.view, 
-				start.getTime(), new java.util.Date());
+				start.getTime(), new java.util.Date(), entityTypes, 
+				Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
 		for(ActivityInfo info : results) {
 			Element resultElem = null;
 			if (info.getWhoOrWhat().getEntityType().equals(EntityType.folderEntry)) {

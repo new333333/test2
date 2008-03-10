@@ -109,5 +109,6 @@ public interface ReportModule {
 	public Collection<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
 	public List<Map<String,Object>> getEntriesViewed(Long ownerId, Date startDate, Date endDate, Integer returnCount);
 	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate);
+	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount);
 	public List<Map<String,Object>> getUsersActivities(Long ownerId, Long[] userIds, Date startDate, Date endDate, Integer returnCount);
 }
