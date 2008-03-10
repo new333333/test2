@@ -42,7 +42,7 @@
 		<ul>
 		<c:forEach var="user" items="${ssUsers}">
 		  <li>
-		    <span><ssf:showUser user="${user}" /></span>
+		    <span><ssf:showUser user="${user}" titleStyle="ss_title" /></span>
 		    <c:if test="${!empty user.status}">
 		    <br/><span class="ss_smallprint ss_italic" style="padding-left:20px;">${user.status}</span>
 		    </c:if>
