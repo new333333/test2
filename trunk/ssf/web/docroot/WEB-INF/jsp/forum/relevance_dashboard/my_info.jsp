@@ -112,7 +112,7 @@
 	
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_calendar">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title"> <ssf:nlt tag="relevance.calendar"/> </div>
+		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.calendar"/> </div>
 	</ssf:param>
 		
       

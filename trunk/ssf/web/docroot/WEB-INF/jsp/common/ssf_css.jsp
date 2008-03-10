@@ -5299,8 +5299,8 @@ div.ss_canvas {
 }
 #ss_Box_12
 {
-	padding: 0;
-	margin: 1% 0 5% 0;
+	padding: 0px;
+	margin: 1% 0% 5% 0%;
 	color:#444444;
 
 }
@@ -5308,7 +5308,7 @@ div.ss_canvas {
 #ss_title
 {
 	
-	margin: 0 0 1% 0;
+	margin: 0px 0px 1% 0px;
 	font-size: 16px;
 	font-weight: 400;
 	color: #333;
@@ -5316,7 +5316,7 @@ div.ss_canvas {
 
 #ss_subtitle
 {
-	padding: 0.5% 0 1% 6px;
+	padding: 0.5% 0px 1% 6px;
 	font-size:14px;
 	color:#555555;
 
@@ -5369,17 +5369,17 @@ div.ss_canvas {
 /* time block styles */	
 #ss_today 
 {
-	margin: 0px 0 10px 10px;
+	margin: 0px 0px 10px 10px;
 }
 
 #ss_yesterday
 {
-	margin: 0px 0 0 10px;
+	margin: 0px 0px 0px 10px;
 }
 
 #ss_lastweek
 {
-	margin: 0px 0 0 10px;
+	margin: 0px 0px 0px 10px;
 }
  .ss_closed				/*use when a box is compressed*/	
 {
@@ -5401,12 +5401,12 @@ div.ss_canvas {
 
 .ss_summary						/*to use when need to display summary of an entry */
 {
-	padding: 0 0 0 15px;
+	padding: 0px 0px 0px 15px;
 	font-style: italic;
 }
 .ss_status						/*to use when need to display twitter status of person */
 {
-	padding: 0 0 0 15px;
+	padding: 0px 0px 0px 15px;
 	font-style: italic;
 }	
 /* Link styles */	
