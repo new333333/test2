@@ -28,6 +28,11 @@ public class Restrictions
 		return new InCriterion(field, Arrays.asList(values));
 	}
 	
+	public static Criterion between(String field, String lo, String hi)
+	{
+		return new BetweenCriterion(field, lo, hi);
+	}
+	
 	public static Junction.Conjunction conjunction()
 	{
 		return new Junction.Conjunction();
@@ -99,6 +104,33 @@ public class Restrictions
 				super.toQuery(root, value);
 			}
 			
+			return root;
+		}
+	}
+	
+	static class BetweenCriterion implements Criterion
+	{
+		protected String fieldName;
+		protected String lo;
+		protected String hi;
+
+		public BetweenCriterion(String fieldName, String lo, String hi)
+		{
+			this.fieldName = fieldName;
+			this.lo = lo;
+			this.hi = hi;
+		}
+
+		public Element toQuery(Branch parent)
+		{
+			Element root = parent.addElement(QueryBuilder.RANGE_ELEMENT);
+			root.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, fieldName);
+			root.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
+			Element child = root.addElement(QueryBuilder.RANGE_START);
+			child.setText(lo);
+			child = root.addElement(QueryBuilder.RANGE_FINISH);
+			child.setText(hi);
+
 			return root;
 		}
 	}
