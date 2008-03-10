@@ -147,7 +147,7 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 			
 		//add time to jobName - may have multple from same binder
 	 	String jobName =  binder.getId() + "-" + start.getTime().getTime();
-	   	String description = SSStatefulJob.trimDescription(start.getTime() + ":" + binder.toString());
+	   	String description = SSStatefulJob.trimDescription(start.getTime() + ":" + binder.getTitle());
 	 	String className = this.getClass().getName();
 	  	try {		
 			JobDetail jobDetail = new JobDetail(jobName, RETRY_GROUP, 

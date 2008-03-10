@@ -68,19 +68,19 @@ public abstract class SSStatefulJob implements StatefulJob {
 	protected ProfileDao profileDao;
 	protected User user;
 	protected Long zoneId;
-	public static int JOBNAME_MAX = 120; 
+	public static int JOBNAME_MAX = 80; 
 	public static int DESCRIPTION_MAX = 120; 
 	public static String ZONEID="zoneId";
 	public static String USERID="userId";
 		
 	public static String trimJobName(String jobName) {
 		if (jobName.length() > JOBNAME_MAX)
-			return jobName.substring(0, Math.max(jobName.length(), JOBNAME_MAX));
+			return jobName.substring(0, JOBNAME_MAX);
 		return jobName;
 	}
 	public static String trimDescription(String description) {
 		if (description.length() > DESCRIPTION_MAX)
-			return description.substring(0, Math.max(description.length(), DESCRIPTION_MAX));
+			return description.substring(0, DESCRIPTION_MAX);
 		return description;
 	}
 	public void execute(final JobExecutionContext context) throws JobExecutionException {
