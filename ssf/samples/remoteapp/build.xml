@@ -13,6 +13,8 @@
 
 	<target name="war" depends="jar">
 		<copy file="${jar.file}" todir="war/WEB-INF/lib"/>
+		<copy file="${project.dir}/lib/commons-httpclient.jar" todir="war/WEB-INF/lib"/>
+		<copy file="${project.dir}/lib/commons-codec.jar" todir="war/WEB-INF/lib"/>
 		<war
 			basedir="war"
 			destfile="${war.file}"
