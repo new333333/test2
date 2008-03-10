@@ -57,7 +57,7 @@
 	  </span><br/>
 	  <span class="ss_link_1">
 	  
-		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" /> 
+		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" titleStyle="ss_link_1" /> 
 	  
 	  </span>
 	  <span class="ss_link_2">

@@ -5397,7 +5397,7 @@ div.ss_canvas {
 	font-style: italic;
 }	
 /* Link styles */	
-.ss_link_1 						/* link_1 Link style for people links */ 
+.ss_link_1, .ss_link_1 span 	/* link_1 Link style for people links */ 
 	{ 
 	color: #00AEEF!important; 
 	}
