@@ -29,6 +29,9 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body>
+</ssf:ifadapter>
 <div class="ss_style ss_portal">
 <h2><ssf:nlt tag="relevance.shareThisWithWhom"/></h2
 
@@ -74,3 +77,7 @@
 
 </form>
 </div>
+<ssf:ifadapter>
+</body>
+</html>
+</ssf:ifadapter>
