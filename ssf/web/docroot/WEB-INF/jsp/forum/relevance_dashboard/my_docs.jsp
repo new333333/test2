@@ -31,7 +31,6 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<div id="ss_para">
 <c:if test="${empty ss_myDocs}">
 <span><ssf:nlt tag="relevance.docs.none"/></span>
 </c:if>
@@ -42,7 +41,6 @@
     <li>
 	 
 	  <span class="ss_link_2">
-	  
 		<c:set var="isDashboard" value="yes"/>
 		<ssf:titleLink 
 			entryId="${entry._docId}" binderId="${entry._binderId}" 
@@ -78,13 +76,15 @@
 				><span>${title}</span></a>
 		</c:if>
 	  
-	  </span><c:if test="${!empty entry._desc}"><br/>
-	  <span class="ss_summary">
-	  ${entry._desc}</span></c:if>
+	  </span>
+	  <c:if test="${!empty entry._desc}">
+	    <br/>
+	    <span class="ss_summary"><ssf:textFormat 
+	      formatAction="limitedDescription" 
+	      textMaxWords="10">${entry._desc}</ssf:textFormat></span>
+	  </c:if>
 	
     </li>
   </c:forEach>
 </ul>
 </c:if>
-</div>
-

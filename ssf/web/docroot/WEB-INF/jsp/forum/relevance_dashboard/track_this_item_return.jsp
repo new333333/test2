@@ -27,20 +27,42 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%><%--
---%><%@ include file="/WEB-INF/jsp/common/include.jsp" %><%--
---%><%@ page import="com.sitescape.util.ParamUtil" %><%--
---%><portletadapter:defineObjects1/><%--
---%><ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter><%--
---%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
---%><%
-
-String title = ParamUtil.get(request, "title", "");
-String divClass = ParamUtil.get(request, "divClass", "");
-
 %>
+<%@ page session="false" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<div id="ss_Box_1">
-  <div id="ss_title"><%= title %></div>
-  <div id="${renderResponse.namespace}_${id}" >
-    <div id="ss_para">
+<%@ page contentType="text/xml; charset=UTF-8" %>
+<taconite-root xml:space="preserve">
+<c:choose>
+<c:when test="${!empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
+	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
+		<div id="ss_status_message" style="visibility:hidden; display:none;">error</div>
+	</taconite-replace>
+</c:when>
+<c:otherwise>
+	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
+		<div id="ss_status_message" style="visibility:hidden; display:none;">ok</div>
+	</taconite-replace>
+	<taconite-replace contextNodeID="ss_track_this_ok${ss_namespace}" parseInBrowser="true">
+		<div id="ss_track_this_ok${ss_namespace}" 
+		  style="position:absolute;visibility:hidden; display:none;border:1px solid black;margin:10px;padding:10px;background-color:#ffffff;">
+		  <c:if test="${!empty ssEntry}">
+		    <span>
+		      <ssf:nlt tag="relevance.nowTracking">
+		      	<ssf:param name="value" useBody="true"><span class="ss_bold">${ssEntry.title}</span></ssf:param>
+		      </ssf:nlt>
+		    </span>
+		  </c:if>
+		  <c:if test="${empty ssEntry}">
+		    <span>
+		      <ssf:nlt tag="relevance.nowTracking">
+		        <ssf:param name="value" useBody="true"><span class="ss_bold">${ssBinder.title}</span></ssf:param>
+		      </ssf:nlt>
+		    </span>
+		  </c:if>
+		</div>
+	</taconite-replace>
+</c:otherwise>
+</c:choose>
+</taconite-root>
+

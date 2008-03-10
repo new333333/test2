@@ -41,9 +41,11 @@
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'folder'}">
 	<li>
-	    <a
+	    <table cellpadding="0" cellspacing="0"><tbody><tr><td><a
 	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
-	    >${binder.title}</a>
+	    >${binder.title}</a></td><td valign="top"><img style="padding:6px 0px 0px 4px;"
+	      src="<html:rootPath/>images/pics/delete.gif"
+	      onClick="ss_trackedItemsDelete(this, '${binder.id}');"/></td></tr></tbody></table>
 	</li>
   </c:if>
 </c:forEach>
@@ -53,15 +55,17 @@
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 
-	<ssf:canvas id="relevanceWorkspaces" type="inline" styleId="ss_people">
+	<ssf:canvas id="relevanceWorkspaces" type="inline" styleId="ss_trackedItems">
 	<ssf:param name="title" value="<%= NLT.get("relevance.trackedWorkspaces") %>"/>
 <ul>
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'workspace' && binder.definitionType == 8}">
 	<li>
-	    <a
+	    <table cellpadding="0" cellspacing="0"><tbody><tr><td><a
 	      href="<ssf:url action="view_ws_listing" binderId="${binder.id}"/>"
-	    >${binder.title}</a>
+	    >${binder.title}</a></td><td valign="top"><img style="padding:4px 0px 0px 4px;"
+	      src="<html:rootPath/>images/pics/delete.gif"
+	      onClick="ss_trackedItemsDelete(this, '${binder.id}');"/></td></tr></tbody></table>
 	</li>
   </c:if>
 </c:forEach>
@@ -71,15 +75,21 @@
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
 
-	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedItems">
-	<ssf:param name="title" value="<%= NLT.get("relevance.trackedPeople") %>"/>
+	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_people">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"><ssf:nlt tag="relevance.trackedPeople"/></div>
+	</ssf:param>
 <ul>
 <c:forEach var="user" items="${ss_trackedPeople}">
 	<li>
+	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
 	    <ssf:showUser user="${user}" />
 	    <c:if test="${!empty user.status}">
 	    <br/><span class="ss_smallprint ss_italic" style="padding-left:20px;">${user.status}</span>
 	    </c:if>
+	    </td><td valign="top"><img style="padding:4px 0px 0px 2px;"
+	      src="<html:rootPath/>images/pics/delete.gif"
+	      onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/></td></tr></tbody></table>
 	</li>
 </c:forEach>
 </ul>

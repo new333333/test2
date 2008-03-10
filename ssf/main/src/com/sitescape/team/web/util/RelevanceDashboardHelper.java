@@ -38,13 +38,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
+import java.util.TreeMap;
 
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.SharedEntity;
@@ -80,12 +80,14 @@ public class RelevanceDashboardHelper {
 		if (ObjectKeys.RELEVANCE_DASHBOARD_DASHBOARD.equals(type)) {
 			setupTasksBeans(bs, userWorkspace, model);
 			setupDocumentsBeans(bs, userWorkspace, model);
+			setupViewedEntriesBean(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_NETWORK_DASHBOARD.equals(type)) {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
 			setupTrackedPeopleBeans(bs, userWorkspace, model);
 			setupSharedItemsBeans(bs, userWorkspace, model);
 			setupWhatsHotBean(bs, model);
+			setupActivitiesBean(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_VISITORS.equals(type)) {
 			setupVisitorsBeans(bs, userWorkspace, model);
@@ -239,7 +241,7 @@ public class RelevanceDashboardHelper {
 				}
 	    	}
     	}
-    	model.put(WebKeys.WHATS_NEW_TRACKED_PLACES_FOLDERS, places);
+    	model.put(WebKeys.WHATS_NEW_TRACKED_PEOPLE_FOLDERS, places);
 	}
 	
 	private static void setupVisitorsBeans(AllModulesInjected bs, Binder binder, Map model) {
@@ -251,6 +253,49 @@ public class RelevanceDashboardHelper {
 		   Collection users = bs.getReportModule().getUsersActivity(binder, AuditType.view, 
 				   start.getTime(), new java.util.Date());
 		   model.put(WebKeys.USERS, users);
+		}
+	}
+	
+	private static void setupViewedEntriesBean(AllModulesInjected bs, Binder binder, Map model) {
+		//What entries have I visited?
+		if (binder != null) {
+			GregorianCalendar start = new GregorianCalendar();
+		    //get users over last 2 weeks
+			start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
+			List entries = bs.getReportModule().getEntriesViewed(binder.getOwnerId(),
+					start.getTime(), new java.util.Date(), 
+					Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
+			model.put(WebKeys.ENTRIES_VIEWED, entries);
+		}
+	}
+	
+	private static void setupActivitiesBean(AllModulesInjected bs, Binder binder, Map model) {
+		//What activities have been happening?
+		if (binder != null) {
+			List<Long> trackedPeople = new ArrayList();
+			if (!model.containsKey(WebKeys.RELEVANCE_TRACKED_PEOPLE)) {
+				UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
+				Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+				if (relevanceMap != null) {
+					trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
+				}
+			} else {
+				SortedSet users = (SortedSet) model.get(WebKeys.RELEVANCE_TRACKED_PEOPLE);
+			}
+			Long[] userIds = new Long[trackedPeople.size()];
+			int count = 0;
+			for (Long id:trackedPeople) {
+				userIds[count++] = id;
+			}
+			if (userIds.length > 0) {
+				GregorianCalendar start = new GregorianCalendar();
+			    //get activities over last 2 weeks
+				start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
+				Collection activities = bs.getReportModule().getUsersActivities(binder.getOwnerId(),
+						userIds, start.getTime(), new java.util.Date(), 
+						Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
+				model.put(WebKeys.ACTIVITIES, activities);
+			}
 		}
 	}
 	

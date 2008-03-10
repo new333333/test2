@@ -50,6 +50,11 @@ public interface ReportModule {
 	public static final String BINDER_ID = "binder_id";
 	public static final String BINDER_TITLE = "binder_title";
 	public static final String BINDER_PARENT = "binder_parent";
+	public static final String DATE = "date";
+	public static final String DESCRIPTION = "description";
+	public static final String ENTITY = "entity";
+	public static final String FILE_ID = "file_id";
+	public static final String USER = "user";
 	public static final String USER_ID = "user_id";
 	public static final String USER_TITLE = "user_title";
 	public static final String LAST_LOGIN = "last_login";
@@ -60,6 +65,7 @@ public interface ReportModule {
 	public static final String AVERAGE_TI = "average_ti";
 	public static final String COUNT = "count";
 	public static final String SIZE = "size";
+	public static final String TYPE = "type";
 	
 	public static class ActivityInfo
 	{
@@ -84,6 +90,7 @@ public interface ReportModule {
 	public void addAuditTrail(AuditTrail.AuditType type, User user, DefinableEntity entity);
 	public void addAuditTrail(AuditTrail.AuditType type, DefinableEntity entity);
 	public void addLoginInfo(LoginInfo loginInfo);
+	public void addStatusInfo(User user);
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment);
 	public void addWorkflowStateHistory(WorkflowStateHistory workflowStateHistory);
 	public void addWorkflowStateHistory(WorkflowState state, HistoryStamp end, boolean isEnded);
@@ -100,6 +107,7 @@ public interface ReportModule {
 
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 	public Collection<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
+	public List<Map<String,Object>> getEntriesViewed(Long ownerId, Date startDate, Date endDate, Integer returnCount);
 	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate);
-
+	public List<Map<String,Object>> getUsersActivities(Long ownerId, Long[] userIds, Date startDate, Date endDate, Integer returnCount);
 }

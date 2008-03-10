@@ -36,13 +36,28 @@
       <div id="ss_col1" class="ss_col1">
       
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
-	
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title"> <ssf:nlt tag="relevance.documents"/> </div>
+		<div id="ss_title"><ssf:nlt tag="relevance.documents"/></div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
-		
 	</ssf:canvas>
+	
+	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"><ssf:nlt tag="relevance.visitedEntries"/></div>
+	</ssf:param>
+		<c:set var="ss_showRecentlyVisitedEntities" value="view" scope="request"/>
+		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
+	</ssf:canvas>
+	
+	<ssf:canvas id="relevanceVisitedFiles" type="inline" styleId="ss_documents">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"><ssf:nlt tag="relevance.visitedFiles"/></div>
+	</ssf:param>
+		<c:set var="ss_showRecentlyVisitedEntities" value="download" scope="request"/>
+		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
+	</ssf:canvas>
+	
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_email">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title"> <ssf:nlt tag="relevance.email"/> </div>
@@ -51,12 +66,10 @@
       
         <div id="ss_today">
        <div id="ss_hints"><em>This is my email for today </em>  </div>
-        <div id="ss_para">
-        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a> RE: <a href="#" class="ss_link_2">My Itinerary</a><br>
+         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a> RE: <a href="#" class="ss_link_2">My Itinerary</a><br>
         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Quality Control Guidelines</a><br>
         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Gerry Kimball</a> RE: <a href="#" class="ss_link_2">Rental space</a><br>
         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Ensemble Practice</a><br>
-          </div>
           </div><!-- end of today -->
          
           

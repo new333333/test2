@@ -726,12 +726,40 @@ function ss_updateStatusNow(obj) {
 	}
 }
 
-function ss_trackThisBinder(id) {
+function ss_trackThisBinder(id, namespace) {
 	ss_setupStatusMessageDiv();
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"track_this_binder", binderId:id}, "__ajax_relevance");
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"track_this_binder", binderId:id, namespace:namespace}, "__ajax_relevance");
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.setData("namespace", namespace);
+	ajaxRequest.setPostRequest(ss_postRequestTrackThis);
+	ajaxRequest.sendRequest();  //Send the request
+}
+function ss_postRequestTrackThis(obj) {
+	//See if there was an error
+	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+		alert(ss_not_logged_in);
+	} else {
+		var namespace = obj.getData("namespace");
+		var divObjS = self.document.getElementById("ss_track_this_anchor" + namespace);
+		var divObjT = self.document.getElementById("ss_track_this_ok" + namespace);
+		if (divObjT != null) {
+			divObjT.style.visibility = 'visible';
+			divObjT.style.display = 'block';
+			ss_setObjectLeft(divObjT, ss_getObjectLeftAbs(divObjS))
+			setTimeout("ss_hideDiv('ss_track_this_ok" + namespace + "');", 2000);
+		}
+	}
+}
+function ss_trackedItemsDelete(obj, id) {
+	ss_setupStatusMessageDiv();
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"track_this_binder_delete", binderId:id}, "__ajax_relevance");
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
 	ajaxRequest.sendRequest();  //Send the request
+	
+	//Delete the row from the parent table
+	var trObj = obj.parentNode.parentNode
+	trObj.parentNode.removeChild(trObj)
 }
 
 //Function to create a named div in the body

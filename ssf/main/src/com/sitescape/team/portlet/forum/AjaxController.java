@@ -1853,8 +1853,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 	
 	private void ajaxSaveUserStatus(ActionRequest request, 
 			ActionResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		String status = PortletRequestUtils.getStringParameter(request, "status", "");
-		getProfileModule().setStatus(status);
+		if (!status.equals(user.getStatus())) {
+			getProfileModule().setStatus(status);
+			getReportModule().addStatusInfo(user);
+		}
 	}
 	
 	private ModelAndView ajaxGetSearchQueryName(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {

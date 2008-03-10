@@ -38,8 +38,7 @@
   <c:forEach var="entry" items="${ss_whatsNewTrackedPlaces}">
     <jsp:useBean id="entry" type="java.util.Map" />
     <li>
-	  <ssf:nlt tag="relevance.searchResultLine">
-	  <ssf:param name="value" useBody="true">
+	  <span class="ss_link_2">
 		<c:set var="isDashboard" value="yes"/>
 		<ssf:titleLink 
 			entryId="${entry._docId}" binderId="${entry._binderId}" 
@@ -52,13 +51,15 @@
 			</ssf:param>
 			<c:out value="${entry.title}" escapeXml="false"/>
 		</ssf:titleLink>
-	  </ssf:param>
-	  <ssf:param name="value" useBody="true">
+	  </span>
+	  <br/>
+	  
+	  <span class="ss_link_1">
 		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" /> 
-	  </ssf:param>
-	  <ssf:param name="value" useBody="true">
+	  </span>
+	  
+	  <span class="ss_link_2">
 		<c:set var="path" value=""/>
-
 		<c:if test="${!empty ss_whatsNewTrackedPlacesFolders[entry._binderId]}">
 			<c:set var="path" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId]}"/>
 			<c:set var="title" value="${ss_whatsNewTrackedPlacesFolders[entry._binderId].title}"/>
@@ -70,9 +71,16 @@
 				title="${path}"
 				><span>${title}</span></a>
 		</c:if>
-	  </ssf:param>
-	  </ssf:nlt>
+	  </span>
+	  <c:if test="${!empty entry._desc}">
+	    <br/>
+	    <span class="ss_summary"><ssf:textFormat 
+	      formatAction="limitedDescription" 
+	      textMaxWords="10">${entry._desc}</ssf:textFormat></span>
+	  </c:if>
+	
     </li>
   </c:forEach>
 </ul>
 </c:if>
+

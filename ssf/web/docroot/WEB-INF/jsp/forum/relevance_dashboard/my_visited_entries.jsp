@@ -30,12 +30,17 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:if test="${empty ss_whatsHot}">
-<span><ssf:nlt tag="relevance.none"/></span>
+
+<c:if test="${empty ssEntriesViewed}">
+<span><ssf:nlt tag="relevance.docs.none"/></span>
 </c:if>
-<c:if test="${!empty ss_whatsHot}">
+<c:if test="${!empty ssEntriesViewed}">
+<c:if test="${ss_showRecentlyVisitedEntities == 'view'}">
+<c:set var="count" value="0"/>
 <ul>
-  <c:forEach var="entry" items="${ss_whatsHot}">
+  <c:forEach var="entryMap" items="${ssEntriesViewed}">
+    <c:if test="${entryMap.type == 'view'}">
+    <c:set var="entry" value="${entryMap.entity}"/>
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
     <li>
 	  <span class="ss_link_2">
@@ -68,8 +73,72 @@
 	      formatAction="limitedDescription" 
 	      textMaxWords="10">${entry.description}</ssf:textFormat></span>
 	  </c:if>
-	
+	<c:set var="count" value="${count + 1}"/>
     </li>
+    </c:if>
   </c:forEach>
 </ul>
+<c:if test="${count == 0}">
+<span><ssf:nlt tag="relevance.docs.none"/></span>
+</c:if>
+</c:if>
+
+<c:if test="${ss_showRecentlyVisitedEntities == 'download'}">
+<c:set var="count" value="0"/>
+<ul>
+  <c:forEach var="entryMap" items="${ssEntriesViewed}">
+    <c:if test="${entryMap.type == 'download'}">
+    <c:set var="entry2" value="${entryMap.entity}"/>
+    <jsp:useBean id="entry2" type="com.sitescape.team.domain.Entry" />
+    <li>
+	  <span class="ss_link_2">
+	  	<a target="_blank" href="<ssf:url 
+					    webPath="viewFile"
+					    folderId="${entry2.parentBinder.id}"
+					    entryId="${entry2.id}"
+					    entityType="${entry2.entityType}" >
+					    <ssf:param name="fileId" value="${entryMap.file_id}"/>
+					    </ssf:url>">${entryMap.description}</a>
+	  </span>
+	  <br/>
+	  <span class="ss_link_2">
+		<c:set var="isDashboard" value="yes"/>
+		<ssf:titleLink 
+			entryId="${entry2.id}" binderId="${entry2.parentBinder.id}" 
+			entityType="${entry2.entityType}" 
+			namespace="${ss_namespace}" 
+			isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+			<ssf:param name="url" useBody="true">
+				<ssf:url adapter="true" portletName="ss_forum" folderId="${entry2.parentBinder.id}" 
+				  action="view_folder_entry" entryId="${entry2.id}" actionUrl="true" />
+			</ssf:param>
+			<c:out value="${entry2.title}" escapeXml="false"/>
+		</ssf:titleLink>
+	  </span>
+	  <br/>
+	  <span class="ss_link_1">
+	    <ssf:showUser user="${entry2.creation.principal}"/>
+	  </span>
+	  
+	  <span class="ss_link_2">
+    	<a href="javascript: ;"
+			onClick="return ss_gotoPermalink('${entry2.parentBinder.id}', '${entry2.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
+			><span>${entry2.parentBinder.title}</span></a>
+	  </span>
+	  <c:if test="${!empty entry2.description}">
+	    <br/>
+	    <span class="ss_summary"><ssf:textFormat 
+	      formatAction="limitedDescription" 
+	      textMaxWords="10">${entry2.description}</ssf:textFormat></span>
+	  </c:if>
+	
+	<c:set var="count" value="${count + 1}"/>
+    </li>
+    </c:if>
+  </c:forEach>
+</ul>
+<c:if test="${count == 0}">
+<span><ssf:nlt tag="relevance.docs.none"/></span>
+</c:if>
+</c:if>
 </c:if>

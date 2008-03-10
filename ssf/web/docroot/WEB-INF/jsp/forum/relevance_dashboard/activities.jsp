@@ -27,20 +27,37 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-%><%--
---%><%@ include file="/WEB-INF/jsp/common/include.jsp" %><%--
---%><%@ page import="com.sitescape.util.ParamUtil" %><%--
---%><portletadapter:defineObjects1/><%--
---%><ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter><%--
---%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
---%><%
-
-String title = ParamUtil.get(request, "title", "");
-String divClass = ParamUtil.get(request, "divClass", "");
-
 %>
-
-<div id="ss_Box_1">
-  <div id="ss_title"><%= title %></div>
-  <div id="${renderResponse.namespace}_${id}" >
-    <div id="ss_para">
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<c:if test="${empty ss_activities}">
+<span><ssf:nlt tag="relevance.none"/></span>
+</c:if>
+<c:if test="${!empty ss_activities}">
+<ul>
+  <c:forEach var="activity" items="${ss_activities}">
+    <li>
+	  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				      value="${activity.date}" type="both" 
+					  timeStyle="short" dateStyle="short" />
+	  <c:if test="${activity.type == 'login'}">
+	    <ssf:nlt tag="relevance.activityLoginLine">
+	      <ssf:param name="value" useBody="true">
+	        <ssf:showUser user="${activity.user}" />
+	      </ssf:param>
+	    </ssf:nlt>
+	  </c:if>
+	  <c:if test="${activity.type == 'userStatus'}">
+	    <ssf:nlt tag="relevance.activityStatusLine">
+	      <ssf:param name="value" useBody="true">
+	        <ssf:showUser user="${activity.user}" />
+	      </ssf:param>
+	      <ssf:param name="value" useBody="true">
+	        <span class="ss_italic">${activity.description}</span>
+	      </ssf:param>
+	    </ssf:nlt>
+	  </c:if>
+    </li>
+  </c:forEach>
+</ul>
+</c:if>

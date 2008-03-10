@@ -5225,7 +5225,7 @@ div.ss_canvas {
 	background-color:#ffffff;
 
 }
-#ss_whatsnew
+	#ss_whatsnew
 {
 	padding: 0;
 	margin: 2% 0 5% 0;

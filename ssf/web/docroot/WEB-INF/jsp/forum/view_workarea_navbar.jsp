@@ -455,7 +455,7 @@ ss_statusCurrent = "${ssUser.status}";
 <td style="padding-left:20px;">
 <c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
 <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
-  onClick="ss_trackThisBinder('${ssBinder.id}');return false;">
+  onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;">
 <c:if test="${ssBinder.entityType == 'workspace'}">
 <c:if test="${ssBinder.definitionType != 12}"><span class="ss_smallprint"><ssf:nlt tag="relevance.trackThisWorkspace"/></span></c:if>
 <c:if test="${ssBinder.definitionType == 12}"><span class="ss_smallprint"><ssf:nlt tag="relevance.trackThisPerson"/></span></c:if>
@@ -463,6 +463,9 @@ ss_statusCurrent = "${ssUser.status}";
 <c:if test="${ssBinder.entityType == 'folder'}"><span class="ss_smallprint"><ssf:nlt tag="relevance.trackThisFolder"/></span></c:if>
 </a>
 </c:if>
+<div id="ss_track_this_anchor${renderResponse.namespace}"> </div>
+<div id="ss_track_this_ok${renderResponse.namespace}" 
+  style="position:absolute;display:none;visibility:hidden;border:1px solid black;padding:10px;background-color:#ffffff;"></div>
 </td>
 <td style="padding-left:20px;">
 <c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
@@ -587,6 +590,43 @@ ss_statusCurrent = "${ssUser.status}";
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
 <!-- end of iframe div -->
 </c:if>
+<script type="text/javascript">
+function ss_showRecentPlacesDiv${renderResponse.namespace}() {
+	var divObjTarget = self.document.getElementById('ss_recentPlacesDiv${renderResponse.namespace}');
+	var divObjSource = self.document.getElementById('ss_recentPlaces${renderResponse.namespace}');
+	if (divObjTarget.style.display == 'block') {
+		divObjTarget.style.display = 'none';
+	} else {
+		divObjTarget.style.display = 'block';
+		ss_setObjectLeft(divObjTarget, ss_getObjectLeftAbs(divObjSource))
+	}
+}
+function ss_hideRecentPlacesDiv${renderResponse.namespace}() {
+	var divObjTarget = self.document.getElementById('ss_recentPlacesDiv${renderResponse.namespace}');
+	divObjTarget.style.display = 'none';
+}
+</script>
+<table cellspacing="0" cellpadding="0">
+<tr>
+<td style="padding-left:20px;" valign="top">
+<div id="ss_recentPlaces${renderResponse.namespace}"><img 
+  src="<html:rootPath/>images/pics/drop_down_tab_left.gif" 
+  height="12" width="12"/><span class="ss_smallprint" 
+  style="padding:0px 4px 0px 4px; position:relative; top:-1px; background-color:#DBDBDB;"
+  ><a href="javascript: ;" 
+  onClick="ss_showRecentPlacesDiv${renderResponse.namespace}();return false;"
+  ><ssf:nlt tag="sidebar.history"/></a></span></div>
+</td>
+</tr>
+</table>
+<div id="ss_recentPlacesDiv${renderResponse.namespace}"
+  style="position:relative; display:none;">
+<ssf:popupPane width="250px" titleTag="sidebar.history"
+      closeScript="ss_hideRecentPlacesDiv${renderResponse.namespace}();return false;">
+<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar_workarea.jsp" />
+</ssf:popupPane>
+</div>
+
 <div style="padding-bottom:4px;"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <div style="padding-bottom:4px;"></div>

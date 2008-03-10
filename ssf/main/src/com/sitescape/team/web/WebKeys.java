@@ -363,6 +363,7 @@ public class WebKeys {
 	public static final String OPERATION_SCHEDULE_MEETING = "schedule_meeting";
 	public static final String OPERATION_SELECT_FILTER = "select_filter";
 	public static final String OPERATION_TRACK_THIS_BINDER = "track_this_binder";
+	public static final String OPERATION_TRACK_THIS_BINDER_DELETE = "track_this_binder_delete";
 	public static final String OPERATION_USER_FILTER = "user_filter";
 	public static final String OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String OPERATION_UPLOAD_IMAGE_FILE = "upload_image_file";
@@ -434,6 +435,7 @@ public class WebKeys {
 	public static final String ACCESS_SUPER_USER = "ss_superUser";
 	public static final String ACCESSIBLE_URL = "ss_accessibleUrl";
 	public static final String ACTION = "action";
+	public static final String ACTIVITIES = "ss_activities";
 	public static final String ADD_ENTRY_DEFINITIONS="ssAddEntryDefinitions";
 	public static final String ADD_ENTRY_TITLE="ssAddEntryTitle";
 	public static final String ADD_ENTRY_TITLES="ssAddEntryTitles";
@@ -539,6 +541,7 @@ public class WebKeys {
     public static final String EMAIL_ALIASES="ssEmailAliases";
 	public static final String ENTITY_ID = "ss_entityId";
 	public static final String ENTITY_TYPE="_entityType";
+    public static final String ENTRIES_VIEWED="ssEntriesViewed";
     public static final String ENTRY="ssEntry";
     public static final String ENTRY_ID="ssEntryId";
     public static final String ENTRY_ID_TO_BE_SHOWN="ssEntryIdToBeShown";
