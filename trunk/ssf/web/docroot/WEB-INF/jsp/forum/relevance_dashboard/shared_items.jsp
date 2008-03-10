@@ -42,7 +42,7 @@
 	  <ssf:nlt tag="relevance.sharedEntityLine">
 	  <span class="ss_link_1">
 	  <ssf:param name="value" useBody="true">
-	    <ssf:showUser user="${sharedItem.referer}" />
+	    <ssf:showUser user="${sharedItem.referer}" titleStyle="ss_link_1" />
 	  </ssf:param>
 	  </span>
 	  <span class="ss_link_2">

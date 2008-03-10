@@ -44,9 +44,9 @@
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'folder'}">
 	
-	    <table cellpadding="0" cellspacing="0"><tbody><tr><td><a
+	    <table cellpadding="0" cellspacing="0"><tbody><tr><td><a class="ss_link_2"
 	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
-	    >${binder.title}</a></td><td valign="top"><img style="padding:6px 0px 0px 4px;"
+	    ><span>${binder.title} (${binder.parentBinder.title})</span></a></td><td valign="top"><img style="padding:6px 0px 0px 4px;"
 	      src="<html:rootPath/>images/pics/delete.gif"
 	      onClick="ss_trackedItemsDelete(this, '${binder.id}');"/></td></tr></tbody></table>
 	<br/>
@@ -67,9 +67,9 @@
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'workspace' && binder.definitionType == 8}">
 	<li>
-	    <table cellpadding="0" cellspacing="0"><tbody><tr><td><a
+	    <table cellpadding="0" cellspacing="0"><tbody><tr><td><a class="ss_link_2"
 	      href="<ssf:url action="view_ws_listing" binderId="${binder.id}"/>"
-	    >${binder.title}</a></td><td valign="top"><img style="padding:4px 0px 0px 4px;"
+	    ><span>${binder.title} (${binder.parentBinder.title})</span></a></td><td valign="top"><img style="padding:4px 0px 0px 4px;"
 	      src="<html:rootPath/>images/pics/delete.gif"
 	      onClick="ss_trackedItemsDelete(this, '${binder.id}');"/></td></tr></tbody></table>
 	</li>
@@ -89,7 +89,7 @@
 <c:forEach var="user" items="${ss_trackedPeople}">
 	
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
-	    <ssf:showUser user="${user}" />
+	    <ssf:showUser user="${user}" titleStyle="ss_link_1" />
 	    <c:if test="${!empty user.status}">
 	    <br/><span class="ss_smallprint ss_italic" style="padding-left:20px;">${user.status}</span>
 	    </c:if>

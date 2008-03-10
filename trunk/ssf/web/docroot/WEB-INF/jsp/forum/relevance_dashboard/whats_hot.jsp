@@ -40,7 +40,7 @@
     <li>
 	  <span class="ss_link_2">
 		<c:set var="isDashboard" value="yes"/>
-		<ssf:titleLink 
+		<ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entry.id}" binderId="${entry.parentBinder.id}" 
 			entityType="${entry.entityType}" 
 			namespace="${ss_namespace}" 
@@ -54,7 +54,7 @@
 	  </span>
 	  <br/>
 	  <span class="ss_link_1">
-	    <ssf:showUser user="${entry.creation.principal}"/>
+	    <ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
 	  </span>
 	  
 	  <span class="ss_link_2">
