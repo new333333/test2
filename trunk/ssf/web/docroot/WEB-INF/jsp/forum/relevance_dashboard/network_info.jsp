@@ -43,13 +43,6 @@
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tracked.jsp" />
 	</ssf:canvas>
 
-	<ssf:canvas id="relevanceMail" type="inline" styleId="ss_mail">
-	<ssf:param name="title" value="News"/>
-		<iframe src="http://news.bbc.co.uk/nolpda/ifs_news/hi/default.stm?ifs=1" 
-		frameborder="0" scrolling="Auto" 
-		width="100%" height="360">mail</iframe>	
-	</ssf:canvas>
-
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 

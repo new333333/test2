@@ -91,7 +91,7 @@ ss_addBinderConfigInternalIds['${binderConfigId}'] = ss_teamWorkspaceInternalId;
 </c:if>
 
 function ss_showAddBinderOptions() {
-	var formObj = self.document.getElementById('$renderResponse.namespace}fm');
+	var formObj = self.document.getElementById('${renderResponse.namespace}fm');
 	if (document.getElementById('folderConfigIdTitle') == null) return;
 	
 	//Default to inheriting from parent
@@ -166,8 +166,8 @@ function ss_checkForm(obj) {
   action="<ssf:url action="add_binder" actionUrl="true"><ssf:param 
   		name="binderId" value="${ssBinder.id}"/><ssf:param 
   		name="operation" value="${ssOperation}"/></ssf:url>"
-  name="$renderResponse.namespace}fm" 
-  id="$renderResponse.namespace}fm" 
+  name="${renderResponse.namespace}fm" 
+  id="${renderResponse.namespace}fm" 
   method="post" onSubmit="return ss_checkForm(this);">
 <span class="ss_bold">
   <c:if test="${ssOperation == 'add_workspace'}">

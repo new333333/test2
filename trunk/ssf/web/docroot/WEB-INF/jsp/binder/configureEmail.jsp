@@ -49,8 +49,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <c:when test="${!empty ssWsDomTree}">
 
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
-<form class="ss_style ss_form" name="$renderResponse.namespace}fm" 
-    id="$renderResponse.namespace}fm" method="post" 
+<form class="ss_style ss_form" name="${renderResponse.namespace}fm" 
+    id="${renderResponse.namespace}fm" method="post" 
     action="<ssf:url action="config_email" actionUrl="true"/>">
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">

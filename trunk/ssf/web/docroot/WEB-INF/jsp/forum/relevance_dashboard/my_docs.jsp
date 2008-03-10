@@ -66,11 +66,11 @@
 
 		<c:if test="${!empty ss_myDocsFolders[entry._binderId]}">
 			<c:set var="path" value="${ss_myDocsFolders[entry._binderId]}"/>
-			<c:set var="title" value="${ss_myDocsFolders[entry._binderId].title}"/>
+			<c:set var="title" value="${ss_myDocsFolders[entry._binderId].parentBinder.title} // ${ss_myDocsFolders[entry._binderId].title}"/>
 		</c:if>
 		<c:set var="isDashboard" value="yes"/>
 		<c:if test="${!empty path}">
-    		<a href="javascript: ;"
+    		<br/><a href="javascript: ;"
 				onClick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 				title="${path}"
 				><span>${title}</span></a>

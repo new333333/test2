@@ -41,8 +41,8 @@
 		name="operation" value="share_this_binder" /><ssf:param 
 		name="binderId" value="${ssBinderId}" /><c:if test=""><ssf:param 
 		name="entryId" value="${ssEntryId}" /></c:if></ssf:url>"
-  name="$renderResponse.namespace}fm" 
-  id="$renderResponse.namespace}fm" 
+  name="${renderResponse.namespace}fm" 
+  id="${renderResponse.namespace}fm" 
   method="post">
   
 <span class="ss_bold"><ssf:nlt tag="relevance.selectUsers"/></span>
