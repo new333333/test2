@@ -324,7 +324,7 @@ div.ss_global_toolbar_quick input {
   color: ${ss_form_element_text_color};
   font-size: ${ss_style_font_fineprint};
   font-family: ${ss_style_folder_view_font_family};  
-  border: solid .01em #B5CEE7;
+  border: solid .01em #999;
 }
 div.ss_style textarea {
   padding: 0px;
@@ -2143,7 +2143,8 @@ span.ss_global_toolbar_label_text, span.ss_global_toolbar_label_text_quickSearch
 }
 
 span.ss_global_toolbar_label_text_quickSearch {
-	font-size: 10px;
+	font-size: ${ss_style_font_fineprint};
+	font-style: Arial, sans serif;
 }
 span.ss_global_toolbar_label_text {
 	font-size: 10px;
@@ -5166,6 +5167,9 @@ div.ss_canvas {
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#333333;
+	padding: 0.5% 0 1% 5px;
+	color: #666666;
+	line-height: 2em;
 
 }
 #ss_trackedItems
@@ -5184,10 +5188,10 @@ div.ss_canvas {
 }
 	#ss_hints
 {
-	font-size: 10px;
+	font-size: 11px;
 	font-style: italic;
-	padding-left:10px;
-	line-height:1em;
+	padding-left:2px;
+	line-height:14px;
 }
 
 	#ss_calendar
@@ -5197,6 +5201,10 @@ div.ss_canvas {
 	color:#444444;
 	border:1px solid #B2CEE7;
 	background-color:#ffffff;
+	padding: 0.5% 0 1% 5px;
+	color: #666666;
+	line-height: 2em;
+	
 
 }
 	#ss_survey
@@ -5248,6 +5256,10 @@ div.ss_canvas {
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#333333;
+	font-style:  arial, sans serif;
+	font-color: #5799CB;
+	line-height: 1.5em;
+	
 
 }
 	#ss_documents
@@ -5317,6 +5329,7 @@ div.ss_canvas {
 	color: #666666;
 	line-height: 2em;
 }
+
 #ss_para ul
 {
 	
@@ -5356,7 +5369,7 @@ div.ss_canvas {
 /* time block styles */	
 #ss_today 
 {
-	margin: 0px 0 0 10px;
+	margin: 0px 0 10px 10px;
 }
 
 #ss_yesterday

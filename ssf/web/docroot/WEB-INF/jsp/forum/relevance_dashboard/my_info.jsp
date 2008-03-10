@@ -37,7 +37,7 @@
       
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title"><ssf:nlt tag="relevance.documents"/></div>
+		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.documents"/></div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
 	</ssf:canvas>
@@ -46,16 +46,20 @@
 	
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_email">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title"> <ssf:nlt tag="relevance.email"/> </div>
+		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.email"/> </div>
 	</ssf:param>
 		
       
         <div id="ss_today">
        <div id="ss_hints"><em>This is my email for today </em>  </div>
-         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a> RE: <a href="#" class="ss_link_2">My Itinerary</a> 9:35 a<br>
-        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Quality Control Guidelines</a> 7:20 a<br>
-        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Gerry Kimball</a> RE: <a href="#" class="ss_link_2">Rental space</a> Fri Mar 7, 5:20 p<br>
-        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Ensemble Practice</a> Thu Mar 6, 12:10 p<br>
+         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a> RE: <a href="#" class="ss_link_2">My Itinerary</a> 9:35 AM<br>
+         <div style="#ss_email">Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page...</div> 
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Quality Control Guidelines</a> 7:20 AM<br>
+        <div> The project is going great so far...</div>
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Gerry Kimball</a> RE: <a href="#" class="ss_link_2">Rental space</a> Fri Mar 7, 5:20 AM<br>
+        <div> Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page: </div>
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Ensemble Practice</a> Thu Mar 6, 12:10 PM<br>
+        <div>Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page: </div>
           </div><!-- end of today -->
          
           
@@ -64,7 +68,7 @@
 	
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_bookmarks">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title"> <ssf:nlt tag="relevance.bookmarks"/> </div>
+		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.bookmarks"/> </div>
 	</ssf:param>
 		
       
@@ -114,7 +118,7 @@
       
         <div id="ss_today">
        <div id="ss_hints"><em>This is my calendar. </em>  </div>
-       <div id="ss_para" class="ss_pt_para">
+       <div id="#ss_calendar" 
         <li>Thu March 6, 9:00-10:00 am<br/>
         Marketing//Development<br/>
         <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
@@ -145,14 +149,13 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.ping"/></div>
 	</ssf:param>
-	<div id="ss_hints"><em>Need to put code in here for IM where is cool dude?</em></div>
-	<div id="ss_para" class="ss_pt_para">
-	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Robbin Smart</a><br/>
-	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Lisa Fadden</a><br/>
-	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a><br/>
-	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Peter Hurley</a><br/>
-	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a><br/>
-	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Brent McConnell</a><br/>
+	<div id="ss_hints"><em>The cool dude is here and I am happy with this are you?</em></div>
+	<img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Robbin Smart</a><br/>
+	<img src="<html:rootPath/>images/pics/sym_s_green_dude.gif" alt="email" width="12" height=12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Lisa Fadden</a><br/>
+	<img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a><br/>
+	<img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Peter Hurley</a><br/>
+	<img src="<html:rootPath/>images/pics/sym_s_green_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a><br/>
+	<img src="<html:rootPath/>images/pics/sym_s_yellow_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Brent McConnell</a><br/>
 	</div>
 
 	</ssf:canvas>

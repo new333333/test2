@@ -34,6 +34,28 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_myTasks}">
+
+<div id="ss_today">
+       <div id="ss_hints"><em>These are my tasks. </em>  </div>
+       <div id="ss_tasks" 
+        <li>Thu March 6, 9:00-10:00 am<br/>
+        Marketing//Development<br/>
+        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
+        <li>Mon March 10, 1:00-3:00 pm<br/>
+        Engineering//Wiki<br/>
+        <a href="#" class="ss_link_2">Software Development</a> </li><br>
+        <li>Tue March 11, 10:00-11:00 am<br/>
+        Marketing//Blog<br/>
+        <a href="#" class="ss_link_2">Coffee with Vendors</a> </li><br>
+        <li>Tue March 11, 4:00-5:00 pm<br/>
+        Finance<br/>
+        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
+        <li>Fri March 14, 6:00-10:00 am<br/>
+        Software//Expo<br/>
+        <a href="#" class="ss_link_2">Flight to Salt Lake</a> </li><br>
+        </div><!-- end of para -->
+</div><!-- end of today -->
+         
 <table class="ss_tasks_list" >
 <tbody>
 	<tr>
