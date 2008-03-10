@@ -42,21 +42,7 @@
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
 	</ssf:canvas>
 	
-	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title"><ssf:nlt tag="relevance.visitedEntries"/></div>
-	</ssf:param>
-		<c:set var="ss_showRecentlyVisitedEntities" value="view" scope="request"/>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
-	</ssf:canvas>
 	
-	<ssf:canvas id="relevanceVisitedFiles" type="inline" styleId="ss_documents">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title"><ssf:nlt tag="relevance.visitedFiles"/></div>
-	</ssf:param>
-		<c:set var="ss_showRecentlyVisitedEntities" value="download" scope="request"/>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
-	</ssf:canvas>
 	
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_email">
 	<ssf:param name="title" useBody="true" >
@@ -66,26 +52,110 @@
       
         <div id="ss_today">
        <div id="ss_hints"><em>This is my email for today </em>  </div>
-         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a> RE: <a href="#" class="ss_link_2">My Itinerary</a><br>
-        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Quality Control Guidelines</a><br>
-        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Gerry Kimball</a> RE: <a href="#" class="ss_link_2">Rental space</a><br>
-        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Ensemble Practice</a><br>
+         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a> RE: <a href="#" class="ss_link_2">My Itinerary</a> 9:35 a<br>
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Quality Control Guidelines</a> 7:20 a<br>
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Gerry Kimball</a> RE: <a href="#" class="ss_link_2">Rental space</a> Fri Mar 7, 5:20 p<br>
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Ensemble Practice</a> Thu Mar 6, 12:10 p<br>
           </div><!-- end of today -->
          
           
 		
 	</ssf:canvas>
 	
+	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_bookmarks">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"> <ssf:nlt tag="relevance.bookmarks"/> </div>
+	</ssf:param>
+		
+      
+        <div id="ss_today">
+       <div id="ss_hints"><em>These are my bookmarks. </em>  </div>
+        <a href="#" class="ss_link_2">My Itinerary</a> <br>
+        <a href="#" class="ss_link_1">Peter Hurley</a> <a href="#" class="ss_link_2">Engineering//New Version Outline</a> <br>
+        <a href="#" class="ss_link_1">Gerry Kimball</a> <a href="#" class="ss_link_2">Marketing//Agenda</a> <br>
+        <a href="#" class="ss_link_1">Bill Bliss</a> <a href="#" class="ss_link_2">Blog Folder//Ensemble Music</a> <br>
+          </div><!-- end of today -->
+         
+          
+		
+	</ssf:canvas>
+	
+		<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_notes">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.notes"/> </div>
+	</ssf:param>
+		
+      
+        <div id="ss_today">
+       <div id="ss_hints"><em>These are my notes. </em>  </div>
+        Need to bring foils to lunch meeting to finalize Keynot Address.  Have UPS ship demo brochures to arrive by Friday.  Make sure to add Tom, Dick, and Harry to talking points re:  design phase<br>
+          </div><!-- end of today -->
+         
+          
+		
+	</ssf:canvas>
 
         </div><!-- end of ss_col 1 -->
+        
       <div id="ss_col2" class="ss_col2">
 	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
-	<ssf:param name="title" value="<%= NLT.get("relevance.tasks") %>"/>
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.tasks"/></div>
+	</ssf:param>
+	
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
 	</ssf:canvas>
+	
+	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_calendar">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"> <ssf:nlt tag="relevance.calendar"/> </div>
+	</ssf:param>
+		
+      
+        <div id="ss_today">
+       <div id="ss_hints"><em>This is my calendar. </em>  </div>
+       <div id="ss_para" class="ss_pt_para">
+        <li>Thu March 6, 9:00-10:00 am<br/>
+        Marketing//Development<br/>
+        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
+        <li>Mon March 10, 1:00-3:00 pm<br/>
+        Engineering//Wiki<br/>
+        <a href="#" class="ss_link_2">Software Development</a> </li><br>
+        <li>Tue March 11, 10:00-11:00 am<br/>
+        Marketing//Blog<br/>
+        <a href="#" class="ss_link_2">Coffee with Vendors</a> </li><br>
+        <li>Tue March 11, 4:00-5:00 pm<br/>
+        Finance<br/>
+        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
+        <li>Fri March 14, 6:00-10:00 am<br/>
+        Software//Expo<br/>
+        <a href="#" class="ss_link_2">Flight to Salt Lake</a> </li><br>
+        </div><!-- end of para -->
+          </div><!-- end of today -->
+         
+          
+		
+	</ssf:canvas>
       </div><!-- end of col2 -->
+      
       <div id="ss_col3" class="ss_col3">
+      
+<ssf:canvas id="relevanceWorkspaces" type="inline" styleId="ss_trackedItems">
+	
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.ping"/></div>
+	</ssf:param>
+	<div id="ss_hints"><em>Need to put code in here for IM where is cool dude?</em></div>
+	<div id="ss_para" class="ss_pt_para">
+	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Robbin Smart</a><br/>
+	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Lisa Fadden</a><br/>
+	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a><br/>
+	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Peter Hurley</a><br/>
+	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a><br/>
+	<img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Brent McConnell</a><br/>
+	</div>
 
+	</ssf:canvas>
       </div><!-- end of col3 -->
     </div><!-- end of col left -->
   </div><!-- end of col mid -->

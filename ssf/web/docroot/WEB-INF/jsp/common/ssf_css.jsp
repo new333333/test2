@@ -5164,7 +5164,7 @@ div.ss_canvas {
 #ss_tasks
 {
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 1% 0 5% 0;
 	color:#333333;
 
 }
@@ -5184,9 +5184,10 @@ div.ss_canvas {
 }
 	#ss_hints
 {
-	font-size: 12px;
+	font-size: 10px;
 	font-style: italic;
 	padding-left:10px;
+	line-height:1em;
 }
 
 	#ss_calendar
@@ -5245,49 +5246,49 @@ div.ss_canvas {
 	#ss_email
 {
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 1% 0 5% 0;
 	color:#333333;
 
 }
 	#ss_documents
 {
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 1% 0 5% 0;
 	color:#333333;
 
 }
 #ss_Box_8
 {
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 1% 0 5% 0;
 	color:#444444;
 
 }
 #ss_Box_9
 {
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 1% 0 5% 0;
 	color:#444444;
 
 }
 #ss_Box_10
 {
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 1% 0 5% 0;
 	color:#444444;
 
 }
 #ss_Box_11
 {
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 1% 0 5% 0;
 	color:#444444;
 
 }
 #ss_Box_12
 {
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 1% 0 5% 0;
 	color:#444444;
 
 }
@@ -5372,7 +5373,7 @@ div.ss_canvas {
 	height:20px;
 }
 	
-/* Link styles */	
+
 
 #ss_para a		 		/* Link style active for links */	
 	{
@@ -5395,15 +5396,17 @@ div.ss_canvas {
 	padding: 0 0 0 15px;
 	font-style: italic;
 }	
-.ss_link_1 						/* link_1 Link style for links */ 
+/* Link styles */	
+.ss_link_1 						/* link_1 Link style for people links */ 
 	{ 
-	color: #00AEEF; 
+	color: #00AEEF!important; 
 	}
 
 	
-.ss_link_2		 		/* link_2 Link style for links */	
+.ss_link_2		 		/* link_2 Link style for place links */	
 	{
-	color:#7ac142;
+	color:#7ac142!important;
+	font-size:10px!important;
 	}
 		
 /* Header styles */
@@ -5534,26 +5537,26 @@ div.ss_canvas {
 	} 
 	.ss_tricolumn .ss_colmid
 	{
-		right: 25%;
+		right: 20%;
 		/* width of the right column */
 		/* center column background color */
 		background-color: #FFFFFC;
 	}
 	.ss_tricolumn .ss_colleft {
-		right:25%;				/* width of the middle column */
+		right:20%;				/* placement from right of the middle column */
 		background:#fff;		/* left column background color */
 	}
 	.ss_tricolumn .ss_col1 {
-		width:46%;				/* width of center column content (column width minus padding on either side) */
-		left:52%;				/* 100% plus left padding of center column */
+		width:38%;				/* width of center column content (column width minus padding on either side) */
+		left:42%;				/* 100% plus left padding of center column */
 	}
 	.ss_tricolumn .ss_col2 {
-		width:21%;				/* Width of left column content (column width minus padding on either side) */
-		left:56%;				/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
+		width:38%;				/* Width of left column content (column width minus padding on either side) */
+		left:43%;				/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
 	}
 	.ss_tricolumn .ss_col3 {
-		width:21%;				/* Width of right column content (column width minus padding on either side) */
-		left:60%;				/* Please make note of the brackets here:
+		width:18%;				/* Width of right column content (column width minus padding on either side) */
+		left:45%;				/* Please make note of the brackets here:
 								(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 	}
 	/* Footer styles */
@@ -5632,7 +5635,7 @@ div.ss_canvas {
 {
 
 	list-style-type: square;
-	margin-left:-20px;
+	margin-left:-10px;
 	border-bottom:1px dashed #444444;
 	line-height:2.5em;
 	padding-bottom:10px;
