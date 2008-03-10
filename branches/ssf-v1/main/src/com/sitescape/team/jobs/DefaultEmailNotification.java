@@ -73,7 +73,7 @@ public class DefaultEmailNotification extends SSStatefulJob implements EmailNoti
 			this.zoneId = binder.getZoneId();
 		}
     	public  String getDescription() {
-    		return SSStatefulJob.trimDescription(binder.toString());
+    		return SSStatefulJob.trimDescription(binder.getTitle());
     	}
     	public Long getZoneId() {
     		return zoneId;
