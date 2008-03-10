@@ -65,6 +65,8 @@ import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.LoginInfo;
+import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.WorkflowState;
@@ -79,6 +81,7 @@ import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -256,23 +259,40 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		List filesSeen = new ArrayList();
 		for(Object o : data) {
 			Object[] col = (Object []) o;
-			DefinableEntity entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
+			DefinableEntity entity = null;
+			try {
+				entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
+			} catch(NoFolderEntryByTheIdException e) {
+				continue;
+			} catch(AccessControlException e) {
+				continue;
+			}
+			if (entity == null) continue;
 			if (!list.contains(entity)) list.add(entity);
 			if (list.size() >= returnCount.intValue()) break;
 		}
 		for(Object o : data) {
 			Object[] cols = (Object[]) o;
+			DefinableEntity entity = null;
 			if (cols[4].equals(AuditType.view.name()) && entriesSeen.contains(cols[1])) continue;
-			if (cols[4].equals(AuditType.download.name()) && entriesSeen.contains(cols[3])) continue;
+			if (cols[4].equals(AuditType.download.name()) && filesSeen.contains(cols[3])) continue;
 			Map<String, Object> row = new HashMap<String, Object>();
-			report.add(row);
-			row.put(ReportModule.ENTITY, getFolderModule().getEntry((Long) cols[0], (Long) cols[1]));
+			try {
+				entity = getFolderModule().getEntry((Long) cols[0], (Long) cols[1]);
+			} catch(NoFolderEntryByTheIdException e) {
+				continue;
+			} catch(AccessControlException e) {
+				continue;
+			}
+			if (entity == null) continue;
+			row.put(ReportModule.ENTITY, entity);
 			row.put(ReportModule.DATE, cols[2]);
 			row.put(ReportModule.FILE_ID, cols[3]);
 			row.put(ReportModule.TYPE, cols[4]);
 			row.put(ReportModule.DESCRIPTION, cols[5]);
+			report.add(row);
 			if (cols[4].equals(AuditType.view.name())) entriesSeen.add(cols[1]);
-			if (cols[4].equals(AuditType.download.name())) entriesSeen.add(cols[3]);
+			if (cols[4].equals(AuditType.download.name())) filesSeen.add(cols[3]);
 			if (report.size() >= returnCount) break;
 		}
 		return report;
@@ -314,8 +334,16 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		return report;
 	}
 	
-	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, final Date startDate, final Date endDate)
-	{
+	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, 
+			final Date startDate, final Date endDate) {
+		Object[] entityTypes = new Object[] {EntityType.folder.name(), EntityType.workspace.name(),
+				 EntityType.folderEntry.name()};
+		return culaEsCaliente(limitType, startDate, endDate, entityTypes,
+				Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBoxMax")));
+		
+	}
+	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, 
+			final Date startDate, final Date endDate, final Object[] entityTypes, final Integer returnCount) {
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(AuditTrail.class)
@@ -328,8 +356,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
 				    .add(Restrictions.ge("startDate", startDate))
 				    .add(Restrictions.lt("startDate", endDate))
-				    .add(Restrictions.in("entityType", new Object[] {EntityType.folder.name(), EntityType.workspace.name(),
-				    												 EntityType.folderEntry.name()}));
+				    .add(Restrictions.in("entityType", entityTypes));
 				if(limitType != null) {
 					crit.add(Restrictions.eq("transactionType", limitType.name()));
 				} else {
@@ -347,13 +374,26 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			String entityType = (String) col[2];
 			DefinableEntity entity = null;
 			try {
-				if(entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name())) {
-					entity = getBinderModule().getBinder((Long) col[1]);
+				if (entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name())) {
+					try {
+						entity = getBinderModule().getBinder((Long) col[1]);
+					} catch(NoBinderByTheIdException e) {
+						continue;
+					} catch(AccessControlException e) {
+						continue;
+					}
 				} else {
-					entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
+					try {
+						entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
+					} catch(NoFolderEntryByTheIdException e) {
+						continue;
+					} catch(AccessControlException e) {
+						continue;
+					}
 				}
-				list.add(new ActivityInfo(entity, (Integer) col[3], (Date) col[4]));
-			} catch (Exception ignoreAccess) {};
+				if (entity != null) list.add(new ActivityInfo(entity, (Integer) col[3], (Date) col[4]));
+			} catch (Exception ignoreAccess) {continue;}
+			if (list.size() > returnCount.intValue()) break;
 		}
 		return list;
 	}

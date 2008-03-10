@@ -57,6 +57,7 @@
 	    <ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
 	  </span>
 	  
+	  <br/>
 	  <span class="ss_link_2">
     	<a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
