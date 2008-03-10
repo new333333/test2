@@ -346,12 +346,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Object[] col = (Object []) o;
 			String entityType = (String) col[2];
 			DefinableEntity entity = null;
-			if(entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name())) {
-				entity = getBinderModule().getBinder((Long) col[1]);
-			} else {
-				entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
-			}
-			list.add(new ActivityInfo(entity, (Integer) col[3], (Date) col[4]));
+			try {
+				if(entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name())) {
+					entity = getBinderModule().getBinder((Long) col[1]);
+				} else {
+					entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
+				}
+				list.add(new ActivityInfo(entity, (Integer) col[3], (Date) col[4]));
+			} catch (Exception ignoreAccess) {};
 		}
 		return list;
 	}
