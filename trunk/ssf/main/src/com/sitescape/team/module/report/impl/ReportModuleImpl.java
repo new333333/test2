@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.module.report.impl;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -37,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.SortedSet;
 import java.util.TreeMap;
 
 import org.hibernate.Criteria;
@@ -54,6 +56,7 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.AnyOwner;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
@@ -73,6 +76,7 @@ import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.folder.FolderModule;
+import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
 import com.sitescape.team.security.AccessControlManager;
@@ -89,6 +93,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	protected BinderModule binderModule;
 	protected FolderModule folderModule;
 	protected AdminModule adminModule;
+	protected ProfileModule profileModule;
 	public void setAccessControlManager(AccessControlManager accessControlManager) {
 		this.accessControlManager = accessControlManager;
 	}
@@ -122,6 +127,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 
 	public FolderModule getFolderModule() {
 		return this.folderModule;
+	}
+
+	public void setProfileModule(ProfileModule profileModule) {
+		this.profileModule = profileModule;
+	}
+
+	public ProfileModule getProfileModule() {
+		return this.profileModule;
 	}
 
 	//circular dependencies prevent spring from setting this up
@@ -167,6 +180,14 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		addAuditTrail(loginInfo);		
 	}
 
+	public void addStatusInfo(User user) {
+		if (user.getStatus() != null && !user.getStatus().equals("")) {
+			AuditTrail auditTrail = new AuditTrail(AuditType.userStatus, user, user);
+			auditTrail.setDescription(user.getStatus());
+			addAuditTrail(auditTrail);
+		}
+	}
+
 	public void addFileInfo(AuditTrail.AuditType type, FileAttachment attachment) {
 		AuditTrail audit = new AuditTrail(type, RequestContextHolder.getRequestContext().getUser(), attachment.getOwner().getEntity());
 		audit.setDescription(attachment.getFileItem().getName());
@@ -202,6 +223,89 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				
 			}});
 		return getProfileDao().loadUsers(ids, entity.getZoneId());
+	}
+	
+	public List<Map<String,Object>> getEntriesViewed(final Long ownerId, 
+			final Date startDate, final Date endDate, Integer returnCount) {
+		
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(AuditTrail.class)
+					.setProjection(Projections.distinct(Projections.projectionList() 
+							.add(Projections.property("owningBinderId"))
+							.add(Projections.property("entityId"))
+							.add(Projections.property("startDate"))
+							.add(Projections.property("fileId"))
+							.add(Projections.property("transactionType"))
+							.add(Projections.property("description"))))
+					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+					.add(Restrictions.eq("entityType", EntityType.folderEntry.toString()))
+				    .add(Restrictions.in("transactionType", new Object[] {AuditType.view.name(), 
+				    													AuditType.download.name()}))
+					.add(Restrictions.eq("startBy", ownerId))
+					.add(Restrictions.ge("startDate", startDate))
+					.add(Restrictions.lt("startDate", endDate));
+				crit.addOrder(Order.desc("startDate"));
+				return crit.list();
+				
+			}});
+		List<DefinableEntity> list = new LinkedList<DefinableEntity>();
+		for(Object o : data) {
+			Object[] col = (Object []) o;
+			DefinableEntity entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
+			if (!list.contains(entity)) list.add(entity);
+			if (list.size() >= returnCount.intValue()) break;
+		}
+		for(Object o : data) {
+			Object[] cols = (Object[]) o;
+			Map<String, Object> row = new HashMap<String, Object>();
+			report.add(row);
+			row.put(ReportModule.ENTITY, getFolderModule().getEntry((Long) cols[0], (Long) cols[1]));
+			row.put(ReportModule.DATE, cols[2]);
+			row.put(ReportModule.FILE_ID, cols[3]);
+			row.put(ReportModule.TYPE, cols[4]);
+			row.put(ReportModule.DESCRIPTION, cols[5]);
+			if (report.size() >= returnCount) break;
+		}
+		return report;
+	}
+	
+	public List<Map<String,Object>> getUsersActivities(final Long ownerId, final Long[] userIds,
+			final Date startDate, final Date endDate, Integer returnCount) {
+		
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		LinkedList<Map<String,Object>> report = new LinkedList<Map<String,Object>>();
+		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session) throws HibernateException {
+				Criteria crit = session.createCriteria(AuditTrail.class)
+					.setProjection(Projections.distinct(Projections.projectionList() 
+							.add(Projections.property("startBy"))
+							.add(Projections.property("transactionType"))
+							.add(Projections.property("description"))
+							.add(Projections.property("startDate"))))
+					.add(Restrictions.eq(ObjectKeys.FIELD_ZONE, RequestContextHolder.getRequestContext().getZoneId()))
+				    .add(Restrictions.in("transactionType", new Object[] {AuditType.login.name(), 
+				    													AuditType.userStatus.name()}))
+					.add(Restrictions.in("startBy", userIds))
+					.add(Restrictions.ge("startDate", startDate))
+					.add(Restrictions.lt("startDate", endDate));
+				crit.addOrder(Order.desc("startDate"));
+				return crit.list();
+				
+			}});
+		for(Object o : data) {
+			Object[] cols = (Object[]) o;
+			Map<String, Object> row = new HashMap<String, Object>();
+			report.add(row);
+			row.put(ReportModule.USER, getProfileDao().loadPrincipal((Long)cols[0], zoneId, true));
+			row.put(ReportModule.TYPE, cols[1]);
+			row.put(ReportModule.DESCRIPTION, cols[2]);
+			row.put(ReportModule.DATE, cols[3]);
+			if (report.size() >= returnCount) break;
+		}
+		return report;
 	}
 	
 	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, final Date startDate, final Date endDate)

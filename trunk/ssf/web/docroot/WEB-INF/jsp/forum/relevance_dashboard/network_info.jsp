@@ -36,8 +36,10 @@
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
 
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_whatsnew">
-	<ssf:param name="title" value="<%= NLT.get("relevance.whatsNewTracked") %>"/>
+	<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_documents">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"><ssf:nlt tag="relevance.whatsNewTracked"/></div>
+	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tracked.jsp" />
 	</ssf:canvas>
 
@@ -51,7 +53,7 @@
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_whatsnew">
+	<ssf:canvas id="relevanceHot" type="inline" styleId="ss_documents">
 	<ssf:param name="title" value="<%= NLT.get("relevance.whatsHot") %>"/>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
 	</ssf:canvas>
@@ -59,9 +61,14 @@
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
 
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_shared_items">
+	<ssf:canvas id="relevanceSharedItems" type="inline" styleId="ss_shared_items">
 	<ssf:param name="title" value="<%= NLT.get("relevance.sharedItems") %>"/>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
+	</ssf:canvas>
+
+	<ssf:canvas id="relevanceActivities" type="inline" styleId="ss_shared_items">
+	<ssf:param name="title" value="<%= NLT.get("relevance.activities") %>"/>
+		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
 	</ssf:canvas>
 
       </div><!-- end of col3 -->

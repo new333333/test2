@@ -45,7 +45,8 @@ public class AuditTrail extends ZonedObject {
 		delete,
 		workflow,
 		login,
-		download
+		download,
+		userStatus
 	};
 
 	

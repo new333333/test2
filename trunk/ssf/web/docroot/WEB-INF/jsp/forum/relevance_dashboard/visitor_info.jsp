@@ -36,10 +36,17 @@
       <div id="ss_col1" class="ss_col1">
 
 	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_people">
-	<ssf:param name="title" value="<%= NLT.get("relevance.visitedInPastTwoWeeks") %>"/>
-		<ul class="ss_nobullet">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/></div>
+	</ssf:param>
+		<ul>
 		<c:forEach var="user" items="${ssUsers}">
-		  <li><ssf:showUser user="${user}" /></li>
+		  <li>
+		    <span><ssf:showUser user="${user}" /></span>
+		    <c:if test="${!empty user.status}">
+		    <br/><span class="ss_smallprint ss_italic" style="padding-left:20px;">${user.status}</span>
+		    </c:if>
+		  </li>
 		</c:forEach>
 		</ul>
 	</ssf:canvas>
