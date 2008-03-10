@@ -60,7 +60,7 @@
 	  <span class="ss_link_2">
     	<a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
-			><span>${entry.parentBinder.title}</span></a>
+			><span>${entry.parentBinder.parentBinder.title} // ${entry.parentBinder.title}</span></a>
 	  </span>
 	  <c:if test="${!empty entry.description}">
 	    <br/>

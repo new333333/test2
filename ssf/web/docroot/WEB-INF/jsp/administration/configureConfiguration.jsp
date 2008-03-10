@@ -56,7 +56,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br/>
 <br/>
 <h3><ssf:nlt tag="administration.configure_cfg.add"/></h3>
-<form class="ss_style ss_form" name="$renderResponse.namespace}add" method="post" 
+<form class="ss_style ss_form" name="${renderResponse.namespace}add" method="post" 
 	action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
 	name="operation" value="add"/></ssf:url>" >
 		
@@ -93,7 +93,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br>
 <hr>
 <br/>
-<form class="ss_style ss_form" name="$renderResponse.namespace}export" method="post" 
+<form class="ss_style ss_form" name="${renderResponse.namespace}export" method="post" 
 	action="<ssf:url action="configure_configuration"><ssf:param 
 		name="operation" value="export"/></ssf:url>" >
 <h3><ssf:nlt tag="administration.export.templates"/></h3>
@@ -152,19 +152,19 @@ var ssExportURL="<ssf:url action="configure_configuration" actionUrl="true"/>";
 <table class="ss_style" width="100%"><tr><td>
 
 <form class="ss_style ss_form" action="<ssf:url webPath="templateDownload"/>" 
-	method="post" name="$renderResponse.namespace}fm">
+	method="post" name="${renderResponse.namespace}fm">
 
 <br>
 <br>
 <span class="ss_bold"><ssf:nlt tag="administration.export.templates.select"/></span>
 <%@include file="/WEB-INF/jsp/administration/commonSelectTree.jsp" %>
 <script type="text/javascript">
-document.$renderResponse.namespace}fm.cancelBtn.onclick=function () {
-	document.$renderResponse.namespace}fm.action=ssExportURL;
-	document.$renderResponse.namespace}fm.onsubmit=function() { return true; };
+document.${renderResponse.namespace}fm.cancelBtn.onclick=function () {
+	document.${renderResponse.namespace}fm.action=ssExportURL;
+	document.${renderResponse.namespace}fm.onsubmit=function() { return true; };
 	return true;
 };
-document.$renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
+document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
 </script>
 
 </form>

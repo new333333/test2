@@ -48,8 +48,8 @@
 			
 			<c:if test="${ss_pageNumber != 1 || ssPageEndIndex != ssTotalRecords}">
 				<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
-				<input class="form-text" type="text" size="1" id="ssGoToPageInput$renderResponse.namespace}"/>
-				<a class="ss_linkButton" onclick="ss_goToSearchResultPageByInputValue('ssGoToPageInput$renderResponse.namespace}'); return false;" href="javascript: ;">Go</a>
+				<input class="form-text" type="text" size="1" id="ssGoToPageInput${renderResponse.namespace}"/>
+				<a class="ss_linkButton" onclick="ss_goToSearchResultPageByInputValue('ssGoToPageInput${renderResponse.namespace}'); return false;" href="javascript: ;">Go</a>
 			</c:if>
 			<c:if test="${empty isDashboard || isDashboard == 'no'}">
 				<c:if test="${ss_pageNumber > 1}">
@@ -106,12 +106,12 @@
 					<c:set var="binderId" value="${ssDashboardPortlet.id}"/>
 				</c:if>
 				<c:if test="${ss_pageNumber > 0}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '$renderResponse.namespace}', '${ss_divId}', '${componentId}', 'search');"
+					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber - 1}', '${ss_pageSize}',  '${renderResponse.namespace}', '${ss_divId}', '${componentId}', 'search');"
 						<ssf:alt tag="general.previousPage"/> >&gt;&gt;</a>
 				</c:if>
 				<span class="ss_pageNumber">${ss_pageNumber+1}</span>
 				<c:if test="${ssPageEndIndex < ssTotalRecords}">
-					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '$renderResponse.namespace}', '${ss_divId}', '${componentId}', 'search');"
+					<a href="javascript: ss_moreDashboardSearchResults('${binderId}', '${ss_pageNumber + 1}', '${ss_pageSize}',  '${renderResponse.namespace}', '${ss_divId}', '${componentId}', 'search');"
 						<ssf:alt tag="general.nextPage"/> >&lt;&lt;</a>
 				</c:if>
 			</c:if>
