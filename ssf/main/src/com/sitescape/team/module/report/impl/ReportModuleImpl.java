@@ -252,6 +252,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				
 			}});
 		List<DefinableEntity> list = new LinkedList<DefinableEntity>();
+		List entriesSeen = new ArrayList();
+		List filesSeen = new ArrayList();
 		for(Object o : data) {
 			Object[] col = (Object []) o;
 			DefinableEntity entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
@@ -260,6 +262,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 		}
 		for(Object o : data) {
 			Object[] cols = (Object[]) o;
+			if (cols[4].equals(AuditType.view.name()) && entriesSeen.contains(cols[1])) continue;
+			if (cols[4].equals(AuditType.download.name()) && entriesSeen.contains(cols[3])) continue;
 			Map<String, Object> row = new HashMap<String, Object>();
 			report.add(row);
 			row.put(ReportModule.ENTITY, getFolderModule().getEntry((Long) cols[0], (Long) cols[1]));
@@ -267,6 +271,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			row.put(ReportModule.FILE_ID, cols[3]);
 			row.put(ReportModule.TYPE, cols[4]);
 			row.put(ReportModule.DESCRIPTION, cols[5]);
+			if (cols[4].equals(AuditType.view.name())) entriesSeen.add(cols[1]);
+			if (cols[4].equals(AuditType.download.name())) entriesSeen.add(cols[3]);
 			if (report.size() >= returnCount) break;
 		}
 		return report;
