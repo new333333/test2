@@ -7,7 +7,7 @@
       <column name="id" sql-type="char(32)"/>
       <generator class="uuid.hex"/>
     </id>
-	 <many-to-one class="com.sitescape.team.domain.UserPrincipal" name="referer" />
+	 <many-to-one class="com.sitescape.team.domain.User" name="referer" />
     <property name="zoneId" access="field"/>
 <!--form an order index, date first -->
 	<property  name="sharedDate" index="access_shared"/>
