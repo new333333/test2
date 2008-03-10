@@ -952,6 +952,12 @@ text/calendar											  ics
 		</property>
 	</bean>
 	
+	<!-- ============================== Remote Application Support ============================ -->
+	<bean id="remoteApplicationManager" class="com.sitescape.team.remoteapplication.impl.RemoteApplicationManagerImpl">
+		<property name="profileDao"><ref local="profileDao"/></property>
+		<property name="accessTokenManager"><ref local="accessTokenManager"/></property>
+	</bean>
+	
 	<!-- ================================  JMX/MBean Support =============================== -->
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
 	    <property name="beans">

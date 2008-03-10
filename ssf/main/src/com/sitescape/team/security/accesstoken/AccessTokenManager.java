@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.security.accesstoken;
 
+import com.sitescape.team.security.accesstoken.AccessToken.BinderAccessConstraints;
+
 public interface AccessTokenManager {
 
 	/**
@@ -49,8 +51,9 @@ public interface AccessTokenManager {
 	
 	/**
 	 * Generates an access token of background type.
-	 * If <code>binderId</code> is specified, its <code>includeDescendants</code> 
-	 * flag is set to <code>true</code>.
+	 * Its corresponding <code>binderAccessConstraints</code> value is set to 
+	 * <code>BinderAccessConstraints.BINDER_AND_DESCENDANTS</code> whether
+	 * <code>binderId</code> is specified or not.
 	 * 
 	 * @param applicationId
 	 * @param userId
@@ -65,10 +68,11 @@ public interface AccessTokenManager {
 	 * @param applicationId
 	 * @param userId
 	 * @param binderId optional
-	 * @param includeDescendants ignored if <code>binderId</code> is <code>null</code>
+	 * @param binderAccessConstraints
 	 * @return
 	 */
-	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId, Boolean includeDescendants);
+	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId, 
+			BinderAccessConstraints binderAccessConstraints);
 	
 	/**
 	 * This invalidates all existing/outstanding background tokens issued for
@@ -91,8 +95,9 @@ public interface AccessTokenManager {
 	
 	/**
 	 * Generates an access token of interactive type.
-	 * If <code>binderId</code> is specified, its <code>includeDescendants</code> 
-	 * flag is set to <code>true</code>.
+	 * Its corresponding <code>binderAccessConstraints</code> value is set to 
+	 * <code>BinderAccessConstraints.BINDER_AND_DESCENDANTS</code> whether
+	 * <code>binderId</code> is specified or not.
 	 * 
 	 * @param applicationId
 	 * @param infoId
@@ -107,10 +112,11 @@ public interface AccessTokenManager {
 	 * @param applicationId
 	 * @param infoId
 	 * @param binderId optional
-	 * @param includeDescendants ignored if <code>binderId</code> is <code>null</code>
+	 * @param binderAccessConstraints
 	 * @return
 	 */
-	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId, Boolean includeDescendants);
+	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId, 
+			BinderAccessConstraints binderAccessConstraints);
 	
 	/**
 	 * Create a <code>TokenInfoInteractive</code> object that the system 

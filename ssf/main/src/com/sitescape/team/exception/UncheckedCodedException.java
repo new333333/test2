@@ -37,6 +37,7 @@ import com.sitescape.team.util.NLT;
 public abstract class UncheckedCodedException extends RuntimeException implements ErrorCodeSupport {
     private String errorCode;
     private Object[] errorArgs;
+    protected String msg;
     
     public UncheckedCodedException(String errorCode) {
     	super();
@@ -49,11 +50,13 @@ public abstract class UncheckedCodedException extends RuntimeException implement
     }
     public UncheckedCodedException(String errorCode, Object[] errorArgs, String message) {
         super(message);
+        setMessage(message);
         setErrorCode(errorCode);
         setErrorArgs(errorArgs);
     }
     public UncheckedCodedException(String errorCode, Object[] errorArgs, String message, Throwable cause) {
         super(message, cause);
+        setMessage(message);
         setErrorCode(errorCode);
         setErrorArgs(errorArgs);
     }
@@ -65,7 +68,10 @@ public abstract class UncheckedCodedException extends RuntimeException implement
 
     public String getLocalizedMessage() {
     	try {
-    		return NLT.get(getErrorCode(), getErrorArgs());
+    		String str = NLT.get(getErrorCode(), getErrorArgs());
+    		if(msg != null)
+    			str = str + ": " + msg;
+    		return str;
     	}
     	catch(Exception e) {
     		return super.getLocalizedMessage();
@@ -86,5 +92,8 @@ public abstract class UncheckedCodedException extends RuntimeException implement
 
     protected void setErrorCode(String errorCode) {
         this.errorCode = errorCode;
+    }
+    private void setMessage(String message) {
+    	this.msg = message;
     }
 }

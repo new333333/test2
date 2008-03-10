@@ -440,6 +440,7 @@ public interface ObjectKeys {
     public static final String XTAG_WFR_RESPONSEDATE="responseDate";
     public static final String XTAG_WFR_RESPONSE="response";
     
+    public static final String XTAG_APPLICATION_POSTURL="postUrl";
     public static final String XTAG_APPLICATION_GROUP_MEMBERS="appMembers";
 
 	public static final String FI_ADAPTER = "fiAdapter";

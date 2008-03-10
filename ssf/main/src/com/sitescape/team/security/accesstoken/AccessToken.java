@@ -49,35 +49,54 @@ public class AccessToken {
 		}
 	};
 
-	private TokenType type;				// required
-	private String infoId;				// required for interactive, null for background
-	private Long applicationId; 		// required
-	private Long userId; 				// required
-	private String digest; 				// required
-	private Long binderId; 				// optional
-	private Boolean includeDescendants; // optional - meaningful iff binderId is specified
+	public enum BinderAccessConstraints {
+		NONE (1),
+		BINDER_ONLY (2),
+		BINDER_AND_DESCENDANTS (3);
+		int number;
+		BinderAccessConstraints(int number) {
+			this.number = number;
+		}
+		public int getNumber() {return number;}
+		public static BinderAccessConstraints valueOf(int number) {
+			switch (number) {
+			case 1: return BinderAccessConstraints.NONE;
+			case 2: return BinderAccessConstraints.BINDER_ONLY;
+			case 3: return BinderAccessConstraints.BINDER_AND_DESCENDANTS;
+			default: throw new IllegalArgumentException(String.valueOf(number));
+			}
+		}
+	};
+
+	private TokenType type;										// required
+	private Long applicationId; 								// required
+	private Long userId; 										// required
+	private String digest; 										// required
+	private Long binderId; 										// optional
+	private BinderAccessConstraints binderAccessConstraints; 	// optional, this value is meaningful iff binderId is non-null
+	private String infoId;										// required for interactive, null for background
 	
 	public static AccessToken interactiveToken(String infoId, Long applicationId, 
-			Long userId, String digest, Long binderId, Boolean includeDescendants) {
+			Long userId, String digest, Long binderId, BinderAccessConstraints binderAccessConstraints) {
 		return new AccessToken(TokenType.interactive, infoId, applicationId,
-				userId, digest, binderId, includeDescendants);
+				userId, digest, binderId, binderAccessConstraints);
 	}
 	
 	public static AccessToken backgroundToken(Long applicationId, 
-			Long userId, String digest, Long binderId, Boolean includeDescendants) {
+			Long userId, String digest, Long binderId, BinderAccessConstraints binderAccessConstraints) {
 		return new AccessToken(TokenType.background, null, applicationId,
-				userId, digest, binderId, includeDescendants);
+				userId, digest, binderId, binderAccessConstraints);
 	}
 	
 	private AccessToken(TokenType type, String infoId, Long applicationId, 
-			Long userId, String digest, Long binderId, Boolean includeDescendants) {
+			Long userId, String digest, Long binderId, BinderAccessConstraints binderAccessConstraints) {
 		this.type = type;
 		this.infoId = infoId;
 		this.applicationId = applicationId;
 		this.userId = userId;
 		this.digest = digest;
 		this.binderId = binderId;
-		this.includeDescendants = includeDescendants;
+		this.binderAccessConstraints = binderAccessConstraints;
 	}
 	
 	public TokenType getType() {
@@ -128,12 +147,12 @@ public class AccessToken {
 		this.userId = userId;
 	}
 
-	public Boolean getIncludeDescendants() {
-		return includeDescendants;
+	public BinderAccessConstraints getBinderAccessConstraints() {
+		return binderAccessConstraints;
 	}
 
-	public void setIncludeDescendants(Boolean includeDescendants) {
-		this.includeDescendants = includeDescendants;
+	public void setIncludeDescendants(BinderAccessConstraints binderAccessConstraints) {
+		this.binderAccessConstraints = binderAccessConstraints;
 	}
 
 	/**
@@ -152,41 +171,32 @@ public class AccessToken {
 			throw new IllegalArgumentException();
 		// Access token string encoded representation:
 		// 
-		// typeNumber[.infoId]-appId-userId-digest-[binderId]-[includeDescendantsNumber]
+		// tokenTypeNumber-appId-userId-digest-binderId-binderAccessConstraintsNumber-[infoId]
 		// 
-		// where [.infoId] is present only for interactive type token 
+		// where [infoId] is present only for interactive type token 
 		String[] s = StringUtil.split(accessTokenStr, "-");
-		if(s.length < 4)
+		if(s.length < 6)
 			throw new MalformedAccessTokenException(accessTokenStr);
-		if(s.length > 6)
+		if(s.length > 7)
 			throw new MalformedAccessTokenException(accessTokenStr);
-		String[] s2 = StringUtil.split(s[0], ".");
-		if(s2.length < 1)
-			throw new MalformedAccessTokenException(accessTokenStr);
-		if(s2.length > 2)
-			throw new MalformedAccessTokenException(accessTokenStr);
-		type = TokenType.valueOf(s2[0]);
-		if(s2.length == 2)
-			infoId = s2[1];
-		if(TokenType.interactive.equals(type)) {
-			if(infoId == null)
-				throw new MalformedAccessTokenException(accessTokenStr);
-		} else if(TokenType.background.equals(type)) {
-			if(infoId != null)
-				throw new MalformedAccessTokenException(accessTokenStr);
-		} else {
-			throw new MalformedAccessTokenException(accessTokenStr);
-		}
+		type = TokenType.valueOf(Integer.valueOf(s[0]));
 		applicationId = Long.valueOf(s[1]);
 		userId = Long.valueOf(s[2]);
 		digest = s[3];
-		if(s.length > 4)
-			binderId = Long.valueOf(s[4]);
-		if(s.length > 5) {
-			if("1".equals(s[5]))
-				includeDescendants = Boolean.TRUE;
-			else if("0".equals(s[5]))
-				includeDescendants = Boolean.FALSE;
+		binderId = Long.valueOf(s[4]);
+		if(binderId.longValue() == 0L)
+			binderId = null;
+		binderAccessConstraints = BinderAccessConstraints.valueOf(Integer.valueOf(s[5]));
+		if(TokenType.interactive.equals(type)) {
+			if(s.length == 7)
+				infoId = s[6];
+			else
+				throw new MalformedAccessTokenException(accessTokenStr);
+		} else if(TokenType.background.equals(type)) {
+			if(s.length == 7)
+				throw new MalformedAccessTokenException(accessTokenStr);
+		} else {
+			throw new MalformedAccessTokenException(accessTokenStr);
 		}
 	}
 	
@@ -197,6 +207,7 @@ public class AccessToken {
 	 * This method does NOT validate the token itself.
 	 */
 	public String toStringRepresentation() throws IllegalStateException {
+		// tokenTypeNumber-appId-userId-digest-binderId-binderAccessConstraintsNumber-[infoId]
 		if(type == null)
 			throw new IllegalStateException("type is missing");
 		if(TokenType.interactive.equals(type)) {
@@ -215,20 +226,14 @@ public class AccessToken {
 		if(digest == null)
 			throw new IllegalStateException("digest is missing");
 		StringBuilder sb = new StringBuilder()
-		.append(type.getNumber());
-		if(infoId != null)
-			sb.append(".").append(infoId);
-		sb.append("-")
+		.append(type.getNumber()).append("-")
 		.append(applicationId).append("-")
 		.append(userId).append("-")
-		.append(digest);
-		if(binderId != null) {
-			sb.append("-").append(binderId);
-			if(Boolean.TRUE.equals(includeDescendants))
-				sb.append("-").append("1");
-			else if(Boolean.FALSE.equals(includeDescendants))
-				sb.append("-").append("0");
-		}
+		.append(digest).append("-")
+		.append((binderId != null)? String.valueOf(binderId) : "0").append("-")
+		.append(binderAccessConstraints.getNumber());
+		if(infoId != null)
+			sb.append("-").append(infoId);
 		return sb.toString();
 	}
 
