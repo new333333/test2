@@ -34,13 +34,18 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_sharedEntities}">
-<ul>
+<div id="ss_subtitle">Do we need a subtitle?</div>
+<div id="ss_para" class="ss_pt_para">
+
   <c:forEach var="sharedItem" items="${ss_sharedEntities}">
-    <li>
+   
 	  <ssf:nlt tag="relevance.sharedEntityLine">
+	  <span class="ss_link_1">
 	  <ssf:param name="value" useBody="true">
 	    <ssf:showUser user="${sharedItem.referer}" />
 	  </ssf:param>
+	  </span>
+	  <span class="ss_link_2">
 	  <ssf:param name="value" useBody="true">
     	<a href="javascript: ;"
     	  <c:if test="${sharedItem.entity.entityType == 'workspace' || sharedItem.entity.entityType == 'folder'}">
@@ -51,8 +56,10 @@
 		  </c:if>
 			><span>${sharedItem.entity.title}</span></a>
 	  </ssf:param>
+	  </span><br/>
 	  </ssf:nlt>
-    </li>
+   <br/>
   </c:forEach>
-</ul>
+
+</div>
 </c:if>

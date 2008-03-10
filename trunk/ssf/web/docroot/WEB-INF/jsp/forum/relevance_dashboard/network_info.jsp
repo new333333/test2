@@ -54,8 +54,10 @@
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
 
-	<ssf:canvas id="relevanceSharedItems" type="inline" styleId="ss_shared_items">
-	<ssf:param name="title" value="<%= NLT.get("relevance.sharedItems") %>"/>
+	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_shared">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"> <ssf:nlt tag="relevance.sharedItems"/> </div>
+	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
 	</ssf:canvas>
 
