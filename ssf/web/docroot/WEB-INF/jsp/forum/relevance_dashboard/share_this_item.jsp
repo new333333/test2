@@ -33,7 +33,7 @@
 <body>
 </ssf:ifadapter>
 <div class="ss_style ss_portal">
-<h2><ssf:nlt tag="relevance.shareThisWithWhom"/></h2
+<h2><ssf:nlt tag="relevance.shareThisWithWhom"/></h2>
 
 <form class="ss_style ss_form" 
   action="<ssf:url adapter="true" portletName="ss_forum" 
