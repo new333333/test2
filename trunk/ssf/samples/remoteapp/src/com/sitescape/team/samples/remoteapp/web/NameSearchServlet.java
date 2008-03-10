@@ -29,14 +29,22 @@
 package com.sitescape.team.samples.remoteapp.web;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.HttpStatus;
+import org.apache.commons.httpclient.methods.GetMethod;
+
 public class NameSearchServlet extends HttpServlet {
 
+	private static final String GOOGLE_SEARCH_TEMPLATE = "http://www.google.com/search?hl=en&q=@@@&btnG=Google+Search";
+	
 	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
 	private static final String PARAMETER_NAME_APPLICATION_ID = "ss_application_id";
 	private static final String PARAMETER_NAME_USER_ID = "ss_user_id";
@@ -49,7 +57,37 @@ public class NameSearchServlet extends HttpServlet {
 		String userId = req.getParameter(PARAMETER_NAME_USER_ID);
 		String accessToken = req.getParameter(PARAMETER_NAME_ACCESS_TOKEN);
 		
-		resp.getWriter().print("Hey! How are you?");
+		String result = googleForName();
+		resp.getWriter().print(result);
 	}
 
+	private String googleForName() throws IOException, ServletException {
+		String name = "Roy Klein";
+		String searchUrl = GOOGLE_SEARCH_TEMPLATE.replace("@@@", "Roy+Klein");
+		
+		String result = "";
+		HttpClient httpClient = new HttpClient();
+		GetMethod getMethod = new GetMethod(searchUrl);
+		try {
+			int statusCode = httpClient.executeMethod(getMethod);
+			if(statusCode == HttpStatus.SC_OK) {
+				String body = getMethod.getResponseBodyAsString();
+				int idx = body.indexOf("swrnum=");
+				if(idx >= 0) {
+					int idx2 = body.indexOf("\"", idx+7);
+					if(idx2 >= 0) {
+						String value = body.substring(idx+7, idx2);
+						result = "About " + value + " matches for " + name + " on Google";
+					}
+				}
+				return result;
+			}
+			else {
+				throw new ServletException(getMethod.getStatusLine().toString());
+			}
+		}
+		finally {
+			getMethod.releaseConnection();
+		}
+	}
 }
