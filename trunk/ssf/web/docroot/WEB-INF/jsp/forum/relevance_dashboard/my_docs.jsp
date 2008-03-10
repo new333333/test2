@@ -42,7 +42,7 @@
 	 
 	  <span class="ss_link_2">
 		<c:set var="isDashboard" value="yes"/>
-		<ssf:titleLink 
+		<ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entry._docId}" binderId="${entry._binderId}" 
 			entityType="${entry._entityType}" 
 			namespace="${ss_namespace}" 
