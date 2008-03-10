@@ -5403,7 +5403,7 @@ div.ss_canvas {
 	}
 
 	
-.ss_link_2		 		/* link_2 Link style for place links */	
+.ss_link_2, .ss_link_2 span		/* link_2 Link style for links */	
 	{
 	color:#7ac142!important;
 	font-size:10px!important;
