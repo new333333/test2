@@ -477,6 +477,25 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
         }
 		return result;
     }
+    public List<Principal> loadPrincipalByEmail(final String email, final Long zoneId) {
+        List result = (List)getHibernateTemplate().execute(
+               	new HibernateCallback() {
+                		public Object doInHibernate(Session session) throws HibernateException {
+    	                  	Query q = session.createQuery("select x.principal from com.sitescape.team.domain.EmailAddress x where " +
+    	                  					"lower(x.address)=:address");
+    	                  	q.setParameter("address", email.toLowerCase());
+    	                  	List result = q.list();
+    	                  	for (int i=0; i<result.size();) { //check zone here, so index is used
+    	                  		if (!((Principal)result.get(i)).getZoneId().equals(zoneId)) result.remove(i);
+    	                  		else ++i;
+    	                  	}
+    	                  	return result;
+                		}
+               	}
+            );
+        return result;
+        	   	
+    }
     private List loadPrincipals(final Collection ids, final Long zoneId, final Class clazz, final boolean cacheable, final boolean checkActive) {
         if ((ids == null) || ids.isEmpty()) return new ArrayList();
         List result = (List)getHibernateTemplate().execute(

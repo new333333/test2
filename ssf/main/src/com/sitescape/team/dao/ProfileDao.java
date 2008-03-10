@@ -122,6 +122,7 @@ public interface ProfileDao {
     public List<Group> loadGroups(Collection<Long> groupsIds, Long zoneId);
     public List<Group> loadGroups(FilterControls filter, Long zoneId) throws DataAccessException; 
     public Principal loadPrincipal(Long prinId, Long zoneId, boolean checkActive);
+    public List<Principal> loadPrincipalByEmail(final String email, final Long zoneId);
     public UserPrincipal loadUserPrincipal(Long prinId, Long zoneId, boolean checkActive);
     public List<UserPrincipal> loadUserPrincipals(Collection<Long> ids, Long zoneId,  boolean checkActive);
 	public Rating loadRating(Long userId, EntityIdentifier entityId);
