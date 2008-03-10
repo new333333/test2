@@ -903,4 +903,10 @@ public class WebHelper {
 		return (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}
 
+	public static String getTokenInfoId(HttpServletRequest request) {
+		HttpSession ses = request.getSession(false);
+		if(ses == null) return null;
+		return (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
+	}
+
 }

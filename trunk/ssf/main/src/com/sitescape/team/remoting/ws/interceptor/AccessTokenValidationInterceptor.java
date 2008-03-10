@@ -84,11 +84,8 @@ public class AccessTokenValidationInterceptor implements MethodInterceptor {
 				// (performed as side effect of this interceptor)
 	            rc.setUserId(token.getUserId());
 	            rc.setApplicationId(token.getApplicationId());
-	            if(token.getBinderId() != null) {
-	            	rc.setBinderId(token.getBinderId());
-	            	if(token.getIncludeDescendants() != null)
-	            		rc.setIncludeDescendants(token.getIncludeDescendants().booleanValue());
-	            }
+	            rc.setBinderId(token.getBinderId());
+	            rc.setBinderAccessConstraints(token.getBinderAccessConstraints());
 			}
 			else {
 				throw new IllegalArgumentException("Argument type mismatch: " + args[0].getClass().getName());

@@ -32,6 +32,7 @@ import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.security.accesstoken.AccessToken.BinderAccessConstraints;
 import com.sitescape.team.util.SpringContextUtil;
 /**
  * @author Jong Kim
@@ -71,10 +72,10 @@ public class RequestContext {
      */
     private Long binderId;
     /*
-     * (Optional) a flag indicating whether all it's descendants should be included or not.
+     * (Optional) a flag indicating the level of access constraints around the specified binder.
      * This value is meaningful if and only if binderId field is non-null.
      */
-    private boolean includeDescendants = true; // Make true the default.
+    private BinderAccessConstraints binderAccessConstraints;
     
     private boolean resolved = false;
     
@@ -202,7 +203,7 @@ public class RequestContext {
     public Application getApplication() {
     	if(resolved) {
     		if(applicationId != null)
-    			return fetchApplication();
+    			return getProfileDao().loadApplication(applicationId, zoneId);
     		else
     			return null;
     	}
@@ -233,12 +234,12 @@ public class RequestContext {
     	return binderId;
     }
     
-    public boolean getIncludeDescendants() {
-		return includeDescendants;
+    public BinderAccessConstraints getBinderAccessConstraints() {
+		return binderAccessConstraints;
 	}
 
-	public void setIncludeDescendants(boolean includeDescendants) {
-		this.includeDescendants = includeDescendants;
+	public void setBinderAccessConstraints(BinderAccessConstraints binderAccessConstraints) {
+		this.binderAccessConstraints = binderAccessConstraints;
 	}
 
 	/**
@@ -296,11 +297,6 @@ public class RequestContext {
 		return u;
 	}
 
-	private Application fetchApplication() {
-		// TO BE WRITTEN $$$$$ TODO
-		return null;
-	}
-	
 	private static ProfileDao getProfileDao() {
 		return (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}

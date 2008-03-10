@@ -728,7 +728,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_GROUP_MEMBERS, LongIdUtil.getIdsAsString(group.getMembers()));
 		} else if(prin instanceof Application) {
 			Application application = (Application)prin;
-			// $$$$$
+			XmlUtils.addAttribute(element, ObjectKeys.XTAG_APPLICATION_POSTURL, ObjectKeys.XTAG_TYPE_STRING, application.getPostUrl());
 		} else if(prin instanceof ApplicationGroup) {
 			ApplicationGroup group = (ApplicationGroup)prin;
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_APPLICATION_GROUP_MEMBERS, LongIdUtil.getIdsAsString(group.getMembers()));			

@@ -35,6 +35,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.security.accesstoken.AccessToken;
 import com.sitescape.team.security.accesstoken.AccessTokenManager;
 import com.sitescape.team.security.accesstoken.InvalidAccessTokenException;
+import com.sitescape.team.security.accesstoken.AccessToken.BinderAccessConstraints;
 import com.sitescape.team.security.accesstoken.AccessToken.TokenType;
 import com.sitescape.team.security.dao.SecurityDao;
 import com.sitescape.team.util.EncryptUtil;
@@ -75,15 +76,16 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 	}
 
 	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId) {
-		return newBackgroundToken(applicationId, userId, binderId, ((binderId == null)? null : Boolean.TRUE));
+		return newBackgroundToken(applicationId, userId, binderId, BinderAccessConstraints.BINDER_AND_DESCENDANTS);
 	}
 
-	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId, Boolean includeDescendants) {
+	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId, 
+			BinderAccessConstraints binderAccessConstraints) {
 		TokenInfoBackground info = loadOrCreateBackground(applicationId, userId, binderId);
 		
-		String digest = computeDigest(TokenType.background, applicationId, userId, binderId, includeDescendants, info.getSeed());
+		String digest = computeDigest(TokenType.background, applicationId, userId, binderId, binderAccessConstraints, info.getSeed());
 		
-		return AccessToken.backgroundToken(applicationId, userId, digest, binderId, includeDescendants);
+		return AccessToken.backgroundToken(applicationId, userId, digest, binderId, binderAccessConstraints);
 	}
 
 	public void invalidateBackgroundTokens(Long applicationId, Long userId, Long binderId) {
@@ -115,16 +117,17 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 	}
 
 	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId) {
-		return newInteractiveToken(applicationId, infoId, binderId, ((binderId == null)? null : Boolean.TRUE));
+		return newInteractiveToken(applicationId, infoId, binderId, BinderAccessConstraints.BINDER_AND_DESCENDANTS);
 	}
 
-	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId, Boolean includeDescendants) {
+	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId, 
+			BinderAccessConstraints binderAccessConstraints) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		TokenInfoInteractive info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), infoId);	
 		
-		String digest = computeDigest(TokenType.background, applicationId, info.getUserId(), binderId, includeDescendants, info.getSeed());
+		String digest = computeDigest(TokenType.interactive, applicationId, info.getUserId(), binderId, binderAccessConstraints, info.getSeed());
 		
-		return AccessToken.interactiveToken(infoId, applicationId, info.getUserId(), digest, binderId, includeDescendants);
+		return AccessToken.interactiveToken(infoId, applicationId, info.getUserId(), digest, binderId, binderAccessConstraints);
 	}
 
 	public String createTokenInfoInteractive(Long userId) {
@@ -152,22 +155,23 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 	}
 
 	private String computeDigest(AccessToken token, String seed) {
-		return computeDigest(token.getType(), token.getApplicationId(), token.getUserId(), token.getBinderId(), token.getIncludeDescendants(), seed);
+		return computeDigest(token.getType(), token.getApplicationId(), token.getUserId(), token.getBinderId(), token.getBinderAccessConstraints(), seed);
 	}
 	
 	private String getRandomSeed() {
 		return UUID.randomUUID().toString();
 	}
 	
-	private String computeDigest(TokenType type, Long applicationId, Long userId, Long binderId, Boolean includeDescendants, String seed) {
+	private String computeDigest(TokenType type, Long applicationId, Long userId, Long binderId, 
+			BinderAccessConstraints binderAccessConstraints, String seed) {
+		// For the purpose of computing digest, we use string representations of the enum values
+		// while their shorter numeric representations are stored in the token. 
 		if(binderId == null) {
 			return EncryptUtil.encryptSHA1(type.name(), applicationId.toString(), userId.toString(), seed);
 		}
-		else if(includeDescendants == null) {
-			return EncryptUtil.encryptSHA1(type.name(), applicationId.toString(), userId.toString(), binderId.toString(), seed);
-		}
 		else {
-			return EncryptUtil.encryptSHA1(type.name(), applicationId.toString(), userId.toString(), binderId.toString(), includeDescendants.toString(), seed);
+			return EncryptUtil.encryptSHA1(type.name(), applicationId.toString(), 
+					userId.toString(), binderId.toString(), binderAccessConstraints.name(), seed);
 		}
 	}
 	

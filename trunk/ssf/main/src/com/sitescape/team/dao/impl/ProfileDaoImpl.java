@@ -71,6 +71,7 @@ import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.GroupPrincipal;
 import com.sitescape.team.domain.IndividualPrincipal;
 import com.sitescape.team.domain.Membership;
+import com.sitescape.team.domain.NoApplicationByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoPrincipalByTheIdException;
@@ -957,14 +958,14 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
 	public Application loadApplication(Long applicationId, Long zoneId) throws NoUserByTheIdException {
     	try {
     		Application application = (Application)getHibernateTemplate().get(Application.class, applicationId);
-    		if (application == null) {throw new NoUserByTheIdException(applicationId);}
+    		if (application == null) {throw new NoApplicationByTheIdException(applicationId);}
     		//	make sure from correct zone
     		if (!application.getZoneId().equals(zoneId) || !application.isActive()) {
-    			throw new NoUserByTheIdException(applicationId);
+    			throw new NoApplicationByTheIdException(applicationId);
     		}
     		return application;
     	} catch (ClassCastException ce) {
-   			throw new NoUserByTheIdException(applicationId);   		
+   			throw new NoApplicationByTheIdException(applicationId);   		
     	}
 	}
 	public Application loadApplication(Long applicationId, String zoneName) throws NoUserByTheIdException {

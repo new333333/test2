@@ -30,4 +30,6 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:out value="${ssDashboard.dashboard.components[ssComponentId].data.applicationId}"/>
+<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data}">
+<ssf:remoteAccessory applicationId="${ssDashboard.dashboard.components[ssComponentId].data.applicationId}"/>
+</c:if>
