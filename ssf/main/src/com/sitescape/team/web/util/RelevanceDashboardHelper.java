@@ -62,6 +62,7 @@ import static com.sitescape.team.search.BasicIndexUtils.*;
 
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
 import com.sitescape.team.search.Criteria;
+import com.sitescape.team.search.Order;
 
 import static com.sitescape.team.search.Restrictions.*;
 import com.sitescape.team.task.TaskHelper;
@@ -165,6 +166,7 @@ public class RelevanceDashboardHelper {
 		Criteria crit = new Criteria();
 		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"entry", "reply"}))
 			.add(eq(CREATORID_FIELD,binder.getOwnerId().toString()));
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 	
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
