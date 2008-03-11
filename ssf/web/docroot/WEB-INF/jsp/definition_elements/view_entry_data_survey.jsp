@@ -62,13 +62,17 @@
 				<c:when test="${overdue || question.alreadyVotedCurrentUser || !hasRightsToVote}">
 					<ol>
 					<c:forEach var="answer" items="${question.answers}">
-						<li>
-							<c:if test="${question.type == 'multiple' || question.type == 'single'}">
-								<ssf:drawChart count="${answer.votesCount}" total="${question.totalResponses}"/>
-							</c:if>
-							<span class="ss_survey_answer" style="zoom:1;"><c:out value="${answer.text}" escapeXml="false"/></span>
-							<div class="ss_clear"></div>
-						</li>
+						<c:if test="${question.type != 'input' || !empty answer.text}">
+							<li>
+								<c:if test="${question.type == 'multiple' || question.type == 'single'}">
+									<ssf:drawChart count="${answer.votesCount}" total="${question.totalResponses}"/>
+								</c:if>
+								<span class="ss_survey_answer" style="zoom:1;"><c:out value="${answer.text}" escapeXml="false"/></span>
+								<c:if test="${question.type == 'multiple' || question.type == 'single'}">
+									<div class="ss_clear"></div>
+								</c:if>
+							</li>
+						</c:if>
 					</c:forEach>
 					</ol>
 					<c:if test="${question.type == 'multiple'}">
