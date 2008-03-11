@@ -40,23 +40,35 @@
   <c:forEach var="sharedItem" items="${ss_sharedEntities}">
    
 	  <ssf:nlt tag="relevance.sharedEntityLine">
-	  <span class="ss_link_1">
 	  <ssf:param name="value" useBody="true">
+	    <span class="ss_link_1">
 	    <ssf:showUser user="${sharedItem.referer}" titleStyle="ss_link_1" />
+	    </span>
 	  </ssf:param>
-	  </span>
 	  <span class="ss_link_2">
 	  <ssf:param name="value" useBody="true">
-    	<a href="javascript: ;"
-    	  <c:if test="${sharedItem.entity.entityType == 'workspace' || sharedItem.entity.entityType == 'folder'}">
+    	<c:if test="${sharedItem.entity.entityType == 'workspace' || sharedItem.entity.entityType == 'folder'}">
+    	  <a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${sharedItem.entity.id}', '${sharedItem.entity.id}', '${sharedItem.entity.entityType}', '${ss_namespace}', 'yes');"
-		  </c:if>
-    	  <c:if test="${sharedItem.entity.entityType == 'folderEntry'}">
-			onClick="return ss_gotoPermalink('${sharedItem.entity.parentBinder.id}', '${sharedItem.entity.id}', '${sharedItem.entity.entityType}', '${ss_namespace}', 'yes');"
-		  </c:if>
 			><span>${sharedItem.entity.title}</span></a>
+		</c:if>
+		<c:if test="${sharedItem.entity.entityType == 'folderEntry'}">
+		  <span class="ss_link_2">
+			<c:set var="isDashboard" value="yes"/>
+			<ssf:titleLink hrefClass="ss_link_2"
+				entryId="${sharedItem.entity.id}" binderId="${sharedItem.entity.parentBinder.id}" 
+				entityType="${sharedItem.entity.entityType}" 
+				namespace="${ss_namespace}" 
+				isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+				<ssf:param name="url" useBody="true">
+					<ssf:url adapter="true" portletName="ss_forum" folderId="${sharedItem.entity.parentBinder.id}" 
+					  action="view_folder_entry" entryId="${sharedItem.entity.id}" actionUrl="true" />
+				</ssf:param>
+				<c:out value="${sharedItem.entity.title}" escapeXml="false"/>
+			</ssf:titleLink>
+		  </span>
+		</c:if>
 	  </ssf:param>
-	  </span><br/>
 	  </ssf:nlt>
    <br/>
   </c:forEach>
