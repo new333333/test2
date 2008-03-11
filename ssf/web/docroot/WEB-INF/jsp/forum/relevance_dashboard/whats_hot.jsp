@@ -34,7 +34,9 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_whatsHot}">
-<ul>
+<div id="ss_today">
+<div id="ss_hints"><em>This is What's Hot!</em></div>
+<div class="ss_hot_para">
   <c:forEach var="entry" items="${ss_whatsHot}">
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
     <li>
@@ -72,5 +74,6 @@
 	
     </li>
   </c:forEach>
-</ul>
+	</div><!-- end of para -->
+    </div><!-- end of today -->
 </c:if>

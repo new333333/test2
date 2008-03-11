@@ -132,7 +132,7 @@
       
         <div id="ss_today">
        <div id="ss_hints"><em>This is my calendar. </em>  </div>
-       <div class="ss_cal_para" > 
+       <div id="ss_cal_para" > 
         <li>Thu March 6, 9:00-10:00 am<br/>
         Marketing//Development<br/>
         <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
