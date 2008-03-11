@@ -35,71 +35,53 @@
 </c:if>
 <c:if test="${!empty ss_myTasks}">
 
-<div id="ss_today">
-       <div id="ss_hints"><em>These are my tasks. </em>  </div>
-       <div id="ss_tasks" 
-        <li>Thu March 6, 9:00-10:00 am<br/>
-        Marketing//Development<br/>
-        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
-        <li>Mon March 10, 1:00-3:00 pm<br/>
-        Engineering//Wiki<br/>
-        <a href="#" class="ss_link_2">Software Development</a> </li><br>
-        <li>Tue March 11, 10:00-11:00 am<br/>
-        Marketing//Blog<br/>
-        <a href="#" class="ss_link_2">Coffee with Vendors</a> </li><br>
-        <li>Tue March 11, 4:00-5:00 pm<br/>
-        Finance<br/>
-        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
-        <li>Fri March 14, 6:00-10:00 am<br/>
-        Software//Expo<br/>
-        <a href="#" class="ss_link_2">Flight to Salt Lake</a> </li><br>
-        </div><!-- end of para -->
-</div><!-- end of today -->
-         
-<table class="ss_tasks_list" >
-<tbody>
-	<tr>
-		<th><ssf:nlt tag="task.title"/></th>
-		<th><ssf:nlt tag="task.priority"/></th>
-		<th><ssf:nlt tag="task.dueDate"/></th>
-		<th><ssf:nlt tag="task.status"/></th>
-		<th><ssf:nlt tag="task.done"/></th>		
-		<th><ssf:nlt tag="task.location"/></th>
-	</tr>
-
+<ul>
 <c:forEach var="entry" items="${ss_myTasks}">
 	<jsp:useBean id="entry" type="java.util.HashMap" />
-	<tr>
-		<td class="ss_entryTitle ss_normalprint">
-			<c:set var="isDashboard" value="yes"/>
+  <li>
+		<div>
+		<c:set var="isDashboard" value="yes"/>				
+		<ssf:titleLink hrefClass="ss_link_2"
+		  entryId="${entry._docId}" binderId="${entry._binderId}" 
+		  entityType="${entry._entityType}" 
+		  namespace="${ss_namespace}" 
+		  isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
 				
-			<ssf:titleLink 
-				entryId="${entry._docId}" binderId="${entry._binderId}" 
-				entityType="${entry._entityType}" 
-				namespace="${ss_namespace}" 
-				isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+		  <ssf:param name="url" useBody="true">
+			<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+				action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+		  </ssf:param>
+				
+		  <c:out value="${entry.title}" escapeXml="false"/>
+		</ssf:titleLink>
+		</div>
 
-				
-				<ssf:param name="url" useBody="true">
-					<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
-					  action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
-				</ssf:param>
-				
-				<c:out value="${entry.title}" escapeXml="false"/>
-			</ssf:titleLink>
-		</td>
-		<td class="ss_iconsContainer" style="text-align: center;">
+		<div>
 		<c:if test="${! empty entry.priority}">
 		  <c:forEach var="prio" items="${entry.ssEntryDefinitionElementData.priority.values}">
 		    <c:if test="${entry.priority == prio.key}">
-		      <img src="<html:imagesPath/>icons/prio_${prio.key}.gif" 
-		        alt="${prio.value}" 
-		        title="${prio.value}" 
-		        class="ss_taskPriority" />
+		      <ssf:nlt tag="relevance.taskPriority">
+		        <ssf:param name="value" useBody="true">
+		          <span>${prio.value}</span>
+		        </ssf:param>
+		      </ssf:nlt>
 		    </c:if>
 		  </c:forEach>
-		</c:if></td>
-		<td>
+		</c:if>
+		<c:if test="${! empty entry.status}">
+		  <c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}">
+		      <c:if test="${entry.status == status.key}">
+		        <ssf:nlt tag="relevance.taskStatus">
+		          <ssf:param name="value" useBody="true">
+		            <span>${status.value}</span>
+		          </ssf:param>
+		        </ssf:nlt>
+		      </c:if>
+		    </c:forEach>
+		  </c:if>
+		</div>
+		
+		<div>
 			<c:choose>
 				<c:when test="${!empty entry['start_end#EndDate']}">
 					<c:choose>
@@ -107,47 +89,23 @@
 							<fmt:formatDate 
 									timeZone="${ssUser.timeZone.ID}"
 									value="${entry['start_end#EndDate']}" type="date" 
-									dateStyle="short" />						
+									dateStyle="medium" />						
 						</c:when>	
 						<c:otherwise>
 							<fmt:formatDate 
 									timeZone="GMT"
 									value="${entry['start_end#EndDate']}" type="date" 
-									dateStyle="short"/>
+									dateStyle="medium"/>
 						</c:otherwise>
 					</c:choose>
 					<c:if test="${overdue}">
-						<ssf:nlt tag="milestone.overdue"/>
+						<span class="ss_smallprint ss_italic"><ssf:nlt tag="milestone.overdue"/></span>
 					</c:if>
 				</c:when>
-				<c:otherwise>
-					&nbsp;
-				</c:otherwise>
 			</c:choose>				  
-		</td>
-		<td class="ss_iconsContainer"  style="text-align: center;">
-		  <c:if test="${! empty entry.status}">
-		    <c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}">
-		      <c:if test="${entry.status == status.key}">
-		        <img src="<html:imagesPath/>icons/status_${status.key}.gif" 
-		          class="ss_taskStatus" 
-		          alt="${status.value}" 
-		          title="${status.value}" />
-		      </c:if>
-		    </c:forEach>
-		  </c:if>
-		</td>
-		<td>
-			<c:if test="${! empty entry.completed && !empty entry.ssEntryDefinitionElementData.completed.values}">
-				<ssf:progressBar currentValue="${entry.completed}" 
-					valuesMap="${entry.ssEntryDefinitionElementData.completed.values}" 
-					namespace="${ss_namespace}" 
-					entryId="${entry._docId}}" 
-					readOnly="true"/>
-			</c:if>
-		</td>
-		<td class="ss_normalprint" width="20%">
-
+		</div>
+		
+		<div>
 			<c:set var="path" value=""/>
 
 			<c:if test="${!empty ss_myTasksFolders[entry._binderId]}">
@@ -162,11 +120,8 @@
 					title="${path}"
 					><span class="ss_bold">${title}</span></a>
 			</c:if>
-				
-								
-		</td>	
-	</tr>
+		</div>
+	</li>							
 </c:forEach>
-</tbody>
-</table>
+</ul>
 </c:if>
