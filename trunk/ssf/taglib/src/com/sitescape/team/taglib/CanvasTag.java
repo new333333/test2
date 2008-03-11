@@ -77,6 +77,7 @@ public class CanvasTag extends BodyTagSupport implements ParamAncestorTag {
 			}
 			StringServletResponse res = new StringServletResponse(httpRes);
 			req.setAttribute("id", this.id);
+			req.setAttribute("styleId", this.styleId);
 			rd.include(req, res);
 
 			pageContext.getOut().print(res.getString());
