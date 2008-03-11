@@ -34,26 +34,25 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_sharedEntities}">
-<div id="ss_subtitle">Do we need a subtitle?</div>
+<div id="ss_hints"><em>People have shared <br/>these with me...</em></div>
 <div id="ss_para" class="ss_pt_para">
 
   <c:forEach var="sharedItem" items="${ss_sharedEntities}">
    
-	  <ssf:nlt tag="relevance.sharedEntityLine">
+	 <li> <ssf:nlt tag="relevance.sharedEntityLine">
+	 
 	  <ssf:param name="value" useBody="true">
-	    <span class="ss_link_1">
-	    <ssf:showUser user="${sharedItem.referer}" titleStyle="ss_link_1" />
-	    </span>
+	    <ssf:showUser user="${sharedItem.referer}" titleStyle="ss_link_1" /><br/>
 	  </ssf:param>
-	  <span class="ss_link_2">
+
 	  <ssf:param name="value" useBody="true">
+	   <span class="ss_link_2">
     	<c:if test="${sharedItem.entity.entityType == 'workspace' || sharedItem.entity.entityType == 'folder'}">
     	  <a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${sharedItem.entity.id}', '${sharedItem.entity.id}', '${sharedItem.entity.entityType}', '${ss_namespace}', 'yes');"
 			><span>${sharedItem.entity.title}</span></a>
 		</c:if>
 		<c:if test="${sharedItem.entity.entityType == 'folderEntry'}">
-		  <span class="ss_link_2">
 			<c:set var="isDashboard" value="yes"/>
 			<ssf:titleLink hrefClass="ss_link_2"
 				entryId="${sharedItem.entity.id}" binderId="${sharedItem.entity.parentBinder.id}" 
@@ -66,11 +65,11 @@
 				</ssf:param>
 				<c:out value="${sharedItem.entity.title}" escapeXml="false"/>
 			</ssf:titleLink>
-		  </span>
 		</c:if>
+	   </span><br/>
 	  </ssf:param>
-	  </ssf:nlt>
-   <br/>
+	
+	  </ssf:nlt></li>
   </c:forEach>
 
 </div>
