@@ -36,6 +36,8 @@ import java.net.Socket;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 
@@ -44,6 +46,8 @@ import com.sitescape.team.presence.PresenceManager;
 
 public class PresenceManagerImpl implements PresenceManager, PresenceManagerImplMBean, InitializingBean, DisposableBean {
 
+	protected Log logger = LogFactory.getLog(getClass());
+	
 	protected String jabberServer;
 	protected String jabberServerPort;
 	protected boolean enabled = false;
@@ -84,6 +88,7 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 			pl.setDaemon(true);
 			pl.start();
 		}
+		logger.debug("Presence engine is " + (isEnabled()?"enabled":"disabled") + ".");
 	}
 
 	public void destroy() throws Exception {
@@ -137,7 +142,7 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 	    	try {
  	            presenceSocket = new Socket(host, port);
 	        } catch (IOException e) {
-         	    //System.out.println(e);
+	        	logger.error("Can't connect to presence server: host ["+ host + "], port [" + port + "]", e);
          	    return null;
          	}
 	        return presenceSocket;
@@ -147,7 +152,7 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 	     * a timer loop, checking for updates each time the timer runs down.
 	     */
 	    public void run() {
-	    	String line;
+	    	String line = null;
 	    	String user;
 	    	Integer status;
 	    	int failCount = 0;
@@ -180,6 +185,7 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
     			       sis = new BufferedReader(new InputStreamReader(presenceSocket.getInputStream()));
     			    }
     			    catch (IOException e) {
+    			    	logger.error("Error occures by reading presence info.", e);
     			        presenceSocket = null;
     			        continue;
     			    }
@@ -188,7 +194,7 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 		        try {
 		        	dataFound = false;
 		        	while ((line = sis.readLine()) != null) {
-	                    //System.out.println("User: " + line);
+		        		logger.debug("Incoming presence data [" + line + "].");
 	                    String parts[] = line.split(" ");
 	                    String addr[] = parts[0].split("@");
 	                    user = addr[0];
@@ -202,6 +208,7 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 		        		presenceSocket = null;
 		        	}
 		        }catch (Exception e ){
+		        	logger.error("Error occures by parsing presence data [" + line + "].", e);
 		        	presenceSocket = null;
 		        } 
 	    	
