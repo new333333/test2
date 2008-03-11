@@ -39,7 +39,7 @@
   action="<ssf:url adapter="true" portletName="ss_forum" 
 		action="__ajax_relevance" actionUrl="true"><ssf:param 
 		name="operation" value="share_this_binder" /><ssf:param 
-		name="binderId" value="${ssBinderId}" /><c:if test=""><ssf:param 
+		name="binderId" value="${ssBinderId}" /><c:if test="${!empty ssEntryId}"><ssf:param 
 		name="entryId" value="${ssEntryId}" /></c:if></ssf:url>"
   name="${renderResponse.namespace}fm" 
   id="${renderResponse.namespace}fm" 

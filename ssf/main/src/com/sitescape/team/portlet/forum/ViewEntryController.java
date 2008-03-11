@@ -541,12 +541,23 @@ public class ViewEntryController extends  SAbstractController {
 				url.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
 				toolbar.addToolbarMenu("7_setHomepage", NLT.get("toolbar.setWikiHomepage"), url, qualifiers);
 			}
-		}		
+		}	
+		
+		Map qualifiers = new HashMap();
+		qualifiers.put("popup", new Boolean(true));
+		qualifiers.put(WebKeys.HELP_SPOT, "helpSpot.shareThis");
+		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		adapterUrl.setParameter(WebKeys.ACTION, "__ajax_relevance");
+		adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SHARE_THIS_BINDER);
+		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
+		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId); 
+		toolbar.addToolbarMenu("8_shareThis", NLT.get("toolbar.shareThis"), adapterUrl.toString(), qualifiers);
+
 
 		//The "Footer" menu
 		Toolbar footerToolbar = new Toolbar();
-		Map qualifiers = new HashMap();
-		AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		qualifiers = new HashMap();
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
 		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
