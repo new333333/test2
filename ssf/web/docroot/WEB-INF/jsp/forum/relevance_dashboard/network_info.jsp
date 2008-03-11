@@ -50,21 +50,25 @@
 	<ssf:param name="title" value="<%= NLT.get("relevance.whatsHot") %>"/>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
 	</ssf:canvas>
+	
+	<ssf:canvas id="relevanceActivities" type="inline" styleId="ss_shared">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.activities"/></div>
+	</ssf:param>
+		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
+	</ssf:canvas>
 
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
 
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_shared">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title"> <ssf:nlt tag="relevance.sharedItems"/> </div>
+		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.sharedItems"/> </div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
 	</ssf:canvas>
 
-	<ssf:canvas id="relevanceActivities" type="inline" styleId="ss_shared_items">
-	<ssf:param name="title" value="<%= NLT.get("relevance.activities") %>"/>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
-	</ssf:canvas>
+	
 
       </div><!-- end of col3 -->
     </div><!-- end of col left -->

@@ -34,24 +34,24 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_activities}">
-<ul>
+
   <c:forEach var="activity" items="${ss_activities}">
     <li>
 	  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${activity.date}" type="both" 
-					  timeStyle="short" dateStyle="short" />
+					  timeStyle="short" dateStyle="short" /><br/>
 	  <c:if test="${activity.type == 'login'}">
 	    <ssf:nlt tag="relevance.activityLoginLine">
 	      <ssf:param name="value" useBody="true">
-	        <ssf:showUser user="${activity.user}" />
+	        <ssf:showUser user="${activity.user}" titleStyle="ss_link_1"/>
 	      </ssf:param>
 	    </ssf:nlt>
 	  </c:if>
 	  <c:if test="${activity.type == 'userStatus'}">
 	    <ssf:nlt tag="relevance.activityStatusLine">
 	      <ssf:param name="value" useBody="true">
-	        <ssf:showUser user="${activity.user}" />
-	      </ssf:param>
+	        <ssf:showUser user="${activity.user}" titleStyle="ss_link_1"/>
+	      </ssf:param><br/>
 	      <ssf:param name="value" useBody="true">
 	        <span class="ss_italic">${activity.description}</span>
 	      </ssf:param>
@@ -59,5 +59,5 @@
 	  </c:if>
     </li>
   </c:forEach>
-</ul>
+
 </c:if>

@@ -5160,6 +5160,7 @@ div.ss_canvas {
 	color:#444444;
 	background-color:#FFF;
 	border:1px solid #B2CEE7;	
+	line-height:1.25em;
 
 }
 #ss_tasks
@@ -5194,16 +5195,15 @@ div.ss_canvas {
 	line-height:14px;
 }
 
-	#ss_calendar
+#ss_calendar
 {
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#444444;
-	border:1px solid #B2CEE7;
 	background-color:#ffffff;
 	padding: 0.5% 0 1% 5px;
 	color: #666666;
-	line-height: 2em;
+	line-height: 1.5em;
 	
 
 }
@@ -5339,7 +5339,7 @@ div.ss_canvas {
 {
 
 	list-style-type: square;
-	margin-left:-20px;
+	margin-left:-10px;
 }
 .ss_pt_title
 {
@@ -5364,6 +5364,18 @@ div.ss_canvas {
 	list-style-type: disc;
 	border-bottom:1px dotted #666666;
 	
+}
+ .ss_cal_para 
+{
+	line-height:1.25em;
+
+}
+ .ss_cal_para li
+{
+	list-style-type: disc;
+	padding-bottom:3px;
+	border-bottom:1px dotted #666666;
+
 }
 
 /* time block styles */	

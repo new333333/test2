@@ -88,14 +88,16 @@
 	
 <c:forEach var="user" items="${ss_trackedPeople}">
 	
-	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
+	    <table cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
 	    <ssf:showUser user="${user}" titleStyle="ss_link_1" />
-	    <c:if test="${!empty user.status}">
-	    <br/><span class="ss_smallprint ss_italic" style="padding-left:20px;">${user.status}</span>
-	    </c:if>
-	    </td><td valign="top"><img style="padding:4px 0px 0px 2px;"
+	    <img style="padding:4px 0px 0px 2px;" align="texttop"
 	      src="<html:rootPath/>images/pics/delete.gif"
-	      onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/></td></tr></tbody></table>
+	      onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/></td></tr>
+	    <c:if test="${!empty user.status}">
+	    <tr><td><div id="ss_hints" ><em>${user.status}</em></div>
+	    </td></tr>
+	    </c:if>
+	    </tbody></table>
 </c:forEach>
 
 	</ssf:canvas>
