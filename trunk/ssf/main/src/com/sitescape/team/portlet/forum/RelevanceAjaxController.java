@@ -211,9 +211,11 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 	
 	private ModelAndView ajaxShareThisBinder(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
-		String binderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		Map model = new HashMap();
-		model.put(WebKeys.BINDER_ID, binderId);
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);
+		if (binderId != null) model.put(WebKeys.BINDER_ID, binderId.toString());
+		if (entryId != null) model.put(WebKeys.ENTRY_ID, entryId.toString());
 		RelevanceDashboardHelper.setupMyTeamsBeans(bs, model);
 		return new ModelAndView("forum/relevance_dashboard/share_this_item", model);
 	}
