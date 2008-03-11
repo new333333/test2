@@ -109,7 +109,7 @@
 <tr>
 <td valign="top" style="width:${property_maxWidth + 30}px;" >
 <div class="ss_smallRBoxTop2 ss_profileBox1"></div><div class="ss_smallRBoxTop1 ss_profileBox1"></div>
-<div class="ss_profileBox1" style="padding: 10px;"><div style="height:${property_maxHeight + 10}px;">
+<div class="ss_profileBox1" style="padding: 1px;"><div style="height:${property_maxHeight + 10}px;">
  <div class="ss_profile_matte">
 <c:if test="${empty ssDefinitionEntry.customAttributes['picture']}">
   <div class="ss_profile_picture_frame ss_profile_photo_box_empty">
