@@ -177,6 +177,7 @@ public class ViewFileController extends SAbstractController {
 				try {
 					response.setContentType("text/html");
 					getFileModule().readCacheHtmlFile(request.getRequestURI(), parent, entity, fa, response.getOutputStream());
+					getReportModule().addFileInfo(AuditType.download, fa);
 					return null;
 				}
 				catch(Exception e) {
