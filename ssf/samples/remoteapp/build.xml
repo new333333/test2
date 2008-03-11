@@ -11,10 +11,38 @@
 	<property name="war.name" value="remoteapp" />
 	<property name="war.file" value="${war.name}.war" />
 
+	<path id="project.classpath">
+		<pathelement path="${classpath}" />
+		<pathelement location="${project.dir}/ws-client/ssf-wsclient.jar"/>
+		<fileset dir="${project.dir}/lib" includes="*.jar" />
+	</path>
+	
 	<target name="war" depends="jar">
 		<copy file="${jar.file}" todir="war/WEB-INF/lib"/>
-		<copy file="${project.dir}/lib/commons-httpclient.jar" todir="war/WEB-INF/lib"/>
-		<copy file="${project.dir}/lib/commons-codec.jar" todir="war/WEB-INF/lib"/>
+		<copy file="${project.dir}/ws-client/ssf-wsclient.jar" todir="war/WEB-INF/lib"/>
+		<copy todir="war/WEB-INF/lib">
+			<fileset dir="${project.dir}/lib">
+				<include name="activation.jar" />
+				<include name="mail.jar" />
+				<include name="dom4j.jar" />
+				<include name="axis.jar" />
+				<include name="axis-ant.jar" />
+				<include name="jaxrpc.jar" />
+				<include name="commons-httpclient.jar" />
+				<include name="commons-logging.jar" />
+				<include name="commons-discovery.jar" />
+				<include name="commons-codec.jar" />
+				<include name="saaj.jar" />
+				<include name="wsdl4j.jar" />
+				<include name="wss4j.jar" />
+				<include name="addressing.jar" />
+				<include name="bcprov-jdk13-128.jar" />
+				<include name="opensaml.jar" />
+				<include name="xalan.jar" />
+				<include name="xmlsec.jar" />
+				<include name="jaxen.jar" />
+			</fileset>
+		</copy>
 		<war
 			basedir="war"
 			destfile="${war.file}"

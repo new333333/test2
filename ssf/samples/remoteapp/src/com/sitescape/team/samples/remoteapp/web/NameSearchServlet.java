@@ -29,21 +29,32 @@
 package com.sitescape.team.samples.remoteapp.web;
 
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.rmi.RemoteException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.dom4j.Document;
+import org.dom4j.DocumentException;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
+import com.sitescape.team.client.ws.profile.ProfileServiceSoapBindingStub;
+import com.sitescape.team.client.ws.profile.ProfileServiceSoapServiceLocator;
 
 public class NameSearchServlet extends HttpServlet {
 
 	private static final String GOOGLE_SEARCH_TEMPLATE = "http://www.google.com/search?hl=en&q=@@@&btnG=Google+Search";
+	
+	private static final String WS_ADDRESS = "http://localhost:8080/ssr/token/ws/ProfileService";
+	private static final String WS_PORT_NAME = "ProfileService";
+	private static final Long PROFILE_BINDER_ID = Long.valueOf(2);
 	
 	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
 	private static final String PARAMETER_NAME_APPLICATION_ID = "ss_application_id";
@@ -52,18 +63,46 @@ public class NameSearchServlet extends HttpServlet {
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
 	throws ServletException, IOException {
-		String action = req.getParameter(PARAMETER_NAME_ACTION);
-		String applicationId = req.getParameter(PARAMETER_NAME_APPLICATION_ID);
-		String userId = req.getParameter(PARAMETER_NAME_USER_ID);
-		String accessToken = req.getParameter(PARAMETER_NAME_ACCESS_TOKEN);
-		
-		String result = googleForName();
-		resp.getWriter().print(result);
+		try {
+			String action = req.getParameter(PARAMETER_NAME_ACTION);
+			String applicationId = req.getParameter(PARAMETER_NAME_APPLICATION_ID);
+			String userId = req.getParameter(PARAMETER_NAME_USER_ID);
+			String accessToken = req.getParameter(PARAMETER_NAME_ACCESS_TOKEN);
+			
+			String title = getUserTitle(accessToken, Long.valueOf(userId));
+			
+			String result = googleForName(title);
+			
+			resp.getWriter().print(result);
+		}
+		catch(ServletException e) {
+			throw e;
+		}
+		catch(IOException e) {
+			throw e;
+		}
+		catch(Exception e) {
+			throw new ServletException(e);
+		}
 	}
 
-	private String googleForName() throws IOException, ServletException {
-		String name = "Roy Klein";
-		String searchUrl = GOOGLE_SEARCH_TEMPLATE.replace("@@@", "Roy+Klein");
+	private String getUserTitle(String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
+		ProfileServiceSoapServiceLocator locator = new ProfileServiceSoapServiceLocator();
+		locator.setEndpointAddress(WS_PORT_NAME, WS_ADDRESS);
+		ProfileServiceSoapBindingStub stub = (ProfileServiceSoapBindingStub) locator.getProfileService();
+		String principalAsXML = stub.getPrincipalAsXML(accessToken, PROFILE_BINDER_ID, userId);
+		
+		Document doc = DocumentHelper.parseText(principalAsXML);
+		Element rootElem = doc.getRootElement();
+		Element elm = (Element) rootElem.selectSingleNode("/principal");
+		String userTitle = elm.attributeValue("title");
+		
+		return userTitle;
+	}
+	
+	private String googleForName(String userTitle) throws IOException, ServletException {
+		String searchStr = userTitle.replace(" ", "+");
+		String searchUrl = GOOGLE_SEARCH_TEMPLATE.replace("@@@", searchStr);
 		
 		String result = "";
 		HttpClient httpClient = new HttpClient();
@@ -77,7 +116,7 @@ public class NameSearchServlet extends HttpServlet {
 					int idx2 = body.indexOf("\"", idx+7);
 					if(idx2 >= 0) {
 						String value = body.substring(idx+7, idx2);
-						result = "About " + value + " matches for " + name + " on Google";
+						result = "About " + value + " matches for " + userTitle + " on Google";
 					}
 				}
 				return result;
