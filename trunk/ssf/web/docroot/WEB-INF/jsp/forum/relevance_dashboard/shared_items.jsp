@@ -30,12 +30,14 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
 <c:if test="${empty ss_sharedEntities}">
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_sharedEntities}">
+<div id="ss_today">
 <div id="ss_hints"><em>People have shared <br/>these with me...</em></div>
-<div id="ss_para" class="ss_pt_para">
+<div class="ss_shared_para">
 
   <c:forEach var="sharedItem" items="${ss_sharedEntities}">
    
@@ -72,5 +74,6 @@
 	  </ssf:nlt></li>
   </c:forEach>
 
-</div>
+	</div><!-- end of para -->
+    </div><!-- end of today -->
 </c:if>

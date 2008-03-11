@@ -44,12 +44,15 @@
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'folder'}">
 	
-	    <table cellpadding="0" cellspacing="0"><tbody><tr><td><a class="ss_link_2"
+	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
+	    <a class="ss_link_2"
 	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
-	    ><span>${binder.title} (${binder.parentBinder.title})</span></a></td><td valign="top"><img style="padding:6px 0px 0px 4px;"
-	      src="<html:rootPath/>images/pics/delete.gif"
-	      onClick="ss_trackedItemsDelete(this, '${binder.id}');"/></td></tr></tbody></table>
-	<br/>
+	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a>
+	    <img style="padding:6px 0px 0px 2px;" align="texttop"
+      src="<html:rootPath/>images/pics/delete.gif"
+      onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/>
+	      </td></tr></tbody></table>
+
   </c:if>
 </c:forEach>
 
@@ -63,19 +66,21 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title"> <ssf:nlt tag="relevance.trackedWorkspaces"/> </div>
 	</ssf:param>
-<ul>
+
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'workspace' && binder.definitionType == 8}">
-	<li>
-	    <table cellpadding="0" cellspacing="0"><tbody><tr><td><a class="ss_link_2"
+
+	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
+	    <a class="ss_link_2"
 	      href="<ssf:url action="view_ws_listing" binderId="${binder.id}"/>"
-	    ><span>${binder.title} (${binder.parentBinder.title})</span></a></td><td valign="top"><img style="padding:4px 0px 0px 4px;"
-	      src="<html:rootPath/>images/pics/delete.gif"
-	      onClick="ss_trackedItemsDelete(this, '${binder.id}');"/></td></tr></tbody></table>
-	</li>
+	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a><img style="padding:6px 0px 0px 2px;" align="texttop"
+      src="<html:rootPath/>images/pics/delete.gif"
+      onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/>
+      </td></tr></tbody></table>
+	
   </c:if>
 </c:forEach>
-</ul>
+
 	</ssf:canvas>
 
       </div><!-- end of col2 -->

@@ -5163,14 +5163,57 @@ div.ss_canvas {
 	line-height:1.25em;
 
 }
+.ss_shared_para 
+{
+	line-height:1.25em;
+	padding-top:5px;
+	padding-left:1%;
+
+}
+ .ss_shared_para li
+{
+	list-style-type: square;
+	padding-bottom:5px;
+
+}
 #ss_tasks
 {
 	padding: 0;
 	margin: 1% 0 5% 0;
-	color:#333333;
 	padding: 0.5% 0 1% 5px;
 	color: #666666;
-	line-height: 2em;
+	line-height: 1.5em;
+
+}
+#ss_tasks_para 
+{
+
+	padding-top:5px;
+
+}
+
+#ss_tasks_para .ss_link_1 a:
+{
+
+	text-decoration:underline;
+	color: #00AEEF!important; 
+	
+
+}
+#ss_tasks_para .ss_link_2 a:
+{
+
+	text-decoration:underline;
+	color:#7ac142!important;
+	font-size:10px!important; 
+	
+
+}
+#ss_tasks_para li
+{
+	list-style-type: square;
+	padding-bottom:3px;
+
 
 }
 #ss_trackedItems
@@ -5205,6 +5248,54 @@ div.ss_canvas {
 	color: #666666;
 	line-height: 1.5em;
 	
+
+}
+#ss_cal_para 
+{
+	line-height:1.25em;
+	padding-top:5px;
+
+}
+#ss_cal_para li
+{
+	list-style-type: square;
+	padding-bottom:3px;
+	border-bottom:1px dotted #666666;
+
+}
+#ss_cal_para a					/*link style for active links*/
+{
+	text-decoration:underline;
+}
+
+#ss_cal_para a:hover					/*link style to hover links*/
+{
+	text-decoration:underline;
+	color:#E67814;
+	background-color:#444444;
+}
+#ss_whatshot
+{
+	padding: 0;
+	margin: 1% 0 5% 0;
+	background-color:#ffffff;
+	padding: 0.5% 0 1% 5px;
+	color: #666666;
+	line-height: 1.5em;
+	
+
+}
+ .ss_hot_para 
+{
+	line-height:1.25em;
+	padding-top:5px;
+
+}
+ .ss_hot_para li
+{
+	list-style-type: square;
+	padding-bottom:3px;
+
 
 }
 	#ss_survey
@@ -5327,7 +5418,18 @@ div.ss_canvas {
 	padding: 0.5% 0 1% 5px;
 	border: 1px dotted #cccccc;
 	color: #666666;
-	line-height: 2em;
+	line-height: 1.8em;
+}
+#ss_para a					/*link style for active links*/
+{
+	text-decoration:underline;
+}
+
+#ss_para a:hover					/*link style to hover links*/
+{
+	text-decoration:underline;
+	color:#E67814;
+	background-color:#444444;
 }
 
 #ss_para ul
@@ -5365,18 +5467,7 @@ div.ss_canvas {
 	border-bottom:1px dotted #666666;
 	
 }
- .ss_cal_para 
-{
-	line-height:1.25em;
 
-}
- .ss_cal_para li
-{
-	list-style-type: disc;
-	padding-bottom:3px;
-	border-bottom:1px dotted #666666;
-
-}
 
 /* time block styles */	
 #ss_today 
@@ -5397,7 +5488,11 @@ div.ss_canvas {
 {
 	height:20px;
 }
-	
+ .ss_overdue				/*when a milestone is overdue*/	
+{
+	color: #CC0000;
+	font-style: italic;
+}	
 
 
 #ss_para a		 		/* Link style active for links */	

@@ -34,8 +34,9 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_myTasks}">
-
-<ul>
+<div id="ss_today">
+<div id="ss_hints"><em>This is my To-Do List</em></div>
+<div id="ss_tasks_para">
 <c:forEach var="entry" items="${ss_myTasks}">
 	<jsp:useBean id="entry" type="java.util.HashMap" />
   <li>
@@ -99,13 +100,13 @@
 						</c:otherwise>
 					</c:choose>
 					<c:if test="${overdue}">
-						<span class="ss_smallprint ss_italic"><ssf:nlt tag="milestone.overdue"/></span>
+						<span class="ss_overdue"><ssf:nlt tag="milestone.overdue"/></span>
 					</c:if>
 				</c:when>
 			</c:choose>				  
 		</div>
 		
-		<div>
+		<div class="ss_link_2">
 			<c:set var="path" value=""/>
 
 			<c:if test="${!empty ss_myTasksFolders[entry._binderId]}">
@@ -122,6 +123,8 @@
 			</c:if>
 		</div>
 	</li>							
-</c:forEach>
-</ul>
+  </c:forEach>
+
+	</div><!-- end of para -->
+    </div><!-- end of today -->
 </c:if>

@@ -46,8 +46,10 @@
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 
-	<ssf:canvas id="relevanceHot" type="inline" styleId="ss_documents">
-	<ssf:param name="title" value="<%= NLT.get("relevance.whatsHot") %>"/>
+	<ssf:canvas id="relevanceHot" type="inline" styleId="ss_whatshot">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title"><ssf:nlt tag="relevance.whatsHot"/></div>
+	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
 	</ssf:canvas>
 	
