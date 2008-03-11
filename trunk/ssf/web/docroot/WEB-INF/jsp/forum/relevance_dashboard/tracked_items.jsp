@@ -85,21 +85,8 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title"> <ssf:nlt tag="relevance.trackedPeople"/> </div>
 	</ssf:param>
-	
-<c:forEach var="user" items="${ss_trackedPeople}">
-	
-	    <table cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
-	    <ssf:showUser user="${user}" titleStyle="ss_link_1" />
-	    <img style="padding:4px 0px 0px 2px;" align="texttop"
-	      src="<html:rootPath/>images/pics/delete.gif"
-	      onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/></td></tr>
-	    <c:if test="${!empty user.status}">
-	    <tr><td><div id="ss_hints" ><em>${user.status}</em></div>
-	    </td></tr>
-	    </c:if>
-	    </tbody></table>
-</c:forEach>
-
+	  <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
+	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_buddies.jsp" />
 	</ssf:canvas>
 
       </div><!-- end of col3 -->

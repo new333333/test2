@@ -87,6 +87,7 @@ public class RelevanceDashboardHelper {
 			setupTasksBeans(bs, userWorkspace, model);
 			setupDocumentsBeans(bs, userWorkspace, model);
 			setupViewedEntriesBean(bs, userWorkspace, model);
+			setupTrackedItemsBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_NETWORK_DASHBOARD.equals(type)) {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);

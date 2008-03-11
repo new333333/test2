@@ -163,15 +163,8 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.ping"/></div>
 	</ssf:param>
-	<div id="ss_hints"><em>Who are your cool dudes?</em></div>
-	<img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Robbin Smart</a><br/>
-	<img src="<html:rootPath/>images/pics/sym_s_green_dude.gif" alt="email" width="12" height=12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Lisa Fadden</a><br/>
-	<img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a><br/>
-	<img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Peter Hurley</a><br/>
-	<img src="<html:rootPath/>images/pics/sym_s_green_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a><br/>
-	<img src="<html:rootPath/>images/pics/sym_s_yellow_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Brent McConnell</a><br/>
-	</div>
-
+	  <c:set var="ss_show_tracked_item_delete_button" value="false" scope="request"/>
+	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_buddies.jsp" />
 	</ssf:canvas>
       </div><!-- end of col3 -->
     </div><!-- end of col left -->
