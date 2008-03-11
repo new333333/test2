@@ -5195,7 +5195,7 @@ div.ss_canvas {
 #ss_tasks_para .ss_link_1 a:
 {
 
-	text-decoration:underline;
+	text-decoration:underline!important;
 	color: #00AEEF!important; 
 	
 
@@ -5203,7 +5203,7 @@ div.ss_canvas {
 #ss_tasks_para .ss_link_2 a:
 {
 
-	text-decoration:underline;
+	text-decoration:underline!important;
 	color:#7ac142!important;
 	font-size:10px!important; 
 	
@@ -5211,7 +5211,7 @@ div.ss_canvas {
 }
 #ss_tasks_para li
 {
-	list-style-type: square;
+	list-style-type: square!important;
 	padding-bottom:3px;
 
 
@@ -5422,14 +5422,14 @@ div.ss_canvas {
 }
 #ss_para a					/*link style for active links*/
 {
-	text-decoration:underline;
+	text-decoration:underline !important;
 }
 
 #ss_para a:hover					/*link style to hover links*/
 {
-	text-decoration:underline;
-	color:#E67814;
-	background-color:#444444;
+	text-decoration:underline!important;
+	color:#E67814 !important;
+	background-color:#444444!important;
 }
 
 #ss_para ul
@@ -5495,16 +5495,21 @@ div.ss_canvas {
 }	
 
 
-#ss_para a		 		/* Link style active for links */	
-	{
-	text-decoration:underline;
+/*======================BACKGROUND HOVER IS FROM THIS CODE========================*/
+
+#ss_para a{
+	text-decoration:underline!important;
 	}
-#ss_para a:hover 		 		/* Link style hover for links */	
-	{
-	text-decoration:underline;
-	color:#E67814;
-	background-color:#FFFFFF;
+#ss_para a:hover{
+	text-decoration:underline!important;
+	color:#E67814 !important;
+	background-color:#444444!important;
 	}	
+	
+/*=================THESE NEED TO BE CONSOLIDATED========*/
+
+
+
 
 .ss_summary						/*to use when need to display summary of an entry */
 {
@@ -5515,20 +5520,29 @@ div.ss_canvas {
 {
 	padding: 0px 0px 0px 15px;
 	font-style: italic;
-}	
-/* Link styles */	
+}
+
+
+
+	
+/*=========== LINK STYLES===================== */	
 .ss_link_1, .ss_link_1 span 	/* link_1 Link style for people links */ 
 	{ 
-	color: #00AEEF!important; 
+	color: #00AEEF!important;
+	text-decoration: underline !important;
+	text-background: #444444 !important; 
 	}
 
 	
 .ss_link_2, .ss_link_2 span		/* link_2 Link style for links */	
 	{
+	text-decoration: underline!important;
 	color:#7ac142!important;
 	font-size:10px!important;
 	}
-		
+/*============link styles ===========================*/		
+
+
 /* Header styles */
   	#ss_topper {
 		height:150px;
@@ -5762,7 +5776,14 @@ div.ss_canvas {
 	padding-right:1%;
 }
 
-
+#ss_tracker{
+position:absolute;
+display:none;
+visibility:hidden;
+border:1px solid black;
+padding:10px;
+background-color:#ffffff;
+}
 
      
 
