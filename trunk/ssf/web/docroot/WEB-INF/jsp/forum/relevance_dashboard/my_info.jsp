@@ -44,7 +44,7 @@
 	
 	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title"><ssf:nlt tag="relevance.visitedEntries"/></div>
+		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.visitedEntries"/></div>
 	</ssf:param>
 		<c:set var="ss_showRecentlyVisitedEntities" value="view" scope="request"/>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
@@ -52,7 +52,7 @@
 	
 	<ssf:canvas id="relevanceVisitedFiles" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title"><ssf:nlt tag="relevance.visitedFiles"/></div>
+		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.visitedFiles"/></div>
 	</ssf:param>
 		<c:set var="ss_showRecentlyVisitedEntities" value="download" scope="request"/>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
