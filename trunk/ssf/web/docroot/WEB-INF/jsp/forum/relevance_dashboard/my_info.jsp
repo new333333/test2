@@ -106,7 +106,7 @@
       
         <div id="ss_today">
        <div id="ss_hints"><em>These are my notes. </em>  </div>
-        Need to bring foils to lunch meeting to finalize Keynot Address.  Have UPS ship demo brochures to arrive by Friday.  Make sure to add Tom, Dick, and Harry to talking points re:  design phase<br>
+        Need to bring foils to lunch meeting to finalize Keynote Address.  Have UPS ship demo brochures to arrive by Friday.  Make sure to add Tom, Dick, and Harry to talking points re:  design phase<br>
           </div><!-- end of today -->
          
           
@@ -132,7 +132,7 @@
       
         <div id="ss_today">
        <div id="ss_hints"><em>This is my calendar. </em>  </div>
-       <div id="#ss_calendar" 
+       <div class="ss_cal_para" > 
         <li>Thu March 6, 9:00-10:00 am<br/>
         Marketing//Development<br/>
         <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
@@ -163,7 +163,7 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.ping"/></div>
 	</ssf:param>
-	<div id="ss_hints"><em>The cool dude is here and I am happy with this are you?</em></div>
+	<div id="ss_hints"><em>Who are your cool dudes?</em></div>
 	<img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Robbin Smart</a><br/>
 	<img src="<html:rootPath/>images/pics/sym_s_green_dude.gif" alt="email" width="12" height=12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Lisa Fadden</a><br/>
 	<img src="<html:rootPath/>images/pics/sym_s_gray_dude.gif" alt="email" width="12" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a><br/>

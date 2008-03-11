@@ -76,7 +76,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
   offsetX="24"  
   </c:if>
   title="<ssf:nlt tag="helpSpot.displayEntryControl"/>"></ssHelpSpot></c:if><c:set 
-  var="ss_menuLinkHelpShown" value="1" scope="request"/><a class="<%= hrefClass %>" href="<%= url %>" 
+  var="ss_menuLinkHelpShown" value="1" scope="request"/><a href="<%= url %>" 
 <% if ( useBinderFunction.equals("no") ) {  %>
 	onClick="ss_loadEntryFromMenu(this,  '<%= entryId %>', '<%= binderId %>', '<%= entityType %>', '<%= namespace %>', '<%= isDashboard %>', '<%= isFile %>');return false;" 
 <% } else if (useBinderFunction.equals("permalink")) { %>
