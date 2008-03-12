@@ -327,7 +327,7 @@ div.ss_global_toolbar_quick input {
   border: solid .01em #999;
 }
 div.ss_style textarea {
-  padding: 0px;
+  padding: 0px 0px 0px 2px;
 }
 div.ss_style input[type="text"],
 div.ss_style input[type="password"],
@@ -5176,6 +5176,12 @@ div.ss_canvas {
 	padding-bottom:5px;
 
 }
+#ss_shared_para li
+{
+	list-style-type: square;
+	padding-bottom:3px;
+	border-bottom:1px dotted #666666;
+}
 #ss_tasks
 {
 	padding: 0;
@@ -5215,6 +5221,12 @@ div.ss_canvas {
 	padding-bottom:3px;
 
 
+}
+#ss_tasks_para li
+{
+	list-style-type: square;
+	padding-bottom:3px;
+	border-bottom:1px dotted #666666;
 }
 #ss_trackedItems
 {
@@ -5271,8 +5283,8 @@ div.ss_canvas {
 #ss_cal_para a:hover					/*link style to hover links*/
 {
 	text-decoration:underline;
-	color:#E67814;
-	background-color:#444444;
+	color:#E67814 !important;
+	background-color:#444444 !important;
 }
 #ss_whatshot
 {
@@ -5282,22 +5294,24 @@ div.ss_canvas {
 	padding: 0.5% 0 1% 5px;
 	color: #666666;
 	line-height: 1.5em;
-	
-
 }
  .ss_hot_para 
 {
 	line-height:1.25em;
 	padding-top:5px;
-
 }
  .ss_hot_para li
 {
 	list-style-type: square;
 	padding-bottom:3px;
-
-
 }
+#ss_hot_para li
+{
+	list-style-type: square;
+	padding-bottom:3px;
+	border-bottom:1px dotted #666666;
+}
+
 	#ss_survey
 {
 	padding: 0;
@@ -5360,6 +5374,7 @@ div.ss_canvas {
 	color:#333333;
 
 }
+
 #ss_Box_8
 {
 	padding: 0;

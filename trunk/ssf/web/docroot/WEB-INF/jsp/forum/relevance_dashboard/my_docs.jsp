@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <c:if test="${empty ss_myDocs}">
-<span><ssf:nlt tag="relevance.docs.none"/></span>
+<span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_myDocs}">
 <ul>

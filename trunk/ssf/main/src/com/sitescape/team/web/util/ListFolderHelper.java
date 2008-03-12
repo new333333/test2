@@ -71,6 +71,7 @@ import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DashboardPortlet;
@@ -745,6 +746,13 @@ public class ListFolderHelper {
 					break;
 				}
 			}
+			//Set the first item in the folder as viewed in the audit trail (arbitrary action)
+			//TODO think of a better algorithm for what is viewed
+			for (FolderEntry f:full) {
+				bs.getReportModule().addAuditTrail(AuditTrail.AuditType.view, f);
+				break;
+			}
+			
 			//Get the WebDAV URLs
 			buildWebDAVURLs(bs, req, folderEntries, model, folder);
 			
