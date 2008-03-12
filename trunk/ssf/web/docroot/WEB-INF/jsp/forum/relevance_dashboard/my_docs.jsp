@@ -57,7 +57,7 @@
 		</ssf:titleLink>
 	 
 	  <br/>
-	  <span class="ss_link_1">
+	  <span>
 	  
 		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" titleStyle="ss_link_1" /> 
 	  
