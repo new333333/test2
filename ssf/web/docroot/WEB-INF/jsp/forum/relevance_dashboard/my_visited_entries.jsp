@@ -57,7 +57,7 @@
 		</ssf:titleLink>
 	  
 	  <br/>
-	  <span class="ss_link_1">
+	  <span>
 	    <ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
 	  </span>
 	  
@@ -66,7 +66,7 @@
     	<a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
 			><span>${entry.parentBinder.title} (${entry.parentBinder.parentBinder.title})</span></a>
-	  </span>&nbsp;<img src="<html:rootPath/>images/pics/folder_icon.gif" alt="folder" width="16" height="16" hspace="2" border="0" align="absmiddle" /> 
+	  </span>&nbsp;<img src="<html:rootPath/>images/pics/folder_icons16x16.png" alt="folder" width="16" height="16" hspace="2" border="0" align="absmiddle" /> 
 	  <c:if test="${!empty entry.description}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 

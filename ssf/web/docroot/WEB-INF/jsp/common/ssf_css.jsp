@@ -5458,6 +5458,7 @@ div.ss_canvas {
 	border: 1px dotted #cccccc;
 	color: #666666;
 	line-height: 1.8em;
+	background: #FFFFFF;
 }
 #ss_para a					/*link style for active links*/
 {
@@ -5581,6 +5582,7 @@ div.ss_canvas {
 	{ 
 	color: #00AEEF!important;
 	text-decoration: underline !important;
+	font-style: bold !important;
 	text-background: #444444 !important; 
 	}
 
@@ -5588,7 +5590,7 @@ div.ss_canvas {
 .ss_link_2, .ss_link_2 span		/* link_2 Link style for places links */	
 	{
 	text-decoration: underline!important;
-	color:#4AAA42!important;
+	color:#204E1D!important;
 	font-size:10px!important;
 	}
 .ss_link_3, .ss_link_3 span		/* link_3 Link style for entry links */	

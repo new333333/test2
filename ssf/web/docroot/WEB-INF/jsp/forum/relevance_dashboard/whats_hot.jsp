@@ -55,7 +55,7 @@
 		</ssf:titleLink>
 	  </span>
 	  <br/>
-	  <span class="ss_link_1">
+	  <span>
 	    <ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
 	  </span>
 	  
