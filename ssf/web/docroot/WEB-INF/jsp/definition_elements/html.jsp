@@ -41,9 +41,21 @@
 <%
 ss_html_element_map.put(ss_html_element.toString(), property_htmlBottom);
 %>
+<c:if test="${!empty ss_element_display_style && 
+    ss_element_display_style == 'tableAlignLeft'}">
+<tr>
+  <td class="ss_table_spacer_right" valign="top" align="right">
+  </td>
+  <td valign="top">
+</c:if>
 <c:out value="${property_htmlTop}" escapeXml="false"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${item}" 
   configJspStyle="${ssConfigJspStyle}" />
 <c:out value="<%= ss_html_element_map.get(ss_html_element.toString()) %>" escapeXml="false"/>
 <c:set var="ss_html_element" value="${ss_html_element - 1}" scope="request"/>
+<c:if test="${!empty ss_element_display_style && 
+    ss_element_display_style == 'tableAlignLeft'}">
+  </td>
+</tr>
+</c:if>

@@ -902,7 +902,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		
 		//Do the search and store the search results in the bean
 		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.MODIFICATION_DATE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.MODIFICATION_DAY_SECOND_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 		if (data.containsKey(WebKeys.SEARCH_FORM_MAX_HITS)) {
 			try {

@@ -32,18 +32,17 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <c:if test="${empty ssEntriesViewed}">
-<span><ssf:nlt tag="relevance.docs.none"/></span>
+<span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ssEntriesViewed}">
-<c:if test="${ss_showRecentlyVisitedEntities == 'view'}">
 <c:set var="count" value="0"/>
-<ul>
   <c:forEach var="entryMap" items="${ssEntriesViewed}">
     <c:if test="${entryMap.type == 'view'}">
     <c:set var="entry" value="${entryMap.entity}"/>
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
-    <li>
-	  <span class="ss_link_2">
+	  <table cellspacing="0" cellpadding="0"><tbody>
+	  <tr><td valign="top"><img src="<html:rootPath/>images/pics/entry_icon.gif"></td>
+	  <td><span class="ss_link_2">
 		<c:set var="isDashboard" value="yes"/>
 		<ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entry.id}" binderId="${entry.parentBinder.id}" 
@@ -75,24 +74,15 @@
 	      textMaxWords="10">${entry.description}</ssf:textFormat></span>
 	  </c:if>
 	<c:set var="count" value="${count + 1}"/>
-    </li>
+	</td></tr></tbody></table>
     </c:if>
-  </c:forEach>
-</ul>
-<c:if test="${count == 0}">
-<span><ssf:nlt tag="relevance.docs.none"/></span>
-</c:if>
-</c:if>
 
-<c:if test="${ss_showRecentlyVisitedEntities == 'download'}">
-<c:set var="count" value="0"/>
-<ul>
-  <c:forEach var="entryMap" items="${ssEntriesViewed}">
     <c:if test="${entryMap.type == 'download'}">
     <c:set var="entry2" value="${entryMap.entity}"/>
     <jsp:useBean id="entry2" type="com.sitescape.team.domain.Entry" />
-    <li>
-	  <span class="ss_link_2">
+	  <table cellspacing="0" cellpadding="0"><tbody>
+	  <tr><td valign="top"><img src="<html:rootPath/>images/pics/attachment_icon.gif"></td>
+	  <td><span class="ss_link_2">
 	  	<a target="_blank" href="<ssf:url 
 					    webPath="viewFile"
 					    folderId="${entry2.parentBinder.id}"
@@ -100,6 +90,10 @@
 					    entityType="${entry2.entityType}" >
 					    <ssf:param name="fileId" value="${entryMap.file_id}"/>
 					    </ssf:url>">${entryMap.description}</a>
+	  </span>
+	  <br/>
+	  <span class="ss_link_1">
+	    <ssf:showUser user="${entry2.creation.principal}" titleStyle="ss_link_1"/>
 	  </span>
 	  <br/>
 	  <span class="ss_link_2">
@@ -116,10 +110,6 @@
 			<c:out value="${entry2.title}" escapeXml="false"/>
 		</ssf:titleLink>
 	  </span>
-	  <br/>
-	  <span class="ss_link_1">
-	    <ssf:showUser user="${entry2.creation.principal}" titleStyle="ss_link_1"/>
-	  </span>
 	  
 	  <br/>
 	  <span class="ss_link_2">
@@ -135,12 +125,10 @@
 	  </c:if>
 	
 	<c:set var="count" value="${count + 1}"/>
-    </li>
+	</td></tr></tbody></table>
     </c:if>
   </c:forEach>
-</ul>
 <c:if test="${count == 0}">
 <span><ssf:nlt tag="relevance.docs.none"/></span>
-</c:if>
 </c:if>
 </c:if>

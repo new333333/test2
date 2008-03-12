@@ -61,6 +61,8 @@ import static com.sitescape.team.module.shared.EntityIndexUtils.*;
 import static com.sitescape.team.search.BasicIndexUtils.*;
 
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
+import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.Criteria;
 import com.sitescape.team.search.Order;
 
@@ -144,7 +146,7 @@ public class RelevanceDashboardHelper {
 	    			cacheEntryDef.put(entryDefId, bs.getDefinitionModule().getEntryDefinitionElements(entryDefId));
 	    		}
 	    		entry.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, cacheEntryDef.get(entryDefId));
-				String id = (String)entry.get("_binderId");
+				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
 					Binder place = bs.getBinderModule().getBinder(bId);
@@ -165,9 +167,10 @@ public class RelevanceDashboardHelper {
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"entry", "reply"}))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, EntityIndexUtils.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
 			.add(eq(CREATORID_FIELD,binder.getOwnerId().toString()));
-		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		crit.addOrder(Order.desc(MODIFICATION_DAY_SECOND_FIELD));
 	
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
@@ -179,7 +182,7 @@ public class RelevanceDashboardHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
-				String id = (String)entry.get("_binderId");
+				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
 					Binder place = bs.getBinderModule().getBinder(bId);
@@ -201,8 +204,11 @@ public class RelevanceDashboardHelper {
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"entry", "reply"}))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, 
+				EntityIndexUtils.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
 			.add(in(ENTRY_ANCESTRY, getTrackedPlacesIds(bs, binder)));
+		crit.addOrder(Order.desc(MODIFICATION_DAY_SECOND_FIELD));
 	
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
@@ -214,7 +220,7 @@ public class RelevanceDashboardHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
-				String id = (String)entry.get("_binderId");
+				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
 					if (!places.containsKey(id)) {
@@ -238,8 +244,11 @@ public class RelevanceDashboardHelper {
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {"entry", "reply"}))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, 
+				EntityIndexUtils.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
 			.add(in(CREATORID_FIELD, getTrackedPeopleIds(bs, binder)));
+		crit.addOrder(Order.desc(MODIFICATION_DAY_SECOND_FIELD));
 	
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 		model.put(WebKeys.WHATS_NEW_TRACKED_PEOPLE, results.get(ObjectKeys.SEARCH_ENTRIES));
@@ -250,7 +259,7 @@ public class RelevanceDashboardHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
-				String id = (String)entry.get("_binderId");
+				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
 					if (!places.containsKey(id)) {
@@ -397,6 +406,9 @@ public class RelevanceDashboardHelper {
 			if (info.getWhoOrWhat().getEntityType().equals(EntityType.folderEntry)) {
 				FolderEntry entry = (FolderEntry) info.getWhoOrWhat();
 				hotEntries.add(entry);
+			}
+			if (hotEntries.size() >= Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")).intValue()) {
+				break;
 			}
 		}
 		model.put(WebKeys.WHATS_HOT, hotEntries);

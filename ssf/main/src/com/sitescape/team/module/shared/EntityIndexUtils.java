@@ -99,6 +99,7 @@ public class EntityIndexUtils {
     public static final String CREATION_YEAR_FIELD = "_creationYear";
     public static final String MODIFICATION_DATE_FIELD = "_modificationDate";
     public static final String MODIFICATION_DAY_FIELD = "_modificationDay";
+    public static final String MODIFICATION_DAY_SECOND_FIELD = "_modificationDaySecond";
     public static final String MODIFICATION_YEAR_MONTH_FIELD = "_modificationYearMonth";
     public static final String MODIFICATION_YEAR_FIELD = "_modificationYear";
     public static final String CREATORID_FIELD = "_creatorId";
@@ -309,6 +310,9 @@ public class EntityIndexUtils {
      		String dayString = formatDayString(modDate);
      		Field modificationDayField = new Field(MODIFICATION_DAY_FIELD, dayString, Field.Store.YES, Field.Index.UN_TOKENIZED);
      		doc.add(modificationDayField);
+     		String daySecondString = formatDaySecondString(modDate);
+     		Field modificationDaySecondField = new Field(MODIFICATION_DAY_SECOND_FIELD, daySecondString, Field.Store.YES, Field.Index.UN_TOKENIZED);
+     		doc.add(modificationDaySecondField);
      		// index the YYYYMM string
      		String yearMonthString = dayString.substring(0,6);
      		Field modificationYearMonthField = new Field(MODIFICATION_YEAR_MONTH_FIELD, yearMonthString, Field.Store.YES, Field.Index.UN_TOKENIZED);
@@ -482,6 +486,12 @@ public class EntityIndexUtils {
     	DateFormat df = DateFormat.getInstance();
     	SimpleDateFormat sf = (SimpleDateFormat)df;
     	sf.applyPattern("yyyyMMdd");
+    	return(df.format(date));
+    }
+    public static String formatDaySecondString(Date date) {
+    	DateFormat df = DateFormat.getInstance();
+    	SimpleDateFormat sf = (SimpleDateFormat)df;
+    	sf.applyPattern("yyyyMMddHHmmss");
     	return(df.format(date));
     }
     public static void addTeamMembership(Document doc, Set<Long> ids, boolean fieldsOnly) {
