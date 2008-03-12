@@ -36,7 +36,7 @@
 <c:if test="${!empty ss_whatsHot}">
 <div id="ss_today">
 <div id="ss_hints"><em>This is What's Hot!</em></div>
-<div class="ss_hot_para">
+<div id="ss_hot_para">
   <c:forEach var="entry" items="${ss_whatsHot}">
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
     <li>

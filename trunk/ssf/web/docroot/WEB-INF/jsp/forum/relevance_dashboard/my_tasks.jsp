@@ -63,7 +63,7 @@
 		    <c:if test="${entry.priority == prio.key}">
 		      <ssf:nlt tag="relevance.taskPriority">
 		        <ssf:param name="value" useBody="true">
-		          <span>${prio.value}</span>
+		          <span class="ss_prioValue">${prio.value}</span>
 		        </ssf:param>
 		      </ssf:nlt>
 		    </c:if>
