@@ -170,7 +170,7 @@ public class RelevanceDashboardHelper {
 		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, EntityIndexUtils.ENTRY_TYPE_REPLY}))
 			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
 			.add(eq(CREATORID_FIELD,binder.getOwnerId().toString()));
-		crit.addOrder(Order.desc(MODIFICATION_DAY_SECOND_FIELD));
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 	
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
@@ -208,7 +208,7 @@ public class RelevanceDashboardHelper {
 				EntityIndexUtils.ENTRY_TYPE_REPLY}))
 			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
 			.add(in(ENTRY_ANCESTRY, getTrackedPlacesIds(bs, binder)));
-		crit.addOrder(Order.desc(MODIFICATION_DAY_SECOND_FIELD));
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 	
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
@@ -248,7 +248,7 @@ public class RelevanceDashboardHelper {
 				EntityIndexUtils.ENTRY_TYPE_REPLY}))
 			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
 			.add(in(CREATORID_FIELD, getTrackedPeopleIds(bs, binder)));
-		crit.addOrder(Order.desc(MODIFICATION_DAY_SECOND_FIELD));
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 	
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 		model.put(WebKeys.WHATS_NEW_TRACKED_PEOPLE, results.get(ObjectKeys.SEARCH_ENTRIES));

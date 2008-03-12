@@ -281,7 +281,7 @@ public class QueryBuilder {
 					descending = false;
 				else
 					descending = true;
-				fields[i] = new SortField(child.getText(), descending);
+				fields[i] = new SortField(child.getText(), SortField.STRING, descending);
 			}
 		}
 		so.setSortBy(fields);
