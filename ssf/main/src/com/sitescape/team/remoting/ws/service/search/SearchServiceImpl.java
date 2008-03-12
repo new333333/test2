@@ -206,10 +206,12 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 				resultElem = entries.addElement("folder");
 				resultElem.addAttribute("id", info.getWhoOrWhat().getId().toString());
 				resultElem.addAttribute("title", info.getWhoOrWhat().getTitle());
+				addRating(resultElem, info.getWhoOrWhat());
 			} else if(info.getWhoOrWhat().getEntityType().equals(EntityType.workspace)) {
 				resultElem = entries.addElement("workspace");
 				resultElem.addAttribute("id", info.getWhoOrWhat().getId().toString());
 				resultElem.addAttribute("title", info.getWhoOrWhat().getTitle());
+				addRating(resultElem, info.getWhoOrWhat());
 			}
 			resultElem.addAttribute(limitType + "Count", "" + info.getCount());
 			resultElem.addAttribute("last" + limitType.substring(0, 1).toUpperCase() + limitType.substring(1), sdf.format(info.getLast()));

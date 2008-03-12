@@ -37,6 +37,7 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HKey;
@@ -75,6 +76,14 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		}
 	}
 	
+	protected void addRating(Element element, DefinableEntity entity)
+	{
+		if(entity.getAverageRating() != null) {
+			element.addAttribute("averageRating", entity.getAverageRating().getAverage().toString());
+			element.addAttribute("ratingCount", entity.getAverageRating().getCount().toString());
+		}
+	}
+
 	protected void addEntryAttributes(Element entryElem, FolderEntry entry)
 	{
         entryElem.addAttribute("id", entry.getId().toString());
@@ -87,6 +96,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
 		String entryUrl = WebUrlUtil.getEntryViewURL(entry);
 		entryElem.addAttribute("href", entryUrl);
+		addRating(entryElem, entry);
 	}
 	
 	protected void addEntryAttributes(Element entryElem, Map entry, boolean isPrincipal)
