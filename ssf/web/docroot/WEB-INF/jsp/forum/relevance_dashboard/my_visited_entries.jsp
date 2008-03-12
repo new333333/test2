@@ -42,7 +42,7 @@
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
 	  <table cellspacing="0" cellpadding="0"><tbody>
 	  <tr><td valign="top"><img src="<html:rootPath/>images/pics/entry_icon.gif"></td>
-	  <td><span class="ss_link_2">
+	  <td>
 		<c:set var="isDashboard" value="yes"/>
 		<ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entry.id}" binderId="${entry.parentBinder.id}" 
@@ -55,7 +55,7 @@
 			</ssf:param>
 			<c:out value="${entry.title}" escapeXml="false"/>
 		</ssf:titleLink>
-	  </span>
+	  
 	  <br/>
 	  <span class="ss_link_1">
 	    <ssf:showUser user="${entry.creation.principal}" titleStyle="ss_link_1"/>
@@ -66,7 +66,7 @@
     	<a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
 			><span>${entry.parentBinder.title} (${entry.parentBinder.parentBinder.title})</span></a>
-	  </span>
+	  </span>&nbsp;<img src="<html:rootPath/>images/pics/folder_icon.gif" alt="folder" width="16" height="16" hspace="2" border="0" align="absmiddle" /> 
 	  <c:if test="${!empty entry.description}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 
@@ -131,4 +131,5 @@
 <c:if test="${count == 0}">
 <span><ssf:nlt tag="relevance.docs.none"/></span>
 </c:if>
+
 </c:if>

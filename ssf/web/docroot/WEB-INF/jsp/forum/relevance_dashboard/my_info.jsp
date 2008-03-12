@@ -120,7 +120,7 @@
       
       <div id="ss_col3" class="ss_col3">
       
-	<ssf:canvas id="relevanceWorkspaces" type="inline" styleId="ss_trackedItems">
+	<ssf:canvas id="relevanceWorkspaces" type="inline" styleId="ss_trackedPeople">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.ping"/></div>
 	</ssf:param>

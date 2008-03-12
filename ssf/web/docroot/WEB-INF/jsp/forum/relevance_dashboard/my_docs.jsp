@@ -35,12 +35,14 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_myDocs}">
-<ul>
+
+<div id="ss_today">
+  <div id="ss_mydocs_para" >
   <c:forEach var="entry" items="${ss_myDocs}">
     <jsp:useBean id="entry" type="java.util.Map" />
     <li>
 	 
-	  <span class="ss_link_2">
+	 
 		<c:set var="isDashboard" value="yes"/>
 		<ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entry._docId}" binderId="${entry._binderId}" 
@@ -54,12 +56,13 @@
 			<c:out value="${entry.title}" escapeXml="false"/>
 		</ssf:titleLink>
 	 
-	  </span><br/>
+	  <br/>
 	  <span class="ss_link_1">
 	  
 		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" titleStyle="ss_link_1" /> 
 	  
 	  </span>
+	   
 	  <span class="ss_link_2">
 	  
 		<c:set var="path" value=""/>
@@ -76,7 +79,7 @@
 				><span>${title}</span></a>
 		</c:if>
 	  
-	  </span>
+	  </span>&nbsp;<img src="<html:rootPath/>images/pics/folder_icon.gif" alt="folder" width="16" height="16" hspace="2" border="0" align="absmiddle" />
 	  <c:if test="${!empty entry._desc}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 
@@ -86,5 +89,6 @@
 	
     </li>
   </c:forEach>
-</ul>
+	</div><!-- end of para -->
+    </div><!-- end of today -->
 </c:if>

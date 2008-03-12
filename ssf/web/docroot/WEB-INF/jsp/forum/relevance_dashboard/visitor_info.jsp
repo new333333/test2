@@ -39,7 +39,7 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/></div>
 	</ssf:param>
-		<ul>
+		
 		<c:forEach var="user" items="${ssUsers}">
 		  <li>
 		    <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
@@ -48,7 +48,7 @@
 		    </c:if>
 		  </li>
 		</c:forEach>
-		</ul>
+		
 	</ssf:canvas>
 
         </div><!-- end of ss_col 1 -->

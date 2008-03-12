@@ -5210,7 +5210,7 @@ div.ss_canvas {
 {
 
 	text-decoration:underline!important;
-	color:#7ac142!important;
+	color:#4AAA42!important;
 	font-size:10px!important; 
 	
 
@@ -5235,11 +5235,13 @@ div.ss_canvas {
 	color:#444444;
 
 }
-#ss_people
+#ss_trackedPeople
 {
 	padding: 0;
-	margin: 1% 0 2% 0;
+	margin: 1% 0 5% 0;
 	color:#444444;
+	background-color:#FFFFFF;
+	
 
 }
 	#ss_hints
@@ -5248,6 +5250,8 @@ div.ss_canvas {
 	font-style: italic;
 	padding-left:2px;
 	line-height:14px;
+	padding-bottom:5px;
+	color:#555555;
 }
 
 #ss_calendar
@@ -5275,12 +5279,37 @@ div.ss_canvas {
 	border-bottom:1px dotted #666666;
 
 }
-#ss_cal_para a					/*link style for active links*/
+#ss_cal_para a					/* link style for active links */
 {
 	text-decoration:underline;
 }
 
-#ss_cal_para a:hover					/*link style to hover links*/
+#ss_cal_para a:hover					/* link style to hover links*/
+{
+	text-decoration:underline;
+	color:#E67814 !important;
+	background-color:#444444 !important;
+}
+#ss_mydocs_para 
+{
+	line-height:1.5em;
+	padding-top:5px;
+
+}
+#ss_mydocs_para li
+{
+	list-style-type: square;
+	padding-top:3px;
+	padding-bottom:3px;
+	border-bottom:1px dotted #0C4E84;	/*some kind of blue*/
+
+}
+#ss_mydocs_para a					/*link style for active links*/
+{
+	text-decoration:underline;
+}
+
+#ss_mydocs_para a:hover					/*link style to hover links*/
 {
 	text-decoration:underline;
 	color:#E67814 !important;
@@ -5295,22 +5324,17 @@ div.ss_canvas {
 	color: #666666;
 	line-height: 1.5em;
 }
- .ss_hot_para 
+#ss_hot_para 
 {
-	line-height:1.25em;
+	line-height:1.5em;
 	padding-top:5px;
-}
- .ss_hot_para li
-{
-	list-style-type: square;
-	padding-bottom:3px;
 }
 #ss_hot_para li
 {
 	list-style-type: square;
 	padding-bottom:3px;
-	border-bottom:1px dotted #666666;
 }
+
 
 	#ss_survey
 {
@@ -5482,6 +5506,11 @@ div.ss_canvas {
 	border-bottom:1px dotted #666666;
 	
 }
+.ss_prioValue
+{
+	font-weight:bold;
+	padding:0 3px 0 3px;
+}
 
 
 /* time block styles */	
@@ -5520,18 +5549,25 @@ div.ss_canvas {
 	color:#E67814 !important;
 	background-color:#444444!important;
 	}	
+#ss_para .ss_link_3 a:visited
+	{
+	text-decoration:underline!important;
+	color:#666666 !important;
+	}	
 	
 /*=================THESE NEED TO BE CONSOLIDATED========*/
 
 
 
 
-.ss_summary						/*to use when need to display summary of an entry */
+.ss_summary						/* to use when need to display summary of an entry */
 {
-	padding: 0px 0px 0px 15px;
+	padding: 0px 0px 0px 0px;
 	font-style: italic;
+	color:#555555;
+	font-size:11px;
 }
-.ss_status						/*to use when need to display twitter status of person */
+.ss_status						/* to use when need to display twitter status of person */
 {
 	padding: 0px 0px 0px 15px;
 	font-style: italic;
@@ -5549,12 +5585,19 @@ div.ss_canvas {
 	}
 
 	
-.ss_link_2, .ss_link_2 span		/* link_2 Link style for links */	
+.ss_link_2, .ss_link_2 span		/* link_2 Link style for places links */	
 	{
 	text-decoration: underline!important;
-	color:#7ac142!important;
+	color:#4AAA42!important;
 	font-size:10px!important;
 	}
+.ss_link_3, .ss_link_3 span		/* link_3 Link style for entry links */	
+	{
+	text-decoration: underline!important;
+	color:#333333!important;
+	font-size:12px!important;
+	}	
+	
 /*============link styles ===========================*/		
 
 
@@ -5705,8 +5748,7 @@ div.ss_canvas {
 	}
 	.ss_tricolumn .ss_col3 {
 		width:18%;				/* Width of right column content (column width minus padding on either side) */
-		left:45%;				/* Please make note of the brackets here:
-								(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
+		left:45%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 	}
 	/* Footer styles */
 

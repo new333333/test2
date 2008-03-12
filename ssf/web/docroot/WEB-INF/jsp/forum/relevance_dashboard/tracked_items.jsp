@@ -48,7 +48,7 @@
 	    <a class="ss_link_2"
 	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
 	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a>
-	    <img style="padding:6px 0px 0px 2px;" align="texttop"
+	    <img style="padding:4px 0px 0px 2px;" align="texttop"
       src="<html:rootPath/>images/pics/delete.gif"
       onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/>
 	      </td></tr></tbody></table>
@@ -72,7 +72,7 @@
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
 	    <a class="ss_link_2"
 	      href="<ssf:url action="view_ws_listing" binderId="${binder.id}"/>"
-	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a><img style="padding:6px 0px 0px 2px;" align="texttop"
+	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a><img style="padding:4px 0px 0px 2px;" align="texttop"
       src="<html:rootPath/>images/pics/delete.gif"
       onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/>
       </td></tr></tbody></table>
@@ -85,7 +85,7 @@
       </div><!-- end of col2 -->
       <div id="ss_col3" class="ss_col3">
 
-	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedItems">
+	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedPeople">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.trackedPeople"/> </div>
 	</ssf:param>
