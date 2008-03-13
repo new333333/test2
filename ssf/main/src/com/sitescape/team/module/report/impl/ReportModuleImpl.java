@@ -67,6 +67,7 @@ import com.sitescape.team.domain.LicenseStats;
 import com.sitescape.team.domain.LoginInfo;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoFolderEntryByTheIdException;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.WorkflowState;
@@ -284,7 +285,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			} catch(AccessControlException e) {
 				continue;
 			}
-			if (entity == null) continue;
+			if (entity == null || entity.isDeleted()) continue;
 			row.put(ReportModule.ENTITY, entity);
 			row.put(ReportModule.DATE, cols[2]);
 			row.put(ReportModule.FILE_ID, cols[3]);
@@ -323,9 +324,11 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			}});
 		for(Object o : data) {
 			Object[] cols = (Object[]) o;
+			Principal user = getProfileDao().loadPrincipal((Long)cols[0], zoneId, true);
+			if (user == null) continue;
 			Map<String, Object> row = new HashMap<String, Object>();
 			report.add(row);
-			row.put(ReportModule.USER, getProfileDao().loadPrincipal((Long)cols[0], zoneId, true));
+			row.put(ReportModule.USER, user);
 			row.put(ReportModule.TYPE, cols[1]);
 			row.put(ReportModule.DESCRIPTION, cols[2]);
 			row.put(ReportModule.DATE, cols[3]);
@@ -391,7 +394,8 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 						continue;
 					}
 				}
-				if (entity != null) list.add(new ActivityInfo(entity, (Integer) col[3], (Date) col[4]));
+				if (entity != null && !entity.isDeleted()) 
+					list.add(new ActivityInfo(entity, (Integer) col[3], (Date) col[4]));
 			} catch (Exception ignoreAccess) {continue;}
 			if (list.size() > returnCount.intValue()) break;
 		}
