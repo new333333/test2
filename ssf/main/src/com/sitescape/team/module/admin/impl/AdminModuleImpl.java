@@ -41,9 +41,7 @@ import java.util.TreeSet;
 
 import javax.mail.internet.InternetAddress;
 
-import org.apache.lucene.index.Term;
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
 import org.springframework.core.io.ClassPathResource;
@@ -52,7 +50,6 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.sitescape.team.ConfigurationException;
-import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -60,47 +57,30 @@ import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.dao.util.OrderBy;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
-import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
-import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.NoBinderByTheNameException;
-import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.PostingDef;
-import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.jobs.EmailNotification;
 import com.sitescape.team.jobs.EmailPosting;
 import com.sitescape.team.jobs.ScheduleInfo;
-import com.sitescape.team.jobs.SendEmail;
 import com.sitescape.team.module.admin.AdminModule;
 import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
-import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.file.FileModule;
-import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.AccessUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.module.shared.EntryBuilder;
-import com.sitescape.team.module.shared.InputDataAccessor;
-import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.ObjectBuilder;
-import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.FunctionExistsException;
@@ -110,9 +90,6 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
-import com.sitescape.team.util.StatusTicket;
-import com.sitescape.team.web.util.DashboardHelper;
-import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 
 /**
@@ -290,7 +267,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	getPostingObject().setScheduleInfo(config);
     }	     
     private EmailPosting getPostingObject() {
-    	String emailPostingClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.POSTING_JOB);
+    	String emailPostingClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.POSTING_JOB_KEY);
         try {
             Class processorClass = ReflectHelper.classForName(emailPostingClass);
             EmailPosting job = (EmailPosting)processorClass.newInstance();
@@ -326,7 +303,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         getNotificationObject().setScheduleInfo(config);
     }    
     private EmailNotification getNotificationObject() {
-    	String emailNotifyClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFICATION_JOB);
+    	String emailNotifyClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFICATION_JOB_KEY);
         try {
             Class processorClass = ReflectHelper.classForName(emailNotifyClass);
             EmailNotification job = (EmailNotification)processorClass.newInstance();
@@ -646,7 +623,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 		}
     	Map message = new HashMap();
        	try {
-    		message.put(SendEmail.FROM, new InternetAddress(user.getEmailAddress()));
+    		message.put(MailModule.FROM, new InternetAddress(user.getEmailAddress()));
     	} catch (Exception ex) {
 			errorParams[0] = user.getTitle();
 			errorParams[1] = user.getEmailAddress();
@@ -657,12 +634,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			return result;
     	}
     	if (body.getFormat() == Description.FORMAT_HTML)
-    		message.put(SendEmail.HTML_MSG, body.getText());
+    		message.put(MailModule.HTML_MSG, body.getText());
     	else 
-       		message.put(SendEmail.TEXT_MSG, body.getText());
+       		message.put(MailModule.TEXT_MSG, body.getText());
     		
-    	message.put(SendEmail.SUBJECT, subject);
- 		message.put(SendEmail.TO, emailSet);
+    	message.put(MailModule.SUBJECT, subject);
+ 		message.put(MailModule.TO, emailSet);
  		if (entries != null) {
  			List attachments = new ArrayList();
 			List iCalendars = new ArrayList();
@@ -670,12 +647,12 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			for (DefinableEntity entry:entries) {
 				if (sendAttachments) attachments.addAll(entry.getFileAttachments());
 				if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
-					iCalendars.add(getIcalModule().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE)));
+					iCalendars.add(getIcalModule().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE_KEY)));
 	 			}
 	 	 	}
-			if (sendAttachments) message.put(SendEmail.ATTACHMENTS, attachments);
+			if (sendAttachments) message.put(MailModule.ATTACHMENTS, attachments);
 			if (!iCalendars.isEmpty()) {
-				message.put(SendEmail.ICALENDARS, iCalendars);
+				message.put(MailModule.ICALENDARS, iCalendars);
 			}
  			
  		}

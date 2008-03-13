@@ -136,7 +136,7 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 			getFolderModule().getEntry(bId, eId);
 
 		if(!entry.getEvents().isEmpty()) {
-			Calendar eventCalendar = getIcalModule().generate(entry, entry.getEvents(), MailModule.DEFAULT_TIMEZONE);
+			Calendar eventCalendar = getIcalModule().generate(entry, entry.getEvents(), null);
 			DataHandler dh = new DataHandler(new CalendarDataSource(eventCalendar));
 			MessageContext messageContext = MessageContext.getCurrentContext();
 			Message responseMessage = messageContext.getResponseMessage();

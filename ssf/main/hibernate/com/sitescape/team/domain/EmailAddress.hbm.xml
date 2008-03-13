@@ -9,6 +9,6 @@
      <key-property name="type" length="64"/>
     </composite-id>
     <property name="zoneId" access="field" not-null="true"/>
-    <property name="address" type="string"  length="256"/>
+    <property name="address" type="string"  length="256" index="address_email"/>
 </class>
 </hibernate-mapping>

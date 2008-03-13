@@ -30,7 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <div>
-<span class="ss_bold"><ssf:nlt tag="definition.selectFolderToMoveTo"/></span>
+<span class="ss_bold"><ssf:nlt tag="definition.selectDestinationFolder"/></span>
 <input type="hidden" id="propertyId_${propertyId}" 
   name="propertyId_${propertyId}"
   value="${propertyValue}" />

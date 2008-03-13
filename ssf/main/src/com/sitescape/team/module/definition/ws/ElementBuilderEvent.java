@@ -50,7 +50,7 @@ public class ElementBuilderEvent extends AbstractElementBuilder {
 		if (obj instanceof Event) {
 			Event event = (Event) obj;
 			StringWriter writer = new StringWriter();
-			Calendar cal = context.getIcalModule().generate(entity, Arrays.asList(event), MailModule.DEFAULT_TIMEZONE);
+			Calendar cal = context.getIcalModule().generate(entity, Arrays.asList(event), null);
 			CalendarOutputter out = new CalendarOutputter();
 			try {
 				out.output(cal, writer);

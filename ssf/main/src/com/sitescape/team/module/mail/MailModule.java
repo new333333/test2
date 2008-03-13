@@ -39,19 +39,30 @@ import com.sitescape.team.domain.Binder;
  *
  */
 public interface MailModule {
-	public static String POSTING_JOB="posting.job";
-	public static String NOTIFICATION_JOB="notification.job";
-	public final static String SUBSCRIPTION_JOB="subscription.job";
-	public final static String SUBSCRIPTION_MINUTES="subscription.minutes";
+	
+	public static String POSTING_JOB_KEY="posting.job";
+	public static String NOTIFICATION_JOB_KEY="notification.job";
+	public final static String SUBSCRIPTION_JOB_KEY="subscription.job";
+	public final static String SUBSCRIPTION_MINUTES_KEY="subscription.minutes";
 
-	public static final String NOTIFY_TEMPLATE_TEXT="notify.mailText";
-	public static final String NOTIFY_TEMPLATE_HTML="notify.mailHtml";
-	public static final String NOTIFY_TEMPLATE_CACHE_DISABLED="notify.templateCacheDisabled";
-	public static final String NOTIFY_FROM="notify.from";
-	public static final String NOTIFY_SUBJECT="notify.subject";
+	public static final String NOTIFY_TEMPLATE_TEXT_KEY="notify.mailText";
+	public static final String NOTIFY_TEMPLATE_HTML_KEY="notify.mailHtml";
+	public static final String NOTIFY_TEMPLATE_CACHE_DISABLED_KEY="notify.templateCacheDisabled";
+	public static final String NOTIFY_FROM_KEY="notify.from";
+	public static final String NOTIFY_SUBJECT_KEY="notify.subject";
+    public static final String DEFAULT_TIMEZONE_KEY="notify.timezone";
+
     public static final String REPLY_SUBJECT="RE: DocId:";
-    public static final String DEFAULT_TIMEZONE="notify.timezone";
-	public Date sendNotifications(Long folderId, Date begin);
+	//Inputs to sendMail from Map
+	public static final String SUBJECT="SUBJECT";//string
+	public static final String TO="TO";	//Collection of InternetAddress
+	public static final String TEXT_MSG="TEXT"; //String
+	public static final String HTML_MSG="HTML"; //String
+	public static final String ATTACHMENTS="attachments"; //fileattachments
+	public static final String ICALENDARS="icalendars"; //Collection of net.fortuna.ical4j.model.Calendar
+	public static final String FROM="FROM"; 	//InternetAddress
+
+    public Date sendNotifications(Long folderId, Date begin);
 	public Date fillSubscriptions(Date begin);
 	public void receivePostings();
 	public void sendMail(MimeMessage msg);
@@ -60,7 +71,7 @@ public interface MailModule {
 	public void sendMail(String mailSenderName, String account, String password, java.io.InputStream input);
     public void sendMail(String mailSenderName, MimeMessagePreparator preparer);
     public boolean sendMail(Binder binder, Map message, String comment);
-    public void scheduleMail(Binder binder, Map message, String comment);
+    public void scheduleMail(Binder binder, Map message, String comment) throws Exception;
 	public String getMailProperty(String zoneName, String name);
 	public String getMailAttribute(String zoneName, String node, String name);
 }
