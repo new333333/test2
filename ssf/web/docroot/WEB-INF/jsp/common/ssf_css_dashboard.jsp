@@ -691,9 +691,10 @@ div.ss_canvas {
 	}
 .ss_link_4, .ss_link_4 span		/* link_4 Link style for entry links */	
 	{
-	text-decoration: underline!important;
+	text-decoration: none!important;
 	color:#333333!important;
-	font-size:10px!important;
+	font-size:9px!important;
+	padding-left:6px;
 	}		
 	
 /* ============link styles =========================== */		

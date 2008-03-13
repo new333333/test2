@@ -58,6 +58,11 @@
 	  <span>
 		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" titleStyle="ss_link_1" /> 
 	  </span>
+	  <span class="ss_link_4">${ssUser.timeZone.ID}
+	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+      value="${entry._modificationDate}" type="both" 
+	  timeStyle="short" dateStyle="medium" />
+	  </span>
 	  
 	  <span class="ss_link_2">
 		<c:set var="path" value=""/>
