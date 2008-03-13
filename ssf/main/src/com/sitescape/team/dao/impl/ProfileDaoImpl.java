@@ -1187,16 +1187,27 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                     public Object doInHibernate(Session session) throws HibernateException {
                     	Criteria crit = session.createCriteria(SharedEntity.class)
                     	.add(Expression.gt("sharedDate", after))
-                         .add(Expression.disjunction()
+             			.addOrder(Order.desc("sharedDate"));
+                    	if (!binderIds.isEmpty() && !ids.isEmpty() ) {
+                    		crit.add(Expression.disjunction()
               					.add(Expression.conjunction()
               							.add(Expression.in("accessId", ids))
               							.add(Expression.eq("accessType", SharedEntity.ACCESS_TYPE_PRINCIPAL)))
               					.add(Expression.conjunction()
               							.add(Expression.in("accessId", binderIds))
-              							.add(Expression.eq("accessType", SharedEntity.ACCESS_TYPE_TEAM)))
-              			)
-              			.addOrder(Order.desc("sharedDate"));
-              			
+              							.add(Expression.eq("accessType", SharedEntity.ACCESS_TYPE_TEAM))));
+                    	} else if (binderIds.isEmpty()) {
+                    		//not a member of a team
+                    		crit.add(Expression.in("accessId", ids))
+                  				.add(Expression.eq("accessType", SharedEntity.ACCESS_TYPE_PRINCIPAL));
+                        		
+                    	} else {
+                    		//should never happen
+                    		crit.add(Expression.in("accessId", binderIds))
+                  				.add(Expression.eq("accessType", SharedEntity.ACCESS_TYPE_TEAM));
+                    		
+                    	}
+               			
                        return crit.list();
                     }
                 }
