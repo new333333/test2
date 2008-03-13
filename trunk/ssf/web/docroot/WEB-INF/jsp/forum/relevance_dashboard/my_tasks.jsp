@@ -34,7 +34,7 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_myTasks}">
-<div id="ss_today">
+<div id="ss_todayC">
 <div id="ss_hints"><em>This is my To-Do List</em></div>
 <div id="ss_tasks_para">
 <c:forEach var="entry" items="${ss_myTasks}">
@@ -74,7 +74,7 @@
 		      <c:if test="${entry.status == status.key}">
 		        <ssf:nlt tag="relevance.taskStatus">
 		          <ssf:param name="value" useBody="true">
-		            <span>${status.value}</span>
+		            <span class="ss_prioValue">${status.value}</span>
 		          </ssf:param>
 		        </ssf:nlt>
 		      </c:if>
@@ -119,7 +119,7 @@
 	    		<a href="javascript: ;"
 					onClick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
 					title="${path}"
-					><span class="ss_bold">${title}</span></a>
+					><span class="ss_prioValue"">${title}</span></a>
 			</c:if>
 		</div>
 	</li>							

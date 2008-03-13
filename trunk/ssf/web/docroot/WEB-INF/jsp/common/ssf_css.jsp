@@ -1,5 +1,5 @@
 <%
-/**
+/* *
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
  * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
@@ -845,7 +845,7 @@ img.ss_help_cpanel_hide {
   position:absolute;
 }
 
-/******************************************************************/
+/* **************************************************************** */
 /* Help content */
 
 /* Horizontal and vertical spacing */
@@ -984,7 +984,7 @@ DIV.ss_style .clickable_item, .new_term {
 DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
     font-weight: bold;
 }
-/*Getting Started Portal*/
+/* Getting Started Portal */
 
 
 .ss_getting_started {
@@ -3056,47 +3056,47 @@ div.ss_end_thumbnail_gallery {
 	background-color:${ss_style_background_color_opaque};
 }
 
-/* CSS document for table - author: rsmart 1.23.07 v02*/
+/* CSS document for table - author: rsmart 1.23.07 v02 */
 .ss_table{
 	font-family: ${ss_table_font_family};
 	border-collapse: collapse;
 }
-/*table head - dark grey with black border top*/	
+/* table head - dark grey with black border top */	
 .ss_table thead tr{
 	background-color: ${ss_table_background_color_head};
 	border-top: 1px solid black;
 }
-/*table head - dark grey with black border bottom*/
+/* table head - dark grey with black border bottom */
 .ss_table thead th{
 	padding: 0.5em;
 	white-space: nowrap;
 	border-bottom: 1px solid black;
 }
-/*row is white*/
+/* row is white */
 .ss_table tr{
 background-color: ${ss_table_background_color_even_row};
 }
 .ss_table_tr_even{
 background-color: ${ss_table_background_color_even_row};
 }
-/*row is lite grey*/
+/* row is lite grey */
 .ss_table_tr_odd{
 background-color: ${ss_table_background_color_odd_row} !important;
 white-space: nowrap !important;
 }
 
-/*yellow hover for table rows*/	
+/* yellow hover for table rows */	
 .ss_table tbody tr:hover{
 	background-color: ${ss_table_background_color_row_hover} !important;
 }
-/*cell and row border*/
+/* cell and row border */
 .ss_table td, .ss_table th {
 	border: 1px dotted ${ss_generic_border_color};
 }
 .ss_table tbody td {
 	padding: 0.5em;
 }
-/*work around to eliminate borders on nested tables*/
+/* work around to eliminate borders on nested tables */
 
 .ss_table_tr_noborder{
 	background-color: ${ss_table_background_color_odd_row} !important;
@@ -3118,7 +3118,7 @@ white-space: nowrap !important;
 	border-color:#ECECEC;
 }
 
-/*fonts for master file tables*/
+/* fonts for master file tables */
 
 .ss_table_paragraph_bld{
 	font-size: ${ss_style_font_normalprint};
@@ -4791,7 +4791,7 @@ a.ss_taskPriority_p5_u:hover img, a.ss_taskPriority_p4_u:hover img, a.ss_taskPri
 	text-decoration: line-through;
 }
 
-/* Task - end*/
+/* Task - end */
 
 div.ssPageNavi {
 	margin: 0px;
@@ -4948,7 +4948,7 @@ table.ssMeetingRecords .ssHeader {
 	padding: 0;
 }
 
-/* CSS Document - container for navigation and search*/
+/* CSS Document - container for navigation and search */
 
 #ss_top_nav_wrapper{
 	position: relative;
@@ -4959,7 +4959,7 @@ table.ssMeetingRecords .ssHeader {
 	display: table;
 }
 	
-	/*grey buttons for portal-expanded view*/	
+	/* grey buttons for portal-expanded view */	
 #ss_top_nav_button{
 	position:relative;
 	display:block;
@@ -5011,7 +5011,7 @@ table.ssMeetingRecords .ssHeader {
 	border-color: #white;
 	border-width: .01em;
 	
-	/*blue buttons for navigation*/
+	/* blue buttons for navigation */
 	}
 #ss_top_nav_buttontwo ul li a.current{	
 	color:#333;
@@ -5055,7 +5055,7 @@ table.ssMeetingRecords .ssHeader {
 	background-color: #8B9BBA;
 	}
 	
-/*- ss_profileTab-------------------------- */
+/* - ss_profileTab-------------------------- */
 
 #ss_profileTab {
   float:left;
@@ -5266,6 +5266,7 @@ div.ss_canvas {
 	
 
 }
+
 #ss_cal_para 
 {
 	line-height:1.25em;
@@ -5284,7 +5285,7 @@ div.ss_canvas {
 	text-decoration:underline;
 }
 
-#ss_cal_para a:hover					/* link style to hover links*/
+#ss_cal_para a:hover					/* link style to hover links */
 {
 	text-decoration:underline;
 	color:#E67814 !important;
@@ -5301,15 +5302,15 @@ div.ss_canvas {
 	list-style-type: square;
 	padding-top:3px;
 	padding-bottom:3px;
-	border-bottom:1px dotted #0C4E84;	/*some kind of blue*/
+	border-bottom:1px dotted #0C4E84;	/* some kind of blue */
 
 }
-#ss_mydocs_para a					/*link style for active links*/
+#ss_mydocs_para a					/* link style for active links */
 {
 	text-decoration:underline;
 }
 
-#ss_mydocs_para a:hover					/*link style to hover links*/
+#ss_mydocs_para a:hover					/* link style to hover links */
 {
 	text-decoration:underline;
 	color:#E67814 !important;
@@ -5336,7 +5337,7 @@ div.ss_canvas {
 }
 
 
-	#ss_survey
+#ss_survey
 {
 	padding: 0;
 	margin: 1% 0 5% 0;
@@ -5345,7 +5346,7 @@ div.ss_canvas {
 	background-color:#ffffff;
 
 }
-	#ss_notes
+#ss_notes
 {
 	padding: 0;
 	margin: 1% 0 5% 0;
@@ -5354,7 +5355,7 @@ div.ss_canvas {
 	background-color:#ffffff;
 
 }
-	#ss_bookmarks
+#ss_bookmarks
 {
 	padding: 0;
 	margin: 1% 0 5% 0;
@@ -5363,14 +5364,14 @@ div.ss_canvas {
 	background-color:#ffffff;
 
 }
-	#ss_whatsnew
+#ss_whatsnew
 {
 	padding: 0;
 	margin: 2% 0 5% 0;
 	color:#333333;
 
 }
-	#ss_personaltracker
+#ss_personaltracker
 {
 	padding: 0%;
 	margin: 1% 0 5% 0;
@@ -5380,7 +5381,7 @@ div.ss_canvas {
 
 }
 
-	#ss_email
+#ss_email
 {
 	padding: 0;
 	margin: 1% 0 5% 0;
@@ -5391,7 +5392,7 @@ div.ss_canvas {
 	
 
 }
-	#ss_documents
+#ss_documents
 {
 	padding: 0;
 	margin: 1% 0 5% 0;
@@ -5460,12 +5461,12 @@ div.ss_canvas {
 	line-height: 1.8em;
 	background: #FFFFFF;
 }
-#ss_para a					/*link style for active links*/
+#ss_para a					/* link style for active links */
 {
 	text-decoration:underline !important;
 }
 
-#ss_para a:hover					/*link style to hover links*/
+#ss_para a:hover					/* link style to hover links */
 {
 	text-decoration:underline!important;
 	color:#E67814 !important;
@@ -5524,23 +5525,26 @@ div.ss_canvas {
 {
 	margin: 0px 0px 0px 10px;
 }
-
+#ss_todayC                     /* this style used to add background color to tasks and calendar */
+{
+	margin: 0px 0px 0px 10px;	
+}
 #ss_lastweek
 {
 	margin: 0px 0px 0px 10px;
 }
- .ss_closed				/*use when a box is compressed*/	
+ .ss_closed				/* use when a box is compressed */	
 {
 	height:20px;
 }
- .ss_overdue				/*when a milestone is overdue*/	
+ .ss_overdue				/* when a milestone is overdue */	
 {
 	color: #CC0000;
 	font-style: italic;
 }	
 
 
-/*======================BACKGROUND HOVER IS FROM THIS CODE========================*/
+/* ======================BACKGROUND HOVER IS FROM THIS CODE======================== */
 
 #ss_para a{
 	text-decoration:underline!important;
@@ -5556,7 +5560,7 @@ div.ss_canvas {
 	color:#666666 !important;
 	}	
 	
-/*=================THESE NEED TO BE CONSOLIDATED========*/
+/* =================THESE NEED TO BE CONSOLIDATED======== */
 
 
 
@@ -5577,7 +5581,7 @@ div.ss_canvas {
 
 
 	
-/*=========== LINK STYLES===================== */	
+/* =========== LINK STYLES===================== */	
 .ss_link_1, .ss_link_1 span 	/* link_1 Link style for people links */ 
 	{ 
 	color: #00AEEF!important;
@@ -5600,7 +5604,7 @@ div.ss_canvas {
 	font-size:12px!important;
 	}	
 	
-/*============link styles ===========================*/		
+/* ============link styles =========================== */		
 
 
 /* Header styles */
@@ -5639,7 +5643,7 @@ div.ss_canvas {
 		color:#FFFFFF;
 	}
 
-/*- Menu Tabs for Relevance--------------------------- */
+/* - Menu Tabs for Relevance--------------------------- */
 
     #ss_tabsC {
       float:left;
@@ -5673,7 +5677,7 @@ div.ss_canvas {
       padding:5px 15px 4px 6px;
       color:#464E42;
       }
-    /* Commented Backslash Hack hides rule from IE5-Mac \*/
+    /* Commented Backslash Hack hides rule from IE5-Mac \ */
     #ss_tabsC a span {float:none;}
     /* End IE5-Mac hack */
     #ss_tabsC a:hover span {

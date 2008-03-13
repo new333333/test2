@@ -34,13 +34,14 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_whatsNewTrackedPlaces}">
-<ul>
+  <div id="ss_today">
+  <div id="ss_mydocs_para" >
   <c:forEach var="entry" items="${ss_whatsNewTrackedPlaces}">
     <jsp:useBean id="entry" type="java.util.Map" />
     <li>
-	  <span class="ss_link_2">
+	  <span>
 		<c:set var="isDashboard" value="yes"/>
-		<ssf:titleLink hrefClass="ss_link_2"
+		<ssf:titleLink hrefClass="ss_link_3"
 			entryId="${entry._docId}" binderId="${entry._binderId}" 
 			entityType="${entry._entityType}" 
 			namespace="${ss_namespace}" 
@@ -71,7 +72,7 @@
 				title="${path}"
 				><span>${title}</span></a>
 		</c:if>
-	  </span>
+	  </span>&nbsp;<img src="<html:rootPath/>images/pics/folder_icons16x16.png" alt="folder" width="16" height="16" hspace="2" border="0" align="absmiddle" />
 	  <c:if test="${!empty entry._desc}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 
@@ -81,6 +82,7 @@
 	
     </li>
   </c:forEach>
-</ul>
+	</div><!-- end of para -->
+    </div><!-- end of today -->
 </c:if>
 
