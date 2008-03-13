@@ -625,6 +625,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			try {
 				from = (InternetAddress)msgs[i].getFrom()[0];
 				title = msgs[i].getSubject();
+				if (title == null) title="";
 				User fromUser = getFromUser(from);
 				RequestContext oldCtx = RequestContextHolder.getRequestContext();
 				try {
@@ -633,13 +634,12 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					
 					inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, from.toString()); 
 					inputData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
-					type=msgs[i].getContentType().trim();
 					content = msgs[i].getContent();
-					if (type.startsWith("text/plain")) {
+					if (msgs[i].isMimeType("text/plain")) {
 						processText(content, inputData);
-					} else if (type.startsWith("text/html")) {
+					} else if (msgs[i].isMimeType("text/html")) {
 						processHTML(content, inputData);
-					} else if (type.startsWith(MailHelper.CONTENT_TYPE_CALENDAR)) {
+					} else if (msgs[i].isMimeType(MailHelper.CONTENT_TYPE_CALENDAR)) {
 						processICalendar(content, iCalendars);						
 					} else if (content instanceof MimeMultipart) {
 						processMime((MimeMultipart)content, inputData, fileItems, iCalendars);
@@ -774,20 +774,22 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		int count = content.getCount();
 		for (int i=0; i<count; ++i ) {
 			BodyPart part = content.getBodyPart(i);
-			String disposition = part.getDisposition();
-			if ((disposition != null) && (
-					(disposition.compareToIgnoreCase(Part.ATTACHMENT) == 0) ||
-					(disposition.compareToIgnoreCase(Part.INLINE) == 0))) {
-				fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
-			} else if (part.isMimeType("text/html")) {
-				processHTML(part.getContent(), inputData);
-			} else if (part.isMimeType("text/plain")) {
-				processText(part.getContent(), inputData);
-			} else if (part.isMimeType(MailHelper.CONTENT_TYPE_CALENDAR)) {
+			if (part.isMimeType(MailHelper.CONTENT_TYPE_CALENDAR)) {
 				processICalendar(part.getContent(), iCalendars);
-			} else if (part instanceof MimeBodyPart) {
-				Object bContent = ((MimeBodyPart)part).getContent();
-				if (bContent instanceof MimeMultipart) processMime((MimeMultipart)bContent, inputData, fileItems, iCalendars);
+			} else { 
+				//old mailers may not use disposition, and instead put the name in the content-type
+				//java mail handles this.
+				String fileName = part.getFileName();
+				if (Validator.isNotNull(fileName)) {
+					fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
+				} else if (part.isMimeType("text/html")) {
+					processHTML(part.getContent(), inputData);
+				} else if (part.isMimeType("text/plain")) {
+					processText(part.getContent(), inputData);
+				} else {
+					Object bContent = part.getContent();
+					if (bContent instanceof MimeMultipart) processMime((MimeMultipart)bContent, inputData, fileItems, iCalendars);
+				}
 			}
 			
 		}
