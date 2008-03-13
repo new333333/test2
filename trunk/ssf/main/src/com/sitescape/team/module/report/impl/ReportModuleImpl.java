@@ -263,9 +263,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			DefinableEntity entity = null;
 			try {
 				entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
-			} catch(NoFolderEntryByTheIdException e) {
-				continue;
-			} catch(AccessControlException e) {
+			} catch(Exception skipThis) {
 				continue;
 			}
 			if (entity == null) continue;
@@ -388,17 +386,13 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 				if (entityType.equals(EntityType.folder.name()) || entityType.equals(EntityType.workspace.name())) {
 					try {
 						entity = getBinderModule().getBinder((Long) col[1]);
-					} catch(NoBinderByTheIdException e) {
-						continue;
-					} catch(AccessControlException e) {
+					} catch(Exception skipThis) {
 						continue;
 					}
 				} else {
 					try {
 						entity = getFolderModule().getEntry((Long) col[0], (Long) col[1]);
-					} catch(NoFolderEntryByTheIdException e) {
-						continue;
-					} catch(AccessControlException e) {
+					} catch(Exception skipThis) {
 						continue;
 					}
 				}
