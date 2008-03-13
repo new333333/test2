@@ -95,7 +95,7 @@ public class ViewICalController extends SAbstractController {
 		response.setHeader("Pragma", "no-cache");
 		
 		CalendarOutputter calendarOutputter = new CalendarOutputter();
-		Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE));
+		Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE_KEY));
 		calendarOutputter.output(calendar, response.getWriter());
 		
 		response.flushBuffer();

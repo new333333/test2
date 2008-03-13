@@ -29,26 +29,15 @@
 package com.sitescape.team.remoting.ws.service.folder.attachments;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.StringBufferInputStream;
-import java.io.StringWriter;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.activation.DataHandler;
-import javax.activation.DataSource;
 import javax.xml.soap.SOAPException;
-
-import net.fortuna.ical4j.data.CalendarOutputter;
-import net.fortuna.ical4j.model.Calendar;
-import net.fortuna.ical4j.model.ValidationException;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.attachments.AttachmentPart;
 
-import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;

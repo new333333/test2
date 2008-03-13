@@ -50,10 +50,8 @@ import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMultipart;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -76,7 +74,6 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
-import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
@@ -382,7 +379,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		if (entry == null) {
 			String subject = folder.getNotificationDef().getSubject();
 			if (Validator.isNull(subject))
-				subject = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_SUBJECT);
+				subject = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_SUBJECT_KEY);
 			//	if not specified, use a localized default
 			if (Validator.isNull(subject))
 				return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
@@ -411,7 +408,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public String getFrom(Folder folder, Notify notify) {
 		String from = folder.getNotificationDef().getFromAddress();
 		if (Validator.isNull(from))
-			from = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_FROM);
+			from = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_FROM_KEY);
 		return from;
 	}
 
@@ -546,7 +543,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			Source xsltSource = new StreamSource(new File(DirPath.getXsltDirPath(),templateName));
 			trans = transFactory.newTemplates(xsltSource);
 			//replace name with actual template
-			if (GetterUtil.getBoolean(mailModule.getMailProperty(zoneName, MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED), false) == false)
+			if (GetterUtil.getBoolean(mailModule.getMailProperty(zoneName, MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED_KEY), false) == false)
 				transformers.put(zoneName + ":" + type, trans);
 		} 
 		return trans.newTransformer();
@@ -616,7 +613,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.getType()));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML_KEY, notify.getLocale(), notify.getType()));
 		
 		return result;
 	}
@@ -651,12 +648,11 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		doEntry(element, entry, notify, true);
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML, notify.getLocale(), notify.getType()));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML_KEY, notify.getLocale(), notify.getType()));
 		
 		return result;
 	}
 	public List postMessages(Folder folder, PostingDef pDef, Message[] msgs, Session session) {
-		String type;
 		Object content;
 		Map fileItems = new HashMap();
 		List iCalendars = new ArrayList();
@@ -675,6 +671,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			try {
 				from = (InternetAddress)msgs[i].getFrom()[0];
 				title = msgs[i].getSubject();
+				if (title == null) title = "";
 				User fromUser = getFromUser(from);
 				RequestContext oldCtx = RequestContextHolder.getRequestContext();
 				try {
@@ -683,13 +680,13 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 					
 					inputData.put(ObjectKeys.INPUT_FIELD_POSTING_FROM, from.toString()); 
 					inputData.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
-					type=msgs[i].getContentType().trim();
 					content = msgs[i].getContent();
-					if (type.startsWith("text/plain")) {
+				
+					if (msgs[i].isMimeType("text/plain")) {
 						processText(content, inputData);
-					} else if (type.startsWith("text/html")) {
+					} else if (msgs[i].isMimeType("text/html")) {
 						processHTML(content, inputData);
-					} else if (type.startsWith(MailHelper.CONTENT_TYPE_CALENDAR)) {
+					} else if (msgs[i].isMimeType(MailHelper.CONTENT_TYPE_CALENDAR)) {
 						processICalendar(content, iCalendars);						
 					} else if (content instanceof MimeMultipart) {
 						processMime((MimeMultipart)content, inputData, fileItems, iCalendars);
@@ -733,7 +730,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 									fileItemsIt.remove();
 								}
 							} catch (Exception e) {
-//								 can't import ical, ignore error, it's probably wrong file format
+								// can't import ical, ignore error, it's probably wrong file format
 								logger.warn(e);
 							}
 						}
@@ -794,11 +791,21 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	private User getFromUser(InternetAddress from) {
 		//try to map email address to a user
 		String fromEmail = from.getAddress();	
-		List users = getProfileDao().loadUsers(new FilterControls("lower(emailAddress)", fromEmail.toLowerCase()), RequestContextHolder.getRequestContext().getZoneId());
-		if (users.size() == 1) return (User)users.get(0);
-		if (users.size() > 1) {
-			logger.error("Multiple users with same email address, cannot use for incoming email");
+		List<Principal> ps = getProfileDao().loadPrincipalByEmail(fromEmail, RequestContextHolder.getRequestContext().getZoneId());
+		User user = null;
+		for (Principal p:ps) {
+            //Make sure it is a user
+            try {
+            	User principal = (User)getProfileDao().loadUser(p.getId(), RequestContextHolder.getRequestContext().getZoneId());
+            	if (user == null) user = principal;
+            	else if (!principal.equals(user)) {
+        			logger.error("Multiple users with same email address, cannot use for incoming email");
+        			break;
+            	}
+            } catch (Exception ignoreEx) {};  
 		}
+		if (user != null) return user;
+		
 		return getProfileDao().getReservedUser(ObjectKeys.ANONYMOUS_POSTING_USER_INTERNALID, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	private void processText(Object content, Map inputData) {
@@ -824,20 +831,22 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		int count = content.getCount();
 		for (int i=0; i<count; ++i ) {
 			BodyPart part = content.getBodyPart(i);
-			String disposition = part.getDisposition();
-			if ((disposition != null) && 
-					((disposition.compareToIgnoreCase(Part.ATTACHMENT) == 0)  ||
-							(disposition.compareToIgnoreCase(Part.INLINE) == 0))) {
-				fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
-			} else if (part.isMimeType("text/html")) {
-				processHTML(part.getContent(), inputData);
-			} else if (part.isMimeType("text/plain")) {
-				processText(part.getContent(), inputData);
-			} else if (part.isMimeType(MailHelper.CONTENT_TYPE_CALENDAR)) {
+			if (part.isMimeType(MailHelper.CONTENT_TYPE_CALENDAR)) {
 				processICalendar(part.getContent(), iCalendars);
-			} else if (part instanceof MimeBodyPart) {
-				Object bContent = ((MimeBodyPart)part).getContent();
-				if (bContent instanceof MimeMultipart) processMime((MimeMultipart)bContent, inputData, fileItems, iCalendars);
+			} else { 
+				//old mailers may not use disposition, and instead put the name in the content-type
+				//java mail handles this.
+				String fileName = part.getFileName();
+				if (Validator.isNotNull(fileName)) {
+					fileItems.put(ObjectKeys.INPUT_FIELD_ENTITY_ATTACHMENTS + Integer.toString(fileItems.size() + 1), new FileHandler(part));
+				} else if (part.isMimeType("text/html")) {
+					processHTML(part.getContent(), inputData);
+				} else if (part.isMimeType("text/plain")) {
+					processText(part.getContent(), inputData);
+				} else {
+					Object bContent = part.getContent();
+					if (bContent instanceof MimeMultipart) processMime((MimeMultipart)bContent, inputData, fileItems, iCalendars);
+				}
 			}
 			
 		}

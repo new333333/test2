@@ -6,7 +6,6 @@
 	<processors>
 		<processor class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter" spring-bean-type="internal" spring-bean-name="defaultFolderEmailFormatter"/>
 		<processor class="com.sitescape.team.jobs.DefaultLdapSynchronization" spring-bean-type="none"/>
-		<processor class="com.sitescape.team.jobs.DefaultFailedEmail" spring-bean-type="none"/>
 		<processor class="com.sitescape.team.jobs.DefaultSendEmail" spring-bean-type="none"/>
 		<processor class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultFolderCoreProcessor"/>
 		<processor class="com.sitescape.team.module.profile.impl.DefaultProfileCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultProfileCoreProcessor"/>
@@ -24,7 +23,6 @@
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
 			<mapping processor-key="processorKey_binderCoreProcessor_5" processor-class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
 			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.team.jobs.DefaultSendEmail"/>
-			<mapping processor-key="processorKey_failedEmailJob" processor-class="com.sitescape.team.jobs.DefaultFailedEmail"/>
 		</model-class>
 		<model-class name="com.sitescape.team.domain.Workspace">
 			<mapping processor-key="processorKey_wsLdapSynchronizationJob" processor-class="com.sitescape.team.jobs.DefaultLdapSynchronization"/>

@@ -2553,6 +2553,7 @@
 			<option name="stopParallelThread" />
 			<option name="notifications" />
 			<option name="moveEntry" />
+			<option name="copyEntry" />
 		</options>
 		<help>ihelp.workflow.on_entry</help>
 	</item>
@@ -2569,6 +2570,7 @@
 			<option name="stopParallelThread" />
 			<option name="notifications" />
 			<option name="moveEntry" />
+			<option name="copyEntry" />
 		</options>
 	</item>
 	
@@ -2592,6 +2594,11 @@
 		</properties>
 	</item>
 	
+	<item name="copyEntry" caption="__copyEntry" multipleAllowedInParent="false">
+		<properties>
+			<property name="folder" caption="__toFolder" type="folderSelect" />
+		</properties>
+	</item>
 	<item name="startParallelThread" type="parallelThread" caption="__startParallelThread" feature="com.sitescape.team.module.workflow.AdvancedWorkflow">
 		<properties>
 			<property name="name" caption="__parallelStateName" type="itemSelect" path="//item[@name='parallelThread']" />

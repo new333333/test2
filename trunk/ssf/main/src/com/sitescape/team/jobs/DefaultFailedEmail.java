@@ -32,41 +32,32 @@ package com.sitescape.team.jobs;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import javax.mail.internet.MimeMessage;
-import java.util.GregorianCalendar;
-import java.util.Calendar;
 import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
-import org.quartz.JobDetail;
-import org.quartz.SimpleTrigger;
-import org.quartz.JobDataMap;
-import org.quartz.Scheduler;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailSendException;
 
-import com.sitescape.team.ConfigurationException;
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.module.mail.JavaMailSender;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.SpringContextUtil;
-import com.sitescape.util.Validator;
 
 /**
+ * @deprecated
  * @author Janet McCann
  *
  */
-public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
+public class DefaultFailedEmail extends SSStatefulJob  {
 	protected Log logger = LogFactory.getLog(getClass());
+	public static final String RETRY_GROUP="retry-send-email";
 
 	/* (non-Javadoc)
 	 * @see com.sitescape.team.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
+	//just finish up what is hanging around
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
     	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
 		String fileName = (String)jobDataMap.get("mailMessage");
@@ -141,55 +132,4 @@ public class DefaultFailedEmail extends SSStatefulJob implements FailedEmail {
 		}
     }
 
-		
-    public void schedule(Binder binder, JavaMailSender mailSender, MimeMessage mail, File fileDir) {
-    	schedule(binder, mailSender, null, null, mail, fileDir);
-    }
-    public void schedule(Binder binder, JavaMailSender mailSender, String account, String password, MimeMessage mail, File fileDir) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
-		//each job is new = don't use verify schedule, cause this a unique
-		GregorianCalendar start = new GregorianCalendar();
-		start.add(Calendar.HOUR_OF_DAY, 1);
-			
-		//add time to jobName - may have multple from same binder
-	 	String jobName =  binder.getId() + "-" + start.getTime().getTime();
-	   	String description = SSStatefulJob.trimDescription(start.getTime() + ":" + binder.getTitle());
-	 	String className = this.getClass().getName();
-	  	try {		
-			JobDetail jobDetail = new JobDetail(jobName, RETRY_GROUP, 
-					Class.forName(className),false, false, false);
-			jobDetail.setDescription(description);
-			JobDataMap data = new JobDataMap();
-			data.put("binder",binder.getId());
-			data.put("zoneId",binder.getZoneId());
-			
-			if(!fileDir.exists())
-				fileDir.mkdirs();
-			File file = new File(fileDir, String.valueOf(start.getTime().getTime()) + ".mail");
-			try {
-				file.createNewFile();
-				FileOutputStream fo = new FileOutputStream(file);
-				mail.writeTo(fo);
-			} catch (Exception ex) {
-				logger.error("Unable to queue mail: " + ex.getLocalizedMessage());
-				return;
-			}
-			data.put("mailMessage", file.getPath());
-			data.put("mailSender", mailSender.getName());
-			if (Validator.isNotNull(account)) {
-				data.put("mailAccount", account);
-				data.put("mailPwd", password);
-			}
-			jobDetail.setJobDataMap(data);
-			jobDetail.addJobListener(getDefaultCleanupListener());
-	  		SimpleTrigger trigger = new SimpleTrigger(jobName, RETRY_GROUP, jobName, RETRY_GROUP, start.getTime(), null, 24, 1000*60*60);
-  			trigger.setMisfireInstruction(SimpleTrigger.MISFIRE_INSTRUCTION_RESCHEDULE_NEXT_WITH_EXISTING_COUNT);
-  			trigger.setDescription(description);
-  			trigger.setVolatility(false);
-			scheduler.scheduleJob(jobDetail, trigger);				
- 		} catch (Exception e) {
-   			throw new ConfigurationException("Cannot start (job:group) " + jobName 
-   					+ ":" + RETRY_GROUP, e);
-   		}
-    }	
 }

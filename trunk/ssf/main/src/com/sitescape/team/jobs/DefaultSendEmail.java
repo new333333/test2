@@ -30,31 +30,18 @@
 package com.sitescape.team.jobs;
 
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-import javax.activation.DataHandler;
-import javax.activation.DataSource;
-import javax.mail.BodyPart;
 import javax.mail.MessagingException;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
-import javax.mail.internet.MimeMultipart;
-
-import net.fortuna.ical4j.data.CalendarOutputter;
-import net.fortuna.ical4j.model.Component;
-import net.fortuna.ical4j.model.ValidationException;
-import net.fortuna.ical4j.util.Calendars;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -64,25 +51,19 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.SimpleTrigger;
-import org.springframework.core.io.InputStreamSource;
 import org.springframework.mail.MailAuthenticationException;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.MailSendException;
-import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.ical.util.ICalUtils;
-import com.sitescape.team.mail.MailHelper;
+import com.sitescape.team.module.mail.JavaMailSender;
 import com.sitescape.team.module.mail.MailModule;
-import com.sitescape.team.module.mail.MimeMessagePreparator;
-import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.util.ByteArrayResource;
+import com.sitescape.team.module.mail.MimeMapPreparator;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.util.Validator;
 
 /**
  * @author Janet McCann
@@ -95,17 +76,96 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 	 * @see com.sitescape.team.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
-		Map message = (Map)jobDataMap.get("mailMessage");
+		Object msg = (Map)jobDataMap.get("mailMessage");
+		if (msg instanceof Map) {
+			doExecuteV1(context, (Map) msg);
+			return;
+		} 
+		MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
+		String fileName = (String)msg;
+		//set file name for delete when trigger complete
+    	File file = new File(fileName);
+		FileInputStream fs=null;
+		Date next = context.getNextFireTime();
+		context.setResult("Failed");
+		try {
+			fs = new FileInputStream(file);
+			String name = (String)jobDataMap.get("mailSender");
+			String account = (String)jobDataMap.get("mailAccount");
+			String password = (String)jobDataMap.get("mailPwd");
+			try {
+				mail.sendMail(name, account, password, fs);
+				context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
+				try {
+					fs.close();
+					fs = null;
+					file.delete();
+				} catch (IOException io) {
+					logger.error("Mail file error (" + file.getName() + ") " + io);
+				} finally {
+					context.setResult("Success");
+				}
+				return;
+				
+		   	} catch (MailSendException sx) {
+		   		//try again
+	    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
+	    	} catch (MailAuthenticationException ax) {
+		   		//try again
+	       		logger.error("Authentication Exception:" + ax.getLocalizedMessage());				
+			} catch (Exception ex) {
+				//remove job
+				context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJobOnError);
+				throw new JobExecutionException(ex);
+			}
+			//see if we should give up
+			if (next == null) {
+				//end of schedule
+				context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
+				try {
+					fs.close();
+					fs = null;
+					name = file.getName();
+		            int dotIdx = name.indexOf('.');
+		            if (dotIdx >= 0)
+		                name = name.substring(0, dotIdx);
+		            name = name + ".dead";
+		            String path = file.getAbsolutePath();
+		            int lastSep = path.lastIndexOf(File.separator);
+		            if (lastSep > 0)
+		                path = path.substring(0,lastSep);
+		            File dead = new File(path + File.separator + name);
+					file.renameTo(dead);
+				} catch (IOException io) {
+					logger.error("Mail file error (" + file.getName() + ") " + io);
+				}		
+			}
+
+		} catch (FileNotFoundException fe) {
+			//remove job
+			context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJobOnError);
+			throw new JobExecutionException(fe);
+		} finally {
+			if (fs != null) {
+				try {
+					fs.close();
+				} catch (IOException io) {}
+			}
+		}
+    }
+    //handle mail left from v1.  This format is obsolete
+    protected void doExecuteV1(JobExecutionContext context, Map message) throws JobExecutionException {
+		MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
+			
 		String name = (String)jobDataMap.get("mailSender");
 		Date next = context.getNextFireTime();
 		try {
-			if (message.containsKey(SendEmail.MIME_MESSAGE)) {
-				ByteArrayInputStream ios = new ByteArrayInputStream((byte[])message.get(SendEmail.MIME_MESSAGE));
-				//send pre-composed message
+			if (message.containsKey("mimeMessage")) {
+				ByteArrayInputStream ios = new ByteArrayInputStream((byte[])message.get("mimeMessage"));
+				//	send pre-composed message
 				mail.sendMail(name, ios);
 			} else {
-				MimeHelper helper = new MimeHelper(message);
+				MimeMapPreparator helper = new MimeMapPreparator(message, logger, SPropsUtil.getBoolean("mail.sendVTODO", true));
 				mail.sendMail(name, helper);
 			} 
 			context.put(CleanupJobListener.CLEANUPSTATUS, CleanupJobListener.DeleteJob);
@@ -131,42 +191,16 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 		}
     }
 
-    public boolean sendMail(String mailSenderName, Map message, String comment) {
-		MimeHelper helper = new MimeHelper(message);
-    	MailModule mail = (MailModule)SpringContextUtil.getBean("mailModule");
-		try {
-			mail.sendMail(mailSenderName, helper);
-			return true;
-	   	} catch (MailSendException sx) {
-    		logger.error("Error sending mail:" + sx.getLocalizedMessage());
-    	} catch (MailAuthenticationException ax) {
-       		logger.error("Authentication Exception:" + ax.getLocalizedMessage());				
-    	}
-       	// at this point we want to schedule a retry
-		Map newMessage = new HashMap();
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		try {
-			helper.getMessage().writeTo(bos);
-			newMessage.put(SendEmail.MIME_MESSAGE, bos.toByteArray());
-		} catch (MessagingException io) {
-			throw new MailPreparationException(NLT.get("errorcode.sendMail.cannotSerialize", new Object[] {io.getLocalizedMessage()}));
-		} catch (IOException io) {
-			throw new MailPreparationException(NLT.get("errorcode.sendMail.cannotSerialize", new Object[] {io.getLocalizedMessage()}));
-		} finally {
-			try {
-				bos.close();
-			} catch (Exception ex) {};
-		}
-		schedule(mailSenderName, newMessage, comment);
-		return false;
-
-    }	
-    public void schedule(String mailSenderName, Map message, String comment) {
-		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
+    public void schedule(JavaMailSender mailSender, MimeMessage message, String comment, File fileDir, boolean now) {
+    	schedule(mailSender, null, null, message, comment, fileDir, now);
+    }
+    public void schedule(JavaMailSender mailSender, String account, String password, MimeMessage message, String comment, File fileDir, boolean now) {
+ 		Scheduler scheduler = (Scheduler)SpringContextUtil.getBean("scheduler");	 
 		//each job is new = don't use verify schedule, cause this a unique
 		GregorianCalendar start = new GregorianCalendar();
-		start.add(Calendar.MINUTE, 1);
-		
+		if (now) start.add(Calendar.MINUTE, 1);
+		else start.add(Calendar.HOUR_OF_DAY, 1);
+				
 		//add time to jobName - may have multiple 
 	 	String jobName =  "sendMail" + "-" + start.getTime().getTime();
 	 	String className = this.getClass().getName();
@@ -175,9 +209,33 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 					Class.forName(className),false, false, false);
 			jobDetail.setDescription(trimDescription(comment));
 			JobDataMap data = new JobDataMap();
-			data.put("mailSender", mailSenderName);
+			data.put("mailSender", mailSender.getName());
 			data.put("zoneId",RequestContextHolder.getRequestContext().getZoneId());
-			data.put("mailMessage", message);
+			if (Validator.isNotNull(account)) {
+				data.put("mailAccount", account);
+				data.put("mailPwd", password);
+			}
+			if(!fileDir.exists())
+				fileDir.mkdirs();
+			File file = new File(fileDir, String.valueOf(start.getTime().getTime()) + ".mail");
+			FileOutputStream fo=null;
+			try {
+				file.createNewFile();
+				fo = new FileOutputStream(file);
+				message.writeTo(fo);
+			} catch (MessagingException io) {
+				throw new MailPreparationException(NLT.get("errorcode.sendMail.cannotSerialize", new Object[] {io.getLocalizedMessage()}));
+			} catch (IOException io) {
+				throw new MailPreparationException(NLT.get("errorcode.sendMail.cannotSerialize", new Object[] {io.getLocalizedMessage()}));
+			} catch (Exception ex) {
+				logger.error("Unable to queue mail: " + ex.getLocalizedMessage());
+				return;
+			} finally {
+				try {
+					fo.close();
+				} catch (Exception ex) {};
+			}
+			data.put("mailMessage", file.getPath());
 			
 			jobDetail.setJobDataMap(data);
 			jobDetail.addJobListener(getDefaultCleanupListener());
@@ -192,161 +250,5 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
    					+ ":" + SEND_MAIL_GROUP, e);
    		}
     }	
-    private class MimeHelper implements MimeMessagePreparator {
-			MimeMessage message;
-			String from;
-			Map details;
-			
-			private MimeHelper(Map details) {
-				this.details = details;
-			}
-			public MimeMessage getMessage() {
-				return message;
-			}
-			public void setDefaultFrom(String from) {
-				this.from = from;
-			}
-			public void prepare(MimeMessage mimeMessage) throws MessagingException {
-				//make sure nothing saved yet
-				message = null;
-				//Get send tasks in email
-				boolean sendVTODO = SPropsUtil.getBoolean("mail.sendVTODO", true);
-			
-				int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
-				
-				Collection<net.fortuna.ical4j.model.Calendar> iCals = (Collection)details.get(SendEmail.ICALENDARS);
-				if (iCals != null && iCals.size() > 0) {
-					// Need to attach icalendar as alternative content,
-					// if there is more then one icals then
-					// all are merged and add ones to email as alternative content
-					multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED;
-				}
-			
-				MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
-				helper.setSubject((String)details.get(SendEmail.SUBJECT));
-				if (details.containsKey(SendEmail.FROM)) 
-					helper.setFrom((InternetAddress)details.get(SendEmail.FROM));
-				else
-					helper.setFrom(from);
-				
-				Collection<InternetAddress> addrs = (Collection)details.get(SendEmail.TO);
-				for (InternetAddress a : addrs) {
-					helper.addTo(a);
-				}
-				if (addrs.isEmpty()) {
-					if (details.containsKey(SendEmail.FROM)) 
-						helper.addTo((InternetAddress)details.get(SendEmail.FROM));
-					else
-						helper.addTo(from);
-					helper.setSubject(NLT.get("errorcode.noRecipients") + " " + (String)details.get(SendEmail.SUBJECT));
-				}
-				String text = (String)details.get(SendEmail.TEXT_MSG);
-				if (text == null) text="";
-				String html = (String)details.get(SendEmail.HTML_MSG);
-				if (html == null) html = "";
-				
-				// the next line creates ALTERNATIVE part, change to setText(String, boolean)
-				// will couse error in iCalendar section (the ical is add as alternative content) 
-				helper.setText(text, html);
-				mimeMessage.addHeader(MailHelper.HEADER_CONTENT_TRANSFER_ENCODING, MailHelper.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
-				Collection<FileAttachment> atts = (Collection)details.get(SendEmail.ATTACHMENTS);
-				if (atts != null) {
-					for (FileAttachment fAtt : atts) {
-						FolderEntry entry = (FolderEntry)fAtt.getOwner().getEntity();
-						DataSource ds = RepositoryUtil.getDataSourceVersioned(fAtt.getRepositoryName(), entry.getParentFolder(), 
-								entry, fAtt.getFileItem().getName(), fAtt.getHighestVersion().getVersionName(), helper.getFileTypeMap());
-						
-						helper.addAttachment(fAtt.getFileItem().getName(), ds);
-					}
-				}
-				
-				
-				if (iCals != null) {
-					int c = 0;
-					net.fortuna.ical4j.model.Calendar margedCalendars = null;
-					for (final net.fortuna.ical4j.model.Calendar ical : iCals) {
-						try {
-							ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStraem(ical);
-							
-							String summary = ICalUtils.getSummary(ical);
-							String fileName = summary + MailHelper.ICAL_FILE_EXTENSION;
-							if (iCals.size() > 1) {
-								fileName = summary + c + MailHelper.ICAL_FILE_EXTENSION;
-							}
-							
-							String component = null;
-							if (!ical.getComponents(Component.VTODO).isEmpty()) {
-								component = Component.VTODO;
-							}
-							String contentType = MailHelper.getCalendarContentType(component, ICalUtils.getMethod(ical));
-							DataSource dataSource = MailHelper.createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
-
-							MailHelper.addAttachment(fileName, new DataHandler(dataSource), helper);
-							
-							//If okay to send todo or not a todo build alternatative
-							if (sendVTODO || !Component.VTODO.equals(component)) {
-								// attach alternative iCalendar content
-								if (iCals.size() == 1) {
-									MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
-								} else {
-									if (margedCalendars == null) {
-										margedCalendars = new net.fortuna.ical4j.model.Calendar();
-									}
-									margedCalendars = Calendars.merge(margedCalendars, ical);
-								}
-							}
-						
-						} catch (IOException e) {
-							logger.error(e);
-						} catch (ValidationException e) {
-							logger.error(e);
-						}
-						c++;
-					}
-					if (margedCalendars != null) {
-						try { 
-							String fileName = ICalUtils.getSummary(margedCalendars) + MailHelper.ICAL_FILE_EXTENSION;
-							ByteArrayOutputStream icalOutputStream = ICalUtils.toOutputStraem(margedCalendars);
-							String component = null;
-							if (!margedCalendars.getComponents(Component.VTODO).isEmpty()) {
-								component = Component.VTODO;
-							}
-							String contentType = MailHelper.getCalendarContentType(component, ICalUtils.getMethod(margedCalendars));
-							DataSource dataSource = MailHelper.createDataSource(new ByteArrayResource(icalOutputStream.toByteArray()), contentType, fileName);
-			
-							MailHelper.addAlternativeBodyPart(new DataHandler(dataSource), helper);
-						} catch (IOException e) {
-							logger.error(e);
-						} catch (ValidationException e) {
-							logger.error("Unvalid calendar", e);
-						}
-					}					
-				}
-	
-				//save message incase cannot connect and need to resend;
-				message = mimeMessage;
-			}
-
-		}
-    
-	protected DataSource createDataSource(
-		    final InputStreamSource inputStreamSource, final String contentType, final String name) {
-
-			return new DataSource() {
-				public InputStream getInputStream() throws IOException {
-					return inputStreamSource.getInputStream();
-				}
-				public OutputStream getOutputStream() {
-					throw new UnsupportedOperationException("Read-only javax.activation.DataSource");
-				}
-				public String getContentType() {
-					return contentType;
-				}
-				public String getName() {
-					return name;
-				}
-			};
-		}
-    
 }
 
