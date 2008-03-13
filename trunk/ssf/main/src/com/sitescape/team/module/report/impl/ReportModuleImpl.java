@@ -338,15 +338,20 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	}
 	
 	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, 
-			final Date startDate, final Date endDate) {
+			final Date startDate, final Date endDate, final Binder binder) {
 		Object[] entityTypes = new Object[] {EntityType.folder.name(), EntityType.workspace.name(),
 				 EntityType.folderEntry.name()};
 		return culaEsCaliente(limitType, startDate, endDate, entityTypes,
-				Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBoxMax")));
+				Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBoxMax")), binder);
 		
 	}
 	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, 
 			final Date startDate, final Date endDate, final Object[] entityTypes, final Integer returnCount) {
+		return culaEsCaliente(limitType, startDate, endDate, entityTypes, returnCount, null);
+	}
+	
+	public Collection<ActivityInfo> culaEsCaliente(final AuditType limitType, 
+			final Date startDate, final Date endDate, final Object[] entityTypes, final Integer returnCount, final Binder binder) {
 		List data = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {
 				Criteria crit = session.createCriteria(AuditTrail.class)
@@ -364,6 +369,9 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 					crit.add(Restrictions.eq("transactionType", limitType.name()));
 				} else {
 					crit.add(Restrictions.in("transactionType", new Object[] {AuditType.view.name(), AuditType.modify.name(), AuditType.download.name()}));
+				}
+				if(binder != null) {
+					crit.add(Restrictions.like("owningBinderKey", binder.getBinderKey().getSortKey() + "%"));
 				}
 				crit.addOrder(Order.desc("hits"));
 

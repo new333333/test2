@@ -170,7 +170,7 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 		return doc.getRootElement().asXML();
 	}
 	
-	public String getHotContent(String accessToken, String limitType)
+	public String getHotContent(String accessToken, String limitType, Long binderId)
 	{
 		Document doc = DocumentHelper.createDocument();
 		Element entries = doc.addElement("entries");
@@ -189,7 +189,11 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 		GregorianCalendar start = new GregorianCalendar();
 		//get users over last 2 weeks
 		start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
-		Collection<ActivityInfo> results = getReportModule().culaEsCaliente(type, start.getTime(), new java.util.Date());
+		Binder binder = null;
+		if(binderId != null) {
+			binder = getBinderModule().getBinder(new Long(binderId));
+		}
+		Collection<ActivityInfo> results = getReportModule().culaEsCaliente(type, start.getTime(), new java.util.Date(), binder);
 		for(ActivityInfo info : results) {
 			Element resultElem = null;
 			if(info.getWhoOrWhat().getEntityType().equals(EntityType.folderEntry)) {

@@ -129,11 +129,11 @@ public class WSClient
 			} else if(args[0].equals("deleteZoneUnderPortal")) {
 				justDoIt("deleteZoneUnderPortal", new Object[] {args[1]});
 			} else if(args[0].equals("getHotContent")) {
-				String howHot = "view";
-				if(args.length > 1) {
-					howHot = args[1];
+				Long binderId = null;
+				if(args.length > 2) {
+					binderId = Long.valueOf(args[2]); 
 				}
-				FacadeClientHelper.printXML(searchService.getHotContent(null, howHot));
+				FacadeClientHelper.printXML(searchService.getHotContent(null, args[1], binderId));
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -151,7 +151,7 @@ public class WSClient
 	
 	static Object fetch(String operation, Object[] args, String filename) throws Exception {
 		// Replace the hostname in the endpoint appropriately.
-		String endpoint = "http://localhost.sitescape.com/ssf/ws/Facade";
+		String endpoint = "http://localhost.sitescape.com:8080/ssf/ws/Facade";
 
 		// Make sure that the client_deploy.wsdd file is accessible to the program.
 		EngineConfiguration config = new FileProvider("client_deploy.wsdd");
