@@ -104,6 +104,8 @@ public class AdvancedSearchController extends AbstractBinderController {
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, RenderResponse response) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
+		String displayType = BinderHelper.getDisplayType(request);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		//ajax requests
 		if (op.equals(WebKeys.OPERATION_FIND_TAG_WIDGET)) {
@@ -120,6 +122,13 @@ public class AdvancedSearchController extends AbstractBinderController {
 			return ajaxGetUsers(request, response);
 		}	
 		Map model = new HashMap();
+		//Set up the standard beans
+		//These have been documented, so don't delete any
+		model.put(WebKeys.USER_PRINCIPAL, user);
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+
+		model.put(WebKeys.DISPLAY_TYPE, displayType);
+
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
