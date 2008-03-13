@@ -41,5 +41,5 @@ public interface SearchService {
 	/*
 	 * howTo can be one of "view", "modify", or "download"
 	 */
-	public String getHotContent(String accessToken, String limitType);
+	public String getHotContent(String accessToken, String limitType, Long binderId);
 }

@@ -34,6 +34,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Collection;
 
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Entry;
@@ -108,7 +109,8 @@ public interface ReportModule {
 	public List<LicenseStats> generateLicenseReport(Date startDate, Date endDate);
 	public Collection<User> getUsersActivity(DefinableEntity entity, AuditTrail.AuditType type, Date startDate, Date endDate);
 	public List<Map<String,Object>> getEntriesViewed(Long ownerId, Date startDate, Date endDate, Integer returnCount);
-	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate);
+	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate, Binder binder);
 	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount);
+	public Collection<ActivityInfo> culaEsCaliente(AuditType limitType, Date startDate, Date endDate, Object[] entityTypes, Integer returnCount, Binder binder);
 	public List<Map<String,Object>> getUsersActivities(Long ownerId, Long[] userIds, Date startDate, Date endDate, Integer returnCount);
 }
