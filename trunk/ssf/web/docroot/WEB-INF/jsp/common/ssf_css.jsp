@@ -2372,7 +2372,7 @@ div.ss_sidebar_panel_featured {
 }
 
 div.ss_actions_bar1_pane {
-	background-image: url(<html:imagesPath/>pics/background_toolbar1.gif);
+	background-color: #B2CBE7;
 	background-repeat: repeat-x;
 	border-top: 1px solid ${ss_style_border_color_dark_hue};
 	border-bottom: 1px solid ${ss_style_border_color_dark_hue};
@@ -2429,7 +2429,7 @@ table.ss_actions_bar4_pane {
 
 
 ul.ss_actions_bar1  {
-	height: 25px;
+	height: 2px;
 	
 }
 
