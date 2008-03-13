@@ -40,9 +40,9 @@
   <c:forEach var="entry" items="${ss_whatsHot}">
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
     <li>
-	  <span class="ss_link_2">
+	  <span>
 		<c:set var="isDashboard" value="yes"/>
-		<ssf:titleLink hrefClass="ss_link_2"
+		<ssf:titleLink hrefClass="ss_link_3"
 			entryId="${entry.id}" binderId="${entry.parentBinder.id}" 
 			entityType="${entry.entityType}" 
 			namespace="${ss_namespace}" 

@@ -92,10 +92,13 @@
 	
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_calendar">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.calendar"/> </div>
+		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.calendar"/> 
+		<img src="<html:rootPath/>images/pics/calendar16x16_2.png" alt="calendar" width="16" height="16" border="0" align="absmiddle" />
+		</div>
+		
 	</ssf:param>
       
-        <div id="ss_today">
+        <div id="ss_todayC">
        <div id="ss_cal_para" > 
         <li>Thu March 6, 9:00-10:00 am<br/>
         Marketing//Development<br/>

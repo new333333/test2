@@ -40,7 +40,7 @@
     <c:if test="${entryMap.type == 'view'}">
     <c:set var="entry" value="${entryMap.entity}"/>
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
-	  <table cellspacing="0" cellpadding="0"><tbody>
+	  <table cellspacing="0" cellpadding="2"><tbody>
 	  <tr><td valign="top"><img src="<html:rootPath/>images/pics/entry_icon.gif"></td>
 	  <td>
 		<c:set var="isDashboard" value="yes"/>
@@ -82,7 +82,9 @@
     <jsp:useBean id="entry2" type="com.sitescape.team.domain.Entry" />
 	  <table cellspacing="0" cellpadding="0"><tbody>
 	  <tr><td valign="top"><img src="<html:rootPath/>images/pics/attachment_icon.gif"></td>
-	  <td><span class="ss_link_2">
+	  <td>
+	  
+	  <span class="ss_link_3">
 	  	<a target="_blank" href="<ssf:url 
 					    webPath="viewFile"
 					    folderId="${entry2.parentBinder.id}"
@@ -92,13 +94,13 @@
 					    </ssf:url>">${entryMap.description}</a>
 	  </span>
 	  <br/>
-	  <span class="ss_link_1">
+	  <span>
 	    <ssf:showUser user="${entry2.creation.principal}" titleStyle="ss_link_1"/>
 	  </span>
 	  <br/>
-	  <span class="ss_link_2">
+	  <span>
 		<c:set var="isDashboard" value="yes"/>
-		<ssf:titleLink hrefClass="ss_link_2"
+		<ssf:titleLink hrefClass="ss_link_3"
 			entryId="${entry2.id}" binderId="${entry2.parentBinder.id}" 
 			entityType="${entry2.entityType}" 
 			namespace="${ss_namespace}" 
@@ -116,7 +118,7 @@
     	<a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${entry2.parentBinder.id}', '${entry2.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
 			><span>${entry2.parentBinder.title} (${entry2.parentBinder.parentBinder.title})</span></a>
-	  </span>
+	  </span>&nbsp;<img src="<html:rootPath/>images/pics/folder_icons16x16.png" alt="folder" width="16" height="16" hspace="2" border="0" align="absmiddle" /> 
 	  <c:if test="${!empty entry2.description}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 
