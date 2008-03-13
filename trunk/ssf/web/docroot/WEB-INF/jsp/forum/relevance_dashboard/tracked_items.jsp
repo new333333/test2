@@ -46,7 +46,13 @@
 	
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
 	    <a class="ss_link_2"
-	      href="<ssf:url action="view_folder_listing" binderId="${binder.id}"/>"
+	      href="<ssf:url adapter="true" portletName="ss_forum" 
+	    	action="view_permalink"
+	    	binderId="${binder.id}">
+	    	<ssf:param name="entityType" value="folder" />
+	    	<ssf:param name="newTab" value="1" />
+			</ssf:url>"
+		  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
 	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a>
 	    <img style="padding:4px 0px 0px 2px;" align="texttop"
       src="<html:rootPath/>images/pics/delete.gif"
@@ -71,7 +77,13 @@
 
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
 	    <a class="ss_link_2"
-	      href="<ssf:url action="view_ws_listing" binderId="${binder.id}"/>"
+	      href="<ssf:url adapter="true" portletName="ss_forum" 
+	    	action="view_permalink"
+	    	binderId="${binder.id}">
+	    	<ssf:param name="entityType" value="workspace" />
+	    	<ssf:param name="newTab" value="1" />
+			</ssf:url>"
+		  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'workspace', '${ss_namespace}', 'yes');"
 	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a><img style="padding:4px 0px 0px 2px;" align="texttop"
       src="<html:rootPath/>images/pics/delete.gif"
       onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/>
