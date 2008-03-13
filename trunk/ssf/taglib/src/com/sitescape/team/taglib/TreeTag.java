@@ -368,7 +368,7 @@ public class TreeTag extends TagSupport {
 			String s_tuple = e.attributeValue("pageTuple", "");
 			String s_page = e.attributeValue("page", "");
 			if (!s_page.equals("")) {
-				s_page += DomTreeBuilder.PAGE_DELIMITER + s_tuple.replaceAll("'", "\\\\'");
+				s_page += DomTreeBuilder.PAGE_DELIMITER + s_tuple.replaceAll("'", "\\\\'").replaceAll("&", "&amp;");
 			}
 			String s_target = e.attributeValue("target", "");
 			String targetField = "";
@@ -394,9 +394,9 @@ public class TreeTag extends TagSupport {
 			String s_text = Html.formatTo(e.attributeValue("title"));
 			if (!s_tuple.equals("")) {
 				//This title is a range field; format it appropriately
-				s_text = getBucketDisplay(e.attributeValue("tuple1").replaceAll("'", "\\\\'"));
+				s_text = getBucketDisplay(e.attributeValue("tuple1").replaceAll("'", "\\\\'").replaceAll("&", "&amp;"));
 				s_text += " <img alt=\"\" src=\"" + getImage("/icons/range_arrows.gif") + "\"/> ";
-				s_text += getBucketDisplay(e.attributeValue("tuple2").replaceAll("'", "\\\\'"));
+				s_text += getBucketDisplay(e.attributeValue("tuple2").replaceAll("'", "\\\\'").replaceAll("&", "&amp;"));
 			}
 			if (Validator.isNull(s_text)) s_text = "--" + NLT.get("entry.noTitle") + "--";
 	
@@ -674,7 +674,7 @@ public class TreeTag extends TagSupport {
 			String s_tuple = e.attributeValue("pageTuple", "");
 			String s_page = e.attributeValue("page", "");
 			if (!s_page.equals("")) {
-				s_page += DomTreeBuilder.PAGE_DELIMITER + s_tuple.replaceAll("'", "\\\\'");
+				s_page += DomTreeBuilder.PAGE_DELIMITER + s_tuple.replaceAll("'", "\\\\'").replaceAll("&", "&amp;");
 			}
 			String s_target = e.attributeValue("target", "");
 			String targetField = "";
