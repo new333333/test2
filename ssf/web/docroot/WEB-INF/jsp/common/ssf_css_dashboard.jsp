@@ -43,9 +43,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width: auto;
 	background-image: url(<html:rootPath/>images/pics/subbanner.png);
 	display: table;
-}
+	}
 	
-	/* grey buttons for portal-expanded view */	
+/* grey buttons for portal-expanded view */	
+
 #ss_top_nav_button{
 	position:relative;
 	display:block;
@@ -53,8 +54,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color:#A7A9AC;
 	border:solid;
 	padding-top:4px;	
-}
-
+	}
 #ss_top_nav_buttontwo a {
 	font-family:  Arial, sans-serif;
 	font-size: 10px;
@@ -64,20 +64,17 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-weight: bold;
 	letter-spacing: 0px;
 }
-
 #ss_top_nav_buttontwo ul{
 	margin:0px;
 	padding:0px;
 	list-style-type:none;
 	width:auto;
 	}
-
 #ss_top_nav_buttontwo ul li{
 	display:block;
 	float:left;
 	margin:6px 3px 0px 0px;
 	}
-
 #ss_top_nav_buttontwo ul li a{
 	display:block;
 	float:left;
@@ -89,23 +86,23 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding:6px 20px 0px 20px;
 	height:18px;
 	}
-
 #ss_top_nav_buttontwo ul li a:hover{
 	font-color: #white;
 	background-color: #CCC;
 	border-style: solid;
 	border-color: #white;
 	border-width: .01em;
+	}	
 	
-	/* blue buttons for navigation */
-	}
+/* blue buttons for navigation Not Used */
+	
 #ss_top_nav_buttontwo ul li a.current{	
 	color:#333;
 	background-color: #B2CBE7;
 	border-style: solid;
 	border-color: #white;
 	border-width: .01em;
-}
+	}
 #ss_top_nav_buttonthree a {
 	font-family:  Arial, sans-serif;
 	font-size: 10px;
@@ -113,20 +110,18 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	display: block;
 	font-weight: bold;
 	letter-spacing: 1px;
-}
-
+	}
 #ss_top_nav_buttonthree ul{
 	margin:0px;
 	padding:0px;
 	list-style-type:none;
-	width:auto;}
-
+	width:auto;
+	}
 #ss_top_nav_buttonthree ul li{
 	display:block;
 	float:left;
 	margin:0px 2px 0px 0px;
 	}
-
 #ss_top_nav_buttonthree ul li a{
 	display:block;
 	float:left;
@@ -135,7 +130,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding:6px 20px 0px 20px;
 	height:20px;
 	}
-
 #ss_top_nav_buttonthree ul li a:hover{
 	color:#333;
 	background-color: #8B9BBA;
@@ -180,21 +174,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
   color:#E4D6CD;
   }
 /* Commented Backslash Hack hides rule from IE5-Mac \*/
-#ss_profileTab a span {float:none;}
+	#ss_profileTab a span {float:none;}
 /* End IE5-Mac hack */
+	
 #ss_profileTab a:hover span {
-  color:#FFF;
-  }
+  	color:#FFF;
+  	}
 #ss_profileTab a:hover {
-  background-position:0% -42px;
-  }
+  	background-position:0% -42px;
+  	}
 #ss_profileTab a:hover span {
-  background-position:100% -42px;
-  }
-
+  	background-position:100% -42px;
+  	}
 #ss_profileTab .ss_profileCurrent a {
-  background-position:0% -42px;
-  }
+  	background-position:0% -42px;
+  	}
 #ss_profileTab .ss_profileCurrent a span {
   background-position:100% -42px;
   }
@@ -207,10 +201,7 @@ div.ss_canvas {
 	margin-bottom: 10px;
 	background-color: ${ss_style_background_color_side_panel};
 	}
-
-
-#ss_wrap
-{
+#ss_wrap{
 	margin: auto;
 	background-color: #FFF;
 	min-height:100%;
@@ -221,93 +212,64 @@ div.ss_canvas {
 	overflow:hidden;	/* This chops off any overhanging divs */
 	text-align:left;
 	color:#666666;
-}	
+	}	
 
 /* Box styles */	
 
-#ss_Box
-{
+#ss_Box{
 	padding: 0;
 	margin: 1% 0 2% 0;
-}
-#ss_networkupdates
-{
+	}
+#ss_networkupdates{
 	padding: 0;
 	margin: 2% 0 2% 0;
 	color:#333333;
-
-}
-
-
-#ss_shared
-{
+	}
+#ss_shared{
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#444444;
 	background-color:#FFF;
 	border:1px solid #B2CEE7;	
 	line-height:1.25em;
-
-}
-.ss_shared_para 
-{
+	}
+.ss_shared_para {
 	line-height:1.25em;
 	padding-top:5px;
 	padding-left:1%;
-
-}
- .ss_shared_para li
-{
+	}
+ .ss_shared_para li{
 	list-style-type: square;
 	padding-bottom:5px;
-
-}
-#ss_shared_para li
-{
+	}
+#ss_shared_para li{
 	list-style-type: square;
 	padding-bottom:3px;
-	border-bottom:1px dotted #666666;
-}
-#ss_tasks
-{
+	border-bottom:1px dotted #666666;	
+	}
+#ss_tasks{
 	padding: 0;
 	margin: 1% 0 5% 0;
 	padding: 0.5% 0 1% 5px;
 	color: #666666;
 	line-height: 1.5em;
-
-}
-#ss_tasks_para 
-{
-
+	}
+#ss_tasks_para {
 	padding-top:5px;
-
-}
-
-#ss_tasks_para .ss_link_1 a:
-{
-
+	}
+#ss_tasks_para .ss_link_1 a:{
 	text-decoration:underline!important;
 	color: #00AEEF!important; 
-	
-
-}
-#ss_tasks_para .ss_link_2 a:
-{
-
+	}
+#ss_tasks_para .ss_link_2 a:{
 	text-decoration:underline!important;
 	color:#4AAA42!important;
 	font-size:10px!important; 
-	
-
-}
-#ss_tasks_para li
-{
+	}
+#ss_tasks_para li{
 	list-style-type: square!important;
 	padding-bottom:3px;
-
-
-}
+	}
 #ss_tasks_para li
 {
 	list-style-type: square;
@@ -375,7 +337,7 @@ div.ss_canvas {
 {
 	text-decoration:underline;
 	color:#E67814 !important;
-	background-color:#444444 !important;
+	background-color:#CCCCCC !important;
 }
 #ss_mydocs_para 
 {
@@ -400,7 +362,7 @@ div.ss_canvas {
 {
 	text-decoration:underline;
 	color:#E67814 !important;
-	background-color:#444444 !important;
+	background-color:#CCCCCC !important;
 }
 #ss_whatshot
 {
@@ -556,7 +518,7 @@ div.ss_canvas {
 {
 	text-decoration:underline!important;
 	color:#E67814 !important;
-	background-color:#444444!important;
+	background-color:#CCCCCC!important;
 }
 
 #ss_para ul
@@ -638,7 +600,7 @@ div.ss_canvas {
 #ss_para a:hover{
 	text-decoration:underline!important;
 	color:#E67814 !important;
-	background-color:#444444!important;
+	background-color:#CCC!important;
 	}	
 #ss_para .ss_link_3 a:visited
 	{
@@ -650,14 +612,15 @@ div.ss_canvas {
 
 
 
+/* to use when need to display summary of an entry */
 
-.ss_summary						/* to use when need to display summary of an entry */
-{
+.ss_summary	{
 	padding: 0px 0px 0px 0px;
 	font-style: italic;
-	color:#555555;
-	font-size:11px;
-}
+	color: #555555;
+	font-size: 11px;
+	line-height: 12px;
+	}
 .ss_status						/* to use when need to display twitter status of person */
 {
 	padding: 0px 0px 0px 15px;
