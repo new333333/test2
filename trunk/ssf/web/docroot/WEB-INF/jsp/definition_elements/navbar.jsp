@@ -89,11 +89,10 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_myworkspace" 
 	  title="<ssf:nlt tag="navigation.myWorkspace"/>"
-      href="<ssf:url action="view_ws_listing" ><ssf:param 
+      onClick="ss_openUrlInWorkarea('<ssf:url action="view_ws_listing" ><ssf:param 
       	name="binderId" value="${ssUser.parentBinder.id}"/><ssf:param 
       	name="entryId" value="${ssUser.id}"/><ssf:param 
-      	name="newTab" value="1"/></ssf:url>"
-      onClick="ss_openUrlInWorkarea(this.href, '${ssUser.workspaceId}', 'view_ws_listing');return false;"
+      	name="newTab" value="1"/></ssf:url>', '${ssUser.workspaceId}', 'view_ws_listing');return false;"
      onMouseOver="this.style.cursor = 'pointer';"
     ><ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="13" offsetX="15" 
 	      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
