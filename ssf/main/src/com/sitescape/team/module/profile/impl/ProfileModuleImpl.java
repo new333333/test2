@@ -1127,7 +1127,15 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	  //need to check access
 	  for (int i=0; i<shares.size();) {
 		  SharedEntity se = shares.get(i);
-		  if (se.getEntity().isDeleted()) continue;
+		  try {
+			  if (se.getEntity().isDeleted()) {
+				  shares.remove(i);
+				  continue;
+			  }
+		  } catch(Exception skipThis) {
+			  shares.remove(i);
+			  continue;
+		  }
 		  if (se.getEntity() instanceof Binder) {
 				if (!getAccessControlManager().testOperation(user, (Binder)se.getEntity(), WorkAreaOperation.READ_ENTRIES)) {
 					shares.remove(i);
