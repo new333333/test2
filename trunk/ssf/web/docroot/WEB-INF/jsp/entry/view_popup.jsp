@@ -43,17 +43,21 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
   style="display:block; margin:2px;">
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-    <table cellpadding="0" cellspacing="0" border="0" width="100%">
+<c:if test="${ss_displayType == 'ss_workarea'}">
+	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+</c:if>
+     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
     <td valign="top" class="ss_view_sidebar">
 
+<c:if test="${ss_displayType != 'ss_workarea'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-
+</c:if>
 	<% // Folder Sidebar %>
 
     <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
@@ -76,8 +80,9 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color">
 			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+<c:if test="${ss_displayType != 'ss_workarea'}">
 			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-		
+</c:if>		
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
 					  configJspStyle="${ssConfigJspStyle}" />
