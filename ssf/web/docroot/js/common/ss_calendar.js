@@ -2343,7 +2343,7 @@ if (!window.ss_calendar_import) {
 	var ss_calendar_import = {
 		divId : "ss_calendar_import_div",
 		
-		importForm : function(forumId, namespace, title) {
+		importForm : function(forumId, namespace, title, legend, uploadBtn) {
 			
 			// Build the import form
 			var calImportDiv = document.getElementById(this.divId);
@@ -2357,7 +2357,7 @@ if (!window.ss_calendar_import) {
 		    calImportDiv.className = "ss_calendar_popup_div";
 		    calImportDiv.style.display = "none";
 			calImportDiv.innerHTML = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
-	         '<tbody><tr><td width="30px"><div class="ss_popup_topleft"></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_calendar_import_title" class="ss_popup_title"></div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_calendar_import_close" class="ss_popup_close"></div></div>' +
+	         '<tbody><tr class="ss_base_title_bar"><td width="30px"><div class="ss_popup_topleft"></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_calendar_import_title"></div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_calendar_import_close" class="ss_popup_close"></div></div>' +
 	         '</td></tr><tr><td colspan="3"><div id="ss_calendar_import_inner" style="padding: 3px 10px;" class="ss_popup_body"></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div></td><td width="100%"><div class="ss_popup_bottomcenter"></div></td>' +
 	         '<td width="40px"><div class="ss_popup_bottomright"></div></td></tr></tbody></table>';
 			
@@ -2373,10 +2373,11 @@ if (!window.ss_calendar_import) {
 		   
 		    dojo.byId("ss_calendar_import_inner").innerHTML = 
 			    "<form id=\"ss_calendar_import_form\" method=\"post\" enctype=\"multipart/form-data\" name=\"ss_calendar_import_form\">" +
-					"<div style=\"text-align: left; width: 100%; \">" +
+					"<div style=\"text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; \">" +
 						"<input type=\"file\" name=\"iCalFile\" />" +
-					"</div><br/>" +
-					"<input type=\"button\" value=\"Upload\" onclick=\"ss_calendar_import.uploadFile('" + namespace + "');\"/>" +
+						"<p class=\"ss_smallprint ss_light\">" + legend + "</p>" + 
+					"</div>" +
+					"<input type=\"button\" value=\"" + uploadBtn + "\" onclick=\"ss_calendar_import.uploadFile('" + namespace + "');\"/>" +
 					"<input type=\"hidden\" name=\"folderId\" value=\"" + forumId + "\">" +
 				"</form>";
 		    
@@ -2453,7 +2454,7 @@ if (!window.ss_calendar_settings) {
 		    calConfigureDiv.className = "ss_calendar_popup_div";
 		    calConfigureDiv.style.display = "none";
 			var htmlCode = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
-	         '<tbody><tr><td width="30px"><div class="ss_popup_topleft"></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_calendar_import_title" class="ss_popup_title">' + this.locale.title + '</div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_calendar_configure_close" class="ss_popup_close"></div></div>' +
+	         '<tbody><tr class="ss_base_title_bar"><td width="30px"><div class="ss_popup_topleft"></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_calendar_import_title">' + this.locale.title + '</div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_calendar_configure_close" class="ss_popup_close"></div></div>' +
 	         '</td></tr><tr><td colspan="3"><div class="ss_popup_body"><form id="ss_calendar_settings_form">'+
 			 '<ul>' +
 			 '<li>' + this.locale.weekStartsOnLabel + ' <select name="weekFirstDay"><option value="7"' + (weekFirstDay==7?'selected="true"':'') + '>' + this.locale.dayNames[6] + '</option><option value="1"' + (weekFirstDay==1?'selected="true"':'') + '>' + this.locale.dayNames[0] + '</option><option value="2" ' + (weekFirstDay==2?'selected="true"':'') + '>' + this.locale.dayNames[1] + '</option></select></li>' +

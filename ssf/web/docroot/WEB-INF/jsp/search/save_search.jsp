@@ -29,14 +29,19 @@
  */
 %>
 <% // Search results saved queries %>
+<c:if test="${empty ss_namespace}">
+	<c:set var="ss_namespace" value="${renderResponse.namespace}" />
+</c:if>
+
 <ssf:sidebarPanel title="searchResult.savedSearchTitle" id="ss_saved_searches" divClass="ss_rating_box_content"
     initOpen="true" sticky="false">
 
 <c:if test="${!empty ss_filterMap}">
-   <input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="searchQueryName" 
+   <input class="ss_saveQueryNameUnactive" type="text" name="searchQueryName" id="${ss_namespace}searchQueryName" 
 		  value="<ssf:nlt tag="searchResult.savedSearch.input.legend"/>" 
-	      onfocus="this.className='ss_saveQueryName'; this.value=''; this.focus();" />
-	<a href="javascript: //;" onclick="ss_saveSearchQuery('searchQueryName', 'ss_saveQueryErrMsg');"><ssf:nlt tag="searchResult.savedSearch.save"/></a>
+	      onfocus="this.className='ss_saveQueryName'; if (this.value == '<ssf:nlt tag="searchResult.savedSearch.input.legend"/>') this.value = ''; " 
+	      onblur="if (this.value == '') this.value='<ssf:nlt tag="searchResult.savedSearch.input.legend"/>'"/>
+	<a href="javascript: //;" onclick="ss_saveSearchQuery('${ss_namespace}searchQueryName', 'ss_saveQueryErrMsg');"><ssf:nlt tag="searchResult.savedSearch.save"/></a>
 	<div id="ss_saveQueryErrMsg" style="visibility: hidden;"></div>
 </c:if>
 <ul id="ss_savedQueriesList">

@@ -304,10 +304,47 @@ boolean ss_isMail = false;
         <tr><td class="ss_att_title" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 		<tr>
 		  <td class="ss_att_title ss_subhead2" colspan="8"><ssf:nlt tag="entry.PreviousVersions"/></td>
-		</tr>	
-		<c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1">
-	          <tr>
-				<td class="ss_att_title" width="25%" style="padding-left: 5px; font-weight: normal;"><a style="text-decoration: none;"
+		</tr>
+		<c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
+	          	<c:choose>
+		          	<c:when test="${status.count == 4}">
+						 <tr id="${ss_attachments_namespace}att_row${status.count}n">
+							<td colspan="8" style="padding-left: 5px; font-weight: normal;"><a href="javascript: // " onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 4, 9)" class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
+						 </tr>
+			 	    </c:when>
+		          	<c:when test="${status.count == 10}">
+						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
+							<td colspan="8" style="padding-left: 5px; font-weight: normal;"><a href="javascript: // " onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 10, 20)" class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
+						 </tr>
+			 	    </c:when>	
+		          	<c:when test="${status.count == 21}">
+						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
+							<td colspan="8" style="padding-left: 5px; font-weight: normal;"><a href="javascript: // " onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 21, 40)" class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
+						 </tr>
+			 	    </c:when>	
+		          	<c:when test="${status.count == 41}">
+						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
+							<td colspan="8" style="padding-left: 5px; font-weight: normal;"><a href="javascript: // " onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 41, 80)" class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
+						 </tr>
+			 	    </c:when>
+		          	<c:when test="${status.count == 81}">
+						 <tr id="${ss_attachments_namespace}att_row${status.count}n" style="display: none; visibility: hidden; ">
+							<td colspan="8" style="padding-left: 5px; font-weight: normal;"><a href="javascript: // " onclick="ss_showAttachmentVersions('${ss_attachments_namespace}att_row', 81)" class="ss_light ss_fineprint"><ssf:nlt tag="entry.ShowOlderVersions"/></a></td>
+						 </tr>
+			 	    </c:when>				 	    
+		 	    </c:choose>	 	    
+		 	    
+				<c:choose>
+					<c:when test="${status.count <= 3}">
+						<tr>
+					</c:when>	
+					<c:otherwise>						
+						<tr id="${ss_attachments_namespace}att_row${status.count}" style="display: none; visibility: hidden; ">
+					</c:otherwise>
+				</c:choose>						
+						
+				<td class="ss_att_title" width="25%" style="padding-left: 5px; font-weight: normal;">
+				<a style="text-decoration: none;"
 				  href="<ssf:url 
 				    webPath="viewFile"
 				    folderId="${ssDefinitionEntry.parentBinder.id}"
@@ -335,8 +372,9 @@ boolean ss_isMail = false;
 					 timeStyle="medium" dateStyle="medium" /></td>
 				<td class="ss_att_meta">${fileVersion.fileItem.lengthKB}KB</td>
 				<td width="25%" class="ss_att_meta ss_att_space">${fileVersion.modification.principal.title}</td>
-				<td class="ss_att_meta" width="15%"></td>
-			  </tr>
+				<td class="ss_att_meta" width="15%"></td>	
+			</tr>				
+				
  	    </c:forEach>
 	</c:if>
 </c:forEach>
