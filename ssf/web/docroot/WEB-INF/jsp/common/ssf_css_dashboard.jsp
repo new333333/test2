@@ -210,7 +210,63 @@ div.ss_canvas {
 	text-align:left;
 	color:#666666;
 	}	
+/* 	THE FOLLOWING DEFINES HORZ RULE LINES  */	
+.rule_1 {					/* This defines plain line in entries recently visited */
+	border:none;
+	color:#3D5FA3!important;
+	background-color:#3D5FA3!important;
+	height:1px;
+	width:100%;
+	margin-bottom:5%;
+	}
+.rule_2 {					/* This defines dashed line in entries recently visited */
 
+	border-color:#3D5FA3!important;
+	border-top-style:dashed;
+	border-top-width:1px;
+	width:100%;
+	margin-bottom:5%;
+	}
+.rule_3 {					/* This defines dotted line in entries recently visited */
+
+	border-color:#3D5FA3!important;
+	border-top-style:dotted;
+	border-top-width:1px;
+	width:100%;
+	margin-bottom:5%;
+	}		
+/*  THE FOLLOWING DEFINES ALL THE IMAGES FOR THE BLUE BARS */
+	
+.ss_tasks_img {
+	background-image: url("<html:rootPath/>images/pics/check16x22.png");
+	background-repeat: no-repeat;
+	background-position: 97% center;
+	}	
+.ss_ping_img {
+	background-image: url("<html:rootPath/>images/pics/im_16x16.png");
+	background-repeat: no-repeat;
+	background-position: 96% center;
+	}
+.ss_cal_img {
+	background-image: url("<html:rootPath/>images/pics/calendar16x16_2.png");
+	background-repeat: no-repeat;
+	background-position: 97% center;
+	}		
+.ss_email_img {
+	background-image: url("<html:rootPath/>images/pics/mailicon.png");
+	background-repeat: no-repeat;
+	background-position: 97% center;
+	}	
+.ss_bookmarks_img {
+	background-image: url("<html:rootPath/>images/pics/bookmarks16x16.png");
+	background-repeat: no-repeat;
+	background-position: 97% center;
+	}	
+.ss_tracked_img {
+	background-image: url("<html:rootPath/>images/pics/tracking20x16.png");
+	background-repeat: no-repeat;
+	background-position: 97% center;
+	}				
 /* Box styles */	
 
 #ss_Box{
@@ -252,6 +308,7 @@ div.ss_canvas {
 	line-height: 1.5em;
 	}
 #ss_tasks_para {
+	line-height:1.25em;
 	padding-top:5px;
 	}
 #ss_tasks_para .ss_link_1 a:{
@@ -263,13 +320,11 @@ div.ss_canvas {
 	color:#4AAA42!important;
 	font-size:10px!important; 
 	}
-#ss_tasks_para li{
-	list-style-type: square!important;
-	padding-bottom:3px;
-	}
+
 #ss_tasks_para li
 {
-	list-style-type: square;
+	list-style-type: square!important;
+	padding-top:3px;
 	padding-bottom:3px;
 	border-bottom:1px dotted #666666;
 }
@@ -311,16 +366,42 @@ div.ss_canvas {
 	
 
 }
-
-#ss_cal_para 
+#ss_visit_para 
 {
 	line-height:1.25em;
 	padding-top:5px;
 
 }
-#ss_cal_para li
+#ss_visit_para li
 {
 	list-style-type: square;
+	padding-top:3px;
+	padding-bottom:3px;
+	border-bottom:1px dotted #666666;
+
+}
+#ss_visit_para a					/* link style for active links */
+{
+	text-decoration:underline;
+}
+
+#ss_visit_para a:hover					/* link style to hover links */
+{
+	text-decoration:underline;
+	color:#E67814 !important;
+	background-color:#CCCCCC !important;
+}
+#ss_cal_para 
+{
+	line-height:1.25em;
+	padding-top:5px;
+	
+}
+#ss_cal_para li
+{
+
+	list-style-type: square;
+	padding-top:3px;
 	padding-bottom:3px;
 	border-bottom:1px dotted #666666;
 
@@ -378,7 +459,9 @@ div.ss_canvas {
 #ss_hot_para li
 {
 	list-style-type: square;
+	padding-top:3px;	
 	padding-bottom:3px;
+	border-bottom:1px dotted #0C4E84;	/* some kind of blue */
 }
 
 
@@ -573,6 +656,7 @@ div.ss_canvas {
 #ss_todayC                     /* this style used to add background color to tasks and calendar */
 {
 	margin: 0px 0px 0px 10px;	
+
 }
 #ss_lastweek
 {

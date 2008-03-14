@@ -122,7 +122,7 @@
 					><span class="ss_prioValue"">${title}</span></a>
 			</c:if>
 		</div>
-	</li>							
+	</li><br/>							
   </c:forEach>
 
 	</div><!-- end of para -->

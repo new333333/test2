@@ -93,7 +93,7 @@
 	      textMaxWords="10">${entry._desc}</ssf:textFormat></span>
 	  </c:if>
 	
-    </li>
+    </li><br/>
   </c:forEach>
 	</div><!-- end of para -->
     </div><!-- end of today -->
