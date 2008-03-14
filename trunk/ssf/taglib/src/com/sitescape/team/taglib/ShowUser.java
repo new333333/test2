@@ -84,21 +84,23 @@ public class ShowUser extends BodyTagSupport {
 				}
 			}
 
-			httpReq.setAttribute(WebKeys.SHOW_USER_USER, user);		
-			httpReq.setAttribute(WebKeys.SHOW_USER_TITLE_STYLE, titleStyle);	
-			if (user != null && user.isActive())
-				httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, showPresence);
-			else
-				httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, Boolean.FALSE);
+			if ((user != null) && (user instanceof User || user instanceof Group)) {
+				httpReq.setAttribute(WebKeys.SHOW_USER_USER, user);		
+				httpReq.setAttribute(WebKeys.SHOW_USER_TITLE_STYLE, titleStyle);	
+				if (user != null && user.isActive())
+					httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, showPresence);
+				else
+					httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, Boolean.FALSE);
+					
 				
-			
-			// Output the presence info
-			String jsp = "/WEB-INF/jsp/tag_jsps/show_user/show_user.jsp";
-			RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
-			ServletRequest req = pageContext.getRequest();
-			StringServletResponse res = new StringServletResponse(httpRes);
-			rd.include(req, res);
-			pageContext.getOut().print(res.getString().trim());
+				// Output the presence info
+				String jsp = "/WEB-INF/jsp/tag_jsps/show_user/show_user.jsp";
+				RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
+				ServletRequest req = pageContext.getRequest();
+				StringServletResponse res = new StringServletResponse(httpRes);
+				rd.include(req, res);
+				pageContext.getOut().print(res.getString().trim());
+			}
 
 		} catch (Exception e) {
 			throw new JspTagException(e.getLocalizedMessage());

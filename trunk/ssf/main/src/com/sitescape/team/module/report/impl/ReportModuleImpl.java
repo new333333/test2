@@ -278,9 +278,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 			Map<String, Object> row = new HashMap<String, Object>();
 			try {
 				entity = getFolderModule().getEntry((Long) cols[0], (Long) cols[1]);
-			} catch(NoFolderEntryByTheIdException e) {
-				continue;
-			} catch(AccessControlException e) {
+			} catch(Exception skipThis) {
 				continue;
 			}
 			if (entity == null || entity.isDeleted()) continue;
