@@ -116,7 +116,7 @@
 						dataUrl="<ssf:url 
 								adapter="true" 
 								portletName="ss_forum" 
-								action="__ajax_request" 
+								action="advanced_search" 
 								actionUrl="true">
 									<ssf:param name="operation" value="get_users_widget" />
 									<ssf:param name="operation" value="check_status" />
