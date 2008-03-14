@@ -48,6 +48,7 @@ var ss_displayType = "${ss_displayType}";
   <div style="border:1px solid black;">
   <div style="background-color:#CECECE; border-bottom:1px solid black; width:100%;">
     <table cellspacing="0" cellpadding="0" style="background-color:#CECECE; width:100%;">
+    <tbody>
     <tr>
     <td>Debug window</td>
     <td align="right">
@@ -64,6 +65,7 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 </script>
     </td>
     </tr>
+    </tbody>
     </table>
   </div>
   <div>
@@ -123,12 +125,12 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 </script>
 
 <div id="ss_top_nav_wrapper" style="width:100%;">
-<table width="100%" align="center" cellspacing="0" cellpadding="0" border="0" 
-  >
+<table width="100%" align="center" cellspacing="0" cellpadding="0" border="0" >
 <tbody>
 <tr>
 <td align="center">
 <table border="0" cellpadding="0" cellspacing="0" >
+<tbody>
   <tr>
     <td align="center" valign="top">
       <div id="ss_top_nav_buttontwo">
@@ -191,6 +193,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
       </div><div class="ss_clear_float"></div>
     </td>
   </tr>
+</tbody>
 </table>
 <div class="ss_clear_float"></div>
 <script type="text/javascript">
@@ -234,6 +237,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
      onMouseOver="this.style.cursor = 'pointer';">
 			<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
 			  name="ss_findUserForm${renderResponse.namespace}" 
+			  style="display:inline;"
 			  action="<ssf:url action="findUser" actionUrl="true"/>">
 				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 				    formElement="searchText" 
@@ -247,6 +251,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 		<div>
 			<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
 			  name="ss_findUserForm${renderResponse.namespace}" 
+			  style="display:inline;"
 			  action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
 				  <ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
 				    formElement="searchText" 
@@ -272,6 +277,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 		<div>
 			<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
 			  name="ss_findPlacesForm${renderResponse.namespace}" 
+			  style="display:inline;"
 			  action="<ssf:url action="findUser" actionUrl="true"/>">
 				  <ssf:find 
 				    formName="ss_findPlacesForm${renderResponse.namespace}" 
@@ -287,6 +293,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 		<div>
 			<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
 			  name="ss_findPlacesForm${renderResponse.namespace}" 
+			  style="display:inline;"
 			  action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
 				  <ssf:find 
 				    formName="ss_findPlacesForm${renderResponse.namespace}" 
@@ -313,6 +320,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 		<div>
 			<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
 			  name="ss_findTagsForm${renderResponse.namespace}" 
+			  style="display:inline;"
 			  action="<ssf:url action="findUser" actionUrl="true"/>">
 				  <ssf:find 
 				    formName="ss_findTagsForm${renderResponse.namespace}" 
@@ -328,6 +336,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 		<div>
 			<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
 			  name="ss_findTagsForm${renderResponse.namespace}" 
+			  style="display:inline;"
 			  action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
 				  <ssf:find 
 				    formName="ss_findTagsForm${renderResponse.namespace}" 
@@ -362,6 +371,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 		  onMouseOver="this.style.cursor = 'pointer';">
      		<form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
 		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
+		  		style="display:inline;"
 		  		action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 		  			name="newTab" value="1"/></ssf:url>">
 			  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
@@ -415,6 +425,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 		  </ssHelpSpot>
      		<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
 		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
+		  		style="display:inline;"
 		  		action="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
 		  			name="action" value="advanced_search"/><ssf:param 
 		  			name="newTab" value="1"/></ssf:url>">
@@ -431,6 +442,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 </ssf:ifaccessible>
 </td>
 </tr>
+</tbody>
 </table>
 </td>
 </tr>
@@ -438,7 +450,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 <!-- Start of Status line -->
 <ssf:ifLoggedIn>
 <tr>
-<td align="center" style="padding:5px 0px 5px 0px;">
+<td align="center" style="padding:5px 0px 0px 0px;">
 <table class="ss_global_toolbar_maximized" cellspacing="0" cellpadding="0" border="0">
 <tbody>
 <tr>
@@ -481,13 +493,14 @@ ss_statusCurrent = "${ssUser.status}";
 </c:if>
 </td>
 </tr>
+</tbody>
 </table>
 </td>
 </tr>
 </ssf:ifLoggedIn>
 
-</td>
-</tr>
+<tr><td style="padding-bottom:4px;"></td></tr>
+</tbody>
 </table>
 </div>
 
@@ -497,6 +510,22 @@ ss_statusCurrent = "${ssUser.status}";
 <div id="ss_navbar_bottom${renderResponse.namespace}"></div>
 
 </c:if>
+
+<table cellspacing="0" cellpadding="0">
+<tbody>
+<tr>
+<td style="padding-left:20px;" valign="top">
+<div id="ss_recentPlaces${renderResponse.namespace}"><img 
+  src="<html:rootPath/>images/pics/drop_down_tab_left.gif" 
+  height="12" width="12"/><span class="ss_smallprint" 
+  style="padding:0px 4px 0px 4px; position:relative; top:-1px; background-color:#DBDBDB;"
+  ><a href="javascript: ;" 
+  onClick="ss_showRecentPlacesDiv${renderResponse.namespace}();return false;"
+  ><ssf:nlt tag="sidebar.history"/></a></span></div>
+</td>
+</tr>
+</tbody>
+</table>
 
 <!-- Start of favorites pane -->
 <div class="ss_style_trans" id="ss_favorites_pane${renderResponse.namespace}" 
@@ -536,7 +565,9 @@ ss_statusCurrent = "${ssUser.status}";
   <div class="ss_style_trans" style="display: none;" id="ss_favorites_editor${renderResponse.namespace}">
      <div style="padding: 10px 0px 7px 0px;">
 
-	<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
+	<table cellspacing="0" cellpadding="0" border="0">
+	<tbody>
+	<tr>
 	  <td>
 		<a class="ss_inlineButton" onClick="ssMyFavorites${renderResponse.namespace}.moveSelectedFavorites('down')"
 		><img <ssf:alt tag="favorites.movedown"/> src="<html:imagesPath/>icons/button_move_down.gif" 
@@ -553,7 +584,9 @@ ss_statusCurrent = "${ssUser.status}";
 		><img <ssf:alt tag="favorites.delete"/> src="<html:imagesPath/>icons/button_delete.gif" 
 		/><span><ssf:nlt tag="favorites.delete"/></span></a>
 	  </td>
-	 </tr></tbody></table>	
+	 </tr>
+	 </tbody>
+	 </table>	
      </div>
      <div style="padding: 3px 0px 0px 135px; width: 40px;">
 		<a class="ss_inlineButton" href="javascript: ;" 
@@ -606,19 +639,7 @@ function ss_hideRecentPlacesDiv${renderResponse.namespace}() {
 	divObjTarget.style.display = 'none';
 }
 </script>
-<table cellspacing="0" cellpadding="0">
-<tr>
-<td style="padding-left:20px;" valign="top">
-<div id="ss_recentPlaces${renderResponse.namespace}"><img 
-  src="<html:rootPath/>images/pics/drop_down_tab_left.gif" 
-  height="12" width="12"/><span class="ss_smallprint" 
-  style="padding:0px 4px 0px 4px; position:relative; top:-1px; background-color:#DBDBDB;"
-  ><a href="javascript: ;" 
-  onClick="ss_showRecentPlacesDiv${renderResponse.namespace}();return false;"
-  ><ssf:nlt tag="sidebar.history"/></a></span></div>
-</td>
-</tr>
-</table>
+
 <div id="ss_recentPlacesDiv${renderResponse.namespace}"
   style="position:relative; display:none;">
 <ssf:popupPane width="250px" titleTag="sidebar.history"

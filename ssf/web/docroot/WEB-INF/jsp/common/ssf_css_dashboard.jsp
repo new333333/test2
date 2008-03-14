@@ -37,10 +37,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /* CSS Document - container for navigation and search */
 
 #ss_top_nav_wrapper{
-	position: relative;
 	width: 100%;
-	height: 84px;
-	width: auto;
 	background-image: url(<html:rootPath/>images/pics/subbanner.png);
 	display: table;
 	}
