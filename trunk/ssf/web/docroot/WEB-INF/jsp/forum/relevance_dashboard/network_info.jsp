@@ -38,7 +38,8 @@
 
 	<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.whatsNewTracked"/></div>
+		<div id="ss_title" class="ss_pt_title ss_tracked_img"><ssf:nlt tag="relevance.whatsNewTracked"/>
+				</div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tracked.jsp" />
 	</ssf:canvas>

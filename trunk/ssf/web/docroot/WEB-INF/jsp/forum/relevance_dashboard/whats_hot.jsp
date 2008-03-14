@@ -77,7 +77,7 @@
 	      textMaxWords="10">${entry.description}</ssf:textFormat></span>
 	  </c:if>
 	
-    </li>
+    </li><br/>
   </c:forEach>
 	</div><!-- end of para -->
     </div><!-- end of today -->

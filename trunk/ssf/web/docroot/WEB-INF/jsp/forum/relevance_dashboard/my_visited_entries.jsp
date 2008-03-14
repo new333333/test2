@@ -34,12 +34,15 @@
 <c:if test="${empty ssEntriesViewed}">
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
+
 <c:if test="${!empty ssEntriesViewed}">
+
 <c:set var="count" value="0"/>
   <c:forEach var="entryMap" items="${ssEntriesViewed}">
     <c:if test="${entryMap.type == 'view'}">
     <c:set var="entry" value="${entryMap.entity}"/>
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
+    
 	  <table cellspacing="0" cellpadding="2"><tbody>
 	  <tr><td valign="top"><img src="<html:rootPath/>images/pics/entry_icon.gif"></td>
 	  <td>
@@ -80,11 +83,14 @@
 	  </c:if>
 	<c:set var="count" value="${count + 1}"/>
 	</td></tr></tbody></table>
+	<hr class="rule_3">
     </c:if>
 
     <c:if test="${entryMap.type == 'download'}">
     <c:set var="entry2" value="${entryMap.entity}"/>
     <jsp:useBean id="entry2" type="com.sitescape.team.domain.Entry" />
+
+    
 	  <table cellspacing="0" cellpadding="0"><tbody>
 	  <tr><td valign="top"><img src="<html:rootPath/>images/pics/attachment_icon.gif"></td>
 	  <td>
@@ -138,6 +144,8 @@
 	
 	<c:set var="count" value="${count + 1}"/>
 	</td></tr></tbody></table>
+	<hr class="rule_3">
+
     </c:if>
   </c:forEach>
 <c:if test="${count == 0}">

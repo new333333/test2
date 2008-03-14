@@ -51,12 +51,12 @@
 	
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_email">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.email"/> </div>
+		<div id="ss_title" class="ss_pt_title ss_email_img"> <ssf:nlt tag="relevance.email"/> 
+			</div>
 	</ssf:param>
        <div id="ss_today">
        <div id="ss_hints"><em>This is my email for today </em>  </div>
-         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Andy Fox</a> RE: <a href="#" class="ss_link_2">My Itinerary</a> 9:35 AM<br>
-         <div style="#ss_email">Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page...</div> 
+                 <div style="#ss_email">Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page...</div> 
         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Quality Control Guidelines</a> 7:20 AM<br>
         <div> The project is going great so far...</div>
         <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Gerry Kimball</a> RE: <a href="#" class="ss_link_2">Rental space</a> Fri Mar 7, 5:20 AM<br>
@@ -68,7 +68,8 @@
 	
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_bookmarks">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.bookmarks"/> </div>
+		<div id="ss_title" class="ss_pt_title ss_bookmarks_img"> <ssf:nlt tag="relevance.bookmarks"/> 
+				</div>
 	</ssf:param>
         <div id="ss_today">
        <div id="ss_hints"><em>These are my bookmarks. </em>  </div>
@@ -84,7 +85,8 @@
       <div id="ss_col2" class="ss_col2">
 	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.tasks"/></div>
+		<div id="ss_title" class="ss_pt_title ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
+			
 	</ssf:param>
 	
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
@@ -92,8 +94,7 @@
 	
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_calendar">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.calendar"/> 
-		<img src="<html:rootPath/>images/pics/calendar16x16_2.png" alt="calendar" width="16" height="16" border="0" align="absmiddle" />
+		<div id="ss_title" class="ss_pt_title ss_cal_img"> <ssf:nlt tag="relevance.calendar"/> 
 		</div>
 		
 	</ssf:param>
@@ -102,19 +103,19 @@
        <div id="ss_cal_para" > 
         <li>Thu March 6, 9:00-10:00 am<br/>
         Marketing//Development<br/>
-        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
+        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br/>
         <li>Mon March 10, 1:00-3:00 pm<br/>
         Engineering//Wiki<br/>
-        <a href="#" class="ss_link_2">Software Development</a> </li><br>
+        <a href="#" class="ss_link_2">Software Development</a> </li><br/>
         <li>Tue March 11, 10:00-11:00 am<br/>
         Marketing//Blog<br/>
-        <a href="#" class="ss_link_2">Coffee with Vendors</a> </li><br>
+        <a href="#" class="ss_link_2">Coffee with Vendors</a> </li><br/>
         <li>Tue March 11, 4:00-5:00 pm<br/>
         Finance<br/>
-        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br>
+        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br/>
         <li>Fri March 14, 6:00-10:00 am<br/>
         Software//Expo<br/>
-        <a href="#" class="ss_link_2">Flight to Salt Lake</a> </li><br>
+        <a href="#" class="ss_link_2">Flight to Salt Lake</a> </li><br/>
         </div><!-- end of para -->
           </div><!-- end of today -->
          
@@ -125,7 +126,8 @@
       
 	<ssf:canvas id="relevanceWorkspaces" type="inline" styleId="ss_trackedPeople">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.ping"/></div>
+		<div id="ss_title" class="ss_pt_title ss_ping_img"><ssf:nlt tag="relevance.ping"/>
+				</div>
 	</ssf:param>
 	  <c:set var="ss_show_tracked_item_delete_button" value="false" scope="request"/>
 	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_buddies.jsp" />
