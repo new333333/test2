@@ -193,7 +193,6 @@
 			var oldCompletedTD = document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_completed");
 			var newCompletedTD = createCompletedTD(task);
 			oldCompletedTD.parentNode.replaceChild(newCompletedTD, oldCompletedTD);	
-try {
 			var oldDueTD = document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_due");
 			var newDueTD = createDueDateTD(task);
 			oldDueTD.parentNode.replaceChild(newDueTD, oldDueTD);	
@@ -203,7 +202,6 @@ try {
 			} else {
 				dojo.html.removeClass(document.getElementById("ss_tasks_" + namespace +"_" + task.id + "_title"), "ss_task_completed");
 			}
-} catch (e) {alert(e);}			
 		}
 				
 		function drawInteractiveChart(task, parent) {

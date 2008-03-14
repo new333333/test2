@@ -581,6 +581,7 @@ public class ViewEntryController extends  SAbstractController {
 			footerToolbar.addToolbarMenu("subscribe", NLT.get("toolbar.menu.subscribeToEntry"), adapterSubscriptionUrl.toString(), qualifiers);
 		}
 		
+		String[] contributorIds = collectContributorIds(entry);
 		
 		if (!user.getEmailAddresses().isEmpty() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
@@ -590,12 +591,13 @@ public class ViewEntryController extends  SAbstractController {
 			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId);
 			qualifiers = new HashMap();
 			qualifiers.put("popup", Boolean.TRUE);
+			qualifiers.put("post", Boolean.TRUE);
+			qualifiers.put("postParams", Collections.singletonMap(WebKeys.USER_IDS_TO_ADD, contributorIds));			
 			footerToolbar.addToolbarMenu("sendMail", NLT.get("toolbar.menu.sendMail"), adapterUrl.toString(), qualifiers);
 		}
 
 		if (getIcBrokerModule().isEnabled() && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			String[] contributorIds = collectContributorIds(entry);
 			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_MEETING);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId);
@@ -609,6 +611,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 		if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
 			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 			footerToolbar.addToolbarMenu("iCalendar", NLT.get("toolbar.menu.iCalendar"), UrlUtil.getICalURL(request, folderId, entryId), qualifiers);
 		}
 		

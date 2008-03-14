@@ -699,6 +699,10 @@ div.ss_send_friend {
   text-align:right;
 }
 
+.ss_permalink {
+	background-color: ${ss_toolbar4_background_color};
+}
+
 .ss_hover_over {
   position:absolute;
   border:1px solid black;

@@ -442,15 +442,21 @@ function ss_openUrlInWindow(obj, windowName, width, height) {
 function ss_showPermalink(obj) {
 	//See if the div exists already
 	var divObj = document.getElementById('ss_permalink_display_div');
-	var divObj3 = document.getElementById('ss_permalink_display_div3');
+	var inputObj = document.getElementById('ss_permalink_display_input');
 	if (divObj == null) {
 		//Create the div
 	    divObj = document.createElement("div");
 	    divObj.setAttribute("id", "ss_permalink_display_div");
-	    divObj.className = "ss_style ss_popupMenu";
+	    divObj.className = "ss_style ss_popupMenu ss_permalink";
 	    divObj2 = document.createElement("div");
-	    divObj3 = document.createElement("div");
-	    divObj3.setAttribute("id", "ss_permalink_display_div3");
+	    inputObj = document.createElement("input");
+	    inputObj.setAttribute("id", "ss_permalink_display_input");
+		inputObj.setAttribute("type", "text");
+		inputObj.setAttribute("style", "margin: 2px;");
+		dojo.event.connect(inputObj, "onclick", function(evt) {
+			inputObj.select();
+			return false;
+	    });		
 	    divObj2.setAttribute("align", "right");
 	    divObj2.className = "ss_popupMenuClose";
 	    aObj = document.createElement("a");
@@ -461,10 +467,13 @@ function ss_showPermalink(obj) {
 	    aObj.appendChild(imgObj);
 	    divObj2.appendChild(aObj);
 	    divObj.appendChild(divObj2)
-	    divObj.appendChild(divObj3)
+	    divObj.appendChild(inputObj)
 		document.getElementsByTagName( "body" ).item(0).appendChild(divObj);
 	}
-	divObj3.innerHTML = ss_replaceSubStrAll(obj.href, "%20", " ");
+	var size = obj.href.length + obj.href.length / 15;
+	inputObj.setAttribute("size", size);
+	inputObj.setAttribute("maxlength", size);
+	inputObj.value = ss_replaceSubStrAll(obj.href, "%20", " ");
 	//ss_debug(parseInt(ss_getObjAbsY(obj) + 10) + "px")
 	if (divObj.style && divObj.style.visibility && divObj.style.visibility == 'visible') {
 		divObj.style.display = 'none';
@@ -476,7 +485,7 @@ function ss_showPermalink(obj) {
 		var x = parseInt(ss_getClickPositionX());
 		x = x - parseInt((ss_getObjectWidth(divObj) / 3) * 2);
 		if (x < 0) x = 0;
-		divObj.style.left = x + "px";
+		divObj.style.left = x + "px";		
 	}
 }
 //Routine to go to a binder when it is clicked
@@ -4377,7 +4386,7 @@ function ss_Clipboard () {
 	    musterDiv.className = "ss_muster_div";
 	    musterDiv.style.display = "none";
 		musterDiv.innerHTML = '<table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 220px;">' +
-         '<tbody><tr><td width="30px"><div class="ss_popup_topleft"></div></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_muster_title" class="ss_popup_title"></div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_muster_close" class="ss_popup_close"></div></div>' +
+         '<tbody><tr class="ss_base_title_bar"><td width="30px"><div class="ss_popup_topleft"></div></td><td width="100%"><div class="ss_popup_topcenter"><div id="ss_muster_title"></div></div></td><td width="40px"><div class="ss_popup_topright"><div id="ss_muster_close" class="ss_popup_close"></div></div>' +
          '</td></tr><tr><td colspan="3"><div id="ss_muster_inner" style="padding: 3px 10px;" class="ss_popup_body"></div></td></tr><tr><td width="30px"><div class="ss_popup_bottomleft"></div></td><td width="100%"><div class="ss_popup_bottomcenter"></div></td>' +
          '<td width="40px"><div class="ss_popup_bottomright"></div></td></tr></tbody></table>';
 
@@ -5693,3 +5702,33 @@ function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 		}
 	}
 }
+
+
+function ss_showAttachmentVersions(prefix, start, end) {
+	if (!document.getElementById) {
+		return;
+	}
+	var rowObj = document.getElementById(prefix + start + "n");
+	if (rowObj) {
+		rowObj.style.display = 'none';
+		rowObj.style.visibility = 'hidden';
+	}
+	var more = start < end;
+	var count = start;
+	while (more) {
+		var rowObj = document.getElementById(prefix + count);
+		if (!rowObj) {
+			return;
+		}
+		rowObj.style.display = 'table-row';
+		rowObj.style.visibility = 'visible';
+		more = count < end;
+		count++;
+	}
+	var rowObj = document.getElementById(prefix + count + "n");
+	if (rowObj) {
+		rowObj.style.display = 'table-row';
+		rowObj.style.visibility = 'visible';
+	}	
+}
+

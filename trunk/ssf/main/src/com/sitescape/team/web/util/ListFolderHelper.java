@@ -1467,6 +1467,7 @@ public class ListFolderHelper {
 			}
 			//RSS link 
 			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 			String rssUrl = UrlUtil.getFeedURL(request, forumId);
 			if (rssUrl != null && !rssUrl.equals(""))
 				folderToolbar.addToolbarMenuItem("3_administration", "", NLT.get("toolbar.menu.rss"), 
@@ -1717,11 +1718,11 @@ public class ListFolderHelper {
 			qualifiers = new HashMap();
 			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
 				qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "', '" + response.getNamespace() + "', '" + 
-						NLT.get("calendar.import.window.title") + "');return false;");
+						NLT.get("calendar.import.window.title") + "', '" + NLT.get("calendar.import.window.legend") + "', '" + NLT.get("calendar.import.window.upload") + "');return false;");
 				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.calendarImport"), "#", qualifiers);
 			} else {
 				qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "', '" + response.getNamespace() + "', '" + 
-						NLT.get("task.import.window.title") + "');return false;");
+						NLT.get("task.import.window.title") + "', '" + NLT.get("task.import.window.legend") + "', '" + NLT.get("task.import.window.upload") + "');return false;");
 				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.taskImport"), "#", qualifiers);
 			}
 		}
@@ -1748,6 +1749,7 @@ public class ListFolderHelper {
 		if (viewType.equals(Definition.VIEW_STYLE_CALENDAR) ||
 				viewType.equals(Definition.VIEW_STYLE_TASK)) {
 			qualifiers = new HashMap();
+			qualifiers.put("onClick", "ss_showPermalink(this);return false;");
 			footerToolbar.addToolbarMenu("iCalendar", NLT.get("toolbar.menu.iCalendar"), com.sitescape.team.ical.util.UrlUtil.getICalURL(request, forumId, null), qualifiers);
 		}
 
