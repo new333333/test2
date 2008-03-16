@@ -160,6 +160,7 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.USER_PRINCIPAL, user);
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(this));
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
 		if (!namespace.equals("")) {

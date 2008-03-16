@@ -126,6 +126,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		//These have been documented, so don't delete any
 		model.put(WebKeys.USER_PRINCIPAL, user);
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(this));
 
 		model.put(WebKeys.DISPLAY_TYPE, displayType);
 

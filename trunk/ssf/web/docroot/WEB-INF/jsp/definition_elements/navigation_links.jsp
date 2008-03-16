@@ -52,6 +52,7 @@
 
 <ssf:skipLink tag="<%= NLT.get("skip.navigation.links") %>" id="navigationLinks_${ss_nav_linksCount}_${renderResponse.namespace}">
 
+<div class="ss_clear_float"></div>
 <div class="ss_breadcrumb">
   <ssHelpSpot helpId="workspaces_folders/misc_tools/breadcrumbs" offsetX="0" 
   <c:if test="<%= !BrowserSniffer.is_ie(request) %>">
@@ -191,6 +192,6 @@
 </li>
 </ul>
 </div>
-<div class="ss_clear"></div>
+<div class="ss_clear_float"></div>
 
 </ssf:skipLink>

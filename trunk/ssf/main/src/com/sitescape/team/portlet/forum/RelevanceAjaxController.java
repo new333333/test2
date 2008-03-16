@@ -41,6 +41,7 @@ import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.dom4j.Element;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
@@ -150,6 +151,11 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 				trackedPeople = new ArrayList();
 				relevanceMap.put(ObjectKeys.RELEVANCE_TRACKED_PEOPLE, trackedPeople);
 			}
+			List trackedCalendars = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_CALENDARS);
+			if (trackedCalendars == null) {
+				trackedCalendars = new ArrayList();
+				relevanceMap.put(ObjectKeys.RELEVANCE_TRACKED_CALENDARS, trackedCalendars);
+			}
 			if (type.equals("add")) {
 				if (!trackedBinders.contains(binderId)) trackedBinders.add(binderId);
 				if (binder.getEntityType().equals(EntityType.workspace) && 
@@ -157,8 +163,15 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 					//This is a user workspace, so also track this user
 					if (!trackedPeople.contains(binder.getOwnerId())) trackedPeople.add(binder.getOwnerId());
 				}
+				Definition binderDef = binder.getDefaultViewDef();
+				Element familyProperty = (Element) binderDef.getDefinition().getRootElement()
+						.selectSingleNode("//properties/property[@name='family']");
+				if (familyProperty != null && familyProperty.attributeValue("value", "").equals("calendar")) {
+					if (!trackedCalendars.contains(binderId)) trackedCalendars.add(binderId);
+				}
 			} else if (type.equals("delete")) {
 				if (trackedBinders.contains(binderId)) trackedBinders.remove(binderId);
+				if (trackedCalendars.contains(binderId)) trackedCalendars.remove(binderId);
 				if (binder.getEntityType().equals(EntityType.workspace) && 
 						binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
 					//This is a user workspace, so also track this user

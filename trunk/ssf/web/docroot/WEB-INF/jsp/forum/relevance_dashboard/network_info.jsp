@@ -47,13 +47,6 @@
         </div><!-- end of ss_col 1 -->
       <div id="ss_col2" class="ss_col2">
 
-	<ssf:canvas id="relevanceHot" type="inline" styleId="ss_whatshot">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.whatsHot"/></div>
-	</ssf:param>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
-	</ssf:canvas>
-	
 	<ssf:canvas id="relevanceActivities" type="inline" styleId="ss_shared">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.activities"/></div>

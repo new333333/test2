@@ -33,7 +33,7 @@
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="showWorkspacePage" value="true"/>
-<c:if test="${ss_displayType == 'ss_workarea'}">
+<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
   <ssf:ifnotadapter>
     <c:set var="showWorkspacePage" value="false"/>
   </ssf:ifnotadapter>
@@ -41,6 +41,7 @@
 
 <ssf:ifadapter>
 <body class="ss_style_body">
+<div id="ss_psuedoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
 
 <c:if test="${!empty ssReloadUrl}">
@@ -51,7 +52,7 @@
 </c:if>
 
 <c:if test="${empty ssReloadUrl}">
-<c:if test="${ss_displayType == 'ss_workarea'}">
+<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 <script type="text/javascript">
 if (self.parent) {
 	//We are in an iframe inside a portlet (maybe?)
@@ -157,13 +158,13 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 	</script>
 
 	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
-<c:if test="${ss_displayType == 'ss_workarea'}">
+<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-<c:if test="${ss_displayType != 'ss_workarea'}">
+<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
     <td valign="top" class="ss_view_sidebar">
 
 	<% // Navigation bar %>
@@ -202,7 +203,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 					  	<c:choose>
 					  		<c:when test="${ss_showTeamMembers}">
 								<% // Navigation links %>
-<c:if test="${ss_displayType != 'ss_workarea'}">
+<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 								<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 </c:if>								
 								<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
@@ -214,7 +215,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 							</c:when>
 							<c:otherwise>
 								<% // Navigation links %>
-<c:if test="${ss_displayType != 'ss_workarea'}">
+<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 								<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 </c:if>								
 								<% // Show the workspace according to its definition %>
@@ -266,6 +267,7 @@ ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initSho
 </c:if>
 
 <ssf:ifadapter>
+</div>
 	</body>
 </html>
 </ssf:ifadapter>

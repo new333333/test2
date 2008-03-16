@@ -207,6 +207,11 @@ public class DefinitionHelper {
 				forumViewElement = (Element) forumViewElement.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
 				model.put(WebKeys.CONFIG_ELEMENT, forumViewElement);
 				model.put(WebKeys.CONFIG_DEFINITION, forumViewDoc);
+				Element familyProperty = (Element) forumViewDoc.getRootElement().selectSingleNode("//properties/property[@name='family']");
+				if (familyProperty != null) {
+					String family = familyProperty.attributeValue("value", "");
+					model.put(WebKeys.DEFINITION_FAMILY, family);
+				}
 			} else {
 				model.put(WebKeys.CONFIG_ELEMENT, null);
 				model.put(WebKeys.CONFIG_DEFINITION, getInstance().getDefinitionModule().getDefinitionConfig());

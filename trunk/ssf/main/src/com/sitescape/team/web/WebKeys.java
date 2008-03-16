@@ -523,6 +523,7 @@ public class WebKeys {
     public static final String DEFINITION_BINDER="ssDefinitionBinder";
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
     public static final String DEFINITION_CHOICES="ssDefinitionChoices";
+    public static final String DEFINITION_FAMILY="ssDefinitionFamily";
     public static final String DISPLAY_STYLE="ss_displayStyle";
     public static final String DISPLAY_STYLE_BLOG="blog";
     public static final String DISPLAY_STYLE_SEARCH="search";
@@ -692,6 +693,7 @@ public class WebKeys {
     public static final String PEOPLE_RESULTCOUNT="ssPeopleResultCount";
     public static final String PERMALINK="ssPermalink";
     public static final String PERSONAL_TAGS="ssPersonalTags";
+	public static final String PORTAL_URL = "ss_portalUrl";
 	public static final String PORTLET_TYPE = "ss_portletType";
 	public static final String PORTLET_TYPE_ADMIN = "ss_portletTypeAdmin";
     public static final String POSTINGS="ssPostings";
@@ -733,6 +735,7 @@ public class WebKeys {
     public static final String RECORDS_DIV_ID="ss_recordsDivId";
     public static final String RELEVANCE_SHARED_ENTITIES="ss_sharedEntities";
     public static final String RELEVANCE_TRACKED_BINDERS="ss_trackedBinders";
+    public static final String RELEVANCE_TRACKED_CALENDARS="ss_trackedCalendars";
     public static final String RELEVANCE_TRACKED_PEOPLE="ss_trackedPeople";
     public static final String RELEVANCE_TYPE_DASHBOARD="dashboard";
     public static final String RELEVANCE_TYPE_SITE_DASHBOARD="networkDashboard";
@@ -839,10 +842,15 @@ public class WebKeys {
     public static final String USER_WORKSPACE="ss_userWorkspace";
     public static final String WHATS_HOT="ss_whatsHot";
     public static final String WHATS_HOT_FOLDERS="ss_whatsHotFolders";
+    public static final String WHATS_NEW="ss_whatsNew";
+    public static final String WHATS_NEW_FOLDERS="ss_whatsNewFolders";
     public static final String WHATS_NEW_TRACKED_PEOPLE="ss_whatsNewTrackedPeople";
     public static final String WHATS_NEW_TRACKED_PEOPLE_FOLDERS="ss_whatsNewTrackedPeopleFolders";
     public static final String WHATS_NEW_TRACKED_PLACES="ss_whatsNewTrackedPlaces";
     public static final String WHATS_NEW_TRACKED_PLACES_FOLDERS="ss_whatsNewTrackedPlacesFolders";
+    public static final String WHATS_NEW_TRACKED_CALENDARS="ss_whatsNewTrackedCalendars";
+    public static final String WHATS_NEW_TRACKED_CALENDAR_IDS="ss_whatsNewTrackedCalendarIds";
+    public static final String WHATS_NEW_TRACKED_CALENDAR_FOLDERS="ss_whatsNewTrackedCalendarFolders";
     public static final String WIKI_HOMEPAGE_ENTRY_ID="ss_wikiHomepageEntryId";
     public static final String WINDOW_STATE="ss_windowState";
     public static final String WORKAREA_OPERATIONS="ssWorkAreaOperations";

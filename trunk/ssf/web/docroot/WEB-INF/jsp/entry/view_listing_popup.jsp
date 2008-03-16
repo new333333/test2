@@ -39,6 +39,7 @@
 </c:if>
 <ssf:ifadapter>
 <body class="ss_style_body">
+<div id="ss_psuedoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
 <c:if test="${!empty ssReloadUrl}">
 <script type="text/javascript">
@@ -48,7 +49,7 @@
 
 </c:if>
 <c:if test="${empty ssReloadUrl}">
-<c:if test="${ss_displayType == 'ss_workarea'}">
+<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
   <%@ include file="/WEB-INF/jsp/entry/view_workarea_common.jsp" %>
 </c:if>
 <c:if test="${showFolderPage}">
@@ -79,6 +80,7 @@
 </c:if>
 </c:if>
 <ssf:ifadapter>
+</div>
 </body>
 </html>
 </ssf:ifadapter>

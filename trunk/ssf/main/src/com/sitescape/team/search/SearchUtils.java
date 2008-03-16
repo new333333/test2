@@ -43,14 +43,25 @@ public class SearchUtils {
 		return crit;
 	}
 	
-	public static Criteria entriesForTrackedPlaces(AllModulesInjected bs, Binder userWorkspace)
+	public static Criteria entriesForTrackedPlaces(AllModulesInjected bs, List userWorkspaces)
 	{
 		Criteria crit = new Criteria();
 		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, 
 				EntityIndexUtils.ENTRY_TYPE_REPLY}))
 			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
-			.add(in(ENTRY_ANCESTRY, getTrackedPlacesIds(bs, userWorkspace)));
+			.add(in(ENTRY_ANCESTRY, userWorkspaces));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		return crit;
+	}
+	
+	public static Criteria entriesForTrackedCalendars(AllModulesInjected bs, List userWorkspaces)
+	{
+		Criteria crit = new Criteria();
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, 
+				EntityIndexUtils.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
+			.add(in(ENTRY_ANCESTRY, userWorkspaces));
+		crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
 		return crit;
 	}
 	
@@ -65,7 +76,7 @@ public class SearchUtils {
 		return crit;
 	}
 
-	private static List<String> getTrackedPlacesIds(AllModulesInjected bs, Binder userWorkspace) {
+	public static List<String> getTrackedPlacesIds(AllModulesInjected bs, Binder userWorkspace) {
 		List<String> sIdList = new ArrayList<String>();
 		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(userWorkspace.getOwnerId(), userWorkspace.getId());
 		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
@@ -80,7 +91,22 @@ public class SearchUtils {
 		return sIdList;
 	}
 
-	private static List<String> getTrackedPeopleIds(AllModulesInjected bs, Binder binder) {
+	public static List<String> getTrackedCalendarIds(AllModulesInjected bs, Binder userWorkspace) {
+		List<String> sIdList = new ArrayList<String>();
+		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(userWorkspace.getOwnerId(), userWorkspace.getId());
+		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
+		if (relevanceMap != null) {
+			List<Long> idList = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_CALENDARS);
+			if (idList != null) {
+				for (Long id: idList) {
+					sIdList.add(String.valueOf(id));
+				}
+			}
+		}
+		return sIdList;
+	}
+
+	public static List<String> getTrackedPeopleIds(AllModulesInjected bs, Binder binder) {
 		List<String> sIdList = new ArrayList<String>();
 		UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
 		Map relevanceMap = (Map)userForumProperties.getProperty(ObjectKeys.USER_PROPERTY_RELEVANCE_MAP);
@@ -97,4 +123,14 @@ public class SearchUtils {
 		}
 		return sIdList;
 	}
+	
+	public static Criteria newEntries()
+	{
+		Criteria crit = new Criteria();
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, EntityIndexUtils.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}));
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		return crit;
+	}
+	
 }

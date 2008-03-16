@@ -209,6 +209,7 @@ public class ListFolderHelper {
 		//These have been documented, so don't delete any
 		model.put(WebKeys.USER_PRINCIPAL, user);
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
 
 		model.put(WebKeys.DISPLAY_TYPE, displayType);
 		model.put(WebKeys.BINDER_ID, binderId.toString());
@@ -267,6 +268,7 @@ public class ListFolderHelper {
 	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 			model.put(WebKeys.USER_PROPERTIES, userProperties);
 			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+			model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
 	
 			model.put(WebKeys.DISPLAY_TYPE, displayType);
 	

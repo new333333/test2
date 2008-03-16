@@ -55,9 +55,12 @@
 			</ssf:url>"
 		  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
 	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a>
+	    <c:forEach var="calendar" items="${ss_trackedCalendars}">
+	      <c:if test="${calendar.id == binder.id}"> <span class="ss_fineprint">(<ssf:nlt tag="relevance.trackedCalendar"/>)</span></c:if>
+	    </c:forEach>
 	    <img style="padding:4px 0px 0px 2px;" align="texttop"
       src="<html:rootPath/>images/pics/delete.gif"
-      onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/>
+      onClick="ss_trackedItemsDelete(this, '${binder.id}');"/>
 	      </td></tr></tbody></table>
 
   </c:if>
@@ -87,7 +90,7 @@
 		  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'workspace', '${ss_namespace}', 'yes');"
 	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a><img style="padding:4px 0px 0px 2px;" align="texttop"
       src="<html:rootPath/>images/pics/delete.gif"
-      onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/>
+      onClick="ss_trackedItemsDelete(this, '${binder.id}');"/>
       </td></tr></tbody></table>
 	
   </c:if>
