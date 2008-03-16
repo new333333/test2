@@ -66,7 +66,7 @@
           </div><!-- end of today -->
 	</ssf:canvas>
 	
-	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_bookmarks">
+	<ssf:canvas id="relevanceBookmarks" type="inline" styleId="ss_bookmarks">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_bookmarks_img"> <ssf:nlt tag="relevance.bookmarks"/> 
 				</div>
@@ -83,48 +83,26 @@
       </div><!-- end of ss_col 1 -->
         
       <div id="ss_col2" class="ss_col2">
-	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
-			
-	</ssf:param>
-	
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
-	</ssf:canvas>
-	
-	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_calendar">
+	<ssf:canvas id="relevanceCalendars" type="inline" styleId="ss_calendar">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_cal_img"> <ssf:nlt tag="relevance.calendar"/> 
 		</div>
-		
 	</ssf:param>
-      
-        <div id="ss_todayC">
-       <div id="ss_cal_para" > 
-        <li>Thu March 6, 9:00-10:00 am<br/>
-        Marketing//Development<br/>
-        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br/>
-        <li>Mon March 10, 1:00-3:00 pm<br/>
-        Engineering//Wiki<br/>
-        <a href="#" class="ss_link_2">Software Development</a> </li><br/>
-        <li>Tue March 11, 10:00-11:00 am<br/>
-        Marketing//Blog<br/>
-        <a href="#" class="ss_link_2">Coffee with Vendors</a> </li><br/>
-        <li>Tue March 11, 4:00-5:00 pm<br/>
-        Finance<br/>
-        <a href="#" class="ss_link_2">All Hands Meeting</a> </li><br/>
-        <li>Fri March 14, 6:00-10:00 am<br/>
-        Software//Expo<br/>
-        <a href="#" class="ss_link_2">Flight to Salt Lake</a> </li><br/>
-        </div><!-- end of para -->
-          </div><!-- end of today -->
-         
+		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_calendars.jsp" />
 	</ssf:canvas>
+
+	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title" class="ss_pt_title ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
+	</ssf:param>
+		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
+	</ssf:canvas>
+	
       </div><!-- end of col2 -->
       
       <div id="ss_col3" class="ss_col3">
       
-	<ssf:canvas id="relevanceWorkspaces" type="inline" styleId="ss_trackedPeople">
+	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedPeople">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_ping_img"><ssf:nlt tag="relevance.ping"/>
 				</div>
