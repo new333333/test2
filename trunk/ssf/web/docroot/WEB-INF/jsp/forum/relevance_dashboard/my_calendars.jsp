@@ -36,13 +36,11 @@
 </c:if>
 <c:if test="${!empty ss_whatsNewTrackedCalendars}">
 
-<div id="ss_today">
-  <div id="ss_mydocs_para" >
+<div id="ss_todayC">
+  <div id="ss_cal_para" > 
   <c:forEach var="entry" items="${ss_whatsNewTrackedCalendars}">
     <jsp:useBean id="entry" type="java.util.Map" />
     <li>
-	 
-	 
 		<c:set var="isDashboard" value="yes"/>
 		<ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entry._docId}" binderId="${entry._binderId}" 
@@ -57,22 +55,15 @@
 		</ssf:titleLink>
 	 
 	  <br/>
-	  <span>
-	  
-		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" titleStyle="ss_link_1" /> 
-	  
-	  </span>
-	  
+
 	  <span class="ss_link_4">
 	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
       value="${entry._modificationDate}" type="both" 
-	  timeStyle="short" dateStyle="medium" />
+	  timeStyle="short" dateStyle="full" />
 	  </span>
 	   
 	  <span class="ss_link_2">
-	  
 		<c:set var="path" value=""/>
-
 		<c:if test="${!empty ss_whatsNewTrackedCalendarFolders[entry._binderId]}">
 			<c:set var="path" value="${ss_whatsNewTrackedCalendarFolders[entry._binderId]}"/>
 			<c:set var="title" value="${ss_whatsNewTrackedCalendarFolders[entry._binderId].title} (${ss_whatsNewTrackedCalendarFolders[entry._binderId].parentBinder.title})"/>
@@ -84,7 +75,6 @@
 				title="${path}"
 				><span>${title}</span></a>
 		</c:if>
-	  
 	  </span>&nbsp;<img src="<html:rootPath/>images/pics/folder_icons16x16.png" alt="folder" width="16" height="16" hspace="2" border="0" align="absmiddle" />
 	  <c:if test="${!empty entry._desc}">
 	    <br/>
@@ -98,3 +88,4 @@
 	</div><!-- end of para -->
     </div><!-- end of today -->
 </c:if>
+
