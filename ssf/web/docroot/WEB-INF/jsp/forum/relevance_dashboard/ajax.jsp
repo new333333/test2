@@ -35,6 +35,9 @@
 <c:if test="${ss_type == 'networkDashboard'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/network_info.jsp" />
 </c:if>
+<c:if test="${ss_type == 'siteDashboard'}">
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/site_info.jsp" />
+</c:if>
 <c:if test="${ss_type == 'visitors'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/visitor_info.jsp" />
 </c:if>

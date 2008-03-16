@@ -39,7 +39,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 
-<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" style="display:block; margin:2;">
+<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" style="display:block;">
 <%@ include file="/WEB-INF/jsp/search/search_result.jsp" %>
 </div>
 <script type="text/javascript">

@@ -61,7 +61,7 @@
 	</c:if>
 	</script>
 
-<c:if test="${ss_displayType == 'ss_workarea'}">
+<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -70,7 +70,7 @@
     <td valign="top" style="width: 200px">
 
 
-<c:if test="${ss_displayType != 'ss_workarea'}">
+<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
@@ -99,7 +99,7 @@
 		<div id="ss_tabs_container">
 			<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 
-<c:if test="${ss_displayType != 'ss_workarea'}">
+<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 			<% // Breadcrumbs %>
 			<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 </c:if>

@@ -41,7 +41,7 @@
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-<c:if test="${ss_displayType == 'ss_workarea'}">
+<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -49,7 +49,7 @@
     <tr>
     <td valign="top" class="ss_view_sidebar">
 
-<c:if test="${ss_displayType != 'ss_workarea'}">
+<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
@@ -77,7 +77,7 @@
 	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color" >
 			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
-<c:if test="${ss_displayType != 'ss_workarea'}">
+<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 </c:if>		
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

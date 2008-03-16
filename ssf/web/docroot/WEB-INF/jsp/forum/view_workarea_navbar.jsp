@@ -33,7 +33,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 <c:set var="ss_urlWindowState" value="maximized"/>
-<c:if test="${ss_displayType == 'ss_workarea'}">
+<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
   <c:set var="ss_urlWindowState" value=""/>
 </c:if>
 <!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script> -->
@@ -78,6 +78,31 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 
 <!-- Start of global toolbar -->
 <script type="text/javascript">
+function ss_workarea_showPsuedoPortal${renderResponse.namespace}(obj) {
+	//See if we are in an iframe inside a portlet 
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_workareaIframe") == 0) {
+		//We are running inside a portlet iframe; do nothing
+	} else {
+		//Show the psuedo portal
+		var divObj = self.document.getElementById('ss_psuedoPortalDiv${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.className = "ss_psuedoPortal"
+		}
+	}
+}
+
+function ss_workarea_showPortal${renderResponse.namespace}(obj) {
+	//See if we are in an iframe inside a portlet 
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_workareaIframe") == 0) {
+		//We are running inside a portlet iframe
+		if (obj.href != "") self.parent.location.href = obj.href;
+	} else {
+		self.location.href = obj.href;
+	}
+}
+
 function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 	if (typeof entryId == "undefined") entryId = "";
 	//Build a url to go to
@@ -96,30 +121,14 @@ function ss_workarea_showId${renderResponse.namespace}(id, action, entryId) {
 if (typeof ss_workarea_showId == "undefined") 
 	ss_workarea_showId = ss_workarea_showId${renderResponse.namespace};
 
-function ss_goToMyParentPortletNormalView${renderResponse.namespace}() {
+function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	//See if we are in an iframe inside a portlet 
 	var windowName = self.window.name    
 	if (windowName.indexOf("ss_workareaIframe") == 0) {
-		//We are running inside an iframe, get the namespace name of that iframe's owning portlet
-		var namespace = windowName.substr("ss_workareaIframe".length)
-		var url = "";
-		try {
-			eval('url = self.parent.ss_portal_view_normal_url'+namespace)
-		} catch(e) {}
-		if (url != "" && url != "undefined") self.parent.location.href = url;
-	}
-}
-function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
-	//See if we are in an iframe inside a portlet 
-	var windowName = self.window.name    
-	if (windowName.indexOf("ss_workareaIframe") == 0) {
-		//We are running inside an iframe, get the namespace name of that iframe's owning portlet
-		var namespace = windowName.substr("ss_workareaIframe".length)
-		var url = "";
-		try {
-			eval('url = self.parent.ss_portal_view_maximized_url'+namespace)
-		} catch(e) {}
-		if (url != "" && url != "undefined") self.parent.location.href = url;
+		//We are running inside an iframe
+		self.parent.location.href = obj.href;
+	} else {
+		self.location.href = obj.href;
 	}
 }
 </script>
@@ -135,19 +144,38 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
     <td align="center" valign="top">
       <div id="ss_top_nav_buttontwo">
         <ul>
-          <li style="display:none;">
+          <li>
 			  <ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
 			      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
 			  </ssHelpSpot>
-	          <a id="ss_portalViewPortalButton${renderResponse.namespace}" 
-	            href="javascript: ;" 
-	            onClick="ss_goToMyParentPortletNormalView${renderResponse.namespace}();return false;"
-	          title="<ssf:nlt tag="navigation.goToPortalView"/>"
+	          <a href="${ss_portalUrl}" 
+	            onClick="ss_workarea_showPortal${renderResponse.namespace}(this);return false;"
+	            title="<ssf:nlt tag="navigation.goToPortalView"/>"
 	          ><ssf:nlt tag="navigation.portalView"/></a></li>
-          <li style="display:none;">
- 			  <a id="ss_portalViewMaximizedButton${renderResponse.namespace}" 
-				href="javascript: ;"
-	            onClick="ss_goToMyParentPortletMaximizedView${renderResponse.namespace}();return false;"
+          <li>
+          	  <a
+	 			  <c:if test="${ssBinder.entityType == 'folder'}">
+	 			    href="<ssf:url adapter="true" portletName="ss_forum" 
+			    		action="view_folder_listing"
+			    		binderId="${ssBinder.id}">
+			    		<ssf:param name="newTab" value="1"/>
+						</ssf:url>"
+	 			  </c:if>
+	 			  <c:if test="${ssBinder.entityType == 'workspace'}">
+	 			    href="<ssf:url adapter="true" portletName="ss_forum" 
+			    		action="view_ws_listing"
+			    		binderId="${ssBinder.id}">
+			    		<ssf:param name="newTab" value="1"/>
+						</ssf:url>"
+	 			  </c:if>
+	 			  <c:if test="${ssBinder.entityType == 'profiles'}">
+	 			    href="<ssf:url adapter="true" portletName="ss_forum" 
+			    		action="view_profile_listing"
+			    		binderId="${ssBinder.id}">
+			    		<ssf:param name="newTab" value="1"/>
+						</ssf:url>"
+	 			  </c:if>
+	            onClick="ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(this);return false;"
 	          title="<ssf:nlt tag="navigation.goToMaximizedView"/>"
               ><ssf:nlt tag="navigation.expandedView"/></a>
           </li>
@@ -196,28 +224,6 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}() {
 </tbody>
 </table>
 <div class="ss_clear_float"></div>
-<script type="text/javascript">
-	//See if we are in an iframe inside a portlet 
-	var windowName = self.window.name    
-	if (windowName.indexOf("ss_workareaIframe") == 0) {
-		//We are running inside a portlet iframe
-		var windowState = "";
-		try {
-			eval('windowState = self.parent.ss_portal_view_window_state'+namespace)
-		} catch(e) {}
-		var pbObj = document.getElementById('ss_portalViewPortalButton${renderResponse.namespace}')
-		pbObj.parentNode.style.display = "block";
-		var ebObj = document.getElementById('ss_portalViewMaximizedButton${renderResponse.namespace}')
-		ebObj.parentNode.style.display = "block";
-		if (windowState == "normal") {
-			var aObj = document.getElementById('ss_portalViewPortalButton${renderResponse.namespace}')
-			aObj.className = "current"
-		} else {
-			var aObj = document.getElementById('ss_portalViewMaximizedButton${renderResponse.namespace}')
-			aObj.className = "current"
-		}
-	}
-</script>
 
 </td>
 </tr>
@@ -469,10 +475,13 @@ ss_statusCurrent = "${ssUser.status}";
 <a class="ss_linkButton ss_smallprint" href="javascript: ;" 
   onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;">
 <c:if test="${ssBinder.entityType == 'workspace'}">
-<c:if test="${ssBinder.definitionType != 12}"><span class="ss_smallprint"><ssf:nlt tag="relevance.trackThisWorkspace"/></span></c:if>
-<c:if test="${ssBinder.definitionType == 12}"><span class="ss_smallprint"><ssf:nlt tag="relevance.trackThisPerson"/></span></c:if>
+  <c:if test="${ssBinder.definitionType != 12}"><span class="ss_smallprint"><ssf:nlt tag="relevance.trackThisWorkspace"/></span></c:if>
+  <c:if test="${ssBinder.definitionType == 12}"><span class="ss_smallprint"><ssf:nlt tag="relevance.trackThisPerson"/></span></c:if>
 </c:if>
-<c:if test="${ssBinder.entityType == 'folder'}"><span class="ss_smallprint"><ssf:nlt tag="relevance.trackThisFolder"/></span></c:if>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <c:if test="${ssDefinitionFamily != 'calendar'}"><span class="ss_smallprint"><ssf:nlt tag="relevance.trackThisFolder"/></span></c:if>
+  <c:if test="${ssDefinitionFamily == 'calendar'}"><span class="ss_smallprint"><ssf:nlt tag="relevance.trackThisCalendar"/></span></c:if>
+</c:if>
 </a>
 </c:if>
 <div id="ss_track_this_anchor${renderResponse.namespace}"> </div>
@@ -522,6 +531,15 @@ ss_statusCurrent = "${ssUser.status}";
   ><a href="javascript: ;" 
   onClick="ss_showRecentPlacesDiv${renderResponse.namespace}();return false;"
   ><ssf:nlt tag="sidebar.history"/></a></span></div>
+
+<div id="ss_recentPlacesDiv${renderResponse.namespace}"
+  style="display:none;">
+<ssf:popupPane width="250px" titleTag="sidebar.history"
+      closeScript="ss_hideRecentPlacesDiv${renderResponse.namespace}();return false;">
+<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar_workarea.jsp" />
+</ssf:popupPane>
+</div>
+
 </td>
 </tr>
 </tbody>
@@ -640,14 +658,10 @@ function ss_hideRecentPlacesDiv${renderResponse.namespace}() {
 }
 </script>
 
-<div id="ss_recentPlacesDiv${renderResponse.namespace}"
-  style="position:relative; display:none;">
-<ssf:popupPane width="250px" titleTag="sidebar.history"
-      closeScript="ss_hideRecentPlacesDiv${renderResponse.namespace}();return false;">
-<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar_workarea.jsp" />
-</ssf:popupPane>
-</div>
-
 <div style="padding-bottom:4px;"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <div style="padding-bottom:4px;"></div>
+
+<script type="text/javascript">
+ss_createOnLoadObj('ss_workarea_showPsuedoPortal${renderResponse.namespace}', ss_workarea_showPsuedoPortal${renderResponse.namespace});
+</script>

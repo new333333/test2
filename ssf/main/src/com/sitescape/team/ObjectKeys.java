@@ -182,9 +182,12 @@ public interface ObjectKeys {
     
     public static final String RELEVANCE_DASHBOARD_DASHBOARD = "dashboard";
     public static final String RELEVANCE_DASHBOARD_NETWORK_DASHBOARD = "networkDashboard";
+    public static final String RELEVANCE_DASHBOARD_SITE_DASHBOARD = "siteDashboard";
     public static final String RELEVANCE_DASHBOARD_VISITORS = "visitors";
     public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
+    public static final String RELEVANCE_DASHBOARD_HIDDEN = "hiddenDashboard";
     public static final String RELEVANCE_TRACKED_BINDERS = "trackedBinders";
+    public static final String RELEVANCE_TRACKED_CALENDARS = "trackedCalendars";
     public static final String RELEVANCE_TRACKED_PEOPLE = "trackedPeople";
     
     public static final String SEARCH_OFFSET = "offset";
@@ -236,6 +239,7 @@ public interface ObjectKeys {
     public static final String USER_PROPERTY_FOLDER_COLUMNS = "userFolderColumns";
     public static final String USER_PROPERTY_MOBILE_BINDER_IDS = "userMobileBinderIds";
     public static final String USER_PROPERTY_PERMALINK_URL = "userPermalinkUrl";
+    public static final String USER_PROPERTY_PORTAL_URL = "userPortalUrl";
     public static final String USER_PROPERTY_SEARCH_RESULTS_FOLDER_COLUMNS = "userSearchResultsFolderColumns";
     public static final String USER_PROPERTY_SEARCH_RESULTS_COLUMN_POSITIONS="searchResultsColumnPositions";
     public static final String USER_PROPERTY_SAVED_SEARCH_QUERIES="userSearchQueries";

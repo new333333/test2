@@ -156,6 +156,7 @@ public class ListProfilesController extends   SAbstractController {
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		model.put(WebKeys.USER_PROPERTIES, userProperties);
 		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(this));
 
 		model.put(WebKeys.DISPLAY_TYPE, displayType);
 

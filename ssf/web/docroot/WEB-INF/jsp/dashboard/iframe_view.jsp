@@ -32,5 +32,9 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <iframe src="${ssDashboard.dashboard.components[ssComponentId].data.url}"
   style="width: 99%;
-  height: ${ssDashboard.dashboard.components[ssComponentId].data.height}px;
+  <c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.height}">
+	<c:set var="ss_height" value="${ssDashboard.dashboard.components[ssComponentId].data.height}"/>
+	<jsp:useBean id="ss_height" type="String" />
+    height: <%= ss_height.replace("px", "") %>px;
+  </c:if>
   margin:0px; padding:0px;" frameBorder="0" >xxx</iframe>

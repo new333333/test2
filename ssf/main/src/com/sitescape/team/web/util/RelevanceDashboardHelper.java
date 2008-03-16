@@ -88,6 +88,7 @@ public class RelevanceDashboardHelper {
 		
 		if (ObjectKeys.RELEVANCE_DASHBOARD_DASHBOARD.equals(type)) {
 			setupTasksBeans(bs, userWorkspace, model);
+			setupTrackedCalendarBeans(bs, userWorkspace, model);
 			setupDocumentsBeans(bs, userWorkspace, model);
 			setupViewedEntriesBean(bs, userWorkspace, model);
 			setupTrackedItemsBeans(bs, userWorkspace, model);
@@ -96,14 +97,19 @@ public class RelevanceDashboardHelper {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
 			setupTrackedPeopleBeans(bs, userWorkspace, model);
 			setupSharedItemsBeans(bs, userWorkspace, model);
-			setupWhatsHotBean(bs, model);
 			setupActivitiesBean(bs, userWorkspace, model);
+			
+		} else if (ObjectKeys.RELEVANCE_DASHBOARD_SITE_DASHBOARD.equals(type)) {
+			setupWhatsHotBean(bs, model);
+			setupWhatsNew(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_VISITORS.equals(type)) {
 			setupVisitorsBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_TRACKED_ITEMS.equals(type)) {
 			setupTrackedItemsBeans(bs, userWorkspace, model);
+			
+		} else if (ObjectKeys.RELEVANCE_DASHBOARD_HIDDEN.equals(type)) {
 		}
 	}
 	
@@ -196,29 +202,68 @@ public class RelevanceDashboardHelper {
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
-		Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, binder);
-	
-		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+		List trackedPlaces = SearchUtils.getTrackedPlacesIds(bs, binder);
+		if (trackedPlaces.size() > 0) {
+			Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, trackedPlaces);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
-		model.put(WebKeys.WHATS_NEW_TRACKED_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
+			model.put(WebKeys.WHATS_NEW_TRACKED_PLACES, results.get(ObjectKeys.SEARCH_ENTRIES));
 
-		Map places = new HashMap();
-    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
-    	if (items != null) {
-	    	Iterator it = items.iterator();
-	    	while (it.hasNext()) {
-	    		Map entry = (Map)it.next();
-				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
-				if (id != null) {
-					Long bId = new Long(id);
-					if (!places.containsKey(id)) {
-						Binder place = bs.getBinderModule().getBinder(bId);
-						places.put(id, place);
+			Map places = new HashMap();
+	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+	    	if (items != null) {
+		    	Iterator it = items.iterator();
+		    	while (it.hasNext()) {
+		    		Map entry = (Map)it.next();
+					String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+					if (id != null) {
+						Long bId = new Long(id);
+						if (!places.containsKey(id)) {
+							Binder place = bs.getBinderModule().getBinder(bId);
+							places.put(id, place);
+						}
 					}
-				}
+		    	}
 	    	}
-    	}
-    	model.put(WebKeys.WHATS_NEW_TRACKED_PLACES_FOLDERS, places);
+	    	model.put(WebKeys.WHATS_NEW_TRACKED_PLACES_FOLDERS, places);
+		}
+	}
+	
+	protected static void setupTrackedCalendarBeans(AllModulesInjected bs, Binder binder, Map model) {		
+		//Get the calendar bean
+		Map options = new HashMap();
+		
+		//Prepare for a standard dashboard search operation
+		setupInitialSearchOptions(options);
+
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		List trackedCalendars = SearchUtils.getTrackedCalendarIds(bs, binder);
+		if (trackedCalendars.size() > 0) {
+			Criteria crit = SearchUtils.entriesForTrackedCalendars(bs, trackedCalendars);
+			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
+			model.put(WebKeys.WHATS_NEW_TRACKED_CALENDARS, results.get(ObjectKeys.SEARCH_ENTRIES));
+
+			Map places = new HashMap();
+	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+	    	if (items != null) {
+		    	Iterator it = items.iterator();
+		    	while (it.hasNext()) {
+		    		Map entry = (Map)it.next();
+					String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+					if (id != null) {
+						Long bId = new Long(id);
+						if (!places.containsKey(id)) {
+							Binder place = bs.getBinderModule().getBinder(bId);
+							places.put(id, place);
+						}
+					}
+		    	}
+	    	}
+	    	model.put(WebKeys.WHATS_NEW_TRACKED_CALENDAR_FOLDERS, places);
+		}
 	}
 	
 	private static void setupTrackedPeopleBeans(AllModulesInjected bs, Binder binder, Map model) {
@@ -253,6 +298,38 @@ public class RelevanceDashboardHelper {
 	    	}
     	}
     	model.put(WebKeys.WHATS_NEW_TRACKED_PEOPLE_FOLDERS, places);
+	}
+	
+	protected static void setupWhatsNew(AllModulesInjected bs, Binder binder, Map model) {		
+		//Get the new items I can see
+		Map options = new HashMap();
+		
+		//Prepare for a standard dashboard search operation
+		setupInitialSearchOptions(options);
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		Criteria crit = SearchUtils.newEntries();
+	
+		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
+		model.put(WebKeys.WHATS_NEW, results.get(ObjectKeys.SEARCH_ENTRIES));
+
+		Map places = new HashMap();
+    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+    	if (items != null) {
+	    	Iterator it = items.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+				if (id != null) {
+					Long bId = new Long(id);
+					Binder place = bs.getBinderModule().getBinder(bId);
+					places.put(id, place);
+				}
+	    	}
+    	}
+    	model.put(WebKeys.WHATS_NEW_FOLDERS, places);
 	}
 	
 	private static void setupVisitorsBeans(AllModulesInjected bs, Binder binder, Map model) {
@@ -320,6 +397,11 @@ public class RelevanceDashboardHelper {
 				if (trackedBinders != null) {
 					SortedSet binders = bs.getBinderModule().getBinders(trackedBinders);
 					model.put(WebKeys.RELEVANCE_TRACKED_BINDERS, binders);
+				}
+				List trackedCalendars = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_CALENDARS);
+				if (trackedCalendars != null) {
+					SortedSet binders = bs.getBinderModule().getBinders(trackedCalendars);
+					model.put(WebKeys.RELEVANCE_TRACKED_CALENDARS, binders);
 				}
 				List trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
 				if (trackedPeople != null) {

@@ -82,7 +82,7 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
 
 
 body.ss_style_body {
-	margin: 0px 2px 0px 2px;
+	margin: 0px 0px 0px 0px;
 }
 
 .ss_style {
@@ -1850,7 +1850,7 @@ div.ss_box_top_rounded {
 div.ss_content_outer {
     position: relative;
 	padding-bottom:10px;
-	margin-top:1px;
+	margin-top:0px;
 }
 .ss_content_inner {
 	width:100%;
@@ -2189,7 +2189,7 @@ td.ss_view_sidebar {
 }
 
 td.ss_view_info {
-	padding-left: 5px;
+	padding-left: 0px;
 }
 
 
@@ -2248,7 +2248,6 @@ span.ss_tabs_title {
 	margin:0px 5px;
 	padding:0px 5px 0px 9px;
 	font-size: ${ss_style_font_smallprint};
-	float:left;
 }
 a.ss_breadcrumb {
 	font-size: ${ss_style_font_smallprint};
@@ -4950,6 +4949,12 @@ table.ssMeetingRecords .ssHeader {
 	border: none!important;
 	margin: 0;
 	padding: 0;
+}
+
+.ss_psuedoPortal {
+	margin:10px;
+	padding:0px;
+	border:1px solid blue;
 }
 
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />
