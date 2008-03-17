@@ -28,10 +28,9 @@
  */
 package com.sitescape.team.module.definition.notify;
 
-import java.util.Date;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 
 import org.dom4j.Element;
 
@@ -45,16 +44,25 @@ public class NotifyBuilderSelect extends AbstractNotifyBuilder {
 
 	   protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
 	    	Object obj = attribute.getValue();
+	    	Map<String, String> valueCaptions = (Map)args.get("_selectboxSelectionsCaptions");
 	    	if (obj instanceof Set) {
 	    		Set set = (Set)obj;
 	    		for (Iterator iter=set.iterator();iter.hasNext();) {
 		    		Element value = element.addElement("value");		    		
 		    		obj = iter.next();
-		    		value.setText(obj.toString());
+		    		if (valueCaptions != null && valueCaptions.containsKey(obj.toString())) {
+		    			value.setText(valueCaptions.get(obj.toString()));	
+		    		} else {
+		    			value.setText(obj.toString());
+		    		}
 	    		}
 	    	} else if (obj != null) {
 		    	Element value = element.addElement("value");
-	    		value.setText(obj.toString());
+	    		if (valueCaptions != null && valueCaptions.containsKey(obj.toString())) {
+	    			value.setText(valueCaptions.get(obj.toString()));	
+	    		} else {
+	    			value.setText(obj.toString());
+	    		}
 	    	} else {
 	    		element.addElement("value");
 	    	}
