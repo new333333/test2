@@ -303,7 +303,7 @@ div.ss_canvas {
 #ss_tasks{
 	padding: 0;
 	margin: 1% 0 5% 0;
-	padding: 0.5% 0 1% 5px;
+	padding: 0.5% 0 15px;
 	color: #666666;
 	line-height: 1.5em;
 	}
@@ -320,7 +320,6 @@ div.ss_canvas {
 	color:#4AAA42!important;
 	font-size:10px!important; 
 	}
-
 #ss_tasks_para li
 {
 	list-style-type: square!important;
@@ -344,7 +343,7 @@ div.ss_canvas {
 	
 
 }
-	#ss_hints
+#ss_hints
 {
 	font-size: 11px;
 	font-style: italic;
@@ -360,7 +359,7 @@ div.ss_canvas {
 	margin: 1% 0 5% 0;
 	color:#444444;
 	background-color:#ffffff;
-	padding: 0.5% 0 1% 5px;
+	padding: 0.5% 0 15px;
 	color: #666666;
 	line-height: 1.5em;
 	
@@ -587,7 +586,6 @@ div.ss_canvas {
 	border: 1px dotted #cccccc;
 	color: #666666;
 	line-height: 1.8em;
-	background: #FFFFFF;
 }
 #ss_para a					/* link style for active links */
 {
@@ -614,11 +612,19 @@ div.ss_canvas {
 }
 .ss_pt_title
 {
-	background-color: #B2CEE7;
+
 	color: #000000;
 	font-size:14px;
 	padding: 2px 0px 2px 5px;
 	width:100%;
+}
+.ss_blue
+{
+	background-color: #B2CEE7;
+}
+.ss_orange
+{
+	background-color: #F93;
 }
 
 .ss_pt_para 

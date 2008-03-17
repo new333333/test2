@@ -39,6 +39,7 @@
 <div id="ss_tasks_para">
 <c:forEach var="entry" items="${ss_myTasks}">
 	<jsp:useBean id="entry" type="java.util.HashMap" />
+
   <li>
 		<div>
 		<c:set var="isDashboard" value="yes"/>				
@@ -122,7 +123,8 @@
 					><span class="ss_prioValue"">${title}</span></a>
 			</c:if>
 		</div>
-	</li><br/>							
+	</li><br/>
+							
   </c:forEach>
 
 	</div><!-- end of para -->

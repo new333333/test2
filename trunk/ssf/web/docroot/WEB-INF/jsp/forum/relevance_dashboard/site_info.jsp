@@ -37,7 +37,7 @@
       
 	<ssf:canvas id="relevanceWhatsNew" type="inline" styleId="ss_trackedItems">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.whatsNew"/> </div>
+		<div id="ss_title" class="ss_pt_title ss_blue"> <ssf:nlt tag="relevance.whatsNew"/> </div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new.jsp" />
 	</ssf:canvas>
@@ -47,7 +47,7 @@
 
 	<ssf:canvas id="relevanceHot" type="inline" styleId="ss_whatshot">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.whatsHot"/></div>
+		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.whatsHot"/></div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
 	</ssf:canvas>

@@ -37,7 +37,7 @@
 
 	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_people">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/></div>
+		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/></div>
 	</ssf:param>
 		
 		<c:forEach var="user" items="${ssUsers}">
