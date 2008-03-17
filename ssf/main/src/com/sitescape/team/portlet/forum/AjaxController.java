@@ -1123,7 +1123,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		String ownerId = PortletRequestUtils.getStringParameter(request, "ownerId", "");
 		if (!ownerId.equals("")) {
 			Binder binder = getBinderModule().getBinder(binderId);
-			getAdminModule().setWorkAreaOwner(binder, Long.valueOf(ownerId));
+			getAdminModule().setWorkAreaOwner(binder, Long.valueOf(ownerId), false);
 		}
 	}
 	

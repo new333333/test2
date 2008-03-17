@@ -473,20 +473,41 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 
 
 	//no transaction
-    public void setWorkAreaOwner(final WorkArea workArea, final Long userId) {
+    public void setWorkAreaOwner(final WorkArea workArea, final Long userId, final boolean propagate) {
     	 checkAccess(workArea, AdminOperation.manageFunctionMembership);
-    	if (!workArea.getOwnerId().equals(userId)) {
+    	 final List<Binder>binders = new ArrayList();
+       	 if (propagate) {
+			if (workArea instanceof Binder) {
+				Binder binder = (Binder)workArea;
+				binders.addAll(binder.getBinders());
+				for (int i=0; i<binders.size();) {
+					Binder child = binders.get(i);
+					if (!userId.equals(child.getOwnerId())) {
+						checkAccess(child, AdminOperation.manageFunctionMembership);
+						++i;
+					} else {
+						binders.remove(i);  //already set, get out of list
+					}
+					binders.addAll(child.getBinders());
+				}
+			}
+    	 }
+    	if (!binders.isEmpty() || !workArea.getOwnerId().equals(userId)) {
     		getTransactionTemplate().execute(new TransactionCallback() {
    		        	public Object doInTransaction(TransactionStatus status) {
    		        		User user = getProfileDao().loadUser(userId, RequestContextHolder.getRequestContext().getZoneId());
    		        		workArea.setOwner(user);
+   		        		for (Binder child:binders) {
+   		        			child.setOwner(user);
+   		        		}
    		        		return null;
    		       }});
     		//do outside transaction
     		//need to update access, since owner has changed - assume read access is effected
 			if (workArea instanceof Binder) {
 				Binder binder = (Binder)workArea;
-				loadBinderProcessor(binder).indexOwner(binder);
+				binders.add(binder);
+				loadBinderProcessor(binder).indexOwner(binders, userId);
 			}
     	}
     }
