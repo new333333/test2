@@ -220,9 +220,10 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 					// if there is more then one icals then
 					// all are merged and add ones to email as alternative content
 					multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED;
-				}
+				} 
 			
 				MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
+
 				helper.setSubject((String)details.get(SendEmail.SUBJECT));
 				if (details.containsKey(SendEmail.FROM)) 
 					helper.setFrom((InternetAddress)details.get(SendEmail.FROM));
@@ -241,13 +242,11 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 					helper.setSubject(NLT.get("errorcode.noRecipients") + " " + (String)details.get(SendEmail.SUBJECT));
 				}
 				String text = (String)details.get(SendEmail.TEXT_MSG);
-				if (text == null) text="";
 				String html = (String)details.get(SendEmail.HTML_MSG);
-				if (html == null) html = "";
 				
 				// the next line creates ALTERNATIVE part, change to setText(String, boolean)
 				// will couse error in iCalendar section (the ical is add as alternative content) 
-				helper.setText(text, html);
+				MailHelper.setText(text, html, helper);
 				mimeMessage.addHeader(MailHelper.HEADER_CONTENT_TRANSFER_ENCODING, MailHelper.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
 				Collection<FileAttachment> atts = (Collection)details.get(SendEmail.ATTACHMENTS);
 				if (atts != null) {
