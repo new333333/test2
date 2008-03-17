@@ -208,7 +208,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				getProfileModule().setUserProperty(null, configId, WebKeys.FOLDER_COLUMN_POSITIONS, "");
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
 				response.setRenderParameter(WebKeys.URL_OPERATION, "");
-			}
+			} 
 		//process cancels first
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			if (!WebKeys.OPERATION_ADD.equals(operation)) { //on add - binderId may be 
@@ -312,7 +312,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 						model.put(WebKeys.PROFILE_CONFIG_ENTRY, user);
 					} 
 				} else {
-					ListFolderHelper.getShowTemplate(request, response, config, model);
+					ListFolderHelper.getShowTemplate(this, request, response, config, model);
 				}
 				model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_TEMPLATE);
 				Tabs tabs = Tabs.getTabs(null);
