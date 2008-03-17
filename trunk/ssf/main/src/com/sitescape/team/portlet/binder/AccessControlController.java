@@ -28,25 +28,23 @@
  */
 package com.sitescape.team.portlet.binder;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.dbunit.database.statement.SimplePreparedStatement;
 import org.springframework.web.servlet.ModelAndView;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.HashSet;
-
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.security.function.WorkArea;
@@ -73,19 +71,23 @@ public class AccessControlController extends AbstractBinderController {
 		
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
-			SimpleProfiler profiler = new SimpleProfiler("lucene");
-			SimpleProfiler.setProfiler(profiler);
+			SimpleProfiler.setProfiler(new SimpleProfiler("lucene"));
 			Map functionMemberships = new HashMap();
 			getAccessResults(request, functionMemberships);
 			getAdminModule().setWorkAreaFunctionMemberships((WorkArea) binder, functionMemberships);
-			logger.info(profiler.toStr());
+			if(logger.isDebugEnabled())
+				logger.debug(SimpleProfiler.toStr());
 			SimpleProfiler.clearProfiler();
 		} else if (formData.containsKey("inheritanceBtn")) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
 			getAdminModule().setWorkAreaFunctionMembershipInherited(binder,inherit);			
 		
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			setupReloadOpener(response, binderId);
+			if (binder instanceof TemplateBinder) {
+				setupViewBinder(response, binder);
+			} else {
+				setupCloseWindow(response);
+			}
 			
 		} else {
 			response.setRenderParameters(request.getParameterMap());
