@@ -21,7 +21,9 @@
 	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
 		<property name="basenames">
 			<list>
+				<value>/WEB-INF/messages/messages-ext</value>
 				<value>/WEB-INF/messages/messages</value>
+				<value>/WEB-INF/messages/help-messages-ext</value>
 				<value>/WEB-INF/messages/help-messages</value>
 			</list>
 		</property>	
