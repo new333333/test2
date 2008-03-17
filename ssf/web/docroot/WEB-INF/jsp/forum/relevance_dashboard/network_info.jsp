@@ -38,7 +38,7 @@
 
 	<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_tracked_img"><ssf:nlt tag="relevance.whatsNewTracked"/>
+		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"><ssf:nlt tag="relevance.whatsNewTracked"/>
 				</div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tracked.jsp" />
@@ -49,7 +49,7 @@
 
 	<ssf:canvas id="relevanceActivities" type="inline" styleId="ss_shared">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"><ssf:nlt tag="relevance.activities"/></div>
+		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.activities"/></div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
 	</ssf:canvas>
@@ -59,7 +59,7 @@
 
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_shared">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title"> <ssf:nlt tag="relevance.sharedItems"/> </div>
+		<div id="ss_title" class="ss_pt_title ss_blue"> <ssf:nlt tag="relevance.sharedItems"/> </div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
 	</ssf:canvas>

@@ -37,7 +37,7 @@
       
 	<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_tracked_img"> <ssf:nlt tag="relevance.trackedFolders"/> 
+		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"> <ssf:nlt tag="relevance.trackedFolders"/> 
 	</div>
 	</ssf:param>
 	
@@ -73,7 +73,7 @@
 
 	<ssf:canvas id="relevanceWorkspaces" type="inline" styleId="ss_trackedItems">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_tracked_img"> <ssf:nlt tag="relevance.trackedWorkspaces"/> </div>
+		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"> <ssf:nlt tag="relevance.trackedWorkspaces"/> </div>
 	</ssf:param>
 
 <c:forEach var="binder" items="${ss_trackedBinders}">
@@ -103,7 +103,7 @@
 
 	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedPeople">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_tracked_img"> <ssf:nlt tag="relevance.trackedPeople"/> 
+		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"> <ssf:nlt tag="relevance.trackedPeople"/> 
 		</div>
 	</ssf:param>
 	  <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
