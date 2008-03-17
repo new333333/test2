@@ -88,11 +88,28 @@ function ssAccessControl(namespace, binderId) {
 	
 	this.selectOwner = function (ownerId, obj) {
 		ss_setupStatusMessageDiv()
+		self.document.getElementById("ss_status_message").innerHTML = ss_operationFailed;
 	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_binder_owner_id", namespace:namespace, ownerId:ownerId, binderId:binderId});
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-		ajaxRequest.setPostRequest(ss_postRequestAlertError);
+		ajaxRequest.setPostRequest(ss_selectOwnerCallBack);
 		ajaxRequest.sendRequest();  //Send the request
 		ss_hideDiv('ss_changeOwnerMenu' + namespace)
+	}
+	function ss_selectOwnerCallBack() {
+		//See if there was an error
+		if (self.document.getElementById("ss_status_message").innerHTML == "error") {
+			alert(ss_not_logged_in);
+		} else if (self.document.getElementById("ss_status_message").innerHTML == "ok") {
+			var spanObj = document.getElementById('ss_changeOwnerMenuOkSpan' + namespace);
+			spanObj.innerHTML = ss_operationSucceeded
+		} else {
+			var spanObj = document.getElementById('ss_changeOwnerMenuOkSpan' + namespace);
+			spanObj.innerHTML = ss_operationFailed
+		}
+		
+		var divObj = document.getElementById('ss_changeOwnerMenuOk' + namespace);
+		ss_showDiv('ss_changeOwnerMenuOk' + namespace)
+		setTimeout("ss_hideDivNone('ss_changeOwnerMenuOk" + namespace + "');", 1500);
 	}
 	
 	this.selectRole = function () {
