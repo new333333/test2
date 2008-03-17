@@ -33,15 +33,6 @@
 <c:set var="treeName" value="${ssComponentId}${renderResponse.namespace}"/>
 <script type="text/javascript">
 function ${treeName}_showId(forum, obj) {
-/*
-	var formObj = ss_getContainingForm(obj);
-	if (formObj["ss_folder_id"+forum] && formObj["ss_folder_id"+forum].checked) {
-		formObj["ss_folder_id"+forum].checked=false
-	} else {
-		formObj["ss_folder_id"+forum].checked=true
-	}
-	return false
-*/
 	if (obj.ownerDocument) {
 		var cDocument = obj.ownerDocument;
 	} else if (obj.document) {

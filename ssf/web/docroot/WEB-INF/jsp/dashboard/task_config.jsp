@@ -37,17 +37,6 @@
 	dojo.require('sitescape.widget.SelectPageable');
 
 	function ${treeName}_showId(forum, obj) {
-	/*
-		var formObj = ss_getContainingForm(obj);
-		var r = formObj["ss_folder_id" + forum];
-		if (r && r.checked) {
-			r.checked=false
-		} else {
-			r.checked=true
-		}
-		return false
-		*/
-		
 		if (obj.ownerDocument) {
 			var cDocument = obj.ownerDocument;
 		} else if (obj.document) {

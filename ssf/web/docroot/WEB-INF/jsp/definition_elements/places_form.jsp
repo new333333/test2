@@ -73,13 +73,6 @@
 			<script type="text/javascript">
 				/* check/uncheck checkboxes in tree on click place name */
 				function ${treeName}_showId(forum, obj) {
-				/*
-					var r = document.getElementById("ss_tree_checkbox${treeName}" + forum);
-					if (r != null) {
-						r.click();
-					}
-					return false;
-				*/
 					if (obj.ownerDocument) {
 						var cDocument = obj.ownerDocument;
 					} else if (obj.document) {
