@@ -56,7 +56,8 @@ function ss_accessSelectOwner${renderResponse.namespace}(ownerId, obj) {
 	${renderResponse.namespace}accessObj.selectOwner(ownerId, obj);
 }
 var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse.namespace}', '${ssBinder.id}');
-
+var ss_operationSucceeded = "<ssf:nlt tag="general.request.succeeded" text="Request succeeded"/>"
+var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request failed"/>"
 </script>
 
 <%
@@ -94,7 +95,13 @@ var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse
   class="ss_bold">${ssBinder.owner.title} 
   <span class="ss_normal ss_smallprint ss_italic">(${ssBinder.owner.name})</span></span>&nbsp;&nbsp;
 <span class="ss_fineprint"><a href="javascript: ;" 
-  onClick="${renderResponse.namespace}accessObj.showChangeOwnerMenu(this, 'ss_changeOwnerMenu${renderResponse.namespace}');return false;">[<ssf:nlt tag="edit"/>]</a></span>
+  onClick="${renderResponse.namespace}accessObj.showChangeOwnerMenu(this, 'ss_changeOwnerMenu${renderResponse.namespace}');return false;"
+  >[<ssf:nlt tag="edit"/>]</a></span>
+<div id="ss_changeOwnerMenuOk${renderResponse.namespace}" 
+  style="display:none; border:1px solid black; background-color:#FFFFFF; width:400px">
+  <span id="ss_changeOwnerMenuOkSpan${renderResponse.namespace}" 
+    class="ss_bold"><ssf:nlt tag="general.request.succeeded"/></span>
+</div>
 </form>
 </td>
 <td align="right" valign="top">
@@ -213,7 +220,6 @@ var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse
     width="100px" singleItem="true"/> 
   </div>
 </div>
-
 <c:if test="${!ssBinder.functionMembershipInherited}">
 
 <div id="ss_addGroupsMenu${renderResponse.namespace}" 
