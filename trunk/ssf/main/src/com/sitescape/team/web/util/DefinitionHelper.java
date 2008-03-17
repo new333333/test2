@@ -37,7 +37,6 @@ import java.util.Map;
 
 import javax.portlet.PortletRequest;
 
-import org.apache.lucene.document.Field;
 import org.dom4j.Document;
 import org.dom4j.Element;
 import org.dom4j.Node;
@@ -368,9 +367,27 @@ public class DefinitionHelper {
     }
     
     public static Map findSelectboxSelectionsAsMap(String attributeName, String definitionId) {
+    	Definition definition = DefinitionHelper.getDefinition(definitionId);
+    	if (definition == null) {
+    		return Collections.EMPTY_MAP;
+    	}
+    	Document definitionConfig = definition.getDefinition();
+    	if (definitionConfig == null) {
+    		return Collections.EMPTY_MAP;
+    	}
+    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName+"']]");
+    	if (node == null) {
+    		return Collections.EMPTY_MAP;
+    	}    	
+    	return findSelectboxSelectionsAsMap((org.dom4j.Element)node);
+    }
+    
+    public static Map findSelectboxSelectionsAsMap(Element element) {
     	Map result = new HashMap();
-		Iterator attributeValuesIt = DefinitionHelper.findSelectboxSelections(attributeName, 
-    			DefinitionHelper.getDefinition(definitionId).getDefinition()).iterator();
+    	if (element == null) {
+    		return result;
+    	}
+		Iterator attributeValuesIt = DefinitionHelper.findSelectboxSelections(element).iterator();
 		while (attributeValuesIt.hasNext()) {
 			
 			String name = null;
@@ -392,7 +409,18 @@ public class DefinitionHelper {
     }
     
     public static List findSelectboxSelections(String attributeName, Document definitionConfig) {
-    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName+"']]//item[@name='selectboxSelection']/properties");
+    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName+"']]");
+    	if (node == null) {
+    		return Collections.EMPTY_LIST;
+    	}
+    	return findSelectboxSelections((org.dom4j.Element)node);
+    }
+    
+    public static List findSelectboxSelections(Element element) {
+    	if (element == null) {
+    		return Collections.EMPTY_LIST;
+    	}    	
+    	List nodes = element.selectNodes("item[@name='selectboxSelection']/properties");
     	if (nodes == null) {
     		return Collections.EMPTY_LIST;
     	}

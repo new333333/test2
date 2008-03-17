@@ -101,6 +101,7 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.DirPath;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Html;
 import com.sitescape.util.StringUtil;
@@ -520,7 +521,19 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
                     } else {
                        	captionValue = (String) args.get("caption");
                     }
-                  
+                    
+                    Map selectboxSelections = DefinitionHelper.findSelectboxSelectionsAsMap(entryElement);
+                    if (selectboxSelections != null && !selectboxSelections.isEmpty()) {
+                    	Map selectboxSelectionsNLTed = new HashMap();
+                    	Iterator<Map.Entry<String, String>> selectboxSelectionsIt = selectboxSelections.entrySet().iterator();
+                    	while (selectboxSelectionsIt.hasNext()) {
+                    		Map.Entry<String, String> selectboxSelEntry = selectboxSelectionsIt.next();
+                    		selectboxSelectionsNLTed.put(selectboxSelEntry.getKey(), NLT.getDef(selectboxSelEntry.getValue(), notifyDef.getLocale()));
+                    		
+                    	}
+                    	args.put("_selectboxSelectionsCaptions", selectboxSelectionsNLTed);
+                    }
+                                      
                     args.put("_caption", NLT.getDef(captionValue, notifyDef.getLocale()));
                     args.put("_itemName", itemName);
                     NotifyBuilderUtil.buildElement(element, notifyDef, entry,
