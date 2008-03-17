@@ -28,10 +28,8 @@
  */
 package com.sitescape.team.web.util;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,58 +42,41 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
-import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
-import javax.portlet.PortletConfig;
-import javax.portlet.PortletPreferences;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
-import javax.servlet.http.HttpServletRequest;
 
-import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.sitescape.team.NoObjectByTheIdException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.ChangeLog;
-import com.sitescape.team.domain.DashboardPortlet;
-import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.Description;
-import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoBinderByTheIdException;
-import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.Subscription;
-import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
-import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
@@ -103,35 +84,20 @@ import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.rss.util.UrlUtil;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.portlet.forum.ListFolderController;
-import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
-import com.sitescape.team.search.filter.SearchFilterRequestParser;
-import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.security.AccessControlException;
-import com.sitescape.team.security.function.Function;
-import com.sitescape.team.security.function.WorkAreaFunctionMembership;
-import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
-import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.ReleaseInfo;
-import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.tree.DomTreeBuilder;
-import com.sitescape.team.web.tree.DomTreeHelper;
-import com.sitescape.team.web.tree.WsDomTreeBuilder;
-import com.sitescape.team.domain.Definition;
-import com.sitescape.util.BrowserSniffer;
 import com.sitescape.util.Validator;
 public class ListFolderHelper {
 
@@ -883,7 +849,7 @@ public class ListFolderHelper {
 		return "entry/view_listing_team_members";
 	}
 	
-	public static void getShowTemplate(RenderRequest req, 
+	public static void getShowTemplate(AllModulesInjected bs, RenderRequest req, 
 			RenderResponse response, Binder folder, Map<String,Object>model) throws PortletRequestBindingException {
 
 		String viewType = "";
@@ -893,8 +859,11 @@ public class ListFolderHelper {
 		}
 		//	The "Display styles" menu
 		Toolbar entryToolbar = new Toolbar();
+//FolderEntries need folders as parents, not templates
+//		if (bs.getAdminModule().testAccess(AdminOperation.manageTemplate)) {				
+//			addEntryToolbar(bs, req, response, folder, entryToolbar, model);
+//		}
 		entryToolbar.addToolbarMenu("2_display_styles", NLT.get("toolbar.folder_views"));
-		//Get the definitions available for use in this folder
 		//Get the definitions available for use in this folder
 		List<Definition> folderViewDefs = folder.getViewDefinitions();
 		Definition currentDef = (Definition)model.get(WebKeys.DEFAULT_FOLDER_DEFINITION);  //current definition in use
@@ -1197,7 +1166,54 @@ public class ListFolderHelper {
 		
 		return hmRet;
 	}
-	
+	protected static void addEntryToolbar(AllModulesInjected bs, RenderRequest request, RenderResponse response, Binder folder, Toolbar entryToolbar, Map model) {
+		List defaultEntryDefinitions = folder.getEntryDefinitions();
+		if (defaultEntryDefinitions.size() > 1) {
+			int count = 1;
+			Map dropdownQualifiers = new HashMap();
+			dropdownQualifiers.put("highlight", new Boolean(true));
+			entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"), "", dropdownQualifiers);
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			//String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
+			//qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
+			for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
+				Definition def = (Definition) defaultEntryDefinitions.get(i);
+				AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+				adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+				String title = NLT.getDef(def.getTitle());
+				if (entryToolbar.checkToolbarMenuItem("1_add", "entries", title)) {
+					title = title + " (" + String.valueOf(count++) + ")";
+				}
+				entryToolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
+				if (i == 0) {
+					adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+					adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
+					model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
+				}
+			}
+		} else {
+			// Only one option
+			Definition def = (Definition) defaultEntryDefinitions.get(0);
+			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
+			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getId().toString());
+			adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
+			String title = NLT.get("toolbar.new") + ": " + NLT.getDef(def.getTitle());
+			Map qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			qualifiers.put("highlight", new Boolean(true));
+			entryToolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
+			
+			adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
+			adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
+			model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
+
+
+		}		
+	}
 	protected static void buildFolderToolbars(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Folder folder, String forumId, Map model, String viewType) {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -1211,59 +1227,9 @@ public class ListFolderHelper {
 		Toolbar footerToolbar = new Toolbar();
 		AdaptedPortletURL adapterUrl;
 		Map qualifiers;
-		Map dropdownQualifiers;
-		//	The "Add entry" menu
-		List defaultEntryDefinitions = folder.getEntryDefinitions();
 		PortletURL url;
-		if (!defaultEntryDefinitions.isEmpty()) {
-			if (bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {				
-
-				if (defaultEntryDefinitions.size() > 1) {
-					int count = 1;
-					dropdownQualifiers = new HashMap();
-					dropdownQualifiers.put("highlight", new Boolean(true));
-					entryToolbar.addToolbarMenu("1_add", NLT.get("toolbar.new"), "", dropdownQualifiers);
-					qualifiers = new HashMap();
-					qualifiers.put("popup", new Boolean(true));
-					//String onClickPhrase = "if (self.ss_addEntry) {return(self.ss_addEntry(this))} else {return true;}";
-					//qualifiers.put(ObjectKeys.TOOLBAR_QUALIFIER_ONCLICK, onClickPhrase);
-					for (int i=0; i<defaultEntryDefinitions.size(); ++i) {
-						Definition def = (Definition) defaultEntryDefinitions.get(i);
-						adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-						adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
-						adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-						adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-						String title = NLT.getDef(def.getTitle());
-						if (entryToolbar.checkToolbarMenuItem("1_add", "entries", title)) {
-							title = title + " (" + String.valueOf(count++) + ")";
-						}
-						entryToolbar.addToolbarMenuItem("1_add", "entries", title, adapterUrl.toString(), qualifiers);
-						if (i == 0) {
-							adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-							adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
-							model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
-						}
-					}
-				} else {
-					// Only one option
-					Definition def = (Definition) defaultEntryDefinitions.get(0);
-					adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_ADD_FOLDER_ENTRY);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_TYPE, def.getId());
-					String title = NLT.get("toolbar.new") + ": " + NLT.getDef(def.getTitle());
-					qualifiers = new HashMap();
-					qualifiers.put("popup", new Boolean(true));
-					qualifiers.put("highlight", new Boolean(true));
-					entryToolbar.addToolbarMenu("1_add", title, adapterUrl.toString(), qualifiers);
-
-					adapterUrl.setParameter(WebKeys.URL_NAMESPACE, response.getNamespace());
-					adapterUrl.setParameter(WebKeys.URL_ADD_DEFAULT_ENTRY_FROM_INFRAME, "1");
-					model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
-
-				}
-
-			}
+		if (bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {				
+			addEntryToolbar(bs, request, response, folder, entryToolbar, model);
 		}
 		//The "Administration" menu
 		qualifiers = new HashMap();
