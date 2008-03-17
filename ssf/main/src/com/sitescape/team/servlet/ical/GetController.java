@@ -43,7 +43,6 @@ import org.springframework.web.servlet.ModelAndView;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
@@ -67,7 +66,7 @@ public class GetController extends SAbstractController {
 		}
 		
 		response.resetBuffer();
-		response.setContentType(MailHelper.CONTENT_TYPE_CALENDAR + MailHelper.CONTENT_TYPE_CHARSET_SUFFIX + XmlFileUtil.FILE_ENCODING);
+		response.setContentType(MailModule.CONTENT_TYPE_CALENDAR + MailModule.CONTENT_TYPE_CHARSET_SUFFIX + XmlFileUtil.FILE_ENCODING);
 		response.setHeader("Cache-Control", "private");
 		response.setHeader("Pragma", "no-cache");
 		
@@ -75,14 +74,14 @@ public class GetController extends SAbstractController {
 		if (entryId != null) {
 			FolderEntry entry  = getFolderModule().getEntry(binderId, entryId);
 			CalendarOutputter calendarOutputter = new CalendarOutputter();
-			Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE_KEY));
+			Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		} else {
 			Map entries = getFolderModule().getFullEntries(binderId, null);
 			List folderEntries = (List)entries.get(ObjectKeys.FULL_ENTRIES);
 			
 			CalendarOutputter calendarOutputter = new CalendarOutputter();
-			Calendar calendar = getIcalModule().generate(folderEntries, mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE_KEY));
+			Calendar calendar = getIcalModule().generate(folderEntries, mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
 			calendarOutputter.output(calendar, response.getWriter());
 		}
 		

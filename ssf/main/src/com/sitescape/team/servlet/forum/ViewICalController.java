@@ -45,7 +45,6 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
@@ -90,12 +89,13 @@ public class ViewICalController extends SAbstractController {
 		
 
 		response.resetBuffer();
-		response.setContentType(MailHelper.CONTENT_TYPE_CALENDAR + "; charset=" + XmlFileUtil.FILE_ENCODING);
+		response.setContentType(MailModule.CONTENT_TYPE_CALENDAR + "; charset=" + XmlFileUtil.FILE_ENCODING);
 		response.setHeader("Cache-Control", "private");
 		response.setHeader("Pragma", "no-cache");
 		
 		CalendarOutputter calendarOutputter = new CalendarOutputter();
-		Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE_KEY));
+		Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), 
+				mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE));
 		calendarOutputter.output(calendar, response.getWriter());
 		
 		response.flushBuffer();

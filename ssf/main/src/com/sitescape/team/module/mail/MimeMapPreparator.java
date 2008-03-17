@@ -16,7 +16,6 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.ical.util.ICalUtils;
-import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.util.NLT;
 public class MimeMapPreparator extends AbstractMailPreparator {
 	Map details;
@@ -40,7 +39,7 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 		}
 	
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
-		mimeMessage.addHeader(MailHelper.HEADER_CONTENT_TRANSFER_ENCODING, MailHelper.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
+		mimeMessage.addHeader(MailModule.HEADER_CONTENT_TRANSFER_ENCODING, MailModule.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
 		helper.setSubject((String)details.get(MailModule.SUBJECT));
 		if (details.containsKey(MailModule.FROM)) 
 			helper.setFrom((InternetAddress)details.get(MailModule.FROM));
@@ -60,7 +59,7 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 		}
 		// the next line creates ALTERNATIVE part, change to setText(String, boolean)
 		// which will cause error in iCalendar section (the ical is add as alternative content) 
-		MailHelper.setText((String)details.get(MailModule.TEXT_MSG), (String)details.get(MailModule.HTML_MSG), helper);
+		setText((String)details.get(MailModule.TEXT_MSG), (String)details.get(MailModule.HTML_MSG), helper);
 		Collection<FileAttachment> atts = (Collection)details.get(MailModule.ATTACHMENTS);
 		if (atts != null) prepareAttachments(atts, helper);
 				
@@ -69,14 +68,15 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 			net.fortuna.ical4j.model.Calendar margedCalendars = null;
 			for (final net.fortuna.ical4j.model.Calendar iCal : iCals) {
 					String summary = ICalUtils.getSummary(iCal);
-					String fileName = summary + MailHelper.ICAL_FILE_EXTENSION;
+					String fileName = summary + MailModule.ICAL_FILE_EXTENSION;
 					if (iCals.size() > 1) {
-						fileName = summary + c + MailHelper.ICAL_FILE_EXTENSION;
+						fileName = summary + c + MailModule.ICAL_FILE_EXTENSION;
 					}
 					
 					String component = getICalComponentType(iCal);
 					//If okay to send todo or not a todo build alternatative
-					if (sendVTODO || !Component.VTODO.equals(component)) {
+					if (false) {
+					//if (sendVTODO || !Component.VTODO.equals(component)) {
 						// 	attach alternative iCalendar content
 						if (iCals.size() == 1 ) {
 							prepareICalendar(iCal, fileName, component, true, true, helper);
@@ -97,7 +97,7 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 			}
 			if (margedCalendars != null) {
 				//add to alternative text, attachments handled already
-				prepareICalendar(margedCalendars, ICalUtils.getSummary(margedCalendars) + MailHelper.ICAL_FILE_EXTENSION, getICalComponentType(margedCalendars), false, true, helper);
+				prepareICalendar(margedCalendars, ICalUtils.getSummary(margedCalendars) + MailModule.ICAL_FILE_EXTENSION, getICalComponentType(margedCalendars), false, true, helper);
 			}
 		}
 

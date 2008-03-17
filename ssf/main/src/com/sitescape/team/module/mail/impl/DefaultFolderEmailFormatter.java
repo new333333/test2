@@ -85,7 +85,6 @@ import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -379,7 +378,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		if (entry == null) {
 			String subject = folder.getNotificationDef().getSubject();
 			if (Validator.isNull(subject))
-				subject = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_SUBJECT_KEY);
+				subject = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_SUBJECT);
 			//	if not specified, use a localized default
 			if (Validator.isNull(subject))
 				return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
@@ -408,7 +407,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	public String getFrom(Folder folder, Notify notify) {
 		String from = folder.getNotificationDef().getFromAddress();
 		if (Validator.isNull(from))
-			from = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_FROM_KEY);
+			from = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_FROM);
 		return from;
 	}
 
@@ -543,7 +542,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 			Source xsltSource = new StreamSource(new File(DirPath.getXsltDirPath(),templateName));
 			trans = transFactory.newTemplates(xsltSource);
 			//replace name with actual template
-			if (GetterUtil.getBoolean(mailModule.getMailProperty(zoneName, MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED_KEY), false) == false)
+			if (GetterUtil.getBoolean(mailModule.getMailProperty(zoneName, MailModule.Property.NOTIFY_TEMPLATE_CACHE_DISABLED), false) == false)
 				transformers.put(zoneName + ":" + type, trans);
 		} 
 		return trans.newTransformer();
@@ -613,7 +612,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML_KEY, notify.getLocale(), notify.getType()));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_TEMPLATE_HTML.getKey(), notify.getLocale(), notify.getType()));
 		
 		return result;
 	}
@@ -648,7 +647,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		doEntry(element, entry, notify, true);
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFY_TEMPLATE_HTML_KEY, notify.getLocale(), notify.getType()));
+		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_TEMPLATE_HTML.getKey(), notify.getLocale(), notify.getType()));
 		
 		return result;
 	}
@@ -686,7 +685,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 						processText(content, inputData);
 					} else if (msgs[i].isMimeType("text/html")) {
 						processHTML(content, inputData);
-					} else if (msgs[i].isMimeType(MailHelper.CONTENT_TYPE_CALENDAR)) {
+					} else if (msgs[i].isMimeType(MailModule.CONTENT_TYPE_CALENDAR)) {
 						processICalendar(content, iCalendars);						
 					} else if (content instanceof MimeMultipart) {
 						processMime((MimeMultipart)content, inputData, fileItems, iCalendars);
@@ -719,7 +718,8 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 							Map.Entry me = (Map.Entry)fileItemsIt.next();
 							FileHandler fileHandler = (FileHandler)me.getValue();
 							
-							if (!MailHelper.isCalendarContent(fileHandler.getOriginalFilename(), fileHandler.getContentType())) {
+							if ((!(fileHandler.getOriginalFilename() != null && fileHandler.getOriginalFilename().toLowerCase().endsWith(MailModule.ICAL_FILE_EXTENSION))) &&
+									(!(fileHandler.getContentType() != null && fileHandler.getContentType().toLowerCase().startsWith(MailModule.CONTENT_TYPE_CALENDAR))) ) {
 								continue;
 							}
 							
@@ -831,7 +831,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		int count = content.getCount();
 		for (int i=0; i<count; ++i ) {
 			BodyPart part = content.getBodyPart(i);
-			if (part.isMimeType(MailHelper.CONTENT_TYPE_CALENDAR)) {
+			if (part.isMimeType(MailModule.CONTENT_TYPE_CALENDAR)) {
 				processICalendar(part.getContent(), iCalendars);
 			} else { 
 				//old mailers may not use disposition, and instead put the name in the content-type

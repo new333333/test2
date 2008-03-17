@@ -267,7 +267,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
     	getPostingObject().setScheduleInfo(config);
     }	     
     private EmailPosting getPostingObject() {
-    	String emailPostingClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.POSTING_JOB_KEY);
+    	String emailPostingClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.POSTING_JOB);
         try {
             Class processorClass = ReflectHelper.classForName(emailPostingClass);
             EmailPosting job = (EmailPosting)processorClass.newInstance();
@@ -303,7 +303,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
         getNotificationObject().setScheduleInfo(config);
     }    
     private EmailNotification getNotificationObject() {
-    	String emailNotifyClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.NOTIFICATION_JOB_KEY);
+    	String emailNotifyClass = getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFICATION_JOB);
         try {
             Class processorClass = ReflectHelper.classForName(emailNotifyClass);
             EmailNotification job = (EmailNotification)processorClass.newInstance();
@@ -647,7 +647,7 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			for (DefinableEntity entry:entries) {
 				if (sendAttachments) attachments.addAll(entry.getFileAttachments());
 				if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
-					iCalendars.add(getIcalModule().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE_KEY)));
+					iCalendars.add(getIcalModule().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE)));
 	 			}
 	 	 	}
 			if (sendAttachments) message.put(MailModule.ATTACHMENTS, attachments);
