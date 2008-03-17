@@ -62,6 +62,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.module.workflow.WorkflowModule;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
@@ -116,6 +117,13 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	}
 	protected BinderModule getBinderModule() {
 		return binderModule;
+	}
+	private WorkflowModule workflowModule;	
+	public void setWorkflowModule(WorkflowModule workflowModule) {
+		this.workflowModule = workflowModule;
+	}
+	protected WorkflowModule getWorkflowModule() {
+		return workflowModule;
 	}
 	/**
      * Called after bean is initialized.  
@@ -322,6 +330,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 
 	        		//do now, with request context set - won't have one if here on zone startup
 	        		IndexSynchronizationManager.applyChanges();
+	        		getWorkflowModule().startScheduledJobs(top); //make sure timer is started right away
 	        		return null;
 	        	}
 	        });
