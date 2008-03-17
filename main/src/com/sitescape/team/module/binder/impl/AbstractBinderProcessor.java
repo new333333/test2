@@ -1249,13 +1249,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	 return ids;
    
      }
-     public void indexOwner(Binder binder) {
-  		String value = BasicIndexUtils.EMPTY_ACL_FIELD;
- 		Long id = binder.getOwnerId();
- 		if (id != null) value = id.toString();
- 		doFieldUpdate(binder, BasicIndexUtils.BINDER_OWNER_ACL_FIELD, value);    		
-     }
-     
+  
+     public void indexOwner(Collection<Binder>binders, Long ownerId) {
+   		String value = BasicIndexUtils.EMPTY_ACL_FIELD;
+  		if (ownerId != null) value = ownerId.toString();
+  		doFieldUpdate(binders, BasicIndexUtils.BINDER_OWNER_ACL_FIELD, value);    		
+      }
+
      //this will update the binder, its attachments and entries, and subfolders and entries that inherit
      private void doFieldUpdate(Binder binder, List<Long>notBinders, String field, String value) {
  		// Now, create a query which can be used by the index update method to modify all the
@@ -1334,7 +1334,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  
  	   	return qTree;
  	}
-    private void doFieldUpdate(List<Binder>binders, String field, String value) {
+    private void doFieldUpdate(Collection<Binder>binders, String field, String value) {
      	if (binders.isEmpty()) return;
  		// Now, create a query which can be used by the index update method to modify all the
  		// entries, replies, attachments, and binders(workspaces) in the index 
@@ -1351,7 +1351,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      	}    		
      	
      }
-	private org.dom4j.Document buildQueryforUpdate(List<Binder> binders) {
+	private org.dom4j.Document buildQueryforUpdate(Collection<Binder> binders) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
 		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);

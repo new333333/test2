@@ -56,7 +56,7 @@ public interface BinderProcessor {
   	public Map getBinders(Binder binder, Map options);
     public void indexFunctionMembership(Binder binder, boolean cascade);
     public void indexTeamMembership(Binder binder, boolean cascade);
-    public void indexOwner(Binder binder);
+    public void indexOwner(Collection<Binder>binders, Long ownerId);
 	public void indexBinder(Binder binder, boolean includeEntries);	
     public void indexBinder(Binder binder, boolean includeEntries, boolean deleteIndex, Collection tags);
    public Collection indexTree(Binder binder, Collection exclusions);
