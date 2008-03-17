@@ -231,7 +231,7 @@ public interface AdminModule {
     public void setPostingSchedule(ScheduleInfo config) throws ParseException, AccessControlException;;
 	public void setWorkAreaFunctionMemberships(WorkArea workArea, Map<Long, Set<Long>> functionMemberships) throws AccessControlException;
     public void setWorkAreaFunctionMembershipInherited(WorkArea workArea, boolean inherit) throws AccessControlException;
-    public void setWorkAreaOwner(WorkArea workArea, Long userId) throws AccessControlException;
+    public void setWorkAreaOwner(WorkArea workArea, Long userId, boolean propagate) throws AccessControlException;
 	public void updateDefaultDefinitions(Long topId);
 	public void updateDefaultTemplates(Long topId);
     
