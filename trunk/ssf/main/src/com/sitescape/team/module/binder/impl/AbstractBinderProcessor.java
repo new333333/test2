@@ -1387,11 +1387,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	 return ids;
    
      }
-     public void indexOwner(Binder binder) {
+     public void indexOwner(Collection<Binder>binders, Long ownerId) {
   		String value = BasicIndexUtils.EMPTY_ACL_FIELD;
- 		Long id = binder.getOwnerId();
- 		if (id != null) value = id.toString();
- 		doFieldUpdate(binder, BasicIndexUtils.BINDER_OWNER_ACL_FIELD, value);    		
+ 		if (ownerId != null) value = ownerId.toString();
+ 		doFieldUpdate(binders, BasicIndexUtils.BINDER_OWNER_ACL_FIELD, value);    		
      }
      
      //this will update the binder, its attachments and entries, and subfolders and entries that inherit
@@ -1412,7 +1411,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
      //this will update the binder, its attachments and entries, and subfolders and entries that inherit
      //this code assumes all doc_types have the field being updated
-  	private org.dom4j.Document buildQueryforUpdate(Binder binder, List<Long> notBinders) {
+  	private org.dom4j.Document buildQueryforUpdate(Binder binder, Collection<Long> notBinders) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
 		//get the binder and all the entrys, replies, subBinders and their attachments
@@ -1472,7 +1471,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  
  	   	return qTree;
  	}
-    private void doFieldUpdate(List<Binder>binders, String field, String value) {
+    private void doFieldUpdate(Collection<Binder>binders, String field, String value) {
      	if (binders.isEmpty()) return;
  		// Now, create a query which can be used by the index update method to modify all the
  		// entries, replies, attachments, and binders(workspaces) in the index 
@@ -1489,7 +1488,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      	}    		
      	
      }
-	private org.dom4j.Document buildQueryforUpdate(List<Binder> binders) {
+	private org.dom4j.Document buildQueryforUpdate(Collection<Binder> binders) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
 		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
 		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
