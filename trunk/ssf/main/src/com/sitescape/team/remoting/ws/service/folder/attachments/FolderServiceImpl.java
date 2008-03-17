@@ -28,40 +28,28 @@
  */
 package com.sitescape.team.remoting.ws.service.folder.attachments;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringBufferInputStream;
 import java.io.StringWriter;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.activation.FileTypeMap;
-import javax.xml.soap.SOAPException;
 
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.ValidationException;
 
-import org.apache.axis.AxisFault;
 import org.apache.axis.Message;
 import org.apache.axis.MessageContext;
 import org.apache.axis.attachments.AttachmentPart;
 
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.mail.MailHelper;
-import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.mail.MailModule;
-import com.sitescape.team.module.shared.EmptyInputData;
-import com.sitescape.team.remoting.RemotingException;
-import com.sitescape.team.remoting.ws.util.attachments.AttachmentsHelper;
-import com.sitescape.team.remoting.ws.util.attachments.AxisMultipartFile;
 import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.util.FileUtil;
 
 public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.folder.FolderServiceImpl {
@@ -90,7 +78,7 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 		}
 		
 		public String getName() { return "com.sitescape.team.CalendarDataSource"; }
-		public String getContentType() { return MailHelper.CONTENT_TYPE_CALENDAR; }
+		public String getContentType() { return MailModule.CONTENT_TYPE_CALENDAR; }
 		
 		public InputStream getInputStream() throws IOException
 		{

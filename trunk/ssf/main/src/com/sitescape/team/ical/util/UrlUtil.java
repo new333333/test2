@@ -32,7 +32,7 @@ import javax.portlet.PortletRequest;
 
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.mail.MailHelper;
+import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.web.util.WebUrlUtil;
 
 /**
@@ -61,7 +61,7 @@ public class UrlUtil {
 		
 		url.append(WebUrlUtil.getIcalRootURL(req)).
 			append("basic").
-			append(MailHelper.ICAL_FILE_EXTENSION).
+			append(MailModule.ICAL_FILE_EXTENSION).
 			append("?bi=").
 			append(binderId);
 		

@@ -39,19 +39,25 @@ import com.sitescape.team.domain.Binder;
  *
  */
 public interface MailModule {
-	
-	public static String POSTING_JOB_KEY="posting.job";
-	public static String NOTIFICATION_JOB_KEY="notification.job";
-	public final static String SUBSCRIPTION_JOB_KEY="subscription.job";
-	public final static String SUBSCRIPTION_MINUTES_KEY="subscription.minutes";
+	public enum Property {
+		POSTING_JOB ("posting.job"),
+		NOTIFICATION_JOB ("notification.job"),
+		SUBSCRIPTION_JOB ("subscription.job"),
+		SUBSCRIPTION_MINUTES ("subscription.minutes"),
+		NOTIFY_TEMPLATE_TEXT ("notify.mailText"),
+		NOTIFY_TEMPLATE_HTML ("notify.mailHtml"),
+		NOTIFY_TEMPLATE_CACHE_DISABLED ("notify.templateCacheDisabled"),
+		NOTIFY_FROM ("notify.from"),
+		NOTIFY_SUBJECT ("notify.subject"),
+	    DEFAULT_TIMEZONE ("notify.timezone");
+		String keyValue;
+		Property(String value) {
+			keyValue = value;
+		}
+		public String getKey() {return keyValue;}
+	}
 
-	public static final String NOTIFY_TEMPLATE_TEXT_KEY="notify.mailText";
-	public static final String NOTIFY_TEMPLATE_HTML_KEY="notify.mailHtml";
-	public static final String NOTIFY_TEMPLATE_CACHE_DISABLED_KEY="notify.templateCacheDisabled";
-	public static final String NOTIFY_FROM_KEY="notify.from";
-	public static final String NOTIFY_SUBJECT_KEY="notify.subject";
-    public static final String DEFAULT_TIMEZONE_KEY="notify.timezone";
-
+	//reply posting subject header
     public static final String REPLY_SUBJECT="RE: DocId:";
 	//Inputs to sendMail from Map
 	public static final String SUBJECT="SUBJECT";//string
@@ -62,6 +68,17 @@ public interface MailModule {
 	public static final String ICALENDARS="icalendars"; //Collection of net.fortuna.ical4j.model.Calendar
 	public static final String FROM="FROM"; 	//InternetAddress
 
+	public static final String HEADER_CONTENT_TRANSFER_ENCODING = "Content-Transfer-Encoding";
+	public static final String HEADER_CONTENT_TRANSFER_ENCODING_8BIT = "8bit";
+	public static final String MULTIPART_SUBTYPE_ALTERNATIVE = "alternative";
+	public static final String CONTENT_TYPE_ALTERNATIVE = "text/alternative";
+	public static final String CONTENT_TYPE_HTML = "text/html";
+	public static final String CONTENT_TYPE_CALENDAR = "text/calendar";
+	public static final String CONTENT_TYPE_CHARSET_SUFFIX = ";charset=";
+	public static final String CONTENT_TYPE_CALENDAR_COMPONENT_SUFFIX = "; component=";
+	public static final String CONTENT_TYPE_CALENDAR_METHOD_SUFFIX = "; method=";
+	public static final String ICAL_FILE_EXTENSION = ".ics";
+	
     public Date sendNotifications(Long folderId, Date begin);
 	public Date fillSubscriptions(Date begin);
 	public void receivePostings();
@@ -72,6 +89,7 @@ public interface MailModule {
     public void sendMail(String mailSenderName, MimeMessagePreparator preparer);
     public boolean sendMail(Binder binder, Map message, String comment);
     public void scheduleMail(Binder binder, Map message, String comment) throws Exception;
+	public String getMailProperty(String zoneName, Property property);
 	public String getMailProperty(String zoneName, String name);
 	public String getMailAttribute(String zoneName, String node, String name);
 }

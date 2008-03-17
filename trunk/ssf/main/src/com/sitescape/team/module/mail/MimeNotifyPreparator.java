@@ -23,7 +23,6 @@ import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.mail.MailHelper;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.util.SpringContextUtil;
@@ -99,7 +98,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 			multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED;
 		}
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
-		mimeMessage.addHeader(MailHelper.HEADER_CONTENT_TRANSFER_ENCODING, MailHelper.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
+		mimeMessage.addHeader(MailModule.HEADER_CONTENT_TRANSFER_ENCODING, MailModule.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
 		helper.setSubject(processor.getSubject(folder, (FolderEntry)entry, notify));
 		for (Iterator iter=toAddrs.iterator();iter.hasNext();) {
 			String email = (String)iter.next();
@@ -117,13 +116,13 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 
 		if (!messageType.equals(Notify.NotifyType.text)) {
 			//use MailHelper so alternative part added for calendars
-			MailHelper.setText(null, (String)result.get(FolderEmailFormatter.HTML), helper);
+			setText(null, (String)result.get(FolderEmailFormatter.HTML), helper);
 			if (sendAttachments) prepareAttachments(notify.getAttachments(), helper);
 			notify.clearAttachments();
 			prepareICalendars(notify, helper);
 		} else {
 			//just a subject line
-			MailHelper.setText("", "", helper);
+			setText("", "", helper);
 		}
 		
 		//save message incase cannot connect and need to resend;
@@ -140,14 +139,15 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 				List events = (List)mapEntry.getValue();
 				Calendar iCal = icalModule.generate(entry, events, timezone.getID());
 				
-				String fileName = entry.getTitle() + MailHelper.ICAL_FILE_EXTENSION;
+				String fileName = entry.getTitle() + MailModule.ICAL_FILE_EXTENSION;
 				if (eventsSize > 1) {
-					fileName = entry.getTitle() + c + MailHelper.ICAL_FILE_EXTENSION;
+					fileName = entry.getTitle() + c + MailModule.ICAL_FILE_EXTENSION;
 				}
 				
 				String component = getICalComponentType(iCal);
 				//If okay to send todo or not a todo build alternatative
-				if (sendVTODO || !Component.VTODO.equals(component)) {
+				if (false) {
+				//	if (sendVTODO || !Component.VTODO.equals(component)) {
 					// 	attach alternative iCalendar content
 					if (eventsSize == 1 && Notify.NotifyType.full.equals(messageType)) {
 						//always send as attachment and alternative text
@@ -169,7 +169,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		
 		if (margedCalendars != null) {
 			//add to alternative text, attachments handled already
-			prepareICalendar(margedCalendars, folder.getTitle() + MailHelper.ICAL_FILE_EXTENSION, getICalComponentType(margedCalendars), false, true, helper);
+			prepareICalendar(margedCalendars, folder.getTitle() + MailModule.ICAL_FILE_EXTENSION, getICalComponentType(margedCalendars), false, true, helper);
 		}
 		
 		notify.clearEvents();

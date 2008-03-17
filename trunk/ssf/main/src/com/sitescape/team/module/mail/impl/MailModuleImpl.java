@@ -120,12 +120,12 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	protected int rcptToLimit = 500;
 //	protected Map<String,String> mailAccounts = new TreeMap(String.CASE_INSENSITIVE_ORDER);
 	public MailModuleImpl() {
-		defaultProps.put(MailModule.POSTING_JOB_KEY, "com.sitescape.team.jobs.DefaultEmailPosting");
-		defaultProps.put(MailModule.NOTIFICATION_JOB_KEY, "com.sitescape.team.jobs.DefaultEmailNotification");
-	 	defaultProps.put(MailModule.SUBSCRIPTION_JOB_KEY, "com.sitescape.team.jobs.DefaultFillEmailSubscription");
-		defaultProps.put(MailModule.NOTIFY_TEMPLATE_TEXT_KEY, "mailText.xslt");
-		defaultProps.put(MailModule.NOTIFY_TEMPLATE_HTML_KEY, "mailHtml.xslt");
-		defaultProps.put(MailModule.NOTIFY_TEMPLATE_CACHE_DISABLED_KEY, "false");
+		defaultProps.put(MailModule.Property.POSTING_JOB.getKey(), "com.sitescape.team.jobs.DefaultEmailPosting");
+		defaultProps.put(MailModule.Property.NOTIFICATION_JOB.getKey(), "com.sitescape.team.jobs.DefaultEmailNotification");
+	 	defaultProps.put(MailModule.Property.SUBSCRIPTION_JOB.getKey(), "com.sitescape.team.jobs.DefaultFillEmailSubscription");
+		defaultProps.put(MailModule.Property.NOTIFY_TEMPLATE_TEXT.getKey(), "mailText.xslt");
+		defaultProps.put(MailModule.Property.NOTIFY_TEMPLATE_HTML.getKey(), "mailHtml.xslt");
+		defaultProps.put(MailModule.Property.NOTIFY_TEMPLATE_CACHE_DISABLED.getKey(), "false");
 	}
 
 	private TransactionTemplate transactionTemplate;
@@ -209,7 +209,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	}
 
 	protected FillEmailSubscription getSubscriptionProcessor(Workspace zone) {
-    	String jobClass = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), SUBSCRIPTION_JOB_KEY);
+    	String jobClass = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.SUBSCRIPTION_JOB);
 	 	   try {
 	 		   Class processorClass = ReflectHelper.classForName(jobClass);
 	 		   FillEmailSubscription job = (FillEmailSubscription)processorClass.newInstance();
@@ -238,7 +238,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		if (zone.isDeleted()) return;
 		//make sure a delete job is scheduled for the zone
 		FillEmailSubscription sub = getSubscriptionProcessor(zone);
-		String minString = (String)getMailProperty(zone.getName(), SUBSCRIPTION_MINUTES_KEY);
+		String minString = (String)getMailProperty(zone.getName(), MailModule.Property.SUBSCRIPTION_MINUTES);
 		int minutes = 5;
 		try {
 			minutes = Integer.parseInt(minString);
@@ -248,6 +248,9 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 
 	public File getMailDirPath(Binder binder) {
 		return new File(new StringBuffer(mailRootDir).append(RequestContextHolder.getRequestContext().getZoneName()).append(File.separator).append(binder.getId().toString()).append(File.separator).toString());
+	}
+	public String getMailProperty(String zoneName, MailModule.Property property) {
+		return getMailProperty(zoneName, property.getKey());
 	}
 	public String getMailProperty(String zoneName, String name) {
 		String val = SZoneConfig.getString(zoneName, "mailConfiguration/property[@name='" + name + "']");
@@ -513,7 +516,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			List<Subscription> folderSubscriptions = null;
 			FolderEmailFormatter processor=null;
 			MimeNotifyPreparator mHelper = null;
-			String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE_KEY);
+			String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE);
 			//Will be sorted by owningBinderkey
 			List<NotifyStatus> uStatus = getCoreDao().loadNotifyStatus("lastFullSent", begin, end, 100, RequestContextHolder.getRequestContext().getZoneId());
 			List ids = new ArrayList();
@@ -656,7 +659,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			List<Subscription> folderSubscriptions = null;
 			FolderEmailFormatter processor=null;
 			MimeNotifyPreparator mHelper = null;
-			String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.DEFAULT_TIMEZONE_KEY);
+			String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE);
 			List ids = new ArrayList();
 			//Will be sorted by owningBinderkey
 			List<NotifyStatus> uStatus;
