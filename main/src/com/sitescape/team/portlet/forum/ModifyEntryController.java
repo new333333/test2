@@ -161,7 +161,9 @@ public class ModifyEntryController extends SAbstractController {
 				}
 			} else if (op.equals(WebKeys.OPERATION_MOVE)) {
 				//must be move entry
-				Long destinationId = PortletRequestUtils.getLongParameter(request, "destination");
+				long[] destinationIds = PortletRequestUtils.getLongParameters(request, "destination");
+				Long destinationId = null;
+				if (destinationIds != null && destinationIds.length > 0) destinationId = destinationIds[destinationIds.length - 1];
 				if (destinationId != null) {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(WebKeys.DEFAULT_SAVE_LOCATION_ID, destinationId);
