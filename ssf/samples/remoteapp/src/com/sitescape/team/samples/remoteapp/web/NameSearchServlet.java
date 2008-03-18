@@ -28,15 +28,19 @@
  */
 package com.sitescape.team.samples.remoteapp.web;
 
+import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
+import org.apache.axis.client.Call;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -45,6 +49,8 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.sitescape.team.client.ws.folder.FolderServiceSoapBindingStub;
+import com.sitescape.team.client.ws.folder.FolderServiceSoapServiceLocator;
 import com.sitescape.team.client.ws.profile.ProfileServiceSoapBindingStub;
 import com.sitescape.team.client.ws.profile.ProfileServiceSoapServiceLocator;
 
@@ -52,8 +58,10 @@ public class NameSearchServlet extends HttpServlet {
 
 	private static final String GOOGLE_SEARCH_TEMPLATE = "http://www.google.com/search?hl=en&q=@@@&btnG=Google+Search";
 	
-	private static final String WS_ADDRESS = "http://localhost:8080/ssr/token/ws/ProfileService";
-	private static final String WS_PORT_NAME = "ProfileService";
+	private static final String PROFILE_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/ProfileService";
+	private static final String PROFILE_SERVICE_PORT_NAME = "ProfileService";
+	private static final String FOLDER_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/FolderService";
+	private static final String FOLDER_SERVICE_PORT_NAME = "FolderService";
 	private static final Long PROFILE_BINDER_ID = Long.valueOf(2);
 	
 	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
@@ -75,6 +83,8 @@ public class NameSearchServlet extends HttpServlet {
 			
 			String result = googleForName(title);
 			
+			//uploadFile(accessToken);
+			
 			resp.getWriter().print(result);
 		}
 		catch(ServletException e) {
@@ -90,7 +100,7 @@ public class NameSearchServlet extends HttpServlet {
 
 	private String getUserTitle(String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
 		ProfileServiceSoapServiceLocator locator = new ProfileServiceSoapServiceLocator();
-		locator.setEndpointAddress(WS_PORT_NAME, WS_ADDRESS);
+		locator.setEndpointAddress(PROFILE_SERVICE_PORT_NAME, PROFILE_SERVICE_ADDRESS);
 		ProfileServiceSoapBindingStub stub = (ProfileServiceSoapBindingStub) locator.getProfileService();
 		String principalAsXML = stub.getPrincipalAsXML(accessToken, PROFILE_BINDER_ID, userId);
 		
@@ -130,5 +140,17 @@ public class NameSearchServlet extends HttpServlet {
 		finally {
 			getMethod.releaseConnection();
 		}
+	}
+	
+	private void uploadFile(String accessToken) throws Exception {
+		// Do not use this method for general purpose, since it uses hard-coded 
+		// binder ID and enry ID, etc. Useful only for one shot testing.
+		FolderServiceSoapServiceLocator locator = new FolderServiceSoapServiceLocator();
+		locator.setEndpointAddress(FOLDER_SERVICE_PORT_NAME, FOLDER_SERVICE_ADDRESS);
+		FolderServiceSoapBindingStub stub = (FolderServiceSoapBindingStub) locator.getFolderService();
+		DataHandler dhSource = new DataHandler(new FileDataSource(new File("C:/junk/junk1/chinese-application.doc")));
+		stub.addAttachment(dhSource);
+		stub._setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
+		stub.uploadFolderFile(accessToken, 33, 9, "upload", "chinese-application.doc");
 	}
 }
