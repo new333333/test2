@@ -132,63 +132,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color: #8B9BBA;
 	}
 	
-/* - ss_profileTab-------------------------- */
 
-#ss_profileTab {
-  float:left;
-  width:100%;
-  background:#F9F7F3;
-  font-size:93%;
-  line-height:normal;
-  border-bottom:1px solid #C2BDAE;
-  }
-#ss_profileTab ul {
-  margin:0px;
-  padding:10px 10px 0 50px;
-  list-style:none;
-  }
-#ss_profileTab li {
-  display:inline;
-  margin:0px;
-  padding:0px;
-  }
-#ss_profileTab a {
-  float:left;
-  background-image: url(<html:rootPath/>images/pics/ss_profiletableft.gif) ;
-  background-repeat: no-repeat;
-  background-position:  left top;
-  margin:0px;
-  padding:0px 0px 0px 4px;
-  text-decoration:none;
-  }
-#ss_profileTab a span {
-  float:left;
-  display:block;
-  background-image: url(<html:rootPath/>images/pics/ss_profiletabright.gif);
-  background-repeat: no-repeat;
-  background-position:  right top;
-  padding:5px 15px 4px 6px;
-  color:#E4D6CD;
-  }
-/* Commented Backslash Hack hides rule from IE5-Mac \*/
-	#ss_profileTab a span {float:none;}
-/* End IE5-Mac hack */
-	
-#ss_profileTab a:hover span {
-  	color:#FFF;
-  	}
-#ss_profileTab a:hover {
-  	background-position:0% -42px;
-  	}
-#ss_profileTab a:hover span {
-  	background-position:100% -42px;
-  	}
-#ss_profileTab .ss_profileCurrent a {
-  	background-position:0% -42px;
-  	}
-#ss_profileTab .ss_profileCurrent a span {
-  background-position:100% -42px;
-  }
+  
 
 div.ss_canvas {
 	border-left: solid 1px ${ss_toolbar1_background_color};
@@ -747,7 +692,7 @@ div.ss_canvas {
 	padding-left:6px;
 	}		
 	
-/* ============link styles =========================== */		
+/* ============ End link styles =========================== */		
 
 
 /* Header styles */
