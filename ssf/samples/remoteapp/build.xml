@@ -10,13 +10,6 @@
 	<property name="jar.file" value="remoteapp.jar" />
 	<property name="war.name" value="remoteapp" />
 	<property name="war.file" value="${war.name}.war" />
-
-	<!-- This overrides the imported definition -->
-	<path id="project.classpath">
-		<pathelement path="${classpath}" />
-		<pathelement location="${project.dir}/ws-client/ssf-wsclient.jar"/>
-		<fileset dir="${project.dir}/lib" includes="*.jar" />
-	</path>
 	
 	<target name="war" depends="jar">
 		<copy file="${jar.file}" todir="war/WEB-INF/lib"/>
@@ -37,7 +30,7 @@
 				<include name="wsdl4j.jar" />
 				<include name="wss4j.jar" />
 				<include name="addressing.jar" />
-				<include name="bcprov-jdk13-128.jar" />
+				<include name="bcprov-jdk15.jar" />
 				<include name="opensaml.jar" />
 				<include name="xalan.jar" />
 				<include name="xmlsec.jar" />
