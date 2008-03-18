@@ -57,6 +57,7 @@ public class NameSearchServlet extends HttpServlet {
 	private static final Long PROFILE_BINDER_ID = Long.valueOf(2);
 	
 	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
+	private static final String PARAMETER_NAME_VERSION = "ss_version";
 	private static final String PARAMETER_NAME_APPLICATION_ID = "ss_application_id";
 	private static final String PARAMETER_NAME_USER_ID = "ss_user_id";
 	private static final String PARAMETER_NAME_ACCESS_TOKEN = "ss_access_token";
@@ -65,6 +66,7 @@ public class NameSearchServlet extends HttpServlet {
 	throws ServletException, IOException {
 		try {
 			String action = req.getParameter(PARAMETER_NAME_ACTION);
+			String version = req.getParameter(PARAMETER_NAME_VERSION);
 			String applicationId = req.getParameter(PARAMETER_NAME_APPLICATION_ID);
 			String userId = req.getParameter(PARAMETER_NAME_USER_ID);
 			String accessToken = req.getParameter(PARAMETER_NAME_ACCESS_TOKEN);

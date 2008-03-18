@@ -36,7 +36,7 @@ import com.sitescape.team.security.accesstoken.AccessToken.BinderAccessConstrain
 public interface RemoteApplicationManager {
 
 	public enum Action {
-		ACCESSORY;
+		view_accessory;
 	};
 
 	public void executeInteractiveAction(Action action, Map<String,String> params, Long applicationId, 

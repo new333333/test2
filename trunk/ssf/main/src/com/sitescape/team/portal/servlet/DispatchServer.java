@@ -111,6 +111,10 @@ public class DispatchServer extends GenericServlet {
 			
 			final HttpSession ses = ((HttpServletRequest) req).getSession();
 			
+			// need the following piece of data to detect the situation where Liferay  
+			// upgrades a session from guest to regular user
+			Long oldUserId = (Long) ses.getAttribute(WebKeys.USER_ID);
+
 			WebHelper.putContext(ses, user);
 
 			if(ses.getAttribute(WebKeys.SERVER_NAME) == null) {		
@@ -120,9 +124,10 @@ public class DispatchServer extends GenericServlet {
 					logger.debug("Server name:port is " + req.getServerName().toLowerCase() + ":" + req.getServerPort() + " for user " + userName + " at the time of login");
 			}	
 			
-			if(ses.getAttribute(WebKeys.TOKEN_INFO_ID) == null) {
+			final String infoId = (String) ses.getAttribute(WebKeys.TOKEN_INFO_ID);
+			if(infoId == null) { 
 				if(!user.isShared() || 
-						SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) {
+						SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
 					// Make sure to run it in the user's context.			
 					RunasTemplate.runas(new RunasCallback() {
 						public Object doAs() {
@@ -131,6 +136,28 @@ public class DispatchServer extends GenericServlet {
 							return null;
 						}
 					}, user);						
+				}
+			}
+			else if (!user.getId().equals(oldUserId)) {
+				// The portal is re-using the same session while changing the owner(user). 
+				if(!user.isShared() || 
+						SPropsUtil.getBoolean("remoteapp.interactive.token.support.guest", true)) { // create a new info object
+					RunasTemplate.runas(new RunasCallback() {
+						public Object doAs() {
+							accessTokenManager.updateTokenInfoInteractive(infoId, user.getId());
+							return null;
+						}
+					}, user);						
+				}
+				else {
+					// The current user is guest and the configuration doesn't allow guest to use interactive tokens.
+					// Run this in the old user's context.			
+					RunasTemplate.runas(new RunasCallback() {
+						public Object doAs() {
+							accessTokenManager.destroyTokenInfoInteractive(infoId);
+							return null;
+						}
+					}, user.getZoneId(), oldUserId);									
 				}
 			}
 		}

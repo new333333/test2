@@ -66,13 +66,24 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
+	// The name of the action/operation.
 	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
+	// The version of the API/protocol.
+	private static final String PARAMETER_NAME_VERSION = "ss_version";
+	// The ID of the application - uniquely assigned to the application. 
 	private static final String PARAMETER_NAME_APPLICATION_ID = "ss_application_id";
+	// The ID of the context user
 	private static final String PARAMETER_NAME_USER_ID = "ss_user_id";
+	// The access token
 	private static final String PARAMETER_NAME_ACCESS_TOKEN = "ss_access_token";
+	// The ID of the binder (optional)
 	private static final String PARAMETER_NAME_BINDER_ID = "ss_binder_id";
+	// The type of access constraints around the binder (optional) - meaningful
+	// only when PARAMETER_NAME_BINDER_ID is specified.
 	private static final String PARAMETER_NAME_BINDER_ACCESS_CONSTRAINTS = "ss_binder_access_constraints"; 
 
+	private static final String API_VERSION = "1.0";
+	
 	private static final int BUFFER_SIZE = 4096;
 
 	private ProfileDao profileDao;
@@ -96,7 +107,8 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 
 	public void executeInteractiveAction(Action action, Map<String,String> params, Long applicationId, 
 			String tokenInfoId, OutputStream out) throws RemoteApplicationException {
-		AccessToken accessToken = getAccessTokenManager().newInteractiveToken(applicationId, tokenInfoId);
+		AccessToken accessToken = getAccessTokenManager().getInteractiveToken
+		(applicationId, RequestContextHolder.getRequestContext().getUserId(), tokenInfoId);
 		try {
 			executeInteractiveAction(action, params, applicationId, accessToken, out);
 		}
@@ -108,8 +120,8 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 	public void executeInteractiveAction(Action action, Map<String,String> params, Long applicationId, String tokenInfoId, 
 			Long binderId, BinderAccessConstraints binderAccessConstraints, OutputStream out) 
 	throws RemoteApplicationException {
-		AccessToken accessToken = getAccessTokenManager().newInteractiveToken
-		(applicationId, tokenInfoId, binderId, binderAccessConstraints);
+		AccessToken accessToken = getAccessTokenManager().getInteractiveToken
+		(applicationId, RequestContextHolder.getRequestContext().getUserId(), tokenInfoId, binderId, binderAccessConstraints);
 		try {
 			executeInteractiveAction(action, params, applicationId, accessToken, out);
 		}
@@ -135,11 +147,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		PostMethod method = new PostMethod(hrl.getPathQuery());
 		try {
 			method.addParameter(PARAMETER_NAME_ACTION, action.name());
-			if(params != null) {
-				for(Map.Entry<String, String> entry : params.entrySet()) {
-					method.addParameter(entry.getKey(), entry.getValue());
-				}
-			}
+			method.addParameter(PARAMETER_NAME_VERSION, API_VERSION);
 			method.addParameter(PARAMETER_NAME_APPLICATION_ID, applicationId.toString());
 			method.addParameter(PARAMETER_NAME_USER_ID, rc.getUserId().toString());
 			method.addParameter(PARAMETER_NAME_ACCESS_TOKEN, accessToken.toStringRepresentation());
@@ -147,6 +155,11 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 				method.addParameter(PARAMETER_NAME_BINDER_ID, accessToken.getBinderId().toString());
 				method.addParameter(PARAMETER_NAME_BINDER_ACCESS_CONSTRAINTS, String.valueOf(accessToken.getBinderAccessConstraints().getNumber()));
 			}	
+			if(params != null) {
+				for(Map.Entry<String, String> entry : params.entrySet()) {
+					method.addParameter(entry.getKey(), entry.getValue());
+				}
+			}
 			int timeout = SPropsUtil.getInt("remoteapp.so.timeout", 0);
 			if(timeout > 0) {
 				method.getParams().setSoTimeout(timeout);
