@@ -30,10 +30,23 @@ package com.sitescape.team.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
+import javax.mail.internet.MimeUtility;
+import javax.servlet.http.HttpServletRequest;
+
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
+
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.util.BrowserSniffer;
 
 /**
  * @author Jong Kim
@@ -163,4 +176,40 @@ public class FileHelper {
         	logger.error(e);
         }
     }		
+	
+	public static long getLength(Binder binder, DefinableEntity entity, FileAttachment fa) {
+		if(ObjectKeys.FI_ADAPTER.equals(fa.getRepositoryName())) {
+			return RepositoryUtil.getContentLengthUnversioned(fa.getRepositoryName(), binder, entity, fa.getFileItem().getName());
+		}
+		else {
+			return fa.getFileItem().getLength();
+		}
+	}
+	
+	public static String encodeFileName(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
+		if(BrowserSniffer.is_ie(request)) {
+			String file = URLEncoder.encode(fileName, "UTF8");
+			file = StringUtils.replace(file, "+", "%20");
+			file = StringUtils.replace(file, "%2B", "+");
+			return file;
+		}
+		else if(BrowserSniffer.is_mozilla(request)) {
+			String file = MimeUtility.encodeText(fileName, "UTF8", "B");
+			file = StringUtils.replace(file, "+", "%20");
+			file = StringUtils.replace(file, "%2B", "+");
+			return file;
+		}
+		else {
+			return fileName;
+		}
+	}
+	
+	public static boolean checkIfAttachment(String contentType) {
+		boolean result = true;
+		String[] types = SPropsUtil.getStringArray("view.file.directly", ",");
+		for (int i=0; i < types.length; i++) {
+			if (contentType.startsWith(types[i].trim() + "/")) return false;
+		}
+		return result;
+	}
 }

@@ -431,12 +431,13 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 		//Don't show ppt file urls for IE. Powerpoint 2007 doesn't work with these urls
 %>
       <a href="<ssf:url 
-	    webPath="viewFile"
+	    webPath="readFile"
 	    folderId="${entry1._binderId}"
-	    entryId="${entry1._docId}" >
-		<ssf:param name="entityType" value="${entry1._entityType}"/>
+	    entryId="${entry1._docId}" 
+	    entityType="${entry1._entityType}" >
 	    <ssf:param name="fileId" value="${entry1._fileID}"/>
 	    <ssf:param name="fileTime" value="${entry1._fileTime}"/>
+	    <ssf:param name="fileName" value="${entry1._fileName}"/>
 	    </ssf:url>"  class="ss_download_link"
 		onClick="return ss_openUrlInWindow(this, '_blank');"
 	  ><span><ssf:nlt tag="entry.download"/></span></a>
