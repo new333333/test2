@@ -34,8 +34,9 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_activities}">
-
+<div id="ss_para">
   <c:forEach var="activity" items="${ss_activities}">
+  
     <li>
 	  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${activity.date}" type="both" 
@@ -58,6 +59,7 @@
 	    </ssf:nlt>
 	  </c:if>
     </li>
+    
   </c:forEach>
-
+</div><!-- end of ss_para -->
 </c:if>

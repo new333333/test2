@@ -35,8 +35,8 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_whatsNewTrackedCalendars}">
-
-<div id="ss_todayC">
+<div id="ss_para" class="ss_paraC">
+<div id="ss_today">
   <div id="ss_cal_para" > 
   <c:forEach var="entry" items="${ss_whatsNewTrackedCalendars}">
     <jsp:useBean id="entry" type="java.util.Map" />
@@ -83,9 +83,10 @@
 	      textMaxWords="10">${entry._desc}</ssf:textFormat></span>
 	  </c:if>
 	
-    </li>
+    </li><br/>
   </c:forEach>
 	</div><!-- end of para -->
     </div><!-- end of today -->
+    </div><!-- end of ss_para -->
 </c:if>
 

@@ -36,7 +36,7 @@
 </c:if>
 
 <c:if test="${!empty ssEntriesViewed}">
-
+<div id="ss_para">
 <c:set var="count" value="0"/>
   <c:forEach var="entryMap" items="${ssEntriesViewed}">
     <c:if test="${entryMap.type == 'view'}">
@@ -151,5 +151,5 @@
 <c:if test="${count == 0}">
 <span><ssf:nlt tag="relevance.docs.none"/></span>
 </c:if>
-
+</div> <!-- end of ss_para -->
 </c:if>

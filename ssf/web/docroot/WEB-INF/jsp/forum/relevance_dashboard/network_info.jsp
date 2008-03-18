@@ -36,7 +36,7 @@
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
 
-	<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_documents">
+	<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_shared">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"><ssf:nlt tag="relevance.whatsNewTracked"/>
 				</div>

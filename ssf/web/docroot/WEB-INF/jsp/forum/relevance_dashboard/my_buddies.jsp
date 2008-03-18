@@ -30,7 +30,9 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+
 <c:forEach var="user" items="${ss_trackedPeople}">
+<div id="today">
     <table cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
     <ssf:showUser user="${user}" titleStyle="ss_link_1" />
     <c:if test="${ss_show_tracked_item_delete_button == 'true'}">
@@ -44,4 +46,5 @@
     </td></tr>
     </c:if>
     </tbody></table>
+    </div><!-- end of today -->
 </c:forEach>

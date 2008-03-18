@@ -34,7 +34,8 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_myTasks}">
-<div id="ss_todayC">
+<div id="ss_para" class="ss_paraC">
+<div id="ss_today">
 <div id="ss_hints"><em>This is my To-Do List</em></div>
 <div id="ss_tasks_para">
 <c:forEach var="entry" items="${ss_myTasks}">
@@ -129,4 +130,5 @@
 
 	</div><!-- end of para -->
     </div><!-- end of today -->
+    </div><!-- end of ss_para -->
 </c:if>

@@ -190,7 +190,7 @@ div.ss_canvas {
 .ss_ping_img {
 	background-image: url("<html:rootPath/>images/pics/im_16x16.png");
 	background-repeat: no-repeat;
-	background-position: 96% center;
+	background-position: 95% center;
 	}
 .ss_cal_img {
 	background-image: url("<html:rootPath/>images/pics/calendar16x16_2.png");
@@ -210,7 +210,7 @@ div.ss_canvas {
 .ss_tracked_img {
 	background-image: url("<html:rootPath/>images/pics/tracking20x16.png");
 	background-repeat: no-repeat;
-	background-position: 97% center;
+	background-position: 95% center;
 	}				
 /* Box styles */	
 
@@ -472,42 +472,6 @@ div.ss_canvas {
 
 }
 
-#ss_Box_8
-{
-	padding: 0;
-	margin: 1% 0 5% 0;
-	color:#444444;
-
-}
-#ss_Box_9
-{
-	padding: 0;
-	margin: 1% 0 5% 0;
-	color:#444444;
-
-}
-#ss_Box_10
-{
-	padding: 0;
-	margin: 1% 0 5% 0;
-	color:#444444;
-
-}
-#ss_Box_11
-{
-	padding: 0;
-	margin: 1% 0 5% 0;
-	color:#444444;
-
-}
-#ss_Box_12
-{
-	padding: 0px;
-	margin: 1% 0% 5% 0%;
-	color:#444444;
-
-}
-
 #ss_title
 {
 	
@@ -555,6 +519,7 @@ div.ss_canvas {
 	list-style-type: square;
 	margin-left:-10px;
 }
+/*  set backgrounds of Box Titles  */
 .ss_pt_title
 {
 
@@ -563,14 +528,16 @@ div.ss_canvas {
 	padding: 2px 0px 2px 5px;
 	width:100%;
 }
-.ss_blue
+.ss_blue						/*  Box Title blue all else the same   */
 {
 	background-color: #B2CEE7;
 }
-.ss_orange
+.ss_orange						/*  Box Title orange all else the same   */
 {
 	background-color: #F93;
 }
+
+/* ******************************  */
 
 .ss_pt_para 
 { 	margin: 1%; 
@@ -593,7 +560,11 @@ div.ss_canvas {
 	padding:0 3px 0 3px;
 }
 
+.ss_paraC                     /* this style used to add background color to tasks and calendar */
+{
+	background-color:#FFFF99;
 
+}
 /* time block styles */	
 #ss_today 
 {
@@ -604,11 +575,7 @@ div.ss_canvas {
 {
 	margin: 0px 0px 0px 10px;
 }
-#ss_todayC                     /* this style used to add background color to tasks and calendar */
-{
-	margin: 0px 0px 0px 10px;	
 
-}
 #ss_lastweek
 {
 	margin: 0px 0px 0px 10px;
@@ -675,7 +642,7 @@ div.ss_canvas {
 .ss_link_2, .ss_link_2 span		/* link_2 Link style for places links */	
 	{
 	text-decoration: underline!important;
-	color:#204E1D!important;
+	color:#4AAA42!important;
 	font-size:10px!important;
 	}
 .ss_link_3, .ss_link_3 span		/* link_3 Link style for entry links */	

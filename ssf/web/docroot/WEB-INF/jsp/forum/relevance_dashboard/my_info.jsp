@@ -54,16 +54,19 @@
 		<div id="ss_title" class="ss_pt_title ss_blue ss_email_img"> <ssf:nlt tag="relevance.email"/> 
 			</div>
 	</ssf:param>
+	 <div id="ss_para">
        <div id="ss_today">
        <div id="ss_hints"><em>This is my email for today </em>  </div>
-                 <div style="#ss_email">Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page...</div> 
-        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Quality Control Guidelines</a> 7:20 AM<br>
-        <div> The project is going great so far...</div>
-        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Gerry Kimball</a> RE: <a href="#" class="ss_link_2">Rental space</a> Fri Mar 7, 5:20 AM<br>
-        <div> Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page: </div>
-        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Ensemble Practice</a> Thu Mar 6, 12:10 PM<br>
-        <div>Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page: </div>
+                 <div id="ss_email">Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page...<br/> 
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Quality Control Guidelines</a> 7:20 AM<br/>
+        The project is going great so far...<br/>
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Gerry Kimball</a> RE: <a href="#" class="ss_link_2">Rental space</a> Fri Mar 7, 5:20 AM<br/>
+       Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page: <br/>
+        <img src="<html:rootPath/>images/pics/mailicon.png" alt="email" width="16" height="12" hspace="2" border="0" />&nbsp;<a href="#" class="ss_link_1">Bill Bliss</a> RE: <a href="#" class="ss_link_2">Ensemble Practice</a> Thu Mar 6, 12:10 PM<br/>
+        Well, first I'd plug in the info from underneath the laptop into the warranty lookup on this page: <br/>
+          </div><!-- end of email -->
           </div><!-- end of today -->
+        </div><!-- end of ss_para --> 
 	</ssf:canvas>
 	
 	<ssf:canvas id="relevanceBookmarks" type="inline" styleId="ss_bookmarks">
@@ -71,6 +74,7 @@
 		<div id="ss_title" class="ss_pt_title ss_blue ss_bookmarks_img"> <ssf:nlt tag="relevance.bookmarks"/> 
 				</div>
 	</ssf:param>
+		<div id="ss_para">
         <div id="ss_today">
        <div id="ss_hints"><em>These are my bookmarks. </em>  </div>
         <a href="#" class="ss_link_2">My Itinerary</a> <br>
@@ -78,6 +82,7 @@
         <a href="#" class="ss_link_1">Gerry Kimball</a> <a href="#" class="ss_link_2">Marketing//Agenda</a> <br>
         <a href="#" class="ss_link_1">Bill Bliss</a> <a href="#" class="ss_link_2">Blog Folder//Ensemble Music</a> <br>
           </div><!-- end of today -->
+          </div><!-- end of ss_para -->
 	</ssf:canvas>
 	
       </div><!-- end of ss_col 1 -->
@@ -93,7 +98,7 @@
 
 	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_orange ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
+		<div id="ss_title" class="ss_pt_title ss_blue ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
 	</ssf:canvas>

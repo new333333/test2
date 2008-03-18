@@ -41,7 +41,7 @@
 	</div>
 	</ssf:param>
 	
-
+<div id="ss_para">
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'folder'}">
 	
@@ -62,10 +62,10 @@
       src="<html:rootPath/>images/pics/delete.gif"
       onClick="ss_trackedItemsDelete(this, '${binder.id}');"/>
 	      </td></tr></tbody></table>
-
+	
   </c:if>
 </c:forEach>
-
+</div> <!-- end of ss_para -->
 	</ssf:canvas>
 
         </div><!-- end of ss_col 1 -->
@@ -75,10 +75,10 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"> <ssf:nlt tag="relevance.trackedWorkspaces"/> </div>
 	</ssf:param>
-
+	
+<div id="ss_para">
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'workspace' && binder.definitionType == 8}">
-
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
 	    <a class="ss_link_2"
 	      href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -92,10 +92,9 @@
       src="<html:rootPath/>images/pics/delete.gif"
       onClick="ss_trackedItemsDelete(this, '${binder.id}');"/>
       </td></tr></tbody></table>
-	
   </c:if>
 </c:forEach>
-
+	</div> <!-- end of ss_para -->
 	</ssf:canvas>
 
       </div><!-- end of col2 -->
@@ -106,8 +105,12 @@
 		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"> <ssf:nlt tag="relevance.trackedPeople"/> 
 		</div>
 	</ssf:param>
+	
+	  <div id="ss_para">
 	  <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
 	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_buddies.jsp" />
+	  </div><!-- end of ss_para -->
+	 
 	</ssf:canvas>
 
       </div><!-- end of col3 -->

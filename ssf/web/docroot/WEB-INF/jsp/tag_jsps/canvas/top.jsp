@@ -43,4 +43,4 @@ String divClass = ParamUtil.get(request, "divClass", "");
 <div id="${styleId}">
   <div id="ss_title"><%= title %></div>
   <div id="${renderResponse.namespace}_${id}" >
-    <div id="ss_para">
+    

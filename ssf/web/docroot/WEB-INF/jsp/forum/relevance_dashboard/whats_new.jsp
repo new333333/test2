@@ -35,7 +35,7 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_whatsNew}">
-
+<div id="ss_para">
 <div id="ss_today">
   <div id="ss_mydocs_para" >
   <c:forEach var="entry" items="${ss_whatsNew}">
@@ -93,8 +93,9 @@
 	      textMaxWords="10">${entry._desc}</ssf:textFormat></span>
 	  </c:if>
 	
-    </li>
+    </li><br/>
   </c:forEach>
 	</div><!-- end of para -->
     </div><!-- end of today -->
+    </div><!-- end of ss_para -->
 </c:if>
