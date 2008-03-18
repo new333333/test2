@@ -26,10 +26,11 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.tools.ws;
+package com.sitescape.team.client.ws.search;
 
-public class SearchService extends WebServiceClient implements
-		com.sitescape.team.remoting.ws.service.search.SearchService {
+import com.sitescape.team.client.ws.WebServiceClient;
+
+public class SearchService extends WebServiceClient implements SearchServiceSoap {
 
 	public SearchService()
 	{
