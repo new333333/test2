@@ -885,14 +885,14 @@ public class AjaxController  extends SAbstractControllerRetry {
 		Map model = new HashMap();
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		//Get the definition id (if present)
-		String defId = PortletRequestUtils.getStringParameter(request,WebKeys.CONDITION_ENTRY_DEF_ID);
+		String defId = PortletRequestUtils.getStringParameter(request,WebKeys.CONDITION_ENTRY_DEF_ID, "");
 		if (Validator.isNotNull(defId)) {
 			model.put(WebKeys.CONDITION_ENTRY_DEF_ID, defId);
 			Map elementData = getDefinitionModule().getEntryDefinitionElements(defId);
 			model.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, elementData);
 		}
 		
-		String name = PortletRequestUtils.getStringParameter(request, WebKeys.CONDITION_ELEMENT_NAME);
+		String name = PortletRequestUtils.getStringParameter(request, WebKeys.CONDITION_ELEMENT_NAME, "");
 		if (Validator.isNotNull(name)) {
 			model.put(WebKeys.CONDITION_ELEMENT_NAME, name);
 		}
