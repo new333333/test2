@@ -34,6 +34,7 @@
 <span><ssf:nlt tag="relevance.none"/></span>
 </c:if>
 <c:if test="${!empty ss_whatsHot}">
+<div id="ss_para">
 <div id="ss_today">
 <div id="ss_hints"><em>This is What's Hot!</em></div>
 <div id="ss_hot_para">
@@ -81,4 +82,5 @@
   </c:forEach>
 	</div><!-- end of para -->
     </div><!-- end of today -->
+    </div><!-- end of ss_para -->
 </c:if>
