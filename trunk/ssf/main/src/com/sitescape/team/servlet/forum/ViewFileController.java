@@ -52,6 +52,7 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TempFileUtil;
 import com.sitescape.team.web.WebKeys;
@@ -234,7 +235,7 @@ public class ViewFileController extends SAbstractController {
 				if (!downloadFile.equals("")) attachment = "attachment; ";
 				response.setHeader(
 							"Content-Disposition",
-							attachment + "filename=\"" + encodeFileName(request, shortFileName) + "\"");
+							attachment + "filename=\"" + FileHelper.encodeFileName(request, shortFileName) + "\"");
 				
 				SimpleDateFormat df = (SimpleDateFormat)DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL);
 				Date d = fa.getModification().getDate();
@@ -259,7 +260,8 @@ public class ViewFileController extends SAbstractController {
 					}
 				} else {
 					try {
-						response.setHeader("Content-Length", String.valueOf(getLength(parent, entity, fa)));
+						response.setHeader("Content-Length", 
+								String.valueOf(FileHelper.getLength(parent, entity, fa)));
 						getFileModule().readFile(parent, entity, fa, response.getOutputStream());
 						getReportModule().addFileInfo(AuditType.download, fa);
 					}
@@ -275,15 +277,6 @@ public class ViewFileController extends SAbstractController {
 			}
 		}
 		return null;
-	}
-	
-	private long getLength(Binder binder, DefinableEntity entity, FileAttachment fa) {
-		if(ObjectKeys.FI_ADAPTER.equals(fa.getRepositoryName())) {
-			return RepositoryUtil.getContentLengthUnversioned(fa.getRepositoryName(), binder, entity, fa.getFileItem().getName());
-		}
-		else {
-			return fa.getFileItem().getLength();
-		}
 	}
 	
 	private void streamZipFile(HttpServletRequest request,
@@ -320,23 +313,5 @@ public class ViewFileController extends SAbstractController {
 			response.getOutputStream().flush();
 		}
 		catch(Exception ignore) {}
-	}
-	
-	private String encodeFileName(HttpServletRequest request, String fileName) throws UnsupportedEncodingException {
-		if(BrowserSniffer.is_ie(request)) {
-			String file = URLEncoder.encode(fileName, "UTF8");
-			file = StringUtils.replace(file, "+", "%20");
-			file = StringUtils.replace(file, "%2B", "+");
-			return file;
-		}
-		else if(BrowserSniffer.is_mozilla(request)) {
-			String file = MimeUtility.encodeText(fileName, "UTF8", "B");
-			file = StringUtils.replace(file, "+", "%20");
-			file = StringUtils.replace(file, "%2B", "+");
-			return file;
-		}
-		else {
-			return fileName;
-		}
 	}
 }
