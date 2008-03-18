@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.tools.ws;
+package com.sitescape.team.client.ws;
 
 import java.io.File;
 import java.net.URL;

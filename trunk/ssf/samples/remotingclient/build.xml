@@ -10,7 +10,8 @@
 
 	<!-- This overrides the imported definition -->
 	<path id="project.classpath">
-		<pathelement path="${classes.dir};${project.dir}/util/classes;${project.dir}/main/classes;${project.dir}/tools/classes" />
+		<pathelement path="${classes.dir};${project.dir}/util/classes;" />
+		<pathelement location="${project.dir}/ws-client/ssf-wsclient.jar" />
 		<pathelement location="${project.dir}/lib/activation.jar" />
 		<pathelement location="${project.dir}/lib/mail.jar" />
 		<pathelement location="${project.dir}/lib/dom4j.jar" />
@@ -20,15 +21,16 @@
 		<pathelement location="${project.dir}/lib/commons-httpclient.jar" />
 		<pathelement location="${project.dir}/lib/commons-logging.jar" />
 		<pathelement location="${project.dir}/lib/commons-discovery.jar" />
+		<pathelement location="${project.dir}/lib/commons-codec.jar" />
 		<pathelement location="${project.dir}/lib/saaj.jar" />
 		<pathelement location="${project.dir}/lib/wsdl4j.jar" />
 		<pathelement location="${project.dir}/lib/wss4j.jar" />
 		<pathelement location="${project.dir}/lib/addressing.jar" />
-		<pathelement location="${project.dir}/lib/bcprov-jdk13-128.jar" />
-		<pathelement location="${project.dir}/lib/commons-codec.jar" />
+		<pathelement location="${project.dir}/lib/bcprov-jdk15.jar" />
 		<pathelement location="${project.dir}/lib/opensaml.jar" />
 		<pathelement location="${project.dir}/lib/xalan.jar" />
 		<pathelement location="${project.dir}/lib/xmlsec.jar" />
+		<pathelement location="${project.dir}/lib/jaxen.jar" />
 	</path>
 
 	<target name="usage">
@@ -220,6 +222,7 @@
 	<target name="zip" depends="compileButGenerated">
 		<delete dir="${basedir}/lib"/>
 		<mkdir dir="${basedir}/lib"/>
+		<copy file="${project.dir}/ws-client/ssf-wsclient.jar" todir="${basedir}/lib"/>
 		<copy todir="${basedir}/lib">
 			<fileset dir="${project.dir}/lib">
 				<include name="activation.jar" />
@@ -228,7 +231,7 @@
 				<include name="axis.jar" />
 				<include name="axis-ant.jar" />
 				<include name="jaxrpc.jar" />
-				<include name="commons-httpclient-3.1.jar" />
+				<include name="commons-httpclient.jar" />
 				<include name="commons-logging.jar" />
 				<include name="commons-discovery.jar" />
 				<include name="saaj.jar" />

@@ -81,7 +81,7 @@
 		<parameter name="wsdlPortType" value="MigrationServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
-		<beanMapping qname="ns:Timestamps" xmlns:ns="urn:model.migration.service.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.service.folder.MigrationService$Timestamps"/>
+		<beanMapping qname="ns:Timestamps" xmlns:ns="http://model.migration.service.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.service.folder.MigrationService$Timestamps"/>
 	</service>
 	<service name="WorkspaceService" provider="java:RPC" style="rpc" use="encoded">
 		<parameter name="scope" value="application"/>	

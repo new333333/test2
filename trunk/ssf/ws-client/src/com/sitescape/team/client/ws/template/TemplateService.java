@@ -1,7 +1,8 @@
-package com.sitescape.team.tools.ws;
+package com.sitescape.team.client.ws.template;
 
-public class TemplateService extends WebServiceClient implements
-		com.sitescape.team.remoting.ws.service.template.TemplateService {
+import com.sitescape.team.client.ws.WebServiceClient;
+
+public class TemplateService extends WebServiceClient implements TemplateServiceSoap {
 
 	public TemplateService() {
 		super("TemplateService");

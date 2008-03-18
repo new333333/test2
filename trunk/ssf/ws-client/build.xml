@@ -1,14 +1,11 @@
 <?xml version="1.0"?>
 
 <project name="ws-client" basedir="." default="jar">
-	<property name="project.dir" value=".." />
-	<property name="classes.dir" value="${basedir}/classes" />
-	<property name="generated.dir" value="${basedir}/generated" />
+	<import file="../build-common.xml"/>
 
+	<property name="generated.dir" value="${basedir}/generated" />
 	<property name="jar.file" value="ssf-wsclient.jar"/>
 	<property name="client.url" value="http://localhost:8080/ssr/ws" />
-
-	<import file="${project.dir}/build-common.xml"/>
 
 	<!-- This overrides the imported definition -->
 	<!--<path id="project.classpath">
@@ -53,6 +50,7 @@
 			memoryMaximumSize="${javac.memoryMaximumSize}"
 			nowarn="${javac.nowarn}">
 			<src path="${generated.dir}" />
+			<src path="${source.dir}" />
 		</javac>
 	</target>
 	
@@ -63,6 +61,7 @@
 		>
 			<fileset dir="${classes.dir}" />
 			<fileset dir="${generated.dir}" />
+			<fileset dir="${source.dir}" />
 		</jar>
 	</target>
 
@@ -84,7 +83,7 @@
 				namespace="urn:migration.service.ws.remoting.team.sitescape.com"
 				package="com.sitescape.team.client.ws.migration" />
 			<mapping
-				namespace="urn:model.migration.service.ws.remoting.team.sitescape.com"
+				namespace="http://model.migration.service.ws.remoting.team.sitescape.com"
 				package="com.sitescape.team.client.ws.migration.model" />
 		</axis-wsdl2java>
 		<axis-wsdl2java
@@ -150,6 +149,14 @@
 			<mapping
 				namespace="urn:zone.service.ws.remoting.team.sitescape.com"
 				package="com.sitescape.team.client.ws.zone" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/WorkspaceService?wsdl" >
+			<mapping
+				namespace="urn:workspace.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.workspace" />
 		</axis-wsdl2java>
 	</target>
 	
