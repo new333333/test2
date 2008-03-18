@@ -135,7 +135,20 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				params.put(WebKeys.URL_OPERATION, new String[] {operation});
 			} 
 
-			if (!Validator.isNull(webPath)) {
+			if (!Validator.isNull(webPath) && this.webPath.equals(WebKeys.ACTION_READFILE)) { 
+				String webUrl = getWebUrl(req);
+				webUrl += "/" + entityType;
+				webUrl += "/" + binderId;
+				if (entryId != null) {
+					webUrl += "/" + entryId;
+				} else {
+					webUrl += "/-";
+				}
+				webUrl += "/" + ((String[])_params.get(WebKeys.URL_FILE_ID))[0];
+				webUrl += "/" + ((String[])_params.get(WebKeys.URL_FILE_TIME))[0];
+				webUrl += "/" + ((String[])_params.get(WebKeys.URL_FILE_NAME))[0];
+				pageContext.getOut().print(webUrl);
+			} else if (!Validator.isNull(webPath)) {
 				if (!Validator.isNull(action)) {
 					params.put("action", new String[] {this.action});
 				}
