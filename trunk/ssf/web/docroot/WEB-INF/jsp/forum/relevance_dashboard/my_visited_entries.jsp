@@ -114,8 +114,8 @@
 	  timeStyle="short" dateStyle="medium" />
 	  </span>
 	  <br/>
-	  <span>
 		<c:set var="isDashboard" value="yes"/>
+		<span class="ss_link_2">
 		<ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entry2.id}" binderId="${entry2.parentBinder.id}" 
 			entityType="${entry2.entityType}" 
@@ -125,9 +125,9 @@
 				<ssf:url adapter="true" portletName="ss_forum" folderId="${entry2.parentBinder.id}" 
 				  action="view_folder_entry" entryId="${entry2.id}" actionUrl="true" />
 			</ssf:param>
-			<span class="ss_link_2"><c:out value="${entry2.title}" escapeXml="false"/></span>
+			<c:out value="${entry2.title}" escapeXml="false"/>
 		</ssf:titleLink>
-	  </span>
+		</span>
 	  
 	  <br/>
 	  <span class="ss_link_2">
