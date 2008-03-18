@@ -65,7 +65,8 @@
 				<entry key="/definitionDownload"><ref local="definitionDownload"/></entry>
 				<entry key="/templateDownload"><ref local="templateDownload"/></entry>
 				<entry key="/errorHandler"><ref local="errorHandler"/></entry>
-				<entry key="/readFile/*"><ref local="readFile"/></entry>
+				<entry key="/readFile"><ref local="readFile"/></entry>
+				<entry key="/readFile/**/*"><ref local="readFile"/></entry>
 			</map>
 		</property>
 	</bean>
