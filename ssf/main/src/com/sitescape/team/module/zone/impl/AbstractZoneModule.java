@@ -470,7 +470,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		HistoryStamp stamp = new HistoryStamp(user);
     		//add reserved group for use in import templates
     		Group group = addAllUserGroup(profiles, stamp);
-    		addAllApplicationGroup(profiles, stamp);
+    		ApplicationGroup applicationGroup = addAllApplicationGroup(profiles, stamp);
 	
     		Function visitorsRole = addVisitorsRole(top);
     		Function participantsRole = addParticipantsRole(top);
@@ -513,12 +513,14 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		teamRoot.setFunctionMembershipInherited(false);
     		
     		
-    		//setup allUsers access
+    		//setup allUsers & allApplications access
     		List members = new ArrayList();
     		members.add(group.getId());
-    		//all users visitors at top
+    		members.add(applicationGroup.getId());
+    		//all users and all applications visitors at top
     		addMembership(top, visitorsRole, top, members);
     		// all users participants at top
+    		members.remove(applicationGroup.getId());
     		addMembership(top, participantsRole, top, members);
     		// all users participants at teamroot
     		addMembership(top, participantsRole, teamRoot, members);

@@ -27,6 +27,7 @@
   <workAreaFunctionMembership>
     <property name="functionName">__role.visitor</property>
     <property name="memberName">allUsers</property>
+    <property name="memberName">allApplications</property>
     <property name="members">-1 -2</property>
   </workAreaFunctionMembership>
   <definition name="_userWorkspace" internalId="402883b90cc53079010cc539bf26000b" databaseId="402883b90cc53079010cc539bf26000b"/>

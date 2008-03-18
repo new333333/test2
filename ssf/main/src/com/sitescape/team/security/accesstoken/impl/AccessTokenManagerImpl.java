@@ -33,6 +33,7 @@ import java.util.UUID;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.security.accesstoken.AccessToken;
+import com.sitescape.team.security.accesstoken.AccessTokenException;
 import com.sitescape.team.security.accesstoken.AccessTokenManager;
 import com.sitescape.team.security.accesstoken.InvalidAccessTokenException;
 import com.sitescape.team.security.accesstoken.AccessToken.BinderAccessConstraints;
@@ -112,18 +113,21 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 			getSecurityDao().delete(info);
 	}
 
-	public AccessToken newInteractiveToken(Long applicationId, String infoId) {
-		return newInteractiveToken(applicationId, infoId, null);
+	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId) {
+		return getInteractiveToken(applicationId, userId, infoId, null);
 	}
 
-	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId) {
-		return newInteractiveToken(applicationId, infoId, binderId, BinderAccessConstraints.BINDER_AND_DESCENDANTS);
+	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId, Long binderId) {
+		return getInteractiveToken(applicationId, userId, infoId, binderId, BinderAccessConstraints.BINDER_AND_DESCENDANTS);
 	}
 
-	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId, 
+	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		TokenInfoInteractive info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), infoId);	
+		
+		if(!info.getUserId().equals(userId))
+			throw new AccessTokenException("User IDs do not match: " + userId + " " + info.getUserId());
 		
 		String digest = computeDigest(TokenType.interactive, applicationId, info.getUserId(), binderId, binderAccessConstraints, info.getSeed());
 		
@@ -183,6 +187,19 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 			getSecurityDao().save(info);
 		}
 		return info;
+	}
+
+	public void updateTokenInfoInteractive(String infoId, Long newUserId) {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		TokenInfoInteractive info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), infoId);	
+		if(info != null) {
+			info.setUserId(newUserId);
+			info.setSeed(getRandomSeed());
+			getSecurityDao().update(info);
+		}
+		else {
+			throw new AccessTokenException("Interactive token info with the id " + infoId + " is not found");
+		}
 	}
 
 	/*

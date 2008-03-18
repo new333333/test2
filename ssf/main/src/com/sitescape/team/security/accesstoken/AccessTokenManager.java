@@ -85,16 +85,16 @@ public interface AccessTokenManager {
 	public void invalidateBackgroundTokens(Long applicationId, Long userId, Long binderId);
 	
 	/**
-	 * Generates an access token of interactive type.
+	 * Returns an access token of interactive type.
 	 * 
 	 * @param applicationId
 	 * @param infoId
 	 * @return
 	 */
-	public AccessToken newInteractiveToken(Long applicationId, String infoId);
+	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId);
 	
 	/**
-	 * Generates an access token of interactive type.
+	 * Returns an access token of interactive type.
 	 * Its corresponding <code>binderAccessConstraints</code> value is set to 
 	 * <code>BinderAccessConstraints.BINDER_AND_DESCENDANTS</code> whether
 	 * <code>binderId</code> is specified or not.
@@ -104,10 +104,10 @@ public interface AccessTokenManager {
 	 * @param binderId optional
 	 * @return
 	 */
-	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId);
+	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId, Long binderId);
 	
 	/**
-	 * Generates an access token of interactive type.
+	 * Returns an access token of interactive type.
 	 * 
 	 * @param applicationId
 	 * @param infoId
@@ -115,7 +115,7 @@ public interface AccessTokenManager {
 	 * @param binderAccessConstraints
 	 * @return
 	 */
-	public AccessToken newInteractiveToken(Long applicationId, String infoId, Long binderId, 
+	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints);
 	
 	/**
@@ -128,6 +128,15 @@ public interface AccessTokenManager {
 	 * @return ID of the created object.
 	 */
 	public String createTokenInfoInteractive(Long userId);
+	
+	/**
+	 * Update the <code>TokenInfoInteractive</code> object represented by the
+	 * ID with the new user ID. It also changes its seed value.
+	 * 
+	 * @param infoId
+	 * @param newUserId
+	 */
+	public void updateTokenInfoInteractive(String infoId, Long newUserId);
 	
 	/**
 	 * Destroy all <code>TokenInfoInteractive</code> objects that belong
