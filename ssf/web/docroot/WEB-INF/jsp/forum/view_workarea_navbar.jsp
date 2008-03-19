@@ -520,31 +520,6 @@ ss_statusCurrent = "${ssUser.status}";
 
 </c:if>
 
-<table cellspacing="0" cellpadding="0">
-<tbody>
-<tr>
-<td style="padding-left:20px;" valign="top">
-<div id="ss_recentPlaces${renderResponse.namespace}"><img 
-  src="<html:rootPath/>images/pics/drop_down_tab_left.gif" 
-  height="12" width="12"/><span class="ss_smallprint" 
-  style="padding:0px 4px 0px 4px; position:relative; top:-1px; background-color:#DBDBDB;"
-  ><a href="javascript: ;" 
-  onClick="ss_showRecentPlacesDiv${renderResponse.namespace}();return false;"
-  ><ssf:nlt tag="sidebar.history"/></a></span></div>
-
-<div id="ss_recentPlacesDiv${renderResponse.namespace}"
-  style="display:none;">
-<ssf:popupPane width="250px" titleTag="sidebar.history"
-      closeScript="ss_hideRecentPlacesDiv${renderResponse.namespace}();return false;">
-<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar_workarea.jsp" />
-</ssf:popupPane>
-</div>
-
-</td>
-</tr>
-</tbody>
-</table>
-
 <!-- Start of favorites pane -->
 <div class="ss_style_trans" id="ss_favorites_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">

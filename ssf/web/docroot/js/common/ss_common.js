@@ -5732,3 +5732,25 @@ function ss_showAttachmentVersions(prefix, start, end) {
 	}	
 }
 
+//Routine to show or hide the sidebar
+function ss_showHideSidebar(namespace) {
+	var divObj = self.document.getElementById('ss_sidebarDiv'+namespace);
+	var tdObj = self.document.getElementById('ss_sidebarTd'+namespace);
+	var sidebarHide = self.document.getElementById('ss_sidebarHide'+namespace);
+	var sidebarShow = self.document.getElementById('ss_sidebarShow'+namespace);
+	if (divObj.style.display == 'block') {
+		//Hide it
+		divObj.style.display = 'none';
+		tdObj.className = '';
+		sidebarShow.style.display = 'none'
+		sidebarHide.style.display = 'block'
+	} else {
+		//Show it
+		tdObj.className = 'ss_view_sidebar';
+		divObj.style.display = 'block';
+		sidebarShow.style.display = 'block'
+		sidebarHide.style.display = 'none'
+	}
+	ssf_onLayoutChange()
+}
+
