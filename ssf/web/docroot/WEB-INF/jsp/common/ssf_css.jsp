@@ -83,6 +83,7 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
 
 body.ss_style_body {
 	margin: 0px 0px 0px 0px;
+	background: none;
 }
 
 .ss_style {
@@ -2376,17 +2377,17 @@ div.ss_sidebar_panel_featured {
 
 div.ss_actions_bar1_pane {
 	background-color: #B2CBE7;
+	border-top: 1px;
+	border-color: #AFAFAF
 	background-repeat: repeat-x;
-	border-top: 1px solid ${ss_style_border_color_dark_hue};
-	border-bottom: 1px solid ${ss_style_border_color_dark_hue};
-	height: 25px;
+	height: 22px;
 	white-space: nowrap;
 }
 
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	background-color: ${ss_toolbar2_background_color};
 	width: 100%;
-	height: 26px;
+	height: 22px;
 	padding: 0px;
 	margin: 0px;
 	border-collapse: collapse;
@@ -2432,7 +2433,7 @@ table.ss_actions_bar4_pane {
 
 
 ul.ss_actions_bar1  {
-	height: 2px;
+	height: 22px;
 	
 }
 
@@ -2443,7 +2444,7 @@ ul.ss_actions_bar1.ss_actions_bar_submenu {
 
 .ss_actions_bar {
 	list-style-type:none;	
-	padding: 0px 0px 0px 5px;
+	padding: 0px 0px 0px 0px;
 	height: 20px;
 	margin: 0px;
 }
@@ -3724,7 +3725,7 @@ div.ss_smallRBoxBody {
 
 
 div.ss_profileBox1 {
-  background-color: ${ss_profileBox1_background_color};
+  background-color: none;
   font-family:${ss_style_folder_view_font_family};
 }
 
@@ -4952,9 +4953,10 @@ table.ssMeetingRecords .ssHeader {
 }
 
 .ss_psuedoPortal {
-	margin:10px;
+	margin:25px;
 	padding:0px;
-	border:1px solid blue;
+	border:1px solid white;
+	background: white;
 }
 
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />

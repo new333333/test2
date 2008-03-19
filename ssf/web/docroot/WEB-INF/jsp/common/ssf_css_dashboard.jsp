@@ -38,8 +38,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 #ss_top_nav_wrapper{
 	width: 100%;
-	background-image: url(<html:rootPath/>images/pics/subbanner.png);
+	background-color:#E4E4E4;
 	display: table;
+	border-color:#CCCCCC;
+	border: 1px;
 	}
 	
 /* grey buttons for portal-expanded view */	
@@ -47,15 +49,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_top_nav_button{
 	position:relative;
 	display:block;
-	height:20px;
+	height:16px;
 	background-color:#A7A9AC;
 	border:solid;
-	padding-top:4px;	
+	padding-top:6px;	
 	}
 #ss_top_nav_buttontwo a {
 	font-family:  Arial, sans-serif;
 	font-size: 10px;
-	background-color: #A7A9AC;
+	background-color: #8B9BBA;
 	font-color: white!important;
 	display: block;
 	font-weight: bold;
@@ -80,8 +82,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-color: white;
 	border-width: .01em;
 	text-decoration:none;
-	padding:6px 20px 0px 20px;
-	height:18px;
+	padding:5px 15px 0px 15px;
+	height:16px;
 	}
 #ss_top_nav_buttontwo ul li a:hover{
 	font-color: #white;
@@ -91,8 +93,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-width: .01em;
 	}	
 	
-/* blue buttons for navigation Not Used */
-	
 #ss_top_nav_buttontwo ul li a.current{	
 	color:#333;
 	background-color: #B2CBE7;
@@ -100,10 +100,12 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-color: #white;
 	border-width: .01em;
 	}
+	
+	/* blue buttons for navigation Not Used */
 #ss_top_nav_buttonthree a {
 	font-family:  Arial, sans-serif;
 	font-size: 10px;
-	background-color: #7986A1;
+	background-color: #8B9BBA;
 	display: block;
 	font-weight: bold;
 	letter-spacing: 1px;
@@ -475,8 +477,8 @@ div.ss_canvas {
 #ss_title
 {
 	
-	margin: 0px 0px 1% 0px;
-	font-size: 16px;
+	margin: 0px 0px 2px 0px;
+	font-size: 14px;
 	font-weight: 400;
 	color: #333;
 }
