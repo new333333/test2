@@ -64,20 +64,37 @@
 <c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
+<div class="ss_actions_bar1_pane" width="100%" style="height: 26px;">
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr><td valign="middle">
+<a href="javascript: ;" 
+  onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
+><span style="padding-left:25px; display:none;"
+  id="ss_sidebarHide${renderResponse.namespace}" 
+  class="ss_bold"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
+  style="padding-left:15px; display:block;"
+  id="ss_sidebarShow${renderResponse.namespace}" 
+  class="ss_bold"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
+</td><td valign="top">
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+</td></tr>
+</table>
+</div>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <td valign="top" style="width: 200px">
+    <td valign="top" class="ss_view_sidebar" id="ss_sidebarTd${renderResponse.namespace}">
+    <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:block;">
 
 
 <c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+</c:if>
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
 	<div class="ss_clear"></div>
-</c:if>
 
 	<!-- Saved searches -->
 	<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
@@ -91,13 +108,13 @@
 	<!-- Tags -->
 	<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
 
+	</div>
 	</td>
 	<td class="ss_view_info" valign="top">
 
 	<div>
 
 		<div id="ss_tabs_container">
-			<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 
 <c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 			<% // Breadcrumbs %>

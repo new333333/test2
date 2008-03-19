@@ -161,14 +161,32 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
+<div class="ss_actions_bar1_pane" width="100%" style="height: 26px;">
+<table cellspacing="0" cellpadding="0" width="100%">
+<tr><td valign="middle">
+<a href="javascript: ;" 
+  onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
+><span style="padding-left:25px; display:none;"
+  id="ss_sidebarHide${renderResponse.namespace}" 
+  class="ss_bold"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
+  style="padding-left:15px; display:block;"
+  id="ss_sidebarShow${renderResponse.namespace}" 
+  class="ss_bold"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
+</td><td valign="top">
+<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+</td></tr>
+</table>
+</div>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-    <td valign="top" class="ss_view_sidebar">
+    <td valign="top" class="ss_view_sidebar" id="ss_sidebarTd${renderResponse.namespace}">
+    <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:block;">
 
+<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
+</c:if>
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
@@ -190,15 +208,13 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 		</c:if>
 	</ssf:sidebarPanel>
 
+	</div>
 	</td>
-</c:if>
+
 	<td valign="top" class="ss_view_info">
 		<div class="ss_tab_canvas">
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 				<div class="ss_style_color">				
-					<% // Workspace toolbar %>
-					<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
-
 					<div class="ss_content_inner">
 					  	<c:choose>
 					  		<c:when test="${ss_showTeamMembers}">
