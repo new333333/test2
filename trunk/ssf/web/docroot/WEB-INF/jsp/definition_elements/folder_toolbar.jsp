@@ -37,7 +37,7 @@
 <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar"/>
 </c:if>
 </td>
-<td class="ss_actions_bar1"  valign="middle" style="height: 23px; width: 50px; white-space: nowrap;">
+<td class="ss_actions_bar1"  valign="middle" style="height: 22px; width: 60px; white-space: nowrap;">
 <a href="javascript: window.print();"><img border="0" 
     class="ss_print_button"
     alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
