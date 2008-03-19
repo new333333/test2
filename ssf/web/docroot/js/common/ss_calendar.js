@@ -2339,7 +2339,7 @@ if (!window.ss_calendar) {
 	var ss_calendar = new ss_calendarControl();
 }
 
-if (!window.ss_calendar_import) {
+if (!window["ss_calendar_import"]) {
 	var ss_calendar_import = {
 		divId : "ss_calendar_import_div",
 		
