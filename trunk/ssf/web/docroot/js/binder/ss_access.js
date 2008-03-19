@@ -86,10 +86,10 @@ function ssAccessControl(namespace, binderId) {
 		ss_hideDiv('ss_addRolesMenu' + namespace);
 	}
 	
-	this.selectOwner = function (ownerId, obj) {
+	this.selectOwner = function (ownerId, propagate) {
 		ss_setupStatusMessageDiv()
 		self.document.getElementById("ss_status_message").innerHTML = ss_operationFailed;
-	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_binder_owner_id", namespace:namespace, ownerId:ownerId, binderId:binderId});
+	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_binder_owner_id", namespace:namespace, ownerId:ownerId, binderId:binderId, propagate:propagate});
 		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 		ajaxRequest.setPostRequest(ss_selectOwnerCallBack);
 		ajaxRequest.sendRequest();  //Send the request

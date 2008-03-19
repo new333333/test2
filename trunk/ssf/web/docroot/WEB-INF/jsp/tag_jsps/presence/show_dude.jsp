@@ -99,6 +99,7 @@
  alt="<c:out value="${ss_presence_text}"/>"/></a>
   <c:if test="${ss_presence_show_title}">
 	<ssf:ifadapter>
+	  <c:if test="${!empty ss_presence_user.workspaceId}">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    action="view_permalink"
 	    binderId="${ss_presence_user.workspaceId}">
@@ -108,8 +109,14 @@
 	  onClick="ss_openUrlInParentWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing');return false;"
 	  ><span id="${ss_presence_user.id}" 
 	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span></a>
+	  </c:if>
+	  <c:if test="${empty ss_presence_user.workspaceId}">
+	  <span id="${ss_presence_user.id}" 
+	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span>
+	  </c:if>
 	</ssf:ifadapter>
 	<ssf:ifnotadapter>
+	  <c:if test="${!empty ss_presence_user.workspaceId}">
 	  <a href="<ssf:url windowState="maximized"><ssf:param 
 	  	name="action" value="view_ws_listing"/><ssf:param 
 	  	name="binderId" value="${ss_presence_user.workspaceId}"/><ssf:param 
@@ -117,6 +124,11 @@
 	  onClick="ss_openUrlInWorkarea(this.href, '${ss_presence_user.workspaceId}', 'view_ws_listing');return false;"
 	  ><span id="${ss_presence_user.id}"  
 	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span></a>
+	  </c:if>
+	  <c:if test="${empty ss_presence_user.workspaceId}">
+	  <span id="${ss_presence_user.id}"  
+	    class="${ss_presence_title_style} ss_muster_users">${ss_presence_user.title}</span>
+	  </c:if>
 	</ssf:ifnotadapter>
  
   </c:if>

@@ -52,8 +52,21 @@ function ss_accessSelectPrincipal${renderResponse.namespace}(id) {
 	${renderResponse.namespace}accessObj.selectPrincipals([id]);
 }
 //doens't work with direct call in accessObj
-function ss_accessSelectOwner${renderResponse.namespace}(ownerId, obj) {
-	${renderResponse.namespace}accessObj.selectOwner(ownerId, obj);
+function ss_accessSelectOwner${renderResponse.namespace}(obj) {
+	var propagateObj = self.document.getElementById('ss_accessPropagate${renderResponse.namespace}');
+	var ownerId = ss_accessSelectedOwnerId${renderResponse.namespace};
+	${renderResponse.namespace}accessObj.selectOwner(ownerId, propagateObj.checked);
+}
+var ss_accessSelectedOwnerId${renderResponse.namespace} = null;
+function ss_accessSetOwner${renderResponse.namespace}(id, obj) {
+	var selectionObj = self.document.getElementById('ss_accessSelectionSpan${renderResponse.namespace}')
+	var fc = obj;
+	while (fc != null) {
+		if (fc.firstChild == null) break;
+		fc = fc.firstChild
+	}
+	if (fc != null) selectionObj.innerHTML = fc.nodeValue;
+	ss_accessSelectedOwnerId${renderResponse.namespace} = id;
 }
 var ${renderResponse.namespace}accessObj = new ssAccessControl('${renderResponse.namespace}', '${ssBinder.id}');
 var ss_operationSucceeded = "<ssf:nlt tag="general.request.succeeded" text="Request succeeded"/>"
@@ -212,12 +225,25 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
     <span class="ss_bold"><ssf:nlt tag="access.changeWorkspaceOwner"/></span>
   </c:if>
   <br/>
+  <table>
+  <tr><td>
   <ssf:find formName="${renderResponse.namespace}changeOwnerForm" 
     formElement="changeOwnerText${renderResponse.namespace}" 
     type="user"
+    clickRoutine="ss_accessSetOwner${renderResponse.namespace}"
     leaveResultsVisible="false"
-    clickRoutine="ss_accessSelectOwner${renderResponse.namespace}"
     width="100px" singleItem="true"/> 
+  </td><td valign="top"
+  <span class="ss_bold" id="ss_accessSelectionSpan${renderResponse.namespace}"></span>
+  </td></tr>
+  </table>
+  <input type="checkbox" name="propagate" 
+    id="ss_accessPropagate${renderResponse.namespace}"/><span style="padding-left:4px;"
+  ><ssf:nlt tag="access.propagateChangeOwner" 
+    text="Propagate this change to all folders beneath this one?"/></span>
+  <br/>
+  <input type="submit" value="<ssf:nlt tag="button.ok"/>"
+  onClick="ss_accessSelectOwner${renderResponse.namespace}(this);return false;"/>
   </div>
 </div>
 <c:if test="${!ssBinder.functionMembershipInherited}">
