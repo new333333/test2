@@ -43,6 +43,7 @@
 <c:if test="${!ss_showUserShowPresence}">
 <c:if test="${ss_showUserUser.active}">
 	<ssf:ifadapter>
+	  <c:if test="${!empty ss_showUserUser.workspaceId}">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    action="view_permalink"
 	    binderId="${ss_showUserUser.workspaceId}">
@@ -52,8 +53,14 @@
 	  onClick="ss_openUrlInParentWorkarea(this.href, '${ss_showUserUser.workspaceId}', 'view_ws_listing');return false;"
 	  ><span id="${ss_showUserUser.id}" 
 	    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span></a>
+	  </c:if>
+	  <c:if test="${empty ss_showUserUser.workspaceId}">
+	  <span id="${ss_showUserUser.id}" 
+	    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+	  </c:if>
 	</ssf:ifadapter>
 	<ssf:ifnotadapter>
+	  <c:if test="${!empty ss_showUserUser.workspaceId}">
 	  <a href="<ssf:url windowState="maximized"><ssf:param 
 	  	name="action" value="view_ws_listing"/><ssf:param 
 	  	name="binderId" value="${ss_showUserUser.workspaceId}"/><ssf:param 
@@ -61,6 +68,11 @@
 	  onClick="ss_openUrlInWorkarea(this.href, '${ss_showUserUser.workspaceId}', 'view_ws_listing');return false;"
 	  ><span id="${ss_showUserUser.id}"  
 	    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span></a>
+	  </c:if>
+	  <c:if test="${empty ss_showUserUser.workspaceId}">
+	  <span id="${ss_showUserUser.id}"  
+	    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+	  </c:if>
 	</ssf:ifnotadapter>
 </c:if>
 <c:if test="${!ss_showUserUser.active}">
@@ -70,9 +82,14 @@
 </c:if>
 </c:if>
 <c:if test="${ssConfigJspStyle == 'mobile'}">
+  <c:if test="${!empty ss_showUserUser.workspaceId}">
   <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    action="__ajax_mobile"
 	    operation="mobile_show_workspace"
 	    binderId="${ss_showUserUser.workspaceId}" />"
   ><span>${ss_showUserUser.title}</span></a>
+  </c:if>
+  <c:if test="${empty ss_showUserUser.workspaceId}">
+  <span>${ss_showUserUser.title}</span>
+  </c:if>
 </c:if>

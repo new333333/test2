@@ -1121,9 +1121,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 			ActionResponse response) throws Exception {
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String ownerId = PortletRequestUtils.getStringParameter(request, "ownerId", "");
+		String sPropagate = PortletRequestUtils.getStringParameter(request, "propagate", "");
 		if (!ownerId.equals("")) {
 			Binder binder = getBinderModule().getBinder(binderId);
-			getAdminModule().setWorkAreaOwner(binder, Long.valueOf(ownerId), false);
+			boolean bPropagate = false;
+			if (sPropagate.equals("on") || sPropagate.equals("true")) bPropagate = true;
+			getAdminModule().setWorkAreaOwner(binder, Long.valueOf(ownerId), bPropagate);
 		}
 	}
 	
