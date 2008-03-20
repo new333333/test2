@@ -182,6 +182,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				if (formData.containsKey("okBtn")) ajaxDoSubscription(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SAVE_UESR_STATUS)) {
 				ajaxSaveUserStatus(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SET_SIDEBAR_VISIBILITY)) {
+				ajaxSetSidebarVisibility(request, response);
 			}
 		}
 	}
@@ -1862,6 +1864,15 @@ public class AjaxController  extends SAbstractControllerRetry {
 			getProfileModule().setStatus(status);
 			getReportModule().addStatusInfo(user);
 		}
+	}
+	
+	private void ajaxSetSidebarVisibility(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String visibility = PortletRequestUtils.getStringParameter(request, "visibility", "block");
+		UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
+		Map properties = userProperties.getProperties();
+		getProfileModule().setUserProperty(null, ObjectKeys.USER_PROPERTY_SIDEBAR_VISIBILITY, visibility);
 	}
 	
 	private ModelAndView ajaxGetSearchQueryName(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {

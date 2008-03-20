@@ -37,7 +37,18 @@ Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("propertie
 if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
-
+<c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
+<c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block"/></c:if>
+<c:if test="${ss_sidebarVisibility == 'none'}">
+  <c:set var="ss_sidebarVisibilityShow" value="block"/>
+  <c:set var="ss_sidebarVisibilityHide" value="none"/>
+  <c:set var="ss_sidebarTdStyle" value=""/>
+</c:if>
+<c:if test="${ss_sidebarVisibility != 'none'}">
+  <c:set var="ss_sidebarVisibilityShow" value="none"/>
+  <c:set var="ss_sidebarVisibilityHide" value="block"/>
+  <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
+</c:if>
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
   style="display:block;">
@@ -51,12 +62,12 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <tr><td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
-><span style="padding-left:25px; display:none;"
+><span style="padding-left:20px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
-  class="ss_bold"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
-  style="padding-left:15px; display:block;"
+  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.show"/>]</span><span 
+  style="padding-left:20px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_bold"><ssf:nlt tag="toolbar.sidebar.hide"/></span></a>
+  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.hide"/>]</span></a>
 </td><td valign="top">
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 </td></tr>
@@ -65,8 +76,8 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
      <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
-    <td valign="top" class="ss_view_sidebar" id="ss_sidebarTd${renderResponse.namespace}">
-    <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:block;">
+    <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
+    <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
 <c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 	<% // Navigation bar %>

@@ -415,6 +415,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_MEETING_RECORDS = "get_meeting_records";
 	public static final String OPERATION_ATTACHE_MEETING_RECORDS = "attache_meeting_records";
 	public static final String OPERATION_SAVE_UESR_STATUS = "save_user_status";
+	public static final String OPERATION_SET_SIDEBAR_VISIBILITY = "set_sidebar_visibility";
 
 	// MODEL TAGS & Attributes
 	public static final String ACCESS_CONTROL_MAP = "ss_accessControlMap";

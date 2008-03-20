@@ -176,6 +176,8 @@ public class ListFolderHelper {
 		model.put(WebKeys.USER_PRINCIPAL, user);
  		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
 		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
+		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
 
 		model.put(WebKeys.DISPLAY_TYPE, displayType);
 		model.put(WebKeys.BINDER_ID, binderId.toString());
@@ -221,7 +223,6 @@ public class ListFolderHelper {
 	
 			request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 	
-			Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 				
 			//Set up the standard beans
