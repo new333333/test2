@@ -337,6 +337,54 @@ div.ss_canvas {
 	color:#E67814 !important;
 	background-color:#CCCCCC !important;
 }
+#ss_viewedItems {
+	line-height:1.4em;
+}
+
+#ss_viewedItems .ss_v_entries ul
+{
+	list-style-type: none;
+	padding: 0;
+	margin-left: 4px;
+
+}
+#ss_viewedItems .ss_v_entries li
+{
+	background-image: url("<html:rootPath/>images/pics/entry_icon.gif");
+	background-repeat: no-repeat;
+	background-position: 1% 1%;
+	padding-left: 30px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+
+}
+#ss_viewedItems .ss_v_attachments ul
+{
+	list-style-type: none;
+	padding: 0;
+	margin-left: 4px;
+
+}
+#ss_viewedItems .ss_v_attachments li
+{
+	background-image: url("<html:rootPath/>images/pics/attachment_icon.gif");
+	background-repeat: no-repeat;
+	background-position: 1% 1%;
+	padding-left: 30px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+
+}
+#ss_viewedItems a					/* link style for active links */
+{
+	text-decoration:underline;
+}
+#ss_viewedItems a:hover					/* link style to hover links */
+{
+	text-decoration:underline;
+	color:#E67814 !important;
+	background-color:#CCCCCC !important;
+}
 #ss_cal_para 
 {
 	line-height:1.25em;
