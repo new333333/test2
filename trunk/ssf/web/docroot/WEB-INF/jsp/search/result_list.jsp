@@ -170,11 +170,13 @@
 												isDashboard="no" useBinderFunction="<%= strUseBinderMethod %>" isFile="yes">
 												
 												<ssf:param name="url" useBody="true">
-													<ssf:url webPath="viewFile" binderId="${entry._binderId}">
-		    											<ssf:param name="entityType" value="${entry._entityType}"/>
-														<ssf:param name="entryId" value="${entry._docId}"/>
+													<ssf:url webPath="readFile" 
+													    binderId="${entry._binderId}"
+													    entryId="${entry._docId}"
+													    entityType="${entry._entityType}">
 														<ssf:param name="fileId" value="${entry._fileID}"/>
 														<ssf:param name="fileTime" value="${entry._fileTime}"/>
+														<ssf:param name="fileName" value="${entry._fileName}"/>
 													</ssf:url>
 												</ssf:param>
 												
@@ -314,11 +316,13 @@
 											isDashboard="no" useBinderFunction="no" isFile="yes">
 											
 											<ssf:param name="url" useBody="true">
-												<ssf:url webPath="viewFile" binderId="${entry._binderId}">
-		    										<ssf:param name="entityType" value="${entry._entityType}"/>
-													<ssf:param name="entryId" value="${entry._docId}"/>
+												<ssf:url webPath="readFile" 
+													binderId="${entry._binderId}"
+		    										entityType="${entry._entityType}"
+													entryId="${entry._docId}">
 													<ssf:param name="fileId" value="${entry._fileID}"/>
 													<ssf:param name="fileTime" value="${entry._fileTime}"/>
+													<ssf:param name="fileName" value="${entry._fileName}"/>
 												</ssf:url>
 											</ssf:param>
 	
@@ -484,11 +488,13 @@
 												isDashboard="no" useBinderFunction="no" isFile="yes">
 												
 												<ssf:param name="url" useBody="true">
-													<ssf:url webPath="viewFile" binderId="${entry._binderId}">
-		    											<ssf:param name="entityType" value="${entry._entityType}"/>
-														<ssf:param name="entryId" value="${entry._docId}"/>
+													<ssf:url webPath="readFile" 
+														binderId="${entry._binderId}"
+		    											entityType="${entry._entityType}"
+														entryId="${entry._docId}">
 														<ssf:param name="fileId" value="${entry._fileID}"/>
 														<ssf:param name="fileTime" value="${entry._fileTime}"/>
+														<ssf:param name="fileName" value="${entry._fileName}"/>
 													</ssf:url>
 												</ssf:param>
 												

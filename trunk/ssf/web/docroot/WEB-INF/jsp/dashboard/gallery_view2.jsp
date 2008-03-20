@@ -50,12 +50,13 @@
   <c:set var="hitCount" value="${hitCount + 1}"/>
     <div>
 	  <a href="<ssf:url 
-	    webPath="viewFile"
+	    webPath="readFile"
 	    binderId="${fileEntry._binderId}"
 	    entryId="${fileEntry._docId}" >
 	    <ssf:param name="entityType" value="${fileEntry._entityType}"/>
 	    <ssf:param name="fileId" value="${fileEntry._fileID}"/>
 	    <ssf:param name="fileTime" value="${fileEntry._fileTime}"/>
+	    <ssf:param name="fileName" value="${fileEntry._fileName}"/>
 	    </ssf:url>"
 		onClick="return ss_openUrlInWindow(this, '_blank');">
     <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:url 
