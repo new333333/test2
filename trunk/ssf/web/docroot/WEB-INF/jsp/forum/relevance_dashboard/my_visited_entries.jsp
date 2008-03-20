@@ -37,15 +37,16 @@
 
 <c:if test="${!empty ssEntriesViewed}">
 <div id="ss_para">
+<div id="ss_viewedItems">
 <c:set var="count" value="0"/>
   <c:forEach var="entryMap" items="${ssEntriesViewed}">
     <c:if test="${entryMap.type == 'view'}">
     <c:set var="entry" value="${entryMap.entity}"/>
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
     
-	  <table cellspacing="0" cellpadding="2"><tbody>
-	  <tr><td valign="top"><img src="<html:rootPath/>images/pics/entry_icon.gif"></td>
-	  <td>
+    <div class="ss_v_entries">
+    <ul>
+    <li>
 		<c:set var="isDashboard" value="yes"/>
 		<ssf:titleLink hrefClass="ss_link_2"
 			entryId="${entry.id}" binderId="${entry.parentBinder.id}" 
@@ -82,8 +83,11 @@
 	      textMaxWords="10">${entry.description}</ssf:textFormat></span>
 	  </c:if>
 	<c:set var="count" value="${count + 1}"/>
-	</td></tr></tbody></table>
+	</li>
+	</ul>
 	<hr class="rule_3">
+	</div><!-- end of viewed entries -->
+	
     </c:if>
 
     <c:if test="${entryMap.type == 'download'}">
@@ -91,9 +95,9 @@
     <jsp:useBean id="entry2" type="com.sitescape.team.domain.Entry" />
 
     
-	  <table cellspacing="0" cellpadding="0"><tbody>
-	  <tr><td valign="top"><img src="<html:rootPath/>images/pics/attachment_icon.gif"></td>
-	  <td>
+	<div id="ss_viewedItems" class="ss_v_attachments">
+	<ul>
+    <li>
 	  
 	  <span class="ss_link_3">
 	  	<a target="_blank" href="<ssf:url 
@@ -143,13 +147,17 @@
 	  </c:if>
 	
 	<c:set var="count" value="${count + 1}"/>
-	</td></tr></tbody></table>
+	</li>
+	</ul>
 	<hr class="rule_3">
+	</div><!-- end of viewed attachments -->
+	
 
     </c:if>
   </c:forEach>
 <c:if test="${count == 0}">
 <span><ssf:nlt tag="relevance.docs.none"/></span>
 </c:if>
+</div> <!-- end of viewed items -->
 </div> <!-- end of ss_para -->
 </c:if>
