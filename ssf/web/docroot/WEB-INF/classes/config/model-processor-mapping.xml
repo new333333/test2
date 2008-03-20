@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <!DOCTYPE model-processor-mapping SYSTEM "../../../resources/model-processor-mapping-1_0_0.dtd">
+
+<!-- Make sure new additions are handled in xslt merge -->
 
 <model-processor-mapping>
 	<processors>
-		<processor class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter" spring-bean-type="internal" spring-bean-name="defaultEmailFormatter"/>
-		<processor class="com.sitescape.team.module.mail.impl.DefaultFolderEmailPoster" spring-bean-type="internal" spring-bean-name="defaultEmailPoster"/>
+		<processor class="com.sitescape.team.module.mail.impl.DefaultEmailFormatter" spring-bean-type="internal" spring-bean-name="defaultEmailFormatter"/>
+		<processor class="com.sitescape.team.module.mail.impl.DefaultEmailPoster" spring-bean-type="internal" spring-bean-name="defaultEmailPoster"/>
 		<processor class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultFolderCoreProcessor"/>
 		<processor class="com.sitescape.team.module.profile.impl.DefaultProfileCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultProfileCoreProcessor"/>
 		<processor class="com.sitescape.team.module.workspace.impl.DefaultWorkspaceCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultWorkspaceCoreProcessor"/>
@@ -17,8 +18,8 @@
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.profile.impl.DefaultProfileCoreProcessor"/>
 		</model-class>
 		<model-class name="com.sitescape.team.domain.Folder">
-			<mapping processor-key="processorKey_folderEmailFormatter" processor-class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter"/>
-			<mapping processor-key="processorKey_folderEmailPoster" processor-class="com.sitescape.team.module.mail.impl.DefaultFolderEmailPoster"/>
+			<mapping processor-key="processorKey_emailFormatter" processor-class="com.sitescape.team.module.mail.impl.DefaultEmailFormatter"/>
+			<mapping processor-key="processorKey_emailPoster" processor-class="com.sitescape.team.module.mail.impl.DefaultEmailPoster"/>
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
 			<mapping processor-key="processorKey_binderCoreProcessor_5" processor-class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
 		</model-class>

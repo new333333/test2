@@ -169,8 +169,10 @@
 				<property name="configFiles">
 					<list>
 						<value>config/model-processor-mapping.xml</value>
+						<value>optional:config/model-processor-mapping-ext.xml</value>
 					</list>		
 				</property>
+				<property name="styleSheet"><value>/WEB-INF/xslt/model-processor-mapping.xslt</value></property>
 				<property name="validating"><value>true</value></property>
 			</bean>
 		</property>
@@ -606,7 +608,7 @@
 			</bean>	
 		</property>
 	</bean>
-	<bean id="defaultFolderEmailFormatter" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter">
+	<bean id="defaultEmailFormatter" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.DefaultEmailFormatter">
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="folderModule"><ref local="folderModule"/></property>
 		<property name="binderModule"><ref local="binderModule"/></property>

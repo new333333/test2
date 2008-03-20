@@ -43,8 +43,8 @@ import com.sitescape.team.module.definition.notify.Notify;
  * @author Janet McCann
  *
  */
-public interface FolderEmailFormatter {
-    public static final String PROCESSOR_KEY = "processorKey_folderEmailFormatter";
+public interface EmailFormatter {
+    public static final String PROCESSOR_KEY = "processorKey_emailFormatter";
     public static final String PLAIN="plain";
     public static final String HTML="html";
     public static final String ATTACHMENT="attachment";

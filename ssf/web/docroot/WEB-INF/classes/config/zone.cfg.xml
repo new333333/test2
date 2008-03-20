@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- Make sure new additions are handled in xslt merge -->
 <zoneConfiguration>
 	<!-- Unlike all other elements in the file, the following element is
 	     meaningful only at the top-level. In other words, it does not

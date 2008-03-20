@@ -8,8 +8,8 @@ import javax.mail.Session;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.PostingDef;
 
-public interface FolderEmailPoster {
-    public static final String PROCESSOR_KEY = "processorKey_folderEmailPoster";
+public interface EmailPoster {
+    public static final String PROCESSOR_KEY = "processorKey_emailPoster";
 	public List postMessages(Folder folder, PostingDef pDef, Message[] msgs, Session session);
 
 }

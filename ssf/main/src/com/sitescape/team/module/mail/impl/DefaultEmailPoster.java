@@ -36,14 +36,14 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.mail.FolderEmailPoster;
+import com.sitescape.team.module.mail.EmailPoster;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.NLT;
 import com.sitescape.util.Html;
 import com.sitescape.util.Validator;
 
-public class DefaultEmailPoster  extends CommonDependencyInjection implements FolderEmailPoster {
+public class DefaultEmailPoster  extends CommonDependencyInjection implements EmailPoster {
     private FolderModule folderModule;
     public void setFolderModule(FolderModule folderModule) {
     	this.folderModule = folderModule;
