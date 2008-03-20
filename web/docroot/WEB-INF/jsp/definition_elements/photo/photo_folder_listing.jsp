@@ -55,12 +55,13 @@
 			    <a onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}')" 
 			      onMouseOut="ss_hideHoverOver(this, 'ss_photoTitle_${fileEntry._docId}')"
 			      href="<ssf:url 
-				    webPath="viewFile"
+				    webPath="readFile"
 				    folderId="${fileEntry._binderId}"
-				    entryId="${fileEntry._docId}" >
-	    			<ssf:param name="entityType" value="${fileEntry._entityType}"/>
+				    entryId="${fileEntry._docId}" 
+				    entityType="${fileEntry._entityType}" >
 				    <ssf:param name="fileId" value="<%= _fileId %>"/>
 				    <ssf:param name="fileTime" value="<%= _fileTime %>"/>
+				    <ssf:param name="fileName" value="${fileEntry._fileName}"/>
 				    </ssf:url>"
 					onClick="return ss_openUrlInWindow(this, '_blank');">
 			    <img <ssf:alt text="${fileEntry.title}"/> border="0" src="<ssf:url 
