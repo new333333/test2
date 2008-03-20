@@ -39,10 +39,10 @@ import com.sitescape.team.web.WebKeys;
  */
 public class PostingDef extends PersistentObject {
 
-    public static final Integer RETURN_TO_SENDER = 3; // default
-    public static final Integer POST_AS_A_NEW_TOPIC = 2;
-    public static final Integer POST_AS_A_REPLY = 1;
-    private Integer replyPostingOption = POST_AS_A_REPLY;
+    public static final Integer REPLY_RETURN_TO_SENDER = 3; 
+    public static final Integer REPLY_POST_AS_A_NEW_TOPIC = 2;
+    public static final Integer REPLY_POST_AS_A_REPLY = 1;
+    private Integer replyPostingOption = REPLY_POST_AS_A_REPLY;
     private boolean enabled=true;
     private String password=null;
     private Binder binder;

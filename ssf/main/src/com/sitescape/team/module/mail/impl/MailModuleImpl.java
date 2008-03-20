@@ -52,8 +52,6 @@ import javax.mail.search.OrTerm;
 import javax.mail.search.RecipientStringTerm;
 import javax.mail.search.SearchTerm;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.beans.factory.InitializingBean;
@@ -81,6 +79,7 @@ import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.FolderEmailFormatter;
+import com.sitescape.team.module.mail.FolderEmailPoster;
 import com.sitescape.team.module.mail.JavaMailSender;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.mail.MimeMapPreparator;
@@ -107,8 +106,6 @@ import com.sitescape.util.Validator;
  *
  */
 public class MailModuleImpl extends CommonDependencyInjection implements MailModule, ZoneSchedule, InitializingBean {
-	protected Log logger = LogFactory.getLog(getClass());
-	protected Map zoneProps = new HashMap();
 	protected ConcurrentHashMap<String, List> mailPosters = new ConcurrentHashMap();
 	protected Map<String, JavaMailSender> mailSenders = new HashMap();
 	protected JavaMailSender mailSender;
@@ -205,39 +202,54 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				}
 			}			
 		}
-*/		
+*/	
+
 	}
 
-	protected FillEmailSubscription getSubscriptionProcessor(Workspace zone) {
+	protected FillEmailSubscription getSubscriptionJob(Workspace zone) {
     	String jobClass = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.SUBSCRIPTION_JOB);
-	 	   try {
-	 		   Class processorClass = ReflectHelper.classForName(jobClass);
-	 		   FillEmailSubscription job = (FillEmailSubscription)processorClass.newInstance();
-	 		   return job;
-	 	   } catch (ClassNotFoundException e) {
-	 		   throw new ConfigurationException(
-	 				"Invalid FillEmailSubscription class name '" + jobClass + "'",
-	 				e);
-	 	   } catch (InstantiationException e) {
-	 		   throw new ConfigurationException(
-	 				"Cannot instantiate FillEmailSubscription of type '"
-	                     	+ jobClass + "'");
-	 	   } catch (IllegalAccessException e) {
-	 		   throw new ConfigurationException(
-	 				"Cannot instantiate FillEmailSubscription of type '"
-	 				+ jobClass + "'");
-	 	   } 
-	 	}
+    	try {
+    		Class processorClass = ReflectHelper.classForName(jobClass);
+    		FillEmailSubscription job = (FillEmailSubscription)processorClass.newInstance();
+    		return job;
+    	} catch (ClassNotFoundException e) {
+    		throw new ConfigurationException(
+    				"Invalid FillEmailSubscription class name '" + jobClass + "'", e);
+    	} catch (InstantiationException e) {
+    		throw new ConfigurationException(
+    				"Cannot instantiate FillEmailSubscription of type '" + jobClass + "'");
+    	} catch (IllegalAccessException e) {
+    		throw new ConfigurationException(
+	 				"Cannot instantiate FillEmailSubscription of type '" + jobClass + "'");
+    	} 
+	}
+	protected SendEmail getEmailJob(Workspace zone) {
+    	String jobClass = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.SUBSCRIPTION_JOB);
+    	try {
+    		Class processorClass = ReflectHelper.classForName(jobClass);
+    		SendEmail job = (SendEmail)processorClass.newInstance();
+    		return job;
+    	} catch (ClassNotFoundException e) {
+    		throw new ConfigurationException(
+    				"Invalid FillEmailSubscription class name '" + jobClass + "'", e);
+    	} catch (InstantiationException e) {
+    		throw new ConfigurationException(
+    				"Cannot instantiate FillEmailSubscription of type '" + jobClass + "'");
+    	} catch (IllegalAccessException e) {
+    		throw new ConfigurationException(
+	 				"Cannot instantiate FillEmailSubscription of type '" + jobClass + "'");
+    	} 
+	}
 	//called on zone delete
 	public void stopScheduledJobs(Workspace zone) {
-		FillEmailSubscription sub = getSubscriptionProcessor(zone);
+		FillEmailSubscription sub = getSubscriptionJob(zone);
 		sub.remove(zone.getId());
 	}
 	//called on zone startup
 	public void startScheduledJobs(Workspace zone) {
 		if (zone.isDeleted()) return;
 		//make sure a delete job is scheduled for the zone
-		FillEmailSubscription sub = getSubscriptionProcessor(zone);
+		FillEmailSubscription sub = getSubscriptionJob(zone);
 		String minString = (String)getMailProperty(zone.getName(), MailModule.Property.SUBSCRIPTION_MINUTES);
 		int minutes = 5;
 		try {
@@ -386,7 +398,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								Message aliasMsgs[]=mFolder.search(new OrTerm(aliasSearch));
 								if (aliasMsgs.length == 0) continue;
 								Folder folder = (Folder)postingDef.getBinder();
-								FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
+								FolderEmailPoster processor = (FolderEmailPoster)processorManager.getProcessor(folder,FolderEmailPoster.PROCESSOR_KEY);
 								sendErrors(folder, postingDef, sender, processor.postMessages(folder,postingDef, aliasMsgs, session));
 							} catch (Exception ex) {
 								logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
@@ -403,7 +415,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								continue;
 							}
 							Folder folder = (Folder)postingDef.getBinder();
-							FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
+							FolderEmailPoster processor = (FolderEmailPoster)processorManager.getProcessor(folder,FolderEmailPoster.PROCESSOR_KEY);
 							for (int j=0; j<mailFolders.length; ++j) {
 								mFolder = mailFolders[j];
 								if ("inbox".equals(mFolder.getFullName())) {
@@ -436,7 +448,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			for (PostingDef postingDef: useUserNamePwd) {
 				mFolder = null;
 				Folder folder = (Folder)postingDef.getBinder();
-				FolderEmailFormatter processor = (FolderEmailFormatter)processorManager.getProcessor(folder,FolderEmailFormatter.PROCESSOR_KEY);
+				FolderEmailPoster processor = (FolderEmailPoster)processorManager.getProcessor(folder,FolderEmailPoster.PROCESSOR_KEY);
 				try {
 					store.connect(null, postingDef.getEmailAddress(), postingDef.getPassword());
 					mFolder = store.getFolder("inbox");				
@@ -481,13 +493,13 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				logger.error("Error sending posting reject:" + getMessage(ms));
 				Map failures = ms.getFailedMessages();
 				if ((binder != null) && !failures.isEmpty()) {
-					SendEmail process = (SendEmail)processorManager.getProcessor(binder, SendEmail.PROCESSOR_KEY);
+					SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 					for (Iterator iter=failures.entrySet().iterator(); iter.hasNext();) {
 						Map.Entry me = (Map.Entry)iter.next();
 						if (!useAliases && !Validator.isNull(postingDef.getPassword()))  {
-							process.schedule(srcSender, postingDef.getEmailAddress(), postingDef.getPassword(), (MimeMessage)me.getKey(), binder.getTitle(), getMailDirPath(binder), false);
+							job.schedule(srcSender, postingDef.getEmailAddress(), postingDef.getPassword(), (MimeMessage)me.getKey(), binder.getTitle(), getMailDirPath(binder), false);
 						} else {
-							process.schedule(srcSender, (MimeMessage)me.getKey(), binder.getTitle(), getMailDirPath(binder), false);							
+							job.schedule(srcSender, (MimeMessage)me.getKey(), binder.getTitle(), getMailDirPath(binder), false);							
 						}
 						logger.error("Error sending posting reject:" + getMessage((Exception)me.getValue()));						
 					}
@@ -631,8 +643,8 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					mailSender.send(mHelper, ctx);
 				} catch (MailSendException sx) {
 		    		logger.error("Error sending mail:" + getMessage(sx));
-			  		SendEmail process = (SendEmail)processorManager.getProcessor(folder, SendEmail.PROCESSOR_KEY);
-			   		process.schedule(mailSender, mHelper.getMessage(), folder.getTitle(), getMailDirPath(folder), false);
+			  		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
+			   		job.schedule(mailSender, mHelper.getMessage(), folder.getTitle(), getMailDirPath(folder), false);
 			   	} catch (Exception ex) {
 			   		//message gets thrown away here
 		       		logger.error(getMessage(ex));
@@ -808,7 +820,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     }
     //send mail now, if fails, reschedule
     public boolean sendMail(Binder binder, Map message, String comment) {
-  		SendEmail process = (SendEmail)processorManager.getProcessor(binder, SendEmail.PROCESSOR_KEY);
+  		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
   		JavaMailSender mailSender = getMailSender(binder);
 		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
 		if ((addrs == null) || addrs.isEmpty()) return true;
@@ -824,10 +836,10 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 			sent = true;
 	 		} catch (MailSendException sx) {
 	 			logger.error("Error sending mail:" + getMessage(sx));
-	 			process.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
+	 			job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
 	 	   	} catch (MailAuthenticationException ax) {
 	       		logger.error("Authentication Exception:" + getMessage(ax));				
-	 			process.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
+	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
 	 		} catch (Exception ex) {
 	 			//message gets thrown away here
 	 			logger.error(getMessage(ex));
@@ -839,7 +851,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     }
     // schedule mail delivery - 
     public void scheduleMail(Binder binder, Map message, String comment) throws Exception {
-  		SendEmail process = (SendEmail)processorManager.getProcessor(binder, SendEmail.PROCESSOR_KEY);
+  		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
   		JavaMailSender mailSender = getMailSender(binder);
  		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
  		if ((addrs == null) || addrs.isEmpty()) return;
@@ -851,7 +863,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 		MimeMessagePreparator helper = new MimeMapPreparator(message, logger, sendVTODO);
 			MimeMessage msg = mailSender.createMimeMessage();
 			helper.prepare(msg);
-			process.schedule(mailSender, msg, comment, getMailDirPath(binder), true);
+			job.schedule(mailSender, msg, comment, getMailDirPath(binder), true);
 		}
 		//replace list with original
 		message.put(MailModule.TO, addrs);

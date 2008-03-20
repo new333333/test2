@@ -965,7 +965,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         }
         post.setBinder(binder);
         post.setEnabled(true);
-        post.setReplyPostingOption(PostingDef.POST_AS_A_REPLY);
+        post.setReplyPostingOption(PostingDef.REPLY_POST_AS_A_REPLY);
       	post.setEmailAddress(emailAddress);
       	post.setPassword(password);
       	binder.setPosting(post);

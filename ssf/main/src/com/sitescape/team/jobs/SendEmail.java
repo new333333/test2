@@ -33,12 +33,7 @@ import java.io.File;
 import javax.mail.internet.MimeMessage;
 import com.sitescape.team.module.mail.JavaMailSender;
 public interface SendEmail {
-    /**
-     * This key is used to uniquely identify a type of processor (ie, a 
-     * concrete class implementing this interface).
-     */
-    public static final String PROCESSOR_KEY = "processorKey_sendEmailJob";
-	public static final String SEND_MAIL_GROUP="send-email";
+ 	public static final String SEND_MAIL_GROUP="send-email";
 	
     public void schedule(JavaMailSender mailSender, MimeMessage message, String comment, File fileDir, boolean now);
     public void schedule(JavaMailSender mailSender, String account, String password, MimeMessage message, String comment, File fileDir, boolean now);

@@ -55,7 +55,6 @@ import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.Dur;
 import net.fortuna.ical4j.model.Parameter;
 import net.fortuna.ical4j.model.ParameterList;
-import net.fortuna.ical4j.model.PeriodList;
 import net.fortuna.ical4j.model.Property;
 import net.fortuna.ical4j.model.Recur;
 import net.fortuna.ical4j.model.TimeZone;
@@ -68,11 +67,9 @@ import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.component.VToDo;
 import net.fortuna.ical4j.model.parameter.Cn;
 import net.fortuna.ical4j.model.parameter.Role;
-import net.fortuna.ical4j.model.parameter.TzId;
 import net.fortuna.ical4j.model.parameter.Value;
 import net.fortuna.ical4j.model.property.Attendee;
 import net.fortuna.ical4j.model.property.CalScale;
-import net.fortuna.ical4j.model.property.DateProperty;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.model.property.DtEnd;
 import net.fortuna.ical4j.model.property.DtStart;
@@ -81,12 +78,9 @@ import net.fortuna.ical4j.model.property.Duration;
 import net.fortuna.ical4j.model.property.Location;
 import net.fortuna.ical4j.model.property.Method;
 import net.fortuna.ical4j.model.property.Organizer;
-import net.fortuna.ical4j.model.property.PercentComplete;
-import net.fortuna.ical4j.model.property.Priority;
 import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.RRule;
 import net.fortuna.ical4j.model.property.RecurrenceId;
-import net.fortuna.ical4j.model.property.Status;
 import net.fortuna.ical4j.model.property.Transp;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Version;
@@ -106,13 +100,13 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
+import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.task.TaskHelper;
@@ -129,7 +123,6 @@ import com.sitescape.util.cal.DayAndPosition;
  * 
  */
 public class IcalModuleImpl implements IcalModule {
-	
 	protected Log logger = LogFactory.getLog(getClass());
 	
 	private static final ProdId PROD_ID = new ProdId("-//SiteScape Inc//"
@@ -368,8 +361,6 @@ public class IcalModuleImpl implements IcalModule {
 	 * Creates an entry in the given folder for each VEVENT in the given ical input stream, returning a list of
 	 *  the added IDs.
 	 * 
-	 * @param binderModule
-	 * @param folderModule
 	 * @param folderId
 	 * @param icalFile
 	 * @return id list of created entries
@@ -378,14 +369,16 @@ public class IcalModuleImpl implements IcalModule {
 	 */
 	public List parseToEntries (final Long folderId, InputStream icalFile) throws IOException, ParserException
 	{
-		final Folder folder = (Folder)binderModule.getBinder(folderId);
-		final List<Long> entries = new ArrayList<Long>();
+		Folder folder = (Folder)folderModule.getFolder(folderId);
+		return parseToEntries(folder, null, icalFile);
+	}
+	public List parseToEntries (final Folder folder, Definition def, InputStream icalFile) throws IOException, ParserException {
 
-		Iterator defaultEntryDefinitions = folder.getEntryDefinitions().iterator();
-		if (!defaultEntryDefinitions.hasNext()) {
-			return entries;
-		}
-		Definition def = (Definition) defaultEntryDefinitions.next();
+		final List<Long> entries = new ArrayList<Long>();
+		if (def == null) {
+			def = folder.getDefaultEntryDef();
+			if (def == null) return entries;
+		} 
 		final String entryType = def.getId();
 		final String eventName= getEventName(def.getDefinition());
 		if(eventName == null) {
@@ -396,15 +389,13 @@ public class IcalModuleImpl implements IcalModule {
 			public void handleEvent(Event event, String description, String summary) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 				
-				formData.put("binderId", new String[] {folderId.toString()});
 				formData.put("description", new String[] {description != null ? description : ""});
-				formData.put("entryType", new String[] {entryType});
 				formData.put("title", new String[] {summary != null ? summary : ""});
 				formData.put(eventName, event);
 				
 				MapInputData inputData = new MapInputData(formData);
 				try {
-					Long entryId = folderModule.addEntry(folderId, entryType, inputData, null, null);
+					Long entryId = folderModule.addEntry(folder.getId(), entryType, inputData, null, null);
 					entries.add(entryId);
 				} catch (AccessControlException e) {
 					logger.warn("Can not create entry from iCal file.", e);
@@ -416,9 +407,7 @@ public class IcalModuleImpl implements IcalModule {
 			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List attendee) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 				
-				formData.put("binderId", new String[] {folderId.toString()});
 				formData.put("description", new String[] {description != null ? description : ""});
-				formData.put("entryType", new String[] {entryType});
 				formData.put("title", new String[] {summary != null ? summary : ""});
 				formData.put(eventName, event);
 				formData.put("priority", new String[] {priority});
@@ -431,7 +420,7 @@ public class IcalModuleImpl implements IcalModule {
 				
 				MapInputData inputData = new MapInputData(formData);
 				try {
-					Long entryId = folderModule.addEntry(folderId, entryType, inputData, null, null);
+					Long entryId = folderModule.addEntry(folder.getId(), entryType, inputData, null, null);
 					entries.add(entryId);
 					logger.info("New entry id created from iCal file [" + entryId + "]");
 				} catch (AccessControlException e) {

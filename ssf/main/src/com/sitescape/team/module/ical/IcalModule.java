@@ -37,13 +37,13 @@ import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 
-import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.Event;
-import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.folder.FolderModule;
-
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
+
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.Folder;
+import com.sitescape.team.domain.Definition;
 
 /**
  * Convert back and forth between iCal text and Events
@@ -118,6 +118,7 @@ public interface IcalModule {
 	 *  the added IDs.
 	 * 
 	 * @param folderId
+	 * @param defId Definition id or null
 	 * @param icalFile
 	 * @return id list of created entries
 	 * @throws IOException
@@ -126,6 +127,8 @@ public interface IcalModule {
 	List parseToEntries (final Long folderId, InputStream icalFile)
 		throws IOException, ParserException;
 
+	List parseToEntries (final Folder folder, Definition def, InputStream icalFile)
+		throws IOException, ParserException;
 
 	public Calendar generate(DefinableEntity entry, Collection events, String defaultTimeZoneId);
 	

@@ -614,6 +614,10 @@
 		<property name="icalModule"><ref local="icalModule"/></property>
 	</bean>
 	
+	<bean id="defaultEmailPoster" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.DefaultEmailPoster">
+		<property name="folderModule"><ref local="folderModule"/></property>
+		<property name="icalModule"><ref local="icalModule"/></property>
+	</bean>
 
 	<bean id="fileModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.file.impl.FileModuleImpl" depends-on="sPropsUtil">
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
