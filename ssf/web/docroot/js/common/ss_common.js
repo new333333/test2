@@ -5738,19 +5738,27 @@ function ss_showHideSidebar(namespace) {
 	var tdObj = self.document.getElementById('ss_sidebarTd'+namespace);
 	var sidebarHide = self.document.getElementById('ss_sidebarHide'+namespace);
 	var sidebarShow = self.document.getElementById('ss_sidebarShow'+namespace);
+	var sidebarVisibility = "";
 	if (divObj.style.display == 'block') {
 		//Hide it
 		divObj.style.display = 'none';
 		tdObj.className = '';
 		sidebarShow.style.display = 'none'
 		sidebarHide.style.display = 'block'
+		sidebarVisibility = "none"
 	} else {
 		//Show it
 		tdObj.className = 'ss_view_sidebar';
 		divObj.style.display = 'block';
 		sidebarShow.style.display = 'block'
 		sidebarHide.style.display = 'none'
+		sidebarVisibility = "block"
 	}
 	ssf_onLayoutChange()
+	ss_setupStatusMessageDiv();
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"set_sidebar_visibility", visibility:sidebarVisibility}, "");
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.setPostRequest(ss_postRequestAlertError);
+	ajaxRequest.sendRequest();  //Send the request
 }
 
