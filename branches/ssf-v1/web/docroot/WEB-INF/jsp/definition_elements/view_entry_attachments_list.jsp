@@ -201,12 +201,13 @@ boolean ss_isMail = false;
 		<td class="ss_att_title" width="25%"><a style="text-decoration: none;" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 						href="<ssf:url 
-					    webPath="viewFile"
+					    webPath="readFile"
 					    folderId="${ssDefinitionEntry.parentBinder.id}"
 					    entryId="${ssDefinitionEntry.id}"
 					    entityType="${ssDefinitionEntry.entityType}" >
 					    <ssf:param name="fileId" value="${selection.id}"/>
 					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+					    <ssf:param name="fileName" value="${selection.fileItem.name}"/>
 					    </ssf:url>" 
 					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
 					</c:if>
