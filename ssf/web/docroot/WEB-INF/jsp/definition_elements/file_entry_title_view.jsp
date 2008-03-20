@@ -52,15 +52,15 @@ if (isIECheck) strBrowserType = "ie";
 <c:if test="${empty fileHandle}">
 <c:set var="fileHandle" value="${ssDefinitionEntry.customAttributes['title'].value}"/>
 </c:if>
-<a style="text-decoration: none;" href="<ssf:fileurl 
-    webPath="viewFile"
-    fileName="${fileHandle.fileItem.name}"
+<a style="text-decoration: none;" href="<ssf:url 
+    webPath="readFile"
     folderId="${ssDefinitionEntry.parentBinder.id}"
     entryId="${ssDefinitionEntry.id}"
     entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${fileHandle.id}"/>
     <ssf:param name="fileTime" value="${fileHandle.modification.date.time}"/>
-    </ssf:fileurl>">
+    <ssf:param name="filename" value="${fileHandle.fileItem.name}"/>
+    </ssf:url>">
 <c:if test="${empty ssDefinitionEntry.title}">
     <span class="ss_light">--<ssf:nlt tag="entry.noTitle"/>--</span>
 </c:if><c:out value="${ssDefinitionEntry.title}"/></a></span>

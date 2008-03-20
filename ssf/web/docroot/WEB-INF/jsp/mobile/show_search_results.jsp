@@ -84,12 +84,13 @@
 			  		<c:when test="${entry._entityType == 'folderEntry' && entry._docType == 'attachment'}">
 					    <tr><td>
 						<a href="<ssf:url 
-						    webPath="viewFile"
+						    webPath="readFile"
 						    folderId="${entryBinderId}"
 						    entryId="${entry._docId}"
 						    entityType="${entry._entityType}" >
 						    <ssf:param name="fileId" value="${entry._fileId}"/>
 						    <ssf:param name="fileTime" value="${entry._fileTime}"/>
+						    <ssf:param name="fileName" value="${entry._fileName}"/>
 						    </ssf:url>">
 					    <c:if test="${empty entry.title}">
 					    	(<ssf:nlt tag="entry.noTitle"/>)

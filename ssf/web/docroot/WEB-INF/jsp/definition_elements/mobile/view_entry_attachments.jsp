@@ -71,12 +71,13 @@ if (isIECheck) strBrowserType = "ie";
 		<td class="ss_att_title">
 		  <a style="text-decoration: none;" 
 			href="<ssf:url 
-		    webPath="viewFile"
+		    webPath="readFile"
 		    folderId="${ssDefinitionEntry.parentBinder.id}"
 		    entryId="${ssDefinitionEntry.id}"
 		    entityType="${ssDefinitionEntry.entityType}" >
 		    <ssf:param name="fileId" value="${selection.id}"/>
 		    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
+		    <ssf:param name="fileName" value="${selection.fileItem.name}"/>
 		    </ssf:url>" 
 		    <ssf:title tag="title.open.file">
 			    <ssf:param name="value" value="${selection.fileItem.name}" />

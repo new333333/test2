@@ -44,15 +44,15 @@ if (isIECheck) strBrowserType = "ie";
 <c:set var="selections" value="${ssDefinitionEntry.customAttributes[property_name].valueSet}" />
 <c:forEach var="selection" items="${selections}">
 <a target="_blank" 
-  href="<ssf:fileurl 
-    webPath="viewFile"
-    fileName="${selection.fileItem.name}"
+  href="<ssf:url 
+    webPath="readFile"
     folderId="${ssDefinitionEntry.parentBinder.id}"
     entryId="${ssDefinitionEntry.id}"
     entityType="${ssDefinitionEntry.entityType}" >
     <ssf:param name="fileId" value="${selection.id}"/>
     <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-    </ssf:fileurl>"><c:out value="${selection.fileItem.name}"/>
+    <ssf:param name="fileName" value="${selection.fileItem.name}"/>
+    </ssf:url>"><c:out value="${selection.fileItem.name}"/>
 </a>
 <br>
 </c:forEach>

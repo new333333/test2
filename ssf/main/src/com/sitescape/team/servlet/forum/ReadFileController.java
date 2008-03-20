@@ -86,7 +86,12 @@ public class ReadFileController extends SAbstractController {
 
 				DefinableEntity entity = null;
 				Binder parent;
-				EntityIdentifier.EntityType entityType = EntityIdentifier.EntityType.valueOf(strEntityType);
+				EntityIdentifier.EntityType entityType = null;
+				try {
+					entityType = EntityIdentifier.EntityType.valueOf(strEntityType);
+				} catch(Exception e) {
+					entityType = EntityIdentifier.EntityType.none;
+				}
 				if (entityType.equals(EntityIdentifier.EntityType.folder) || entityType.equals(EntityIdentifier.EntityType.workspace) ||
 						entityType.equals(EntityIdentifier.EntityType.profiles)) {
 					//the entry is the binder
