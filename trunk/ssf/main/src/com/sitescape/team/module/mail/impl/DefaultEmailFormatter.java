@@ -77,7 +77,7 @@ import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.mail.FolderEmailFormatter;
+import com.sitescape.team.module.mail.EmailFormatter;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -92,7 +92,7 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class DefaultFolderEmailFormatter extends CommonDependencyInjection implements FolderEmailFormatter {
+public class DefaultEmailFormatter extends CommonDependencyInjection implements EmailFormatter {
     private FolderModule folderModule;
     private BinderModule binderModule;
     protected DefinitionModule definitionModule;
@@ -100,7 +100,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 	private TransformerFactory transFactory = TransformerFactory.newInstance();
 
 	protected Map transformers = new HashMap();
-    public DefaultFolderEmailFormatter () {
+    public DefaultEmailFormatter () {
 	}
     public void setDefinitionModule(DefinitionModule definitionModule) {
         this.definitionModule = definitionModule;
@@ -606,7 +606,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_TEMPLATE_HTML.getKey(), notify.getLocale(), notify.getType()));
+		result.put(EmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_TEMPLATE_HTML.getKey(), notify.getLocale(), notify.getType()));
 		
 		return result;
 	}
@@ -641,7 +641,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		doEntry(element, entry, notify, true);
 		
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
-		result.put(FolderEmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_TEMPLATE_HTML.getKey(), notify.getLocale(), notify.getType()));
+		result.put(EmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_TEMPLATE_HTML.getKey(), notify.getLocale(), notify.getType()));
 		
 		return result;
 	}

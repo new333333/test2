@@ -78,8 +78,8 @@ import com.sitescape.team.jobs.ZoneSchedule;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.mail.FolderEmailFormatter;
-import com.sitescape.team.module.mail.FolderEmailPoster;
+import com.sitescape.team.module.mail.EmailFormatter;
+import com.sitescape.team.module.mail.EmailPoster;
 import com.sitescape.team.module.mail.JavaMailSender;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.mail.MimeMapPreparator;
@@ -398,7 +398,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								Message aliasMsgs[]=mFolder.search(new OrTerm(aliasSearch));
 								if (aliasMsgs.length == 0) continue;
 								Folder folder = (Folder)postingDef.getBinder();
-								FolderEmailPoster processor = (FolderEmailPoster)processorManager.getProcessor(folder,FolderEmailPoster.PROCESSOR_KEY);
+								EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
 								sendErrors(folder, postingDef, sender, processor.postMessages(folder,postingDef, aliasMsgs, session));
 							} catch (Exception ex) {
 								logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
@@ -415,7 +415,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								continue;
 							}
 							Folder folder = (Folder)postingDef.getBinder();
-							FolderEmailPoster processor = (FolderEmailPoster)processorManager.getProcessor(folder,FolderEmailPoster.PROCESSOR_KEY);
+							EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
 							for (int j=0; j<mailFolders.length; ++j) {
 								mFolder = mailFolders[j];
 								if ("inbox".equals(mFolder.getFullName())) {
@@ -448,7 +448,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			for (PostingDef postingDef: useUserNamePwd) {
 				mFolder = null;
 				Folder folder = (Folder)postingDef.getBinder();
-				FolderEmailPoster processor = (FolderEmailPoster)processorManager.getProcessor(folder,FolderEmailPoster.PROCESSOR_KEY);
+				EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
 				try {
 					store.connect(null, postingDef.getEmailAddress(), postingDef.getPassword());
 					mFolder = store.getFolder("inbox");				
@@ -526,7 +526,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			ctx = mailSender.initializeConnection();
 			Folder currentFolder = null;
 			List<Subscription> folderSubscriptions = null;
-			FolderEmailFormatter processor=null;
+			EmailFormatter processor=null;
 			MimeNotifyPreparator mHelper = null;
 			String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE);
 			//Will be sorted by owningBinderkey
@@ -553,7 +553,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	   				if (!entry.getRootFolder().equals(currentFolder)) {
 	   					currentFolder = entry.getRootFolder();
 	   					folderSubscriptions = getCoreDao().loadSubscriptionByEntity(currentFolder.getEntityIdentifier());  					
-	   					processor = (FolderEmailFormatter)processorManager.getProcessor(currentFolder,FolderEmailFormatter.PROCESSOR_KEY);
+	   					processor = (EmailFormatter)processorManager.getProcessor(currentFolder,EmailFormatter.PROCESSOR_KEY);
 	   					mHelper = new MimeNotifyPreparator(processor, currentFolder, begin, logger, sendVTODO);
 	   	   				mHelper.setDefaultFrom(mailSender.getDefaultFrom());		
 	   	  				mHelper.setTimeZone(timeZone);
@@ -669,7 +669,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 			ctx = mailSender.initializeConnection();
 			Folder currentFolder = null;
 			List<Subscription> folderSubscriptions = null;
-			FolderEmailFormatter processor=null;
+			EmailFormatter processor=null;
 			MimeNotifyPreparator mHelper = null;
 			String timeZone = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE);
 			List ids = new ArrayList();
@@ -713,7 +713,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 				if (!entries.isEmpty()) {
 	   				//Handle digest subscriptions and notifications 
 	   		 		//get folder specific helper to build message
-					processor = (FolderEmailFormatter)processorManager.getProcessor(currentFolder,FolderEmailFormatter.PROCESSOR_KEY);
+					processor = (EmailFormatter)processorManager.getProcessor(currentFolder,EmailFormatter.PROCESSOR_KEY);
 	   		  		folderSubscriptions = getCoreDao().loadSubscriptionByEntity(currentFolder.getEntityIdentifier());
 	   				List digestResults = processor.buildDistributionList(currentFolder, entries, folderSubscriptions, Subscription.DIGEST_STYLE_EMAIL_NOTIFICATION);		
 	   				mHelper = new MimeNotifyPreparator(processor, currentFolder, begin, logger, sendVTODO);

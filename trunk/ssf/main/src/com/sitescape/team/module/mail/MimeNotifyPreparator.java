@@ -30,7 +30,7 @@ import com.sitescape.util.Validator;
 
 
 public class MimeNotifyPreparator extends AbstractMailPreparator {
-	FolderEmailFormatter processor;
+	EmailFormatter processor;
 	Folder folder;
 	Collection toAddrs;
 	Collection entries;
@@ -42,7 +42,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	boolean sendAttachments=false;
 	boolean sendVTODO;
 	IcalModule icalModule;
-	public MimeNotifyPreparator(FolderEmailFormatter processor, Folder folder, Date startDate, Log logger, boolean sendVTODO) {
+	public MimeNotifyPreparator(EmailFormatter processor, Folder folder, Date startDate, Log logger, boolean sendVTODO) {
 		super(logger);
 		this.processor = processor;
 		this.folder = folder;
@@ -116,7 +116,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 
 		if (!messageType.equals(Notify.NotifyType.text)) {
 			//use MailHelper so alternative part added for calendars
-			setText(null, (String)result.get(FolderEmailFormatter.HTML), helper);
+			setText(null, (String)result.get(EmailFormatter.HTML), helper);
 			if (sendAttachments) prepareAttachments(notify.getAttachments(), helper);
 			notify.clearAttachments();
 			prepareICalendars(notify, helper);
