@@ -54,6 +54,5 @@ public interface FolderEmailFormatter {
 	public Map buildNotificationMessage(Folder folder, FolderEntry entry, Notify notify);
 	public String getSubject(Folder folder, FolderEntry entry, Notify notify);
 	public String getFrom(Folder folder, Notify notify);
-	public List postMessages(Folder folder, PostingDef pDef, Message[] msgs, Session session);
 
 }

@@ -42,6 +42,7 @@ public interface MailModule {
 	public enum Property {
 		POSTING_JOB ("posting.job"),
 		NOTIFICATION_JOB ("notification.job"),
+		SENDMAIL_JOB ("mail.send"),
 		SUBSCRIPTION_JOB ("subscription.job"),
 		SUBSCRIPTION_MINUTES ("subscription.minutes"),
 		NOTIFY_TEMPLATE_TEXT ("notify.mailText"),

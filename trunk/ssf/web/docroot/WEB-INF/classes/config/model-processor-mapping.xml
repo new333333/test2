@@ -4,9 +4,8 @@
 
 <model-processor-mapping>
 	<processors>
-		<processor class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter" spring-bean-type="internal" spring-bean-name="defaultFolderEmailFormatter"/>
-		<processor class="com.sitescape.team.jobs.DefaultLdapSynchronization" spring-bean-type="none"/>
-		<processor class="com.sitescape.team.jobs.DefaultSendEmail" spring-bean-type="none"/>
+		<processor class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter" spring-bean-type="internal" spring-bean-name="defaultEmailFormatter"/>
+		<processor class="com.sitescape.team.module.mail.impl.DefaultFolderEmailPoster" spring-bean-type="internal" spring-bean-name="defaultEmailPoster"/>
 		<processor class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultFolderCoreProcessor"/>
 		<processor class="com.sitescape.team.module.profile.impl.DefaultProfileCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultProfileCoreProcessor"/>
 		<processor class="com.sitescape.team.module.workspace.impl.DefaultWorkspaceCoreProcessor" spring-bean-type="internal" spring-bean-name="defaultWorkspaceCoreProcessor"/>
@@ -16,19 +15,15 @@
 	<default-mappings>
 		<model-class name="com.sitescape.team.domain.ProfileBinder">
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.profile.impl.DefaultProfileCoreProcessor"/>
-			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.team.jobs.DefaultSendEmail"/>
 		</model-class>
 		<model-class name="com.sitescape.team.domain.Folder">
 			<mapping processor-key="processorKey_folderEmailFormatter" processor-class="com.sitescape.team.module.mail.impl.DefaultFolderEmailFormatter"/>
+			<mapping processor-key="processorKey_folderEmailPoster" processor-class="com.sitescape.team.module.mail.impl.DefaultFolderEmailPoster"/>
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
 			<mapping processor-key="processorKey_binderCoreProcessor_5" processor-class="com.sitescape.team.module.folder.impl.DefaultFolderCoreProcessor"/>
-			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.team.jobs.DefaultSendEmail"/>
 		</model-class>
 		<model-class name="com.sitescape.team.domain.Workspace">
-			<mapping processor-key="processorKey_wsLdapSynchronizationJob" processor-class="com.sitescape.team.jobs.DefaultLdapSynchronization"/>
-			<mapping processor-key="processorKey_wsLdapNameMapper" processor-class="com.sitescape.team.ldap.DefaultLdapNameMapper"/>
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.workspace.impl.DefaultWorkspaceCoreProcessor"/>
-			<mapping processor-key="processorKey_sendEmailJob" processor-class="com.sitescape.team.jobs.DefaultSendEmail"/>
 		</model-class>
 		<model-class name="com.sitescape.team.domain.TemplateBinder">
 			<mapping processor-key="processorKey_binderCoreProcessor" processor-class="com.sitescape.team.module.binder.impl.DefaultTemplateCoreProcessor"/>
