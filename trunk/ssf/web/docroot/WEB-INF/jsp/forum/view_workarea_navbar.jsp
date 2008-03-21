@@ -652,5 +652,5 @@ function ss_hideRecentPlacesDiv${renderResponse.namespace}() {
 <div style="padding-bottom:4px;"></div>
 
 <script type="text/javascript">
-ss_createOnLoadObj('ss_workarea_showPseudoPortal${renderResponse.namespace}', ss_workarea_showPseudoPortal${renderResponse.namespace});
+ss_workarea_showPseudoPortal${renderResponse.namespace}()
 </script>
