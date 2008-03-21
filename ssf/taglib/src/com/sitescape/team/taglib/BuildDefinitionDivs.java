@@ -703,7 +703,8 @@ public class BuildDefinitionDivs extends TagSupport {
 						if (propertyNameElements != null) {
 							for (int i = 0; i < propertyNameElements.size(); i++) {
 								String propertyValue = "";
-								if (((Element)propertyNameElements.get(i)).hasContent()) {
+								if (((Element)propertyNameElements.get(i)).hasContent() &&
+										((Element)propertyNameElements.get(i)).isTextOnly()) {
 									propertyValue = ((Element)propertyNameElements.get(i)).getText();
 								} else {
 									propertyValue = ((Element)propertyNameElements.get(i)).attributeValue("value", "");
@@ -722,8 +723,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						//if no value assigned and deprecated, don't show it
 						if (propertyConfig.attributeValue("status", "").equals("deprecated")) continue;
 					}
-					String propertyValueDefault = RepositoryUtil.getDefaultRepositoryName();
-					if (propertyValueDefault.equals("")) propertyConfig.attributeValue("default", "");
+					String propertyValueDefault = propertyConfig.attributeValue("default", "");
 					String type = propertyConfig.attributeValue("type", "text");
 					if (type.equals("textarea")) {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
@@ -981,6 +981,10 @@ public class BuildDefinitionDivs extends TagSupport {
 						String multipleText = "";
 						if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
 						sb.append("<select name=\"propertyId_" + propertyId + "\" " + multipleText + ">\n");
+
+						//Get the default value for the repository
+						propertyValueDefault = RepositoryUtil.getDefaultRepositoryName();
+						if (propertyValueDefault.equals("")) propertyConfig.attributeValue("default", "");
 
 						String[] repositoryList = SPropsUtil.getCombinedPropertyList(
 								ObjectKeys.CONFIG_PROPERTY_REPOSITORIES, ObjectKeys.CUSTOM_PROPERTY_PREFIX);

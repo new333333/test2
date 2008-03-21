@@ -1731,6 +1731,10 @@
 			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
+			<property name="initialSetting" caption="__initialSetting" type="radio" default="today">
+				<option name="today" caption="__initializeToCurrentDate" />
+				<option name="none" caption="__initializeToNone" />
+			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1749,6 +1753,10 @@
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" unique="//item[@type='data_time']">
 				<help>ihelp.designers.data_name</help>
+			</property>
+			<property name="initialSetting" caption="__initialSetting" type="radio" default="today">
+				<option name="today" caption="__initializeToCurrentDate" />
+				<option name="none" caption="__initializeToNone" />
 			</property>
 			<property name="required" caption="__required" type="boolean" default="false">
 				<help>ihelp.designers.required</help>
