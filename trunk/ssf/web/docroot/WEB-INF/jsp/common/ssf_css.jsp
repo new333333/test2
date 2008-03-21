@@ -4952,7 +4952,7 @@ table.ssMeetingRecords .ssHeader {
 	padding: 0;
 }
 
-.ss_psuedoPortal {
+.ss_pseudoPortal {
 	margin:25px;
 	padding:0px;
 	border:1px solid white;

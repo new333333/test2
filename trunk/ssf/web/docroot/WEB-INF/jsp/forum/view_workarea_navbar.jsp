@@ -78,16 +78,30 @@ var ss_debugTextareaId = "debugTextarea${renderResponse.namespace}"
 
 <!-- Start of global toolbar -->
 <script type="text/javascript">
-function ss_workarea_showPsuedoPortal${renderResponse.namespace}(obj) {
+var ss_parentWorkareaNamespace${renderResponse.namespace} = "";
+function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 	//See if we are in an iframe inside a portlet 
 	var windowName = self.window.name    
 	if (windowName.indexOf("ss_workareaIframe") == 0) {
-		//We are running inside a portlet iframe; do nothing
+		//We are running inside a portlet iframe; set up for layout changes
+		ss_parentWorkareaNamespace${renderResponse.namespace} = windowName.substr("ss_workareaIframe".length)
+		ss_createOnResizeObj('ss_setParentWorkareaIframeSize${renderResponse.namespace}', ss_setParentWorkareaIframeSize${renderResponse.namespace});
+		ss_createOnLayoutChangeObj('ss_setParentWorkareaIframeSize${renderResponse.namespace}', ss_setParentWorkareaIframeSize${renderResponse.namespace});
 	} else {
-		//Show the psuedo portal
-		var divObj = self.document.getElementById('ss_psuedoPortalDiv${renderResponse.namespace}');
+		//Show the pseudo portal
+		var divObj = self.document.getElementById('ss_pseudoPortalDiv${renderResponse.namespace}');
 		if (divObj != null) {
-			divObj.className = "ss_psuedoPortal"
+			divObj.className = "ss_pseudoPortal"
+		}
+	}
+}
+
+function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
+	if (typeof self.parent != "undefined") {
+		var resizeRoutineName = "ss_setWorkareaIframeSize" + ss_parentWorkareaNamespace${renderResponse.namespace};
+		eval("var resizeRoutineExists = typeof(self.parent."+resizeRoutineName+")");
+		if (resizeRoutineExists != "undefined") {
+			eval("self.parent."+resizeRoutineName+"()");
 		}
 	}
 }
@@ -638,5 +652,5 @@ function ss_hideRecentPlacesDiv${renderResponse.namespace}() {
 <div style="padding-bottom:4px;"></div>
 
 <script type="text/javascript">
-ss_createOnLoadObj('ss_workarea_showPsuedoPortal${renderResponse.namespace}', ss_workarea_showPsuedoPortal${renderResponse.namespace});
+ss_createOnLoadObj('ss_workarea_showPseudoPortal${renderResponse.namespace}', ss_workarea_showPseudoPortal${renderResponse.namespace});
 </script>
