@@ -8,88 +8,234 @@
 
  <target id="bbgk5ei" pid="bbgk3e9" name="Sect2" level="2" number="3.1.1"> <text>Accessories</text> </target>
 
- <target id="bbj059j" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Personal accessory for this page only:</text> </target>
+ <target id="begju0u" pid="bbgk3e9" name="Sect3" level="3"> <text>Creating and Deleting an Accessory</text> </target>
 
- <target id="bbj05vv" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Personal accessory for all workspaces and folders:</text> </target>
+ <target id="befjejj" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-1"> <text>The Accessories Icon and Drop-Down List</text> </target>
 
- <target id="bbj06kn" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Community accessory for this page:</text> </target>
+ <target id="bbj059j" pid="bbgk3e9" name="FormalPara" level="5" number="w"> <text>Personal accessory for this page only:</text> </target>
+
+ <target id="bbj05vv" pid="bbgk3e9" name="FormalPara" level="5" number="w"> <text>Personal accessory for all workspaces and folders:</text> </target>
+
+ <target id="bbj06kn" pid="bbgk3e9" name="FormalPara" level="5" number="w"> <text>Community accessory for this page:</text> </target>
+
+ <target id="befjfbm" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-2"> <text>A Photo Gallery as an Accessory</text> </target>
+
+ <target id="befjfy0" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-3"> <text>Currently Displayed Icons for an Accessory and Its Panel</text> </target>
 
  <target id="bbj0auv" pid="bbgk3e9" name="Sect3" level="3"> <text>Adding an Accessory Visible on All Pages</text> </target>
 
+ <target id="befjggc" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-4"> <text>A Global Accessory Seen on a File Folder Page</text> </target>
+
+ <target id="befjh6g" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-5"> <text>A Global Accessory Seen on a Discussion Folder Page</text> </target>
+
+ <target id="befji8e" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-6"> <text>A Closed Accessory</text> </target>
+
  <target id="bbj0iv6" pid="bbgk3e9" name="Sect3" level="3"> <text>Adding an Accessory for One Page</text> </target>
 
- <target id="bbj0ny8" pid="bbgk3e9" name="Sect3" level="3"> <text>Layout</text> </target>
+ <target id="beghjsj" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-7"> <text>A Search-Results Accessory for One Folder</text> </target>
+
+ <target id="beghto0" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-8"> <text>The Configuration Icon for an Accessory</text> </target>
+
+ <target id="bdykr2m" pid="bbgk3e9" name="Sect3" level="3"> <text>Positioning Accessories</text> </target>
+
+ <target id="beghu80" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-9"> <text>Two Closed Accessories</text> </target>
+
+ <target id="beghuqd" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-10"> <text>Positioning an Accessory</text> </target>
+
+ <target id="beghv87" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-11"> <text>The Two Accessories After Positioning</text> </target>
+
+ <target id="beghw3r" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-12"> <text>Positioning an Accessory in One Column</text> </target>
+
+ <target id="beghwmg" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-13"> <text>Positioning an Accessory in the Other Column</text> </target>
+
+ <target id="beghx4p" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-14"> <text>Accessories Appearing in Two Columns</text> </target>
+
+ <target id="bbj0ny8" pid="bbgk3e9" name="Sect3" level="3"> <text>Establishing a Default Layout</text> </target>
+
+ <target id="beghzbv" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-15"> <text>Menu Items Affecting Accessory Layout</text> </target>
 
  <target id="bc4o11g" pid="bbgk3e9" name="Sect3" level="3"> <text>Creating a "What's New?" Accessory</text> </target>
 
+ <target id="begjlp7" pid="bbgk3e9" name="Procedure" level="4" number="1"> <text>Add a Search Results accessory visible on all pages that you view.</text> </target>
+
+ <target id="begjlp8" pid="bbgk3e9" name="Step" level="5" number="1"> <text>Add a Search Results accessory visible on all pages that you view.</text> </target>
+
+ <target id="begjlrc" pid="bbgk3e9" name="Step" level="5" number="2"> <text>In the Last activity in days section, select a number of days (for example, 3 or 7 days).</text> </target>
+
+ <target id="begjlum" pid="bbgk3e9" name="Step" level="5" number="3"> <text>Click Apply.</text> </target>
+
+ <target id="begjlwn" pid="bbgk3e9" name="Step" level="5" number="4"> <text>Click Close.</text> </target>
+
+ <target id="begi01y" pid="bbgk3e9" name="Figure" level="4" number="Figure 3-16"> <text>Example of a "What's New?" Accessory</text> </target>
+
  <target id="bbgk5ku" pid="bbgk3e9" name="Sect2" level="2" number="3.1.2"> <text>Favorites</text> </target>
+
+ <target id="begi0j8" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-17"> <text>The Favorites Panel</text> </target>
 
  <target id="bbj2yij" pid="bbgk3e9" name="Sect2" level="2" number="3.1.3"> <text>Tags</text> </target>
 
+ <target id="begi0yk" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-18"> <text>The Folder Tags Section of the Tools Sidebar</text> </target>
+
+ <target id="begi1iu" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-19"> <text>Adding Tags to a Folder</text> </target>
+
+ <target id="begi1xa" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-20"> <text>Tag Links</text> </target>
+
+ <target id="begi2ov" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-21"> <text>Searching for Tagged Items</text> </target>
+
  <target id="bbgk6hx" pid="bbgk3e9" name="Sect2" level="2" number="3.1.4"> <text>Filters</text> </target>
+
+ <target id="begi35r" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-22"> <text>Creating a New Filter</text> </target>
+
+ <target id="begi3zm" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-23"> <text>Search Criteria for the Filter</text> </target>
+
+ <target id="begi569" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-24"> <text>Applying the Filter</text> </target>
 
  <target id="bbq9ha7" pid="bbgk3e9" name="Sect2" level="2" number="3.1.5"> <text>E-mail Notifications</text> </target>
 
- <target id="bbq9ny3" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Digest --</text> </target>
+ <target id="begi5ma" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-25"> <text>The Subscriptions Menu</text> </target>
 
- <target id="bbq9okx" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Individual messages --</text> </target>
+ <target id="bbq9ny3" pid="bbgk3e9" name="FormalPara" level="4" number="w"> <text>Digest:</text> </target>
 
- <target id="bbq9p1y" pid="bbgk3e9" name="FormalPara" level="3" number="w"> <text>Individual messages with attachments --</text> </target>
+ <target id="bbq9okx" pid="bbgk3e9" name="FormalPara" level="4" number="w"> <text>Individual messages:</text> </target>
+
+ <target id="bbq9p1y" pid="bbgk3e9" name="FormalPara" level="4" number="w"> <text>Individual messages with attachments:</text> </target>
 
  <target id="bbgk71z" pid="bbgk3e9" name="Sect2" level="2" number="3.1.6"> <text>The Clipboard</text> </target>
 
- <target id="bbj3qrh" pid="bbgk3e9" name="Sect2" level="2" number="3.1.7"> <text>Entry-Reference Mark-Up</text> </target>
+ <target id="begi66a" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-26"> <text>The Clipboard Link</text> </target>
 
- <target id="bbizuzh" pid="bbgk3e9" name="Sect2" level="2" number="3.1.8"> <text>Rating Stars</text> </target>
+ <target id="begi6l8" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-27"> <text>The Clipboard Panel</text> </target>
+
+ <target id="begi86j" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-28"> <text>Clipboard Names on the Send Mail Form</text> </target>
+
+ <target id="bbj3qrh" pid="bbgk3e9" name="Sect2" level="2" number="3.1.7"> <text>Entry-Reference MarkUp</text> </target>
+
+ <target id="begiamb" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-29"> <text>The Entry Reference Markup Icon</text> </target>
+
+ <target id="begib5t" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-30"> <text>The Find Link</text> </target>
+
+ <target id="begibq9" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-31"> <text>The Find a Page Panel</text> </target>
+
+ <target id="begic4y" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-32"> <text>Specifying a Page Name Using Type to Find</text> </target>
+
+ <target id="bbizuzh" pid="bbgk3e9" name="Sect2" level="2" number="3.1.8"> <text>The Five Star Ratings Tool</text> </target>
+
+ <target id="begid2z" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-33"> <text>The Five Star Ratings Tool</text> </target>
 
  <target id="bbgk7me" pid="bbgk3e9" name="Sect2" level="2" number="3.1.9"> <text>Workflow</text> </target>
 
- <target id="bbgkaj3" pid="bbgk3e9" name="Sect2" level="2" number="3.1.10"> <text>ICEcore Conference</text> </target>
+ <target id="begidhp" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-34"> <text>Changing an Entry's Workflow State</text> </target>
+
+ <target id="bbgkaj3" pid="bbgk3e9" name="Sect2" level="2" number="3.1.10"> <text>Novell Conferencing</text> </target>
+
+ <target id="begifwo" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-35"> <text>The Presence Panel</text> </target>
 
  <target id="bbqa0rf" pid="bbgk3e9" name="Sect2" level="2" number="3.1.11"> <text>Accessibility Mode</text> </target>
+
+ <target id="begigp5" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-36"> <text>The Enable Accessible Mode Link on a Personal Workspace Page</text> </target>
+
+ <target id="be4qxk0" pid="bbgk3e9" name="Sect2" level="2" number="3.1.12"> <text>The Mobile Portlet</text> </target>
+
+ <target id="begihcm" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-37"> <text>The Mobile Portlet</text> </target>
 
  <target id="bbgk3jn" pid="bbgk3jn" name="Sect1" level="1" number="3.2"> <text>Folder Types</text> </target>
 
  <target id="bbgk7cy" pid="bbgk3jn" name="Sect2" level="2" number="3.2.1"> <text>Blogs</text> </target>
 
+ <target id="begikhl" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-38"> <text>A Blog Entry</text> </target>
+
+ <target id="begilow" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-39"> <text>The Calendar and Archive Tools for a Blog</text> </target>
+
  <target id="bbgk8kr" pid="bbgk3jn" name="Sect2" level="2" number="3.2.2"> <text>Discussions</text> </target>
+
+ <target id="begim8v" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-40"> <text>The Table View of a Discussion Folder</text> </target>
 
  <target id="bbgk8qf" pid="bbgk3jn" name="Sect2" level="2" number="3.2.3"> <text>Calendars</text> </target>
 
- <target id="bbj2po3" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Import calendar:</text> </target>
+ <target id="begims7" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-41"> <text>A Calendar Page</text> </target>
 
- <target id="bbj2qgo" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Show entries by:</text> </target>
+ <target id="beginnx" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-42"> <text>The Import Calendar Link</text> </target>
 
- <target id="bbj2rc9" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Work day:</text> </target>
+ <target id="begio8x" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-43"> <text>Calendar Tools</text> </target>
 
- <target id="bbj2seo" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Number of days:</text> </target>
+ <target id="begiom5" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-44"> <text>The iCal Link</text> </target>
 
- <target id="bbj2t5k" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Previous and next page:</text> </target>
+ <target id="bbj2po3" pid="bbgk3jn" name="FormalPara" level="4" number="w"> <text>Import calendar:</text> </target>
 
- <target id="bbj2tti" pid="bbgk3jn" name="FormalPara" level="3" number="w"> <text>Calendar applet:</text> </target>
+ <target id="bbj2qgo" pid="bbgk3jn" name="FormalPara" level="4" number="w"> <text>Show entries by:</text> </target>
+
+ <target id="bbj2rc9" pid="bbgk3jn" name="FormalPara" level="4" number="w"> <text>Work day:</text> </target>
+
+ <target id="bbj2seo" pid="bbgk3jn" name="FormalPara" level="4" number="w"> <text>Number of days (calendar pages):</text> </target>
+
+ <target id="bbj2t5k" pid="bbgk3jn" name="FormalPara" level="4" number="w"> <text>Previous and next page (arrows):</text> </target>
+
+ <target id="bbj2tti" pid="bbgk3jn" name="FormalPara" level="4" number="w"> <text>Calendar applet:</text> </target>
+
+ <target id="bebvsnt" pid="bbgk3jn" name="FormalPara" level="4" number="w"> <text>iCal link:</text> </target>
 
  <target id="bbgk9gw" pid="bbgk3jn" name="Sect2" level="2" number="3.2.4"> <text>Guestbooks</text> </target>
 
+ <target id="begipzh" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-45"> <text>A Guestbook Folder</text> </target>
+
  <target id="bbgk9mn" pid="bbgk3jn" name="Sect2" level="2" number="3.2.5"> <text>File Folders</text> </target>
 
- <target id="bbgk9sv" pid="bbgk3jn" name="Sect2" level="2" number="3.2.6"> <text>Milestone folders</text> </target>
+ <target id="begiql9" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-46"> <text>A Folder File</text> </target>
+
+ <target id="bbgk9sv" pid="bbgk3jn" name="Sect2" level="2" number="3.2.6"> <text>Milestone Folders</text> </target>
 
  <target id="bbgka71" pid="bbgk3jn" name="Sect2" level="2" number="3.2.7"> <text>Photo Albums</text> </target>
 
+ <target id="begis20" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-47"> <text>A Photo Album</text> </target>
+
+ <target id="begisfx" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-48"> <text>Viewing a Picture in a Photo Album</text> </target>
+
  <target id="bbgkasg" pid="bbgk3jn" name="Sect2" level="2" number="3.2.8"> <text>Surveys </text> </target>
+
+ <target id="begit1d" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-49"> <text>Providing More Than One Answer to a Survey Question</text> </target>
+
+ <target id="begitjg" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-50"> <text>A Question That Accepts Only a Single Answer</text> </target>
+
+ <target id="begiu2u" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-51"> <text>Providing a Write-In Answer to a Question</text> </target>
+
+ <target id="begiv0m" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-52"> <text>Survey Results for the First Question</text> </target>
 
  <target id="bbgkaza" pid="bbgk3jn" name="Sect2" level="2" number="3.2.9"> <text>Tasks</text> </target>
 
  <target id="bbgkdy7" pid="bbgk3jn" name="Sect2" level="2" number="3.2.10"> <text>Wikis</text> </target>
 
+ <target id="begivm5" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-53"> <text>Wiki Navigation Tools</text> </target>
+
+ <target id="begiw1r" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-54"> <text>Setting the Main Page of a Wiki Folder</text> </target>
+
+ <target id="begiwrx" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-55"> <text>The Edit History Menu Item</text> </target>
+
+ <target id="begix5k" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-56"> <text>The Edit History Form</text> </target>
+
+ <target id="begixmc" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-57"> <text>Comparing Two Different Versions of a Wiki Entry</text> </target>
+
  <target id="bbgk3yu" pid="bbgk3yu" name="Sect1" level="1" number="3.3"> <text>Workspaces</text> </target>
 
  <target id="bbj44iq" pid="bbgk3yu" name="Sect2" level="2" number="3.3.1"> <text>Global Workspaces</text> </target>
+
+ <target id="begiybs" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-58"> <text>Structuring Global Workspaces By Geography and Then By Function</text> </target>
 
  <target id="bbj44n5" pid="bbgk3yu" name="Sect2" level="2" number="3.3.2"> <text>Personal Workspaces</text> </target>
 
  <target id="bbj49ax" pid="bbgk3yu" name="Sect2" level="2" number="3.3.3"> <text>Team Workspaces</text> </target>
 
  <target id="bbgke8j" pid="bbgk3yu" name="Sect2" level="2" number="3.3.4"> <text>Project Workspaces</text> </target>
+
+ <target id="begj0a2" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-59"> <text>A Project Workspace Within a Team Workspace</text> </target>
+
+ <target id="begj161" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-60"> <text>Task Categories and Their Folders</text> </target>
+
+ <target id="begj1px" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-61"> <text>A Task Folder</text> </target>
+
+ <target id="begj27g" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-62"> <text>Changing the % Done Value of a Task</text> </target>
+
+ <target id="begj2rd" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-63"> <text>A Milestone Folder</text> </target>
+
+ <target id="begj34g" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-64"> <text>A Project Workspace Page</text> </target>
 
 </targets>

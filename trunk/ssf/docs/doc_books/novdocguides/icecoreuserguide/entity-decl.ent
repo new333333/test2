@@ -25,10 +25,10 @@
 <!-- ============================================================= -->
 
 <!-- please change product to anything that makes sense in your current release -->
-<!ENTITY product       "ICEcore">
-<!ENTITY product_short       "ICEcore">
-<!ENTITY conf_prod_name "ICEcore Conference">
-<!ENTITY conf_prod_name_short "Conference">
+<!ENTITY product       "Novell Teaming">
+<!ENTITY product_short       "Teaming">
+<!ENTITY conf_prod_name "Novell Conferencing">
+<!ENTITY conf_prod_name_short "Conferencing">
 
 
 <!-- oddities -->

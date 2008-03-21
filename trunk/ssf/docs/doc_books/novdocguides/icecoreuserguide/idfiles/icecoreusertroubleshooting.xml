@@ -8,18 +8,12 @@
 
  <target id="bbiz7jt" pid="bbiz5s2" name="FormalPara" level="2"> <text>Problem:</text> </target>
 
- <target id="bbizbuc" pid="bbizbuc" name="Sect1" level="1" number="A.2"> <text>Too Many Sign Ins for WebDAV</text> </target>
+ <target id="bbizbuc" pid="bbizbuc" name="Sect1" level="1" number="A.2"> <text>Too Many Sign-Ins for WebDAV</text> </target>
 
  <target id="bbizc3a" pid="bbizbuc" name="FormalPara" level="2"> <text>Problem:</text> </target>
 
  <target id="bbizgel" pid="bbizgel" name="Sect1" level="1" number="A.3"> <text>Not Understanding Mirrored Folders</text> </target>
 
  <target id="bbizgkh" pid="bbizgel" name="FormalPara" level="2"> <text>Problem:</text> </target>
-
- <target id="bbizllx" pid="bbizgel" name="FormalPara" level="3" number="w"> <text>Warning:</text> </target>
-
- <target id="bbizmd4" pid="bbizgel" name="FormalPara" level="3" number="w"> <text>Strong recommendation:</text> </target>
-
- <target id="bbizpf2" pid="bbizgel" name="FormalPara" level="3" number="w"> <text>Warning:</text> </target>
 
 </targets>
