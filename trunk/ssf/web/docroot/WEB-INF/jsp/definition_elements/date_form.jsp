@@ -66,6 +66,7 @@
 	<c:set var="initDate" value="<%= new Date() %>"/>
 	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 		<c:set var="initDate" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+		<c:set var="property_initialSetting" value="entry"/>
 	</c:if>
 
 	<div dojoType="DropdownDatePickerActivateByInput" 
@@ -74,8 +75,14 @@
 		name="${elementName}_fullDate" 
 		lang="<ssf:convertLocaleToDojoStyle />" 
 		weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
-		value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" 
-		timeZone="${ssUser.timeZone.ID}"/>"></div>
+		<c:if test="${property_initialSetting != 'none'}">
+		  value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" 
+			timeZone="${ssUser.timeZone.ID}"/>"
+		</c:if>
+		<c:if test="${property_initialSetting == 'none'}">
+		  value=""
+		</c:if>
+	></div>
 
 		<input type="hidden" name="${elementName}_timezoneid" value="${ssUser.timeZone.ID}" />
 		<input type="hidden" name="${elementName}_skipTime" value="false" />
