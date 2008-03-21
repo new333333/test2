@@ -62,6 +62,7 @@
 	<c:set var="initDate" value="<%= new Date() %>"/>
 	<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
 		<c:set var="initDate" value="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+		<c:set var="property_initialSetting" value="entry"/>
 	</c:if>
 
 	<table class="ss_style" cellpadding="0" border="0">
@@ -72,8 +73,14 @@
 					id="date_${elementName}_${prefix}"
 					name="${elementName}_fullDate" 
 					lang="${ssUser.locale.language}" 
-					value="<fmt:formatDate value="${initDate}" pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"></div>
-				</div>
+					<c:if test="${property_initialSetting != 'none'}">
+					  value="<fmt:formatDate value="${initDate}" 
+					    pattern="yyyy-MM-dd" timeZone="${ssUser.timeZone.ID}"/>"
+					</c:if>
+					<c:if test="${property_initialSetting == 'none'}">
+					  value=""
+					</c:if>
+				></div>
 			</td>
 			<td>
 				<div dojoType="DropdownTimePickerActivateByInput"
@@ -81,7 +88,14 @@
 					id="date_time_${elementName}_${prefix}"
 					name="${elementName}_0_fullTime" 
 					lang="${ssUser.locale.language}" 
-					value="<fmt:formatDate value="${initDate}" pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"></div>
+					<c:if test="${property_initialSetting != 'none'}">
+					  value="<fmt:formatDate value="${initDate}" 
+					    pattern="HH:mm:ss" timeZone="${ssUser.timeZone.ID}"/>"
+					</c:if>
+					<c:if test="${property_initialSetting == 'none'}">
+					  value=""
+					</c:if>
+				></div>
 				<input type="hidden" name="${elementName}_timezoneid" value="${ssUser.timeZone.ID}" />
 			</td>
 		</tr>
