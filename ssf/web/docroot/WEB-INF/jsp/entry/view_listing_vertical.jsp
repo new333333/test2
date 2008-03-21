@@ -33,7 +33,7 @@
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <ssf:ifadapter>
 <body class="ss_style_body">
-<div id="ss_psuedoPortalDiv${renderResponse.namespace}">
+<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
 <c:if test="${!empty ssReloadUrl}">
 <script type="text/javascript">

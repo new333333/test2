@@ -201,6 +201,9 @@ function ss_fetch_url(url, callbackRoutine, callbackData, toggleCall) {
 					ss_fetch_url_debug("received " + data);
 					if (callbackRoutine) callbackRoutine(data, callbackData);
 				} catch (e) {alert(e);}
+				//Signal that the layout changed
+				if (ssf_onLayoutChange) setTimeout("ssf_onLayoutChange();", 100);
+				
 			},
 			preventCache: true
 	};   
@@ -487,6 +490,9 @@ function ss_showPermalink(obj) {
 		if (x < 0) x = 0;
 		divObj.style.left = x + "px";		
 	}
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+	
 }
 //Routine to go to a binder when it is clicked
 // id can be a number or a string ending in "_1234" where 1234 is the id
@@ -903,7 +909,6 @@ function ss_showHideBusinessCard(op, scope) {
 	ss_fetch_url(ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams));
 }
 
-
 //Routine to set the opacity of a div
 //  (Note: this may not work if "width" is not explicitly set on the div)
 function ss_setOpacity(obj, opacity) {
@@ -1209,7 +1214,7 @@ function m_setLayoutRoutine(layoutRoutine) {
 function ssf_onLayoutChange(obj) {
     for (var i = 0; i < ss_onLayoutChangeList.length; i++) {
         if (ss_onLayoutChangeList[i].layoutRoutine) {
-        	//ss_debug("ssf_onLayoutChange: " + ss_onLayoutChangeList[i].name)
+        	ss_debug("ssf_onLayoutChange executing routine: " + ss_onLayoutChangeList[i].name)
         	ss_onLayoutChangeList[i].layoutRoutine();
         }
     }
@@ -2086,7 +2091,7 @@ function setWindowHighWaterMark(divName) {
 
 //Routines to replace substrings in a string
 function ss_replaceSubStr(str, subStr, newSubStrVal) {
-    ss_debug("ss_replaceSubStr: " + str + ", " + subStr + " ==> " + newSubStrVal)
+    //ss_debug("ss_replaceSubStr: " + str + ", " + subStr + " ==> " + newSubStrVal)
     var newStr = str;
 	var i = str.indexOf(subStr);
     var lenS = str.length;
@@ -2094,7 +2099,7 @@ function ss_replaceSubStr(str, subStr, newSubStrVal) {
     if (i >= 0) {
         newStr = str.substring(0, i) + newSubStrVal + str.substring(i+lenSS, lenS);
     }
-    ss_debug("   new str = " + newStr)
+    //ss_debug("   new str = " + newStr)
 	return newStr;
 }
 function ss_replaceSubStrAll(str, subStr, newSubStrVal) {
@@ -3504,9 +3509,8 @@ function ss_showForumEntryInIframe_Overlay(url) {
 }
 
 function ss_showForumEntryInIframe_Popup(url) {
-
-    ss_debug('popup width = ' + ss_viewEntryPopupWidth)
-    ss_debug('popup height = ' + ss_viewEntryPopupHeight)
+    //ss_debug('popup width = ' + ss_viewEntryPopupWidth)
+    //ss_debug('popup height = ' + ss_viewEntryPopupHeight)
     var wObj = self.document.getElementById('ss_showfolder')
 
 	if (!wObj) {
@@ -5059,6 +5063,8 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 				dojo.html.setVisibility(divId, "visible");
 	            dojo.html.setOpacity(divId,0);
 	            dojo.lfx.html.fadeIn(divId, 200).play();
+				//Signal that the layout changed
+				if (ssf_onLayoutChange) ssf_onLayoutChange();
 			} catch (e) {alert(e)}
 		},
 		preventCache: true,
@@ -5417,6 +5423,7 @@ function ss_postTreeDivRequest(obj) {
 	} else {
 		ss_treeOpen(obj.getData('treeName'), obj.getData('id'), obj.getData('parentId'), obj.getData('bottom'), obj.getData('type'));
 	}
+	
 }
 
 function ss_treeOpen(treeName, id, parentId, bottom, type) {
@@ -5466,7 +5473,7 @@ function ss_treeOpen(treeName, id, parentId, bottom, type) {
 		if (iObj != null && ss_treeIconsOpen[type]) iObj.src = ss_treeIconsOpen[type];
 
 		//Signal that the layout changed
-		if (ssf_onLayoutChange) ssf_onLayoutChange();
+		if (ssf_onLayoutChange) setTimeout('ssf_onLayoutChange();', 100);
 		
 		self.focus();
 	}

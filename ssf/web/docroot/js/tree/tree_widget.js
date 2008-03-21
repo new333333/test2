@@ -31,6 +31,7 @@
 var ss_treeIds;
 if (ss_treeIds == null) ss_treeIds = new Array();
 function ss_treeToggle(treeName, id, parentId, bottom, type, page, indentKey) {
+	alert('zzz')
 	ss_hideBucketText()
 	if (page == null) page = "";
 	if (ss_treeDisplayStyle && ss_treeDisplayStyle == 'accessible') {
