@@ -1961,7 +1961,10 @@ div.ss_global_toolbar_maximized {
     position: relative;
 	padding-top:2px;
 }
-
+div.ss_global_findbar {
+    position: relative;
+	padding-top:2px;
+}
 div.ss_global_toolbar_maximized div.ss_global_toolbar_myworkspace, div.ss_global_toolbar_maximized div.ss_global_toolbar_favs,
 div.ss_global_toolbar_maximized div.ss_global_toolbar_myteams, 
  div.ss_global_toolbar_maximized div.ss_global_toolbar_divider, div.ss_global_toolbar_maximized div.ss_global_toolbar_quick,
@@ -2246,8 +2249,8 @@ span.ss_tabs_title {
 
 /* breadcrumbs */
 .ss_breadcrumb {
-	margin:0px 5px;
-	padding:0px 5px 0px 9px;
+	margin-left:-10px;
+	padding:0px 5px 0px 0px;
 	font-size: ${ss_style_font_smallprint};
 }
 a.ss_breadcrumb {

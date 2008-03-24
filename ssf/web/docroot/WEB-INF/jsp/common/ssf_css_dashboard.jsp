@@ -38,7 +38,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 #ss_top_nav_wrapper{
 	width: 100%;
-	background-color:#E4E4E4;
+	background-color:#ececec;
 	display: table;
 	border-color:#CCCCCC;
 	border: 1px;
@@ -66,6 +66,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_top_nav_buttontwo ul{
 	margin:0px;
 	padding:0px;
+	padding-left:10px;
 	list-style-type:none;
 	width:auto;
 	}
@@ -99,6 +100,43 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-style: solid;
 	border-color: #white;
 	border-width: .01em;
+	}
+#ss_top_nav_view{					/* "buttons" for portal and expanded view */
+	position:relative;
+	display:inline;
+	height:16px;
+	padding-top:6px;	
+	}
+#ss_top_nav_view a {
+	font-family:  Arial, sans-serif;
+	font-size: 10px;
+	text-decoration:underline;
+	letter-spacing: 0px;
+}
+#ss_top_nav_view ul{
+	margin:0px;
+	padding:0px;
+	list-style-type:none;
+	width:auto;
+	}
+#ss_top_nav_view ul li{
+	display:inline;
+	margin:6px 3px 0px 0px;
+	width:100%;
+	}
+#ss_top_nav_view ul li a{
+	float:left;
+	color:#333;
+	padding:5px 15px 0px 15px;
+	height:16px;
+	}
+#ss_top_nav_view ul li a:hover{
+	color: #EF2121!important;
+
+	}	
+	
+#ss_top_nav_view ul li a.current{	
+	color:#526394!important;
 	}
 	
 	/* blue buttons for navigation Not Used */
