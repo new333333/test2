@@ -150,13 +150,17 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <div id="ss_top_nav_wrapper" style="width:100%;">
 <table width="100%" align="center" cellspacing="0" cellpadding="0" border="0" >
 <tbody>
+
 <tr>
-<td align="center">
-<table border="0" cellpadding="0" cellspacing="0" >
+
+<td align="right" style="padding:5px 15px 2px 0px;">
+<!-- Beginning of Find Bar:  Find People/Places/Search  -->
+<table class="ss_global_toolbar_maximized" cellspacing="0" cellpadding="0" border="0">
 <tbody>
-  <tr>
-    <td align="center" valign="top">
-      <div id="ss_top_nav_buttontwo">
+<tr>
+
+<td>
+<div id="ss_top_nav_view">
         <ul>
           <li>
 			  <ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
@@ -193,60 +197,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	          title="<ssf:nlt tag="navigation.goToMaximizedView"/>"
               ><ssf:nlt tag="navigation.expandedView"/></a>
           </li>
-          <li>
-			  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
-			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
-			  </ssHelpSpot>
-              <a title="<ssf:nlt tag="navigation.myWorkspace"/>"
-				  href="<ssf:url 
-				    windowState="${ss_urlWindowState}"
-			      	action="view_ws_listing"
-			      	binderId="${ssUser.workspaceId}"/>"
-              ><ssf:nlt tag="navigation.myWorkspace"/> </a>
-          </li>
-          <li><a title="<ssf:nlt tag="navigation.myTeams"/>"
-			  href="javascript:;" 
-			  onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
-              ><ssf:nlt tag="navigation.myTeams"/> <img border="0" 
-              src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
-		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
-		          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
-			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}">
-			      	
-			    </div>
-			  </ssHelpSpot>
-			  <div id="ss_navbar_myteams${renderResponse.namespace}"
-			      style="visibility:hidden;margin:20px 0px 0px -130px;padding:0px;"></div>
-
-          </li>
-          <li><a title="<ssf:nlt tag="navigation.favorites"/>"
-	  			href="javascript: ;" 
-	  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
-              ><ssf:nlt tag="navigation.favorites"/> <img border="0" 
-              src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
-		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
-		          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
-			  </ssHelpSpot>
-		      <div align="right" id="ss_navbar_favorites${renderResponse.namespace}" 
-		      style="visibility:hidden;margin:20px 0px 0px -150px;padding:0px;"
-		      ></div>
-          </li>
-        </ul>
-      </div><div class="ss_clear_float"></div>
-    </td>
-  </tr>
-</tbody>
-</table>
-<div class="ss_clear_float"></div>
-
+          </ul>
+          </div>
 </td>
-</tr>
-<tr>
-<td align="center" style="padding:5px 0px 2px 0px;">
-<table class="ss_global_toolbar_maximized" cellspacing="0" cellpadding="0" border="0">
-<tbody>
-<tr>
-
 <td>
 <ssf:ifnotaccessible>
 <span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findUser"/></span>
@@ -470,7 +423,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <!-- Start of Status line -->
 <ssf:ifLoggedIn>
 <tr>
-<td align="center" style="padding:5px 0px 0px 0px;">
+<td align="left" style="padding:5px 0px 0px 20px;">
 <table class="ss_global_toolbar_maximized" cellspacing="0" cellpadding="0" border="0">
 <tbody>
 <tr>
@@ -515,6 +468,51 @@ ss_statusCurrent = "${ssUser.status}";
 </a>
 </c:if>
 </td>
+<td>
+<div id="ss_top_nav_buttontwo">
+        <ul>
+          
+          <li>
+			  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
+			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
+			  </ssHelpSpot>
+              <a title="<ssf:nlt tag="navigation.myWorkspace"/>"
+				  href="<ssf:url 
+				    windowState="${ss_urlWindowState}"
+			      	action="view_ws_listing"
+			      	binderId="${ssUser.workspaceId}"/>"
+              ><ssf:nlt tag="navigation.myWorkspace"/> </a>
+          </li>
+          <li><a title="<ssf:nlt tag="navigation.myTeams"/>"
+			  href="javascript:;" 
+			  onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
+              ><ssf:nlt tag="navigation.myTeams"/> <img border="0" 
+              src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
+		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
+		          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
+			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}">
+			      	
+			    </div>
+			  </ssHelpSpot>
+			  <div id="ss_navbar_myteams${renderResponse.namespace}"
+			      style="visibility:hidden;margin:20px 0px 0px -130px;padding:0px;"></div>
+
+          </li>
+          <li><a title="<ssf:nlt tag="navigation.favorites"/>"
+	  			href="javascript: ;" 
+	  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
+              ><ssf:nlt tag="navigation.favorites"/> <img border="0" 
+              src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
+		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
+		          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
+			  </ssHelpSpot>
+		      <div align="right" id="ss_navbar_favorites${renderResponse.namespace}" 
+		      style="visibility:hidden;margin:20px 0px 0px -150px;padding:0px;"
+		      ></div>
+          </li>
+        </ul>
+      </div>
+      </td>
 </tr>
 </tbody>
 </table>
