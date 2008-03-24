@@ -1105,12 +1105,21 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 				entry.removeAttachment(fAtt);
 				//file names on binders are not registered
 				if (binder.isLibrary() && !binder.equals(entry)) getCoreDao().updateFileName(binder, entry, fAtt.getFileItem().getName(), null);
+				// Do NOT reset the title of the entry even if the title came from the file 
+				// being deleted and the parent folder required unique titles.
+				// In other word, deleting a file from an entry returns its file name to the
+				// namespace pool but not the entry's title. If the user needs to create a
+				// new entry with the same title (as opposed to re-using the old entry), he
+				// will have to manually delete the old entry before creating a new one
+				// (related ICEcore issue number is #1803).
+				/*
 		        if ((entry.getEntryDef() != null)  && DefinitionUtils.isSourceItem(entry.getEntryDef().getDefinition(), fAtt.getName(), ObjectKeys.FIELD_ENTITY_TITLE)) {
 		        	//if tracking unique titles, remove old title
 		        	if ((entry.getParentBinder() != null) && entry.getParentBinder().isUniqueTitles()) getCoreDao().updateTitle(entry.getParentBinder(), entry, entry.getNormalTitle(), null);
 		        	//check title for entries
 		        	entry.setTitle("");			   			   
 				}
+				*/
 			        
 	            return null;
 	       	}
