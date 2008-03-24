@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE model-processor-mapping SYSTEM "../../../resources/model-processor-mapping-1_0_0.dtd">
+<!DOCTYPE model-processor-mapping SYSTEM "../dtd/model-processor-mapping-1_0_0.dtd">
 
 <!-- Make sure new additions are handled in xslt merge -->
 
