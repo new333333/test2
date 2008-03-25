@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.samples.remoting.client.ws.axis;
+package com.sitescape.team.samples.wsclient.axis;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -66,7 +66,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import com.sitescape.team.samples.remoting.client.util.FacadeClientHelper;
+import com.sitescape.team.samples.wsclient.util.FacadeClientHelper;
 import com.sitescape.util.PasswordEncryptor;
 
 /*
