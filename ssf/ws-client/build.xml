@@ -6,30 +6,6 @@
 	<property name="generated.dir" value="${basedir}/generated" />
 	<property name="jar.file" value="ssf-wsclient.jar"/>
 	<property name="client.url" value="http://localhost:8080/ssr/ws" />
-
-	<!-- This overrides the imported definition -->
-	<!--<path id="project.classpath">
-		<pathelement path="${classes.dir};${project.dir}/util/classes;${project.dir}/main/classes;${project.dir}/tools/classes" />
-		<pathelement location="${project.dir}/lib/activation.jar" />
-		<pathelement location="${project.dir}/lib/mail.jar" />
-		<pathelement location="${project.dir}/lib/saaj.jar" />
-		<pathelement location="${project.dir}/lib/wsdl4j.jar" />
-		<pathelement location="${project.dir}/lib/wss4j.jar" />
-		<pathelement location="${project.dir}/lib/bcprov-jdk15.jar" />
-		<pathelement location="${project.dir}/lib/jaxrpc.jar" />
-		<pathelement location="${project.dir}/lib/commons-logging.jar" />
-		<pathelement location="${project.dir}/lib/commons-codec.jar" />
-		<pathelement location="${project.dir}/lib/commons-discovery.jar" />
-		<pathelement location="${project.dir}/lib/axis.jar" />
-		<pathelement location="${project.dir}/lib/opensaml.jar" />
-		<pathelement location="${project.dir}/lib/xalan.jar" />
-		<pathelement location="${project.dir}/lib/xmlsec.jar" />
-	
-		<pathelement location="${project.dir}/lib/dom4j.jar" />
-		<pathelement location="${project.dir}/lib/axis-ant.jar" />
-		<pathelement location="${project.dir}/lib/commons-httpclient.jar" />
-		<pathelement location="${project.dir}/lib/addressing.jar" />
-	</path>-->
 	
 	<target name="clean">
 		<delete dir="${classes.dir}" />
