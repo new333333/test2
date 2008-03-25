@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.samples.remoting.client.util;
+package com.sitescape.team.samples.wsclient.util;
 
 import java.io.File;
 import java.io.FileReader;
