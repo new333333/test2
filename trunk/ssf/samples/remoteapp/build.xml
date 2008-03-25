@@ -13,28 +13,19 @@
 	
 	<target name="war" depends="jar">
 		<copy file="${jar.file}" todir="war/WEB-INF/lib"/>
+		<!-- Copy Teaming WS client library -->
 		<copy file="${project.dir}/ws-client/ssf-wsclient.jar" todir="war/WEB-INF/lib"/>
+		<!-- Copy libraries needed by the Teaming WS client library -->
+		<copy todir="war/WEB-INF/lib">
+			<fileset dir="${project.dir}/lib"
+				includes="${libraries.wsclient}" />
+		</copy>
+		<!-- Copy additional libraries needed by the remote application sample -->
 		<copy todir="war/WEB-INF/lib">
 			<fileset dir="${project.dir}/lib">
-				<include name="activation.jar" />
-				<include name="mail.jar" />
-				<include name="dom4j.jar" />
-				<include name="axis.jar" />
-				<include name="axis-ant.jar" />
-				<include name="jaxrpc.jar" />
-				<include name="commons-httpclient.jar" />
-				<include name="commons-logging.jar" />
-				<include name="commons-discovery.jar" />
-				<include name="commons-codec.jar" />
-				<include name="saaj.jar" />
-				<include name="wsdl4j.jar" />
-				<include name="wss4j.jar" />
 				<include name="addressing.jar" />
-				<include name="bcprov-jdk15.jar" />
-				<include name="opensaml.jar" />
-				<include name="xalan.jar" />
-				<include name="xmlsec.jar" />
-				<include name="jaxen.jar" />
+				<include name="dom4j.jar" />
+				<include name="commons-httpclient.jar" />
 			</fileset>
 		</copy>
 		<war
