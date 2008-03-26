@@ -194,7 +194,7 @@ public class WSExport extends WSClientBase
 		
 		Object result = call.invoke(args);
 		
-		WebServiceClientUtil.extractFiles(call);
+		WebServiceClientUtil.extractFiles(call, attachmentFolder);
 		
 		return result;
 	}

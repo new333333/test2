@@ -102,24 +102,27 @@ public class WebServiceClientUtil {
 	 * @param stub
 	 * @throws SOAPException 
 	 */
-	public static int extractFiles(Stub stub) throws SOAPException {
+	public static int extractFiles(Stub stub, File attachmentDir) throws SOAPException {
 		Object[] atts = stub.getAttachments();
+		int count = 0;
 		if(atts != null) {
 			DataHandler[] dhTab = new DataHandler[atts.length];
 			for(int i = 0; i < atts.length; i++) {
 				AttachmentPart ap = (AttachmentPart) atts[i];
 				dhTab[i] = ap.getDataHandler();
-				String s = ap.getMimeHeader("Content-Disposition")[0];
-				s = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
-				//System.out.println("Attachment:" + s);
-				File src = new File(dhTab[i].getName());
-				src.renameTo(new File(s));
+				if(ap.getMimeHeader("Content-Disposition") != null) {
+					if(attachmentDir != null)
+						attachmentDir.mkdirs();
+					String s = ap.getMimeHeader("Content-Disposition")[0];
+					s = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
+					//System.out.println("Attachment:" + s);
+					File src = new File(dhTab[i].getName());
+					src.renameTo((attachmentDir == null)? new File(s) : new File(attachmentDir, s));
+					count++;
+				}
 			}
-			return atts.length;
 		}
-		else {
-			return 0;
-		}
+		return count;
 	}
 	
 	/**
@@ -178,23 +181,32 @@ public class WebServiceClientUtil {
 	 * Extract attached file(s), if any, from the inbound message.
 	 * 
 	 * @param stub
+	 * @param attachmentDir directory into which to extract the attached files. 
+	 * if the directory doesn't exist, it will be created;
+	 * if <code>null</code> is passed, current directory is assumed.
 	 * @throws SOAPException 
 	 */
-	public static int extractFiles(Call call) throws SOAPException {
+	public static int extractFiles(Call call, File attachmentDir) throws SOAPException {
 		org.apache.axis.MessageContext messageContext = call.getMessageContext();
 		org.apache.axis.Message returnedMessage = messageContext.getResponseMessage();
 		Iterator iteAtta = returnedMessage.getAttachments();
 		DataHandler[] dhTab = new DataHandler[returnedMessage.countAttachments()];
+		int count = 0;
 		for (int i=0;iteAtta.hasNext();i++) {
 			AttachmentPart ap = (AttachmentPart) iteAtta.next();
 			dhTab[i] = ap.getDataHandler();
-			String s = ap.getMimeHeader("Content-Disposition")[0];
-			s = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
-			//System.out.println("Attachment:" + s);
-			File src = new File(dhTab[i].getName());
-			src.renameTo(new File(s));
+			if(ap.getMimeHeader("Content-Disposition") != null) {
+				if(attachmentDir != null)
+					attachmentDir.mkdirs();
+				String s = ap.getMimeHeader("Content-Disposition")[0];
+				s = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
+				//System.out.println("Attachment:" + s);
+				File src = new File(dhTab[i].getName());
+				src.renameTo((attachmentDir == null)? new File(s) : new File(attachmentDir, s));
+				count++;
+			}
 		}
-		return returnedMessage.countAttachments();
+		return count;
 	}
 
 }
