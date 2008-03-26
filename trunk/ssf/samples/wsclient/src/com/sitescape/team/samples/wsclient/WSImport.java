@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.samples.wsclient.axis;
+package com.sitescape.team.samples.wsclient;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -66,7 +66,6 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import com.sitescape.team.samples.wsclient.util.FacadeClientHelper;
 import com.sitescape.util.PasswordEncryptor;
 
 /*
@@ -102,7 +101,7 @@ import com.sitescape.util.PasswordEncryptor;
  *  resuming an import that gets interrupted.  You'll have to just delete the partially imported stuff
  *  and start again.
  */
-public class WSImport
+public class WSImport extends WSClientBase
 {
 	static final String PAD = "                                                                     ";
 	
@@ -111,17 +110,16 @@ public class WSImport
 	static Long WorkspaceConfigId = new Long(24);
 	static Long DiscussionFolderConfigId = new Long(5);
 	
-	static String host = "localhost";
 	static Long targetId = null;
 	public static void main(String[] args) {
-		if(args.length < 1 || args.length > 3) {
-			System.err.println("Usage: WSImport <host> <export folder> [<target binder id>]");
+		getSystemProperties();
+		if(args.length < 1 || args.length > 2) {
+			System.err.println("Usage: WSImport <export folder> [<target binder id>]");
 			return;
 		}
-		host = args[0];
-		File importRoot = new File(args[1]);
-		if(args.length == 3) {
-			targetId = Long.valueOf(args[2]);
+		File importRoot = new File(args[0]);
+		if(args.length == 2) {
+			targetId = Long.valueOf(args[1]);
 		} else {
 			try {
 				targetId = (Long) fetch("addFolder", new Object[] {GlobalWorkspacesId, WorkspaceConfigId, safeName("Imported data " + (new Date()).toString())}, null);
@@ -150,7 +148,7 @@ public class WSImport
 		Long myId = null;
 		File myAttributes = new File(root, "Attributes.xml");
 		if(myAttributes.exists()) {
-			String xml = FacadeClientHelper.readText(myAttributes);
+			String xml = ClientHelper.readText(myAttributes);
 			Document document = DocumentHelper.parseText(xml);
 			System.err.println(PAD.substring(0, depth) + "Processing " + document.getRootElement().attributeValue("id") + " - " + document.getRootElement().attributeValue("title"));
 			if(parentId == null) {
@@ -188,7 +186,7 @@ public class WSImport
 	static void createEntry(File entryFile, File parentFolder, Long parentId, int depth)
 	throws Exception
 	{
-		String xml = FacadeClientHelper.readText(entryFile);
+		String xml = ClientHelper.readText(entryFile);
 		Document document = DocumentHelper.parseText(xml);
 		Element root = document.getRootElement();
 		String definition = root.attributeValue("definitionId");

@@ -40,3 +40,5 @@ http://<hostname>:8080/ssf/images/icons/workspace.gif
 6. You can retrieve WSDL from http://<hostname>:8080/ssf/ws/Facade?wsdl
 Please note that not all operations described in the WSDL are currently 
 operable though (work in progress).
+
+To use WS-Security, change -Dauthmethod=basic to -Dauthmethod=wss
