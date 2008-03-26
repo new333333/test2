@@ -26,13 +26,12 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.samples.wsclient.util;
+package com.sitescape.team.samples.wsclient;
 
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Date;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -41,7 +40,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-public class FacadeClientHelper {
+public class ClientHelper {
 
 	public static void printXML(String xml) {
 		System.out.println();
@@ -55,35 +54,6 @@ public class FacadeClientHelper {
 		System.out.println();
 	}
 	
-	public static String generateEntryInputDataAsXML(long binderId, String definitionId) {
-		StringBuffer sb = new StringBuffer("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-		sb.append("<data>")
-			.append("<property name=\"title\">WS test ")
-			.append(new Date().getTime())
-			.append("</property>")
-			.append("<property name=\"description\">Added through Web Service</property>")
-			.append("<property name=\"birthDate_date\">21</property>")
-			.append("<property name=\"birthDate_month\">05</property>")
-			.append("<property name=\"birthDate_year\">1992</property>")
-			.append("<property name=\"birthDate_timezoneid\">GMT</property>")
-			.append("<property name=\"colors\">white</property>")
-			.append("<property name=\"colors\">blue</property>")
-			.append("</data>");
-
-		return sb.toString();
-	}
-	
-	private static void prettyPrintXML(Document doc) {
-		OutputFormat format = OutputFormat.createPrettyPrint();
-		try {
-			XMLWriter writer = new XMLWriter(System.out, format);
-			writer.write(doc);
-		}
-		catch(IOException e) {
-			System.out.println(e);
-		}
-	}
-
 	public static String readText(File file)
 	{
 		FileReader reader = null;
@@ -128,7 +98,19 @@ public class FacadeClientHelper {
 		return buf.toString();
 	}
 
+	private static void prettyPrintXML(Document doc) {
+		OutputFormat format = OutputFormat.createPrettyPrint();
+		try {
+			XMLWriter writer = new XMLWriter(System.out, format);
+			writer.write(doc);
+		}
+		catch(IOException e) {
+			System.out.println(e);
+		}
+	}
+	
 	public static void main(String args[]) {
+		// just for testing
 		try {
 //		 turn validation on
 			SAXReader reader = new SAXReader(true);

@@ -26,47 +26,25 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.samples.wsclient.axis;
+package com.sitescape.team.samples.wsclient;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedList;
 
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
 import javax.xml.namespace.QName;
 
-import org.apache.axis.AxisEngine;
 import org.apache.axis.EngineConfiguration;
-import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Service;
-import org.apache.axis.configuration.FileProvider;
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSPasswordCallback;
-import org.apache.ws.security.handler.WSHandlerConstants;
-import org.apache.ws.security.message.token.UsernameToken;
-
-import org.dom4j.Attribute;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
 import org.dom4j.io.XMLWriter;
 
-import com.sitescape.team.samples.wsclient.util.FacadeClientHelper;
-import com.sitescape.util.PasswordEncryptor;
+import com.sitescape.team.client.ws.WebServiceClientUtil;
 
 /*
  * Exports the workspace tree, including all entries and their attachments, into a tree of Windows folders.
@@ -82,23 +60,22 @@ import com.sitescape.util.PasswordEncryptor;
  * A new folder is created based on the given hostname and id of the folder being exported.  You can give
  *  a binder ID on the command line - the default is '1', which will export the entire tree.
  */
-public class WSExport
+public class WSExport extends WSClientBase
 {
-	static String host = "localhost";
 	public static void main(String[] args) {
-		if(args.length < 1 || args.length > 2) {
-			System.err.println("Usage: WSExport <host> [<root binder id>]");
+		getSystemProperties();
+		if(args.length > 1) {
+			System.err.println("Usage: WSExport [<root binder id>]");
 			return;
 		}
-		host = args[0];
-		Long rootBinderId = new Long(1);
-		if(args.length == 2) {
-			rootBinderId = Long.valueOf(args[1]);
+		Long rootBinderId = new Long(0);
+		if(args.length == 1) {
+			rootBinderId = Long.valueOf(args[0]);
 		}
 		try {
 			File exportRoot = new File(safeName("export-" + rootBinderId + "-" + host));
 			exportRoot.mkdir();
-			String xml = (String) fetch("getWorkspaceTreeAsXML", new Object[] {rootBinderId, new Integer(-1), ""}, exportRoot);
+			String xml = (String) fetch("SearchService", "getWorkspaceTreeAsXML", new Object[] {rootBinderId, new Integer(-1), ""}, exportRoot);
 			Document document = DocumentHelper.parseText(xml);
 			createWorkspaceTree(document.getRootElement(), exportRoot);
 		}
@@ -158,7 +135,7 @@ public class WSExport
 	throws Exception
 	{
 		Long id = Long.parseLong(root.attributeValue("id"));
-		String xml = (String) fetch("getFolderEntriesAsXML", new Object[] { id }, parent);
+		String xml = (String) fetch("FolderService", "getFolderEntriesAsXML", new Object[] { id }, parent);
 		Document document = DocumentHelper.parseText(xml);
 		for ( Iterator i = document.getRootElement().elementIterator(); i.hasNext(); ) {
 			Element element = (Element) i.next();
@@ -171,7 +148,7 @@ public class WSExport
 	{
 		Long id = Long.parseLong(root.attributeValue("id"));
 		File attachments = new File(parent, "Attach-" + safeName(root));
-		String xml = (String) fetch("getFolderEntryAsXML", new Object[] { folderId, id, Boolean.TRUE }, attachments);
+		String xml = (String) fetch("FolderService", "getFolderEntryAsXML", new Object[] { folderId, id, Boolean.TRUE }, attachments);
 		try {
 			File entryFile = new File(parent, safeName(root) + ".xml");
 			entryFile.createNewFile();
@@ -200,47 +177,25 @@ public class WSExport
 		return id + "-" + title;
 	}
 
-	static Object fetch(String operation, Object[] args, File attachmentFolder) throws Exception {
-		// Replace the hostname in the endpoint appropriately.
-		String endpoint = "http://"+host+"/ssf/ws/Facade";
+	static Object fetch(String serviceName, String operation, Object[] args, File attachmentFolder) throws Exception {
+		EngineConfiguration config = getEngineConfiguration();
 
-		// Make sure that the client_deploy.wsdd file is accessible to the program.
-		EngineConfiguration config = new FileProvider("client_deploy.wsdd");
-
-		Service service = new Service(config);
+		Service service = (config == null)? new Service() : new Service(config); 
 
 		Call call = (Call) service.createCall();
 		
-		call.setTargetEndpointAddress(new URL(endpoint));
+		String endpointAddr = getEndpointAddress(serviceName);
+		
+		call.setTargetEndpointAddress(new URL(endpointAddr));
 
-		// We are going to invoke the remote operation to fetch the workspace
-		//  or folder to print.
 		call.setOperationName(new QName(operation));
 
-		// Programmatically set the username. Alternatively you can specify
-		// the username in the WS deployment descriptor client_deploy.wsdd
-		// if the username is known at deployment time and does not change
-		// between calls, which is rarely the case in Aspen.
-		call.setProperty(WSHandlerConstants.USER, "admin");
+		setUserCredential(call);
 		
 		Object result = call.invoke(args);
 		
-		org.apache.axis.MessageContext messageContext = call.getMessageContext();
-		org.apache.axis.Message returnedMessage = messageContext.getResponseMessage();
-		Iterator iteAtta = returnedMessage.getAttachments();
-		DataHandler[] dhTab = new DataHandler[returnedMessage.countAttachments()];
-		for (int i=0;iteAtta.hasNext();i++) {
-			AttachmentPart ap = (AttachmentPart) iteAtta.next();
-			dhTab[i] = ap.getDataHandler();
-			if(ap.getMimeHeader("Content-Disposition") != null) {
-				attachmentFolder.mkdirs();
-				String s = ap.getMimeHeader("Content-Disposition")[0];
-				s = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
-				System.out.println("Attachment:" + s);
-				File src = new File(dhTab[i].getName());
-				src.renameTo(new File(attachmentFolder, s));
-			}
-		}
+		WebServiceClientUtil.extractFiles(call);
+		
 		return result;
 	}
 }

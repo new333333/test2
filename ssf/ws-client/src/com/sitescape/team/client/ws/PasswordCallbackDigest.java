@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.samples.wsclient.security;
+package com.sitescape.team.client.ws;
 
 import java.io.IOException;
 
@@ -36,30 +36,55 @@ import javax.security.auth.callback.UnsupportedCallbackException;
 
 import org.apache.ws.security.WSPasswordCallback;
 
-/** 
+import com.sitescape.util.PasswordEncryptor;
+
+/**
  * This class implements standard <code>CallbackHandler</code> interface
  * to allow security system (WS client-side runtime in this case) to interact 
  * with the application to retrieve specific authentication data. 
  * The class is implemented using Apache WSS4J library.
  * 
- * This implementation passes cleartext password to WS-Security framework.
+ * This implementation passes Teaming-encrypted password to WS-Security framework.
  * 
  * @author jong
  *
  */
-public class PWCallbackText implements CallbackHandler {
+public class PasswordCallbackDigest implements CallbackHandler {
 
+	private String password; // clear text password
+	
+	public PasswordCallbackDigest(String password) {
+		this.password = password;
+	}
+	
 	public void handle(Callback[] callbacks) throws IOException, UnsupportedCallbackException {
-
-		//System.out.println("*** Client-side PWCallbackText is called");
-
         for (int i = 0; i < callbacks.length; i++) {
             if (callbacks[i] instanceof WSPasswordCallback) {
                 WSPasswordCallback pc = (WSPasswordCallback)callbacks[i];
-                String id = pc.getIdentifer();
-                	String clearPassword = "test";
-                	//System.out.println("Client: Cleartext password is [" + clearPassword + "]");
-        			pc.setPassword(clearPassword);
+                String id = pc.getIdentifer(); // this is username, which we don't use here
+                if (password != null) {
+                	// Encrypt the clear-text password using the supplied class.
+                	// This is the same class used by the product to encrypt user password
+                	// before storing it in the user database. 
+                	// This encryption has nothing to do with the internal digest performed 
+                	// later by the WS-Security framework. With Teaming, all passwords are 
+                	// stored in encrypted form in the database using secure one-way
+                	// hash function, which can not be decrypted back into the original
+                	// password in plain text. Consequently, WS client must provide a 
+                	// password in exactly the same encrypted form, so that the server
+                	// can compare the credential against the user record in the system.
+                	// For non-Java based WS client that wishes to use WS-Security 
+                	// authentication with digest password, the exact same algorighm in
+                	// the supplied class must be translated in the platform's language.
+                	// And at runtime the same encryption must be applied to the password
+                	// before handing it over to the WS-Security for digest computation.
+                	String encryptedPassword = PasswordEncryptor.encrypt(password);
+                	//System.out.println(encryptedPassword);
+                	pc.setPassword(encryptedPassword);
+                }
+                else {
+                	throw new RuntimeException("Password must be specified");
+                }
             } else {
                 throw new UnsupportedCallbackException(callbacks[i], "Unrecognized Callback");
             }

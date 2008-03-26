@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.samples.wsclient.axis;
+package com.sitescape.team.samples.wsclient;
 
 import java.io.File;
 import java.io.FileReader;
@@ -54,7 +54,6 @@ import org.apache.ws.security.WSPasswordCallback;
 import org.apache.ws.security.handler.WSHandlerConstants;
 import org.apache.ws.security.message.token.UsernameToken;
 
-import com.sitescape.team.samples.wsclient.util.FacadeClientHelper;
 import com.sitescape.util.PasswordEncryptor;
 
 public class WSLoadTest

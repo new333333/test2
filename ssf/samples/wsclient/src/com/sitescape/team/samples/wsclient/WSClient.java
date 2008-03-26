@@ -26,7 +26,7 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.samples.wsclient.axis;
+package com.sitescape.team.samples.wsclient;
 
 import java.io.File;
 import java.io.FileReader;
@@ -52,7 +52,6 @@ import org.apache.ws.security.handler.WSHandlerConstants;
 import org.apache.ws.security.message.token.UsernameToken;
 
 import com.sitescape.team.client.ws.search.SearchService;
-import com.sitescape.team.samples.wsclient.util.FacadeClientHelper;
 import com.sitescape.util.PasswordEncryptor;
 
 /**
@@ -110,7 +109,7 @@ public class WSClient
 			} else if(args[0].equals("printDefinitionConfig")) {
 				fetchAndPrintXML("getDefinitionConfigAsXML", new Object[0]);
 			} else if(args[0].equals("addEntry")) {
-				String s = FacadeClientHelper.readText(args[3]);
+				String s = ClientHelper.readText(args[3]);
 				System.out.println("XML: " + s);
 				String filename = null;
 				if(args.length > 4) {
@@ -118,13 +117,13 @@ public class WSClient
 				}
 				fetchAndPrintIdentifier("addFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s, filename}, filename);
 			} else if(args[0].equals("modifyEntry")) {
-				String s = FacadeClientHelper.readText(args[3]);
+				String s = ClientHelper.readText(args[3]);
 				System.out.println("XML: " + s);
 				justDoIt("modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});
 			} else if(args[0].equals("uploadFile")) {
 				justDoIt("uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);
 			} else if(args[0].equals("uploadCalendar")) {
-				String s = FacadeClientHelper.readText(args[2]);
+				String s = ClientHelper.readText(args[2]);
 				System.out.println("XML: " + s);
 				String attachFile = null;
 				if(args.length > 3) {
@@ -132,7 +131,7 @@ public class WSClient
 				}
 				justDoIt("uploadCalendarEntries", new Object[] {Long.parseLong(args[1]), s}, attachFile);
 			} else if(args[0].equals("search")) {
-				String s = FacadeClientHelper.readText(args[1]);
+				String s = ClientHelper.readText(args[1]);
 				System.out.println("XML: " + s);
 				fetchAndPrintXML("search", new Object[] {s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("addUserToGroup")) {
@@ -156,7 +155,7 @@ public class WSClient
 				if(args.length > 2) {
 					binderId = Long.valueOf(args[2]); 
 				}
-				FacadeClientHelper.printXML(searchService.getHotContent(null, args[1], binderId));
+				ClientHelper.printXML(searchService.getHotContent(null, args[1], binderId));
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -226,7 +225,7 @@ public class WSClient
 	static void fetchAndPrintXML(String operation, Object[] args) throws Exception {
 		String wsTreeAsXML = (String) fetch(operation, args);
 
-		FacadeClientHelper.printXML(wsTreeAsXML);
+		ClientHelper.printXML(wsTreeAsXML);
 	}
 
 	static void justDoIt(String operation, Object[] args) throws Exception {
