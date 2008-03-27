@@ -53,7 +53,11 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 		}
 	}
 
-   public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) {
+	public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) {
+		throw new UnsupportedOperationException("Workflow is not supported in the base edition");
+	}
+	
+	public void addEntryWorkflow(Long folderId, Long entryId, String definitionId, String startState) {
 		throw new UnsupportedOperationException("Workflow is not supported in the base edition");
     }
    //inside write transaction

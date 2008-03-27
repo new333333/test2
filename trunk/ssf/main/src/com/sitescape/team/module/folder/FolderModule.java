@@ -95,14 +95,25 @@ public interface FolderModule {
      public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException;
-    /**
-     * Start a workflow on a <code>FolderEntry</code>
+     /**
+      * Start a workflow on a <code>FolderEntry</code>
+      * @param folderId
+      * @param entryId
+      * @param definitionId
+      * @throws AccessControlException
+      */
+     public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) 
+     	throws AccessControlException;
+     /**
+     * Start a workflow on a <code>FolderEntry</code> and put it in a state.  Used when entries are being
+     * added to the system from another source.
      * @param folderId
      * @param entryId
      * @param definitionId
+     * @param startState
      * @throws AccessControlException
      */
-    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) 
+    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId, String startState) 
     	throws AccessControlException;
     /**
      * Add a reply to the specified <code>FolderEntry</code>

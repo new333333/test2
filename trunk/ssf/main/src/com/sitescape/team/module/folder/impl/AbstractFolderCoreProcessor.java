@@ -346,8 +346,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
     //***********************************************************************************************************
     //inside write transaction
-    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition) {
-    	super.addEntryWorkflow(binder, entry, definition);
+    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, String startState) {
+    	super.addEntryWorkflow(binder, entry, definition, startState);
     	
     	//reindex top whose lastActivity has changed
     	if (!entry.isTop()) {

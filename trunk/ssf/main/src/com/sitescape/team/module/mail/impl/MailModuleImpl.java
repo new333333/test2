@@ -120,6 +120,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		defaultProps.put(MailModule.Property.POSTING_JOB.getKey(), "com.sitescape.team.jobs.DefaultEmailPosting");
 		defaultProps.put(MailModule.Property.NOTIFICATION_JOB.getKey(), "com.sitescape.team.jobs.DefaultEmailNotification");
 	 	defaultProps.put(MailModule.Property.SUBSCRIPTION_JOB.getKey(), "com.sitescape.team.jobs.DefaultFillEmailSubscription");
+	 	defaultProps.put(MailModule.Property.SENDMAIL_JOB.getKey(), "com.sitescape.team.jobs.DefaultSendEmail");
 		defaultProps.put(MailModule.Property.NOTIFY_TEMPLATE_TEXT.getKey(), "mailText.xslt");
 		defaultProps.put(MailModule.Property.NOTIFY_TEMPLATE_HTML.getKey(), "mailHtml.xslt");
 		defaultProps.put(MailModule.Property.NOTIFY_TEMPLATE_CACHE_DISABLED.getKey(), "false");
@@ -224,7 +225,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     	} 
 	}
 	protected SendEmail getEmailJob(Workspace zone) {
-    	String jobClass = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.SUBSCRIPTION_JOB);
+    	String jobClass = getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.SENDMAIL_JOB);
     	try {
     		Class processorClass = ReflectHelper.classForName(jobClass);
     		SendEmail job = (SendEmail)processorClass.newInstance();

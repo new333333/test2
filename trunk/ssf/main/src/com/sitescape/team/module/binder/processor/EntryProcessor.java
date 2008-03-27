@@ -38,8 +38,6 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.module.file.FilesErrors;
-
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
@@ -56,7 +54,7 @@ public interface EntryProcessor extends BinderProcessor {
     
     public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options)
     	throws WriteFilesException;
-    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition);  
+    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, String startState);  
     public Entry copyEntry(Binder binder, Entry entry, Binder destination, Map options);
     public void copyEntries(Binder source, Binder binder, Map options);
     public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource, Map options);
