@@ -30,43 +30,11 @@ package com.sitescape.team.samples.wsclient;
 
 import java.io.File;
 import java.io.FilenameFilter;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Date;
-import java.util.Iterator;
-import java.util.LinkedList;
 
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.xml.namespace.QName;
-
-import org.apache.axis.AxisEngine;
-import org.apache.axis.EngineConfiguration;
-import org.apache.axis.attachments.AttachmentPart;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.axis.configuration.FileProvider;
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSPasswordCallback;
-import org.apache.ws.security.handler.WSHandlerConstants;
-import org.apache.ws.security.message.token.UsernameToken;
-
-import org.dom4j.Attribute;
 import org.dom4j.Document;
-import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.OutputFormat;
-import org.dom4j.io.SAXReader;
-import org.dom4j.io.XMLWriter;
-
-import com.sitescape.util.PasswordEncryptor;
 
 /*
  * Import workspaces, folders, entries and attachments exported by WsExport.  Each binder is a Windows
@@ -112,7 +80,8 @@ public class WSImport extends WSClientBase
 	
 	static Long targetId = null;
 	public static void main(String[] args) {
-		getSystemProperties();
+		WSImport wsImport = new WSImport();
+		
 		if(args.length < 1 || args.length > 2) {
 			System.err.println("Usage: WSImport <export folder> [<target binder id>]");
 			return;
@@ -122,7 +91,7 @@ public class WSImport extends WSClientBase
 			targetId = Long.valueOf(args[1]);
 		} else {
 			try {
-				targetId = (Long) fetch("addFolder", new Object[] {GlobalWorkspacesId, WorkspaceConfigId, safeName("Imported data " + (new Date()).toString())}, null);
+				targetId = (Long) wsImport.fetch("TemplateService", "addBinder", new Object[] {GlobalWorkspacesId, WorkspaceConfigId, safeName("Imported data " + (new Date()).toString())}, null, null);
 			} catch(Exception e) {
 				System.err.println("Could not create new import folder.");
 				e.printStackTrace();
@@ -130,7 +99,7 @@ public class WSImport extends WSClientBase
 			}
 		}
 		try {
-			createWorkspaceTree(importRoot, null, 0);
+			wsImport.createWorkspaceTree(importRoot, null, 0);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
@@ -142,7 +111,7 @@ public class WSImport extends WSClientBase
 		return name.replaceAll("[\\p{Punct}\\p{Space}]", "_");
 	}
 	
-	static void createWorkspaceTree(File root, Long parentId, int depth)
+	void createWorkspaceTree(File root, Long parentId, int depth)
 	throws Exception
 	{
 		Long myId = null;
@@ -162,7 +131,7 @@ public class WSImport extends WSClientBase
 					configId = DiscussionFolderConfigId;
 				}
 				String title = safeName(binder.attributeValue("title"));
-				myId = (Long) fetch("addFolder", new Object[] {parentId, configId, title}, null);
+				myId = (Long) fetch("TemplateService", "addBinder", new Object[] {parentId, configId, title}, null, null);
 			}
 		}
 		// Build tree recursively
@@ -183,7 +152,7 @@ public class WSImport extends WSClientBase
 		}
 	}
 
-	static void createEntry(File entryFile, File parentFolder, Long parentId, int depth)
+	void createEntry(File entryFile, File parentFolder, Long parentId, int depth)
 	throws Exception
 	{
 		String xml = ClientHelper.readText(entryFile);
@@ -191,56 +160,20 @@ public class WSImport extends WSClientBase
 		Element root = document.getRootElement();
 		String definition = root.attributeValue("definitionId");
 		System.err.println(PAD.substring(0, depth) + "Entry " + root.attributeValue("id") + " - " + root.attributeValue("title"));
-		Long myId = (Long) fetch("addFolderEntry", new Object[] {parentId, definition, xml}, null);
+		Long myId = (Long) fetch("FolderService", "addFolderEntry", new Object[] {parentId, definition, xml}, null, null);
 		File attachmentsFolder = new File(parentFolder, "Attach-"+entryFile.getName().substring(0, entryFile.getName().length()-4));
 		if(attachmentsFolder.exists() && attachmentsFolder.isDirectory()) {
 			createEntryAttachments(attachmentsFolder, myId, parentId, depth + 1);
 		}
 	}
 	
-	static void createEntryAttachments(File attachmentsFolder, Long entryId, Long folderId, int depth)
+	void createEntryAttachments(File attachmentsFolder, Long entryId, Long folderId, int depth)
 	throws Exception
 	{
 		File[] attachments = attachmentsFolder.listFiles();
 		for(File f : attachments) {
 			System.out.println(PAD.substring(0, depth) + "Attachment: " + f.getName());
-			fetch("uploadFolderFile", new Object[] {folderId, entryId, "ss_attachFile1", f.getName()}, f);
+			fetch("FolderService", "uploadFolderFile", new Object[] {folderId, entryId, "ss_attachFile1", f.getName()}, f, null);
 		}
-	}
-
-	static Object fetch(String operation, Object[] args, File attachment) throws Exception {
-		// Replace the hostname in the endpoint appropriately.
-		String endpoint = "http://"+host+"/ssf/ws/Facade";
-
-		// Make sure that the client_deploy.wsdd file is accessible to the program.
-		EngineConfiguration config = new FileProvider("client_deploy.wsdd");
-
-		Service service = new Service(config);
-
-		Call call = (Call) service.createCall();
-		
-		call.setTargetEndpointAddress(new URL(endpoint));
-
-		// We are going to invoke the remote operation to fetch the workspace
-		//  or folder to print.
-		call.setOperationName(new QName(operation));
-
-		// Programmatically set the username. Alternatively you can specify
-		// the username in the WS deployment descriptor client_deploy.wsdd
-		// if the username is known at deployment time and does not change
-		// between calls, which is rarely the case in Aspen.
-		call.setProperty(WSHandlerConstants.USER, "admin");
-		
-		if(attachment != null) {
-			DataHandler dhSource = new DataHandler(new FileDataSource(attachment));
-		
-			call.addAttachmentPart(dhSource); //Add the file.
-        
-			call.setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
-		}
-
-		Object result = call.invoke(args);
-		
-		return result;
 	}
 }

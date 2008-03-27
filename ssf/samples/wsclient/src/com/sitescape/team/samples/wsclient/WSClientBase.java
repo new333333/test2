@@ -28,21 +28,27 @@
  */
 package com.sitescape.team.samples.wsclient;
 
+import java.io.File;
+import java.net.URL;
+
+import javax.xml.namespace.QName;
+
 import org.apache.axis.EngineConfiguration;
 import org.apache.axis.client.Call;
+import org.apache.axis.client.Service;
 import org.apache.axis.configuration.FileProvider;
 
 import com.sitescape.team.client.ws.WebServiceClientUtil;
 
 public abstract class WSClientBase {
 
-	protected static String host; // optional - default to localhost
-	protected static String port; // optional - default to 8080
-	protected static String username; // required
-	protected static String password; // required
-	protected static boolean authBasic; // optional - default to basic (the other available value is wss)
+	protected String host; // optional - default to localhost
+	protected String port; // optional - default to 8080
+	protected String username; // required
+	protected String password; // required
+	protected boolean authBasic; // optional - default to basic (the other available value is wss)
 	
-	protected static void getSystemProperties() {
+	protected WSClientBase() {
 		host = System.getProperty("host", "localhost");
 		
 		port = System.getProperty("port", "8080");
@@ -64,7 +70,7 @@ public abstract class WSClientBase {
 			throw new IllegalArgumentException("Illegal authmethod value: " + authMethod);			
 	}
 	
-	protected static EngineConfiguration getEngineConfiguration() {
+	protected EngineConfiguration getEngineConfiguration() {
 		// If using basic auth, there is no custom engine configuration to use.
 		// If using WS-Security, the engine must be configured with appropriate handlers
 		// specified in the config file.
@@ -77,7 +83,7 @@ public abstract class WSClientBase {
 		}
 	}
 	
-	protected static String getEndpointAddress(String serviceName) {
+	protected String getEndpointAddress(String serviceName) {
 		// The endpoint is different depending on the authentication mechanism to be used.
 		StringBuilder sb = new StringBuilder("http://");
 		sb.append(host);
@@ -91,12 +97,51 @@ public abstract class WSClientBase {
 		return sb.toString();
 	}
 	
-	protected static void setUserCredential(Call call) {
+	protected void setUserCredential(Call call) {
 		if(authBasic) {
 			WebServiceClientUtil.setUserCredentialBasicAuth(call, username, password);
 		}
 		else {
 			WebServiceClientUtil.setUserCredentialWSSecurity(call, username, password, true);
 		}
+	}
+	
+	protected Object fetch(String serviceName, String operation, Object[] args, 
+			File inputAttachment, File outputAttachmentsDirectory) throws Exception {
+		Call call = prepareCall(serviceName, operation, args);
+		
+		attachInputFile(call, inputAttachment);
+		
+		Object result = call.invoke(args);
+		
+		extractOutputFiles(call, outputAttachmentsDirectory);
+		
+		return result;
+	}
+
+	protected Call prepareCall(String serviceName, String operation, Object[] args) throws Exception {
+		EngineConfiguration config = getEngineConfiguration();
+
+		Service service = (config == null)? new Service() : new Service(config); 
+
+		Call call = (Call) service.createCall();
+		
+		String endpointAddr = getEndpointAddress(serviceName);
+		
+		call.setTargetEndpointAddress(new URL(endpointAddr));
+
+		call.setOperationName(new QName(operation));
+
+		setUserCredential(call);
+		
+		return call;
+	}
+	
+	protected void attachInputFile(Call call, File inputAttachment) {
+		WebServiceClientUtil.attachFile(call, inputAttachment);
+	}
+
+	protected void extractOutputFiles(Call call, File outputAttachmentsDirectory) throws Exception {
+		WebServiceClientUtil.extractFiles(call, outputAttachmentsDirectory);
 	}
 }

@@ -111,7 +111,8 @@
 		
 		<ant dir="tools" target="compile" />
 		
-		<ant dir="samples" target="compile" />
+		<!-- Temporary 
+		<ant dir="samples" target="compile" />-->
 	</target>
 
 	<target name="jar">

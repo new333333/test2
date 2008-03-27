@@ -31,20 +31,12 @@ package com.sitescape.team.samples.wsclient;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Iterator;
 
-import javax.xml.namespace.QName;
-
-import org.apache.axis.EngineConfiguration;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.XMLWriter;
-
-import com.sitescape.team.client.ws.WebServiceClientUtil;
 
 /*
  * Exports the workspace tree, including all entries and their attachments, into a tree of Windows folders.
@@ -63,7 +55,8 @@ import com.sitescape.team.client.ws.WebServiceClientUtil;
 public class WSExport extends WSClientBase
 {
 	public static void main(String[] args) {
-		getSystemProperties();
+		WSExport wsExport = new WSExport();
+		
 		if(args.length > 1) {
 			System.err.println("Usage: WSExport [<root binder id>]");
 			return;
@@ -73,18 +66,18 @@ public class WSExport extends WSClientBase
 			rootBinderId = Long.valueOf(args[0]);
 		}
 		try {
-			File exportRoot = new File(safeName("export-" + rootBinderId + "-" + host));
+			File exportRoot = new File(safeName("export-" + rootBinderId + "-" + wsExport.host));
 			exportRoot.mkdir();
-			String xml = (String) fetch("SearchService", "getWorkspaceTreeAsXML", new Object[] {rootBinderId, new Integer(-1), ""}, exportRoot);
+			String xml = (String) wsExport.fetch("SearchService", "getWorkspaceTreeAsXML", new Object[] {rootBinderId, new Integer(-1), ""}, null, exportRoot);
 			Document document = DocumentHelper.parseText(xml);
-			createWorkspaceTree(document.getRootElement(), exportRoot);
+			wsExport.createWorkspaceTree(document.getRootElement(), exportRoot);
 		}
 		catch(Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-	static void createWorkspaceTree(Element root, File parent)
+	void createWorkspaceTree(Element root, File parent)
 	throws Exception
 	{
 		String type = root.attributeValue("type");
@@ -131,11 +124,11 @@ public class WSExport extends WSClientBase
 		}
 	}
 	
-	static void exportFolderEntries(Element root, File parent)
+	void exportFolderEntries(Element root, File parent)
 	throws Exception
 	{
 		Long id = Long.parseLong(root.attributeValue("id"));
-		String xml = (String) fetch("FolderService", "getFolderEntriesAsXML", new Object[] { id }, parent);
+		String xml = (String) fetch("FolderService", "getFolderEntriesAsXML", new Object[] { id }, null, parent);
 		Document document = DocumentHelper.parseText(xml);
 		for ( Iterator i = document.getRootElement().elementIterator(); i.hasNext(); ) {
 			Element element = (Element) i.next();
@@ -143,12 +136,12 @@ public class WSExport extends WSClientBase
 		}
 	}
 	
-	static void exportEntry(Element root, Long folderId, File parent)
+	void exportEntry(Element root, Long folderId, File parent)
 	throws Exception
 	{
 		Long id = Long.parseLong(root.attributeValue("id"));
 		File attachments = new File(parent, "Attach-" + safeName(root));
-		String xml = (String) fetch("FolderService", "getFolderEntryAsXML", new Object[] { folderId, id, Boolean.TRUE }, attachments);
+		String xml = (String) fetch("FolderService", "getFolderEntryAsXML", new Object[] { folderId, id, Boolean.TRUE }, null, attachments);
 		try {
 			File entryFile = new File(parent, safeName(root) + ".xml");
 			entryFile.createNewFile();
@@ -177,25 +170,4 @@ public class WSExport extends WSClientBase
 		return id + "-" + title;
 	}
 
-	static Object fetch(String serviceName, String operation, Object[] args, File attachmentFolder) throws Exception {
-		EngineConfiguration config = getEngineConfiguration();
-
-		Service service = (config == null)? new Service() : new Service(config); 
-
-		Call call = (Call) service.createCall();
-		
-		String endpointAddr = getEndpointAddress(serviceName);
-		
-		call.setTargetEndpointAddress(new URL(endpointAddr));
-
-		call.setOperationName(new QName(operation));
-
-		setUserCredential(call);
-		
-		Object result = call.invoke(args);
-		
-		WebServiceClientUtil.extractFiles(call, attachmentFolder);
-		
-		return result;
-	}
 }
