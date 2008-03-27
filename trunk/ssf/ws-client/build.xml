@@ -13,8 +13,22 @@
 		<delete file="${jar.file}" />
 	</target>
 	
-	<target name="compile">
-		<delete dir="${classes.dir}" failonerror="true"/>
+	<target name="compileGenerated">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}">
+			<src path="${generated.dir}" />
+		</javac>
+	</target>
+	
+	<target name="compileCombined">
 		<mkdir dir="${classes.dir}" />
 		<javac
 			classpathref="project.classpath"
@@ -30,7 +44,7 @@
 		</javac>
 	</target>
 	
-	<target name="jar" depends="compile">
+	<target name="jar" depends="compileCombined">
 		<delete file="${jar.file}"/>
 		<jar
 			jarfile="${jar.file}"
