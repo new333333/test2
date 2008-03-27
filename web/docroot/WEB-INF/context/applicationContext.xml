@@ -434,6 +434,7 @@
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="profileModule"><ref local="profileModule"/></property>
 		<property name="binderModule"><ref local="binderModule"/></property>
+		<property name="workflowModule"><ref bean="workflowModule"/></property>
 	</bean>
 	
 	
