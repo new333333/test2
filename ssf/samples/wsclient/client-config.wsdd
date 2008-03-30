@@ -3,6 +3,8 @@
  <transport name="http" pivot="java:org.apache.axis.transport.http.CommonsHTTPSender"/>
   <globalConfiguration >
    <requestFlow >
+    <!-- WSS4J Axis handler for WS-Security. This handler must not be used/specified 
+         if the application wishes to use HTTP Basic Authentication. -->
     <handler type="java:org.apache.ws.axis.security.WSDoAllSender" >
      <parameter name="action" value="UsernameToken"/>
      <!-- Our sample program sets username programmatically. 

@@ -29,30 +29,6 @@
 package com.sitescape.team.samples.wsclient;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Iterator;
-
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.xml.namespace.QName;
-
-import org.apache.axis.EngineConfiguration;
-import org.apache.axis.attachments.AttachmentPart;
-import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.axis.configuration.FileProvider;
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSPasswordCallback;
-import org.apache.ws.security.handler.WSHandlerConstants;
-import org.apache.ws.security.message.token.UsernameToken;
-
-import com.sitescape.team.client.ws.search.SearchService;
-import com.sitescape.util.PasswordEncryptor;
 
 /**
  * This WS client program uses JAX-RPC compliant client binding classes 
@@ -77,85 +53,85 @@ import com.sitescape.util.PasswordEncryptor;
  * @author jong
  *
  */
-public class WSClient
+public class WSClient extends WSClientBase
 {
-	static SearchService searchService = new SearchService();
-	
 	public static void main(String[] args) {
 		if(args.length == 0) {
 			printUsage();
 			return;
 		}
 
+		WSClient wsClient = new WSClient();
+		
 		try {
 			if(args[0].equals("printWorkspaceTree")) {
-				fetchAndPrintXML("getWorkspaceTreeAsXML", new Object[] {Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
+				wsClient.fetchAndPrintXML("SearchService", "getWorkspaceTreeAsXML", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
 			} else if(args[0].equals("printPrincipal")) {
-				fetchAndPrintXML("getPrincipalAsXML", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
+				wsClient.fetchAndPrintXML("ProfileService", "getPrincipalAsXML", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("printAllPrincipals")) {
-				fetchAndPrintXML("getAllPrincipalsAsXML", new Object[] {Integer.parseInt(args[1]), Integer.parseInt(args[2])});
+				wsClient.fetchAndPrintXML("ProfileService", "getAllPrincipalsAsXML", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("printFolderEntries")) {
-				fetchAndPrintXML("getFolderEntriesAsXML", new Object[] {Long.parseLong(args[1])});
+				wsClient.fetchAndPrintXML("FolderService", "getFolderEntriesAsXML", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("addFolder")) {
-				fetchAndPrintIdentifier("addFolder", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3]});
+				wsClient.fetchAndPrintIdentifier("TemplateService", "addBinder", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3]});
 			} else if(args[0].equals("printTeamMembers")) {
-				fetchAndPrintXML("getTeamMembersAsXML", new Object[] {Long.parseLong(args[1])});
+				wsClient.fetchAndPrintXML("SearchService", "getTeamMembersAsXML", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("printTeams")) {
-				fetchAndPrintXML("getTeamsAsXML", new Object[] {});
+				wsClient.fetchAndPrintXML("SearchService", "getTeamsAsXML", new Object[] {null});
 			} else if(args[0].equals("printFolderEntry")) {
-				fetchAndPrintXML("getFolderEntryAsXML", new Object[] {Long.parseLong(args[1]),Long.parseLong(args[2]), Boolean.parseBoolean(args[3])});			
+				wsClient.fetchAndPrintXML("FolderService", "getFolderEntryAsXML", new Object[] {null, Long.parseLong(args[1]),Long.parseLong(args[2]), Boolean.parseBoolean(args[3])});			
 			} else if(args[0].equals("printDefinition")) {
-				fetchAndPrintXML("getDefinitionAsXML", new Object[] {args[1]});
+				wsClient.fetchAndPrintXML("DefinitionService", "getDefinitionAsXML", new Object[] {null, args[1]});
 			} else if(args[0].equals("printDefinitionConfig")) {
-				fetchAndPrintXML("getDefinitionConfigAsXML", new Object[0]);
+				wsClient.fetchAndPrintXML("DefinitionService", "getDefinitionConfigAsXML", new Object[] {null});
 			} else if(args[0].equals("addEntry")) {
-				String s = ClientHelper.readText(args[3]);
+				String s = readText(args[3]);
 				System.out.println("XML: " + s);
 				String filename = null;
 				if(args.length > 4) {
 					filename = args[4];
 				}
-				fetchAndPrintIdentifier("addFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s, filename}, filename);
+				wsClient.fetchAndPrintIdentifier("FolderService", "addFolderEntry", new Object[] {null, Long.parseLong(args[1]), args[2], s, filename}, filename);
 			} else if(args[0].equals("modifyEntry")) {
-				String s = ClientHelper.readText(args[3]);
+				String s = readText(args[3]);
 				System.out.println("XML: " + s);
-				justDoIt("modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});
+				wsClient.justDoIt("FolderService", "modifyFolderEntry", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), s});
 			} else if(args[0].equals("uploadFile")) {
-				justDoIt("uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);
+				wsClient.justDoIt("FolderService", "uploadFolderFile", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);
 			} else if(args[0].equals("uploadCalendar")) {
-				String s = ClientHelper.readText(args[2]);
+				String s = readText(args[2]);
 				System.out.println("XML: " + s);
 				String attachFile = null;
 				if(args.length > 3) {
 					attachFile = args[3];
 				}
-				justDoIt("uploadCalendarEntries", new Object[] {Long.parseLong(args[1]), s}, attachFile);
+				wsClient.justDoIt("IcalService", "uploadCalendarEntries", new Object[] {null, Long.parseLong(args[1]), s}, attachFile);
 			} else if(args[0].equals("search")) {
-				String s = ClientHelper.readText(args[1]);
+				String s = readText(args[1]);
 				System.out.println("XML: " + s);
-				fetchAndPrintXML("search", new Object[] {s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
+				wsClient.fetchAndPrintXML("SearchService", "search", new Object[] {null, s, Integer.parseInt(args[2]), Integer.parseInt(args[3])});
 			} else if(args[0].equals("addUserToGroup")) {
-				justDoIt("addUserToGroup", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
-			} else if(args[0].equals("getBinderTitle")) {
-				fetchAndPrintString("getBinderTitle", new Object[] {Long.parseLong(args[1])});
+				wsClient.justDoIt("ProfileService", "addUserToGroup", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
+			} else if(args[0].equals("getFolderTitle")) {
+				wsClient.fetchAndPrintString("FolderService", "getFolderTitle", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("addZoneUnderPortal")) {
 				String mailDomain = null;
 				if(args.length > 3)
 					mailDomain = args[3];
-				justDoIt("addZoneUnderPortal", new Object[] {args[1], args[2], mailDomain});
+				wsClient.justDoIt("ZoneService", "addZoneUnderPortal", new Object[] {null, args[1], args[2], mailDomain});
 			} else if(args[0].equals("modifyZoneUnderPortal")) {
 				String mailDomain = null;
 				if(args.length > 3)
 					mailDomain = args[3];
-				justDoIt("modifyZoneUnderPortal", new Object[] {args[1], args[2], mailDomain});
+				wsClient.justDoIt("ZoneService", "modifyZoneUnderPortal", new Object[] {null, args[1], args[2], mailDomain});
 			} else if(args[0].equals("deleteZoneUnderPortal")) {
-				justDoIt("deleteZoneUnderPortal", new Object[] {args[1]});
+				wsClient.justDoIt("ZoneService", "deleteZoneUnderPortal", new Object[] {null, args[1]});
 			} else if(args[0].equals("getHotContent")) {
 				Long binderId = null;
 				if(args.length > 2) {
 					binderId = Long.valueOf(args[2]); 
 				}
-				ClientHelper.printXML(searchService.getHotContent(null, args[1], binderId));
+				wsClient.fetchAndPrintXML("SearchService", "getHotContent", new Object[] {null, args[1], binderId});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -167,104 +143,55 @@ public class WSClient
 		}
 	}
 	
-	static Object fetch(String operation, Object[] args) throws Exception {
-		return fetch(operation, args, null);
+	Object fetch(String serviceName, String operation, Object[] args) throws Exception {
+		return fetch(serviceName, operation, args, null);
+	}
+
+	void fetchAndPrintXML(String serviceName, String operation, Object[] args) throws Exception {
+		String wsTreeAsXML = (String) fetch(serviceName, operation, args);
+
+		printXML(wsTreeAsXML);
+	}
+
+	void justDoIt(String serviceName, String operation, Object[] args) throws Exception {
+		justDoIt(serviceName, operation, args, null);
 	}
 	
-	static Object fetch(String operation, Object[] args, String filename) throws Exception {
-		// Substitute appropriate host name and port number in the endpoint address.
-		String endpointAddress = "http://localhost:8080/ssf/ws/Facade";
-
-		// Make sure that the client_deploy.wsdd file is accessible to the program.
-		EngineConfiguration config = new FileProvider("client_deploy.wsdd");
-
-		Service service = new Service(config);
-
-		Call call = (Call) service.createCall();
-
-		call.setTargetEndpointAddress(new URL(endpointAddress));
-
-		// We are going to invoke the remote operation to fetch the workspace
-		//  or folder to print.
-		call.setOperationName(new QName(operation));
-
-		// Programmatically set the username. Alternatively you can specify
-		// the username in the WS deployment descriptor client_deploy.wsdd
-		// if the username is known at deployment time and does not change
-		// between calls, which is rarely the case in Aspen.
-		call.setProperty(WSHandlerConstants.USER, "admin");
-		
-		if(filename != null) {
-			DataHandler dhSource = new DataHandler(new FileDataSource(new File(filename)));
-		
-			call.addAttachmentPart(dhSource); //Add the file.
-        
-			call.setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
-		}
-		
-		Object result = call.invoke(args);
-		
-		org.apache.axis.MessageContext messageContext = call.getMessageContext();
-		org.apache.axis.Message returnedMessage = messageContext.getResponseMessage();
-		System.out.println("Number of attachments is -> " +
-			returnedMessage.countAttachments());
-		Iterator iteAtta = returnedMessage.getAttachments();
-		DataHandler[] dhTab = new DataHandler[returnedMessage.countAttachments()];
-		for (int i=0;iteAtta.hasNext();i++) {
-			AttachmentPart ap = (AttachmentPart) iteAtta.next();
-			dhTab[i] = ap.getDataHandler();
-			String s = ap.getMimeHeader("Content-Disposition")[0];
-			s = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
-			System.out.println("Attachment:" + s);
-			File src = new File(dhTab[i].getName());
-			src.renameTo(new File(s));
-		}
-		return result;
+	void justDoIt(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		fetch(serviceName, operation, args, filename);
 	}
 
-	static void fetchAndPrintXML(String operation, Object[] args) throws Exception {
-		String wsTreeAsXML = (String) fetch(operation, args);
-
-		ClientHelper.printXML(wsTreeAsXML);
-	}
-
-	static void justDoIt(String operation, Object[] args) throws Exception {
-		justDoIt(operation, args, null);
+	void fetchAndPrintIdentifier(String serviceName, String operation, Object[] args) throws Exception {
+		fetchAndPrintIdentifier(serviceName, operation, args, null);
 	}
 	
-	static void justDoIt(String operation, Object[] args, String filename) throws Exception {
-		fetch(operation, args, filename);
-	}
-
-
-	static void fetchAndPrintIdentifier(String operation, Object[] args) throws Exception {
-		fetchAndPrintIdentifier(operation, args, null);
-	}
-	
-	static void fetchAndPrintIdentifier(String operation, Object[] args, String filename) throws Exception {
-		Long ident = (Long) fetch(operation, args, filename);
+	void fetchAndPrintIdentifier(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		Long ident = (Long) fetch(serviceName, operation, args, filename);
 
 		System.out.println(ident);
 	}
 
-	static void fetchAndPrintString(String operation, Object[] args) throws Exception {
-		fetchAndPrintString(operation, args, null);
+	void fetchAndPrintString(String serviceName, String operation, Object[] args) throws Exception {
+		fetchAndPrintString(serviceName, operation, args, null);
 	}
 	
-	static void fetchAndPrintString(String operation, Object[] args, String filename) throws Exception {
-		String str = (String) fetch(operation, args, filename);
+	void fetchAndPrintString(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		String str = (String) fetch(serviceName, operation, args, filename);
 
 		System.out.println(str);
 	}
 
+	Object fetch(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		return invokeWithCall(serviceName, operation, args, ((filename != null)? new File(filename) : null), null);
+	}
+	
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println("printWorkspaceTree <workspace id> <depth> [<page>]");
 		System.out.println("printPrincipal <binder id> <principal id>");
 		System.out.println("printAllPrincipals <first> <max>");
-		System.out.println("addFolder <parent binder id> <binder config id> <title>");
 		System.out.println("printFolderEntries <folder id>");
-		System.out.println("search <xmlFilename> <offset> <maxResults>");
+		System.out.println("addFolder <parent binder id> <binder config id> <title>");
 		System.out.println("printTeamMembers <binder id>");
 		System.out.println("printTeams");
 		System.out.println("printFolderEntry <folder id> <entry id> <includeAttachments>");
@@ -274,13 +201,15 @@ public class WSClient
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
 		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
 		System.out.println("uploadCalendar <folder id> <xmlFilename> [<iCalFilename>]");
+		System.out.println("search <xmlFilename> <offset> <maxResults>");
 		System.out.println("addUserToGroup <user id> <group id>");
 		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
-		System.out.println("getBinderTitle <binder id>");
+		System.out.println("getFolderTitle <folder id>");
 		System.out.println("-- The following is to be used only with ICEcore Enterprise server with appropriate license --");
 		System.out.println("addZoneUnderPortal <zone name> <virtual host> [<mail domain>]");
 		System.out.println("modifyZoneUnderPortal <zone name> <virtual host> [<mail domain>]");
 		System.out.println("deleteZoneUnderPortal <zone name>");
+		System.out.println("getHotContent <limitType> <binder id>");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com
