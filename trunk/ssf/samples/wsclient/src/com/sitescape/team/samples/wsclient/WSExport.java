@@ -68,7 +68,7 @@ public class WSExport extends WSClientBase
 		try {
 			File exportRoot = new File(safeName("export-" + rootBinderId + "-" + wsExport.host));
 			exportRoot.mkdir();
-			String xml = (String) wsExport.fetch("SearchService", "getWorkspaceTreeAsXML", new Object[] {rootBinderId, new Integer(-1), ""}, null, exportRoot);
+			String xml = (String) wsExport.invokeWithCall("SearchService", "getWorkspaceTreeAsXML", new Object[] {null, rootBinderId, new Integer(-1), ""}, null, exportRoot);
 			Document document = DocumentHelper.parseText(xml);
 			wsExport.createWorkspaceTree(document.getRootElement(), exportRoot);
 		}
@@ -128,7 +128,7 @@ public class WSExport extends WSClientBase
 	throws Exception
 	{
 		Long id = Long.parseLong(root.attributeValue("id"));
-		String xml = (String) fetch("FolderService", "getFolderEntriesAsXML", new Object[] { id }, null, parent);
+		String xml = (String) invokeWithCall("FolderService", "getFolderEntriesAsXML", new Object[] {null, id }, null, parent);
 		Document document = DocumentHelper.parseText(xml);
 		for ( Iterator i = document.getRootElement().elementIterator(); i.hasNext(); ) {
 			Element element = (Element) i.next();
@@ -141,7 +141,7 @@ public class WSExport extends WSClientBase
 	{
 		Long id = Long.parseLong(root.attributeValue("id"));
 		File attachments = new File(parent, "Attach-" + safeName(root));
-		String xml = (String) fetch("FolderService", "getFolderEntryAsXML", new Object[] { folderId, id, Boolean.TRUE }, null, attachments);
+		String xml = (String) invokeWithCall("FolderService", "getFolderEntryAsXML", new Object[] { null, folderId, id, Boolean.TRUE }, null, attachments);
 		try {
 			File entryFile = new File(parent, safeName(root) + ".xml");
 			entryFile.createNewFile();

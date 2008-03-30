@@ -29,19 +29,8 @@
 	</target>
 	
 	<target name="compileCombined">
-		<mkdir dir="${classes.dir}" />
-		<javac
-			classpathref="project.classpath"
-			compiler="${javac.compiler}"
-			debug="${javac.debug}"
-			deprecation="${javac.deprecation}"
-			destdir="${classes.dir}"
-			fork="${javac.fork}"
-			memoryMaximumSize="${javac.memoryMaximumSize}"
-			nowarn="${javac.nowarn}">
-			<src path="${generated.dir}" />
-			<src path="${source.dir}" />
-		</javac>
+		<antcall target="compileGenerated"/>
+		<antcall target="compile"/>
 	</target>
 	
 	<target name="jar" depends="compileCombined">

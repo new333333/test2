@@ -59,9 +59,7 @@ public class NameSearchServlet extends HttpServlet {
 	private static final String GOOGLE_SEARCH_TEMPLATE = "http://www.google.com/search?hl=en&q=@@@&btnG=Google+Search";
 	
 	private static final String PROFILE_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/ProfileService";
-	private static final String PROFILE_SERVICE_PORT_NAME = "ProfileService";
 	private static final String FOLDER_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/FolderService";
-	private static final String FOLDER_SERVICE_PORT_NAME = "FolderService";
 	private static final Long PROFILE_BINDER_ID = Long.valueOf(2);
 	
 	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
@@ -100,7 +98,7 @@ public class NameSearchServlet extends HttpServlet {
 
 	private String getUserTitle(String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
 		ProfileServiceSoapServiceLocator locator = new ProfileServiceSoapServiceLocator();
-		locator.setEndpointAddress(PROFILE_SERVICE_PORT_NAME, PROFILE_SERVICE_ADDRESS);
+		locator.setProfileServiceEndpointAddress(PROFILE_SERVICE_ADDRESS);
 		ProfileServiceSoapBindingStub stub = (ProfileServiceSoapBindingStub) locator.getProfileService();
 		String principalAsXML = stub.getPrincipalAsXML(accessToken, PROFILE_BINDER_ID, userId);
 		
@@ -146,7 +144,7 @@ public class NameSearchServlet extends HttpServlet {
 		// Do not use this method for general purpose, since it uses hard-coded 
 		// binder ID and enry ID, etc. Useful only for one shot testing.
 		FolderServiceSoapServiceLocator locator = new FolderServiceSoapServiceLocator();
-		locator.setEndpointAddress(FOLDER_SERVICE_PORT_NAME, FOLDER_SERVICE_ADDRESS);
+		locator.setFolderServiceEndpointAddress(FOLDER_SERVICE_ADDRESS);
 		FolderServiceSoapBindingStub stub = (FolderServiceSoapBindingStub) locator.getFolderService();
 		DataHandler dhSource = new DataHandler(new FileDataSource(new File("C:/junk/junk1/chinese-application.doc")));
 		stub.addAttachment(dhSource);

@@ -29,32 +29,14 @@
 package com.sitescape.team.samples.wsclient;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 
-
 import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
-import javax.security.auth.callback.Callback;
-import javax.security.auth.callback.CallbackHandler;
-import javax.security.auth.callback.UnsupportedCallbackException;
-import javax.xml.namespace.QName;
 
-import org.apache.axis.EngineConfiguration;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
-import org.apache.axis.client.Service;
-import org.apache.axis.configuration.FileProvider;
-import org.apache.ws.security.WSConstants;
-import org.apache.ws.security.WSPasswordCallback;
-import org.apache.ws.security.handler.WSHandlerConstants;
-import org.apache.ws.security.message.token.UsernameToken;
-
-import com.sitescape.util.PasswordEncryptor;
 
 public class WSLoadTest extends WSClientBase
 {
@@ -67,6 +49,8 @@ public class WSLoadTest extends WSClientBase
 	static Date lastStatus = null;
 	
 	public static void main(String[] args) {
+		WSLoadTest wsLoadTest = new WSLoadTest();
+		
 		if(args.length < 3 || args.length > 4) {
 			System.err.println("Usage: WSLoadTest <count> <commaSeparatedFolderIdList> <definitionId> [<attachmentFilename>]");
 			System.err.println("           folder id's can be ranges, e.g. 3-15:4 is the same as 3,7,11,15");
@@ -100,7 +84,7 @@ public class WSLoadTest extends WSClientBase
 				product = product * counts[i];
 			}
 			System.out.println("Creating " + product + " entries, total.");
-			createFolders(counts, 0, parentFolder, "");
+			wsLoadTest.createFolders(counts, 0, parentFolder, "");
 		} else {
 			count = Integer.parseInt(args[0]);
 			if(args[1].contains(",")) {
@@ -131,18 +115,21 @@ public class WSLoadTest extends WSClientBase
 				}
 			}
 			folderIds = generatedIds.toArray(new Long[0]);
-			createEntries(count, folderIds, "");
+			wsLoadTest.createEntries(count, folderIds, "");
 		}
 
 		System.err.println("Total time: " + ((new Date()).getTime() - start.getTime()) + "ms");
 	}
 
-	static void createEntries(int count, Long[] folderIds, String prefix) {
+	void createEntries(int count, Long[] folderIds, String prefix) {
 		try {
 			for(int j = 0; j < folderIds.length; j++) {
 				for(int i = 0; i < count; i++) {
 					String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><entry>  <attribute name=\"title\" type=\"title\">Load Test Entry " + prefix + i + " " + start.toString()  + "</attribute><attribute name=\"description\" type=\"description\">" + loremIpsum + "</attribute></entry>";
-					Long entryId = (Long) fetch("addFolderEntry", new Object[] {folderIds[j], definitionId, s, filename}, filename);
+					Long entryId = (Long) invokeWithCall("FolderService", "addFolderEntry", 
+							new Object[] {null, folderIds[j], definitionId, s, filename},
+							((filename != null)? new File(filename) : null),
+							null);
 					completed++;
 					Date now = new Date();
 					if(now.getTime() - lastStatus.getTime() > 60000) {
@@ -156,14 +143,16 @@ public class WSLoadTest extends WSClientBase
 			e.printStackTrace();
 		}
 	}
-	static void createFolders(int[] folderCounts, int depth, Long parentFolder, String prefix)
+	void createFolders(int[] folderCounts, int depth, Long parentFolder, String prefix)
 	{
 		if(depth == folderCounts.length - 1) {
 			createEntries(folderCounts[depth], new Long[] {parentFolder}, prefix);
 		} else {
 			for(int i = 0; i < folderCounts[depth]; i++) {
 				try {
-					Long newFolder = (Long) fetch("addFolder", new Object[] {parentFolder, templateId, "Generated folder " + prefix + (i+1)  + safeName(start.toString())}, null);
+					Long newFolder = (Long) invokeWithCall("TemplateService", "addBinder", 
+							new Object[] {null, parentFolder, templateId, "Generated folder " + prefix + (i+1)  + safeName(start.toString())}, 
+							null, null);
 					createFolders(folderCounts, depth + 1, newFolder, prefix + (i+1) + "-");
 				} catch(Exception e) {
 					e.printStackTrace();
@@ -177,39 +166,12 @@ public class WSLoadTest extends WSClientBase
 		return name.replaceAll("[\\p{Punct}\\p{Space}]", "_");
 	}
 
-	static Object fetch(String operation, Object[] args, String filename) throws Exception {
-		// Replace the hostname in the endpoint appropriately.
-		String endpoint = "http://marilyn9200:8080/ssf/ws/Facade";
-
-		// Make sure that the client_deploy.wsdd file is accessible to the program.
-		EngineConfiguration config = new FileProvider("client_deploy.wsdd");
-
-		Service service = new Service(config);
-
-		Call call = (Call) service.createCall();
-
-		call.setTargetEndpointAddress(new URL(endpoint));
-
-		// We are going to invoke the remote operation to fetch the workspace
-		//  or folder to print.
-		call.setOperationName(new QName(operation));
-
-		// Programmatically set the username. Alternatively you can specify
-		// the username in the WS deployment descriptor client_deploy.wsdd
-		// if the username is known at deployment time and does not change
-		// between calls, which is rarely the case in Aspen.
-		call.setProperty(WSHandlerConstants.USER, "admin");
-		
-		if(filename != null) {
-			DataHandler dhSource = new DataHandler(new FileDataSource(new File(filename)));
-		
-			call.addAttachmentPart(dhSource); //Add the file.
-        
-			call.setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
-		}
-		
-		Object result = call.invoke(args);
-		
+	/*
+	 * (non-Javadoc)
+	 * @see com.sitescape.team.samples.wsclient.WSClientBase#extractOutputFiles(org.apache.axis.client.Call, java.io.File)
+	 */
+	@Override
+	protected void extractOutputFiles(Call call, File outputAttachmentsDirectory) throws Exception {
 		org.apache.axis.MessageContext messageContext = call.getMessageContext();
 		org.apache.axis.Message returnedMessage = messageContext.getResponseMessage();
 		Iterator iteAtta = returnedMessage.getAttachments();
@@ -219,10 +181,6 @@ public class WSLoadTest extends WSClientBase
 			dhTab[i] = ap.getDataHandler();
 			System.out.println("Filename=" + dhTab[i].getName());
 		}
-		return result;
 	}
 
-	static void justDoIt(String operation, Object[] args, String filename) throws Exception {
-		fetch(operation, args, filename);
-	}
 }

@@ -32,6 +32,7 @@ import java.io.File;
 import java.util.Iterator;
 
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.xml.soap.SOAPException;
 
@@ -88,7 +89,17 @@ public class WebServiceClientUtil {
 	 * @param file
 	 */
 	public static void attachFile(Stub stub, File file) {
-		DataHandler dhSource = new DataHandler(new FileDataSource(file));
+		attachSource(stub, new FileDataSource(file));
+	}
+	
+	/**
+	 * Attach a data source to the outbound message.
+	 * 
+	 * @param stub
+	 * @param source
+	 */
+	public static void attachSource(Stub stub, DataSource source) {
+		DataHandler dhSource = new DataHandler(source);
 		
 		stub.addAttachment(dhSource); // add the file
     
@@ -149,12 +160,12 @@ public class WebServiceClientUtil {
 	 */
 	public static void setUserCredentialWSSecurity(Call call, String username, String password, boolean passwordText) {
 		if(passwordText) {
-			call.setProperty(UsernameToken.PASSWORD_TYPE, WSConstants.PASSWORD_TEXT);
+			call.setProperty(UsernameToken.PASSWORD_TYPE, WSConstants.PW_TEXT);
 			call.setProperty(WSHandlerConstants.PW_CALLBACK_REF,
 					new PasswordCallbackText(password));
 		}
 		else {
-			call.setProperty(UsernameToken.PASSWORD_TYPE, WSConstants.PASSWORD_DIGEST);
+			call.setProperty(UsernameToken.PASSWORD_TYPE, WSConstants.PW_DIGEST);
 			call.setProperty(WSHandlerConstants.PW_CALLBACK_REF,
 					new PasswordCallbackDigest(password));
 		}
@@ -169,7 +180,17 @@ public class WebServiceClientUtil {
 	 * @param file
 	 */
 	public static void attachFile(Call call, File file) {
-		DataHandler dhSource = new DataHandler(new FileDataSource(file));
+		attachSource(call, new FileDataSource(file));
+	}
+	
+	/**
+	 * Attach a data source to the outbound message.
+	 * 
+	 * @param stub
+	 * @param source
+	 */
+	public static void attachSource(Call call, DataSource source) {
+		DataHandler dhSource = new DataHandler(source);
 		
 		call.addAttachmentPart(dhSource); // add the file
     
