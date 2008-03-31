@@ -32,5 +32,5 @@ import com.sitescape.team.remoting.ws.service.folder.FolderService;
 
 public interface ExtendedFolderService extends FolderService {
 
-	public String getFolderTitle(long folderId);
+	public String getFolderTitle(String accessToken, long folderId);
 }

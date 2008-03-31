@@ -32,7 +32,7 @@ import com.sitescape.team.remoting.ws.service.folder.FolderServiceEndpoint;
 
 public class ExtendedFolderServiceEndpoint extends FolderServiceEndpoint implements ExtendedFolderService {
 
-	public String getFolderTitle(long folderId) {
-		return ((ExtendedFolderService) getFolderService()).getFolderTitle(folderId); 
+	public String getFolderTitle(String accessToken, long folderId) {
+		return ((ExtendedFolderService) getFolderService()).getFolderTitle(accessToken, folderId); 
 	}
 }

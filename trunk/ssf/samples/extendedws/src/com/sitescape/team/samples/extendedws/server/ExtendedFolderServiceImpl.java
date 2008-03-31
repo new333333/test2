@@ -33,7 +33,7 @@ import com.sitescape.team.remoting.ws.service.folder.attachments.FolderServiceIm
 
 public class ExtendedFolderServiceImpl extends FolderServiceImpl implements ExtendedFolderService {
 
-	public String getFolderTitle(long folderId) {
+	public String getFolderTitle(String accessToken, long folderId) {
 		Binder binder =  getBinderModule().getBinder(folderId);
 		return binder.getTitle();
 	}
