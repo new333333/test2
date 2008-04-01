@@ -145,6 +145,7 @@ public interface CoreDao {
     public void updateTitle(Binder binder, DefinableEntity entity, String oldName, String newName);
     public void unRegisterFileName(Binder binder, String name);
     public void unRegisterTitle(Binder binder, String name);
+    public Long getEntityIdForMatchingTitle(Long binderId, String title); 
 
     public int daysSinceInstallation();
 }

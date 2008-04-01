@@ -678,6 +678,14 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		if (!(entity instanceof Binder)) le.setEntityId(entity.getId());
 		addNewName(le, entity);
     }
+    public Long getEntityIdForMatchingTitle(Long binderId, String title) {
+    	LibraryEntry le = new LibraryEntry(binderId, LibraryEntry.TITLE, title);
+		LibraryEntry exist = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, le);
+		if(exist != null)
+			return exist.getEntityId();
+		else
+			return null;
+    }
     protected void removeOldName(LibraryEntry oldLe, DefinableEntity entity) {
 		LibraryEntry le = (LibraryEntry)getHibernateTemplate().get(LibraryEntry.class, oldLe);
 		if (le != null) {
