@@ -45,6 +45,7 @@ import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
@@ -72,6 +73,7 @@ import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.LibraryPathUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.web.util.WebHelper;
 
 public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 
@@ -85,6 +87,7 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 
 	private AllModulesInjected bs;
 	private FileTypeMap mimeTypes;
+	private CoreDao coreDao;
 	
 	protected final Log logger = LogFactory.getLog(getClass());
 	
@@ -123,6 +126,13 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 	}
 	public void setMimeTypes(FileTypeMap mimeTypes) {
 		this.mimeTypes = mimeTypes;
+	}
+	protected CoreDao getCoreDao() {
+		return coreDao;
+	}
+
+	public void setCoreDao(CoreDao coreDao) {
+		this.coreDao = coreDao;
 	}
 
 	public void createResource(Map uri) throws NoAccessException, 
@@ -772,12 +782,37 @@ public class SiteScapeFileSystemLibrary implements SiteScapeFileSystem {
 				
 		String fileName = getLastElemName(objMap);		
 		
+		FolderEntry entry = null;
+		
 		if(isNew) {
-			createLibraryFolderEntry((Folder) parentBinder, fileName, content, null);
+			if(parentBinder.isUniqueTitles()) {
+				// The following code attempts to identify an already-existing entry
+				// whose title happens to be identical to the name (after normalization)
+				// of the file being added. This scenario can happen if a file with the 
+				// same name was previously created with an entry, and then the file was 
+				// subsequently removed from the entry. If that's the case, we must 
+				// identify the entry and store this file into it as opposed to creating
+				// a new entry. Because entry titles must be unique within the binder, 
+				// this is necessary.
+				try {
+					Long entryId = getCoreDao().getEntityIdForMatchingTitle(parentBinder.getId(), WebHelper.getNormalizedTitle(fileName));
+					if(entryId != null) {
+						entry = bs.getFolderModule().getEntry(parentBinder.getId(), entryId);
+					}
+				}
+				catch(Exception e) { // this shouldn't happen...
+					entry = null; // in any event don't give up yet
+				}
+			}
 		}
 		else {
-			modifyLibraryFolderEntry(getFolderEntry(objMap), fileName, content, null);
+			entry = getFolderEntry(objMap);
 		}
+		
+		if(entry == null)
+			createLibraryFolderEntry((Folder) parentBinder, fileName, content, null);
+		else
+			modifyLibraryFolderEntry(entry, fileName, content, null);
 	}
 	
 	/**
