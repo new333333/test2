@@ -85,7 +85,6 @@
 	<c:set var="count" value="${count + 1}"/>
 	</li>
 	</ul>
-	<hr class="rule_3">
 	</div><!-- end of viewed entries -->
 	
     </c:if>
@@ -149,7 +148,6 @@
 	<c:set var="count" value="${count + 1}"/>
 	</li>
 	</ul>
-	<hr class="rule_3">
 	</div><!-- end of viewed attachments -->
 	
 
