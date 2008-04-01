@@ -34,6 +34,7 @@ import java.util.Map;
 
 import javax.activation.FileTypeMap;
 
+import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.ssfs.AlreadyExistsException;
 import com.sitescape.team.ssfs.CrossContextConstants;
 import com.sitescape.team.ssfs.LockException;
@@ -59,6 +60,11 @@ implements SiteScapeFileSystem {
 		ssfsLib.setMimeTypes(mimeTypes);
 	}
 
+	public void setCoreDao(CoreDao coreDao) {
+		ssfsInt.setCoreDao(coreDao);
+		ssfsLib.setCoreDao(coreDao);		
+	}
+	
 	public void createResource(Map uri) throws NoAccessException, 
 	AlreadyExistsException, TypeMismatchException {
 		if(isInternal(uri))

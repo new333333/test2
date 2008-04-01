@@ -32,5 +32,13 @@ import com.sitescape.team.remoting.ws.service.folder.FolderService;
 
 public interface ExtendedFolderService extends FolderService {
 
+	/**
+	 * Returns the title of the folder.
+	 * 
+	 * @param accessToken access token; meaningful only for token-based access,
+	 * <code>null</code> for other cases
+	 * @param folderId folder id
+	 * @return
+	 */
 	public String getFolderTitle(String accessToken, long folderId);
 }
