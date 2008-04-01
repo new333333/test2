@@ -58,7 +58,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-family:  Arial, sans-serif;
 	font-size: 10px;
 	background-color: #8B9BBA;
-	font-color: white!important;
+	color: white!important;
 	display: block;
 	font-weight: bold;
 	letter-spacing: 0px;
@@ -82,15 +82,14 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-style: solid;
 	border-color: white;
 	border-width: .01em;
-	text-decoration:none;
 	padding:5px 15px 0px 15px;
 	height:16px;
 	}
 #ss_top_nav_buttontwo ul li a:hover{
-	font-color: #white;
+	font-color: #FFF;
 	background-color: #CCC;
 	border-style: solid;
-	border-color: #white;
+	border-color: #FFF;
 	border-width: .01em;
 	}	
 	
@@ -98,7 +97,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color:#333;
 	background-color: #B2CBE7;
 	border-style: solid;
-	border-color: #white;
+	border-color: #FFF;
 	border-width: .01em;
 	}
 #ss_top_nav_view{					/* "buttons" for portal and expanded view */
@@ -110,7 +109,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_top_nav_view a {
 	font-family:  Arial, sans-serif;
 	font-size: 10px;
-	text-decoration:underline;
 	letter-spacing: 0px;
 }
 #ss_top_nav_view ul{
@@ -132,7 +130,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 #ss_top_nav_view ul li a:hover{
 	color: #EF2121!important;
-
 	}	
 	
 #ss_top_nav_view ul li a.current{	
@@ -162,7 +159,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_top_nav_buttonthree ul li a{
 	display:block;
 	float:left;
-	color:#fff;
+	color:#FFFFFF;
 	text-decoration:none;
 	padding:6px 20px 0px 20px;
 	height:20px;
@@ -185,7 +182,7 @@ div.ss_canvas {
 	}
 #ss_wrap{
 	margin: auto;
-	background-color: #FFF;
+	background-color: #FFFFFF;
 	min-height:100%;
 	position:relative;		/* This fixes the IE7 overflow hidden bug */
 	clear:both;
@@ -212,13 +209,7 @@ div.ss_canvas {
 	width:100%;
 	margin-bottom:5%;
 	}
-.rule_3 {					/* This defines dotted line in entries recently visited */
-
-	border-color:#3D5FA3!important;
-	border-top-style:dotted;
-	border-top-width:1px;
-	width: 85%;
-	}		
+		
 /*  THE FOLLOWING DEFINES ALL THE IMAGES FOR THE BLUE BARS */
 	
 .ss_tasks_img {
@@ -266,7 +257,7 @@ div.ss_canvas {
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#444444;
-	background-color:#FFF;
+	background-color:#FFFFFF;
 	border:1px solid #B2CEE7;	
 	line-height:1.25em;
 	}
@@ -311,12 +302,10 @@ div.ss_canvas {
 	padding-bottom:3px;
 	border-bottom:1px dotted #666666;
 }
-#ss_trackedItems
-{
+#ss_trackedItems{
 	padding: 0;
 	margin: 1% 0 2% 0;
 	color:#444444;
-
 }
 #ss_trackedPeople{
 	padding: 0;
@@ -324,10 +313,8 @@ div.ss_canvas {
 	color:#444444;
 	background-color:#FFFFFF;
 	line-height: 1.6em;
-
 }
-#ss_hints
-{
+#ss_hints{
 	font-size: 11px;
 	font-style: italic;
 	padding-left:2px;
@@ -335,9 +322,7 @@ div.ss_canvas {
 	padding-bottom:5px;
 	color:#555555;
 }
-
-#ss_calendar
-{
+#ss_calendar{
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#444444;
@@ -345,90 +330,67 @@ div.ss_canvas {
 	padding: 0.5% 0 15px;
 	color: #666666;
 	line-height: 1.5em;
-	
-
 }
-#ss_visit_para 
-{
+#ss_visit_para {
 	line-height:1.25em;
 	padding-top:5px;
-
 }
-#ss_visit_para li
-{
+#ss_visit_para li{
 	list-style-type: square;
 	padding-top:3px;
 	padding-bottom:3px;
-	border-bottom:1px dotted #666666;
-
-}
-#ss_visit_para a					/* link style for active links */
-{
+	border-bottom:1px dotted #666666;}
+	
+		/* ACTIVE LINKS */
+#ss_visit_para a	{
 	text-decoration:underline;
 }
-
-#ss_visit_para a:hover					/* link style to hover links */
-{
+		/* HOVER LINKS */
+#ss_visit_para a:hover{
 	text-decoration:underline;
 	color:#E67814 !important;
-	background-color:#CCCCCC !important;
-}
+	background-color:#CCCCCC !important;}
 #ss_viewedItems {
-	line-height:1.4em;
-}
-
-#ss_viewedItems .ss_v_entries ul
-{
+	line-height:1.4em;}
+#ss_viewedItems .ss_v_entries ul{
 	list-style-type: none;
 	padding: 0;
 	margin-left: 4px;
-
 }
-#ss_viewedItems .ss_v_entries li
-{
+#ss_viewedItems .ss_v_entries li{
 	background-image: url("<html:rootPath/>images/pics/entry_icon.gif");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
 	padding-left: 30px;
 	padding-top: 3px;
 	padding-bottom: 3px;
-
+	border-bottom:1px dotted #666666;}
 }
-#ss_viewedItems .ss_v_attachments ul
-{
+#ss_viewedItems .ss_v_attachments ul{
 	list-style-type: none;
 	padding: 0;
 	margin-left: 4px;
-
 }
-#ss_viewedItems .ss_v_attachments li
-{
+#ss_viewedItems .ss_v_attachments li{
 	background-image: url("<html:rootPath/>images/pics/attachment_icon.gif");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
 	padding-left: 30px;
 	padding-top: 3px;
-	padding-bottom: 3px;
-
-}
-#ss_viewedItems a					/* link style for active links */
-{
+	padding-bottom: 3px;}
+	
+/* ACTIVE LINKS */	
+#ss_viewedItems a{
 	text-decoration:underline;
 }
-#ss_viewedItems a:hover					/* link style to hover links */
-{
+/* HOVER LINKS */
+#ss_viewedItems a:hover{
 	text-decoration:underline;
 	color:#E67814 !important;
-	background-color:#CCCCCC !important;
-}
-#ss_cal_para 
-{
-	padding-top:5px;
-	
-}
-#ss_cal_para li
-{
-
+	background-color:#CCCCCC !important;}
+#ss_cal_para{
+	padding-top:5px;}
+#ss_cal_para li{
 	list-style-type: square;
 	padding-top:3px;
 	padding-bottom:3px;
@@ -475,7 +437,7 @@ div.ss_canvas {
 {
 	padding: 0;
 	margin: 1% 0 5% 0;
-	background-color:#ffffff;
+	background-color:#FFFFFF;
 	padding: 0.5% 0 1% 5px;
 	color: #666666;
 	line-height: 1.5em;
@@ -512,71 +474,51 @@ div.ss_canvas {
 	background-color:#ffffff;
 
 }
-#ss_bookmarks
-{
+#ss_bookmarks{
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#444444;
-	border:1px solid #B2CEE7;
 	background-color:#ffffff;
-
 }
-#ss_whatsnew
-{
+#ss_whatsnew{
 	padding: 0;
 	margin: 2% 0 5% 0;
 	color:#333333;
-
 }
-#ss_personaltracker
-{
+#ss_personaltracker{
 	padding: 0%;
 	margin: 1% 0 5% 0;
 	color:#444444;
 	border:1px solid #B2CEE7;
 	background-color:#ffffff;
-
 }
-
-#ss_email
-{
+#ss_email{
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#333333;
-	font-style:  arial, sans serif;
-	font-color: #5799CB;
+	font-family:  Arial, sans serif;
+	color: #5799CB;
 	line-height: 1.5em;
-	
-
 }
-#ss_documents
-{
+#ss_documents{
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#333333;
-
 }
-
-#ss_title
-{
-	
+#ss_title{
 	margin: 0px 0px 2px 0px;
 	font-size: 14px;
 	font-weight: 400;
 	color: #333;
 }
-
-#ss_subtitle
-{
+#ss_subtitle{
 	padding: 0.5% 0px 1% 6px;
 	font-size:14px;
 	color:#555555;
-
 }
-#ss_para 
-{
+#ss_para {
 	margin-top: 1%;
-	padding: 0.5% 0 1% 5px;
+	padding: 0.5% 0 1% 15px;
 	border: 1px dotted #cccccc;
 	color: #666666;
 	line-height: 1.6em;
@@ -590,7 +532,7 @@ div.ss_canvas {
 {
 	text-decoration:underline!important;
 	color:#E67814 !important;
-	background-color:#CCCCCC!important;
+	background:#CCCCCC!important;
 }
 
 #ss_para ul
@@ -715,35 +657,31 @@ div.ss_canvas {
 
 	
 /* =========== LINK STYLES===================== */	
-.ss_link_1, .ss_link_1 span 	/* link_1 Link style for people links */ 
-	{ 
+	/* PEOPLE LINKS */
+.ss_link_1, .ss_link_1 span { 
+	text-decoration: underline;
 	color: #00AEEF!important;
-	text-decoration: underline !important;
-	font-style: bold !important;
 	text-background: #444444 !important; 
 	}
-
-	
-.ss_link_2, .ss_link_2 span		/* link_2 Link style for places links */	
-	{
+	/* PLACES LINKS*/	
+.ss_link_2, .ss_link_2 span	{
 	text-decoration: underline!important;
 	color:#4AAA42!important;
 	font-size:10px!important;
 	}
-.ss_link_3, .ss_link_3 span		/* link_3 Link style for entry links */	
-	{
+	/* ENTRY LINKS*/	
+.ss_link_3, .ss_link_3 span	{
 	text-decoration: underline!important;
 	color:#333333!important;
 	font-size:12px!important;
+	font-weight: bold !important;
 	}
-.ss_link_4, .ss_link_4 span		/* link_4 Link style for entry links */	
-	{
+.ss_link_4, .ss_link_4 span{
 	text-decoration: none!important;
 	color:#999999!important;
 	font-size:9px!important;
 	padding-left:6px;
-	}		
-	
+	}			
 /* ============ End link styles =========================== */		
 
 
@@ -801,14 +739,14 @@ div.ss_canvas {
       }
  #ss_tabsC a {
     float:left;
-    background:url("<html:rootPath/>images/pics/tableftC.gif") no-repeat left top;
+    background:url("<html:rootPath/>images/pics/tableft7.gif") no-repeat left top;
     margin:0;
     padding:0 0 0 4px;
       }
  #ss_tabsC a span {
     float:left;
     display:block;
-    background:url("<html:rootPath/>images/pics/tabrightC.gif") no-repeat right top;
+    background:url("<html:rootPath/>images/pics/tabright7.gif") no-repeat right top;
     padding:5px 15px 4px 6px;
     color:#464E42;
       }

@@ -293,13 +293,12 @@ div.ss_entryDescription.ss_entryContent table {
   }
 
 .ss_content_rule {
-	border-bottom: 1px solid ${ss_style_border_color_dark_hue};
+	border-bottom: 1px solid #CCC;
+	padding-bottom: 3px;
 }
 
 .ss_style_color {
-	border-left: solid 1px ${ss_style_border_color_dark_hue};
-	border-right: solid 1px ${ss_style_border_color_dark_hue};
-	border-bottom: solid 1px ${ss_style_border_color_dark_hue};
+	
 }
 .ss_form_color {
   color: ${ss_form_text_color};
@@ -1405,9 +1404,7 @@ table.ss_attachments_list td.ss_att_space {
   color: ${ss_style_footer_text_color};
   font: ${ss_style_footer_font};
   text-align:center;
-  margin-top: 0px;
-  margin-bottom: 0px;
-  padding-top:2px;
+  padding-top:15px;
   padding-bottom:2px;
   }
 .ss_footer_toolbar * {
@@ -1850,8 +1847,8 @@ div.ss_box_top_rounded {
 /* -------------------Skins-------------------- */
 div.ss_content_outer {
     position: relative;
-	padding-bottom:10px;
 	margin-top:0px;
+	border: solid 1px #CCC;
 }
 .ss_content_inner {
 	width:100%;
@@ -2152,11 +2149,11 @@ span.ss_global_toolbar_label_text, span.ss_global_toolbar_label_text_quickSearch
 
 span.ss_global_toolbar_label_text_quickSearch {
 	font-size: ${ss_style_font_fineprint};
-	font-style: Arial, sans serif;
+	font-family: Arial, sans serif;
 }
 span.ss_global_toolbar_label_text {
 	font-size: 10px;
-	font-style: Arial, sans serif;
+	font-family: Arial, sans serif;
 }
 div.ss_global_toolbar_findUser_text span {
 }
@@ -2381,8 +2378,7 @@ div.ss_sidebar_panel_featured {
 div.ss_actions_bar1_pane {
 	background-color: #B2CBE7;
 	border-top: 1px;
-	border-color: #AFAFAF
-	background-repeat: repeat-x;
+	border-color: #AFAFAF;
 	height: 22px;
 	white-space: nowrap;
 }
@@ -2682,7 +2678,6 @@ div.ss_utils_bar {
     text-align:right;
 	margin-bottom:0px;
 	background:transparent none repeat scroll 0%;
-	border-bottom: 1px solid ${ss_style_border_color_dark_hue};
 }
 div.ss_line {
 	border-bottom: 1px solid #666666;
@@ -3728,15 +3723,12 @@ div.ss_smallRBoxBody {
 
 
 div.ss_profileBox1 {
-  background-color: none;
-  font-family:${ss_style_folder_view_font_family};
+    font-family:${ss_style_folder_view_font_family};
 }
-
 div.ss_profileBox2 {
   background-color: ${ss_replies_background_color};
 /*  width: 230px; */
 }
-
 div.ss_profile_box_title {
   font-size: 13px;
   color: ${ss_style_metadata_color};
