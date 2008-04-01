@@ -47,6 +47,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.InternalException;
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Entry;
@@ -89,7 +90,8 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 
 	private AllModulesInjected bs;
 	private FileTypeMap mimeTypes;
-	
+	private CoreDao coreDao;
+
 	SiteScapeFileSystemInternal(AllModulesInjected bs) {
 		this.bs = bs;
 	}
@@ -99,6 +101,14 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 	}
 	public void setMimeTypes(FileTypeMap mimeTypes) {
 		this.mimeTypes = mimeTypes;
+	}
+
+	protected CoreDao getCoreDao() {
+		return coreDao;
+	}
+
+	public void setCoreDao(CoreDao coreDao) {
+		this.coreDao = coreDao;
 	}
 
 	public void createResource(Map uri) throws NoAccessException, 
