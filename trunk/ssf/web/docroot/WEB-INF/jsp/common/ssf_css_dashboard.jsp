@@ -44,7 +44,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border: 1px;
 	}
 	
-/* grey buttons for portal-expanded view */	
+/* NAVIGATION BUTTONS */	
 
 #ss_top_nav_button{
 	position:relative;
@@ -92,7 +92,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-color: #FFF;
 	border-width: .01em;
 	}	
-	
 #ss_top_nav_buttontwo ul li a.current{	
 	color:#333;
 	background-color: #B2CBE7;
@@ -136,42 +135,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	color:#526394!important;
 	}
 	
-	/* blue buttons for navigation Not Used */
-#ss_top_nav_buttonthree a {
-	font-family:  Arial, sans-serif;
-	font-size: 10px;
-	background-color: #8B9BBA;
-	display: block;
-	font-weight: bold;
-	letter-spacing: 1px;
-	}
-#ss_top_nav_buttonthree ul{
-	margin:0px;
-	padding:0px;
-	list-style-type:none;
-	width:auto;
-	}
-#ss_top_nav_buttonthree ul li{
-	display:block;
-	float:left;
-	margin:0px 2px 0px 0px;
-	}
-#ss_top_nav_buttonthree ul li a{
-	display:block;
-	float:left;
-	color:#FFFFFF;
-	text-decoration:none;
-	padding:6px 20px 0px 20px;
-	height:20px;
-	}
-#ss_top_nav_buttonthree ul li a:hover{
-	color:#333;
-	background-color: #8B9BBA;
-	}
-	
-
-  
-
 div.ss_canvas {
 	border-left: solid 1px ${ss_toolbar1_background_color};
 	border-right: solid 1px ${ss_toolbar1_background_color};
@@ -193,15 +156,14 @@ div.ss_canvas {
 	color:#666666;
 	}	
 /* 	THE FOLLOWING DEFINES HORZ RULE LINES  */	
-.rule_1 {					/* This defines plain line in entries recently visited */
-	border:none;
+.rule_1 {					
 	color:#3D5FA3!important;
 	background-color:#3D5FA3!important;
 	height:1px;
 	width:100%;
 	margin-bottom:5%;
 	}
-.rule_2 {					/* This defines dashed line in entries recently visited */
+.rule_2 {					
 
 	border-color:#3D5FA3!important;
 	border-top-style:dashed;
@@ -242,19 +204,19 @@ div.ss_canvas {
 	background-repeat: no-repeat;
 	background-position: 95% center;
 	}				
-/* Box styles */	
+/* BOX STYLES*/	
 
 #ss_Box{
 	padding: 0;
 	margin: 1% 0 2% 0;
-	}
+	}	
+	/*SHARED*/
 #ss_networkupdates{
 	padding: 0;
 	margin: 2% 0 2% 0;
 	color:#333333;
 	}
 #ss_shared{
-	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#444444;
 	background-color:#FFFFFF;
@@ -275,8 +237,8 @@ div.ss_canvas {
 	padding-bottom:3px;
 	border-bottom:1px dotted #666666;	
 	}
+ 	/*TASKS*/
 #ss_tasks{
-	padding: 0;
 	margin: 1% 0 5% 0;
 	padding: 0.5% 0 15px;
 	color: #666666;
@@ -295,25 +257,24 @@ div.ss_canvas {
 	color:#4AAA42!important;
 	font-size:10px!important; 
 	}
-#ss_tasks_para li
-{
+#ss_tasks_para {
 	list-style-type: square!important;
 	padding-top:3px;
 	padding-bottom:3px;
 	border-bottom:1px dotted #666666;
-}
+	}
+	/*TRACKED ITEMS*/
 #ss_trackedItems{
-	padding: 0;
 	margin: 1% 0 2% 0;
 	color:#444444;
-}
+	}
 #ss_trackedPeople{
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#444444;
 	background-color:#FFFFFF;
 	line-height: 1.6em;
-}
+	}
 #ss_hints{
 	font-size: 11px;
 	font-style: italic;
@@ -321,7 +282,8 @@ div.ss_canvas {
 	line-height:14px;
 	padding-bottom:5px;
 	color:#555555;
-}
+	}		
+	/*CALENDAR*/
 #ss_calendar{
 	padding: 0;
 	margin: 1% 0 5% 0;
@@ -330,33 +292,37 @@ div.ss_canvas {
 	padding: 0.5% 0 15px;
 	color: #666666;
 	line-height: 1.5em;
-}
+	}
 #ss_visit_para {
 	line-height:1.25em;
 	padding-top:5px;
-}
+	}
 #ss_visit_para li{
 	list-style-type: square;
 	padding-top:3px;
 	padding-bottom:3px;
 	border-bottom:1px dotted #666666;}
 	
-		/* ACTIVE LINKS */
-#ss_visit_para a	{
+	/* ACTIVE LINKS - VISITOR */
+#ss_visit_para a{
 	text-decoration:underline;
 }
-		/* HOVER LINKS */
+	/* HOVER LINKS */
 #ss_visit_para a:hover{
 	text-decoration:underline;
 	color:#E67814 !important;
-	background-color:#CCCCCC !important;}
+	background-color:#CCCCCC !important;
+	}
+	
+	/*VIEWED ITEMS*/
 #ss_viewedItems {
-	line-height:1.4em;}
+	line-height:1.4em;
+	}
 #ss_viewedItems .ss_v_entries ul{
 	list-style-type: none;
 	padding: 0;
 	margin-left: 4px;
-}
+	}
 #ss_viewedItems .ss_v_entries li{
 	background-image: url("<html:rootPath/>images/pics/entry_icon.gif");
 	background-repeat: no-repeat;
@@ -365,133 +331,121 @@ div.ss_canvas {
 	padding-top: 3px;
 	padding-bottom: 3px;
 	border-bottom:1px dotted #666666;}
-}
+	}
 #ss_viewedItems .ss_v_attachments ul{
 	list-style-type: none;
-	padding: 0;
 	margin-left: 4px;
-}
+	}
 #ss_viewedItems .ss_v_attachments li{
 	background-image: url("<html:rootPath/>images/pics/attachment_icon.gif");
 	background-repeat: no-repeat;
 	background-position: 1% 1%;
 	padding-left: 30px;
 	padding-top: 3px;
-	padding-bottom: 3px;}
-	
-/* ACTIVE LINKS */	
+	padding-bottom: 3px;
+	}	
+	/* ACTIVE LINKS - VIEWED ITEMS*/	
 #ss_viewedItems a{
 	text-decoration:underline;
-}
-/* HOVER LINKS */
+	}
+	/* HOVER LINKS */
 #ss_viewedItems a:hover{
 	text-decoration:underline;
 	color:#E67814 !important;
-	background-color:#CCCCCC !important;}
+	background-color:#CCCCCC !important;
+	}
+	/*CALENDAR*/
 #ss_cal_para{
-	padding-top:5px;}
+	padding-top:5px;
+	}
 #ss_cal_para li{
 	list-style-type: square;
 	padding-top:3px;
 	padding-bottom:3px;
 	border-bottom:1px dotted #666666;
-
-}
-#ss_cal_para a					/* link style for active links */
-{
+	}
+	/* CALENDAR ACTIVE LINKS */
+#ss_cal_para a{
 	text-decoration:underline;
-}
-
-#ss_cal_para a:hover					/* link style to hover links */
-{
+	}
+	/* HOVER LINKS */
+#ss_cal_para a:hover{
 	text-decoration:underline;
 	color:#E67814 !important;
 	background-color:#CCCCCC !important;
-}
-#ss_mydocs_para 
-{
+	}
+	/*MY DOCUMENTS*/
+#ss_mydocs_para {
 	line-height:1.5em;
 	padding-top:5px;
-
-}
-#ss_mydocs_para li
-{
+	}
+#ss_mydocs_para li{
 	list-style-type: square;
 	padding-top:3px;
 	padding-bottom:3px;
-	border-bottom:1px dotted #0C4E84;	/* some kind of blue */
-
-}
-#ss_mydocs_para a					/* link style for active links */
-{
-	text-decoration:underline;
-}
-
-#ss_mydocs_para a:hover					/* link style to hover links */
-{
+	border-bottom:1px dotted #0C4E84;
+	}
+	/* ACTIVE LINK */
+	#ss_mydocs_para a					
+	text-decoration:underline;{
+	}
+	/* HOVER LINK */
+#ss_mydocs_para a:hover{
 	text-decoration:underline;
 	color:#E67814 !important;
 	background-color:#CCCCCC !important;
-}
-#ss_whatshot
-{
-	padding: 0;
+	}
+	/* WHATS HOT */
+#ss_whatshot{
 	margin: 1% 0 5% 0;
 	background-color:#FFFFFF;
 	padding: 0.5% 0 1% 5px;
 	color: #666666;
 	line-height: 1.5em;
-}
-#ss_hot_para 
-{
+	}
+#ss_hot_para {
 	line-height:1.5em;
 	padding-top:5px;
-}
-#ss_hot_para li
-{
+	}
+#ss_hot_para li{
 	list-style-type: square;
 	padding-top:3px;	
 	padding-bottom:3px;
-	border-bottom:1px dotted #0C4E84;	/* some kind of blue */
-}
-
-
-#ss_survey
-{
-	padding: 0;
+	border-bottom:1px dotted #0C4E84;	
+	}
+	/* SURVEY*/
+#ss_survey{
 	margin: 1% 0 5% 0;
 	color:#444444;
 	border:1px solid #B2CEE7;
 	background-color:#ffffff;
-
-}
-#ss_notes
-{
-	padding: 0;
+	}
+	/* NOTES */
+#ss_notes{
 	margin: 1% 0 5% 0;
 	color:#444444;
 	border:1px solid #B2CEE7;
 	background-color:#ffffff;
-
-}
+	}
+	/* BOOKMARKS */
 #ss_bookmarks{
-	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#444444;
 	background-color:#ffffff;
-}
+	}
+	/* WHATS NEW */
 #ss_whatsnew{
-	padding: 0;
 	margin: 2% 0 5% 0;
 	color:#333333;
-}
+	}
+	/* PERSONAL TRACKER */
 #ss_personaltracker{
-	padding: 0%;
 	margin: 1% 0 5% 0;
 	color:#444444;
 	border:1px solid #B2CEE7;
 	background-color:#ffffff;
-}
+	}
+	/* EMAIL */
 #ss_email{
 	padding: 0;
 	margin: 1% 0 5% 0;
@@ -499,124 +453,94 @@ div.ss_canvas {
 	font-family:  Arial, sans serif;
 	color: #5799CB;
 	line-height: 1.5em;
-}
+	}
+	/* DOCUMENTS */
 #ss_documents{
-	padding: 0;
 	margin: 1% 0 5% 0;
-	color:#333333;
-}
+	color:#333;
+	}
 #ss_title{
 	margin: 0px 0px 2px 0px;
 	font-size: 14px;
 	font-weight: 400;
 	color: #333;
-}
+	}
 #ss_subtitle{
 	padding: 0.5% 0px 1% 6px;
 	font-size:14px;
 	color:#555555;
-}
+	}
 #ss_para {
 	margin-top: 1%;
 	padding: 0.5% 0 1% 15px;
 	border: 1px dotted #cccccc;
 	color: #666666;
 	line-height: 1.6em;
-}
-#ss_para a					/* link style for active links */
-{
-	text-decoration:underline !important;
-}
+	}
 
-#ss_para a:hover					/* link style to hover links */
-{
-	text-decoration:underline!important;
-	color:#E67814 !important;
-	background:#CCCCCC!important;
-}
-
-#ss_para ul
-{
-	
+#ss_para ul{
 	color:#555555;
-}
-#ss_para ul li
-{
-
+	}
+#ss_para ul li{
 	list-style-type: square;
 	margin-left:-10px;
-}
-/*  set backgrounds of Box Titles  */
-.ss_pt_title
-{
-
+	}
+	
+/*  BOX TITLES */
+.ss_pt_title{
 	color: #000000;
 	font-size:14px;
 	padding: 2px 0px 2px 5px;
 	width:100%;
-}
-.ss_blue						/*  Box Title blue all else the same   */
-{
+	}
+/*  BOX TITLE COLORS   */
+.ss_blue{
 	background-color: #B2CEE7;
-}
-.ss_orange						/*  Box Title orange all else the same   */
-{
+	}
+.ss_orange{	
 	background-color: #F93;
-}
+	}
 
 /* ******************************  */
 
-.ss_pt_para 
-{ 	margin: 1%; 
-}
-.ss_pt_para ul
-{
-	
+.ss_pt_para { 	
+	margin: 1%; 
+	}
+.ss_pt_para ul{
 	color:#555555;
 }
-.ss_pt_para ul li
-{
+.ss_pt_para ul li{
 	margin-left: -10px;
 	list-style-type: disc;
-	border-bottom:1px dotted #666666;
-	
-}
-.ss_prioValue
-{
+	border-bottom:1px dotted #666666;	
+	}
+.ss_prioValue{
 	font-weight:bold;
 	padding:0 3px 0 3px;
-}
-
-.ss_paraC                     /* this style used to add background color to tasks and calendar */
-{
+	}
+/* BACKGROUND COLORS */	
+.ss_paraC                     {
 	background-color:#FFFF99;
-
-}
+	}	
 /* time block styles */	
-#ss_today 
-{
+#ss_today {
 	margin: 0px 0px 10px 10px;
-}
-
-#ss_yesterday
-{
+	}
+#ss_yesterday{
 	margin: 0px 0px 0px 10px;
-}
-
-#ss_lastweek
-{
+	}
+#ss_lastweek{
 	margin: 0px 0px 0px 10px;
-}
- .ss_closed				/* use when a box is compressed */	
-{
+	}
+/* COMPRESSED BOX*/	
+ .ss_closed	{
 	height:20px;
-}
- .ss_overdue				/* when a milestone is overdue */	
-{
+	}
+ /* when a milestone is overdue */				
+ .ss_overdue{
 	color: #CC0000;
 	font-style: italic;
-}	
-
+	}	
 
 /* ======================BACKGROUND HOVER IS FROM THIS CODE======================== */
 
@@ -699,12 +623,10 @@ div.ss_canvas {
 	position:relative;
 	float:left;			
 	}
-
 #ss_BC_nav li{
 	text-decoration: none;
 	display: inline;
-	}
-		
+	}	
 #ss_toolbar_basic{
 	position: relative;
 	float: right;		
@@ -760,19 +682,15 @@ div.ss_canvas {
 #ss_tabsC a:hover {   
       background-position:0% -42px;
       }
-
 #ss_tabsC a:hover span {
       background-position:100% -42px;
       }
-
 #ss_tabsC .ss_tabsCCurrent a {
       background-position:0% -42px;
         }
 #ss_tabsC .ss_tabsCCurrent a span {
      background-position:100% -42px;
         }
-		
-
 	
 	/* COLUMN CONTAINER */
 #ss_dashboard_content {
