@@ -35,16 +35,65 @@ boolean isIE = BrowserSniffer.is_ie(request);
 %>
 
 /* CSS Document - container for navigation and search */
-
+	
+	/*WRAPPER*/
 #ss_top_nav_wrapper{
 	width: 100%;
-	background-color:#ececec;
+	background-color:#EBEBEA;
 	display: table;
 	border-color:#CCCCCC;
 	border: 1px;
 	}
 	
-/* NAVIGATION BUTTONS */	
+	/* COLUMN CONTAINER */
+#ss_dashboard_content {
+	position:relative; /* This fixes the IE7 overflow hidden bug */
+	clear:both;
+	float:left;
+    width:100%;	/* width of whole page */
+	overflow:hidden; /* This chops off any overhanging divs */
+	}
+
+/* COMMON COLUMN SETTINGS */
+.ss_colright,.ss_colmid,.ss_colleft{
+	float:left;
+	width:100%; /* width of page */
+	position:relative;
+	}
+.ss_col1,.ss_col2,.ss_col3 {
+	float:left;
+	position:relative;
+	padding:1em 0 1em 0; /* no left and right padding on columns, we just make them narrower instead 
+	only padding top and bottom is included here, make it whatever value you need */
+	overflow:hidden;
+	}	
+/* 3 COLUMN PAGE STYLE SETTINGS */
+.ss_tricolumn{	/* 3 Column page style */
+	background-color: #C9CFE0; /* right column background color */
+	} 
+.ss_tricolumn .ss_colmid{
+	right: 20%;
+	/* width of the right column */
+	/* center column background color */
+	background-color: #FFFFFC;
+	}
+.ss_tricolumn .ss_colleft {
+	right:20%;				/* placement from right of the middle column */
+	background:#fff;		/* left column background color */
+	}
+.ss_tricolumn .ss_col1 {
+	width:38%;				/* width of center column content (column width minus padding on either side) */
+	left:42%;				/* 100% plus left padding of center column */
+	}
+.ss_tricolumn .ss_col2 {
+	width:38%;				/* Width of left column content (column width minus padding on either side) */
+	left:43%;				/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
+	}
+.ss_tricolumn .ss_col3 {
+	width:18%;				/* Width of right column content (column width minus padding on either side) */
+	left:45%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
+	}
+	/* NAVIGATION BUTTONS -MOVE */	
 
 #ss_top_nav_button{
 	position:relative;
@@ -57,8 +106,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 #ss_top_nav_buttontwo a {
 	font-family:  Arial, sans-serif;
 	font-size: 10px;
-	background-color: #8B9BBA;
-	color: white!important;
+	background: #8B9BBA;
+	color: #FFF!important;
 	display: block;
 	font-weight: bold;
 	letter-spacing: 0px;
@@ -86,7 +135,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	height:16px;
 	}
 #ss_top_nav_buttontwo ul li a:hover{
-	font-color: #FFF;
+	color: #FFF;
 	background-color: #CCC;
 	border-style: solid;
 	border-color: #FFF;
@@ -155,22 +204,6 @@ div.ss_canvas {
 	text-align:left;
 	color:#666666;
 	}	
-/* 	THE FOLLOWING DEFINES HORZ RULE LINES  */	
-.rule_1 {					
-	color:#3D5FA3!important;
-	background-color:#3D5FA3!important;
-	height:1px;
-	width:100%;
-	margin-bottom:5%;
-	}
-.rule_2 {					
-
-	border-color:#3D5FA3!important;
-	border-top-style:dashed;
-	border-top-width:1px;
-	width:100%;
-	margin-bottom:5%;
-	}
 		
 /*  THE FOLLOWING DEFINES ALL THE IMAGES FOR THE BLUE BARS */
 	
@@ -220,7 +253,7 @@ div.ss_canvas {
 	margin: 1% 0 5% 0;
 	color:#444444;
 	background-color:#FFFFFF;
-	border:1px solid #B2CEE7;	
+	border:1px solid #A7A0AC;	
 	line-height:1.25em;
 	}
 .ss_shared_para {
@@ -272,7 +305,7 @@ div.ss_canvas {
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#444444;
-	background-color:#FFFFFF;
+	background-color:#CCD2E3;
 	line-height: 1.6em;
 	}
 #ss_hints{
@@ -289,7 +322,7 @@ div.ss_canvas {
 	margin: 1% 0 5% 0;
 	color:#444444;
 	background-color:#ffffff;
-	padding: 0.5% 0 15px;
+	padding: 0.5% 0 0px;
 	color: #666666;
 	line-height: 1.5em;
 	}
@@ -310,7 +343,7 @@ div.ss_canvas {
 	/* HOVER LINKS */
 #ss_visit_para a:hover{
 	text-decoration:underline;
-	color:#E67814 !important;
+	color:#464E42; !important;
 	background-color:#CCCCCC !important;
 	}
 	
@@ -332,18 +365,6 @@ div.ss_canvas {
 	padding-bottom: 3px;
 	border-bottom:1px dotted #666666;}
 	}
-#ss_viewedItems .ss_v_attachments ul{
-	list-style-type: none;
-	margin-left: 4px;
-	}
-#ss_viewedItems .ss_v_attachments li{
-	background-image: url("<html:rootPath/>images/pics/attachment_icon.gif");
-	background-repeat: no-repeat;
-	background-position: 1% 1%;
-	padding-left: 30px;
-	padding-top: 3px;
-	padding-bottom: 3px;
-	}	
 	/* ACTIVE LINKS - VIEWED ITEMS*/	
 #ss_viewedItems a{
 	text-decoration:underline;
@@ -351,7 +372,7 @@ div.ss_canvas {
 	/* HOVER LINKS */
 #ss_viewedItems a:hover{
 	text-decoration:underline;
-	color:#E67814 !important;
+	color:#464E42;!important;
 	background-color:#CCCCCC !important;
 	}
 	/*CALENDAR*/
@@ -371,7 +392,7 @@ div.ss_canvas {
 	/* HOVER LINKS */
 #ss_cal_para a:hover{
 	text-decoration:underline;
-	color:#E67814 !important;
+	color:#464E42; !important;
 	background-color:#CCCCCC !important;
 	}
 	/*MY DOCUMENTS*/
@@ -381,8 +402,7 @@ div.ss_canvas {
 	}
 #ss_mydocs_para li{
 	list-style-type: square;
-	padding-top:3px;
-	padding-bottom:3px;
+	padding-bottom:0px;
 	border-bottom:1px dotted #0C4E84;
 	}
 	/* ACTIVE LINK */
@@ -392,7 +412,7 @@ div.ss_canvas {
 	/* HOVER LINK */
 #ss_mydocs_para a:hover{
 	text-decoration:underline;
-	color:#E67814 !important;
+	color:#464E42; !important;
 	background-color:#CCCCCC !important;
 	}
 	/* WHATS HOT */
@@ -401,7 +421,7 @@ div.ss_canvas {
 	background-color:#FFFFFF;
 	padding: 0.5% 0 1% 5px;
 	color: #666666;
-	line-height: 1.5em;
+	line-height: 1.6em;
 	}
 #ss_hot_para {
 	line-height:1.5em;
@@ -417,14 +437,14 @@ div.ss_canvas {
 #ss_survey{
 	margin: 1% 0 5% 0;
 	color:#444444;
-	border:1px solid #B2CEE7;
+	border:1px solid #A7A9AC;
 	background-color:#ffffff;
 	}
 	/* NOTES */
 #ss_notes{
 	margin: 1% 0 5% 0;
 	color:#444444;
-	border:1px solid #B2CEE7;
+	border:1px solid #A7A9AC;
 	background-color:#ffffff;
 	}
 	/* BOOKMARKS */
@@ -442,7 +462,7 @@ div.ss_canvas {
 #ss_personaltracker{
 	margin: 1% 0 5% 0;
 	color:#444444;
-	border:1px solid #B2CEE7;
+	border:1px solid #A7A9AC;
 	background-color:#ffffff;
 	}
 	/* EMAIL */
@@ -472,12 +492,11 @@ div.ss_canvas {
 	}
 #ss_para {
 	margin-top: 1%;
-	padding: 0.5% 0 1% 15px;
+	padding-left: 15px;
 	border: 1px dotted #cccccc;
 	color: #666666;
 	line-height: 1.6em;
 	}
-
 #ss_para ul{
 	color:#555555;
 	}
@@ -495,7 +514,7 @@ div.ss_canvas {
 	}
 /*  BOX TITLE COLORS   */
 .ss_blue{
-	background-color: #B2CEE7;
+	background-color: #CCD2E3;
 	}
 .ss_orange{	
 	background-color: #F93;
@@ -520,7 +539,7 @@ div.ss_canvas {
 	}
 /* BACKGROUND COLORS */	
 .ss_paraC                     {
-	background-color:#FFFF99;
+	background-color:#DEE7EE;
 	}	
 /* time block styles */	
 #ss_today {
@@ -549,8 +568,8 @@ div.ss_canvas {
 	}
 #ss_para a:hover{
 	text-decoration:underline!important;
-	color:#E67814 !important;
-	background-color:#CCC!important;
+	color:#ECB456 !important;
+	background:#CCC!important;
 	}	
 #ss_para .ss_link_3 a:visited
 	{
@@ -559,7 +578,6 @@ div.ss_canvas {
 	}	
 	
 /* =================THESE NEED TO BE CONSOLIDATED======== */
-
 
 
 /* to use when need to display summary of an entry */
@@ -577,15 +595,13 @@ div.ss_canvas {
 	font-style: italic;
 }
 
-
-
 	
 /* =========== LINK STYLES===================== */	
 	/* PEOPLE LINKS */
 .ss_link_1, .ss_link_1 span { 
 	text-decoration: underline;
 	color: #00AEEF!important;
-	text-background: #444444 !important; 
+	font-background: #444444 !important; 
 	}
 	/* PLACES LINKS*/	
 .ss_link_2, .ss_link_2 span	{
@@ -609,7 +625,7 @@ div.ss_canvas {
 /* ============ End link styles =========================== */		
 
 
-/* Header styles */
+/* HEADER STYLES*/
   	
 #ss_topper {
 	height:150px;
@@ -639,15 +655,15 @@ div.ss_canvas {
 	color:#FFFFFF;
 	}
 
-/* - Menu Tabs for Relevance--------------------------- */
+/* - MENU TABS FOR RELEVANCE--------------------------- */
 
 #ss_tabsC {
     float:left;
     width:100%;
-    background:#EDF7E7;
+    background:#D4DAE7;
     font-size:93%;
     line-height:normal;
-    border-bottom: 1px #A7A9AC solid;
+    border-bottom: 1px solid #CCCCCC;
       }
  #ss_tabsC ul {
     margin:0;
@@ -677,7 +693,7 @@ div.ss_canvas {
  #ss_tabsC a span {float:none;}
     /* End IE5-Mac hack */
 #ss_tabsC a:hover span {
-    color:#FFF;
+    color:#ECB546;
       }
 #ss_tabsC a:hover {   
       background-position:0% -42px;
@@ -692,55 +708,7 @@ div.ss_canvas {
      background-position:100% -42px;
         }
 	
-	/* COLUMN CONTAINER */
-#ss_dashboard_content {
-	position:relative; /* This fixes the IE7 overflow hidden bug */
-	clear:both;
-	float:left;
-    width:100%;	/* width of whole page */
-	overflow:hidden; /* This chops off any overhanging divs */
-	}
-
-/* COMMON COLUMN SETTINGS */
-.ss_colright,.ss_colmid,.ss_colleft{
-	float:left;
-	width:100%; /* width of page */
-	position:relative;
-	}
-.ss_col1,.ss_col2,.ss_col3 {
-	float:left;
-	position:relative;
-	padding:1em 0 1em 0; /* no left and right padding on columns, we just make them narrower instead 
-	only padding top and bottom is included here, make it whatever value you need */
-	overflow:hidden;
-	}
 	
-/* 3 COLUMN PAGE STYLE SETTINGS */
-.ss_tricolumn{	/* 3 Column page style */
-	background-color: #EDF7E7; /* right column background color */
-	} 
-.ss_tricolumn .ss_colmid{
-	right: 20%;
-	/* width of the right column */
-	/* center column background color */
-	background-color: #FFFFFC;
-	}
-.ss_tricolumn .ss_colleft {
-	right:20%;				/* placement from right of the middle column */
-	background:#fff;		/* left column background color */
-	}
-.ss_tricolumn .ss_col1 {
-	width:38%;				/* width of center column content (column width minus padding on either side) */
-	left:42%;				/* 100% plus left padding of center column */
-	}
-.ss_tricolumn .ss_col2 {
-	width:38%;				/* Width of left column content (column width minus padding on either side) */
-	left:43%;				/* width of (right column) plus (center column left and right padding) plus (left column left padding) */
-	}
-.ss_tricolumn .ss_col3 {
-	width:18%;				/* Width of right column content (column width minus padding on either side) */
-	left:45%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
-	}
 /* FOOTER STYLES*/
 
 #ss_footer{
@@ -774,15 +742,15 @@ div.ss_canvas {
 	margin: 1% 0 2% 2%;
 	color:#333333;
 	background-color:#FFF;
-	border:1px solid #B2CEE7;
+	border:1px solid #A7A9AC;
 	}
 #ss_task_list p{
-	border-top: 1px solid #B2CEE7;
+	border-top: 1px solid #A7A9AC;
 	padding:4px 5px 7px 5px;
 	line-height:2em;
 	}
 #ss_task_list_hdr{
-	background-color: #B2CEE7;
+	background-color: #A7A9AC;
 	color: #000000;
 	font-size:12px;
 	padding: 5px 5px 3px 2px;
