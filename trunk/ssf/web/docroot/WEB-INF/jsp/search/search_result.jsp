@@ -76,7 +76,7 @@
   <c:set var="ss_sidebarVisibilityHide" value="block"/>
   <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 </c:if>
-<div class="ss_actions_bar1_pane" width="100%" style="height: 26px;">
+<div class="ss_actions_bar1_pane" width="100%" style="height: 22px;">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr><td valign="middle">
 <a href="javascript: ;" 

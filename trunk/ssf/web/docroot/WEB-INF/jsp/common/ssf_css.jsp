@@ -629,8 +629,10 @@ div.ss_iconed_label {
   font-family: ${ss_style_title_font_family};
   background-repeat: no-repeat;
   background-position: left center;
-  padding-left: 16px;
+  padding-left: 30px;
   padding-right: 4px;
+  padding-top:	6px;
+  padding-bottom: 6px;
   margin-left: 2px;
   font-size: 11px;
   font-weight: bold;
@@ -2190,7 +2192,7 @@ td.ss_view_sidebar {
 }
 
 td.ss_view_info {
-	padding-left: 0px;
+	padding-left: 6px;
 }
 
 
@@ -2255,20 +2257,14 @@ a.ss_breadcrumb {
 }
 
 div.ss_sidebar_panel {
-	border-left: solid 1px ${ss_toolbar1_background_color};
-	border-right: solid 1px ${ss_toolbar1_background_color};
-	border-bottom: solid .3px ${ss_toolbar1_background_color};
-	padding-bottom: 0px;
+	padding-bottom: 1px;
 	width: 200px;
 	overflow: hidden;
 	background-color: ${ss_style_background_color_side_panel};
 	}
 
 div.ss_sidebar_panel_featured {
-	border-left: solid 1px ${ss_toolbar1_background_color};
-	border-right: solid 1px ${ss_toolbar1_background_color};
-	border-bottom: solid .3px ${ss_toolbar1_background_color};
-	padding-bottom: 0px;
+
 	width: 200px;
 	overflow: hidden;
 	background-color: ${ss_style_background_color_side_panel_featured};
@@ -2276,26 +2272,22 @@ div.ss_sidebar_panel_featured {
 /* titlebar */
 .ss_base_title_bar {
 	background-color: ${ss_toolbar1_background_color};
-    background-image: url(<html:imagesPath/>pics/background_base_title_bar.jpg);
-    background-repeat: repeat-x;
-	color: ${ss_panel_header_bar_title_color};
-	font-size: 11px;
+	color: #333;
+	font-size: 12px;
 	font-family: ${ss_style_title_font_family};
-	font-weight: bold;
-	height:14px;
-	margin:0px;
-	padding-bottom: 3px;
-	padding-left: 3px;
-	padding-right: 3px;
+	padding-bottom: 2px;
+	padding-top: 3px;
+	padding-left:10px;
+	padding-right: 5px;
 }
 
 .ss_title_bar {
 	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.jpg);
 	color: #333333;
-	height:16px;
+	height:14px;
 	margin:0px;
 	padding-bottom: 3px;
-	padding-left: 3px;
+
 }
 
 .ss_title_bar * {
@@ -2376,9 +2368,9 @@ div.ss_sidebar_panel_featured {
 }
 
 div.ss_actions_bar1_pane {
-	background-color: #B2CBE7;
-	border-top: 1px;
-	border-color: #AFAFAF;
+	background-color: #AFAFAF;
+	border-bottom: 1px solid;
+	border-color: #FFF;
 	height: 22px;
 	white-space: nowrap;
 }

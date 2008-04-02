@@ -57,7 +57,7 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 <c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
-<div class="ss_actions_bar1_pane" width="100%" style="height: 26px;">
+<div class="ss_actions_bar1_pane" width="100%" style="height: 22px;">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr><td valign="middle">
 <a href="javascript: ;" 
