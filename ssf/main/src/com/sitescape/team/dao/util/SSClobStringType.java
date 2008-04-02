@@ -42,12 +42,12 @@ import java.sql.SQLException;
 import java.sql.Types;
 
 import org.hibernate.HibernateException;
-import org.springframework.orm.hibernate3.support.AbstractLobType;
 import org.springframework.jdbc.support.lob.LobCreator;
 import org.springframework.jdbc.support.lob.LobHandler;
+import org.springframework.orm.hibernate3.support.AbstractLobType;
 
-import com.sitescape.team.domain.SSBlobSerializable;
 import com.sitescape.team.domain.SSClobString;
+import com.sitescape.util.jdbc.support.lob.NoLazyLobs;
 
 /*
  * Copied from  the spring ClobStingType to implement lazy loading of clobs
@@ -74,7 +74,14 @@ public class SSClobStringType extends AbstractLobType {
 	protected Object nullSafeGetInternal(
 			ResultSet rs, String[] names, Object owner, LobHandler lobHandler)
 			throws SQLException, IOException, HibernateException {
-	    return new SSClobString(rs.getClob(names[0]));
+
+		if (!(lobHandler instanceof NoLazyLobs)) {
+			return new SSClobString(rs.getClob(names[0])); 
+		} else {
+			//Postgress won't handle 
+			return new SSClobString(lobHandler.getClobAsString(rs, names[0]));
+		}
+
 	}
 
 	protected void nullSafeSetInternal(PreparedStatement ps, int index, Object value, LobCreator lobCreator)
