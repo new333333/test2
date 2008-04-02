@@ -92,6 +92,12 @@ public class WSClient extends WSClientBase
 					filename = args[4];
 				}
 				wsClient.fetchAndPrintIdentifier("FolderService", "addFolderEntry", new Object[] {null, Long.parseLong(args[1]), args[2], s, filename}, filename);
+			} else if(args[0].equals("addWorkflow")) {
+				String stateName = null;
+				if(args.length > 4) {
+					stateName = args[4];
+				}
+				justDoIt("addEntryWorkflow", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], stateName});
 			} else if(args[0].equals("modifyEntry")) {
 				String s = readText(args[3]);
 				System.out.println("XML: " + s);
@@ -198,6 +204,7 @@ public class WSClient extends WSClientBase
 		System.out.println("printDefinition <definition id>");
 		System.out.println("printDefinitionConfig");
 		System.out.println("addEntry <folder id> <definition id> <entryDataXMLString> [<attachmentFileName>]");
+		System.out.println("addWorkflow <folder id> <entry id> <definition id> [<startState>]");
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
 		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
 		System.out.println("uploadCalendar <folder id> <xmlFilename> [<iCalFilename>]");

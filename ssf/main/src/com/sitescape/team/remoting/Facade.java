@@ -60,6 +60,7 @@ public interface Facade {
 	public void uploadFolderFile(long folderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 
+	public void addEntryWorkflow(long binderId, long entryId, String definitionId, String startState);
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML);
 
 	/*

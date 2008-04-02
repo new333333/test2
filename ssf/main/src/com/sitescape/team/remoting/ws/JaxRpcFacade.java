@@ -136,6 +136,13 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#addEntryWorkflow}.
+	 */
+	public void addEntryWorkflow(long binderId, long entryId, String definitionId, String startState) {
+		this.folderService.addEntryWorkflow(null, binderId, entryId, definitionId, startState);
+	}
+	/**
+	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.ical#uploadCalendarEntries}.
 	 */
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)

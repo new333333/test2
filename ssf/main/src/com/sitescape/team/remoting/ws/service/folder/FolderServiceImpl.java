@@ -178,5 +178,8 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
+	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState) {
+		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, startState);
+	}
 	
 }

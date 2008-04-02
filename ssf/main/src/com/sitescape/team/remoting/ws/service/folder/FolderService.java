@@ -42,6 +42,7 @@ public interface FolderService {
 	
 	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML);
 
+	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState);
 	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 }
