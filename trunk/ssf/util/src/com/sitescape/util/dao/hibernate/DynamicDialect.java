@@ -72,6 +72,8 @@ public class DynamicDialect extends Dialect {
 			//this needs to be tested??
 			if (dbName.equals("MySQL")) 
 				_dialect = new MySQL5InnoDBDialect();
+			else if (dbName.equals("PostgreSQL")) 
+				_dialect = new PostgreSQLDialectBytea();
 			else if (dbName.equalsIgnoreCase("frontbase"))
 				_dialect = new FrontBase4Dialect();
 			else

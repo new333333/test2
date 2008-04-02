@@ -36,6 +36,8 @@ package com.sitescape.team.dao.util;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.sql.PreparedStatement;
@@ -49,6 +51,7 @@ import org.springframework.jdbc.support.lob.LobHandler;
 import org.springframework.orm.hibernate3.support.AbstractLobType;
 
 import com.sitescape.team.domain.SSBlobSerializable;
+import com.sitescape.util.jdbc.support.lob.NoLazyLobs;
 
 /**
  * @author Janet McCann
@@ -82,8 +85,26 @@ public class SSBlobSerializableType extends AbstractLobType {
 
 		protected Object nullSafeGetInternal(ResultSet rs, String[] names, Object owner, LobHandler lobHandler)
 		throws SQLException, IOException, HibernateException {
-
-		    return new SSBlobSerializable(rs.getBlob(names[0]));
+			if (!(lobHandler instanceof NoLazyLobs)) {
+				return new SSBlobSerializable(rs.getBlob(names[0]));
+			} else {
+				InputStream is = lobHandler.getBlobAsBinaryStream(rs, names[0]);
+				if (is != null) {
+					ObjectInputStream ois = new ObjectInputStream(is);
+					try {
+						return new SSBlobSerializable(ois.readObject());
+					}
+					catch (ClassNotFoundException ex) {
+						throw new HibernateException("Could not deserialize BLOB contents", ex);
+					}
+					finally {
+						ois.close();
+					}
+				}
+				else {
+					return null;
+				}
+			}
 		}
 
 		protected void nullSafeSetInternal(PreparedStatement ps, int index, Object value, LobCreator lobCreator)
