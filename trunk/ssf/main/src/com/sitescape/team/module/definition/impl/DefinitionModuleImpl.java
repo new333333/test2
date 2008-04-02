@@ -1903,4 +1903,48 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         }
 		SimpleProfiler.stopProfiler("DefinitionModuleImpl.walkDefinition");
     }
+	public void walkViewDefinition(DefinableEntity entry, DefinitionVisitor visitor, Map args) {
+		SimpleProfiler.startProfiler("DefinitionModuleImpl.walkDefinition");
+		//access check not needed = assumed okay from entry
+        Definition def = entry.getEntryDef();
+        if(def == null) return;
+        String flagElementPath = "./" + visitor.getFlagElementName();
+        Document definitionTree = def.getDefinition();
+        if (definitionTree != null) {
+            Element root = definitionTree.getRootElement();
+
+            //Get a list of all of the items in the definition
+			Element entryFormItem = (Element)root.selectSingleNode("//item[@name='entryView' or @name='profileEntryView']");
+            if (entryFormItem != null) {
+                List<Element> items = entryFormItem.elements();
+                if (items != null) {
+                    for (Element nextItem:items) {
+
+                    	Element flagElem = (Element) nextItem.selectSingleNode(flagElementPath);
+                    	if (flagElem == null) {
+                        	 // The current item in the entry definition does not contain
+                        	 // the flag element. Check the corresponding item in the default
+                        	 // config definition to see if it has it.
+                        	 // This two level mechanism allows entry definition (more specific
+                        	 // one) to override the settings in the default config definition
+                        	 // (more general one). This overriding works in its 
+                        	 // entirity only, that is, partial overriding is not supported.
+     						//Find the item in the base configuration definition to see if it is a data item
+                    		String itemName = (String) nextItem.attributeValue("name");						
+     						Element configItem = this.definitionBuilderConfig.getItem(this.definitionConfig, itemName);
+     						if (configItem != null) flagElem = (Element) configItem.selectSingleNode(flagElementPath);
+                    	}
+
+                    	if (flagElem != null) {
+                        	 Map oArgs = getOptionalArgs(flagElem);
+                        	 //add in caller supplied arguments
+                        	 if (args != null) oArgs.putAll(args);
+                        	 visitor.visit(nextItem, flagElem, oArgs);
+                        }
+                    }
+                }
+            }
+        }
+		SimpleProfiler.stopProfiler("DefinitionModuleImpl.walkDefinition");
+    }
 }
