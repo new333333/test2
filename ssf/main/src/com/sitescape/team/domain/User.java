@@ -35,21 +35,19 @@
 package com.sitescape.team.domain;
 
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Set;
 import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeSet;
 
 import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.util.EncryptUtil;
 import com.sitescape.util.PasswordEncryptor;
 import com.sitescape.util.Validator;
-import com.sitescape.team.ObjectKeys;
 
 /**
  * @hibernate.subclass discriminator-value="U" dynamic-update="true" node="User"
@@ -70,7 +68,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
     protected Long digestSeed;
     protected String skypeId="";
     protected String status="";
-    private Set principalIds; // set of Long; this field is computed 
     private SortedSet groupNames; // sorted set of group names; this field is computed
 	public User() {
     }
@@ -331,61 +328,6 @@ public class User extends UserPrincipal implements IndividualPrincipal {
 		return EncryptUtil.encryptSHA1(getId().toString(), digestSeed.toString(), binderId);
 	}
  
-    /**
-     * This method computes a complete graph of membership starting bottom up
-     * from this user object, and returns their ids as a set of 
-     * <code>Long</code>.
-     * 
-     * TODO I believe it would be more efficient to augment the DAO service to
-     * fetch the entire graph eargerly rather than relying on lazy loading. 
-     * This lazy loading can prove to be unacceptably costly, especially when
-     * the depth of graph is large. But for now...
-     * 
-     * Note: This does not cache the result of the computation, since it can
-     * change any time (TRUE IN THEORY BUT NOT IN PRACTICE: see below)   
-     * 
-     * Note: Our system architecture is such that new persistence session is
-     * created and the user object is re-loaded from the database for each
-     * and every request (ie, interaction between the user and the system).
-     * In other words, we do not cache user object across multiple requests
-     * within a user session. Consequently it is safe to cache the result
-     * of this computation within the user object.
-     * 
-     * Note: This method may load associated groups lazily, which means that
-     * this method is expected to be executed in a valid transactional context.
-     * Otherwise, a data-access runtime exception may be thrown. 
-     * 
-     * @return
-     */
-    public Set computePrincipalIds(GroupPrincipal reservedGroup) {
-    	// Each thread serving a user request has its own copy of user object.
-    	// Therefore we do not have to use synchronization around principalIds.
-        if (!isActive()) return new HashSet();
-        
-        if(principalIds == null) {
-    		Set ids = new HashSet();
-    		if (reservedGroup != null) {
-    			//this handles the case where all users is part of another group
-    			addPrincipalIds(reservedGroup, ids);
-    		}
-    		addPrincipalIds(this, ids);
-    		principalIds = ids;
-    	}
-        return principalIds;
-    }
-    
-    private void addPrincipalIds(IPrincipal principal, Set ids) {
-        // To prevent infinite loop resulting from possible cycle among
-        // group membership, proceed only if the principal hasn't already
-        // been processed. 
-        if (!principal.isActive()) return;
-        if(ids.add(principal.getId())) {
-            List memberOf = principal.getMemberOf();
-            for(Iterator i = memberOf.iterator(); i.hasNext();) {
-                addPrincipalIds((IPrincipal) i.next(), ids);
-            }
-        }
-    }
     public boolean isAllIndividualMember() {
     	if (!isReserved()) return true;
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(getInternalId())) return false;

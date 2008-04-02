@@ -29,7 +29,6 @@
 package com.sitescape.team.module.binder.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -883,9 +882,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        	child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
 
     	// look for user
-       	User user = RequestContextHolder.getRequestContext().getUser();
-       	if (!userId.equals(user.getId())) user = getProfileDao().loadUser(userId, user.getZoneId());
-       	Set<Long> ids = getProfileDao().getPrincipalIds(user);
+       	Principal prin = RequestContextHolder.getRequestContext().getUser();
+       	if (!userId.equals(prin.getId())) prin = getProfileDao().loadPrincipal(userId, prin.getZoneId(), true);
+       	Set<Long> ids = getProfileDao().getPrincipalIds(prin);
        	if (ids.isEmpty()) return Collections.EMPTY_LIST;
        	if (ids.size() > 1) {
        		Element orField2 = boolElement.addElement(QueryBuilder.OR_ELEMENT);
