@@ -31,6 +31,7 @@ package com.sitescape.team.domain;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public interface IPrincipal extends PersistentLongId {
 
@@ -86,6 +87,8 @@ public interface IPrincipal extends PersistentLongId {
 
     public void setForeignName(String foreignName);
      
+    public Set computePrincipalIds(GroupPrincipal reservedGroup);
+    
     public List getMemberOf();
 
     public void setMemberOf(Collection groups);

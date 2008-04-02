@@ -28,16 +28,10 @@
  */
 package com.sitescape.team.domain;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
-
 import com.sitescape.util.Validator;
 
 public class Application extends ApplicationPrincipal implements IndividualPrincipal {
 
-    private Set principalIds; // set of Long; this field is computed 
     private String postUrl;
     
 	public EntityIdentifier.EntityType getEntityType() {
@@ -59,39 +53,10 @@ public class Application extends ApplicationPrincipal implements IndividualPrinc
 	public void setPostUrl(String postUrl) {
 		this.postUrl = postUrl;
 	}
-
-	public Set computePrincipalIds(GroupPrincipal reservedGroup) {
-    	// Each thread serving a user request has its own copy of user object.
-    	// Therefore we do not have to use synchronization around principalIds.
-        if (!isActive()) return new HashSet();
-        
-        if(principalIds == null) {
-    		Set ids = new HashSet();
-    		if (reservedGroup != null) {
-    			//this handles the case where all users is part of another group
-    			addPrincipalIds(reservedGroup, ids);
-    		}
-    		addPrincipalIds(this, ids);
-    		principalIds = ids;
-    	}
-        return principalIds;
-    }
     
     public boolean isAllIndividualMember() {
     	return true; // any situation where this shouldn't be the case?
     }
 
-    private void addPrincipalIds(IPrincipal principal, Set ids) {
-        // To prevent infinite loop resulting from possible cycle among
-        // group membership, proceed only if the principal hasn't already
-        // been processed. 
-        if (!principal.isActive()) return;
-        if(ids.add(principal.getId())) {
-            List memberOf = principal.getMemberOf();
-            for(Iterator i = memberOf.iterator(); i.hasNext();) {
-                addPrincipalIds((IPrincipal) i.next(), ids);
-            }
-        }
-    }
 
 }

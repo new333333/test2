@@ -28,13 +28,10 @@
  */
 package com.sitescape.team.domain;
 
-import java.util.Set;
 
 public interface IndividualPrincipal extends IPrincipal {
 
 	public String getTitle();
 	
-    public Set computePrincipalIds(GroupPrincipal reservedGroup);
-
     public boolean isAllIndividualMember();
 }

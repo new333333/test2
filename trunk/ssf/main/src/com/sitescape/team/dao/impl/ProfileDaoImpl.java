@@ -794,19 +794,23 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	return loadUser(id, zoneId);
    }
     
-    public Set<Long> getPrincipalIds(IndividualPrincipal p) {
-    	if(p.isAllIndividualMember()) {
-        	GroupPrincipal gp;
-        	if(p instanceof User)
-        		gp = getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, p.getZoneId());
-        	else if(p instanceof Application)
-        		gp = getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, p.getZoneId());
-        	else
-        		throw new IllegalArgumentException(p.getClass().getName());
-        	
-    		return new HashSet(p.computePrincipalIds(gp));
-    	}
-    	else {
+    public Set<Long> getPrincipalIds(Principal p) {
+    	if (p instanceof IndividualPrincipal) {
+	    	if(((IndividualPrincipal)p).isAllIndividualMember()) {
+	        	GroupPrincipal gp;
+	        	if(p instanceof User)
+	        		gp = getReservedGroup(ObjectKeys.ALL_USERS_GROUP_INTERNALID, p.getZoneId());
+	        	else if(p instanceof Application)
+	        		gp = getReservedApplicationGroup(ObjectKeys.ALL_APPLICATIONS_GROUP_INTERNALID, p.getZoneId());
+	        	else
+	        		throw new IllegalArgumentException(p.getClass().getName());
+	        	
+	    		return new HashSet(p.computePrincipalIds(gp));
+	    	}
+	    	else {
+	    		return new HashSet(p.computePrincipalIds(null));
+	    	}
+    	} else {
     		return new HashSet(p.computePrincipalIds(null));
     	}
     }
