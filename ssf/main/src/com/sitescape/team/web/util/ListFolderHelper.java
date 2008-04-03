@@ -1239,7 +1239,7 @@ public class ListFolderHelper {
 		folderToolbar.addToolbarMenu("1_administration", 
 				NLT.get("toolbar.manageThisFolder"), "", qualifiers);
 		//Add Folder
-		if (bs.getFolderModule().testAccess(folder, FolderOperation.addFolder)) {
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.addFolder)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));

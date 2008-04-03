@@ -55,8 +55,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
-import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.module.workspace.WorkspaceModule.WorkspaceOperation;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
@@ -165,8 +164,8 @@ public class AddFolderController extends SAbstractController {
 		
 		Map accessControlMap = BinderHelper.getAccessControlMapBean(model);
 		if (binder instanceof Workspace) 
-			accessControlMap.put("createWorkspace", getWorkspaceModule().testAccess((Workspace)binder, 
-						WorkspaceModule.WorkspaceOperation.addWorkspace));
+			accessControlMap.put("createWorkspace", getBinderModule().testAccess((Workspace)binder, 
+						BinderOperation.addWorkspace));
 
 		if (operation.equals(WebKeys.OPERATION_ADD_SUB_FOLDER)) {
 			List result = getTemplateModule().getTemplates(Definition.FOLDER_VIEW);

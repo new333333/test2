@@ -46,9 +46,6 @@ public class SearchServiceEndpoint implements ServiceLifecycle, SearchService {
 		return searchService;
 	}
 	
-	public String getTeamMembersAsXML(String accessToken, long binderId) {
-		return getSearchService().getTeamMembersAsXML(accessToken, binderId);
-	}
 	
 	public String getTeamsAsXML(String accessToken) {
 		return getSearchService().getTeamsAsXML(accessToken);

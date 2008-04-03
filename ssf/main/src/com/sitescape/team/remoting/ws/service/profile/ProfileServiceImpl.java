@@ -51,7 +51,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
     	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxRecords));
-		Map results = getProfileModule().getUsers(getProfileModule().getProfileBinder().getId(), options);
+		Map results = getProfileModule().getPrincipals(getProfileModule().getProfileBinder().getId(), options);
 		List users = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 		Element rootElement = doc.addElement("principals");
 		rootElement.addAttribute("first", ""+firstRecord);

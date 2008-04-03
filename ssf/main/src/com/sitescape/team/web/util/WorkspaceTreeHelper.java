@@ -60,7 +60,6 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
-import com.sitescape.team.module.workspace.WorkspaceModule.WorkspaceOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.util.AllModulesInjected;
@@ -279,7 +278,7 @@ public class WorkspaceTreeHelper {
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 		
 		//Get the info for the "add a team" button
-		if (!ws.isRoot() && bs.getWorkspaceModule().testAccess(ws, WorkspaceOperation.addWorkspace)) {
+		if (!ws.isRoot() && bs.getBinderModule().testAccess(ws, BinderOperation.addWorkspace)) {
 			Long cfgType = null;
 			List result = bs.getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW);
 			if (result.isEmpty()) {
@@ -335,7 +334,7 @@ public class WorkspaceTreeHelper {
 		//	The "Add" menu
 		PortletURL url;
 		//Add Workspace except to top or a user workspace
-		if (!workspace.isRoot() && bs.getWorkspaceModule().testAccess(workspace, WorkspaceOperation.addWorkspace)) {
+		if (!workspace.isRoot() && bs.getBinderModule().testAccess(workspace, BinderOperation.addWorkspace)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
@@ -347,7 +346,7 @@ public class WorkspaceTreeHelper {
 					NLT.get("toolbar.menu.addWorkspace"), url, qualifiers);
 		}
 		//Add Folder except to top
-		if (!workspace.isRoot() && bs.getWorkspaceModule().testAccess(workspace, WorkspaceOperation.addFolder)) {
+		if (!workspace.isRoot() && bs.getBinderModule().testAccess(workspace, BinderOperation.addFolder)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));

@@ -141,19 +141,6 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 		return xml;
 	}
 	
-	public String getTeamMembersAsXML(String accessToken, long binderId)
-	{
-		Binder binder = getBinderModule().getBinder(new Long(binderId));
-		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, true);
-		Document doc = DocumentHelper.createDocument();
-		Element team = doc.addElement("team");
-		team.addAttribute("inherited", binder.isTeamMembershipInherited()?"true":"false");
-		for(Principal p : principals) {
-			addPrincipalToDocument(team, p);
-		}
-		
-		return doc.getRootElement().asXML();
-	}
 	
 	public String getTeamsAsXML(String accessToken)
 	{

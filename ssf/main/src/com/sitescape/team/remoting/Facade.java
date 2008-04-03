@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.remoting;
 
+import java.util.List;
+
 /**
  * WS facade for business tier.
  * 
@@ -43,7 +45,8 @@ public interface Facade {
 	public String getDefinitionAsXML(String definitionId);
 	
 	public String getDefinitionConfigAsXML();
-	
+	public String getDefinitionListAsXML();
+
 	// 
 	// Folder operations
 	// 	
@@ -116,7 +119,12 @@ public interface Facade {
 	 * @return XML representation of team membership
 	 */
 	public String getTeamMembersAsXML(long binderId);
-	
+	/**
+	 * Set team members for the binder
+	 * @param binderId
+	 * @param memberIds
+	 */
+	public void setTeamMembers(long binderId, List<Long> memberIds);
 	/**
 	 * Returns the teams that the caller is on
 	 * 

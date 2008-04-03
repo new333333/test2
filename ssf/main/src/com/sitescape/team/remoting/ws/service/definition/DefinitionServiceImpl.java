@@ -27,7 +27,14 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.remoting.ws.service.definition;
+import java.util.List;
 
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.module.shared.XmlUtils;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.remoting.ws.BaseService;
 
 public class DefinitionServiceImpl extends BaseService implements DefinitionService {
@@ -38,6 +45,22 @@ public class DefinitionServiceImpl extends BaseService implements DefinitionServ
 	
 	public String getDefinitionConfigAsXML(String accessToken) {
 		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
+	}
+	public String getDefinitionListAsXML(String accessToken) {
+		List<Definition> defs = getDefinitionModule().getDefinitions();
+		Document doc = DocumentHelper.createDocument();
+		doc.addElement("definitions");
+		Element root = doc.getRootElement();
+		for (Definition def:defs) {
+			Element defElement = root.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
+			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
+			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
+			defElement.addAttribute("id", def.getId().toString());
+			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, Integer.toString(def.getType()));			
+			XmlUtils.addAttributeCData(defElement, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, def.getTitle());
+			
+		}
+		return root.asXML();
 	}
 
 }

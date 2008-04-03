@@ -42,44 +42,6 @@ import com.sitescape.team.security.AccessControlException;
  *
  */
 public interface WorkspaceModule {
-	public enum WorkspaceOperation {
-		addFolder,
-		addWorkspace
-	}
-	/**
-	 * Add a new folder under this workspace
-	 * @param workspaceId
-	 * @param definitionId
-	 * @param inputData
-	 * @param fileItems May be <code>null</code>
-     * @param options additional processing options or null
-	 * @return
-	 * @throws AccessControlException
-	 * @throws WriteFilesException
-	 */
-	public Long addFolder(Long workspaceId, String definitionId, InputDataAccessor inputData,
-			Map fileItems, Map options) throws AccessControlException, WriteFilesException;
-	/**
-	 * Add a new workspace under this workspace
-	 * @param workspaceId
-	 * @param definitionId
-	 * @param inputData
-	 * @param fileItems May be <code>null</code>
-     * @param options additional processing options or null
- 	 * @return
-	 * @throws AccessControlException
-	 * @throws WriteFilesException
-	 */
-	public Long addWorkspace(Long workspaceId, String definitionId, InputDataAccessor inputData,
-			Map fileItems, Map options) throws AccessControlException, WriteFilesException;
-	/**
-	 * Check access to a workspace, throwing an exception if denied
-	 * @param workspace
-	 * @param operation
-	 * @throws AccessControlException
-	 */
-	public void checkAccess(Workspace workspace, WorkspaceOperation operation) 
-		throws AccessControlException;
 	/**
 	 * Return set of child binder titles
 	 * @param top
@@ -113,13 +75,6 @@ public interface WorkspaceModule {
 	public SortedSet<Binder> getWorkspaceTree(Long id) 
 		throws AccessControlException; 
 
-    /**
-     * Test access to a workspace
-     * @param workspace
-     * @param operation
-     * @return
-     */
-    public boolean testAccess(Workspace workspace, WorkspaceOperation operation);
 
 }
 

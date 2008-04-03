@@ -326,16 +326,17 @@ public interface ObjectKeys {
     public static final String FAMILY_TASK = "task";
     public static final String FAMILY_CALENDAR = "calendar";
     
-    //xml tags - used in GenerateLdapList (as strings) - keep in sync
+    //xml tags - some used in GenerateLdapList (as strings) - keep in sync
     public static final String XTAG_ATTRIBUTE_ID="databaseId";
     public static final String XTAG_ATTRIBUTE_NAME="name";
     public static final String XTAG_ATTRIBUTE_TYPE="type";
+    public static final String XTAG_ATTRIBUTE_INTERNALID="internalId";
+    
+    //change log element attributes
     public static final String XTAG_ATTRIBUTE_OPERATION="operation";
     public static final String XTAG_ATTRIBUTE_MODIFIEDBY="modifiedBy";
     public static final String XTAG_ATTRIBUTE_MODIFIEDON="modifiedOn";
-    public static final String XTAG_ATTRIBUTE_INTERNALID="internalId";
-    
-    
+    // data types for <attribute>
     public static final String XTAG_TYPE_STRING="string";
     public static final String XTAG_TYPE_DESCRIPTION="description";
     public static final String XTAG_TYPE_COMMASEPARATED="commaSeparated";
@@ -346,7 +347,7 @@ public interface ObjectKeys {
     public static final String XTAG_TYPE_XML="xml";
     public static final String XTAG_TYPE_EVENT="event";
     public static final String XTAG_TYPE_FILE="file";
-    
+    //types of elements
     public static final String XTAG_ELEMENT_TYPE_PROPERTY="property";
     public static final String XTAG_ELEMENT_TYPE_HISTORYSTAMP="historyStamp";
     public static final String XTAG_ELEMENT_TYPE_EVENT="event";
@@ -364,7 +365,7 @@ public interface ObjectKeys {
     
     public static final String XTAG_HISTORY_BY="author";
     public static final String XTAG_HISTORY_WHEN="when";
-
+    //values of name= attributes
     public static final String XTAG_ENTITY_TITLE="title";
     public static final String XTAG_ENTITY_DESCRIPTION="description";
     public static final String XTAG_ENTITY_PARENTBINDER="parentBinder";
@@ -435,6 +436,7 @@ public interface ObjectKeys {
     public static final String XTAG_TEMPLATE_TITLE="templateTitle";
     public static final String XTAG_TEMPLATE_DESCRIPTION="templateDescription";
     
+
     public static final String XTAG_WF_CHANGE="workflowChange";
     public static final String XTAG_WFS_DEFINITION="definition";
     public static final String XTAG_WFS_TIMER="timer";

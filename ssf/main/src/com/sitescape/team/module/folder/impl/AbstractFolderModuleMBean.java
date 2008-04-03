@@ -38,5 +38,4 @@ public interface AbstractFolderModuleMBean {
 	
 	public int getAddReplyCount();
 	
-	public int getAddFolderCount();
 }

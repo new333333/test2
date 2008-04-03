@@ -33,4 +33,6 @@ public interface DefinitionService {
 	public String getDefinitionAsXML(String accessToken, String definitionId);
 	
 	public String getDefinitionConfigAsXML(String accessToken);
+	
+	public String getDefinitionListAsXML(String accessToken);
 }

@@ -29,36 +29,27 @@
 package com.sitescape.team.module.workspace.impl;
 
 
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.sitescape.team.NotSupportedException;
-import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.BinderComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
-import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.util.Validator;
 
 /**
  * @author Jong Kim
@@ -69,26 +60,6 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 	protected Log logger = LogFactory.getLog(getClass());
     protected DefinitionModule definitionModule;
 
-	public boolean testAccess(Workspace workspace, WorkspaceOperation operation) {
-		try {
-			checkAccess(workspace, operation);
-			return true;
-		} catch (AccessControlException ac) {
-			return false;
-		}
-	}
-	public void checkAccess(Workspace workspace, WorkspaceOperation operation) throws AccessControlException {
-		switch (operation) {
-		case addFolder:
-	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_FOLDERS);
-	    	break;
-		case addWorkspace:
-	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_WORKSPACES);
-	    	break;
-	    default:
-	    	throw new NotSupportedException(operation.toString(), "checkAccess");
-		}
-	}
 
     protected DefinitionModule getDefinitionModule() {
 		return definitionModule;
@@ -99,19 +70,6 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 	 */
 	public void setDefinitionModule(DefinitionModule definitionModule) {
 		this.definitionModule = definitionModule;
-	}
-	private Workspace loadWorkspace(Long workspaceId)  {
-        Workspace workspace = (Workspace)getCoreDao().loadBinder(workspaceId, RequestContextHolder.getRequestContext().getZoneId());
-        if (workspace.isDeleted()) throw new NoBinderByTheIdException(workspace.getId());
-        return workspace;
-		
-	}
-	private BinderProcessor loadProcessor(Workspace workspace) {
-        // This is nothing but a dispatcher to an appropriate processor. 
-        // Shared logic, if exists, must be put into the corresponding method in 
-        // com.sitescape.team.module.folder.AbstractfolderCoreProcessor class, not 
-        // in this method.
-		return (BinderProcessor)getProcessorManager().getProcessor(workspace, BinderProcessor.PROCESSOR_KEY);
 	}
 
    public Workspace getWorkspace(Long workspaceId) 
@@ -173,41 +131,5 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
      	return titles;
    		
    	}
-   	
-    //no transaction by default     
-    public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
- 
-    	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
-    	checkAccess(parentWorkspace, WorkspaceOperation.addFolder);
-    	Definition def = null;
-    	if (Validator.isNotNull(definitionId)) { 
-    		def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-    	}
-    	        
-    	Binder binder = loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems, options);
-    	return binder.getId();
-   }
- 
-    //no transaction by default
-    public Long addWorkspace(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
-    	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
-   		    
-    	Definition def = null;
-    	if (Validator.isNotNull(definitionId)) { 
-    		def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-    	}
-    	//allow users workspaces to be created for all users
-    	if (parentWorkspace.isReserved() && ObjectKeys.PROFILE_ROOT_INTERNALID.equals(parentWorkspace.getInternalId())) { 
-    		if ((def == null) || (def.getType() != Definition.USER_WORKSPACE_VIEW)) {
-    			checkAccess(parentWorkspace, WorkspaceOperation.addWorkspace);
-    		}
-    	} else {
-    		checkAccess(parentWorkspace, WorkspaceOperation.addWorkspace);
-    	}
-    	
-    	return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems, options).getId();
-    }
  
 }

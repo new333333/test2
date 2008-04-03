@@ -131,6 +131,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("type", entry.getEntityType().toString());
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
 		entryElem.addAttribute("reserved", Boolean.toString(entry.isReserved()));
+		entryElem.addAttribute("name", entry.getName());
 		
 		return entryElem;
 	}
@@ -146,6 +147,11 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("emailAddress", (String) user.get(ProfileIndexUtils.EMAIL_FIELD));
 		entryElem.addAttribute("type", (String) user.get(EntityIndexUtils.ENTRY_TYPE_FIELD));
 		entryElem.addAttribute("reserved", Boolean.toString(user.get(ProfileIndexUtils.RESERVEDID_FIELD)!=null));
+		if (EntityIndexUtils.ENTRY_TYPE_USER.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
+			entryElem.addAttribute("name", (String)user.get(ProfileIndexUtils.LOGINNAME_FIELD));			
+		} else {
+			entryElem.addAttribute("name", (String)user.get(ProfileIndexUtils.GROUPNAME_FIELD));			
+		}
 /*
  * I don't know how to get this from the map
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));

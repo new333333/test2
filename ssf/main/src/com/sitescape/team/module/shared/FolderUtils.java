@@ -159,11 +159,7 @@ public class FolderUtils {
 		data.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, resourcePath);
 		data.put(ObjectKeys.PI_SYNCH_TO_SOURCE, Boolean.toString(synchToSource));
 		
-		if(parentBinder instanceof Workspace)
-			return getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), null, null);
-		else
-			return getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
+		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
 					new MapInputData(data), null, null);
 	}
 
@@ -190,11 +186,7 @@ public class FolderUtils {
 		//data.put("description", "This folder was created through WebDAV");
 		data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
 		
-		if(parentBinder instanceof Workspace)
-			return getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), null, null);
-		else
-			return getFolderModule().addFolder(parentBinder.getId(), def.getId(), 
+		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
 					new MapInputData(data), null, null);
 	}
 	

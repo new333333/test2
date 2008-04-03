@@ -49,6 +49,10 @@ public class DefinitionServiceEndpoint implements ServiceLifecycle, DefinitionSe
 		return getDefinitionService().getDefinitionConfigAsXML(accessToken);
 	}
 
+	public String getDefinitionListAsXML(String accessToken) {
+		return getDefinitionService().getDefinitionListAsXML(accessToken);
+	}
+
 	public void init(Object context) throws ServiceException {
 		this.definitionService = (DefinitionService) SpringContextUtil.getBean("definitionService");
 	}
