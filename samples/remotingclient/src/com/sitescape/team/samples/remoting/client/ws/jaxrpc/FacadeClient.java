@@ -151,7 +151,7 @@ public class FacadeClient {
 		JaxRpcFacade service = locator.getFacade();
 		
 		// Invoke getEntryAsXML
-		String entryAsXML = service.getFolderEntryAsXML(binderId, entryId);
+		String entryAsXML = service.getFolderEntryAsXML(binderId, entryId, false);
 		
 		FacadeClientHelper.printXML(entryAsXML);				
 	}
@@ -168,7 +168,7 @@ public class FacadeClient {
 		
 		FacadeClientHelper.printXML(entryInputDataAsXML);
 		
-		long entryId = service.addFolderEntry(binderId, definitionId, entryInputDataAsXML);
+		long entryId = service.addFolderEntry(binderId, definitionId, entryInputDataAsXML, null);
 		
 		System.out.println("*** ID of the newly created entry is " + entryId);	
 		System.out.println();
@@ -213,7 +213,7 @@ public class FacadeClient {
 		JaxRpcFacadeService locator = new JaxRpcFacadeServiceLocator(/*config*/);
 		JaxRpcFacade service = locator.getFacade();
 		
-		String wsTreeAsXML = service.getWorkspaceTreeAsXML(binderId, levels);
+		String wsTreeAsXML = service.getWorkspaceTreeAsXML(binderId, levels, "0");
 		
 		FacadeClientHelper.printXML(wsTreeAsXML);				
 	}
