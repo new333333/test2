@@ -281,11 +281,11 @@ div.ss_canvas {
 	line-height:1.6em;
 	padding-top:5px;
 	}
-#ss_tasks_para .ss_link_1 a:{
+#ss_tasks_para .ss_link_1 a {
 	text-decoration:underline!important;
 	color: #00AEEF!important; 
 	}
-#ss_tasks_para .ss_link_2 a:{
+#ss_tasks_para .ss_link_2 a {
 	text-decoration:underline!important;
 	color:#4AAA42!important;
 	font-size:10px!important; 
@@ -343,7 +343,7 @@ div.ss_canvas {
 	/* HOVER LINKS */
 #ss_visit_para a:hover{
 	text-decoration:underline;
-	color:#464E42; !important;
+	color:#464E42 !important;
 	background-color:#CCCCCC !important;
 	}
 	
@@ -363,7 +363,7 @@ div.ss_canvas {
 	padding-left: 30px;
 	padding-top: 3px;
 	padding-bottom: 3px;
-	border-bottom:1px dotted #666666;}
+	border-bottom:1px dotted #666666;
 	}
 	/* ACTIVE LINKS - VIEWED ITEMS*/	
 #ss_viewedItems a{
@@ -392,7 +392,7 @@ div.ss_canvas {
 	/* HOVER LINKS */
 #ss_cal_para a:hover{
 	text-decoration:underline;
-	color:#464E42; !important;
+	color:#464E42 !important;
 	background-color:#CCCCCC !important;
 	}
 	/*MY DOCUMENTS*/
@@ -406,13 +406,13 @@ div.ss_canvas {
 	border-bottom:1px dotted #0C4E84;
 	}
 	/* ACTIVE LINK */
-	#ss_mydocs_para a					
-	text-decoration:underline;{
+#ss_mydocs_para a {					
+	text-decoration:underline;
 	}
 	/* HOVER LINK */
 #ss_mydocs_para a:hover{
 	text-decoration:underline;
-	color:#464E42; !important;
+	color:#464E42 !important;
 	background-color:#CCCCCC !important;
 	}
 	/* WHATS HOT */
@@ -601,7 +601,7 @@ div.ss_canvas {
 .ss_link_1, .ss_link_1 span { 
 	text-decoration: underline;
 	color: #00AEEF!important;
-	font-background: #444444 !important; 
+	background: #444444 !important; 
 	}
 	/* PLACES LINKS*/	
 .ss_link_2, .ss_link_2 span	{
