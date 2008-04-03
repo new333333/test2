@@ -54,7 +54,7 @@ public interface EntryProcessor extends BinderProcessor {
     
     public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems)
     	throws WriteFilesException;
-    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition);  
+    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, String startState);  
     public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource);
     public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition);
     public Entry getEntry(Binder binder, Long entryId);
