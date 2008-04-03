@@ -57,7 +57,7 @@ import com.sitescape.team.util.LongIdUtil;
 
 public class XmlUtils {
 
-	public static Element addDefinition(Element parent, Definition def) {
+	public static Element addDefinitionReference(Element parent, Definition def) {
 		Element e = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
 		e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
 		e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());

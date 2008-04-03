@@ -28,6 +28,10 @@
  */
 package com.sitescape.team.remoting.ws.service.folder;
 
+import java.util.HashMap;
+
+import org.dom4j.Document;
+
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoUserByTheNameException;
@@ -35,13 +39,23 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.remoting.RemotingException;
+import com.sitescape.team.remoting.ws.util.DomInputData;
+import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class MigrationServiceImpl extends FolderServiceImpl implements
 		MigrationService {
 
 	public long addFolder(String accessToken, long parentId, String definitionId,
 			String inputDataAsXML, Timestamps timestamps) {
-		return super.addFolder(accessToken, parentId, definitionId, inputDataAsXML);
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
+		
+		try {
+			Document doc = getDocument(inputDataAsXML);
+			return getBinderModule().addBinder(new Long(parentId), definitionId, 
+					new DomInputData(doc, getIcalModule()), new HashMap(), null).longValue();
+		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
 	}
 
 	public long addFolderEntry(String accessToken, long binderId, String definitionId,

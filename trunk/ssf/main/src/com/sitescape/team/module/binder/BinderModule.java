@@ -56,6 +56,8 @@ import com.sitescape.team.web.tree.DomTreeBuilder;
  */
 public interface BinderModule {
 	public enum BinderOperation {
+		addFolder,
+		addWorkspace,
 		copyBinder,
 		deleteBinder,
 		indexBinder,
@@ -69,6 +71,20 @@ public interface BinderModule {
 		report,
 		setProperty,		
 	}
+    /**
+     * Add a new <code>Folder</code> or <code>Workspace</code>.  Use definition type to determine which
+     * @param parentId
+     * @param definitionId
+     * @param inputData
+     * @param fileItems May be <code>null</code>
+     * @param options Additional processing options or null
+     * @return
+     * @throws AccessControlException
+     * @throws WriteFilesException
+     */
+    public Long addBinder(Long parentId, String definitionId, InputDataAccessor inputData,
+       		Map fileItems, Map options)
+    	throws AccessControlException, WriteFilesException;
 	/**
 	 * Subscribe to a binder.  Use to request notification of changes.
 	 * @param binderId

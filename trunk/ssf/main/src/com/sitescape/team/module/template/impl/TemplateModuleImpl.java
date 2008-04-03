@@ -563,12 +563,12 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		if (defs.isEmpty() || binder.isDefinitionsInherited()) {
 			Definition def = binder.getEntryDef();
 			if (def != null) {
-				XmlUtils.addDefinition(element, def);
+				XmlUtils.addDefinitionReference(element, def);
 			}
 			
 		} else {
 			for (Definition def:defs) {
-				XmlUtils.addDefinition(element, def);
+				XmlUtils.addDefinitionReference(element, def);
 			}
 		}
 		Map<String,Definition> workflows = binder.getWorkflowAssociations();
@@ -576,9 +576,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			//log the name the workflow refers to
 			try {
 				Definition entryDef = getCoreDao().loadDefinition(me.getKey(), binder.getZoneId());
-				Element wf = XmlUtils.addDefinition(element, me.getValue());
+				Element wf = XmlUtils.addDefinitionReference(element, me.getValue());
 				//log the definitionId the workflow refers to
-				XmlUtils.addDefinition(wf, entryDef);
+				XmlUtils.addDefinitionReference(wf, entryDef);
 			} catch (NoDefinitionByTheIdException nd) {};
 	
 		}
@@ -713,16 +713,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	   }	    	
 	   //get binder created
 	   try {
-		   if (cfg.getDefinitionType() == Definition.WORKSPACE_VIEW) {
-			   binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
-		   } else if (cfg.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
-			   binder = getCoreDao().loadBinder(getWorkspaceModule().addWorkspace(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
-		   } else {
-			   if (parentBinder instanceof Workspace)
-				   binder = getCoreDao().loadBinder(getWorkspaceModule().addFolder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
-			   else
-				   binder = getCoreDao().loadBinder(getFolderModule().addFolder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
-		   }
+			   binder = getCoreDao().loadBinder(getBinderModule().addBinder(parentBinder.getId(), def.getId(), inputData, fileItems, ctx), zoneId);
 	   } catch (WriteFilesException wf) {
 		   //don't fail, but log it
   			logger.error("Error creating binder from template: ", wf);

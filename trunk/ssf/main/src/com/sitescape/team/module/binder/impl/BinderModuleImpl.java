@@ -86,7 +86,6 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.lucene.Hits;
-import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -114,7 +113,7 @@ import com.sitescape.util.Validator;
  *
  */
 public class BinderModuleImpl extends CommonDependencyInjection implements BinderModule {
- 
+
 	private TransactionTemplate transactionTemplate;
     protected TransactionTemplate getTransactionTemplate() {
 		return transactionTemplate;
@@ -149,6 +148,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
   			getAccessControlManager().checkOperation(RequestContextHolder.getRequestContext().getZone(), WorkAreaOperation.SITE_ADMINISTRATION);
   		} else {
   			switch (operation) {
+  				case addFolder:
+  					getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_FOLDERS);
+  					break;
+  				case addWorkspace:
+  			    	getAccessControlManager().checkOperation(binder, WorkAreaOperation.CREATE_WORKSPACES);
+  			    	break;
 	  			case deleteBinder:
 	  			case indexBinder:
 	  			case indexTree:
@@ -238,7 +243,29 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return processor.getBinders(binder, options);
 	}
 
-    public Set<Long> indexTree(Long binderId) {
+	//no transaction by default
+	public Long addBinder(Long parentBinderId, String definitionId, InputDataAccessor inputData, 
+			Map fileItems, Map options) throws AccessControlException, WriteFilesException {
+		Binder parentBinder = loadBinder(parentBinderId);
+		Definition def = null;
+		if (Validator.isNotNull(definitionId)) { 
+			def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
+		} else  {
+			def = parentBinder.getEntryDef();
+		} 
+		if (def.getType() == Definition.FOLDER_VIEW) {
+			checkAccess(parentBinder, BinderOperation.addFolder);
+			Binder binder = loadBinderProcessor(parentBinder).addBinder(parentBinder, def, Folder.class, inputData, fileItems, options);
+			if(parentBinder instanceof Folder && parentBinder.isMirrored() && binder.isMirrored())
+				setDefinitionsInherited(binder.getId(), true);
+			return binder.getId();
+		} else {
+			if (!(parentBinder instanceof Workspace)) throw new NotSupportedException("errorcode.notsupported.addbinder");
+			checkAccess(parentBinder, BinderOperation.addWorkspace);		    	
+		    return loadBinderProcessor(parentBinder).addBinder(parentBinder, def, Workspace.class, inputData, fileItems, options).getId();
+		}
+	}
+	public Set<Long> indexTree(Long binderId) {
     	Set<Long> ids = new HashSet();
     	ids.add(binderId);
     	return indexTree(ids, StatusTicket.NULL_TICKET);

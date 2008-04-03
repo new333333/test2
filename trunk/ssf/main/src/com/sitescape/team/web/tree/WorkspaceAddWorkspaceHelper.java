@@ -32,8 +32,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.workspace.WorkspaceModule;
-import com.sitescape.team.security.function.WorkAreaOperation;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.util.AllModulesInjected;
 
 public class WorkspaceAddWorkspaceHelper implements DomTreeHelper {
@@ -61,7 +60,7 @@ public class WorkspaceAddWorkspaceHelper implements DomTreeHelper {
 	public void customize(AllModulesInjected bs, Object source, int type, Element element) {
 		if ((type == DomTreeBuilder.TYPE_WORKSPACE)) {
 			Workspace ws = (Workspace) source;
-			if (!bs.getWorkspaceModule().testAccess(ws, WorkspaceModule.WorkspaceOperation.addWorkspace)) {
+			if (!bs.getBinderModule().testAccess(ws, BinderModule.BinderOperation.addWorkspace)) {
 				element.addAttribute("titleClass", "ss_light");
 				element.addAttribute("titleHighlightedClass", "ss_light");
 			}

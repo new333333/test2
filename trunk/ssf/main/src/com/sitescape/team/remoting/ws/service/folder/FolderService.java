@@ -30,8 +30,6 @@ package com.sitescape.team.remoting.ws.service.folder;
 
 public interface FolderService {
 
-	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML);
-
 	public String getFolderEntriesAsXML(String accessToken, long binderId);
 	
 	public String getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments);

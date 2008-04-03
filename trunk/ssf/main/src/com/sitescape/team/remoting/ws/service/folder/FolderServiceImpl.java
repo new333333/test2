@@ -49,18 +49,6 @@ import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class FolderServiceImpl extends BaseService implements FolderService {
 
-	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML)
-	{
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-		
-		try {
-			Document doc = getDocument(inputDataAsXML);
-			return getFolderModule().addFolder(new Long(parentId), definitionId, 
-					new DomInputData(doc, getIcalModule()), new HashMap(), null).longValue();
-		} catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
-	}
 	
 	public String getFolderEntriesAsXML(String accessToken, long binderId) {
 		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));

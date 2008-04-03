@@ -124,7 +124,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     AtomicInteger meCount = new AtomicInteger();
     AtomicInteger deCount = new AtomicInteger();
     AtomicInteger arCount = new AtomicInteger();
-    AtomicInteger afCount = new AtomicInteger();
 
 
 	protected DefinitionModule getDefinitionModule() {
@@ -209,9 +208,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case addEntry: 
 			case synchronize:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
-				break;
-			case addFolder:
-				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_FOLDERS);
 				break;
 			case changeEntryTimestamps:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.SITE_ADMINISTRATION);
@@ -308,24 +304,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		}
 		return result;
 	}
-    //no transaction by default
-   public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
-    	afCount.incrementAndGet();
-		Folder parentFolder = loadFolder(parentFolderId);
-		checkAccess(parentFolder, FolderOperation.addFolder);
-		Definition def = null;
-		if (Validator.isNotNull(definitionId)) { 
-			def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-		} else {
-			def = parentFolder.getEntryDef();
-		}
-    			
-		Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems, options);
-		if(parentFolder.isMirrored() && binder.isMirrored())
-			getBinderModule().setDefinitionsInherited(binder.getId(), true);
-		return binder.getId();
-    }
+ 
     //no transaction by default
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
@@ -1067,7 +1046,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 		meCount.set(0);
 		deCount.set(0);
 		arCount.set(0);
-		afCount.set(0);
 	}
 	public int getAddEntryCount() {
 		return aeCount.get();
@@ -1077,9 +1055,6 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	}
 	public int getModifyEntryCount() {
 		return meCount.get();
-	}
-	public int getAddFolderCount() {
-		return afCount.get();
 	}
 	public int getAddReplyCount() {
 		return arCount.get();

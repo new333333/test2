@@ -28,9 +28,12 @@
  */
 package com.sitescape.team.remoting.ws;
 
+import java.util.List;
+
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
 import com.sitescape.team.remoting.Facade;
+import com.sitescape.team.remoting.ws.service.binder.BinderService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
 import com.sitescape.team.remoting.ws.service.ical.IcalService;
@@ -58,6 +61,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	private IcalService icalService;
 	private ProfileService profileService;
 	private ZoneService zoneService;
+	private BinderService binderService;
 	
 	protected void onInit() {
 		this.templateService = (TemplateService) getWebApplicationContext().getBean("templateService");
@@ -67,6 +71,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.icalService = (IcalService) getWebApplicationContext().getBean("icalService");
 		this.profileService = (ProfileService) getWebApplicationContext().getBean("profileService");
 		this.zoneService = (ZoneService) getWebApplicationContext().getBean("zoneService");
+		this.binderService = (BinderService) getWebApplicationContext().getBean("binderService");
 	}
 
 	/**
@@ -85,6 +90,14 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		return this.definitionService.getDefinitionConfigAsXML(null);
 	}
 	
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.definition#getDefinitionListAsXML}.
+	 */
+	public String getDefinitionListAsXML() {
+		return this.definitionService.getDefinitionListAsXML(null);
+
+	}
 	/**
 	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.module.admin.remoting.ws#addBinder}.
@@ -220,10 +233,10 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.remoting.ws.service.search#getTeamMembersAsXML}.
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#getTeamMembersAsXML}.
 	 */
 	public String getTeamMembersAsXML(long binderId) {
-		return this.searchService.getTeamMembersAsXML(null, binderId);
+		return this.binderService.getTeamMembersAsXML(null, binderId);
 	}
 
 	/**
@@ -234,7 +247,9 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		return this.searchService.getTeamsAsXML(null);
 	}
 	
-	/**
+	public void setTeamMembers(long binderId, List<Long> memberIds) {
+		this.binderService.setTeamMembers(null, binderId, memberIds);
+	}	/**
 	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.zone#addZoneUnderPortal}.
 	 */
@@ -257,5 +272,6 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public void deleteZoneUnderPortal(String zoneName) {
 		this.zoneService.deleteZoneUnderPortal(null, zoneName);
 	}
+
 
 }

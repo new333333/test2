@@ -63,7 +63,6 @@ public interface FolderModule {
 	//if not listed, you have the entry and the operation only needs read access
    public enum FolderOperation {
 	   addEntry,
-	   addFolder,
 	   addEntryWorkflow,
 	   addReply,
 	   copyEntry,
@@ -129,20 +128,6 @@ public interface FolderModule {
      */
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems, Map options) 
-    	throws AccessControlException, WriteFilesException;
-    /**
-     * Add a new <code>Folder</code> under this folder.
-     * @param folderId
-     * @param definitionId
-     * @param inputData
-     * @param fileItems May be <code>null</code>
-     * @param options Additional processing options or null
-     * @return
-     * @throws AccessControlException
-     * @throws WriteFilesException
-     */
-    public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems, Map options)
     	throws AccessControlException, WriteFilesException;
     /**
      * Subscribe to an entry.  Multiple styles can be specified and multiple address/style are permitted

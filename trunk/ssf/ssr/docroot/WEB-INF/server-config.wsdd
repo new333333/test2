@@ -83,13 +83,13 @@
 		<parameter name="allowedMethods" value="*"/>
 		<beanMapping qname="ns:Timestamps" xmlns:ns="http://model.migration.service.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.service.folder.MigrationService$Timestamps"/>
 	</service>
-	<service name="WorkspaceService" provider="java:RPC" style="rpc" use="encoded">
+	<service name="BinderService" provider="java:RPC" style="rpc" use="encoded">
 		<parameter name="scope" value="application"/>	
-		<parameter name="wsdlTargetNamespace" value="urn:workspace.service.ws.remoting.team.sitescape.com"/>
-		<parameter name="wsdlServiceElement" value="WorkspaceServiceSoapService"/>
-		<parameter name="wsdlServicePort" value="WorkspaceService"/>
-		<parameter name="className" value="com.sitescape.team.remoting.ws.service.workspace.WorkspaceServiceEndpoint"/>
-		<parameter name="wsdlPortType" value="WorkspaceServiceSoap"/>
+		<parameter name="wsdlTargetNamespace" value="urn:binder.service.ws.remoting.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="BinderServiceSoapService"/>
+		<parameter name="wsdlServicePort" value="BinderService"/>
+		<parameter name="className" value="com.sitescape.team.remoting.ws.service.binder.BinderServiceEndpoint"/>
+		<parameter name="wsdlPortType" value="BinderServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
 	</service>
