@@ -90,6 +90,7 @@ public interface FolderModule {
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException;
     public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) throws AccessControlException;
+    public void addEntryWorkflow(Long folderId, Long entryId, String definitionId, String startState) throws AccessControlException;
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
 
