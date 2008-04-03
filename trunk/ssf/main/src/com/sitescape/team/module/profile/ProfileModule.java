@@ -208,6 +208,14 @@ public interface ProfileModule {
  	public SortedSet<Principal> getPrincipals(Collection<Long> ids)
  		throws AccessControlException;
  	/**
+ 	 * Search for all principals
+ 	 * @param binderId
+ 	 * @param searchOptions
+ 	 * @return
+ 	 * @throws AccessControlException
+ 	 */
+	public Map getPrincipals(Long binderId, Map searchOptions) throws AccessControlException;
+	/**
  	 * Return the profileBinder
  	 * @return
  	 */

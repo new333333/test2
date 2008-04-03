@@ -115,6 +115,8 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private String[] applicationGroupDocType = {EntityIndexUtils.ENTRY_TYPE_APPLICATION_GROUP};
 	private String[] individualPrincipalDocType = {EntityIndexUtils.ENTRY_TYPE_USER, EntityIndexUtils.ENTRY_TYPE_APPLICATION};
 	private String[] groupPrincipalDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP, EntityIndexUtils.ENTRY_TYPE_APPLICATION_GROUP};
+	
+	private String[] allPrincipalDocType = {EntityIndexUtils.ENTRY_TYPE_USER, EntityIndexUtils.ENTRY_TYPE_GROUP, EntityIndexUtils.ENTRY_TYPE_APPLICATION, EntityIndexUtils.ENTRY_TYPE_APPLICATION_GROUP};
 	private List<String> guestSavedProps = Arrays.asList(new String[]{ObjectKeys.USER_PROPERTY_PERMALINK_URL});
     protected DefinitionModule definitionModule;
 	protected DefinitionModule getDefinitionModule() {
@@ -1109,6 +1111,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        	TreeSet<IndividualPrincipal> result = new TreeSet(c);
        	result.addAll(getProfileDao().loadIndividualPrincipals(individualIds, user.getZoneId(), true));
 		return result;	
+	}
+	//RO transaction
+	public Map getPrincipals(Long binderId, Map searchOptions) {
+        ProfileBinder binder = loadBinder(binderId);
+		checkReadAccess(binder);
+        return loadProcessor(binder).getBinderEntries(binder, allPrincipalDocType, searchOptions);        
 	}
     //RO transaction
     public Collection<SharedEntity> getShares(Long userId, Date after) {
