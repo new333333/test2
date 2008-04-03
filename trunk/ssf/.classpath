@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="ws-client/src"/>
 	<classpathentry kind="src" path="slide-webdavclient/src"/>
 	<classpathentry kind="src" path="commons-httpclient-contrib/src"/>
 	<classpathentry kind="src" path="lucene-contrib/src"/>
@@ -93,5 +94,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jakarta-taglibs-standard.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portals-bridges.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portal-client.jar"/>
+	<classpathentry exported="true" kind="lib" path="ws-client/ssf-wsclient.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
