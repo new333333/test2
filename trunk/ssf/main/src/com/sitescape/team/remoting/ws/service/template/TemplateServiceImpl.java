@@ -28,7 +28,16 @@
  */
 package com.sitescape.team.remoting.ws.service.template;
 
+import java.util.List;
+
+import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
+import org.dom4j.Element;
+
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 
@@ -42,5 +51,21 @@ public class TemplateServiceImpl extends BaseService implements TemplateService 
 			throw new RemotingException(e);
 		}
 	}
-	
+	public String getTemplateListAsXML(String accessToken) {
+		List<TemplateBinder> defs = getTemplateModule().getTemplates();
+		Document doc = DocumentHelper.createDocument();
+		doc.addElement("templates");
+		Element root = doc.getRootElement();
+		for (TemplateBinder def:defs) {
+			Element defElement = root.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
+			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
+			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
+			defElement.addAttribute("id", def.getId().toString());
+			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, def.getDefinitionType().toString());
+			XmlUtils.addAttributeCData(defElement, ObjectKeys.XTAG_TEMPLATE_TITLE, ObjectKeys.XTAG_TYPE_STRING, def.getTemplateTitle());
+			
+		}
+		return root.asXML();
+	}
+
 }
