@@ -40,7 +40,7 @@ public class NullWorkflowModuleImpl extends CommonDependencyInjection implements
    public void startScheduledJobs(Workspace zone) {	   
     }
 
-	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef) {
+	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef, String startState) {
 	}
 	public void deleteEntryWorkflow(WorkflowSupport entry) {
 	}	

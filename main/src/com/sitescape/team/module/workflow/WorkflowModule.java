@@ -39,13 +39,15 @@ public interface WorkflowModule {
     public final static String ENTRY_TYPE = "__entryType";
     public final static String ENTRY_ID = "__entryId";
     public final static String BINDER_ID = "__binderId";
+    public final static String SKIP_NOTIFY_ON_ENTER = "__skipNotifyOnEnter";
 	/**
 	 * Start workflow on entry.
 	 * @param entry
 	 * @param id
 	 * @param workflowDef
+	 * @param startState Optional
 	 */
-	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef);
+	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef, String startState);
 	/**
 	 * Delete all workflows associated with an entry
 	 * @param entry
