@@ -102,13 +102,6 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.module.admin.remoting.ws#addBinder}.
 	 */
-	public long addWorkspace(long parentBinderId, long binderConfigId, String title) {
-		return this.templateService.addBinder(null, parentBinderId, binderConfigId, title);
-	}
-	/**
-	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.module.admin.remoting.ws#addBinder}.
-	 */
 	public long addFolder(long parentBinderId, long binderConfigId, String title) {
 		return this.templateService.addBinder(null, parentBinderId, binderConfigId, title);
 	}
