@@ -31,4 +31,5 @@ package com.sitescape.team.remoting.ws.service.template;
 public interface TemplateService {
 
 	public long addBinder(String accessToken, long parentBinderId, long binderConfigId, String title);
+	public String getTemplateListAsXML(String accessToken);
 }

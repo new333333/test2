@@ -142,6 +142,8 @@ public class WSClient extends WSClientBase
 				wsClient.fetchAndPrintXML("SearchService", "getHotContent", new Object[] {null, args[1], binderId});
 			} else if(args[0].equals("listDefinitions")) {
 				wsClient.fetchAndPrintXML("DefinitionService", "getDefinitionListAsXML", new Object[] {null});
+			} else if(args[0].equals("listTemplates")) {
+				wsClient.fetchAndPrintXML("TemplateService", "getTemplateListAsXML", new Object[] {null});
 			} else if(args[0].equals("setTeamMembers")) {
 				String ids[] = args[2].split(",");
 				System.out.println(ids.length);
@@ -217,6 +219,7 @@ public class WSClient extends WSClientBase
 		System.out.println("printDefinition <definition id>");
 		System.out.println("printDefinitionConfig");
 		System.out.println("listDefinitions");
+		System.out.println("listTemplates");
 		System.out.println("addEntry <folder id> <definition id> <entryDataXMLString> [<attachmentFileName>]");
 		System.out.println("addWorkflow <folder id> <entry id> <definition id> [<startState>]");
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
