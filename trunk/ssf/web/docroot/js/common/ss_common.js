@@ -4297,7 +4297,7 @@ function ss_getActionFromDefinitionType(definitionType) {
 }
 
 function ss_launchUrlInNewWindow(obj, fileName) {
-	var pattern = /\.([^/\.]*)$/
+	var pattern = /\.([^\/\.]*)$/
 	var results = pattern.exec(fileName)
 	if (!ss_isIE && results != null) {
 		//IE doesn't work on the second attempt to open the same file.
@@ -5747,6 +5747,8 @@ function ss_showAttachmentVersions(prefix, start, end) {
 	}	
 }
 
+
+
 //Routine to show or hide the sidebar
 function ss_showHideSidebar(namespace) {
 	var divObj = self.document.getElementById('ss_sidebarDiv'+namespace);
@@ -5756,15 +5758,21 @@ function ss_showHideSidebar(namespace) {
 	var sidebarVisibility = "";
 	if (divObj.style.display == 'block') {
 		//Hide it
-		divObj.style.display = 'none';
-		tdObj.className = '';
-		sidebarShow.style.display = 'none'
-		sidebarHide.style.display = 'block'
-		sidebarVisibility = "none"
+   		dojo.lfx.html.fade(divObj, {end: 0}, 400, '', function() {
+		    	divObj.style.visibility = "hidden";
+		    	divObj.style.display = "none";
+				tdObj.className = '';
+				sidebarShow.style.display = 'none'
+				sidebarHide.style.display = 'block'
+				sidebarVisibility = "none"
+   		}).play();
 	} else {
 		//Show it
 		tdObj.className = 'ss_view_sidebar';
+    	dojo.html.setOpacity(divObj, 0);
 		divObj.style.display = 'block';
+    	divObj.style.visibility = "visible";
+	    dojo.lfx.html.fade(divObj, {start:0, end:1.0}, 400).play();
 		sidebarShow.style.display = 'block'
 		sidebarHide.style.display = 'none'
 		sidebarVisibility = "block"
@@ -5776,4 +5784,5 @@ function ss_showHideSidebar(namespace) {
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
 	ajaxRequest.sendRequest();  //Send the request
 }
+
 
