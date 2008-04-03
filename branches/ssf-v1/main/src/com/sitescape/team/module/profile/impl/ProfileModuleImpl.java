@@ -100,6 +100,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
 	private String[] userDocType = {EntityIndexUtils.ENTRY_TYPE_USER};
 	private String[] groupDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP};
+	private String[] principalDocType = {EntityIndexUtils.ENTRY_TYPE_USER, EntityIndexUtils.ENTRY_TYPE_GROUP};
 
     protected DefinitionModule definitionModule;
 	protected DefinitionModule getDefinitionModule() {
@@ -322,6 +323,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
        	result.addAll(getProfileDao().loadGroups(entryIds, user.getZoneId()));
 		return result;
 	}
+	//RO transaction
+	public Map getPrincipals(Long binderId, Map options) {
+        ProfileBinder binder = loadBinder(binderId);
+    	checkReadAccess(binder);
+        return loadProcessor(binder).getBinderEntries(binder, principalDocType, options);        
+    }
+
 	public SortedSet<Principal> getPrincipals(Collection<Long> ids, Long zoneId) {
 		ProfileBinder binder = getProfileBinder();
  	    User user = RequestContextHolder.getRequestContext().getUser();
