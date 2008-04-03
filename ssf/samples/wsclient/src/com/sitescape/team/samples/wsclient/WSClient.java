@@ -97,7 +97,7 @@ public class WSClient extends WSClientBase
 				if(args.length > 4) {
 					stateName = args[4];
 				}
-				justDoIt("addEntryWorkflow", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], stateName});
+				wsClient.justDoIt("FolderService", "addEntryWorkflow", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], stateName});
 			} else if(args[0].equals("modifyEntry")) {
 				String s = readText(args[3]);
 				System.out.println("XML: " + s);
