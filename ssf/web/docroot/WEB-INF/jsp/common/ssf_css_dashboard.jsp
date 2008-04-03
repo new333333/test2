@@ -336,7 +336,7 @@ div.ss_canvas {
 	padding-bottom:3px;
 	border-bottom:1px dotted #666666;}
 	
-	/* ACTIVE LINKS - VISITOR */
+	/* ACTIVE LINKS  VISITOR */
 #ss_visit_para a{
 	text-decoration:underline;
 }
@@ -372,7 +372,7 @@ div.ss_canvas {
 	/* HOVER LINKS */
 #ss_viewedItems a:hover{
 	text-decoration:underline;
-	color:#464E42;!important;
+	color:#ECB456 !important;
 	background-color:#CCCCCC !important;
 	}
 	/*CALENDAR*/
