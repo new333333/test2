@@ -87,6 +87,7 @@ public interface ProfileModule {
     public Map getGroups(Long binderId, Map options) throws AccessControlException;
 	public SortedSet<Group> getGroups(Collection<Long> groupIds) throws AccessControlException;
  	public SortedSet<Principal> getPrincipals(Collection<Long> ids, Long zoneId);
+    public Map getPrincipals(Long binderId, Map options) throws AccessControlException;
 	public ProfileBinder getProfileBinder();
     public UserProperties getUserProperties(Long userId);
     public UserProperties getUserProperties(Long userId, Long folderId);
