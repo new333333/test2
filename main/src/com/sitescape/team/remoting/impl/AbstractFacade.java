@@ -52,6 +52,7 @@ import org.dom4j.io.XMLWriter;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
@@ -67,6 +68,7 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.AbstractAllModulesInjected;
@@ -110,6 +112,29 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
 	}
 
+	public String getDefinitionListAsXML() {
+		List<Definition> defs = getDefinitionModule().getDefinitions();
+		Document doc = DocumentHelper.createDocument();
+		doc.addElement("definitions");
+		Element root = doc.getRootElement();
+		for (Definition def:defs) {
+			Element defElement = root.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
+			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
+			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
+			defElement.addAttribute("id", def.getId().toString());
+			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, Integer.toString(def.getType()));			
+			XmlUtils.addAttributeCData(defElement, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, def.getTitle());
+			
+		}
+		return root.asXML();
+	}
+	public void setDefinitions(long binderId, List<String>definitionIds, List<String>workflowAssociations) {
+		HashMap wfs = new HashMap();
+		for (int i=0; i+1<workflowAssociations.size(); i+=2) {
+			wfs.put(workflowAssociations.get(i), workflowAssociations.get(i+1));
+		}
+		getBinderModule().setDefinitions(binderId, definitionIds, wfs);
+	}
 	public long addFolder(long parentBinderId, long binderConfigId, String title)
 	{
 		try {
@@ -118,7 +143,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			throw new RemotingException(e);
 		}
 	}
-	
+		
 	public String getFolderEntriesAsXML(long binderId) {
 		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
 
@@ -350,6 +375,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		entryElem.addAttribute("type", entry.getEntityType().toString());
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
 		entryElem.addAttribute("reserved", Boolean.toString(entry.isReserved()));
+		entryElem.addAttribute("name", entry.getName());
 		
 		return entryElem;
 	}
@@ -365,6 +391,11 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		entryElem.addAttribute("emailAddress", (String) user.get(ProfileIndexUtils.EMAIL_FIELD));
 		entryElem.addAttribute("type", (String) user.get(EntityIndexUtils.ENTRY_TYPE_FIELD));
 		entryElem.addAttribute("reserved", Boolean.toString(user.get(ProfileIndexUtils.RESERVEDID_FIELD)!=null));
+		if (EntityIndexUtils.ENTRY_TYPE_USER.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
+			entryElem.addAttribute("name", (String)user.get(ProfileIndexUtils.LOGINNAME_FIELD));
+		} else {
+			entryElem.addAttribute("name", (String)user.get(ProfileIndexUtils.GROUPNAME_FIELD));			
+		}
 /*
  * I don't know how to get this from the map
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
@@ -378,7 +409,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
     	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxRecords));
-		Map results = getProfileModule().getUsers(getProfileModule().getProfileBinder().getId(), options);
+		Map results = getProfileModule().getPrincipals(getProfileModule().getProfileBinder().getId(), options);
 		List users = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 		Element rootElement = doc.addElement("principals");
 		rootElement.addAttribute("first", ""+firstRecord);
@@ -506,6 +537,9 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		return doc.getRootElement().asXML();
 	}
 	
+	public void setTeamMembers(long binderId, List<Long> memberIds) {
+		getBinderModule().setTeamMembers(binderId, memberIds);
+	}
 	public String getTeamsAsXML()
 	{
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -558,4 +592,8 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		getDefinitionModule().walkDefinition(entry, visitor, null);
 		
 	}
+	public void addEntryWorkflow(long binderId, long entryId, String definitionId, String startState) {
+		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, startState);
+	}
+	
 }

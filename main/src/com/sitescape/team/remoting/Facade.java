@@ -27,7 +27,7 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.remoting;
-
+import java.util.List;
 /**
  * WS facade for business tier.
  * 
@@ -41,7 +41,9 @@ public interface Facade {
 	public String getDefinitionAsXML(String definitionId);
 	
 	public String getDefinitionConfigAsXML();
-	
+	public String getDefinitionListAsXML();
+	public void setDefinitions(long binderId, List<String>definitionIds, List<String>workflowAssociations);
+
 	// 
 	// Folder operations
 	// 	
@@ -55,6 +57,8 @@ public interface Facade {
 	
 	public void modifyFolderEntry(long folderId, long entryId, String inputDataAsXML);
 	
+	public void addEntryWorkflow(long binderId, long entryId, String definitionId, String startState);
+
 	public void uploadFolderFile(long folderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 
@@ -118,5 +122,12 @@ public interface Facade {
 	 * @return XML representation of teams
 	 */
 	public String getTeamsAsXML();
+	/**
+	 * Set team members for the binder
+	 * @param binderId
+	 * @param memberIds
+	 */
+	public void setTeamMembers(long binderId, List<Long> memberIds);
+
 }
 
