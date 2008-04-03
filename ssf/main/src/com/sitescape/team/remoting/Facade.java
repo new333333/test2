@@ -47,6 +47,7 @@ public interface Facade {
 	public String getDefinitionConfigAsXML();
 	public String getDefinitionListAsXML();
 
+	public long addWorkspace(long parentBinderId, long binderConfigId, String title);
 	// 
 	// Folder operations
 	// 	
