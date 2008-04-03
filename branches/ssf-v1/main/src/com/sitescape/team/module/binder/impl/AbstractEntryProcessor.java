@@ -407,7 +407,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		Definition entryDef = entry.getEntryDef();
     		if (entryDef != null) {
     			Definition wfDef = (Definition)workflowAssociations.get(entryDef.getId());
-    			if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef);
+    			if (wfDef != null)	getWorkflowModule().addEntryWorkflow((WorkflowSupport)entry, entry.getEntityIdentifier(), wfDef, null);
     		}
     	}
     }
@@ -737,12 +737,12 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    	
     }
      //***********************************************************************************************************
-     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition) {
+     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, String startState) {
  		if (!(entry instanceof WorkflowSupport)) return;
   		WorkflowSupport wEntry = (WorkflowSupport)entry;
   		//set up version for all loggin
   		entry.incrLogVersion();
-  		getWorkflowModule().addEntryWorkflow(wEntry, entry.getEntityIdentifier(), definition);
+  		getWorkflowModule().addEntryWorkflow(wEntry, entry.getEntityIdentifier(), definition, startState);
   		processChangeLog(entry, ChangeLog.STARTWORKFLOW);
   		indexEntry(entry);
      }
