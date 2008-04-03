@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.remoting.ws;
 
+import java.util.List;
+
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
 import com.sitescape.team.remoting.Facade;
@@ -55,7 +57,13 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public String getDefinitionConfigAsXML() {
 		return this.facade.getDefinitionConfigAsXML();
 	}
-	
+	public String getDefinitionListAsXML() {
+		return this.facade.getDefinitionListAsXML();
+	}
+
+	public void setDefinitions(long binderId, List<String>definitionIds, List<String>workflowAssociations) {
+		this.facade.setDefinitions(binderId, definitionIds, workflowAssociations);
+	}
 	public long addFolder(long parentBinderId, long binderConfigId, String title) {
 		return this.facade.addFolder(parentBinderId, binderConfigId, title);
 	}
@@ -75,6 +83,9 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
 		this.facade.modifyFolderEntry(binderId, entryId, inputDataAsXML);
+	}
+	public void addEntryWorkflow(long binderId, long entryId, String definitionId, String startState) {
+		this.facade.addEntryWorkflow(binderId, entryId, definitionId, startState);
 	}
 
 	public void uploadFolderFile(long binderId, long entryId, 
@@ -136,4 +147,8 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public String getTeamsAsXML() {
 		return this.facade.getTeamsAsXML();
 	}
+	public void setTeamMembers(long binderId, List<Long> memberIds) {
+		this.facade.setTeamMembers(binderId, memberIds);
+	}
+
 }
