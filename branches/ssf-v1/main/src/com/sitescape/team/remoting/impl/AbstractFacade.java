@@ -348,14 +348,14 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	}
 	*/
 	
-	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML) {
+	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
 		
 		try {
 			return getFolderModule().addReply(new Long(binderId), new Long(parentId), 
-				definitionId, new DomInputData(doc, getIcalModule()), null).longValue();
+				definitionId, new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} )).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
