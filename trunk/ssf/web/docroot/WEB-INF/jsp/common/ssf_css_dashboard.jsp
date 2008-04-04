@@ -39,10 +39,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	/*WRAPPER*/
 #ss_top_nav_wrapper{
 	width: 100%;
-	background-color:#EBEBEA;
+	background-color:#D8D8D8;
 	display: table;
 	border-color:#CCCCCC;
 	border: 1px;
+	color: #CCCCCC;
 	}
 	
 	/* COLUMN CONTAINER */
@@ -63,7 +64,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_col1,.ss_col2,.ss_col3 {
 	float:left;
 	position:relative;
-	padding:1em 0 1em 0; /* no left and right padding on columns, we just make them narrower instead 
+	padding:0 0 1em 0; /* no left and right padding on columns, we just make them narrower instead 
 	only padding top and bottom is included here, make it whatever value you need */
 	overflow:hidden;
 	}	
@@ -74,12 +75,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_tricolumn .ss_colmid{
 	right: 20%;
 	/* width of the right column */
-	/* center column background color */
-	background-color: #FFFFFC;
+	/* Need to change this to change background color */
+	background-color: #EFEFEF;
 	}
 .ss_tricolumn .ss_colleft {
 	right:20%;				/* placement from right of the middle column */
-	background:#fff;		/* left column background color */
 	}
 .ss_tricolumn .ss_col1 {
 	width:38%;				/* width of center column content (column width minus padding on either side) */
@@ -194,7 +194,6 @@ div.ss_canvas {
 	}
 #ss_wrap{
 	margin: auto;
-	background-color: #FFFFFF;
 	min-height:100%;
 	position:relative;		/* This fixes the IE7 overflow hidden bug */
 	clear:both;
@@ -202,7 +201,6 @@ div.ss_canvas {
     width:100%;			/* width of whole page */
 	overflow:hidden;	/* This chops off any overhanging divs */
 	text-align:left;
-	color:#666666;
 	}	
 		
 /*  THE FOLLOWING DEFINES ALL THE IMAGES FOR THE BLUE BARS */
@@ -253,7 +251,6 @@ div.ss_canvas {
 	margin: 1% 0 5% 0;
 	color:#444444;
 	background-color:#FFFFFF;
-	border:1px solid #A7A0AC;	
 	line-height:1.25em;
 	}
 .ss_shared_para {
@@ -327,7 +324,7 @@ div.ss_canvas {
 	line-height: 1.5em;
 	}
 #ss_visit_para {
-	line-height:1.25em;
+	line-height:1em;
 	padding-top:5px;
 	}
 #ss_visit_para li{
@@ -349,7 +346,7 @@ div.ss_canvas {
 	
 	/*VIEWED ITEMS*/
 #ss_viewedItems {
-	line-height:1.4em;
+	line-height:1.6em;
 	}
 #ss_viewedItems .ss_v_entries ul{
 	list-style-type: none;
@@ -367,9 +364,9 @@ div.ss_canvas {
 	}
 	/* ACTIVE LINKS - VIEWED ITEMS*/	
 #ss_viewedItems a{
-	text-decoration:underline;
+	text-decoration:none;
 	}
-	/* HOVER LINKS */
+	/* ACTIVE HOVER LINKS */
 #ss_viewedItems a:hover{
 	text-decoration:underline;
 	color:#ECB456 !important;
@@ -389,7 +386,7 @@ div.ss_canvas {
 #ss_cal_para a{
 	text-decoration:underline;
 	}
-	/* HOVER LINKS */
+	/* CALENDAR HOVER LINKS */
 #ss_cal_para a:hover{
 	text-decoration:underline;
 	color:#464E42 !important;
@@ -397,7 +394,7 @@ div.ss_canvas {
 	}
 	/*MY DOCUMENTS*/
 #ss_mydocs_para {
-	line-height:1.5em;
+	line-height:1.6em;
 	padding-top:5px;
 	}
 #ss_mydocs_para li{
@@ -419,17 +416,16 @@ div.ss_canvas {
 #ss_whatshot{
 	margin: 1% 0 5% 0;
 	background-color:#FFFFFF;
-	padding: 0.5% 0 1% 5px;
+	padding: 0% 0 1% 5px;
 	color: #666666;
 	line-height: 1.6em;
 	}
 #ss_hot_para {
-	line-height:1.5em;
-	padding-top:5px;
+	line-height:1.6em;
+	padding-top:1px;
 	}
 #ss_hot_para li{
-	list-style-type: square;
-	padding-top:3px;	
+	list-style-type: square;	
 	padding-bottom:3px;
 	border-bottom:1px dotted #0C4E84;	
 	}
@@ -467,17 +463,17 @@ div.ss_canvas {
 	}
 	/* EMAIL */
 #ss_email{
-	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#333333;
 	font-family:  Arial, sans serif;
-	color: #5799CB;
+
 	line-height: 1.5em;
+	padding: 0;
 	}
 	/* DOCUMENTS */
 #ss_documents{
 	margin: 1% 0 5% 0;
-	color:#333;
+	color:#555;
 	}
 #ss_title{
 	margin: 0px 0px 2px 0px;
@@ -486,24 +482,11 @@ div.ss_canvas {
 	color: #333;
 	}
 #ss_subtitle{
-	padding: 0.5% 0px 1% 6px;
 	font-size:14px;
 	color:#555555;
+	padding: 0.5% 0 1% 6px;
 	}
-#ss_para {
-	margin-top: 1%;
-	padding-left: 15px;
-	border: 1px dotted #cccccc;
-	color: #666666;
-	line-height: 1.6em;
-	}
-#ss_para ul{
-	color:#555555;
-	}
-#ss_para ul li{
-	list-style-type: square;
-	margin-left:-10px;
-	}
+
 	
 /*  BOX TITLES */
 .ss_pt_title{
@@ -541,15 +524,15 @@ div.ss_canvas {
 .ss_paraC                     {
 	background-color:#DEE7EE;
 	}	
-/* time block styles */	
+/* TIMEBLOCK STYLES */	
 #ss_today {
-	margin: 0px 0px 10px 10px;
+	margin: 0 0 0 0;
 	}
 #ss_yesterday{
-	margin: 0px 0px 0px 10px;
+	margin: 0 0 0 10px;
 	}
 #ss_lastweek{
-	margin: 0px 0px 0px 10px;
+	margin: 0 0 0 10px;
 	}
 /* COMPRESSED BOX*/	
  .ss_closed	{
@@ -560,22 +543,7 @@ div.ss_canvas {
 	color: #CC0000;
 	font-style: italic;
 	}	
-
-/* ======================BACKGROUND HOVER IS FROM THIS CODE======================== */
-
-#ss_para a{
-	text-decoration:underline!important;
-	}
-#ss_para a:hover{
-	text-decoration:underline!important;
-	color:#ECB456 !important;
-	background:#CCC!important;
-	}	
-#ss_para .ss_link_3 a:visited
-	{
-	text-decoration:underline!important;
-	color:#666666 !important;
-	}	
+	
 	
 /* =================THESE NEED TO BE CONSOLIDATED======== */
 
@@ -583,25 +551,55 @@ div.ss_canvas {
 /* to use when need to display summary of an entry */
 
 .ss_summary	{
-	padding: 0px 0px 0px 0px;
 	font-style: italic;
 	color: #555555;
 	font-size: 11px;
 	line-height: 12px;
+	padding: 0;
 	}
 .ss_status						/* to use when need to display twitter status of person */
 {
-	padding: 0px 0px 0px 15px;
 	font-style: italic;
+	padding: 0 0 0 15px;
 }
-
+#ss_para {
+	margin-top: 1%;
+	border: 1px dotted #cccccc;
+	padding-left: 15px;
+	color: #555555;
+	}
+#ss_para ul{
+	color:#555555;
+	}
+#ss_para ul li{
+	list-style-type: square;
+	margin-left:-10px;
+	}
 	
 /* =========== LINK STYLES===================== */	
+
+/* BACKGROUND HOVER IS FROM THIS CODE */
+
+#ss_para a{
+	text-decoration:none!important;
+	font-weight: bold;
+	color: #555555;
+	}
+#ss_para a:hover{
+	color:#ECB456 !important;
+	background:#CCC!important;
+	}
+#ss_para a:visited{
+	color:#996699 !important;
+	}	
+#ss_para .ss_link_3 a:visited{
+	color:#9966CC !important;
+	}	
 	/* PEOPLE LINKS */
 .ss_link_1, .ss_link_1 span { 
-	text-decoration: underline;
+	text-decoration: none;
+	font-weight: normal;
 	color: #00AEEF!important;
-	background: #444444 !important; 
 	}
 	/* PLACES LINKS*/	
 .ss_link_2, .ss_link_2 span	{
@@ -611,8 +609,7 @@ div.ss_canvas {
 	}
 	/* ENTRY LINKS*/	
 .ss_link_3, .ss_link_3 span	{
-	text-decoration: underline!important;
-	color:#333333!important;
+	color:#666666!important;
 	font-size:12px!important;
 	font-weight: bold !important;
 	}
@@ -663,7 +660,9 @@ div.ss_canvas {
     background:#D4DAE7;
     font-size:93%;
     line-height:normal;
-    border-bottom: 1px solid #CCCCCC;
+    border-bottom: 1px solid #666;
+    border-right: 10px solid #EFEFEF;
+
       }
  #ss_tabsC ul {
     margin:0;
@@ -677,23 +676,23 @@ div.ss_canvas {
       }
  #ss_tabsC a {
     float:left;
-    background:url("<html:rootPath/>images/pics/tableft7.gif") no-repeat left top;
+    background:url("<html:rootPath/>images/pics/tableftF.gif") no-repeat left top;
     margin:0;
     padding:0 0 0 4px;
       }
  #ss_tabsC a span {
     float:left;
     display:block;
-    background:url("<html:rootPath/>images/pics/tabright7.gif") no-repeat right top;
+    background:url("<html:rootPath/>images/pics/tabrightF.gif") no-repeat right top;
     padding:5px 15px 4px 6px;
-    color:#464E42;
+
       }
  /* Commented Backslash Hack hides rule from IE5-Mac \ */
  
  #ss_tabsC a span {float:none;}
     /* End IE5-Mac hack */
 #ss_tabsC a:hover span {
-    color:#ECB546;
+    color:#FFFFFF;
       }
 #ss_tabsC a:hover {   
       background-position:0% -42px;

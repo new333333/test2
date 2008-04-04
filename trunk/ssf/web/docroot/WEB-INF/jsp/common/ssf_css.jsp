@@ -306,7 +306,7 @@ div.ss_entryDescription.ss_entryContent table {
   }
     
 .ss_form.ss_gray {
-  color: ${ss_form_gray_color};
+  color: #333333;
   }
 
 .ss_form select, .ss_form option {
@@ -628,7 +628,7 @@ a.ss_linkButton:focus, a.ss_linkButton:hover {
 div.ss_iconed_label {
   font-family: ${ss_style_title_font_family};
   background-repeat: no-repeat;
-  background-position: left center;
+  background-position: 13px 50%;
   padding-left: 30px;
   padding-right: 4px;
   padding-top:	6px;
@@ -1712,7 +1712,8 @@ div.ss_box_top_rounded {
 /* Tree widget styles */
 .ss_treeWidget {
   background: url("<html:imagesPath/>pics/1pix.gif") fixed no-repeat;
-  }
+    margin-top:8px;
+    }
 .ss_twDiv {
   }
 .ss_twSpan, ss_twA {
@@ -1740,8 +1741,8 @@ div.ss_box_top_rounded {
   width:19px;
   height:20px;
   border:none;
-  margin: 0px 2px 0px 0px !important;
-  padding:0px;
+  margin: 1px 2px 0px 0px !important;
+  padding-top:10px;
   }
 .ss_twPlus {
   width:19px;
@@ -1849,7 +1850,8 @@ div.ss_box_top_rounded {
 /* -------------------Skins-------------------- */
 div.ss_content_outer {
     position: relative;
-	margin-top:0px;
+    background: #EFEFEF;
+	margin-top:0;
 	border: solid 1px #CCC;
 }
 .ss_content_inner {
@@ -2185,14 +2187,14 @@ div.ss_global_toolbar_search_text span {
 	background-color:inherit !important;
 }
 
-
 td.ss_view_sidebar {
     width: 200px;
-    background-color: ${ss_style_background_color_side_panel};
+    background-color: #D8D8D8;
+    border-right: 6px solid #EFEFEF;
 }
 
 td.ss_view_info {
-	padding-left: 6px;
+	padding-left: 0;
 }
 
 
@@ -2260,11 +2262,9 @@ div.ss_sidebar_panel {
 	padding-bottom: 1px;
 	width: 200px;
 	overflow: hidden;
-	background-color: ${ss_style_background_color_side_panel};
 	}
 
 div.ss_sidebar_panel_featured {
-
 	width: 200px;
 	overflow: hidden;
 	background-color: ${ss_style_background_color_side_panel_featured};
@@ -2275,45 +2275,42 @@ div.ss_sidebar_panel_featured {
 	color: #333;
 	font-size: 12px;
 	font-family: ${ss_style_title_font_family};
-	padding-bottom: 2px;
-	padding-top: 3px;
+	padding-bottom: 1px;
+	padding-top: 2px;
 	padding-left:10px;
 	padding-right: 5px;
-}
-
+	}
 .ss_title_bar {
 	background-image: url(<html:imagesPath/>roundcorners3/background_dc_bar.jpg);
 	color: #333333;
 	height:14px;
 	margin:0px;
 	padding-bottom: 3px;
-
-}
-
+	}
 .ss_title_bar * {
 	background-color: transparent;
-}
+	}
 .ss_title_bar_history_bar {
 	background:inherit;
 	color:${ss_style_text_color};
-}
+	}		
 .ss_title_bar_inner1 {
 	background:url(<html:imagesPath/>roundcorners3/corner1.gif) no-repeat left;
 	height:24px;
 	width:8px;
-}
+	}		
 .ss_title_bar_inner2 {
 	background:url(<html:imagesPath/>roundcorners3/corner2.gif) no-repeat right;
 	height:24px;
 	width:8px;
-}
+	}
 .ss_title_bar strong {
 	position:relative;
 	padding-left:15px;
 	top:1px;
 	margin:0px;
 	padding:0px;
-}
+	}
 /* titlebar icons: */
 .ss_title_bar_icons {
 	float:right;
@@ -3728,7 +3725,6 @@ div.ss_profile_box_title {
 }
 
 div.ss_profile_matte {
-  background-color: #FFFFFF;
   padding: 5px;
 }
 div.ss_profile_picture_frame {
