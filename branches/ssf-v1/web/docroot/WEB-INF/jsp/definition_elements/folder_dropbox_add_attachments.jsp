@@ -140,6 +140,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 				<ssf:nlt tag="loading.applet"/>
 			</div>
 			
+			<!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 			<c:if test="<%= isIE %>">
 			<object id="folderdropboxobj${ssBinderId}${ss_namespace}" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="dropbox" 
 			  WIDTH = "20" HEIGHT = "20" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
@@ -188,6 +189,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			<c:if test="<%= isIE %>">
 			</object>
 			</c:if>
+			<!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
 			
 		</td></tr>
 		<tr>
