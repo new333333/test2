@@ -140,6 +140,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 				<ssf:nlt tag="loading.applet"/>
 			</div>
 			
+			<!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 			<c:if test="<%= isIE %>">
 			<object id="folderdropboxobj${ssBinderId}${ss_namespace}" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="dropbox" 
 			  WIDTH = "20" HEIGHT = "20" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
@@ -151,30 +152,30 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			  ARCHIVE = "droptarget/ssf-droptarget-applet.jar" 
 			  WIDTH = "22" HEIGHT = "22" MAYSCRIPT>
 			</c:if>
-			    <PARAM NAME="CODE" VALUE = "com.sitescape.team.applets.droptarget.TopFrame" />
-			    <PARAM NAME ="CODEBASE" VALUE = "<html:rootPath/>applets" />
-			    <PARAM NAME ="ARCHIVE" VALUE = "droptarget/ssf-droptarget-applet.jar" />
+			    <PARAM NAME="CODE" value = "com.sitescape.team.applets.droptarget.TopFrame" />
+			    <PARAM NAME ="CODEBASE" value = "<html:rootPath/>applets" />
+			    <PARAM NAME ="ARCHIVE" value = "droptarget/ssf-droptarget-applet.jar" />
 			    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />
 			    <param name = "scriptable" value="true" />
-			    <PARAM NAME = "NAME" VALUE = "folderdropboxobj${ssBinderId}${ss_namespace}" />
-			    <PARAM NAME = "startingDir" VALUE=""/>
-			    <PARAM NAME = "reloadFunctionName" VALUE="ss_hideFolderDropTarget${ssBinderId}${ss_namespace}"/>
-			    <PARAM NAME = "bgcolorFunctionName" VALUE="getFolderAppletBgColor${ssBinderId}${ss_namespace}"/>
-			    <PARAM NAME = "savePreviousVersions" VALUE="yes"/>
-			    <PARAM NAME = "fileReceiverURL" VALUE="${ssFolderAttachmentFileReceiverURL}" />
-			    <PARAM NAME = "deactivationUrl" VALUE=""/>
-			    <PARAM NAME = "displayUrl" VALUE="0"/>
+			    <PARAM NAME = "NAME" value = "folderdropboxobj${ssBinderId}${ss_namespace}" />
+			    <PARAM NAME = "startingDir" value=""/>
+			    <PARAM NAME = "reloadFunctionName" value="ss_hideFolderDropTarget${ssBinderId}${ss_namespace}"/>
+			    <PARAM NAME = "bgcolorFunctionName" value="getFolderAppletBgColor${ssBinderId}${ss_namespace}"/>
+			    <PARAM NAME = "savePreviousVersions" value="yes"/>
+			    <PARAM NAME = "fileReceiverURL" value="${ssFolderAttachmentFileReceiverURL}" />
+			    <PARAM NAME = "deactivationUrl" value=""/>
+			    <PARAM NAME = "displayUrl" value="0"/>
 				<c:if test="${ssBinderIsLibrary == 'false'}">
-					<PARAM NAME = "loadDirectory" VALUE="no" />
+					<PARAM NAME = "loadDirectory" value="no" />
 				</c:if>
 				<c:if test="${ssBinderIsLibrary == 'true'}">
-					<PARAM NAME = "loadDirectory" VALUE="yes" />
+					<PARAM NAME = "loadDirectory" value="yes" />
 				</c:if>
-			    <PARAM NAME = "onLoadFunction" VALUE="ss_onAppletLoad${ssBinderId}${ss_namespace}" />
-			    <PARAM NAME = "onCancelFunction" VALUE="" />
-			    <PARAM NAME = "menuLabelPaste" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.paste" />" />
-			    <PARAM NAME = "menuLabelCancel" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.cancel" />" />
-			    <PARAM NAME = "menuLabelDeactivate" VALUE="<ssf:nlt tag="binder.add.files.applet.menu.deactivate" />" />
+			    <PARAM NAME = "onLoadFunction" value="ss_onAppletLoad${ssBinderId}${ss_namespace}" />
+			    <PARAM NAME = "onCancelFunction" value="" />
+			    <PARAM NAME = "menuLabelPaste" value="<ssf:nlt tag="binder.add.files.applet.menu.paste" />" />
+			    <PARAM NAME = "menuLabelCancel" value="<ssf:nlt tag="binder.add.files.applet.menu.cancel" />" />
+			    <PARAM NAME = "menuLabelDeactivate" value="<ssf:nlt tag="binder.add.files.applet.menu.deactivate" />" />
 			    <PARAM NAME = "directoryLoadErrorMessage" value="<ssf:nlt tag="binder.add.files.applet.no.directory.for.nonlibrary.folder" />" />
 			    <PARAM NAME = "noFileAlertMessage" value="<ssf:nlt tag="binder.add.files.applet.no.files.in.clipboard" />" />
 			    <PARAM NAME = "fileLoadingInProgress" value="ss_startLoadingFiles${ssBinderId}${ss_namespace}" />
@@ -188,6 +189,7 @@ function ss_hideFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 			<c:if test="<%= isIE %>">
 			</object>
 			</c:if>
+			<!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
 			
 		</td></tr>
 		<tr>

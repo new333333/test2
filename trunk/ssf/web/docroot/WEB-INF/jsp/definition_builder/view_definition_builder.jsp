@@ -795,6 +795,7 @@ function ss_saveUserGroupResults(s) {
   </span>
 
 <br/>
+<!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 <c:if test="<%= isIE %>">
 <object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "100%" HEIGHT = "600"  
   codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
@@ -805,9 +806,9 @@ function ss_saveUserGroupResults(s) {
   ARCHIVE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.6.jar,lib/dom4j.jar,lib/jaxen.jar" 
   WIDTH = "100%" HEIGHT = "600">
 </c:if>
-    <PARAM NAME = CODE VALUE = "com.sitescape.team.applets.workflowviewer.WorkflowViewer" >
-    <PARAM NAME = CODEBASE VALUE = "<html:rootPath/>applets" >
-    <PARAM NAME = ARCHIVE VALUE = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.6.jar,lib/dom4j.jar,lib/jaxen.jar" >
+    <PARAM NAME = CODE value = "com.sitescape.team.applets.workflowviewer.WorkflowViewer" >
+    <PARAM NAME = CODEBASE value = "<html:rootPath/>applets" >
+    <PARAM NAME = ARCHIVE value = "workflow-viewer/ssf-workflowviewer-applet.jar,lib/colt.jar,lib/commons-collections-3.1.jar,lib/jung-1.7.6.jar,lib/dom4j.jar,lib/jaxen.jar" >
     <param name="type" value="application/x-java-applet;version=1.5">
     <param name="scriptable" value="false">
 	<param name="xmlGetUrl" value="<ssf:url 
@@ -828,6 +829,7 @@ function ss_saveUserGroupResults(s) {
 <c:if test="<%= isIE %>">
 </object>
 </c:if>
+<!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
 
 </div>
 <br/>

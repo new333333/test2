@@ -57,6 +57,7 @@ OpenFile Applet
 	 boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 	%>
 
+	<!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 	<c:if test="<%= isIE %>">
 		<object id="fileopenobj${ssEntryId}${ss_namespace}" name="fileopenobj${ssEntryId}${ss_namespace}" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="fileopen" 
 		  WIDTH = "1" HEIGHT = "1" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
@@ -68,18 +69,18 @@ OpenFile Applet
 	  ARCHIVE = "fileopen/ssf-fileopen-applet.jar" 
 	  WIDTH = "1" HEIGHT = "1" MAYSCRIPT="true">
 	</c:if>
-	    <PARAM NAME="CODE" VALUE = "com.sitescape.team.applets.fileopen.FileOpen" />
-	    <PARAM NAME ="CODEBASE" VALUE = "<html:rootPath/>applets" />
-	    <PARAM NAME ="ARCHIVE" VALUE = "fileopen/ssf-fileopen-applet.jar" />
+	    <PARAM NAME="CODE" value = "com.sitescape.team.applets.fileopen.FileOpen" />
+	    <PARAM NAME ="CODEBASE" value = "<html:rootPath/>applets" />
+	    <PARAM NAME ="ARCHIVE" value = "fileopen/ssf-fileopen-applet.jar" />
 	    <PARAM NAME ="type" value="application/x-java-applet;version=1.5" />
 	    <param name = "scriptable" value="true" />
-	    <PARAM NAME = "NAME" VALUE = "fileopen" />
-	    <PARAM NAME = "startingDir" VALUE=""/>
-	    <PARAM NAME = "fileToOpen" VALUE="${ssEntryAttachmentURL}"/>
-	    <PARAM NAME = "editorType" VALUE="${ssEntryAttachmentEditorType}"/>
-	    <PARAM NAME = "checkEditClicked" VALUE="ss_checkEditClickLocal${ssEntryId}${ss_namespace}"/>
-	    <PARAM NAME = "resetEditClicked" VALUE="ss_resetEditClickLocal${ssEntryId}${ss_namespace}"/>
-	    <PARAM NAME = "operatingSystem" VALUE="${ssOSInfo}"/>
+	    <PARAM NAME = "NAME" value = "fileopen" />
+	    <PARAM NAME = "startingDir" value=""/>
+	    <PARAM NAME = "fileToOpen" value="${ssEntryAttachmentURL}"/>
+	    <PARAM NAME = "editorType" value="${ssEntryAttachmentEditorType}"/>
+	    <PARAM NAME = "checkEditClicked" value="ss_checkEditClickLocal${ssEntryId}${ss_namespace}"/>
+	    <PARAM NAME = "resetEditClicked" value="ss_resetEditClickLocal${ssEntryId}${ss_namespace}"/>
+	    <PARAM NAME = "operatingSystem" value="${ssOSInfo}"/>
 	    <PARAM NAME = "uploadErrorMessage" value="<ssf:nlt tag="exception.codedError.title" />" />
 	<c:if test="<%= !isIE %>">
 	</applet>
@@ -87,5 +88,6 @@ OpenFile Applet
 	<c:if test="<%= isIE %>">
 	</object>
 	</c:if>
+	<!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
 
 </body>
