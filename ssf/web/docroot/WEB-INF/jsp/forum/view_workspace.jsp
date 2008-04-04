@@ -178,10 +178,10 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <tr><td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
-><span style="padding-left:20px; display:${ss_sidebarVisibilityShow};"
+><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
   class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.show"/>]</span><span 
-  style="padding-left:20px; display:${ss_sidebarVisibilityHide};"
+  style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
   class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.hide"/>]</span></a>
 </td><td valign="top">

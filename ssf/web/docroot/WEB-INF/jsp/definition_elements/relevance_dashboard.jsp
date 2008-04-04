@@ -87,9 +87,9 @@ function ss_showRelevanceTab(s, namespace) {
 	<li><a href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'trackedItems', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.trackedItems"/></span></a></li>
-	<li><a href="javascript: ;"
+	<a href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'hiddenDashboard', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.hide"/></span></a></li>
+		><span><ssf:nlt tag="relevance.tab.hide"/></span></a>
   </ul>
 </div>
 <div class="ss_clear_float"></div>
