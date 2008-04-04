@@ -786,6 +786,7 @@ function ss_saveUserGroupResults(s) {
   </span>
 
 <br/>
+<!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 <c:if test="<%= isIE %>">
 <object classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" WIDTH = "100%" HEIGHT = "600"  
   codebase="http://java.sun.com/update/1.5.0/jinstall-1_5-windows-i586.cab#Version=5,0,0,3">
@@ -819,6 +820,7 @@ function ss_saveUserGroupResults(s) {
 <c:if test="<%= isIE %>">
 </object>
 </c:if>
+<!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
 
 </div>
 <br/>

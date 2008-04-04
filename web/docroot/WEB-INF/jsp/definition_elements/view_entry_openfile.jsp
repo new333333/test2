@@ -57,6 +57,7 @@ OpenFile Applet
 	 boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
 	%>
 
+	<!--NOVELL_REWRITE_ATTRIBUTE_ON='value'-->
 	<c:if test="<%= isIE %>">
 		<object id="fileopenobj${ssEntryId}${ss_namespace}" name="fileopenobj${ssEntryId}${ss_namespace}" classid="clsid:8AD9C840-044E-11D1-B3E9-00805F499D93" CLASS="fileopen" 
 		  WIDTH = "1" HEIGHT = "1" NAME = "launcher" ALIGN = "middle" VSPACE = "0" HSPACE = "0" 
@@ -87,5 +88,6 @@ OpenFile Applet
 	<c:if test="<%= isIE %>">
 	</object>
 	</c:if>
+	<!--NOVELL_REWRITE_ATTRIBUTE_OFF='value'-->
 
 </body>
