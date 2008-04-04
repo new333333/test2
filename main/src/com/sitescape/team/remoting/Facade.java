@@ -72,10 +72,11 @@ public interface Facade {
 	/*
     public void deleteFolderEntry(long folderId, long entryId);
 
-	public long addReply(long folderId, long parentEntryId, String definitionId, String inputDataAsXML);
-
-	 */
+	*/
 	
+	public long addReply(long folderId, long parentEntryId, String definitionId, String inputDataAsXML, String attachedFileName);
+
+	/*
 	//
 	// Profile operations
 	//
