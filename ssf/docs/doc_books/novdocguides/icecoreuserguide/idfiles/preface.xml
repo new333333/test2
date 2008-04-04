@@ -36,7 +36,7 @@
 
  <target id="bbj2cdd" pid="preface" name="FormalPara" level="3"> <text>Note:</text> </target>
 
- <target id="barqtxf" pid="preface" name="FormalPara" level="3"> <text>Blog summary</text> </target>
+ <target id="barqtxf" pid="preface" name="FormalPara" level="3"> <text>Blog summary:</text> </target>
 
  <target id="b9yxhsb" pid="preface" name="row" level="2"> <text>Open the ManagerGuide.pdf file.</text> </target>
 
