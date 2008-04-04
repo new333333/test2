@@ -108,7 +108,7 @@
 
  <target id="begi86j" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-28"> <text>Clipboard Names on the Send Mail Form</text> </target>
 
- <target id="bbj3qrh" pid="bbgk3e9" name="Sect2" level="2" number="3.1.7"> <text>Entry-Reference MarkUp</text> </target>
+ <target id="bbj3qrh" pid="bbgk3e9" name="Sect2" level="2" number="3.1.7"> <text>Entry-Reference Markup</text> </target>
 
  <target id="begiamb" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-29"> <text>The Entry Reference Markup Icon</text> </target>
 
@@ -134,31 +134,27 @@
 
  <target id="begigp5" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-36"> <text>The Enable Accessible Mode Link on a Personal Workspace Page</text> </target>
 
- <target id="be4qxk0" pid="bbgk3e9" name="Sect2" level="2" number="3.1.12"> <text>The Mobile Portlet</text> </target>
-
- <target id="begihcm" pid="bbgk3e9" name="Figure" level="3" number="Figure 3-37"> <text>The Mobile Portlet</text> </target>
-
  <target id="bbgk3jn" pid="bbgk3jn" name="Sect1" level="1" number="3.2"> <text>Folder Types</text> </target>
 
  <target id="bbgk7cy" pid="bbgk3jn" name="Sect2" level="2" number="3.2.1"> <text>Blogs</text> </target>
 
- <target id="begikhl" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-38"> <text>A Blog Entry</text> </target>
+ <target id="begikhl" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-37"> <text>A Blog Entry</text> </target>
 
- <target id="begilow" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-39"> <text>The Calendar and Archive Tools for a Blog</text> </target>
+ <target id="begilow" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-38"> <text>The Calendar and Archive Tools for a Blog</text> </target>
 
  <target id="bbgk8kr" pid="bbgk3jn" name="Sect2" level="2" number="3.2.2"> <text>Discussions</text> </target>
 
- <target id="begim8v" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-40"> <text>The Table View of a Discussion Folder</text> </target>
+ <target id="begim8v" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-39"> <text>The Table View of a Discussion Folder</text> </target>
 
  <target id="bbgk8qf" pid="bbgk3jn" name="Sect2" level="2" number="3.2.3"> <text>Calendars</text> </target>
 
- <target id="begims7" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-41"> <text>A Calendar Page</text> </target>
+ <target id="begims7" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-40"> <text>A Calendar Page</text> </target>
 
- <target id="beginnx" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-42"> <text>The Import Calendar Link</text> </target>
+ <target id="beginnx" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-41"> <text>The Import Calendar Link</text> </target>
 
- <target id="begio8x" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-43"> <text>Calendar Tools</text> </target>
+ <target id="begio8x" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-42"> <text>Calendar Tools</text> </target>
 
- <target id="begiom5" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-44"> <text>The iCal Link</text> </target>
+ <target id="begiom5" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-43"> <text>The iCal Link</text> </target>
 
  <target id="bbj2po3" pid="bbgk3jn" name="FormalPara" level="4" number="w"> <text>Import calendar:</text> </target>
 
@@ -176,49 +172,49 @@
 
  <target id="bbgk9gw" pid="bbgk3jn" name="Sect2" level="2" number="3.2.4"> <text>Guestbooks</text> </target>
 
- <target id="begipzh" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-45"> <text>A Guestbook Folder</text> </target>
+ <target id="begipzh" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-44"> <text>A Guestbook Folder</text> </target>
 
  <target id="bbgk9mn" pid="bbgk3jn" name="Sect2" level="2" number="3.2.5"> <text>File Folders</text> </target>
 
- <target id="begiql9" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-46"> <text>A Folder File</text> </target>
+ <target id="begiql9" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-45"> <text>A Folder File</text> </target>
 
  <target id="bbgk9sv" pid="bbgk3jn" name="Sect2" level="2" number="3.2.6"> <text>Milestone Folders</text> </target>
 
  <target id="bbgka71" pid="bbgk3jn" name="Sect2" level="2" number="3.2.7"> <text>Photo Albums</text> </target>
 
- <target id="begis20" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-47"> <text>A Photo Album</text> </target>
+ <target id="begis20" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-46"> <text>A Photo Album</text> </target>
 
- <target id="begisfx" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-48"> <text>Viewing a Picture in a Photo Album</text> </target>
+ <target id="begisfx" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-47"> <text>Viewing a Picture in a Photo Album</text> </target>
 
  <target id="bbgkasg" pid="bbgk3jn" name="Sect2" level="2" number="3.2.8"> <text>Surveys </text> </target>
 
- <target id="begit1d" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-49"> <text>Providing More Than One Answer to a Survey Question</text> </target>
+ <target id="begit1d" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-48"> <text>Providing More Than One Answer to a Survey Question</text> </target>
 
- <target id="begitjg" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-50"> <text>A Question That Accepts Only a Single Answer</text> </target>
+ <target id="begitjg" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-49"> <text>A Question That Accepts Only a Single Answer</text> </target>
 
- <target id="begiu2u" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-51"> <text>Providing a Write-In Answer to a Question</text> </target>
+ <target id="begiu2u" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-50"> <text>Providing a Write-In Answer to a Question</text> </target>
 
- <target id="begiv0m" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-52"> <text>Survey Results for the First Question</text> </target>
+ <target id="begiv0m" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-51"> <text>Survey Results for the First Question</text> </target>
 
  <target id="bbgkaza" pid="bbgk3jn" name="Sect2" level="2" number="3.2.9"> <text>Tasks</text> </target>
 
  <target id="bbgkdy7" pid="bbgk3jn" name="Sect2" level="2" number="3.2.10"> <text>Wikis</text> </target>
 
- <target id="begivm5" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-53"> <text>Wiki Navigation Tools</text> </target>
+ <target id="begivm5" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-52"> <text>Wiki Navigation Tools</text> </target>
 
- <target id="begiw1r" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-54"> <text>Setting the Main Page of a Wiki Folder</text> </target>
+ <target id="begiw1r" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-53"> <text>Setting the Main Page of a Wiki Folder</text> </target>
 
- <target id="begiwrx" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-55"> <text>The Edit History Menu Item</text> </target>
+ <target id="begiwrx" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-54"> <text>The Edit History Menu Item</text> </target>
 
- <target id="begix5k" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-56"> <text>The Edit History Form</text> </target>
+ <target id="begix5k" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-55"> <text>The Edit History Form</text> </target>
 
- <target id="begixmc" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-57"> <text>Comparing Two Different Versions of a Wiki Entry</text> </target>
+ <target id="begixmc" pid="bbgk3jn" name="Figure" level="3" number="Figure 3-56"> <text>Comparing Two Different Versions of a Wiki Entry</text> </target>
 
  <target id="bbgk3yu" pid="bbgk3yu" name="Sect1" level="1" number="3.3"> <text>Workspaces</text> </target>
 
  <target id="bbj44iq" pid="bbgk3yu" name="Sect2" level="2" number="3.3.1"> <text>Global Workspaces</text> </target>
 
- <target id="begiybs" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-58"> <text>Structuring Global Workspaces By Geography and Then By Function</text> </target>
+ <target id="begiybs" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-57"> <text>Structuring Global Workspaces By Geography and Then By Function</text> </target>
 
  <target id="bbj44n5" pid="bbgk3yu" name="Sect2" level="2" number="3.3.2"> <text>Personal Workspaces</text> </target>
 
@@ -226,16 +222,16 @@
 
  <target id="bbgke8j" pid="bbgk3yu" name="Sect2" level="2" number="3.3.4"> <text>Project Workspaces</text> </target>
 
- <target id="begj0a2" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-59"> <text>A Project Workspace Within a Team Workspace</text> </target>
+ <target id="begj0a2" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-58"> <text>A Project Workspace Within a Team Workspace</text> </target>
 
- <target id="begj161" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-60"> <text>Task Categories and Their Folders</text> </target>
+ <target id="begj161" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-59"> <text>Task Categories and Their Folders</text> </target>
 
- <target id="begj1px" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-61"> <text>A Task Folder</text> </target>
+ <target id="begj1px" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-60"> <text>A Task Folder</text> </target>
 
- <target id="begj27g" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-62"> <text>Changing the % Done Value of a Task</text> </target>
+ <target id="begj27g" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-61"> <text>Changing the % Done Value of a Task</text> </target>
 
- <target id="begj2rd" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-63"> <text>A Milestone Folder</text> </target>
+ <target id="begj2rd" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-62"> <text>A Milestone Folder</text> </target>
 
- <target id="begj34g" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-64"> <text>A Project Workspace Page</text> </target>
+ <target id="begj34g" pid="bbgk3yu" name="Figure" level="3" number="Figure 3-63"> <text>A Project Workspace Page</text> </target>
 
 </targets>

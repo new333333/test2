@@ -142,7 +142,7 @@
 
  <target id="befiam1" pid="banqhqf" name="Step" level="4" number="4"> <text>In the Team members section, use the type-to-find feature (typing a few letters as Novell Teaming supplies a list of links that match what you have typed so far) to specify your teammates.</text> </target>
 
- <target id="befiaot" pid="banqhqf" name="Step" level="4" number="5"> <text>In the Workspace folders section, select the check box next to the folders you want your team workspace to contain. (You can also add subworkspaces and more folders later.)</text> </target>
+ <target id="befiaot" pid="banqhqf" name="Step" level="4" number="5"> <text>In the Workspace folders section, select the check box next to the folders you want your team workspace to contain. (You can also add sub-workspaces and more folders later.)</text> </target>
 
  <target id="befiat5" pid="banqhqf" name="Step" level="4" number="6"> <text>(Optional) In the Announcement section of the form, click the checkbox and provide a message in the Announcement text box. Novell Teaming automatically sends the announcement text in an e-mail message to your teammates after you submit this form.</text> </target>
 

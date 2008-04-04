@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreuserguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `3/21/2008 11:47:59 AM'>
+   <String `4/4/2008 11:07:24 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2375,14 +2375,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `features-markup-page-name-a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `features-mobile-portlet-a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2854,6 +2846,14 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `intro_type_to_find_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `tasks_accessory_closing_icon_a.png'>
    <Char Tab> 
    <String `1'>
@@ -3178,6 +3178,12 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `features-mobile-portlet-a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `tasks_collapse_contact_info_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -3460,7 +3466,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 44%, Indent: Current Indent'>
+   <String `Width: 42%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3505,7 +3511,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
+   <String `Width: 93%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3865,7 +3871,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 57%, Indent: Current Indent'>
+   <String `Width: 53%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4039,7 +4045,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 40%, Indent: Current Indent'>
+   <String `Width: 41%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4444,7 +4450,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 88%, Indent: Current Indent'>
+   <String `Width: 85%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4579,7 +4585,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 86%, Indent: Current Indent'>
+   <String `Width: 85%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4759,7 +4765,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 30%, Indent: Current Indent'>
+   <String `Width: 31%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4843,7 +4849,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 70%, Indent: Current Indent'>
+   <String `Width: 66%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4991,51 +4997,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Specifying a Page Name Using Type to Find\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `features-mobile-portlet-a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecorefeaturesoverview.fm|1630015'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `features-mobile-portlet-a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in icecorefeaturesoverview.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 37%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Title: The Mobile Portlet'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: The Mobile Portlet\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5293,7 +5254,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 31%, Indent: Current Indent'>
+   <String `Width: 30%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6245,7 +6206,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1608258'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1681891'>
     <MCurrPage `1'>
    > # end of Marker
    <String `intro_add_content_a.png'>
@@ -6259,7 +6220,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 85%, Indent: Current Indent'>
+   <String `Width: 86%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6337,7 +6298,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 39%, Indent: Current Indent'>
+   <String `Width: 40%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6376,7 +6337,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 90%, Indent: Current Indent'>
+   <String `Width: 91%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6415,7 +6376,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 75%, Indent: Current Indent'>
+   <String `Width: 70%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6499,7 +6460,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 93%, Indent: Current Indent'>
+   <String `Width: 90%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6601,7 +6562,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: Entry Contents Dispalyed in an Overlaid Panel\q'>
+   <String `Description: \qDescription: Entry Contents Displayed in an Overlaid Panel\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6724,7 +6685,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 48%, Indent: Current Indent'>
+   <String `Width: 50%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6808,7 +6769,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 91%, Indent: Current Indent'>
+   <String `Width: 93%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6898,7 +6859,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 93%, Indent: Current Indent'>
+   <String `Width: 91%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6988,7 +6949,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 85%, Indent: Current Indent'>
+   <String `Width: 83%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7033,7 +6994,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 57%, Indent: Current Indent'>
+   <String `Width: 58%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7078,7 +7039,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 73%, Indent: Current Indent'>
+   <String `Width: 75%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7123,7 +7084,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 63%, Indent: Current Indent'>
+   <String `Width: 58%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7303,7 +7264,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 60%, Indent: Current Indent'>
+   <String `Width: 58%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7348,7 +7309,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 41%, Indent: Current Indent'>
+   <String `Width: 40%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7489,13 +7450,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Title: Two Portlets Within the LargerPortal Page'>
+   <String `Title: A Portlet Within the LargerPortal Page'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: Two portlets within the larger portal page\q'>
+   <String `Description: \qDescription: A portlet within the larger portal page\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7528,7 +7489,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 60%, Indent: Current Indent'>
+   <String `Width: 61%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7618,7 +7579,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 47%, Indent: Current Indent'>
+   <String `Width: 48%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7631,6 +7592,51 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: The Tools Sidebar\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `intro_type_to_find_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ss\\v8\\ssf\\docs\\doc_books\\novdocguides\\icecoreuserguide\\icecoreunderstanding.fm|1690130'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `intro_type_to_find_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in icecoreunderstanding.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 68%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Using Type to Find to View a Folder or Workspace'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Using Type to Find to View a Folder or Workspace\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7663,7 +7669,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
+   <String `Width: 98%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7708,7 +7714,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 47%, Indent: Current Indent'>
+   <String `Width: 46%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7870,7 +7876,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 71%, Indent: Current Indent'>
+   <String `Width: 70%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7948,7 +7954,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 75%, Indent: Current Indent'>
+   <String `Width: 76%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7987,7 +7993,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 28%, Indent: Current Indent'>
+   <String `Width: 26%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8149,7 +8155,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 81%, Indent: Current Indent'>
+   <String `Width: 96%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8233,7 +8239,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 53%, Indent: Current Indent'>
+   <String `Width: 52%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8389,7 +8395,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 96%, Indent: Current Indent'>
+   <String `Width: 95%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8596,7 +8602,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 68%, Indent: Current Indent'>
+   <String `Width: 51%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8635,7 +8641,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 60%, Indent: Current Indent'>
+   <String `Width: 55%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8713,7 +8719,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 41%, Indent: Current Indent'>
+   <String `Width: 44%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8836,7 +8842,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 52%, Indent: Current Indent'>
+   <String `Width: 53%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8914,7 +8920,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 54%, Indent: Current Indent'>
+   <String `Width: 63%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8959,7 +8965,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 42%, Indent: Current Indent'>
+   <String `Width: 44%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -9037,7 +9043,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 80%, Indent: Current Indent'>
+   <String `Width: 95%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
