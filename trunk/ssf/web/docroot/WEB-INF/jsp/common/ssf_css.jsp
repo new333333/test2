@@ -1953,240 +1953,6 @@ div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_b
     background-color: ${ss_style_background_color};
 }
 
-/* global toolbar: */
-div.ss_global_toolbar_in_portlet {
-	background-color: transparent;
-	height: auto;
-}
-div.ss_global_toolbar_maximized {
-    position: relative;
-	padding-top:2px;
-}
-div.ss_global_findbar {
-    position: relative;
-	padding-top:2px;
-}
-div.ss_global_toolbar_maximized div.ss_global_toolbar_myworkspace, div.ss_global_toolbar_maximized div.ss_global_toolbar_favs,
-div.ss_global_toolbar_maximized div.ss_global_toolbar_myteams, 
- div.ss_global_toolbar_maximized div.ss_global_toolbar_divider, div.ss_global_toolbar_maximized div.ss_global_toolbar_quick,
- div.ss_global_toolbar_maximized .ss_global_toolbar_findUser, div.ss_global_toolbar_maximized .ss_global_toolbar_help,
- div.ss_global_toolbar_maximized .ss_global_toolbar_accessible {
-	white-space: nowrap;
-}
-
-div.ss_global_toolbar_help {
-	text-align: center;
-    <c:if test="<%= !isIE %>">
-    padding-top: 15px;
-    </c:if>
-}
-
-div#ss_navbarHelpButton {
-    margin-left: 5px;
-}
-
-div.ss_global_toolbar_maximized .ss_global_toolbar_divider {
-	width: 4px;
-	height: 43px;
-	background: transparent url(<html:imagesPath/>pics/divider_global_toolbar.gif) no-repeat;	
-	margin: 0px 5px 0px 5px;	
-}
-
-div.ss_global_toolbar_maximized .ss_global_toolbar_accessible {
-}
-
-div.ss_global_toolbar_maximized .ss_global_toolbar_findUser {
-	padding-top: 3px;
-}
-
-div.ss_global_toolbar_maximized .ss_global_toolbar_quick {
-	padding-top: 0px;
-	padding-bottom: 2px;
-	border-top: 1px dashed #CCCCCC;
-	margin-top: 8px
-}
-
-div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_label_text {
-	text-align: left;	
-	vertical-align: bottom;
-}
-
-div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_quick_advanced {
-	text-align: right;
-	font-size: 5px;
-	padding-left: 5px;
-	vertical-align: top;
-}
-
-div.ss_global_toolbar table {
-	background-color: transparent;
-}
-div.ss_global_toolbar table tr.ss_row_txt td {
-	padding-top: 10px;
-}
-div.ss_global_toolbar table tr.ss_row_last td {
-	height: 29px;
-}
-div.ss_global_toolbar table td {
-	white-space: nowrap;
-	padding-left: 5px;
-	padding-right: 5px;
-}
-
-div.ss_global_toolbar_maximized table.ss_global_toolbar_maximized td {
-	white-space: nowrap;
-	padding-left: 2px;
-	padding-right: 0px;
-}
-.ss_global_toolbar_portlet_box {
-	background-color: ${ss_toolbar4_background_color} !important;
-}
-
-.ss_global_toolbar a span, .ss_global_toolbar div span {
-	background-color:transparent;
-}
-
-
-
-.ss_global_toolbar_myworkspace div, .ss_global_toolbar_favs div,
-.ss_global_toolbar_myteams div  {
-	padding: 0px 5px 0px 5px;
-	vertical-align: middle;
-}
-
-.ss_global_toolbar_favs div {
-	background:url(<html:brandedImagesPath/>icons/toolbar_favorites.gif) no-repeat top;
-	background-position: left 0px;
-	width: 49px;
-	height: 42px;	
-}
-
-.ss_global_toolbar_favs div:hover {
-	background:url(<html:brandedImagesPath/>icons/toolbar_favorites.gif) no-repeat top;
-	background-position: left -42px;
-	width: 49px;
-	height: 42px;	
-}
-
-.ss_global_toolbar_myworkspace div {
-	background:url(<html:brandedImagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
-	background-position: left 0px;
-	width: 61px;
-	height: 42px;	
-}
-
-.ss_global_toolbar_myworkspace div:hover {
-	background:url(<html:brandedImagesPath/>icons/toolbar_myworkspace.gif) no-repeat top;
-	width: 61px;
-	height: 42px;
-	background-position: left -42px;
-}
-
-.ss_global_toolbar_myteams div {
-	background:url(<html:brandedImagesPath/>icons/toolbar_workspace_teaming.gif) no-repeat top;
-	background-position: left 0px;
-	width: 46px;
-	height: 42px;	
-}
-
-.ss_global_toolbar_myteams div:hover {
-	background:url(<html:brandedImagesPath/>icons/toolbar_workspace_teaming.gif) no-repeat top;
-	background-position: left -42px;
-	width: 46px;
-	height: 42px;	
-}
-
-.ss_global_toolbar_favs_big div {
-	background:url(<html:brandedImagesPath/>icons/toolbar_favorites_big.jpg) no-repeat top;
-	width: 75px;
-	padding-top: 60px;
-	text-align: center;
-}
-.ss_global_toolbar_myworkspace_big div {
-	background:url(<html:brandedImagesPath/>icons/toolbar_myworkspace_big.jpg) no-repeat top;
-	width: 85px;
-	padding-top: 60px;
-	text-align: center;
-}
-
-div.ss_global_toolbar_show_portal {
-	background:url(<html:imagesPath/>icons/toolbar_show_portal.jpg) no-repeat top;
-}
-div.ss_global_toolbar_hide_portal {
-	background:url(<html:imagesPath/>icons/toolbar_hide_portal.jpg) no-repeat top;
-}
-div.ss_global_toolbar_help {
-	background:url(<html:imagesPath/>icons/help.png) no-repeat top center;
-	width: 30px;
-	padding-right: 4px;
-	margin-top: 5px;
-	text-align: center;
-}
-.ss_global_toolbar_accessible {
-	margin-top: 0px;
-	background-color: transparent;
-}
-.ss_global_toolbar_accessible form {
-	background-color:transparent;
-}
-.ss_global_toolbar_accessible a {
-    background-color:transparent;
-}
-.ss_global_toolbar_accessible img {
-	background-color: transparent;
-}
-.ss_global_toolbar_findUser {
-	margin-top: 0px;
-	background-color: transparent;
-}
-.ss_global_toolbar_findUser form {
-	background-color:transparent;
-}
-.ss_global_toolbar_findUser .form-text {
-	width:40px;
-}
-span.ss_global_toolbar_label_text, span.ss_global_toolbar_label_text_quickSearch {
-	color:#333333;
-	background-color: transparent;
-	white-space: nowrap;
-}
-
-span.ss_global_toolbar_label_text_quickSearch {
-	font-size: ${ss_style_font_fineprint};
-	font-family: Arial, sans serif;
-}
-span.ss_global_toolbar_label_text {
-	font-size: 10px;
-	font-family: Arial, sans serif;
-}
-div.ss_global_toolbar_findUser_text span {
-}
-.ss_global_toolbar_findUser a {
-}
-.ss_global_toolbar_search {
-	margin-top: 0px;
-	background-color: transparent;
-	vertical-align: bottom;
-}
-.ss_global_toolbar_search form {
-	background-color:transparent;
-}
-
-.ss_global_toolbar_quick input {
-	width: 115px;
-	background-color: #FFFFFF;
-	border: 1px solid #7F9DB9;
-}
-div.ss_global_toolbar_search_text {
-    width:100px;
-	color:#484848;
-	text-align:center;
-	padding:0px !important;
-}
-div.ss_global_toolbar_search_text span {
-	background-color:inherit !important;
-}
-
 td.ss_view_sidebar {
     width: 200px;
     background-color: #D8D8D8;
@@ -4139,8 +3905,8 @@ div.ss_searchContainer #ss_content {
 	width:100%;
 }
 a.ss_searchButton img {
-	width: 22px;
-	height: 17px;
+	width: 20px;
+	height: 16px;
 	margin: 0px;
 	padding: 0px;
 	border: 0px;
@@ -4148,11 +3914,11 @@ a.ss_searchButton img {
 }
 
 a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img, a.ss_searchButton:visited img { 
-	background: transparent url(<html:imagesPath/>pics/search_icons.gif) no-repeat top left; 
+	background: transparent url(<html:rootPath/>images/pics/searchheadbkg.png) no-repeat top left; 
 }
 
 a.ss_searchButton:hover img {
-    background-position:  left -17px; 
+    background-position:  left -16px; 
 <ssf:ifaccessible>
   outline: dotted 1px gray;
 </ssf:ifaccessible>  
@@ -4943,6 +4709,7 @@ table.ssMeetingRecords .ssHeader {
 }
 
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />
+<jsp:include page="/WEB-INF/jsp/common/ssf_css_global_nav.jsp" />
 
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>
