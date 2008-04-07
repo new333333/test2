@@ -1,20 +1,31 @@
 package com.sitescape.team.remoting.ws.service.binder;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.SortedSet;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.util.DomInputData;
+import com.sitescape.team.security.function.Function;
+import com.sitescape.team.security.function.WorkAreaFunctionMembership;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
+import com.sitescape.team.util.ResolveIds;
 
 public class BinderServiceImpl extends BaseService implements BinderService {
 	public long addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML)
@@ -28,6 +39,13 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
+	}
+	public void setDefinitions(String accessToken, long binderId, List<String>definitionIds, List<String>workflowAssociations) {
+		HashMap wfs = new HashMap();
+		for (int i=0; i+1<workflowAssociations.size(); i+=2) {
+			wfs.put(workflowAssociations.get(i), workflowAssociations.get(i+1));
+		}
+		getBinderModule().setDefinitions(binderId, definitionIds, wfs);
 	}
 	public String getTeamMembersAsXML(String accessToken, long binderId)
 	{
@@ -44,6 +62,48 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 	}
 	public void setTeamMembers(String accessToken, long binderId, List<Long> memberIds) {
 		getBinderModule().setTeamMembers(binderId, memberIds);
+	}
+	public void setFunctionMembership(String accessToken, long binderId, String inputDataAsXml) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		List<Function> functions = getAdminModule().getFunctions();
+		Document doc = getDocument(inputDataAsXml);
+		Map wfms = new HashMap();
+		List<Element> wfmElements = doc.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP);
+		for (Element wfmElement:wfmElements) {
+			 String functionName = XmlUtils.getProperty(wfmElement, ObjectKeys.XTAG_WA_FUNCTION_NAME);
+			 Function func = null;
+			 for (Function f:functions) {
+				 if (f.getName().equals(functionName)) {
+					 func = f;
+					 break;
+				 }
+			 }
+			 if (func == null) continue;
+			 List<Element> nameElements = wfmElement.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_PROPERTY + "[@name='" + ObjectKeys.XTAG_WA_MEMBER_NAME + "']");
+			 Set<String> names = new HashSet();
+			 for (Element e:nameElements) {
+				 names.add(e.getTextTrim());				 
+			 }
+			 Collection<Principal> principals = getProfileModule().getPrincipalsByName(names);
+			 Set<Long>ids = new HashSet();
+			 for (Principal p:principals) {
+				 ids.add(p.getId());
+			 }
+			 ids.addAll(LongIdUtil.getIdsAsLongSet(XmlUtils.getProperty(wfmElement, ObjectKeys.XTAG_WA_MEMBERS), ","));
+
+			 if (ids.isEmpty()) continue;
+			 wfms.put(func.getId(), ids);
+		}
+		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, false); 
+		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
+	}
+	public void setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, inherit); 		
+	}
+	public void setOwner(String accessToken, long binderId, long userId) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		getAdminModule().setWorkAreaOwner(binder, userId, false); 		
 	}
 
 }
