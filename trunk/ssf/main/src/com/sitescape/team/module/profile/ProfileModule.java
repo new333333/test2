@@ -216,6 +216,14 @@ public interface ProfileModule {
  	 */
 	public Map getPrincipals(Long binderId, Map searchOptions) throws AccessControlException;
 	/**
+	 * Load principals using name
+	 * @param names
+	 * @return
+	 * @throws AccessControlException
+	 */
+	public Collection<Principal> getPrincipalsByName(Collection<String> names) throws AccessControlException;
+	
+	/**
  	 * Return the profileBinder
  	 * @return
  	 */
