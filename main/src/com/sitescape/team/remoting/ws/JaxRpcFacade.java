@@ -93,6 +93,11 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.facade.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	
+	public void uploadFolderFileStaged(long binderId, long entryId, 
+			String fileUploadDataItemName, String stagedFileRelativePath) {
+		this.facade.uploadFolderFileStaged(binderId, entryId, fileUploadDataItemName, stagedFileRelativePath);
+	}
+	
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
 	{
 		this.facade.uploadCalendarEntries(folderId, iCalDataAsXML);
