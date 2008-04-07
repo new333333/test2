@@ -70,7 +70,6 @@ function ss_userListSelectItem(id, obj, prefix) {
 	newLiObj.innerHTML = spanObj.innerHTML;
 	var newAnchorObj = document.createElement("a");
 	newAnchorObj.setAttribute("href", "javascript: ;");
-	// newAnchorObj.setAttribute("onClick", "ss_userListRemove('" + prefix + "', this);");
 	dojo.event.connect(newAnchorObj, "onclick", function(evt) {
 		ss_userListRemove(prefix, evt.target.parentNode);
     });	

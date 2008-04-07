@@ -43,12 +43,18 @@ function ss_declareFindUserSearchVariables () {
 	window.ss_findUserClickRoutine = new Array();
 	window.ss_findUserClickRoutineArgs = new Array();
 	window.ss_findUserViewUrl = new Array();
+	window.ss_findUserViewAccesibleUrl = new Array();
 	window.ss_findUserLeaveResultsVisible = new Array();
 	window.ss_findUserSearchUrl = new Array();
+	window.ss_findUserListType = new Array();
+	window.ss_findUserRenderNamespace = new Array();
+	window.ss_findUserBinderId = new Array();
+	window.ss_findUserSubFolders = new Array();
+	window.ss_findUserFoldersOnly = new Array();
 	window.ss___findUserIsMouseOverList = new Array();
 }
 
-function ss_findUserConfVariableForPrefix(prefix, clickRoutine, clickRoutineArgs, viewUrl, leaveResultsVisible, userSearchUrl) {
+function ss_findUserConfVariableForPrefix(prefix, clickRoutine, clickRoutineArgs, viewUrl, viewAccesibleUrl, userSearchUrl, leaveResultsVisible, listType, renderNamespace, binderId, subFolders, foldersOnly) {
 	if (!window.ss_findUser_searchText) {
 		ss_declareFindUserSearchVariables();
 	}
@@ -66,12 +72,18 @@ function ss_findUserConfVariableForPrefix(prefix, clickRoutine, clickRoutineArgs
 	ss_findUserSearchLastfindUserGroupType[prefix] = "";
 	ss_findUserClickRoutine[prefix] = clickRoutine;
 	ss_findUserViewUrl[prefix] = viewUrl;
+	ss_findUserViewAccesibleUrl[prefix]= viewAccesibleUrl;
 	ss_findUserLeaveResultsVisible[prefix] = leaveResultsVisible;
 	ss_findUserSearchUrl[prefix] = userSearchUrl;
 	if (clickRoutineArgs && clickRoutineArgs != "")
 		ss_findUserClickRoutineArgs[prefix] = clickRoutineArgs.split(",");
 	else
 		ss_findUserClickRoutineArgs[prefix] = new Array();	
+	ss_findUserListType[prefix] = listType;
+	ss_findUserRenderNamespace[prefix]= renderNamespace;
+	ss_findUserBinderId[prefix] = binderId;
+	ss_findUserSubFolders[prefix] = subFolders;
+	ss_findUserFoldersOnly[prefix] = foldersOnly;
 }
 
 function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
@@ -151,17 +163,23 @@ function ss_findUserSearch(prefix, textObjId, elementName, findUserGroupType) {
 		return;
 	}
 	var ajaxRequest = new ss_AjaxRequest(ss_findUserSearchUrl[prefix]); //Create AjaxRequest object
-	ajaxRequest.addKeyValue("searchText", searchText)
-	ajaxRequest.addKeyValue("maxEntries", "10")
-	ajaxRequest.addKeyValue("pageNumber", ss_findUser_pageNumber[prefix])
-	ajaxRequest.addKeyValue("findType", findUserGroupType)
-	ajaxRequest.addKeyValue("listDivId", "available_" + prefix)
+	ajaxRequest.addKeyValue("searchText", searchText);
+	ajaxRequest.addKeyValue("maxEntries", "10");
+	ajaxRequest.addKeyValue("pageNumber", ss_findUser_pageNumber[prefix]);
+	ajaxRequest.addKeyValue("findType", findUserGroupType);
+	if (ss_findUserBinderId[prefix] != "") { 
+		ajaxRequest.addKeyValue("binderId", ss_findUserBinderId[prefix]);
+	}
+	if (ss_findUserSubFolders[prefix] != "") { 
+		ajaxRequest.addKeyValue("searchSubFolders", ss_findUserSubFolders[prefix]);
+	}
+	ajaxRequest.addKeyValue("listDivId", "available_" + prefix);
 	ajaxRequest.addKeyValue("namespace", prefix);
 	ajaxRequest.setPostRequest(ss_postFindUserRequest);
 	ajaxRequest.setData("prefix", prefix);
-	ajaxRequest.setData("elementName", elementName)
-	ajaxRequest.setData("savedColor", savedColor)
-	ajaxRequest.setData("crFound", crFound)
+	ajaxRequest.setData("elementName", elementName);
+	ajaxRequest.setData("savedColor", savedColor);
+	ajaxRequest.setData("crFound", crFound);
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
 }
@@ -224,18 +242,51 @@ function ss_findUserSelectItem0(prefix) {
 	}
 }
 //Routine called when item is clicked
-function ss_findUserSelectItem(prefix, obj) {
+function ss_findUserSelectItem(prefix, obj, entityType) {
 	if (!obj || !obj.id ||obj.id == undefined) return false;
 	var id = ss_replaceSubStr(obj.id, 'ss_findUser_id_', "");
+	var listType = ss_findUserListType[prefix];
 	if (ss_findUserClickRoutine[prefix] != "") {
-		//eval(ss_findUserClickRoutine[prefix] + "('"+id+"');");
-		window[ss_findUserClickRoutine[prefix]].apply(this, [id, obj].concat(ss_findUserClickRoutineArgs[prefix]));
+		if (listType == "places") {
+			window[ss_findUserClickRoutine[prefix]].apply(this, [id, entityType, obj].concat(ss_findUserClickRoutineArgs[prefix]));
+		} else {
+			window[ss_findUserClickRoutine[prefix]].apply(this, [id, obj].concat(ss_findUserClickRoutineArgs[prefix]));
+		}
 		if (ss_findUserLeaveResultsVisible[prefix]) {
-			//setTimeout("ss_showFindUserSelections('"+prefix+"');", 200)
-			setTimeout(function() {ss_showFindUserSelections(prefix)}, 200); // faster then "ss_showFindUserSelections(prefix)"
+			setTimeout(function() {ss_showFindUserSelections(prefix)}, 200);
 		}
 	} else {
-		url = ss_replaceSubStr(ss_findUserViewUrl[prefix], 'ss_entryIdPlaceholder', id);
+		if (listType == "tags" || listType == "communityTags" || listType == "personalTags") {
+			var url = ss_replaceSubStrAll(ss_findUserViewUrl[prefix], 'ss_tagPlaceHolder', id);
+			self.location.href = url;
+		} else if (listType == "entries") {
+			var url = ss_replaceSubStr(ss_findUserViewUrl[prefix], 'ss_entryIdPlaceholder', id);
+			self.location.href = url;
+		} else if (listType == "places") {
+		    var url = ss_findUserViewUrl[prefix]; 
+			url = ss_replaceSubStr(url, 'ss_binderIdPlaceholder', id);
+			url = ss_replaceSubStr(url, 'ss_entityTypePlaceholder', entityType);
+			if (ss_gotoPermalink(id, id, entityType, ss_findUserRenderNamespace[prefix], 'yes')) {
+				self.location.href = url;
+			}
+			return false;
+		} else { // user
+			var url = ss_replaceSubStr(ss_findUserViewUrl[prefix], 'ss_entryIdPlaceholder', id);
+			self.location.href = url;
+		}
+	}
+}
+
+//Routine called when item is clicked in accessible mode
+function ss_findUserSelectItemAccessible(prefix, obj, entityType) {
+	var listType = ss_findUserListType[prefix];
+	if (listType != "entries") {
+		return ss_findUserSelectItem(prefix, obj, entityType);
+	} else {
+		if (!obj || !obj.id ||obj.id == undefined) return false;
+		var id = ss_replaceSubStr(obj.id, 'ss_findUser_id_', "");
+		var url = ss_findUserViewAccesibleUrl[prefix]; 
+		url = ss_replaceSubStr(url, 'ss_entryIdPlaceholder', id);
 		self.location.href = url;
 	}
 }

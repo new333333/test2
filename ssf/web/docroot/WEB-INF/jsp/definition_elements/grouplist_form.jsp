@@ -1,3 +1,4 @@
+<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -26,46 +27,27 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.survey;
-
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
-
-import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.UpdateAttributeSupport;
-
-import net.sf.json.JSONObject;
-
-public class Survey implements UpdateAttributeSupport {
-
-	private JSONObject jsonObj;
-
-	private SurveyModel survey;
-
-	public Survey(String jsonStringRepresentation) {
-		super();
-		this.jsonObj = JSONObject.fromString(jsonStringRepresentation);
-		this.survey = new SurveyModel(this.jsonObj);
+%>
+<% // Group list %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%
+	String propertyName = (String) request.getAttribute("property_name");
+	java.util.List groupList = new java.util.ArrayList();
+	java.util.Set groupListSet = new java.util.HashSet();
+%>
+<c:if test="${! empty ssDefinitionEntry}">
+  <c:set var="grouplist_entry" value="${ssDefinitionEntry}"/>
+  <jsp:useBean id="grouplist_entry" type="com.sitescape.team.domain.DefinableEntity" />
+<%
+	if (propertyName != null && !propertyName.equals("")) 
+		groupList = com.sitescape.team.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(propertyName));
+	if(groupList != null) {
+		groupListSet.addAll(groupList);
 	}
-
-	public SurveyModel getSurveyModel() {
-		return this.survey;
-	}
-
-	public String toString() {
-		return jsonObj.toString();
-	}
-
-	public boolean update(Object obj) {
-		Survey newSurvey = (Survey)obj;
-		
-		if (!newSurvey.getSurveyModel().isVoteRequest()) {
-			newSurvey.getSurveyModel().updateFrom(getSurveyModel());
-		}
-		newSurvey.getSurveyModel().removeVoteRequest();
-		throw new ClassCastException();
-	}
-
-}
+%>
+</c:if>
+<div class="ss_entryContent">
+<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
+<ssf:find formName="${formName}" formElement="${property_name}" type="group" 
+  userList="<%= groupListSet %>"/>
+</div>

@@ -180,21 +180,24 @@ public class SearchFilterRequestParser {
 		List<SearchFilter.Entry> entries = new ArrayList(); 
 		
 		if (!parseAdvancedOptions) {
-			String[] entryTypeIds = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterEntryDefIdField.concat("_hidden"));
-			for (int i = 0; i < entryTypeIds.length; i++) {
-				String entryTypeId = entryTypeIds[i];
-				String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat("_").concat(entryTypeId).concat("_hidden"), "");
-				String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat("_").concat(entryTypeId).concat("_hidden"));
-				String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat("0_").concat(entryTypeId).concat("_hidden"), null);
-				if (value != null && value2 != null) {
-					String[] allValues = new String[value.length + 1];
-					System.arraycopy(value, 0, allValues, 0, value.length);
-					allValues[allValues.length - 1] = value2;
-					value = allValues;
-				}				
-				String valueType = getEntryValueType(entryTypeId, entryFieldId);
-				if (!entryTypeId.equals("")) {
-					entries.add(new SearchFilter.Entry(entryTypeId, entryFieldId, value, valueType));
+			int entryTypesLength = PortletRequestUtils.getIntParameter(request, SearchFilterKeys.FilterEntryDefLength, 1);
+			for (int j = 0; j < entryTypesLength; j++) {
+				String[] entryTypeIds = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterEntryDefIdField.concat("_" + j).concat("_hidden"));
+				for (int i = 0; i < entryTypeIds.length; i++) {
+					String entryTypeId = entryTypeIds[i];
+					String entryFieldId = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementNameField.concat("_").concat(entryTypeId).concat("_" + j).concat("_hidden"), "");
+					String[] value = PortletRequestUtils.getStringParameters(request, SearchFilterKeys.FilterElementValueField.concat("_").concat(entryTypeId).concat("_" + j).concat("_hidden"));
+					String value2 = PortletRequestUtils.getStringParameter(request, SearchFilterKeys.FilterElementValueField.concat("0_").concat(entryTypeId).concat("_" + j).concat("_hidden"), null);
+					if (value != null && value2 != null) {
+						String[] allValues = new String[value.length + 1];
+						System.arraycopy(value, 0, allValues, 0, value.length);
+						allValues[allValues.length - 1] = value2;
+						value = allValues;
+					}				
+					String valueType = getEntryValueType(entryTypeId, entryFieldId);
+					if (!entryTypeId.equals("")) {
+						entries.add(new SearchFilter.Entry(entryTypeId, entryFieldId, value, valueType));
+					}
 				}
 			}
 		} else {

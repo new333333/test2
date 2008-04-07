@@ -34,18 +34,46 @@
 
   <c:set var="count" value="0"/>
   <div id="<c:out value="${ss_divId}"/>" style="padding:2px;margin:2px;">
-	<c:if test="${!empty ssUsers}">
+	<c:if test="${!empty ssEntries}">
       <table cellspacing="0" cellpadding="0">
       <tbody>
       <tr>
       <td colspan="2">
       <ul>
       
-		<c:forEach var="entry" items="${ssUsers}">  
+		<c:forEach var="entry" items="${ssEntries}">  
 		  <c:set var="count" value="${count + 1}"/>
-		  <li id="<c:out value="ss_findUser_id_${entry._docId}"/>"><a 
-		    onClick="parent.ss_findUserSelectItem('${ss_namespace}', this.parentNode);return false;" 
-		    href="javascript: ;"><span style="white-space:nowrap;"><c:out value="${entry.title}"/></span></a></li>
+		  <li id="<c:out value="ss_findUser_id_<c:choose><%--
+		          --%><c:when test="${ssFindType == 'personalTags' || ssFindType == 'communityTags' || ssFindType == 'tags' }"><%--
+		      		--%><c:out value="${entry.ssTag}"/><%--
+		      	  --%></c:when><%--
+  		          --%><c:otherwise><%--
+  		          	--%><c:out value="${entry._docId}"/><%--
+  		          --%></c:otherwise></c:choose>"/>"><a 
+		    onClick="<c:choose><%--
+		    			--%><c:when test="${ssFindType == 'personalTags' || ssFindType == 'communityTags' }"><%--
+		    				--%>parent.ss_putValueInto('ss_findUser_searchText_${ss_namespace}', '${entry.ssTag}');return false;<%--
+		    			--%></c:when><%--
+						--%><c:otherwise><%--
+							--%>parent.ss_findUserSelectItemAccessible('${ss_namespace}', this.parentNode, '${entry._entityType}');return false;<%--
+						--%></c:otherwise><%--
+			   		 --%></c:choose>" 
+		    href="javascript: ;"
+		    <c:if test="${ssFindType == 'entries'}">
+			    <ssf:title tag="title.open.folderEntry">
+					<ssf:param name="value" value="${entry.title}" />
+				</ssf:title>
+		    </c:if>
+		    ><span style="white-space:nowrap;"><c:choose><%--
+		          --%><c:when test="${!empty entry.ssTag}"><%--
+		      		--%><c:out value="${entry.ssTag}"/><%--
+		      	  --%></c:when><%--
+		          --%><c:when test="${!empty entry._extendedTitle}"><%--
+		      		--%><c:out value="${entry._extendedTitle}"/><%--
+		      	  --%></c:when><%--		      	  
+  		          --%><c:otherwise><%--
+  		          	--%><c:out value="${entry.title}"/><%--
+  		          --%></c:otherwise></c:choose></span></a></li>
 		</c:forEach>
       </ul>
       </td>
@@ -68,7 +96,7 @@
        </tbody>
        </table>
 	</c:if>
-	<c:if test="${empty ssUsers}">
+	<c:if test="${empty ssEntries}">
 	 <ul>
 	  <li>
 	    <table cellspacing="0" cellpadding="0"><tbody><tr>

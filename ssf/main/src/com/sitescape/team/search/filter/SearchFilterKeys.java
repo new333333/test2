@@ -62,6 +62,7 @@ public class SearchFilterKeys {
 //	//formData fields and values
 	public final static String FilterNameField = "filterName";
 //	
+	public final static String FilterEntryDefLength = "ss_entry_def_length_hidden";
 	public final static String FilterEntryDefIdField = "ss_entry_def_id";
 	public final static String FilterElementNameField = "elementName";
 	public final static String FilterElementValueField = "elementValue";
@@ -116,6 +117,9 @@ public class SearchFilterKeys {
    	public final static String FilterEventDate = "filterEventDate";
    	public final static String FilterItemType = "filterItemType";
    	public final static String FilterTaskStatusName = "filterTaskStatusName";
+   	
+   	public final static String FilterListType = "listType";
+   	public final static String FilterListTypeUserGroupTeam = "userGroupTeam";
    	
    	public final static String CurrentUserId="CURRENT_USER_ID";
    	

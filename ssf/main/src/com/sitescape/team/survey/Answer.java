@@ -39,6 +39,7 @@ import org.apache.commons.lang.builder.ToStringBuilder;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
+import com.sun.star.text.SetVariableType;
 
 public class Answer {
 
@@ -80,7 +81,10 @@ public class Answer {
 
 	@Override
 	public String toString() {
-		return new ToStringBuilder(this).append("text", text).append("index", index).toString();
+		return new ToStringBuilder(this).append("text", text).append("index", index)
+					.append("votedUserIds", this.votedUserIds)
+					.append("votesCount", this.votesCount)
+					.toString();
 	}
 
 	public String getText() {
@@ -99,11 +103,42 @@ public class Answer {
 		User currentUser = RequestContextHolder.getRequestContext().getUser();
 		this.votedUserIds.add(currentUser.getId().toString());
 		
+		setVotesCount(this.votesCount);
+		setVotedBy(this.votedUserIds);
+	}
+	
+	private void setVotedBy(List newVotedUserIds) {
+		this.votedUserIds = newVotedUserIds;
+		this.jsonObj.remove("votedBy");
+		this.jsonObj.put("votedBy", newVotedUserIds);
+	}
+
+	private void setVotesCount(int newVotesCount) {
+		this.votesCount = newVotesCount;
 		this.jsonObj.remove("votesCount");
-		this.jsonObj.put("votesCount", this.votesCount);
+		this.jsonObj.put("votesCount", newVotesCount);
+	}
+
+	public void removeVote() {
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		String currentUserId = currentUser.getId().toString();
+		if (this.votedUserIds == null || !this.votedUserIds.contains(currentUserId)) {
+			return;
+		}
+		
+		this.votedUserIds.remove(currentUserId);
+		
+		this.votesCount--;
+		
+		this.jsonObj.remove("votesCount");
+		if (this.votesCount > 0) {
+			this.jsonObj.put("votesCount", this.votesCount);
+		}
 		
 		this.jsonObj.remove("votedBy");
-		this.jsonObj.put("votedBy", this.votedUserIds);
+		if (this.votedUserIds != null && !this.votedUserIds.isEmpty()) {
+			this.jsonObj.put("votedBy", this.votedUserIds);
+		}
 	}
 	
 	public boolean isAlreadyVotedCurrentUser() {
@@ -115,5 +150,21 @@ public class Answer {
 		return this.votedUserIds != null && 
 			!this.votedUserIds.isEmpty();
 	}
-	
+
+	public List getVotedUserIds() {
+		return votedUserIds;
+	}
+
+	public void updateFrom(Answer oldAnswer) {
+		if (this.index != oldAnswer.index) {
+			return;
+		}
+		
+		if (oldAnswer.votesCount > 0) {
+			setVotesCount(oldAnswer.votesCount);
+		}
+		if (oldAnswer.votedUserIds != null && !oldAnswer.votedUserIds.isEmpty()) {
+			setVotedBy(oldAnswer.votedUserIds);
+		}
+	}
 }

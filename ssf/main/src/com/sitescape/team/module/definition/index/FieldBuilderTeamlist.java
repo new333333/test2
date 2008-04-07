@@ -26,46 +26,42 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.survey;
+package com.sitescape.team.module.definition.index;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.Map;
 
-import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.UpdateAttributeSupport;
+import org.apache.lucene.document.Field;
 
-import net.sf.json.JSONObject;
+import com.sitescape.team.search.BasicIndexUtils;
 
-public class Survey implements UpdateAttributeSupport {
+/**
+ *
+ * @author Jong Kim
+ */
+public class FieldBuilderTeamlist extends AbstractFieldBuilder {
 
-	private JSONObject jsonObj;
-
-	private SurveyModel survey;
-
-	public Survey(String jsonStringRepresentation) {
-		super();
-		this.jsonObj = JSONObject.fromString(jsonStringRepresentation);
-		this.survey = new SurveyModel(this.jsonObj);
-	}
-
-	public SurveyModel getSurveyModel() {
-		return this.survey;
-	}
-
-	public String toString() {
-		return jsonObj.toString();
-	}
-
-	public boolean update(Object obj) {
-		Survey newSurvey = (Survey)obj;
-		
-		if (!newSurvey.getSurveyModel().isVoteRequest()) {
-			newSurvey.getSurveyModel().updateFrom(getSurveyModel());
-		}
-		newSurvey.getSurveyModel().removeVoteRequest();
-		throw new ClassCastException();
-	}
-
+    public String makeFieldName(String dataElemName) {
+        //Just use the data name. It is guaranteed to be unique within its definition
+    	return dataElemName;
+    }
+    
+    protected Field[] build(String dataElemName, Set dataElemValue, Map args) {
+        // This default radio implementation ignores args.  
+        
+        Field[] fields = new Field[dataElemValue.size()];
+        String fieldName = makeFieldName(dataElemName);
+       
+        Long val;
+        Field field;
+        int i = 0;
+        for(Iterator it = dataElemValue.iterator(); it.hasNext(); i++) {
+	        val = Long.valueOf(((String)it.next()).trim());
+	        field = new Field(fieldName, val.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        fields[i] = field;
+        }
+        
+        return fields;
+    }
 }

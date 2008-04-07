@@ -66,7 +66,8 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
     private Boolean foldersOnly;
     private String instanceCount;
     private String accessibilityText;
-
+    private Boolean addCurrentUser;
+    
 	private Map _params;
 
 	public int doStartTag() {
@@ -85,56 +86,44 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			if (this._params == null) this._params = new HashMap();
 			
 			if (this.userList == null) this.userList = new HashSet();			
-			if (this.type == null) this.type = WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER;
+			if (this.type == null) this.type = WebKeys.FIND_TYPE_USER;
 			if (singleItem == null) singleItem = false;
 			if (leaveResultsVisible == null) leaveResultsVisible = false;
 			if (searchSubFolders == null) searchSubFolders = false;
 			if (foldersOnly == null) foldersOnly = false;
+			if (addCurrentUser == null) addCurrentUser = false;
 			this.instanceCount = UUID.randomUUID().toString();
 			
 			//Output the start of the area
 			RequestDispatcher rd;
 			String jsp;
+			
+			
 			if (singleItem) {
-				if (type.equals("places")) {
-					jsp = "/WEB-INF/jsp/tag_jsps/find/single_place.jsp";
-				} else if (type.equals("tags") || type.equals("personalTags") || type.equals("communityTags")) {
-					jsp = "/WEB-INF/jsp/tag_jsps/find/single_tag.jsp";
-				} else if (type.equals("entries")) {
-					jsp = "/WEB-INF/jsp/tag_jsps/find/single_entry.jsp";
-				} else {
-					jsp = "/WEB-INF/jsp/tag_jsps/find/single_user.jsp";
-				}
+				jsp = "/WEB-INF/jsp/tag_jsps/find/single.jsp";
 			} else {
-				if (type.equals("places")) {
-					jsp = "/WEB-INF/jsp/tag_jsps/find/places_list.jsp";
-				} else if (type.equals("tags")) {
-					jsp = "/WEB-INF/jsp/tag_jsps/find/tag_list.jsp";
-				} else if (type.equals("entries")) {
-					jsp = "/WEB-INF/jsp/tag_jsps/find/entries_list.jsp";
-				} else {
-					jsp = "/WEB-INF/jsp/tag_jsps/find/user_list.jsp";
-				}
+				jsp = "/WEB-INF/jsp/tag_jsps/find/list.jsp";
 			}
 			rd = httpReq.getRequestDispatcher(jsp);
 
 			ServletRequest req = null;
 			req = new DynamicServletRequest(httpReq, _params);
-			req.setAttribute("user_list", this.userList);			
-			req.setAttribute("form_name", this.formName);
-			req.setAttribute("form_element", this.formElement);
-			req.setAttribute("element_width", this.width);
-			req.setAttribute("list_type", this.type);
-			req.setAttribute("singleItem", this.singleItem);
-			req.setAttribute("clickRoutine", this.clickRoutine);
-			req.setAttribute("clickRoutineArgs", this.clickRoutineArgs);
-			req.setAttribute("instanceCount", this.instanceCount);
-			req.setAttribute("instanceCode", this.hashCode() + "_" + this.formName + "_" + this.formElement);
-			req.setAttribute("leaveResultsVisible", this.leaveResultsVisible);
-			req.setAttribute("searchSubFolders", this.searchSubFolders.toString());
-			req.setAttribute("foldersOnly", this.foldersOnly.toString());
-			req.setAttribute("binderId", this.binderId);
-			req.setAttribute("accessibilityText", this.accessibilityText);
+			req.setAttribute(WebKeys.FIND_USER_LIST, this.userList);			
+			req.setAttribute(WebKeys.FIND_FORM_NAME, this.formName);
+			req.setAttribute(WebKeys.FIND_FORM_ELEMENT, this.formElement);
+			req.setAttribute(WebKeys.FIND_ELEMENT_WIDTH, this.width);
+			req.setAttribute(WebKeys.FIND_LIST_TYPE, this.type);
+			req.setAttribute(WebKeys.FIND_SINGLE_ITEM, this.singleItem);
+			req.setAttribute(WebKeys.FIND_CLICK_ROUTINE, this.clickRoutine);
+			req.setAttribute(WebKeys.FIND_CLICK_ROUTINE_ARGS, this.clickRoutineArgs);
+			req.setAttribute(WebKeys.FIND_INSTANCE_COUNT, this.instanceCount);
+			req.setAttribute(WebKeys.FIND_INSTANCE_CODE, this.hashCode() + "_" + this.formName + "_" + this.formElement);
+			req.setAttribute(WebKeys.FIND_LEAVE_RESULTS_VISIBLE, this.leaveResultsVisible.toString());
+			req.setAttribute(WebKeys.FIND_SEARCH_SUBFOLDERS, this.searchSubFolders.toString());
+			req.setAttribute(WebKeys.FIND_FOLDERS_ONLY, this.foldersOnly.toString());
+			req.setAttribute(WebKeys.URL_BINDER_ID, this.binderId);
+			req.setAttribute(WebKeys.FIND_ACCESSIBILITY_TEXT, this.accessibilityText);
+			req.setAttribute(WebKeys.FIND_ADD_CURRENT_USER, this.addCurrentUser);
 			
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
@@ -143,8 +132,6 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			return EVAL_PAGE;
 		}
 	    catch(Exception e) {
-			// TODO: temporary, remove later
-	    	// System.out.println("EXCEPTION:"+e);
 	        throw new JspException(e);
 	    }
 		finally {
@@ -233,5 +220,9 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 	
 	public void setAccessibilityText(String accessibilityText) {
 	    this.accessibilityText = accessibilityText;
+	}
+
+	public void setAddCurrentUser(Boolean addCurrentUser) {
+		this.addCurrentUser = addCurrentUser;
 	}	
 }

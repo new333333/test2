@@ -28,66 +28,129 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
 <%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
+<%
+	java.util.Set ss_showUserGroupMembers = (java.util.Set) request.getAttribute("ss_showUserGroupMembers");
+%>
+
 <portletadapter:defineObjects1/>
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
-
 <c:if test="${ssConfigJspStyle != 'mobile'}">
-<c:if test="${ss_showUserShowPresence}">
-  <ssf:presenceInfo user="${ss_showUserUser}" showTitle="true" titleStyle="${ss_showUserTitleStyle}" /> 
-</c:if>
-<c:if test="${!ss_showUserShowPresence}">
-<c:if test="${ss_showUserUser.active}">
-	<ssf:ifadapter>
-	  <c:if test="${!empty ss_showUserUser.workspaceId}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    action="view_permalink"
-	    binderId="${ss_showUserUser.workspaceId}">
-	    <ssf:param name="entityType" value="workspace" />
-	    <ssf:param name="newTab" value="1" />
-		</ssf:url>"
-	  onClick="ss_openUrlInParentWorkarea(this.href, '${ss_showUserUser.workspaceId}', 'view_ws_listing');return false;"
-	  ><span id="${ss_showUserUser.id}" 
-	    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span></a>
-	  </c:if>
-	  <c:if test="${empty ss_showUserUser.workspaceId}">
-	  <span id="${ss_showUserUser.id}" 
-	    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
-	  </c:if>
-	</ssf:ifadapter>
-	<ssf:ifnotadapter>
-	  <c:if test="${!empty ss_showUserUser.workspaceId}">
-	  <a href="<ssf:url windowState="maximized"><ssf:param 
-	  	name="action" value="view_ws_listing"/><ssf:param 
-	  	name="binderId" value="${ss_showUserUser.workspaceId}"/><ssf:param 
-	  	name="newTab" value="1"/></ssf:url>"
-	  onClick="ss_openUrlInWorkarea(this.href, '${ss_showUserUser.workspaceId}', 'view_ws_listing');return false;"
-	  ><span id="${ss_showUserUser.id}"  
-	    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span></a>
-	  </c:if>
-	  <c:if test="${empty ss_showUserUser.workspaceId}">
-	  <span id="${ss_showUserUser.id}"  
-	    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
-	  </c:if>
-	</ssf:ifnotadapter>
-</c:if>
-<c:if test="${!ss_showUserUser.active}">
-  <span id="${ss_showUserUser.id}" 
-    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
-</c:if>
-</c:if>
+
+	<c:choose>
+		<c:when test="${!ss_showUserIsGroup}">
+			<c:if test="${ss_showUserShowPresence}">
+				<ssf:presenceInfo user="${ss_showUserUser}" showTitle="true" titleStyle="${ss_showUserTitleStyle}" /> 
+			</c:if>		
+		</c:when>
+		<c:otherwise>
+			<img border="0" src="<html:imagesPath/>pics/group_icon_small.gif" />
+		</c:otherwise>
+	</c:choose>
+	
+
+	<c:if test="${!ss_showUserShowPresence || ss_showUserIsGroup}">
+		<c:if test="${ss_showUserUser.active}">
+			<ssf:ifadapter>
+				<c:if test="${!empty ss_showUserUser.workspaceId}">
+				  	<c:if test="${!ss_showUserIsGroup}">
+					  <a 
+				  		href="<ssf:url adapter="true" portletName="ss_forum" 
+						    action="view_permalink"
+						    binderId="${ss_showUserUser.workspaceId}">
+						    <ssf:param name="entityType" value="workspace" />
+						    <ssf:param name="newTab" value="1" />
+							</ssf:url>"
+				  		onclick="ss_openUrlInParentWorkarea(this.href, '${ss_showUserUser.workspaceId}', 'view_ws_listing');return false;"
+					  >
+			  		</c:if>
+					  <span id="${ss_showUserUser.id}" 
+					    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+			  	<c:choose>
+				  	<c:when test="${!ss_showUserIsGroup}">
+					  </a>
+			  		</c:when>
+			  		<c:otherwise>
+				  		<a href="javascript: //"
+				  		onclick="dojo.html.toggleShowing('ss_show_user_${ss_showUserInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showUser.group.members"><ssf:param name="value" value="${fn:length(ss_showUserGroupMembers)}"/></ssf:nlt></a>
+				  		<div id="ss_show_user_${ss_showUserInstanceCount}" style="display: none;">
+					  		<ul>
+								<c:forEach var="member" items="${ss_showUserGroupMembers}" >
+							 	 <li><ssf:showUser user="${member}" showPresence="${ss_showUserShowPresence}"/></li>
+								</c:forEach>
+					  		</ul>
+				  		</div>
+			  		</c:otherwise>
+			  	</c:choose>	
+         	  </c:if>
+         	  <c:if test="${empty ss_showUserUser.workspaceId}">
+          	      <span id="${ss_showUserUser.id}" 
+            	       class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+              </c:if>		  	
+			</ssf:ifadapter>
+			<ssf:ifnotadapter>
+			  <c:if test="${!empty ss_showUserUser.workspaceId}">
+			  <a 
+		  	  	<c:choose>
+				  	<c:when test="${!ss_showUserIsGroup}">
+					  	href="<ssf:url windowState="maximized"><ssf:param 
+						  	name="action" value="view_ws_listing"/><ssf:param 
+						  	name="binderId" value="${ss_showUserUser.workspaceId}"/><ssf:param 
+						  	name="newTab" value="1"/></ssf:url>"
+						 onclick="ss_openUrlInWorkarea(this.href, '${ss_showUserUser.workspaceId}', 'view_ws_listing');return false;"
+			  		</c:when>
+			  		<c:otherwise>
+				  		href="javascript: //"
+			  		</c:otherwise>
+			  	</c:choose>
+			  ><span id="${ss_showUserUser.id}"  
+			    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span></a>
+			    <c:if test="${ss_showUserIsGroup}">
+			  		<a href="javascript: //"
+			  		onclick="dojo.html.toggleShowing('ss_show_user_${ss_showUserInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showUser.group.members"><ssf:param name="value" value="${fn:length(ss_showUserGroupMembers)}"/></ssf:nlt></a>
+			  		<div id="ss_show_user_${ss_showUserInstanceCount}" style="display: none;">
+				  		<ul>
+							<c:forEach var="member" items="${ss_showUserGroupMembers}" >
+						 	 <li><ssf:showUser user="${member}" showPresence="${ss_showUserShowPresence}"/></li>
+							</c:forEach>
+				  		</ul>
+			  		</div>
+			    </c:if>
+			  </c:if>
+			  <c:if test="${empty ss_showUserUser.workspaceId}">
+				  <span id="${ss_showUserUser.id}"  
+				    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+			  </c:if>
+			</ssf:ifnotadapter>
+		</c:if>
+		<c:if test="${!ss_showUserUser.active}">
+		  <span id="${ss_showUserUser.id}" 
+		    class="${ss_showUserTitleStyle} ss_muster_users">${ss_showUserUser.title}</span>
+		</c:if>
+	</c:if>
 </c:if>
 <c:if test="${ssConfigJspStyle == 'mobile'}">
   <c:if test="${!empty ss_showUserUser.workspaceId}">
-  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    action="__ajax_mobile"
-	    operation="mobile_show_workspace"
-	    binderId="${ss_showUserUser.workspaceId}" />"
-  ><span>${ss_showUserUser.title}</span></a>
+  	  	<c:choose>
+		  	<c:when test="${!ss_showUserIsGroup}">  
+		  	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
+				    action="__ajax_mobile"
+				    operation="mobile_show_workspace"
+				    binderId="${ss_showUserUser.workspaceId}" />"><span>${ss_showUserUser.title}</span></a>
+			</c:when>
+	  		<c:otherwise>
+		  		<ul>
+					<c:forEach var="member" items="${ss_showUserGroupMembers}" >
+						<li><ssf:showUser user="${member}" showPresence="${ss_showUserShowPresence}"/></li>
+					</c:forEach>
+		  		</ul>
+	  		</c:otherwise>
+	  	</c:choose>
   </c:if>
   <c:if test="${empty ss_showUserUser.workspaceId}">
   <span>${ss_showUserUser.title}</span>

@@ -30,7 +30,6 @@ package com.sitescape.team.taglib;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
@@ -43,14 +42,9 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.dom4j.Document;
 
-import com.sitescape.team.dao.ProfileDao;
-import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.UserPrincipal;
-import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -62,11 +56,11 @@ import com.sitescape.util.servlet.StringServletResponse;
  * @author Peter Hurley
  * 
  */
-public class ShowUser extends BodyTagSupport {
+public class ShowTeam extends BodyTagSupport {
 
-	protected static final Log logger = LogFactory.getLog(ShowUser.class);
+	protected static final Log logger = LogFactory.getLog(ShowTeam.class);
 	
-	private UserPrincipal user = null;
+	private Binder team = null;
 	private String titleStyle = "";
     private Boolean showPresence = Boolean.TRUE;
 
@@ -82,42 +76,20 @@ public class ShowUser extends BodyTagSupport {
 		try {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
-			ProfileDao profileDao = (ProfileDao) SpringContextUtil.getBean("profileDao");
-			
-			// Get a user object from the principal
-			if ((user != null) && !(user instanceof User) && !(user instanceof Group)) {
-				try {
-					//this will remove the proxy and return a real user or group
-					//currently looks like this code is expecting a User
-					//get user even if deleted.
-					user = profileDao.loadUserPrincipal(user.getId(), user.getZoneId(), false);
-				} catch (Exception e) {
-					logger.warn(e);
-				}
-			}
+			BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
 
-			if ((user != null) && (user instanceof User || user instanceof Group)) {
-				httpReq.setAttribute(WebKeys.SHOW_USER_INSTANCE_COUNT, UUID.randomUUID().toString());
-				httpReq.setAttribute(WebKeys.SHOW_USER_USER, user);		
-				httpReq.setAttribute(WebKeys.SHOW_USER_TITLE_STYLE, titleStyle);
-				httpReq.setAttribute(WebKeys.SHOW_USER_IS_GROUP, user instanceof Group);
-				if (user != null && user.isActive())
-					httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, showPresence);
-				else
-					httpReq.setAttribute(WebKeys.SHOW_USER_SHOW_PRESENCE, Boolean.FALSE);
-					
-				if (user instanceof Group) {
-					ProfileModule profileModule = (ProfileModule) SpringContextUtil.getBean("profileModule");
-					if (profileModule != null) {
-						Collection<Long> ids = new ArrayList<Long>();
-						ids.add(user.getId());
-						Set groupUsers = profileModule.getUsersFromPrincipals(ids);
-						httpReq.setAttribute(WebKeys.SHOW_USER_GROUP_MEMBERS, groupUsers);
-					}
-				}
+			if ((team != null) && (team instanceof Binder)) {
+				httpReq.setAttribute(WebKeys.SHOW_TEAM_INSTANCE_COUNT, UUID.randomUUID().toString());
+				httpReq.setAttribute(WebKeys.SHOW_TEAM_TEAM, team);		
+				httpReq.setAttribute(WebKeys.SHOW_TEAM_TITLE_STYLE, titleStyle);
+				httpReq.setAttribute(WebKeys.SHOW_TEAM_SHOW_PRESENCE, showPresence);
+				
+
+				Set groupUsers = binderModule.getTeamMembers(team, true);
+				httpReq.setAttribute(WebKeys.SHOW_TEAM_TEAM_MEMBERS, groupUsers);
 				
 				// Output the presence info
-				String jsp = "/WEB-INF/jsp/tag_jsps/show_user/show_user.jsp";
+				String jsp = "/WEB-INF/jsp/tag_jsps/show_team/show_team.jsp";
 				RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
 				ServletRequest req = pageContext.getRequest();
 				StringServletResponse res = new StringServletResponse(httpRes);
@@ -128,7 +100,7 @@ public class ShowUser extends BodyTagSupport {
 		} catch (Exception e) {
 			throw new JspTagException(e.getLocalizedMessage());
 		} finally {
-			user = null;
+			team = null;
 			showPresence = true;
 			titleStyle = "";
 		}
@@ -136,8 +108,8 @@ public class ShowUser extends BodyTagSupport {
 		return EVAL_PAGE;
 	}
 
-	public void setUser(UserPrincipal user) {
-		this.user = user;
+	public void setTeam(Binder team) {
+		this.team = team;
 	}
 	public void setShowPresence(Boolean showPresence) {
 		this.showPresence = showPresence;

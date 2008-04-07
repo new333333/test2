@@ -4163,6 +4163,15 @@ div.ss_questionContainer input.ss_survay_checkbox, div.ss_questionContainer inpu
 	vertical-align:bottom;
 }
 
+div.ss_survey_required {
+	background-color: ${ss_form_element_color};
+}
+
+ul.ss_survey_users_list {
+	margin: 0;
+	padding: 0;
+}
+
 table.ss_milestones_list td.ss_completed, table.ss_milestones_list td.ss_completed a {
 	color: #999966;
 }

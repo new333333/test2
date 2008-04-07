@@ -547,6 +547,12 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<name>addCurrentUser</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>
 	</tag>
 	
 	<tag>
@@ -1029,6 +1035,29 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 	</tag>
+	
+	<tag>
+		<name>showTeam</name>
+		<tag-class>com.sitescape.team.taglib.ShowTeam</tag-class>
+		<body-content>JSP</body-content>
+		<attribute>
+			<name>team</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>com.sitescape.team.domain.Binder</type>
+		</attribute>		
+		<attribute>
+			<name>showPresence</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
+		</attribute>		
+		<attribute>
+			<name>titleStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>	
 
 	<tag>
 		<name>showUser</name>

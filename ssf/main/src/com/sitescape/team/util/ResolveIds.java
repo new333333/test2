@@ -45,7 +45,9 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.CoreDao;
 import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.search.filter.SearchFilterKeys;
 
 public class ResolveIds {
 	
@@ -100,7 +102,31 @@ public class ResolveIds {
 			return Collections.EMPTY_LIST;
 		}
 		ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
-		return profileDao.loadPrincipals(ids, RequestContextHolder.getRequestContext().getZoneId(), true);
+		List result = new ArrayList();
+		
+		List filteredIds = new ArrayList();
+		Iterator it = ids.iterator();
+		while (it.hasNext()) {
+			Object firstId = it.next();
+			if (firstId.equals(SearchFilterKeys.CurrentUserId)) {
+				Map currentUser = new HashMap();
+				currentUser.put("id", firstId);
+				currentUser.put("title", NLT.get("searchForm.currentUserTitle"));
+				result.add(currentUser);
+			} else {
+				if (firstId != null && firstId.getClass().equals(Long.class)) {
+					filteredIds.add(firstId);
+				} else {
+					try {
+						filteredIds.add(Long.parseLong((String)firstId));
+					} catch (NumberFormatException e) {
+						// ignore id
+					}
+				}
+			}
+		}
+		result.addAll(profileDao.loadPrincipals(filteredIds, RequestContextHolder.getRequestContext().getZoneId(), true));
+		return result;
 	}
 	
 	public static Map getBinderTitlesAndIcons(Object binderIds) {
@@ -163,9 +189,61 @@ public class ResolveIds {
 			data = new HashMap();
 			data.put("title", objs[1]);
 			data.put("iconName", objs[2]);
+			data.put("id", objs[0].toString());
 			results.put(objs[0].toString(), data);
 		}
 		return results;
+	}
+	
+	public static Set getBinders(Object teamIds) {
+		if (teamIds == null) {
+			return Collections.EMPTY_SET;
+		}
+		if (teamIds.getClass().isAssignableFrom(String.class)) {
+			return getBinders((String)teamIds);
+		} else if (teamIds.getClass().isAssignableFrom(SearchFieldResult.class)) {
+			return getBinders((SearchFieldResult)teamIds);
+		}
+		logger.warn("getBinders called with wrong parameter class [" + teamIds.getClass() + "]");
+		return Collections.EMPTY_SET;
+	}
+	
+	public static Set getBinders(SearchFieldResult teamIds) {
+		if (teamIds == null) {
+			return Collections.EMPTY_SET;
+		}		
+		Set<String> strIds = teamIds.getValueSet();
+		List ids = stringsToLongs(strIds);
+		return getBinders(ids);
+	}	
+	
+	public static Set getBinders(String teamIds) {
+		if (teamIds == null) {
+			return Collections.EMPTY_SET;
+		}		
+		Set<Long> ids = new HashSet();
+		try {
+			ids.add(Long.valueOf(teamIds));
+		} catch (NumberFormatException ne) {};
+		return getBinders(ids);
+	}
+	
+	public static Set getBinders(CustomAttribute attribute) {
+		if ((attribute == null) || (attribute.getValueType() != CustomAttribute.COMMASEPARATEDSTRING)) {
+			return null;
+		}
+		
+		Set<String> strIds = attribute.getValueSet();
+		List ids = stringsToLongs(strIds);
+		return getBinders(ids);
+	}
+	
+	public static Set getBinders(Collection ids) {
+		if (ids == null) {
+			return Collections.EMPTY_SET;
+		}
+		BinderModule binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
+		return binderModule.getBinders(ids);
 	}
 	
 	public static List stringsToLongs(Collection ids) {
@@ -179,7 +257,12 @@ public class ResolveIds {
 		while (it.hasNext()) {
 			String id = (String)it.next();
 			try {
-				result.add(Long.parseLong(id));
+				if (SearchFilterKeys.CurrentUserId.equals(id)) {
+					// leave pseudo id on the list
+					result.add(id);
+				} else {
+					result.add(Long.parseLong(id));
+				}
 			} catch (NumberFormatException e) {}
 		}
 		

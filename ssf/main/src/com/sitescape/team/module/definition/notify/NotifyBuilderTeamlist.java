@@ -26,46 +26,34 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.survey;
+package com.sitescape.team.module.definition.notify;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.util.Iterator;
+import java.util.Collection;
+import java.util.Map;
 
-import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.UpdateAttributeSupport;
+import org.dom4j.Element;
 
-import net.sf.json.JSONObject;
+import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.util.ResolveIds;
+/**
+*
+* @author Janet McCann
+*/
+public class NotifyBuilderTeamlist extends AbstractNotifyBuilder {
 
-public class Survey implements UpdateAttributeSupport {
-
-	private JSONObject jsonObj;
-
-	private SurveyModel survey;
-
-	public Survey(String jsonStringRepresentation) {
-		super();
-		this.jsonObj = JSONObject.fromString(jsonStringRepresentation);
-		this.survey = new SurveyModel(this.jsonObj);
-	}
-
-	public SurveyModel getSurveyModel() {
-		return this.survey;
-	}
-
-	public String toString() {
-		return jsonObj.toString();
-	}
-
-	public boolean update(Object obj) {
-		Survey newSurvey = (Survey)obj;
-		
-		if (!newSurvey.getSurveyModel().isVoteRequest()) {
-			newSurvey.getSurveyModel().updateFrom(getSurveyModel());
-		}
-		newSurvey.getSurveyModel().removeVoteRequest();
-		throw new ClassCastException();
-	}
-
+	   protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
+		   // TODO: implement
+		   Collection users = ResolveIds.getPrincipals(attribute);
+		   if ((users != null) && !users.isEmpty()) {
+	    		for (Iterator iter=users.iterator();iter.hasNext();) {
+		    		Element value = element.addElement("value");		    		
+		    		value.setText(((Principal)iter.next()).getTitle());
+	    		}
+	    	} else {
+	    		element.addElement("value");
+	    	}
+	    	return true;
+	   }
 }

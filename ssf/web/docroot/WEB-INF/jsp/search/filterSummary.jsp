@@ -104,24 +104,24 @@
 			</c:forEach>
 		</c:if>
 		<c:if test="${!empty ss_filterMap.additionalFilters.entry}">
-			<c:forEach var="block" items="${ss_filterMap.additionalFilters.entry}">
-				<input type="hidden" name="ss_entry_def_id_hidden" value="${block.entryType}" />
-				<input type="hidden" name="elementName_${block.entryType}_hidden" value="${block.entryElement}" />
+			<input type="hidden" name="ss_entry_def_length_hidden" value="${fn:length(ss_filterMap.additionalFilters.entry)}" />
+			<c:forEach var="block" items="${ss_filterMap.additionalFilters.entry}" varStatus="status">
+				<input type="hidden" name="ss_entry_def_id_${status.index}_hidden" value="${block.entryType}" />
+				<input type="hidden" name="elementName_${block.entryType}_${status.index}_hidden" value="${block.entryElement}" />
 				<c:choose>
 					<c:when test="${block.valueType == 'date' || block.valueType == 'event'}">
-						<input type="hidden" name="elementValue_${block.entryType}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" pattern="yyyy-MM-dd"/>" />
+						<input type="hidden" name="elementValue_${block.entryType}_${status.index}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" pattern="yyyy-MM-dd"/>" />
 					</c:when>
 					<c:when test="${block.valueType == 'date_time'}">
-						<input type="hidden" name="elementValue_${block.entryType}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" pattern="yyyy-MM-dd"/>" />
+						<input type="hidden" name="elementValue_${block.entryType}_${status.index}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" pattern="yyyy-MM-dd"/>" />
 						<c:if test="${fn:length(block.entryValues) > 10}">
-							<input type="hidden" name="elementValue0_${block.entryType}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" pattern="HH:mm"/>" />
+							<input type="hidden" name="elementValue0_${block.entryType}_${status.index}_hidden" value="<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${block.entryValuesNotFormatted}" pattern="HH:mm"/>" />
 						</c:if>
 					</c:when>
 					<c:otherwise>
-						<input type="hidden" name="elementValue_${block.entryType}_hidden" value="${block.entryValuesNotFormatted}" />
+						<input type="hidden" name="elementValue_${block.entryType}_${status.index}_hidden" value="${block.entryValuesNotFormatted}" />
 					</c:otherwise>
-				</c:choose>				
-				
+				</c:choose>
 				
 				<p><ssf:nlt tag="searchForm.label.entry"/>:
 				<script type="text/javascript">

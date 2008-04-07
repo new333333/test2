@@ -1,3 +1,4 @@
+<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -26,46 +27,42 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.survey;
+%>
+<% //Group_list view %>
+<c:set var="grouplist_entry" value="${ssDefinitionEntry}"/>
+<jsp:useBean id="grouplist_entry" type="com.sitescape.team.domain.Entry" />
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+<c:if test="${empty ss_element_display_style}">
+<div class="ss_entryContent">
+<span class="ss_labelLeft"><c:out value="${property_caption}" /></span>
+<ul class="ss_nobullet">
+<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
+<li><ssf:showUser user="${selection}" showPresence="true"/></li>
+</c:forEach>
+</ul>
+</div>
+</c:if>
 
-import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.UpdateAttributeSupport;
+<c:if test="${!empty ss_element_display_style && 
+    ss_element_display_style == 'tableAlignLeft'}">
+<tr>
+  <td class="ss_table_spacer_right" valign="top" align="right">
+    <span class="ss_light"><c:out value="${property_caption}" /></span>
+  </td>
+  <td valign="top" align="left">
+	<ul class="ss_nobullet">
+	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getPrincipals(grouplist_entry.getCustomAttribute(property_name)) %>" >
+ 	 <li><ssf:showUser user="${selection}" showPresence="true"/></li>
+	</c:forEach>
+	</ul>
+  </td>
+</tr>
+</c:if>
 
-import net.sf.json.JSONObject;
 
-public class Survey implements UpdateAttributeSupport {
 
-	private JSONObject jsonObj;
 
-	private SurveyModel survey;
 
-	public Survey(String jsonStringRepresentation) {
-		super();
-		this.jsonObj = JSONObject.fromString(jsonStringRepresentation);
-		this.survey = new SurveyModel(this.jsonObj);
-	}
 
-	public SurveyModel getSurveyModel() {
-		return this.survey;
-	}
 
-	public String toString() {
-		return jsonObj.toString();
-	}
 
-	public boolean update(Object obj) {
-		Survey newSurvey = (Survey)obj;
-		
-		if (!newSurvey.getSurveyModel().isVoteRequest()) {
-			newSurvey.getSurveyModel().updateFrom(getSurveyModel());
-		}
-		newSurvey.getSurveyModel().removeVoteRequest();
-		throw new ClassCastException();
-	}
-
-}

@@ -69,6 +69,10 @@ public class TaskHelper {
 
 	public static final String ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME = "assignment";
 	
+	public static final String ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME = "assignment_groups";
+	
+	public static final String ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME = "assignment_teams";
+	
 	public static final String TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME = "start_end";
 	
 	public enum FilterType {

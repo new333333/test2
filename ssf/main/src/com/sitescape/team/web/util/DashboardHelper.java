@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.web.util;
 
+import java.awt.font.NumericShaper;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,6 +43,7 @@ import java.util.SortedSet;
 
 import javax.portlet.ActionRequest;
 
+import org.apache.taglibs.standard.tag.common.core.SetSupport;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
@@ -106,7 +108,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 	//key in component data used to resolve binders by type
 	public final static String ChooseType = "chooseViewType";
 	public final static String AssignedTo = "assignedTo";
-	public final static String AssignedToName = "assignedToName";
+	public final static String AssignedToGroups = "assignedToGroups";
+	public final static String AssignedToTeams = "assignedToTeams";	
 	
 	//Scopes
 	public final static String Local = "local";
@@ -840,18 +843,36 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		}
 
     	if (data.get(AssignedTo) != null && data.get(AssignedTo) instanceof String) {
-    		String userId = (String)data.get(AssignedTo);
-    		String userTitle = null;
-    		if (SearchFilterKeys.CurrentUserId.equals(userId)) {
-    			userTitle = NLT.get("searchForm.currentUserTitle");
-    		} else {
-    			Iterator users = getProfileModule().getUsers(Collections.singleton(Long.parseLong(userId))).iterator();
-    			if (users.hasNext()) {
-    				userTitle = ((Principal)users.next()).getTitle();
-    			}
-    		}
-    		data.put(AssignedToName, userTitle);
-    	}
+    		// convert from v1.0
+			Set userIds = new HashSet();
+			if (data.get(AssignedTo) instanceof String) {
+				try {
+					userIds.add(Long.parseLong((String)data.get(AssignedTo)));
+				} catch (NumberFormatException e) {
+					// ignore
+				}
+			}
+			data.put(AssignedTo, userIds);
+	    }
+    	
+//    	if (data.get(AssignedTo) != null) {
+//    		Set userIds = null;
+//    		if (data.get(AssignedTo) instanceof String) {
+//    			userIds = Collections.singleton((String)data.get(AssignedTo));
+//    		} else {
+//    			userIds = (Set)data.get(AssignedTo);
+//    		}
+//    		String userTitle = null;
+//    		if (SearchFilterKeys.CurrentUserId.equals(userId)) {
+//    			userTitle = NLT.get("searchForm.currentUserTitle");
+//    		} else {
+//    			Iterator users = getProfileModule().getUsers(Collections.singleton(Long.parseLong(userId))).iterator();
+//    			if (users.hasNext()) {
+//    				userTitle = ((Principal)users.next()).getTitle();
+//    			}
+//    		}
+//    		data.put(AssignedToName, userTitle);
+//    	}
 		
 		
     	Workspace ws = getWorkspaceModule().getTopWorkspace();
@@ -891,8 +912,6 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			}
 		}
 		
-		// Map elementData = BinderHelper.getCommonEntryElements();
-		// searchSearchFormData.put(WebKeys.SEARCH_FORM_QUERY_DATA, FilterHelper.buildFilterFormMap(searchQuery,	elementData));
 		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(searchQuery, getDefinitionModule(), getProfileModule(), getBinderModule());
 		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
@@ -1189,17 +1208,66 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						componentData.put(SearchFormSavedFolderIdList, LongIdUtil.getIdsAsString(folderIds));
 					}
 					
-					String assignedTo = PortletRequestUtils.getStringParameter(request, "assignedTo", "");
-					if (!"".equals(assignedTo)) {
-						searchFilter.addEntryAttributeValues(null,
-										TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,
-										new String[] { assignedTo },
-										"user_list");
-						componentData.put(AssignedTo, assignedTo);
+					
+					if (ObjectKeys.DASHBOARD_COMPONENT_TASK_SUMMARY.equals(cName)) {
+						List<SearchFilter.Entry> entries = new ArrayList(); 
+						String assignedTo = PortletRequestUtils.getStringParameter(request, "assignedTo", "");
+						String[] assignedToSplited = new String[0];
+						if (!"".equals(assignedTo)) {
+							assignedToSplited = assignedTo.trim().split("\\s");
+							Set ids = new HashSet();
+							for (int i = 0; i < assignedToSplited.length; i++) {
+								try {
+									if (SearchFilterKeys.CurrentUserId.equals(assignedToSplited[i])) {
+										ids.add(SearchFilterKeys.CurrentUserId);
+									} else {
+										ids.add(Long.parseLong(assignedToSplited[i]));
+									}
+								} catch (NumberFormatException e) {
+									// ignore
+								}
+							}
+							componentData.put(AssignedTo, ids);
+						}
+						entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME, assignedToSplited, "user_list"));
+						
+						String assignedToGroup = PortletRequestUtils.getStringParameter(request, "assignedToGroup", "");
+						String[] assignedToGroupSplited = new String[0];
+						if (!"".equals(assignedToGroup)) {
+							assignedToGroupSplited = assignedToGroup.trim().split("\\s");
+							Set ids = new HashSet();
+							for (int i = 0; i < assignedToGroupSplited.length; i++) {
+								try {
+									ids.add(Long.parseLong(assignedToGroupSplited[i]));
+								} catch (NumberFormatException e) {
+									// ignore
+								}
+							}
+							componentData.put(AssignedToGroups, ids);
+						}
+						entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME, assignedToGroupSplited, "group_list"));
+						
+						String assignedToTeam = PortletRequestUtils.getStringParameter(request, "assignedToTeam", "");
+						String[] assignedToTeamSplited = new String[0];
+						if (!"".equals(assignedToTeam)) {
+							assignedToTeamSplited = assignedToTeam.trim().split("\\s");
+							Set ids = new HashSet();
+							for (int i = 0; i < assignedToTeamSplited.length; i++) {
+								try {
+									ids.add(Long.parseLong(assignedToTeamSplited[i]));
+								} catch (NumberFormatException e) {
+									// ignore
+								}
+							}
+							componentData.put(AssignedToTeams, ids);
+						}
+						entries.add(new SearchFilter.Entry(null, TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME, assignedToTeamSplited, "team_list"));					
+						searchFilter.addEntries(entries, "userGroupTeam");
 					}
 					
 					componentData.put(SearchFormSavedSearchQuery, searchFilter
 							.getFilter().asXML());
+					
 				} else if (ObjectKeys.DASHBOARD_COMPONENT_WIKI_SUMMARY.equals(cName) ||
 						ObjectKeys.DASHBOARD_COMPONENT_GUESTBOOK_SUMMARY.equals(cName)) {
 
