@@ -29,6 +29,7 @@
 package com.sitescape.team.remoting;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * WS facade for business tier.
@@ -46,6 +47,11 @@ public interface Facade {
 	
 	public String getDefinitionConfigAsXML();
 	public String getDefinitionListAsXML();
+	public void setDefinitions(long binderId, List<String>definitionIds, List<String>workflowAssociations);
+	public void setFunctionMembership(long binderId, String inputDataAsXml);
+	public void setFunctionMembershipInherited(long binderId, boolean inherit);	
+	public void setOwner(long binderId, long userId);
+
 	// 
 	// Folder operations
 	// 	

@@ -5,6 +5,7 @@ import java.util.List;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.util.SpringContextUtil;
 
 
@@ -18,12 +19,25 @@ public class BinderServiceEndpoint implements ServiceLifecycle, BinderService {
 	public long addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML) {
 		return getBinderService().addBinder(accessToken, parentId, definitionId, inputDataAsXML);
 	}
+	public void setDefinitions(String accessToken, long binderId, List<String>definitionIds, List<String>workflowAssociations) {
+		getBinderService().setDefinitions(accessToken, binderId, definitionIds, workflowAssociations);
+
+	}
 	public String getTeamMembersAsXML(String accessToken, long binderId) {
 		return getBinderService().getTeamMembersAsXML(accessToken, binderId);
 	}
 
 	public void setTeamMembers(String accessToken, long binderId, List<Long> memberIds) {
 		getBinderService().setTeamMembers(accessToken, binderId, memberIds);
+	}
+	public void setFunctionMembership(String accessToken, long binderId, String inputDataAsXml) {
+		getBinderService().setFunctionMembership(accessToken, binderId, inputDataAsXml);
+	}
+	public void setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit) {
+		getBinderService().setFunctionMembershipInherited(null, binderId, inherit);
+	}
+	public void setOwner(String accessToken, long binderId, long userId) {
+		getBinderService().setOwner(null, binderId, userId);
 	}
 	public void init(Object context) throws ServiceException {
 		this.binderService = (BinderService) SpringContextUtil.getBean("binderService");
