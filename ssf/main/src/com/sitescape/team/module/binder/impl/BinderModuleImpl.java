@@ -253,6 +253,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		} else  {
 			def = parentBinder.getEntryDef();
 		} 
+   		
 		if (def.getType() == Definition.FOLDER_VIEW) {
 			checkAccess(parentBinder, BinderOperation.addFolder);
 			Binder binder = loadBinderProcessor(parentBinder).addBinder(parentBinder, def, Folder.class, inputData, fileItems, options);
@@ -261,8 +262,15 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			return binder.getId();
 		} else {
 			if (!(parentBinder instanceof Workspace)) throw new NotSupportedException("errorcode.notsupported.addbinder");
-			checkAccess(parentBinder, BinderOperation.addWorkspace);		    	
-		    return loadBinderProcessor(parentBinder).addBinder(parentBinder, def, Workspace.class, inputData, fileItems, options).getId();
+		  	//allow users workspaces to be created for all users
+		   	if (parentBinder.isReserved() && ObjectKeys.PROFILE_ROOT_INTERNALID.equals(parentBinder.getInternalId())) { 
+	    		if ((def == null) || (def.getType() != Definition.USER_WORKSPACE_VIEW)) {
+	    			checkAccess(parentBinder, BinderOperation.addWorkspace);		    	
+	        	}
+		   	} else {
+		   		checkAccess(parentBinder, BinderOperation.addWorkspace);
+	        }
+	    	return loadBinderProcessor(parentBinder).addBinder(parentBinder, def, Workspace.class, inputData, fileItems, options).getId();
 		}
 	}
 	public Set<Long> indexTree(Long binderId) {
