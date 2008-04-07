@@ -43,4 +43,6 @@ public interface FolderService {
 	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState);
 	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
+	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
+			String fileUploadDataItemName, String stagedFileRelativePath);
 }
