@@ -27,7 +27,10 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.definition.notify;
+import java.io.Writer;
 import java.util.Map;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.VelocityContext;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
@@ -74,4 +77,12 @@ public abstract class AbstractNotifyBuilder implements NotifyBuilder {
 	   	}
 	   	return true;
     }
+    public void buildElement(String template, Element entryElement, Notify notifyDef, DefinableEntity entity, VelocityContext ctx, Writer writer) {
+    	try {
+    		Velocity.mergeTemplate(template, ctx, writer);
+    	} catch (Exception ex) {
+    		System.out.println(ex);
+    	}
+    }
+ 
 }

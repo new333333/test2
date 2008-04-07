@@ -68,10 +68,10 @@ public class ChangeLogUtils {
 		if (def != null) {
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_ENTITY_DEFINITION, def.getId());
 		}
-		XmlUtils.addAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, entry.getIconName());			
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, entry.getIconName());			
 		//process all form items
-		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, entry.getTitle());
-		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_ENTITY_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, entry.getDescription());
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, entry.getTitle());
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, entry.getDescription());
 		Set<Map.Entry> mes = entry.getCustomAttributes().entrySet();
 		for (Map.Entry me: mes) {
 			CustomAttribute attr = (CustomAttribute)me.getValue();

@@ -219,6 +219,10 @@ public interface ObjectKeys {
     
     //Search Result Identifier
     public static final String SEARCH_RESULTS_DISPLAY="ss_searchResultListing";
+
+    //file repository
+    public static final String FI_ADAPTER = "fiAdapter";
+	public static final String PI_SYNCH_TO_SOURCE = "_synchToSource";
     
     //User properties
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
@@ -327,7 +331,7 @@ public interface ObjectKeys {
     public static final String FAMILY_CALENDAR = "calendar";
     
     //xml tags - some used in GenerateLdapList (as strings) - keep in sync
-    public static final String XTAG_ATTRIBUTE_ID="databaseId";
+    public static final String XTAG_ATTRIBUTE_DATABASEID="databaseId";
     public static final String XTAG_ATTRIBUTE_NAME="name";
     public static final String XTAG_ATTRIBUTE_TYPE="type";
     public static final String XTAG_ATTRIBUTE_INTERNALID="internalId";
@@ -336,21 +340,15 @@ public interface ObjectKeys {
     public static final String XTAG_ATTRIBUTE_OPERATION="operation";
     public static final String XTAG_ATTRIBUTE_MODIFIEDBY="modifiedBy";
     public static final String XTAG_ATTRIBUTE_MODIFIEDON="modifiedOn";
-    // data types for <attribute>
-    public static final String XTAG_TYPE_STRING="string";
-    public static final String XTAG_TYPE_DESCRIPTION="description";
-    public static final String XTAG_TYPE_COMMASEPARATED="commaSeparated";
-    public static final String XTAG_TYPE_BOOLEAN="boolean";
-    public static final String XTAG_TYPE_LONG="long";
-    public static final String XTAG_TYPE_DATE="date";
-    public static final String XTAG_TYPE_SERIALIZED="serialized";
-    public static final String XTAG_TYPE_XML="xml";
-    public static final String XTAG_TYPE_EVENT="event";
-    public static final String XTAG_TYPE_FILE="file";
-    //types of elements
+    public static final String XTAG_ATTRIBUTE_LOGVERSION="logVersion";
+    //types of XML elements
     public static final String XTAG_ELEMENT_TYPE_PROPERTY="property";
     public static final String XTAG_ELEMENT_TYPE_HISTORYSTAMP="historyStamp";
     public static final String XTAG_ELEMENT_TYPE_EVENT="event";
+    public static final String XTAG_ELEMENT_TYPE_WORKFLOWSTATE="workflowState";
+    public static final String XTAG_ELEMENT_TYPE_WORKFLOWREPONSE="workflowResponse";
+    public static final String XTAG_ELEMENT_TYPE_FILEARCHIVE="fileArchive";
+    public static final String XTAG_ELEMENT_TYPE_VERSIONARCHIVE="versionArchive";
     public static final String XTAG_ELEMENT_TYPE_FILEATTACHMENT="fileAttachment";
     public static final String XTAG_ELEMENT_TYPE_VERSIONATTACHMENT="versionAttachment";
     public static final String XTAG_ELEMENT_TYPE_ATTRIBUTE="attribute";
@@ -362,96 +360,113 @@ public interface ObjectKeys {
     public static final String XTAG_ELEMENT_TYPE_DASHBOARD_COMPONENT_DATA="data";
     public static final String XTAG_ELEMENT_TYPE_DASHBOARD_LAYOUT="layout";
     public static final String XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP="workAreaFunctionMembership";
-    
+    // values of type= attribute for element XTAG_ELEMENT_TYPE_ATTRIBUTE
+    public static final String XTAG_TYPE_STRING="string";
+    public static final String XTAG_TYPE_DESCRIPTION="description";
+    public static final String XTAG_TYPE_COMMASEPARATED="commaSeparated";
+    public static final String XTAG_TYPE_BOOLEAN="boolean";
+    public static final String XTAG_TYPE_LONG="long";
+    public static final String XTAG_TYPE_DATE="date";
+    public static final String XTAG_TYPE_SERIALIZED="serialized";
+    public static final String XTAG_TYPE_XML="xml";
+    public static final String XTAG_TYPE_EVENT="event";
+    public static final String XTAG_TYPE_FILE="file";
+    //attributes for element XTAG_ELEMENT_TYPE_HISTORYSTAMP 
     public static final String XTAG_HISTORY_BY="author";
     public static final String XTAG_HISTORY_WHEN="when";
-    //values of name= attributes
-    public static final String XTAG_ENTITY_TITLE="title";
-    public static final String XTAG_ENTITY_DESCRIPTION="description";
-    public static final String XTAG_ENTITY_PARENTBINDER="parentBinder";
-    public static final String XTAG_ENTITY_LOGVERSION="logVersion";
-    public static final String XTAG_ENTITY_DEFINITION="entryDef";
-    public static final String XTAG_ENTITY_DEFINITION_NAME="entryDefName";
-    public static final String XTAG_ENTITY_ICONNAME="iconName";
+    //value of name= attribute on XTAG_ELEMENT_TYPE_HISTORYSTAMP 
     public static final String XTAG_ENTITY_CREATION="created";
     public static final String XTAG_ENTITY_MODIFICATION="modified";
+    //values of name= attribute on XTAG_ELEMENT_TYPE_ATTRIBUTE for entities
+    public static final String XTAG_ENTITY_TITLE="title";
+    public static final String XTAG_ENTITY_DESCRIPTION="description";
+    public static final String XTAG_ENTITY_DEFINITION_NAME="entryDefName";
+    public static final String XTAG_ENTITY_ICONNAME="iconName";
     public static final String XTAG_ENTITY_ATTACHMENTS="attachments";
-
+    //values of name= attribute on XTAG_ELEMENT_TYPE_PROPERTY for entities   
+    public static final String XTAG_ENTITY_PARENTBINDER="parentBinder";
+    public static final String XTAG_ENTITY_DEFINITION="entryDef";
+    //values of name= attributes on XTAG_ELEMENT_TYPE_ATTRIBUTE for principals
     public static final String XTAG_PRINCIPAL_FOREIGNNAME="foreignName";
     public static final String XTAG_PRINCIPAL_NAME="name";
     public static final String XTAG_PRINCIPAL_DISABLED="disabled";
-    
+    //values of name= attributes on XTAG_ELEMENT_TYPE_ATTRIBUTE for user
     public static final String XTAG_USER_FIRSTNAME="firstName";
     public static final String XTAG_USER_MIDDLENAME="middleName";
     public static final String XTAG_USER_LASTNAME="lastName";
-    public static final String XTAG_USER_DISPLAYSTYLE="displayStyle";
     public static final String XTAG_USER_EMAIL="emailAddress";
-    public static final String XTAG_USER_EMAIL_TEXT="emailAddress";
-    public static final String XTAG_USER_EMAIL_MOBILE="emailAddress";
-    public static final String XTAG_USER_LOCALE="locale";
-    public static final String XTAG_USER_TIMEZONE="timeZone";
-    public static final String XTAG_USER_PASSWORD="password";
-    public static final String XTAG_USER_DIGESTSEED="digestSeed";
+    public static final String XTAG_USER_EMAIL_TEXT="txtEmailAddress";
+    public static final String XTAG_USER_EMAIL_MOBILE="mobileEmailAddress";
     public static final String XTAG_USER_ZONNAME="zonName";
     public static final String XTAG_USER_ORGANIZATION="organization";
-    public static final String XTAG_USER_LOGINDATE="loginDate";
     public static final String XTAG_USER_PHONE="phone";
     public static final String XTAG_USER_SKYPEID="skypeId";
     public static final String XTAG_USER_STATUS="status";
-       
+    public static final String XTAG_USER_TIMEZONE="timeZone";
+    //values of name= attributes on XTAG_ELEMENT_TYPE_PROPERTY for user
+    public static final String XTAG_USER_DISPLAYSTYLE="displayStyle";
+    public static final String XTAG_USER_LOCALE="locale";
+    public static final String XTAG_USER_PASSWORD="password";
+    public static final String XTAG_USER_DIGESTSEED="digestSeed";
+    public static final String XTAG_USER_LOGINDATE="loginDate";
+    //values of name= attributes on XTAG_ELEMENT_TYPE_PROPERTY for groups
     public static final String XTAG_GROUP_MEMBERS="members";
     public static final String XTAG_GROUP_MEMBER_NAME="memberName";
-    
+    //values of name= attributes on XTAG_ELEMENT_TYPE_ATTRIBUTE for groups
+    public static final String XTAG_APPLICATION_POSTURL="postUrl";
+    //values of name= attributes on XTAG_ELEMENT_TYPE_PROPERTY for groups
+    public static final String XTAG_APPLICATION_GROUP_MEMBERS="appMembers";
+
+    //values of name= attributes on XTAG_ELEMENT_TYPE_PROPERTY for folderentry
     public static final String XTAG_FOLDERENTRY_DOCNUMBER="docNumber";
     public static final String XTAG_FOLDERENTRY_TOPENTRY="topEntry";
     public static final String XTAG_FOLDERENTRY_PARENTENTRY="parentEntry";
     public static final String XTAG_FOLDERENTRY_POSTEDBY="postedBy";
-    
+    //value of name= attributes on properties of XTAG_ELEMENT_TYPE_FILEATTACHMENT 
     public static final String XTAG_FILE_NAME="fileName";
     public static final String XTAG_FILE_LENGTH="fileLength";
     public static final String XTAG_FILE_REPOSITORY="repository";
     public static final String XTAG_FILE_LAST_VERSION="lastVersion";
-
+    //value of name= attributes on properties of XTAG_ELEMENT_TYPE_VERSIONATTACHMENT 
     public static final String XTAG_FILE_PARENT="parentAttachment";
     public static final String XTAG_FILE_VERSION_NUMBER="versionNumber";
     public static final String XTAG_FILE_VERSION_NAME="versionName";
-    
+    //values of attributes on element XTAG_ELEMENT_TYPE_FILEARCHIVE
     public static final String XTAG_FILE_ARCHIVE_STORE_NAME="archiveStoreName";
+    //values of attributes on element XTAG_ELEMENT_TYPE_VERSIONARCHIVE
     public static final String XTAG_FILE_ARCHIVE_URI="archiveURI";
-    
+    //values of name= attribute on XTAG_ELEMENT_TYPE_PROPERTY for element XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP
     public static final String XTAG_WA_FUNCTION="function";
     public static final String XTAG_WA_FUNCTION_NAME="functionName";
     public static final String XTAG_WA_MEMBERS="members";
     public static final String XTAG_WA_MEMBER_NAME="memberName";
 
-    
-    public static final String XTAG_BINDER_UNIQUETITLES="uniqueTitle";
+    //value of name= attribue on XTAG_ELEMENT_TYPE_ATTRIBUTE for binders
     public static final String XTAG_BINDER_NAME="name";
+    public static final String XTAG_TEMPLATE_TITLE="templateTitle";
+    public static final String XTAG_TEMPLATE_DESCRIPTION="templateDescription";
+   //value of name= attribue on XTAG_ELEMENT_TYPE_PROPERTY for binders
+    public static final String XTAG_BINDER_UNIQUETITLES="uniqueTitle";
     public static final String XTAG_BINDER_LIBRARY="library";
     public static final String XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP="inheritFunctionMembership";
     public static final String XTAG_BINDER_INHERITDEFINITIONS="inheritDefinitions";
     public static final String XTAG_BINDER_INHERITTEAMMEMBERS="inheritTeamMembers";
     public static final String XTAG_BINDER_TEAMMEMBERS="teamMembers";
     public static final String XTAG_BINDER_TEAMMEMBER_NAME="teamMemberName";
-    public static final String XTAG_TEMPLATE_TITLE="templateTitle";
-    public static final String XTAG_TEMPLATE_DESCRIPTION="templateDescription";
-    
-
+     
+    //value of name= attribute on XTAG_ELEMENT_TYPE_HISTORYSTAMP 
     public static final String XTAG_WF_CHANGE="workflowChange";
+    //value of name= attribute XTAG_ELEMENT_TYPE_PROPERTY element XTAG_ELEMENT_TYPE_WORKFLOWSTATE
     public static final String XTAG_WFS_DEFINITION="definition";
     public static final String XTAG_WFS_TIMER="timer";
     public static final String XTAG_WFS_THREAD="thread";
      
+    //value of name= attribute XTAG_ELEMENT_TYPE_PROPERTY element XTAG_ELEMENT_TYPE_WORKFLOWRESPONSE
     public static final String XTAG_WFR_DEFINITION="definition";
     public static final String XTAG_WFR_RESPONDER="responder";
     public static final String XTAG_WFR_RESPONSEDATE="responseDate";
     public static final String XTAG_WFR_RESPONSE="response";
     
-    public static final String XTAG_APPLICATION_POSTURL="postUrl";
-    public static final String XTAG_APPLICATION_GROUP_MEMBERS="appMembers";
 
-	public static final String FI_ADAPTER = "fiAdapter";
-	
-	public static final String PI_SYNCH_TO_SOURCE = "_synchToSource";
 	
 }

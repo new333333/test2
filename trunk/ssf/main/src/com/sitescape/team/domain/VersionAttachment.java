@@ -94,7 +94,7 @@ public class VersionAttachment extends FileAttachment {
     }
 	public Element addChangeLog(Element parent) {
 		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_VERSIONATTACHMENT);
-		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId());
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getId());
 		element.addAttribute(ObjectKeys.XTAG_FILE_PARENT, getParentAttachment().getId());
 
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_FILE_VERSION_NUMBER, Long.toString(getVersionNumber()));

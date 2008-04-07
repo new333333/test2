@@ -53,6 +53,7 @@ Lucene 1.9.1+indexupdater
 md5crypt.jar
 mysql-connector-java-5.0.4-bin.jar
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
+oro 2.0.8 (needed by velocity)
 Portals Bridges 1.0
 Portlet 1.0
 Quartz 1.4.5
@@ -68,7 +69,7 @@ Spring mock 1.2.9 (comes with Spring)
 Spring Portlet spring-portlet.jar
 Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
 Trove 1.0.2
-Velocity 1.4
+Velocity 1.5
 WSDL4J 1.5.1
 WSS4J 1.5.1
 Xalan 2.7.0 (XPath and XSLT implementation; used by WSS4J and others)

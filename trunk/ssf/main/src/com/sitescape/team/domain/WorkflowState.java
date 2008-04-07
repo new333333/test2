@@ -184,8 +184,8 @@ public class WorkflowState extends ZonedObject {
     }
    
 	public Element addChangeLog(Element parent) {
-		Element element = parent.addElement("workflowState");
-		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId().toString());
+		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_WORKFLOWSTATE);
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getId().toString());
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getState());
 		
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_DEFINITION, getDefinition().getId());

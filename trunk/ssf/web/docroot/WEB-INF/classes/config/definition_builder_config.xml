@@ -113,6 +113,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature.jsp" />
 		</jsps>
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSignature" vtl="signature.vtl"/>
 	</item>
 	
 	<item name="entryCreatorView" caption="__entry_creator" category="commonEntryViewData" display="view">
@@ -123,6 +124,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_creator.jsp" />
 		</jsps>
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderCreator" vtl="creator.vtl" />
 	</item>
 	
 	<item name="entryDateView" caption="__entry_date" category="commonEntryViewData" display="view">
@@ -133,6 +135,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_date.jsp" />
 		</jsps>
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDate" vtl="date.vtl" />
 	</item>
 	
 	<item name="descriptionView" caption="__description" category="commonEntryViewData" display="view">
@@ -143,6 +146,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" vtl="description.vtl" />
 	</item>
 	<item name="entryAttachments" caption="__entry_attachments" category="commonEntryViewData" display="view">
 		<properties>
@@ -330,6 +334,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_title.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_title.jsp" />
 		</jsps>
+		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderTitle" vtl="title.vtl" />
 	</item>
 	
 	

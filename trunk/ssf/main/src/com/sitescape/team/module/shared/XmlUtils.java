@@ -28,32 +28,30 @@
  */
 package com.sitescape.team.module.shared;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ArrayList;
+import java.util.Map;
 import java.util.Set;
 
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Description;
-import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
+import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
-import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.util.Validator;
-import com.sitescape.team.dao.CoreDao;
-import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.util.Validator;
 
 public class XmlUtils {
 
@@ -61,7 +59,7 @@ public class XmlUtils {
 		Element e = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_DEFINITION);
 		e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, def.getName());
 		e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
-		e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, def.getId().toString());
+		e.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, def.getId().toString());
 		return e;
 	}
 	public static Element addProperty(Element parent, String name, String value) {
@@ -82,12 +80,6 @@ public class XmlUtils {
 		if (value != null) prop.addText(value.toString());
 		return prop;
 	}
-	public static Element addPropertyCData(Element parent, String name, Object value) {
-		Element prop = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_PROPERTY);
-		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, name);
-		if (value != null) prop.addCDATA(value.toString());
-		return prop;
-	}
 	 public static String getProperty(Element element, String name) {
 		 Element variableEle = (Element)element.selectSingleNode("./property[@name='" + name + "']");
 		 if (variableEle == null) return null;
@@ -95,7 +87,7 @@ public class XmlUtils {
 	 }
 
 	//attributes are available through the definintion builder
-	public static Element addAttribute(Element parent, String name, String type, String value) {
+	public static Element addCustomAttribute(Element parent, String name, String type, String value) {
 		if (Validator.isNull(value)) return null;
 		Element prop = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE);
 		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, name);
@@ -103,7 +95,7 @@ public class XmlUtils {
 		prop.addText(value);
 		return prop;
 	}
-	public static Element addAttribute(Element parent, String name, String type, Collection values) {
+	public static Element addCustomAttribute(Element parent, String name, String type, Collection values) {
 		if ((values == null) || values.isEmpty()) return null;
 		Element prop = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE);
 		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, name);
@@ -117,7 +109,7 @@ public class XmlUtils {
 		return prop;
 	}
 	//attributes are available through the definintion builder
-	public static Element addAttribute(Element parent, String name, String type, Object value) {
+	public static Element addCustomAttribute(Element parent, String name, String type, Object value) {
 		if (value == null) return null;
 		Element prop = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE);
 		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, name);
@@ -125,29 +117,13 @@ public class XmlUtils {
 		prop.addText(value.toString());
 		return prop;
 	}
-	//attributes are available through the definintion builder
-	public static Element addAttributeCData(Element parent, String name, String type, String value) {
-		if (Validator.isNull(value)) return null;
-		Element prop = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE);
-		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, name);
-		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, type);
-		prop.addCDATA(value);
-		return prop;
-	}
-	public static Element addAttributeCData(Element parent, String name, String type, Object value) {
-		if (value == null) return null;
-		Element prop = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE);
-		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, name);
-		prop.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, type);
-		prop.addCDATA(value.toString());
-		return prop;
-	}
-	 public static Object getAttribute(Element element, String name) {
+
+	 public static Object getCustomAttribute(Element element, String name) {
 		 Element variableEle = (Element)element.selectSingleNode("./" + ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE + "[@name='" + name + "']");
 		 if (variableEle == null) return null;
-		 return getAttributeValue(variableEle);
+		 return getCustomAttributeValue(variableEle);
 	 }
-	 public static Object getAttributeValue(Element element) {
+	 public static Object getCustomAttributeValue(Element element) {
 		 String type = element.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_TYPE);
 		 if (type == null) type = ObjectKeys.XTAG_TYPE_STRING;
 		 if (type.equals(ObjectKeys.XTAG_TYPE_STRING)) {
@@ -159,12 +135,12 @@ public class XmlUtils {
 		 
 	 }
 
-	 public static Map getAttributes(Element config) {
+	 public static Map getCustomAttributes(Element config) {
 		 Map updates = new HashMap();
 		 List<Element> attributes = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE);
 		 for (Element att:attributes) {
 			 String name = att.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_NAME);
-			 updates.put(name, getAttributeValue(att));
+			 updates.put(name, getCustomAttributeValue(att));
 		 }
 		 return updates;
 	 }
@@ -200,7 +176,7 @@ public class XmlUtils {
 	 public static Definition getDefinitionFromElement(Element defElement, CommonDependencyInjection ci) {
 		 Definition def = null;
 		 //first try databaseId because any workflows will reference it
-		 String dId = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_ID);
+		 String dId = defElement.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID);
 		 if (Validator.isNotNull(dId)) {
 			 try {
 				 def = ci.getCoreDao().loadDefinition(dId, RequestContextHolder.getRequestContext().getZoneId());

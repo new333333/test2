@@ -195,6 +195,7 @@
 	<xsd:attribute name="summary" type="xsd:boolean" use="required" />
 	<xsd:attribute name="full" type="xsd:boolean" use="required" />
 	<xsd:attribute name="notifyBuilder" type="xsd:string" use="required" />
+	<xsd:attribute name="vtl" type="xsd:string"/>
   </xsd:complexType>
   
  <xsd:complexType name="webServiceType">

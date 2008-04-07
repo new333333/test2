@@ -36,6 +36,9 @@ public class DirPath {
 		return getWebappDirPathHidden("xslt");
 	}
 
+	public static String getVelocityDirPath() {
+		return getWebappDirPathHidden("velocity");
+	}
 	public static String getRssDirPath() {
 		return getWebappDirPathHidden("rss");
 	}

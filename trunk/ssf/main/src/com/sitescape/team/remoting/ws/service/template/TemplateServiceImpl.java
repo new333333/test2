@@ -62,7 +62,7 @@ public class TemplateServiceImpl extends BaseService implements TemplateService 
 			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
 			defElement.addAttribute("id", def.getId().toString());
 			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, def.getDefinitionType().toString());
-			XmlUtils.addAttributeCData(defElement, ObjectKeys.XTAG_TEMPLATE_TITLE, ObjectKeys.XTAG_TYPE_STRING, def.getTemplateTitle());
+			XmlUtils.addCustomAttribute(defElement, ObjectKeys.XTAG_TEMPLATE_TITLE, ObjectKeys.XTAG_TYPE_STRING, def.getTemplateTitle());
 			
 		}
 		return root.asXML();

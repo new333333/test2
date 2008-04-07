@@ -695,7 +695,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		Element element = ChangeLogUtils.buildLog(changes, entry);
 		//add principal fields
 		Principal prin = (Principal)entry;
-		XmlUtils.addAttribute(element, ObjectKeys.XTAG_PRINCIPAL_NAME, ObjectKeys.XTAG_TYPE_STRING, prin.getName());
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_PRINCIPAL_NAME, ObjectKeys.XTAG_TYPE_STRING, prin.getName());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_PRINCIPAL_FOREIGNNAME, prin.getForeignName());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_PRINCIPAL_DISABLED, String.valueOf(prin.isDisabled()));
 		if (!Validator.isNull(prin.getInternalId())) {
@@ -704,31 +704,31 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		if (prin instanceof User) {
 			User user = (User)prin;
 			//attributes are available through the definintion builder
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_FIRSTNAME, ObjectKeys.XTAG_TYPE_STRING, user.getFirstName());
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_MIDDLENAME, ObjectKeys.XTAG_TYPE_STRING, user.getMiddleName());
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_LASTNAME, ObjectKeys.XTAG_TYPE_STRING, user.getLastName());
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_ZONNAME, ObjectKeys.XTAG_TYPE_STRING, user.getZonName());
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_TIMEZONE, ObjectKeys.XTAG_TYPE_STRING, user.getTimeZone().getID());
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL_TEXT, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress(User.TEXT_EMAIL));
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_EMAIL_MOBILE, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress(User.MOBILE_EMAIL));
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_ORGANIZATION, ObjectKeys.XTAG_TYPE_STRING, user.getOrganization());
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_PHONE, ObjectKeys.XTAG_TYPE_STRING, user.getPhone());
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_USER_SKYPEID, ObjectKeys.XTAG_TYPE_STRING, user.getSkypeId());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_FIRSTNAME, ObjectKeys.XTAG_TYPE_STRING, user.getFirstName());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_MIDDLENAME, ObjectKeys.XTAG_TYPE_STRING, user.getMiddleName());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_LASTNAME, ObjectKeys.XTAG_TYPE_STRING, user.getLastName());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_ZONNAME, ObjectKeys.XTAG_TYPE_STRING, user.getZonName());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_TIMEZONE, ObjectKeys.XTAG_TYPE_STRING, user.getTimeZone().getID());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_EMAIL, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_EMAIL_TEXT, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress(User.TEXT_EMAIL));
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_EMAIL_MOBILE, ObjectKeys.XTAG_TYPE_STRING, user.getEmailAddress(User.MOBILE_EMAIL));
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_ORGANIZATION, ObjectKeys.XTAG_TYPE_STRING, user.getOrganization());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_PHONE, ObjectKeys.XTAG_TYPE_STRING, user.getPhone());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_SKYPEID, ObjectKeys.XTAG_TYPE_STRING, user.getSkypeId());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_STATUS, ObjectKeys.XTAG_TYPE_STRING, user.getStatus());
 
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_DISPLAYSTYLE, user.getDisplayStyle());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOCALE, user.getLocale());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_PASSWORD, user.getPassword());
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_DIGESTSEED, user.getDigestSeed());
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_STATUS, user.getStatus());
-					XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOGINDATE, user.getLoginDate());
+			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_LOGINDATE, user.getLoginDate());
 
 		} else if(prin instanceof Group) {
 			Group group = (Group)prin;
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_GROUP_MEMBERS, LongIdUtil.getIdsAsString(group.getMembers()));
 		} else if(prin instanceof Application) {
 			Application application = (Application)prin;
-			XmlUtils.addAttribute(element, ObjectKeys.XTAG_APPLICATION_POSTURL, ObjectKeys.XTAG_TYPE_STRING, application.getPostUrl());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_APPLICATION_POSTURL, ObjectKeys.XTAG_TYPE_STRING, application.getPostUrl());
 		} else if(prin instanceof ApplicationGroup) {
 			ApplicationGroup group = (ApplicationGroup)prin;
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_APPLICATION_GROUP_MEMBERS, LongIdUtil.getIdsAsString(group.getMembers()));			

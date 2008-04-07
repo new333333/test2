@@ -1995,7 +1995,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		ChangeLog changes = new ChangeLog(binder, operation);
 		//any changes here should be considered to template export
 		Element element = ChangeLogUtils.buildLog(changes, binder);
-		XmlUtils.addAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP, binder.isFunctionMembershipInherited());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_INHERITDEFINITIONS, binder.isDefinitionsInherited());
