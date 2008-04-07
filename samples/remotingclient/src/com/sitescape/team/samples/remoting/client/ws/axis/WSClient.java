@@ -99,6 +99,8 @@ public class WSClient
 				justDoIt("modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});
 			} else if(args[0].equals("uploadFile")) {
 				justDoIt("uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);
+			} else if(args[0].equals("uploadFileStaged")) {
+				justDoIt("uploadFolderFileStaged", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]});
 			} else if(args[0].equals("uploadCalendar")) {
 				String s = FacadeClientHelper.readText(args[2]);
 				System.out.println("XML: " + s);
@@ -254,6 +256,7 @@ public class WSClient
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
 		System.out.println("addWorkflow <folder id> <entry id> <definition id> <startState>");
 		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
+		System.out.println("uploadFileStaged <folder id> <entry id> <fileDataFieldName> <stagedFileRelativePath>");
 		System.out.println("uploadCalendarEntries <folder id> <xmlFilename> [<iCalFilename>]");
 		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
 		System.out.println("getBinderTitle <binder id>");
