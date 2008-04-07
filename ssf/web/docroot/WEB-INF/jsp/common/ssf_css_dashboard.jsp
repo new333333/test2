@@ -36,16 +36,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 /* CSS Document - container for navigation and search */
 	
-	/*WRAPPER*/
-#ss_top_nav_wrapper{
-	width: 100%;
-	background-color:#D8D8D8;
-	display: table;
-	border-color:#CCCCCC;
-	border: 1px;
-	color: #CCCCCC;
-	}
-	
+
 	/* COLUMN CONTAINER */
 #ss_dashboard_content {
 	position:relative; /* This fixes the IE7 overflow hidden bug */
@@ -92,96 +83,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_tricolumn .ss_col3 {
 	width:18%;				/* Width of right column content (column width minus padding on either side) */
 	left:45%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
-	}
-	/* NAVIGATION BUTTONS -MOVE */	
-
-#ss_top_nav_button{
-	position:relative;
-	display:block;
-	height:16px;
-	background-color:#A7A9AC;
-	border:solid;
-	padding-top:6px;	
-	}
-#ss_top_nav_buttontwo a {
-	font-family:  Arial, sans-serif;
-	font-size: 10px;
-	background: #8B9BBA;
-	color: #FFF!important;
-	display: block;
-	font-weight: bold;
-	letter-spacing: 0px;
-}
-#ss_top_nav_buttontwo ul{
-	margin:0px;
-	padding:0px;
-	padding-left:10px;
-	list-style-type:none;
-	width:auto;
-	}
-#ss_top_nav_buttontwo ul li{
-	display:block;
-	float:left;
-	margin:6px 3px 0px 0px;
-	}
-#ss_top_nav_buttontwo ul li a{
-	display:block;
-	float:left;
-	color:#333;
-	border-style: solid;
-	border-color: white;
-	border-width: .01em;
-	padding:5px 15px 0px 15px;
-	height:16px;
-	}
-#ss_top_nav_buttontwo ul li a:hover{
-	color: #FFF;
-	background-color: #CCC;
-	border-style: solid;
-	border-color: #FFF;
-	border-width: .01em;
-	}	
-#ss_top_nav_buttontwo ul li a.current{	
-	color:#333;
-	background-color: #B2CBE7;
-	border-style: solid;
-	border-color: #FFF;
-	border-width: .01em;
-	}
-#ss_top_nav_view{					/* "buttons" for portal and expanded view */
-	position:relative;
-	display:inline;
-	height:16px;
-	padding-top:6px;	
-	}
-#ss_top_nav_view a {
-	font-family:  Arial, sans-serif;
-	font-size: 10px;
-	letter-spacing: 0px;
-}
-#ss_top_nav_view ul{
-	margin:0px;
-	padding:0px;
-	list-style-type:none;
-	width:auto;
-	}
-#ss_top_nav_view ul li{
-	display:inline;
-	margin:6px 3px 0px 0px;
-	width:100%;
-	}
-#ss_top_nav_view ul li a{
-	float:left;
-	color:#333;
-	padding:5px 15px 0px 15px;
-	height:16px;
-	}
-#ss_top_nav_view ul li a:hover{
-	color: #EF2121!important;
-	}	
-	
-#ss_top_nav_view ul li a.current{	
-	color:#526394!important;
 	}
 	
 div.ss_canvas {
@@ -362,6 +263,20 @@ div.ss_canvas {
 	padding-bottom: 3px;
 	border-bottom:1px dotted #666666;
 	}
+#ss_viewedItems .ss_v_attachments ul{
+	list-style-type: none;
+	padding: 0;
+	margin-left: 4px;
+	}
+#ss_viewedItems .ss_v_attachments li{
+	background-image: url("<html:rootPath/>images/pics/attachment_icon.gif");
+	background-repeat: no-repeat;
+	background-position: 1% 1%;
+	padding-left: 30px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	border-bottom:1px dotted #666666;
+	}	
 	/* ACTIVE LINKS - VIEWED ITEMS*/	
 #ss_viewedItems a{
 	text-decoration:none;
@@ -615,7 +530,7 @@ div.ss_canvas {
 	}
 .ss_link_4, .ss_link_4 span{
 	text-decoration: none!important;
-	color:#999999!important;
+	color:#555555!important;
 	font-size:9px!important;
 	padding-left:6px;
 	}			
