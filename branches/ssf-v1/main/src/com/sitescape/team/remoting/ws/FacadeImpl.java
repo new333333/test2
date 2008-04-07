@@ -62,6 +62,8 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.impl.AbstractFacade;
 import com.sitescape.team.remoting.impl.RemotingException;
 import com.sitescape.team.repository.RepositoryUtil;
+import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.util.FileUtil;
 
@@ -110,6 +112,44 @@ public class FacadeImpl extends AbstractFacade {
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
+		}
+	}
+	
+	public void uploadFolderFileStaged(long binderId, long entryId, 
+			String fileUploadDataItemName, String stagedFileRelativePath) {
+		boolean enable = SPropsUtil.getBoolean("staging.upload.files.enable", false);
+		if(enable) {
+			fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
+			stagedFileRelativePath = StringCheckUtil.check(stagedFileRelativePath);
+			
+			// Get the staged file
+			String rootPath = SPropsUtil.getString("staging.upload.files.rootpath", "").trim();
+			File file = new File(rootPath, stagedFileRelativePath);
+			
+			// Wrap it in a datastructure expected by our app.
+			SimpleMultipartFile mf = new SimpleMultipartFile(file.getName(), file, false);
+						
+			// Create a map of file item names to items 
+			Map fileItems = new HashMap();
+			fileItems.put(fileUploadDataItemName, mf);
+			
+			try {
+				// Finally invoke the business method. 
+				getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
+					new EmptyInputData(), fileItems, null, null);
+				// If you're here, the transaction was successful. 
+				// Check if we need to delete the staged file or not.
+				if(SPropsUtil.getBoolean("staging.upload.files.delete.after", false)) {
+					file.delete();
+				}
+			}
+			catch(WriteFilesException e) {
+				throw new RemotingException(e);
+			}
+		}
+		else {
+			throw new UnsupportedOperationException("Staged file upload is disabled: " + binderId + ", " + 
+					entryId + ", " + fileUploadDataItemName + ", " + stagedFileRelativePath);			
 		}
 	}
 	
