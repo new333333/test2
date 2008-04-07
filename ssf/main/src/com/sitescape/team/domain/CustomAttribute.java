@@ -569,33 +569,33 @@ public class CustomAttribute extends ZonedObject {
 	    	switch(getValueType()) {
        			case STRING:
        				if (!Validator.isNull(stringValue))
-       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, stringValue);
+       					element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, stringValue);
        				else if (description != null)
-       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, description.getText());
+       					element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, description.getText());
        				break;
        			case DESCRIPTION:
-       				element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_DESCRIPTION, description.getText());
+       				element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_DESCRIPTION, description.getText());
       				break;
        			case COMMASEPARATEDSTRING:
        				if (!Validator.isNull(stringValue))
-       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_COMMASEPARATED, stringValue);
+       					element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_COMMASEPARATED, stringValue);
        				else if (description != null)
-       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_COMMASEPARATED, description.getText());
+       					element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_COMMASEPARATED, description.getText());
       				break;
        			case BOOLEAN:		
-       				element =  XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_BOOLEAN, booleanValue.toString());    	
+       				element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_BOOLEAN, booleanValue.toString());    	
       				break;
        			case LONG:
-       				element =  XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_LONG, longValue.toString());  
+       				element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_LONG, longValue.toString());  
       				break;
        			case DATE:
-       				element =  XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_DATE, dateValue.toString());  
+       				element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_DATE, dateValue.toString());  
       				break;
        			case SERIALIZED:
-       				element =  XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_SERIALIZED, serializedValue.toBase64String());
+       				element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_SERIALIZED, serializedValue.toBase64String());
       				break;
         		case XML:
-        			element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_XML, xmlValue.getText()); 
+        			element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_XML, xmlValue.getText()); 
       				break;
        			case EVENT:
          			Event event = owner.getEntity().getEvent(stringValue);
@@ -603,13 +603,13 @@ public class CustomAttribute extends ZonedObject {
       				break;
        			case SURVEY:
        				if (!Validator.isNull(stringValue))
-       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, stringValue);
+       					element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, stringValue);
        				else if (description != null)
-       					element =  XmlUtils.addAttributeCData(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, description.getText());
+       					element =  XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_STRING, description.getText());
        				break;     				
        			case ATTACHMENT:
        				//attachments are logged separetly
-       				element = XmlUtils.addAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_FILE, stringValue);
+       				element = XmlUtils.addCustomAttribute(parent, getName(), ObjectKeys.XTAG_TYPE_FILE, stringValue);
       				break;
       	    }
     	}

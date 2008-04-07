@@ -350,7 +350,7 @@ public class FileAttachment extends Attachment {
 	}
 	public Element addChangeLog(Element parent, boolean includeVersions) {
 		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FILEATTACHMENT);
-		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId());
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getId());
 		if (!Validator.isNull(getName())) element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getName());
 		
 		if (creation != null) creation.addChangeLog(element, ObjectKeys.XTAG_ENTITY_CREATION);

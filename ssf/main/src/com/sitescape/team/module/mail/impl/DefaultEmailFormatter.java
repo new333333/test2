@@ -29,6 +29,7 @@
 
 package com.sitescape.team.module.mail.impl;
 
+import java.beans.BeanInfo;
 import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
@@ -42,6 +43,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.Properties;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -51,12 +53,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.io.DocumentSource;
+
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.VelocityContext;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Folder;
@@ -70,6 +73,7 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule;
+import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.notify.Notify;
@@ -92,13 +96,13 @@ import com.sitescape.util.Validator;
  * @author Janet McCann
  *
  */
-public class DefaultEmailFormatter extends CommonDependencyInjection implements EmailFormatter {
+public class DefaultEmailFormatter extends CommonDependencyInjection implements org.springframework.beans.factory.InitializingBean , EmailFormatter {
     private FolderModule folderModule;
     private BinderModule binderModule;
     protected DefinitionModule definitionModule;
     protected MailModule mailModule;
 	private TransformerFactory transFactory = TransformerFactory.newInstance();
-
+	protected Properties velocityProperties;
 	protected Map transformers = new HashMap();
     public DefaultEmailFormatter () {
 	}
@@ -121,8 +125,26 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	public void setIcalModule(IcalModule icalModule) {
 		this.icalModule = icalModule;
 	}	
+	private DefinitionConfigurationBuilder definitionBuilderConfig;
+	public DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
+        return definitionBuilderConfig;
+    }
+    public void setDefinitionBuilderConfig(DefinitionConfigurationBuilder definitionBuilderConfig) {
+        this.definitionBuilderConfig = definitionBuilderConfig;
+    }
+   public void setVelocityProperties(Properties velocityProperties) {
+        this.velocityProperties = velocityProperties;
+    }
 
-	/**
+   public void afterPropertiesSet() throws Exception {
+	    try {
+	    	velocityProperties.put("file.resource.loader.path", DirPath.getVelocityDirPath());
+	    	velocityProperties.put("file.resource.loader.modificationCheckInterval", "2");
+	    	Velocity.init(velocityProperties);
+	    } catch (Exception ex) {};
+
+   }
+   /**
 	 * Determine which users have access to the entry.
 	 * Return a map from locale to a collection of email Addresses
 	 */
@@ -613,7 +635,8 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	public Map buildNotificationMessage(Folder folder, FolderEntry entry,  Notify notify) {
 	    Map result = new HashMap();
 	    if (notify.getStartDate() == null) return result;
-		Document mailDigest = DocumentHelper.createDocument();
+//	    return buildNotificationMessageVelocity(folder, entry, notify);
+	    Document mailDigest = DocumentHelper.createDocument();
 		
     	Element rootElement = mailDigest.addElement("mail");
 		Element element;
@@ -645,7 +668,102 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		
 		return result;
 	}
+	protected Map buildNotificationMessageVelocity(Folder folder, final FolderEntry entry,  final Notify notify) {
+	    	
+		final String fullOrSummaryAttribute = (notify.getType().name());
+		final StringWriter writer = new StringWriter();
+		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+			public void visit(Element entryElement, Element flagElement, Map args)
+			{
+				String include = flagElement.attributeValue(fullOrSummaryAttribute);
+				if("true".equals(include)) {
+				    VelocityContext ctx = new VelocityContext();
+				    ctx.put(WebKeys.DEFINITION_ENTRY, entry);
+					//Each item property that has a value is added as a "request attribute". 
+					//  The key name is "property_xxx" where xxx is the property name.
+					//At a minimum, make sure the name and caption variables are defined
+					ctx.put("property_name", "");
+					ctx.put("property_caption", "");
+					ctx.put("notify", notify);
+					String itemType = entryElement.attributeValue("name", "");
+					//get Item from main config document
+					Element itemDefinition = definitionBuilderConfig.getItem(definitionModule.getDefinitionConfig(), itemType);
+	
+					//Also set up the default values for all properties defined in the definition configuration
+					//  These will be overwritten by the real values (if they exist) below
+					List<Element> itemDefinitionProperties = itemDefinition.selectNodes("properties/property");
+					Map propertyValuesMap = new HashMap();
+					Map savedReqAttributes = new HashMap();
+					for (Element property:itemDefinitionProperties) {
+						String propertyName = property.attributeValue("name", "");
+						if (Validator.isNull(propertyName)) continue;
+						//Get the type from the config definition
+						String propertyConfigType = property.attributeValue("type", "text");
+						String propertyValue = "";	
+						//Get the value(s) from the actual definition
+						if (propertyConfigType.equals("selectbox")) {
+							//get all items with same name
+							List<Element> selProperties = entryElement.selectNodes("properties/property[@name='"+propertyName+"']");
+							if (selProperties == null) continue;
+							//There might be multiple values so bulid a list
+							List propertyValues = new ArrayList();
+							for (Element selItem:selProperties) {
+								String selValue = NLT.getDef(selItem.attributeValue("value", ""));
+								if (Validator.isNotNull(selValue)) propertyValues.add(selValue);
+								
+							}
+							propertyValuesMap.put("propertyValues_"+propertyName, propertyValues);
+							propertyValuesMap.put("property_"+propertyName, "");
+						} else {
+							Element selItem = (Element)entryElement.selectSingleNode("properties/property[@name='"+propertyName+"']");
+							if (selItem == null) selItem=property;
+							if (propertyConfigType.equals("textarea")) {
+								propertyValue = selItem.getText();
+							} else {										
+								propertyValue = NLT.getDef(selItem.attributeValue("value", ""));
+							}
+							//defaults don't apply here
+							//Set up any "setAttribute" values that need to be passed along. Save the old value so it can be restored
+							String reqAttrName = property.attributeValue("setAttribute", "");
+							if (Validator.isNotNull(reqAttrName)) {
+								//Find this property in the current config
+								savedReqAttributes.put(reqAttrName, ctx.get(reqAttrName));
+								ctx.put(reqAttrName, propertyValue);
+							}
+							if (Validator.isNull(propertyValue)) {
+								propertyValue = property.attributeValue("default", "");
+								if (!Validator.isNull(propertyValue)) propertyValue = NLT.getDef(propertyValue);
+							}
+							propertyValuesMap.put("property_"+propertyName, propertyValue);
+						
+						}
+							
+					}
+				
+					Iterator itPropertyValuesMap = propertyValuesMap.entrySet().iterator();
+					while (itPropertyValuesMap.hasNext()) {
+						Map.Entry entry = (Map.Entry)itPropertyValuesMap.next();
+						ctx.put((String)entry.getKey(), entry.getValue());
+					}
+						
+					NotifyBuilderUtil.buildElement(flagElement, entryElement, notify, entry,
+							ctx, writer);
+				}
+                
+			}
+			public String getFlagElementName() { return "notify"; }
+		};
 
+		definitionModule.walkViewDefinition(entry, visitor, null);	
+		
+		Map result = new HashMap();
+		result.put(EmailFormatter.HTML, writer.toString());
+		
+		return result;
+
+
+
+	}
 	protected class AclChecker {
 		private User user;
 		private String [] emails;

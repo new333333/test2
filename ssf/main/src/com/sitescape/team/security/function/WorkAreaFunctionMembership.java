@@ -165,7 +165,7 @@ public class WorkAreaFunctionMembership extends ZonedObject {
     }
     public Element addChangeLog(Element parent) {
 		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP);
-		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId().toString());
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getId().toString());
 		
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_WA_FUNCTION, getFunctionId());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_WA_MEMBERS, LongIdUtil.getIdsAsString(getMemberIds()));

@@ -283,9 +283,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 checkAccess(TemplateOperation.manageTemplate);
 		 Element config = doc.getRootElement();
 		 //check name
-		 String name = (String)XmlUtils.getAttribute(config, ObjectKeys.XTAG_BINDER_NAME);
+		 String name = (String)XmlUtils.getCustomAttribute(config, ObjectKeys.XTAG_BINDER_NAME);
 		 if (Validator.isNull(name)) {
-			 name = (String)XmlUtils.getAttribute(config, ObjectKeys.XTAG_TEMPLATE_TITLE);
+			 name = (String)XmlUtils.getCustomAttribute(config, ObjectKeys.XTAG_TEMPLATE_TITLE);
 			 if (Validator.isNull(name)) {
 				 throw new IllegalArgumentException(NLT.get("general.required.name"));
 			 }
@@ -337,7 +337,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 template.setFunctionMembershipInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITFUNCTIONMEMBERSHIP), true));
 		 template.setTeamMembershipInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS), true));
 		 //get attribute from document
-		 Map updates = XmlUtils.getAttributes(config);
+		 Map updates = XmlUtils.getCustomAttributes(config);
 		 doAddTemplate(template, type, updates);
 		 //setup after template is saved
 		 if (!template.isTeamMembershipInherited()) XmlUtils.getTeamMembersFromXml(template, config, this);
@@ -506,12 +506,12 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, binder.getDefinitionType().toString());
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, binder.getInternalId());
 		
-		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_TEMPLATE_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTemplateTitle());
-		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_TEMPLATE_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, binder.getTemplateDescription());
-		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTitle());
-		XmlUtils.addAttributeCData(element, ObjectKeys.XTAG_ENTITY_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, binder.getDescription());
-		XmlUtils.addAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, binder.getIconName());			
-		if (binder.isRoot()) XmlUtils.addAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_TEMPLATE_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTemplateTitle());
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_TEMPLATE_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, binder.getTemplateDescription());
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, binder.getTitle());
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_DESCRIPTION, ObjectKeys.XTAG_TYPE_DESCRIPTION, binder.getDescription());
+		XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_ENTITY_ICONNAME, ObjectKeys.XTAG_TYPE_STRING, binder.getIconName());			
+		if (binder.isRoot()) XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_BINDER_NAME, ObjectKeys.XTAG_TYPE_STRING, binder.getName());
 
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_LIBRARY, binder.isLibrary());
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_BINDER_UNIQUETITLES, binder.isUniqueTitles());

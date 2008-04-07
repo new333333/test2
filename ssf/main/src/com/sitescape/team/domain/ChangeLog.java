@@ -266,8 +266,8 @@ public class ChangeLog extends ZonedObject {
 		if (root == null) {
 			root = getDocument().addElement(getEntityType());
 			//add stuff in the database row, so xml is usefull on its own
-			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getEntityId().toString());
-			root.addAttribute(ObjectKeys.XTAG_ENTITY_LOGVERSION, getVersion().toString());
+			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getEntityId().toString());
+			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_LOGVERSION, getVersion().toString());
 			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_OPERATION, getOperation());
 			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_MODIFIEDBY, getUserName());
 			root.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_MODIFIEDON, getOperationDate().toString());

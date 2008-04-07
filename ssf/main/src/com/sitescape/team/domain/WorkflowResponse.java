@@ -149,8 +149,8 @@ public class WorkflowResponse extends ZonedObject {
     	return id.hashCode();
     }
 	public Element addChangeLog(Element parent) {
-		Element element = parent.addElement("workflowResponse");
-		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_ID, getId().toString());
+		Element element = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_WORKFLOWREPONSE);
+		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getId().toString());
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getName());
 		
 		XmlUtils.addProperty(element, ObjectKeys.XTAG_WFR_DEFINITION, getDefinitionId());

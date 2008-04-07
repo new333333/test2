@@ -57,7 +57,7 @@ public class DefinitionServiceImpl extends BaseService implements DefinitionServ
 			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, def.getInternalId());
 			defElement.addAttribute("id", def.getId().toString());
 			defElement.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_TYPE, Integer.toString(def.getType()));			
-			XmlUtils.addAttributeCData(defElement, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, def.getTitle());
+			XmlUtils.addCustomAttribute(defElement, ObjectKeys.XTAG_ENTITY_TITLE, ObjectKeys.XTAG_TYPE_STRING, def.getTitle());
 			
 		}
 		return root.asXML();

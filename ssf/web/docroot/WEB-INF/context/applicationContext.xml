@@ -611,7 +611,7 @@
 		<property name="binderModule"><ref local="binderModule"/></property>
 		<property name="mailModule"><ref local="mailModule"/></property>
 		<property name="icalModule"><ref local="icalModule"/></property>
-<!--	path is set in bean 
+
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 		<property name="velocityProperties">
 		<props>
@@ -622,7 +622,6 @@
 			<prop key="file.resource.loader.description">Velocity File Resource Loader</prop>
 		</props>
 		</property>
--->
 	</bean>
 	
 	<bean id="defaultEmailPoster" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.DefaultEmailPoster">

@@ -15,7 +15,7 @@ public interface BinderService {
 	 */
 	public void setDefinitions(String accessToken, long binderId, List<String>definitionIds, List<String>workflowAssociations);
 	/**
-	 * Set function membership for a binder.  Can mix and match memberName and members
+	 * Set function membership for a binder.  Can mix and match memberName and/or members
 	 * <workAreaFunctionMembership>
 	 * <property name="functionName">__role.visitor</property>
 	 * <property name="memberName">kelly</property>

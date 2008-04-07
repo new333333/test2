@@ -1097,11 +1097,11 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
    		ChangeLog changeLog = new ChangeLog(entry, ChangeLog.FILEDELETE);
    		Element parent = ChangeLogUtils.buildLog(changeLog, fAtt);
    		if(archiveURIs.size() > 0) {
-   			Element fileElem = parent.addElement("fileArchive");
+   			Element fileElem = parent.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_FILEARCHIVE);
    			if(archiveStoreName != null)
    				fileElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_STORE_NAME, archiveStoreName);
    			for(KeyValuePair pair : archiveURIs) {
-   				Element verElem = fileElem.addElement("versionArchive");
+   				Element verElem = fileElem.addElement(ObjectKeys.XTAG_ELEMENT_TYPE_VERSIONARCHIVE);
    				verElem.addAttribute(ObjectKeys.XTAG_FILE_VERSION_NUMBER, pair.getKey()); 
    				verElem.addAttribute(ObjectKeys.XTAG_FILE_ARCHIVE_URI, pair.getValue());
    			}

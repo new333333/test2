@@ -168,7 +168,7 @@ public abstract class Dashboard extends PersistentTimestampObject {
 		XmlUtils.addProperty(d, "nextComponentId", String.valueOf(getNextComponentId()));
 		XmlUtils.addProperty(d, "showComponents", String.valueOf(isShowComponents()));
 		XmlUtils.addProperty(d, "version", getVersion());
-		XmlUtils.addPropertyCData(d, TITLE, getProperty(TITLE));
+		XmlUtils.addProperty(d, TITLE, getProperty(TITLE));
 		XmlUtils.addProperty(d, INCLUDEBINDERTITLE, getProperty(INCLUDEBINDERTITLE));
 		layoutAsXml(d, WIDE_TOP);
 		layoutAsXml(d, NARROW_FIXED);
@@ -272,7 +272,7 @@ public abstract class Dashboard extends PersistentTimestampObject {
 						Map.Entry dataProp = (Map.Entry)iter2.next();
 						String dataName = (String)dataProp.getKey();
 						if (Validator.isNull(dataName)) continue;
-						XmlUtils.addPropertyCData(dataElement, dataName, dataProp.getValue());
+						XmlUtils.addProperty(dataElement, dataName, dataProp.getValue());
 					}
 				}
 				

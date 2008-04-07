@@ -29,9 +29,11 @@
 package com.sitescape.team.module.definition.notify;
 
 import java.util.Map;
+import java.io.Writer;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.DefinableEntity;
+import org.apache.velocity.VelocityContext;
 
 /**
  *
@@ -40,4 +42,5 @@ import com.sitescape.team.domain.DefinableEntity;
 public interface NotifyBuilder {
     
     public boolean buildElement(Element element, DefinableEntity entity, Notify notifyDef, String dataElemName, Map args);
+    public void buildElement(String template, Element entryElement, Notify notifyDef, DefinableEntity entity, VelocityContext ctx, Writer writer);
 }
