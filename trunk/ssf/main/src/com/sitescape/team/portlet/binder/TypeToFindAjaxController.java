@@ -37,7 +37,7 @@ import com.sitescape.util.Validator;
  *
  */
 public class TypeToFindAjaxController extends SAbstractController {
-	static Pattern replacePtrn = Pattern.compile("([\\p{Punct}&&[^\\*]])");
+	public static Pattern replacePtrn = Pattern.compile("([\\p{Punct}&&[^\\*]])");
 
 	//caller will retry on OptimisiticLockExceptions
 	public void handleActionRequestInternal(ActionRequest request, ActionResponse response) throws Exception {
@@ -114,14 +114,14 @@ public class TypeToFindAjaxController extends SAbstractController {
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchFilter);
-		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
+		if (findType.equals(WebKeys.FIND_TYPE_GROUP)) {
 			users = getProfileModule().getGroups(u.getParentBinder().getId(), options);
 		} else {
 			users = getProfileModule().getUsers(u.getParentBinder().getId(), options);
 		}
 		model.put(WebKeys.USERS, users.get(ObjectKeys.SEARCH_ENTRIES));
 		model.put(WebKeys.USER_IDS_TO_SKIP, userIdsToSkip);
-		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, findType);
+		model.put(WebKeys.FIND_TYPE, findType);
 		model.put(WebKeys.DIV_ID, listDivId);
 		response.setContentType("text/xml");
 		return new ModelAndView("forum/user_list_search", model);
@@ -141,11 +141,13 @@ public class TypeToFindAjaxController extends SAbstractController {
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		String binderId = PortletRequestUtils.getStringParameter(request, "binderId", "");
 		String searchSubFolders = PortletRequestUtils.getStringParameter(request, "searchSubFolders", "");
+		boolean addCurrentUser = PortletRequestUtils.getBooleanParameter(request, "addCurrentUser", false);
 		Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
 
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Map options = new HashMap();
-		String view = "", viewAccessible = "";
+		String view = "forum/find_search_result";
+		String viewAccessible = "forum/find_search_result_accessible";	
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
 		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
@@ -159,8 +161,6 @@ public class TypeToFindAjaxController extends SAbstractController {
 		
 			if(result) {
 				List thelist = null;
-				view = "forum/find_tag_search";
-				viewAccessible = "forum/find_tag_search_accessible";
 				
 				model.put(WebKeys.TAG_LENGTH_WARNING, NLT.get("tags.maxLengthWarning"));
 				model.put(WebKeys.TAGS, thelist);
@@ -188,10 +188,11 @@ public class TypeToFindAjaxController extends SAbstractController {
 		
 	    searchText = newStr;
 	     
-		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
+		if (findType.equals(WebKeys.FIND_TYPE_PLACES)) {
 			searchTermFilter.addPlacesFilter(searchText, Boolean.valueOf(foldersOnly));
-
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
+		} else if (findType.equals(WebKeys.FIND_TYPE_TEAMS)) {
+			searchTermFilter.addWorkspaceFilter(searchText);
+		} else if (findType.equals(WebKeys.FIND_TYPE_ENTRIES)) {
 			//Add the title term
 			if (searchText.length()>0)
 			searchTermFilter.addTitleFilter(searchText);
@@ -210,7 +211,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 				//TODO Need to implement "searchSubFolders"
 			}
 			
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS)) {
+		} else if (findType.equals(WebKeys.FIND_TYPE_TAGS)) {
 			// this has been replaced by a getTags method in the search engine.
 			// searchTermFilter.addTagsFilter(FilterHelper.FilterTypeTags, searchText);
 		} else {
@@ -220,26 +221,27 @@ public class TypeToFindAjaxController extends SAbstractController {
 				searchTermFilter.addLoginNameFilter(searchText);
 			}
 		}
-	   	
+		
 		//Do a search to find the first few items that match the search text
 		options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
-		if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PLACES)) {
+		if (findType.equals(WebKeys.FIND_TYPE_PLACES)) {
 			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
 			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 			model.put(WebKeys.ENTRIES, entries);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			view = "forum/find_places_search";
-			viewAccessible = "forum/find_places_search_accessible";
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_ENTRIES)) {
+		} else if (findType.equals(WebKeys.FIND_TYPE_TEAMS)) {
 			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
 			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
 			model.put(WebKeys.ENTRIES, entries);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			view = "forum/find_entries_search";
-			viewAccessible = "forum/find_entries_search_accessible";
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_TAGS) ||
-				findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS) ||
-				findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
+		} else if (findType.equals(WebKeys.FIND_TYPE_ENTRIES)) {
+			Map retMap = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
+			List entries = (List)retMap.get(ObjectKeys.SEARCH_ENTRIES);
+			model.put(WebKeys.ENTRIES, entries);
+			model.put(WebKeys.SEARCH_TOTAL_HITS, retMap.get(ObjectKeys.SEARCH_COUNT_TOTAL));
+		} else if (findType.equals(WebKeys.FIND_TYPE_TAGS) ||
+				findType.equals(WebKeys.FIND_TYPE_PERSONAL_TAGS) ||
+				findType.equals(WebKeys.FIND_TYPE_COMMUNITY_TAGS)) {
 			
 			String wordRoot = searchText;
 			int i = wordRoot.indexOf("*");
@@ -253,40 +255,46 @@ public class TypeToFindAjaxController extends SAbstractController {
 				if (tags.size() < endTag) endTag = tags.size();
 				tagsPage = tags.subList(startingCount.intValue(), endTag);
 			}
-			model.put(WebKeys.TAGS, tagsPage);
+			model.put(WebKeys.ENTRIES, tagsPage);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, Integer.valueOf(tags.size()));
-			view = "forum/find_tag_search";
-			viewAccessible = "forum/find_tag_search_accessible";
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_GROUP)) {
+		} else if (findType.equals(WebKeys.FIND_TYPE_GROUP)) {
 			Map entries = getProfileModule().getGroups(user.getParentBinder().getId(), options);
-			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
+			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			view = "forum/find_user_search";
-			viewAccessible = "forum/find_user_search_accessible";
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_USER)) {
+		} else if (findType.equals(WebKeys.FIND_TYPE_USER)) {
 			Map entries = getProfileModule().getUsers(user.getParentBinder().getId(), options);
-			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
+			
+			int page = 0;
+			try {
+				page = Integer.parseInt(pageNumber);
+			} catch (NumberFormatException e) {}
+			
+			List resultList = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
+			if (addCurrentUser && page == 0 && (searchText.equals("") || searchText.equals("*"))) {
+				// add relative option "current user" and "me"
+				Map currentUserPlaceholder = new HashMap();
+				currentUserPlaceholder.put("title", NLT.get("searchForm.currentUserTitle"));
+				currentUserPlaceholder.put("_docId", SearchFilterKeys.CurrentUserId);
+				resultList.add(0, currentUserPlaceholder);
+			}
+			model.put(WebKeys.ENTRIES, resultList);
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			view = "forum/find_user_search";
-			viewAccessible = "forum/find_user_search_accessible";
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_APPLICATION_GROUP)) {
+		} else if (findType.equals(WebKeys.FIND_TYPE_APPLICATION_GROUP)) {
 			Map entries = getProfileModule().getApplicationGroups(user.getParentBinder().getId(), options);
-			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
+			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			view = "forum/find_user_search";
-			viewAccessible = "forum/find_user_search_accessible";
-		} else if (findType.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_APPLICATION)) {
+		} else if (findType.equals(WebKeys.FIND_TYPE_APPLICATION)) {
 			Map entries = getProfileModule().getApplications(user.getParentBinder().getId(), options);
-			model.put(WebKeys.USERS, entries.get(ObjectKeys.SEARCH_ENTRIES));
+			model.put(WebKeys.ENTRIES, entries.get(ObjectKeys.SEARCH_ENTRIES));
 			model.put(WebKeys.SEARCH_TOTAL_HITS, entries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
-			view = "forum/find_user_search";
-			viewAccessible = "forum/find_user_search_accessible";
 		}
-		model.put(WebKeys.USER_SEARCH_USER_GROUP_TYPE, findType);
+		model.put(WebKeys.FIND_TYPE, findType);
 		model.put(WebKeys.PAGE_SIZE, maxEntries);
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
 		
 		model.put(WebKeys.NAMESPACE, namespace);
+		
+		
 		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle()) &&
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			view = viewAccessible;

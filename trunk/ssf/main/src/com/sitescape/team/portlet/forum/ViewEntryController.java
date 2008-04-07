@@ -152,9 +152,14 @@ public class ViewEntryController extends  SAbstractController {
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		Map formData = request.getParameterMap();
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
-				
+		
 		Map model = new HashMap();
-
+		
+		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
+		if (!operation.equals("")) {
+			model.put(WebKeys.URL_OPERATION, operation);
+		}
+		
 		//Set up the standard beans
 		//These have been documented, so don't delete any
 		model.put(WebKeys.USER_PRINCIPAL, user);

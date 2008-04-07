@@ -31,6 +31,11 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:set var="treeName" value="${ssComponentId}${renderResponse.namespace}"/>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.Set" %>
+<%@ page import="java.util.List" %>
+<jsp:useBean id="ssDashboard" type="java.util.Map" scope="request" />
+<jsp:useBean id="ssComponentId" type="java.lang.String" scope="request" />
 
 <script type="text/javascript">
 	dojo.require('dojo.widget.*');
@@ -97,21 +102,58 @@
 <table class="ss_style" width="100%">
 	<tr>
 		<td>
-			<ssf:nlt tag="dashboard.task.assignedTo"/>:  
-			<div dojoType="SelectPageable" widgetId="assignedTo_${renderResponse.namespace}" name="assignedTo" 
-						id="ss_authors_options_${renderResponse.namespace}"
-						maxListLength="12"
-						autoComplete="false"
-						dataUrl="<ssf:url 
-								adapter="true" 
-								portletName="ss_forum" 
-								action="advanced_search" 
-								actionUrl="true">
-									<ssf:param name="operation" value="get_users_widget" />
-									<ssf:param name="operation" value="check_status" />
-								</ssf:url>&searchText=%{searchString}&pager=%{pagerString}"							
-				>
-			</div>
+				<ssf:nlt tag="dashboard.task.assignedTo"/>
+				
+				<br/><br/>
+				<%
+					java.util.Set userListSet = new java.util.HashSet();
+					java.util.Set groupListSet = new java.util.HashSet();
+					Set teamList = new java.util.HashSet();;
+	
+					Map components = null;
+					Map component = null;
+					Map data = null;
+					Map dashboard = (Map)ssDashboard.get("dashboard");
+					if (dashboard != null) components = (Map)dashboard.get("components");
+					if (components != null) component = (Map)components.get(ssComponentId.toString());
+					if (component != null) data = (Map)component.get("data");
+					if (data != null && data.containsKey("assignedTo")) {
+						List userList = com.sitescape.team.util.ResolveIds.getPrincipals((Set)data.get("assignedTo"));
+						if (userList != null) {
+							userListSet.addAll(userList);
+						}
+					}
+					if (data != null && data.containsKey("assignedToGroups")) {
+						List groupList = com.sitescape.team.util.ResolveIds.getPrincipals((Set)data.get("assignedToGroups"));
+						if (groupList != null) {
+							groupListSet.addAll(groupList);
+						}
+					}	
+					if (data != null && data.containsKey("assignedToTeams")) {
+						teamList = com.sitescape.team.util.ResolveIds.getBinders((Set)data.get("assignedToTeams"));
+					}									
+				%>		
+				<div style="margin-left: 20px;">
+					<ssf:nlt tag="dashboard.task.assignedToUser"/>
+					<ssf:find formName="${formName}" formElement="assignedTo" type="user" 
+					  userList="<%= userListSet %>" addCurrentUser="true"/>
+				</div>
+			<br/>
+				<ssf:nlt tag="dashboard.task.assignedToOr"/>
+			<br/><br/>
+				<div style="margin-left: 20px;">
+					<ssf:nlt tag="dashboard.task.assignedToGroup"/>
+					<ssf:find formName="${formName}" formElement="assignedToGroup" type="group" 
+					  userList="<%= groupListSet %>"/>
+				</div>
+			<br/>
+				<ssf:nlt tag="dashboard.task.assignedToOr"/>
+				<br/><br/>
+				<div style="margin-left: 20px;">
+					<ssf:nlt tag="dashboard.task.assignedToTeam"/>
+					<ssf:find formName="${formName}" formElement="assignedToTeam" type="teams" 
+					  userList="<%= teamList %>"/>	
+				</div>
 			
 			<c:if test="${!empty ssDashboard.beans[ssComponentId].ssBinder}">
 				<span class="ss_bold"><ssf:nlt tag="portlet.forum.selected.folder"/></span>
@@ -141,16 +183,17 @@
 				/>
 			</div>
 </td></tr></table>
+<%--
 <script type="text/javascript">
-
-	djConfig.searchIds.push("ss_authors_options_${renderResponse.namespace}");
-
-	<c:if test="${! empty ssDashboard.dashboard.components[ssComponentId].data.assignedTo}">
+	djConfig.searchIds.push("assignedTo_${renderResponse.namespace}");
+	
 	dojo.addOnLoad(function () {
-		var assignetToWidget${renderResponse.namespace} = dojo.widget.byId("assignedTo_${renderResponse.namespace}");
-		assignetToWidget${renderResponse.namespace}.setValue("${ssDashboard.dashboard.components[ssComponentId].data.assignedTo}");
-		assignetToWidget${renderResponse.namespace}.setLabel("${ssDashboard.dashboard.components[ssComponentId].data.assignedToName}");
+		<c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data.assignedTo}">
+			var assignetToWidget${renderResponse.namespace} = dojo.widget.byId("assignedTo_${renderResponse.namespace}");
+			assignetToWidget${renderResponse.namespace}.setValue("${ssDashboard.dashboard.components[ssComponentId].data.assignedTo}");
+			assignetToWidget${renderResponse.namespace}.setLabel("${ssDashboard.dashboard.components[ssComponentId].data.assignedToName}");
+		</c:if>
 	});
-	</c:if>
 
 </script>
+--%>

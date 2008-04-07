@@ -175,6 +175,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxRemoveSearchQuery(request, response);
 			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
 				ajaxVoteSurvey(request, response);
+			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY_REMOVE)) {
+				ajaxVoteSurveyRemove(request, response);				
 			} else if (op.equals(WebKeys.OPERATION_ATTACHE_MEETING_RECORDS)) {
 				ajaxAttacheMeetingRecords(request, response);
 			} else if (op.equals(WebKeys.OPERATION_SUBSCRIBE)) {
@@ -264,6 +266,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				return new ModelAndView("forum/meeting_return", model);	
 			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
 				return new ModelAndView("forum/json/vote_survey", model);	
+			} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY_REMOVE)) {
+				return new ModelAndView("forum/json/vote_survey", model);				
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 				return new ModelAndView("forum/json/icalendar_upload", model);
 			} else if (op.equals(WebKeys.OPERATION_UPDATE_TASK)) {
@@ -356,6 +360,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxListSavedQueries(request, response);
 		} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY)) {
 			return ajaxVoteSurveyStatus(request, response);	
+		} else if (op.equals(WebKeys.OPERATION_VOTE_SURVEY_REMOVE)) {
+			return ajaxVoteSurveyStatus(request, response);				
 		} else if (op.equals(WebKeys.OPERATION_CHECK_STATUS)) {
 			return ajaxCheckStatus(request, response);
 		} else if (op.equals(WebKeys.OPERATION_WIKILINK_FORM)) {
@@ -1954,7 +1960,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		if (survey == null) {
 			return;
 		}
-		
+		survey.removeVote();
 		Iterator formDataIt = request.getParameterMap().entrySet().iterator();
 		while (formDataIt.hasNext()) {
 			Map.Entry mapEntry = (Map.Entry)formDataIt.next();
@@ -1980,6 +1986,36 @@ public class AjaxController  extends SAbstractControllerRetry {
 			}
 		}
 
+		survey.setVoteRequest();
+		
+		Map formData = new HashMap(); 
+		formData.put(attributeName, surveyAttrValue.toString());
+		getFolderModule().addVote(binderId, entryId, new MapInputData(formData), null);
+	}
+	
+	private void ajaxVoteSurveyRemove(ActionRequest request, ActionResponse response) throws AccessControlException, ReservedByAnotherUserException, WriteFilesException {
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID, -1);
+		Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID, -1);
+		String attributeName = PortletRequestUtils.getStringParameter(request, "attributeName", "");
+		
+		if (binderId == -1 || entryId == -1 || Validator.isNull(attributeName)) {
+			return;
+		}
+		
+		FolderEntry entry = getFolderModule().getEntry(binderId, entryId);
+		CustomAttribute surveyAttr = entry.getCustomAttribute(attributeName);
+		if (surveyAttr == null || surveyAttr.getValue() == null) {
+			return;
+		}
+		
+		Survey surveyAttrValue = ((Survey)surveyAttr.getValue());
+		SurveyModel survey = surveyAttrValue.getSurveyModel();
+		if (survey == null) {
+			return;
+		}
+		
+		survey.removeVote();
+		
 		survey.setVoteRequest();
 		
 		Map formData = new HashMap(); 

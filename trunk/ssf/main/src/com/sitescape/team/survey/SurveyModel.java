@@ -37,11 +37,28 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
-public class SurveyModel {
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.User;
 
+public class SurveyModel {
+	
+	public static final String ALL_USERS = "all";
+
+	public static final String VOTERS = "voters";
+	
+	public static final String MODERATOR = "moderator";
+	
 	private JSONObject survey;
 	
 	private List<Question> questions;
+	
+	private String allowedToViewBeforeDueDate;
+	
+	private String allowedToViewAfterDueDate;
+	
+	private String allowedToViewDetails;
+	
+	private Boolean allowedToChangeVote;
 	
 	private int maxLastIndex = 0;
 	
@@ -55,7 +72,19 @@ public class SurveyModel {
 			JSONObject question = questionsIt.next();
 			questions.add(new Question(question, this));
 		}
-	}	
+		try {
+			this.allowedToViewBeforeDueDate = this.survey.getString("viewBeforeDueTime");
+		} catch (JSONException e) {}
+		try {
+			this.allowedToViewAfterDueDate = this.survey.getString("viewAfterDueTime");
+		} catch (JSONException e) {}
+		try {
+			this.allowedToViewDetails = this.survey.getString("viewDetails");
+		} catch (JSONException e) {}
+		try {		
+			this.allowedToChangeVote = this.survey.getBoolean("allowChange");
+		} catch (JSONException e) {}
+	}
 
 	public List<Question> getQuestions() {
 		return this.questions;
@@ -77,9 +106,29 @@ public class SurveyModel {
 		return false;
 	}
 	
+	public boolean isAlreadyVotedCurrentUser() {
+		if (this.questions == null) {
+			return false;
+		}
+		
+		Iterator it = this.questions.iterator();
+		while (it.hasNext()) {
+			Question question = (Question)it.next();
+			if (question.isAlreadyVotedCurrentUser()) {
+				return true;
+			}
+		}
+		
+		return false;
+	}	
+	
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this).append("questions", questions)
+			.append("allowedToChangeVote", this.allowedToChangeVote)
+			.append("allowedToViewAfterDueDate", this.allowedToViewAfterDueDate)
+			.append("allowedToViewBeforeDueDate", this.allowedToViewBeforeDueDate)
+			.append("allowedToViewDetails", this.allowedToViewDetails)
 				.toString();
 	}
 
@@ -132,4 +181,119 @@ public class SurveyModel {
 		
 		return false;
 	}
+
+	public boolean isAllowedToChangeVote() {
+		return allowedToChangeVote != null?allowedToChangeVote:false;
+	}
+
+	public String getAllowedToViewAfterDueDate() {
+		return allowedToViewAfterDueDate!=null?allowedToViewAfterDueDate:ALL_USERS;
+	}
+
+	public String getAllowedToViewBeforeDueDate() {
+		return allowedToViewBeforeDueDate!=null?allowedToViewBeforeDueDate:ALL_USERS;
+	}
+
+	public String getAllowedToViewDetails() {
+		return allowedToViewDetails!=null?allowedToViewDetails:MODERATOR;
+	}
+	
+	public boolean isAllowedToViewDetailsCurrentUser() {
+		if (this.allowedToViewDetails == null) {
+			// v1.0 compatibility
+			return true;
+		}
+		
+		if (ALL_USERS.equals(this.allowedToViewDetails)) {
+			return true;
+		}
+		
+		if (VOTERS.equals(this.allowedToViewDetails) &&
+				this.isAlreadyVotedCurrentUser()) {
+			return true;
+		}
+		
+		return false;
+	}	
+	
+	public boolean isAllowedModeratorToViewDetails() {
+		if (MODERATOR.equals(this.allowedToViewDetails)) {
+			return true;
+		}	
+		return false;
+	}	
+	
+	public boolean isAllowedToViewBeforeDueDateCurrentUser() {
+		if (this.allowedToViewBeforeDueDate == null) {
+			// v1.0 compatibility
+			return true;
+		}
+		
+		if (ALL_USERS.equals(this.allowedToViewBeforeDueDate)) {
+			return true;
+		}
+		
+		if (VOTERS.equals(this.allowedToViewBeforeDueDate) &&
+				this.isAlreadyVotedCurrentUser()) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isAllowedModeratorToViewBeforeDueDate() {
+		if (MODERATOR.equals(this.allowedToViewBeforeDueDate)) {
+			return true;
+		}	
+		return false;
+	}
+	
+	public boolean isAllowedToViewAfterDueDateCurrentUser() {
+		if (this.allowedToViewAfterDueDate == null) {
+			// v1.0 compatibility
+			return true;
+		}
+		
+		if (ALL_USERS.equals(this.allowedToViewAfterDueDate)) {
+			return true;
+		}
+		
+		if (VOTERS.equals(this.allowedToViewAfterDueDate) &&
+				this.isAlreadyVotedCurrentUser()) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public boolean isAllowedModeratorToViewAfterDueDate() {
+		if (MODERATOR.equals(this.allowedToViewAfterDueDate)) {
+			return true;
+		}	
+		return false;
+	}
+
+	public void removeVote() {
+		if (this.questions == null) {
+			return;
+		}
+		
+		Iterator it = this.questions.iterator();
+		while (it.hasNext()) {
+			Question question = (Question)it.next();
+			question.removeVote();
+		}
+	}
+	
+	public void updateFrom(SurveyModel surveyModel) {
+		Iterator<Question> newQuestionsIt = this.questions.iterator();
+		while (newQuestionsIt.hasNext()) {
+			Question newQuestion = newQuestionsIt.next();
+			Question oldQuestion = surveyModel.getQuestionByIndex(newQuestion.getIndex());
+			if (oldQuestion != null) {
+				newQuestion.updateFrom(oldQuestion);
+			}
+		}
+	}
+
 }

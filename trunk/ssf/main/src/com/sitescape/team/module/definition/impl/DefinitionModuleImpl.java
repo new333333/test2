@@ -1536,6 +1536,20 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							v.setValue(userIds);
 							entryData.put(nameValue, v);
 						}
+					} else if (itemName.equals("group_list")) {
+						if (inputData.exists(nameValue)) {
+							Set<String>groupIds = LongIdUtil.getIdsAsStringSet(inputData.getSingleValue(nameValue));
+							CommaSeparatedValue v = new CommaSeparatedValue();
+							v.setValue(groupIds);
+							entryData.put(nameValue, v);
+						}		
+					} else if (itemName.equals("team_list")) {
+						if (inputData.exists(nameValue)) {
+							Set<String>teamIds = LongIdUtil.getIdsAsStringSet(inputData.getSingleValue(nameValue));
+							CommaSeparatedValue v = new CommaSeparatedValue();
+							v.setValue(teamIds);
+							entryData.put(nameValue, v);
+						}
 					} else if (itemName.equals("places")) {
 						if (inputData.exists(WebKeys.URL_ID_CHOICES)) {
 							ArrayList ids = new ArrayList();

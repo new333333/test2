@@ -30,7 +30,7 @@ dojo.require("dojo.json");
 
 if (!window.ssSurvey) {
 
-	function ssSurvey(hiddenInputValueId, surveyContainerId) {
+	function ssSurvey(hiddenInputValueId, surveyContainerId, prefix) {
 		
 		var inputId = hiddenInputValueId;
 		
@@ -39,28 +39,32 @@ if (!window.ssSurvey) {
 		var ss_questionsArray = new Array();
 		
 		var ss_questionsCounter = 0;
+		
+		var prefix = prefix;
 	
 		var that = this;
 		
 		var currentSurvey;
 		
+		this.locale = {
+			moreAnswers: "Add more answers",
+			questionHeader: "Question",
+			confirmRemove: "Do you want remove the question with answers?",
+			modifySurveyWarning: "Be carefull with modifing survey! Some people have already voted in this survey. If you remove a questions or an answers you'll lose votes.",
+			required: "Answer to this question is required."
+		};
+		
 		this.initialize = function(currentSurveyAsJSONString) {
 			if (currentSurveyAsJSONString) {
 				currentSurvey = dojo.json.evalJson(currentSurveyAsJSONString);
-				if (!alreadyVoted()) {
-					ss_initSurveyQuestions(currentSurvey.questions);
-				} else {
-					dojo.byId(surveyContainerId).innerHTML = "<strong>" + ss_nlt_surveyModifyNotAllowed_alreadyVoted + "</strong>";
-				}
+				dojo.byId(surveyContainerId).innerHTML = that.locale.modifySurveyWarning;
+				ss_initSurveySettings(currentSurvey);
+				ss_initSurveyQuestions(currentSurvey.questions);
 			}
 		}
 		
-		this.ss_newSurveyQuestion = function(type, questionText, questionIndex, withDefaultAnswers) {
-			if (!alreadyVoted ()) {
-				ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers);
-			} else {
-				alert(ss_nlt_surveyModifyNotAllowed_alreadyVoted);				
-			}
+		this.ss_newSurveyQuestion = function(type, questionText, questionIndex, withDefaultAnswers, requiredAnswer) {
+			ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers, requiredAnswer);
 		}
 		
 		function alreadyVoted () {
@@ -79,7 +83,7 @@ if (!window.ssSurvey) {
 			return false;
 		}
 
-		function ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers) {
+		function ss_newSurveyQuestion(type, questionText, questionIndex, withDefaultAnswers, requiredAnswer) {
 			if (!ss_questionsArray[ss_questionsCounter] || ss_questionsArray[ss_questionsCounter] == 'undefined') {
 				ss_questionsArray[ss_questionsCounter] = new Array();
 			}
@@ -87,10 +91,11 @@ if (!window.ssSurvey) {
 		
 			var questionContainer = document.createElement('div');
 			dojo.html.setClass(questionContainer, "ss_questionContainer");
-			questionContainer.id = "question"+ss_questionsCounter;
+			questionContainer.id = prefix + "question" + ss_questionsCounter;
 			dojo.byId(surveyContainerId).appendChild(questionContainer);
 			ss_addQuestionHeader(questionContainer);
 			ss_addQuestionDescription(questionContainer, questionText, questionIndex);
+			ss_addAnswerRequired(questionContainer, questionText, questionIndex, requiredAnswer);
 			ss_addQuestionAnswers(type, ss_questionsCounter, withDefaultAnswers);
 			ss_refreshAllHeaders();
 			ss_questionsCounter++;
@@ -98,7 +103,7 @@ if (!window.ssSurvey) {
 		
 		function ss_addQuestionHeader (questionContainer) {
 			var questionHeader = document.createElement('h4');
-			questionHeader.id = "questionHeader"+ss_questionsCounter;
+			questionHeader.id = prefix + "questionHeader"+ss_questionsCounter;
 			var removerLink = document.createElement('a');
 			removerLink.href = "javascript: //;";
 			dojo.event.connect(removerLink, "onclick", ss_callRemoveQuestion(that, ss_questionsCounter));
@@ -107,8 +112,8 @@ if (!window.ssSurvey) {
 			removerLink.appendChild(removerImg);
 			questionHeader.appendChild(removerLink);
 			var label = document.createElement('span');
-			label.id = "questionHeaderLabel"+ss_questionsCounter;
-			label.appendChild(document.createTextNode(ss_nlt_surveyQuestionHeader));
+			label.id = prefix + "questionHeaderLabel"+ss_questionsCounter;
+			label.appendChild(document.createTextNode(that.locale.questionHeader));
 			questionHeader.appendChild(label);
 			questionContainer.appendChild(questionHeader);
 		}
@@ -118,9 +123,9 @@ if (!window.ssSurvey) {
 		}
 		
 		this.ss_removeQuestion = function(index) {
-			if (confirm(ss_nlt_surveyConfirmRemove)) {
+			if (confirm(this.locale.confirmRemove)) {
 				ss_questionsArray[index]='undefined';
-				var questionContainer = dojo.byId("question"+index);
+				var questionContainer = dojo.byId(prefix + "question" + index);
 				questionContainer.parentNode.removeChild(questionContainer);
 				ss_refreshAllHeaders();
 			}
@@ -131,17 +136,32 @@ if (!window.ssSurvey) {
 			if (questionText) {
 				question.value = questionText;
 			}
-			question.id = "questionText"+ss_questionsCounter;
+			question.id = prefix + "questionText"+ss_questionsCounter;
 			questionContainer.appendChild(question);
 			tinyMCE.execCommand("mceAddControl", false, question.id);
 			if (questionIndex) {
 				var questionIndexInput = document.createElement('input');
 				questionIndexInput.setAttribute("type", "hidden");
-				questionIndexInput.id = "questionText"+ss_questionsCounter+"_index";
+				questionIndexInput.id = prefix + "questionText"+ss_questionsCounter+"_index";
 				questionIndexInput.value = questionIndex;
 				questionContainer.appendChild(questionIndexInput);
 			}
 		}
+		
+		function ss_addAnswerRequired(questionContainer, questionText, questionIndex, value) {
+			var id = prefix + "answerRequired"+ss_questionsCounter;
+			var requiredObj = document.createElement('input');
+			requiredObj.type = "checkbox";
+			requiredObj.style.width = "auto";
+			requiredObj.id = id;
+			questionContainer.appendChild(requiredObj);
+			requiredObj.checked = value;
+			var labelObj = document.createElement('label');
+			labelObj.htmlFor = id;
+			labelObj.appendChild(document.createTextNode(that.locale.required));
+			questionContainer.appendChild(labelObj);
+		}
+		
 		
 		function ss_refreshAllHeaders() {
 			var totalQC =0;
@@ -154,7 +174,7 @@ if (!window.ssSurvey) {
 			for (var j=0; j<ss_questionsArray.length; j++) {
 				if (ss_questionsArray[j].type && ss_questionsArray[j].type != 'undefined') {
 					counter++;
-					dojo.byId("questionHeaderLabel"+j).innerHTML = ss_nlt_surveyQuestionHeader+" "+counter+"/"+totalQC;
+					dojo.byId(prefix + "questionHeaderLabel"+j).innerHTML = that.locale.questionHeader+" "+counter+"/"+totalQC;
 				}
 			}
 		}
@@ -169,16 +189,16 @@ if (!window.ssSurvey) {
 			var more = document.createElement('a');
 			dojo.html.setClass(more, "ss_button");
 			dojo.event.connect(more, "onclick", ss_callAddAnswerOption(that, index));
-			more.appendChild(document.createTextNode(ss_nlt_surveyMoreAnswers));
+			more.appendChild(document.createTextNode(that.locale.moreAnswers));
 			var answersList = document.createElement('ol');
-			answersList.id = "answers"+index;
-			dojo.byId('question'+index).appendChild(answersList);
+			answersList.id = prefix + "answers"+index;
+			dojo.byId(prefix + 'question'+index).appendChild(answersList);
 			if (withDefaultOptions) {
 				ss_addAnswerOption(index);
 				ss_addAnswerOption(index);
 				ss_addAnswerOption(index);
 			}
-			dojo.byId('question'+index).appendChild(more);	
+			dojo.byId(prefix + 'question'+index).appendChild(more);	
 		}
 		
 		function ss_callAddAnswerOption(obj, index) {
@@ -191,7 +211,7 @@ if (!window.ssSurvey) {
 		}
 		
 		this.ss_removeAnswer = function(questionNo, answerNo) {
-			var li = dojo.byId("option_question"+questionNo+"answer"+answerNo);
+			var li = dojo.byId(prefix + "option_question"+questionNo+"answer"+answerNo);
 			li.parentNode.removeChild(li);
 		}
 		
@@ -201,24 +221,27 @@ if (!window.ssSurvey) {
 			var aCounter = 0;
 			var content;
 			var questionIndexInput;
+			var requiredAnswer;
 			for (var i=0; i<ss_questionsArray.length;i++){
 				if (ss_questionsArray[i].type && ss_questionsArray[i].type != 'undefined') {
 					ss_toSend[ind] = {};
 					ss_toSend[ind].type = ss_questionsArray[i].type;
-					content = tinyMCE.getContent("questionText"+i).replace(/\+/g, "&#43");
+					content = tinyMCE.getContent(prefix + "questionText"+i).replace(/\+/g, "&#43");
 					ss_toSend[ind].question = content;
-					questionIndexInput = dojo.byId("questionText"+i+"_index");
+					questionIndexInput = dojo.byId(prefix + "questionText"+i+"_index");
 					if (questionIndexInput) {
 						ss_toSend[ind].index = questionIndexInput.value;
 					}
+					requiredAnswer = dojo.byId(prefix + "answerRequired" + i);
+					ss_toSend[ind].answerRequired = requiredAnswer && requiredAnswer.checked;
 					if (ss_questionsArray[i].type == 'multiple' || ss_questionsArray[i].type == 'single') {
 						ss_toSend[ind].answers = new Array();
 						aCounter = 0;
 						for (var j=0; j<ss_questionsArray[i].answersNo; j++) {
-							if (dojo.byId("question"+i+"answer"+j)) {
-								var answerIndexInput = dojo.byId("question"+i+"answer"+j+"_index");
+							if (dojo.byId(prefix + "question"+i+"answer"+j)) {
+								var answerIndexInput = dojo.byId(prefix + "question"+i+"answer"+j+"_index");
 								ss_toSend[ind].answers[aCounter] = {
-									'text' : dojo.byId("question"+i+"answer"+j).value
+									'text' : dojo.byId(prefix + "question"+i+"answer"+j).value
 								};
 								if (answerIndexInput) {
 									ss_toSend[ind].answers[aCounter].index = answerIndexInput.value;
@@ -230,16 +253,50 @@ if (!window.ssSurvey) {
 					ind++;
 				}
 			}
+			
+			var ids = ["all", "voters", "moderator"];
+			for (var i = 0; i < ids.length; i++) {
+				var rights = dojo.byId(prefix + "_viewBeforeDueTime_" + ids[i]);
+				if (rights && rights.checked) {
+					var viewBeforeDueTime = ids[i];
+				}
+			}
+					
+			var ids = ["all", "voters", "moderator"];
+			for (var i = 0; i < ids.length; i++) {
+				var rights = dojo.byId(prefix + "_viewAfterDueTime_" + ids[i]);
+				if (rights && rights.checked) {
+					var viewAfterDueTime = ids[i];
+				}
+			}
+			
+			var ids = ["all", "voters", "moderator"];
+			for (var i = 0; i < ids.length; i++) {
+				var rights = dojo.byId(prefix + "_viewDetails_" + ids[i]);
+				if (rights && rights.checked) {
+					var viewDetails = ids[i];
+				}
+			}	
+			
+			var allowObj = dojo.byId(prefix + "_allowChange");		
 			var inputObj = document.getElementById(inputId);
 			if (inputObj) {
-				inputObj.value = dojo.json.serialize({'questions' : ss_toSend});
+				inputObj.value = dojo.json.serialize(
+						{
+							'questions' : ss_toSend, 
+							'viewBeforeDueTime' : viewBeforeDueTime,
+							'viewAfterDueTime' : viewAfterDueTime,
+							'viewDetails' : viewDetails,
+							'allowChange' : allowObj && allowObj.checked
+						}
+				);
 			}
 			return ss_onSubmit(obj);
 		}
 		
 		function ss_initSurveyQuestions(questionsArray) {
 			for (var i=0; i<questionsArray.length; i++) {
-				ss_newSurveyQuestion(questionsArray[i].type, questionsArray[i].question, questionsArray[i].index,  false);
+				ss_newSurveyQuestion(questionsArray[i].type, questionsArray[i].question, questionsArray[i].index,  false, questionsArray[i].answerRequired);
 				
 				if (questionsArray[i].type == 'multiple' || questionsArray[i].type == 'single') {
 					for (var j=0; j<questionsArray[i].answers.length; j++) {
@@ -248,6 +305,28 @@ if (!window.ssSurvey) {
 				}
 			}
 		}
+		
+		function ss_initSurveySettings(currentSurvey) {
+			var rights = dojo.byId(prefix + "_viewBeforeDueTime_" + currentSurvey.viewBeforeDueTime);
+			if (rights) {
+				rights.checked = true;
+			}
+					
+			rights = dojo.byId(prefix + "_viewAfterDueTime_" + currentSurvey.viewAfterDueTime);
+			if (rights) {
+				rights.checked = true;
+			}
+			
+			rights = dojo.byId(prefix + "_viewDetails_" + currentSurvey.viewDetails);
+			if (rights) {
+				rights.checked = true;
+			}
+			
+			rights = dojo.byId(prefix + "_allowChange");		
+			if (rights) {
+				rights.checked = currentSurvey.allowChange;
+			}
+		}		
 		
 		function ss_addAnswerOption(index, value) {
 			that.ss_addAnswerOption(index, value);
@@ -259,7 +338,7 @@ if (!window.ssSurvey) {
 				lastAnswerNo = ss_questionsArray[index].answersNo;
 			}
 			var answer = document.createElement('li');
-			answer.id="option_question"+index+"answer"+lastAnswerNo;
+			answer.id = prefix + "option_question"+index+"answer"+lastAnswerNo;
 		
 			var removerLink = document.createElement('a');
 			removerLink.href = "javascript: //;";
@@ -271,7 +350,7 @@ if (!window.ssSurvey) {
 		
 			var newOption = document.createElement('input');
 			newOption.name = "question"+index+"answer"+lastAnswerNo;
-			newOption.id = "question"+index+"answer"+lastAnswerNo;
+			newOption.id = prefix + "question"+index+"answer"+lastAnswerNo;
 			
 			if (value) {
 				newOption.value = value.text;
@@ -283,11 +362,11 @@ if (!window.ssSurvey) {
 			if (value && value.index) {
 				var newOptionIndex = document.createElement('input');
 				newOptionIndex.setAttribute("type", "hidden");
-				newOptionIndex.id = "question"+index+"answer"+lastAnswerNo+"_index";
+				newOptionIndex.id = prefix + "question"+index+"answer"+lastAnswerNo+"_index";
 				newOptionIndex.value = value.index;
 				answer.appendChild(newOptionIndex);
 			}
-			dojo.byId('answers'+index).appendChild(answer);
+			dojo.byId(prefix + 'answers'+index).appendChild(answer);
 			
 			lastAnswerNo++;
 			ss_questionsArray[index].answersNo = lastAnswerNo;
@@ -312,7 +391,49 @@ ssSurvey.prepareSubmit = function(formObj) {
 	}
 }
 
-ssSurvey.vote = function(formId, binderId, entryId) {
+ssSurvey.clearAnswers = function(questionIndex, answerIndexes, prefix) {
+	if (answerIndexes.length > 0) {
+		for (var i = 0; i < answerIndexes.length; i++) {
+			var answerObj = dojo.byId(prefix + "_answer_" + questionIndex + "_" + answerIndexes[i]);
+			answerObj.checked = false;
+		}
+	} else {
+		var answerObj = dojo.byId(prefix + "_answer_" + questionIndex);
+		if (answerObj) {
+			answerObj.value = '';
+		}
+	}
+}
+
+ssSurvey.vote = function(formId, binderId, entryId, requiredQuestions, prefix) {
+	var missingAnswers = false;
+	for (qId in requiredQuestions) {
+		var hasAnswer = false;
+		if (requiredQuestions[qId].length > 0) {
+			for (var i = 0; i < requiredQuestions[qId].length; i++) {
+				var answerObj = dojo.byId(prefix + "_answer_" + qId + "_" + requiredQuestions[qId][i]);
+				if (answerObj && answerObj.checked) {
+					hasAnswer = true;
+				}
+			}
+		} else {
+			var answerObj = dojo.byId(prefix + "_answer_" + qId);
+			if (answerObj && answerObj.value != '') {
+				hasAnswer = true;
+			}
+		}
+		if (!hasAnswer) {
+			missingAnswers = true;
+			var questionConteinerObj = dojo.byId(prefix + "_question_" + qId);
+			dojo.html.addClass(questionConteinerObj, "ss_survey_required");
+		}
+	}
+	
+	if (missingAnswers) {
+		return false;
+	}
+
+
 	var urlParams = {operation:"vote_survey", binderId:binderId, entryId:entryId};
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
 
@@ -324,11 +445,34 @@ ssSurvey.vote = function(formId, binderId, entryId) {
 		load: function(type, data, evt) {
 			if (data.notLoggedIn) {
 				alert(ss_not_logged_in);
-			} else {
-				alert(ssSurvey.votedLabel);
+			} else if (window["ss_reloadUrl"]) {
+				ss_random++;
+				url = ss_replaceSubStr(ss_reloadUrl, "ss_randomPlaceholder", ss_random);
+				document.location.href = ss_reloadUrl;
 			}
-			try { window.close(); } catch (e){}
-			try { parent.ss_hideEntryDiv(); } catch (e){}
+		},
+		mimetype: "text/json",
+		formNode: document.getElementById(formId)
+	});
+}
+
+ssSurvey.removeVote = function(formId, binderId, entryId) {
+	var urlParams = {operation:"vote_survey_remove", binderId:binderId, entryId:entryId};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams);
+
+	dojo.io.bind({
+    	url: url,
+		error: function(type, data, evt) {
+			alert(ss_not_logged_in);
+		},
+		load: function(type, data, evt) {
+			if (data.notLoggedIn) {
+				alert(ss_not_logged_in);
+			} else if (window["ss_reloadUrl"]) {
+				ss_random++;
+				url = ss_replaceSubStr(ss_reloadUrl, "ss_randomPlaceholder", ss_random);
+				document.location.href = ss_reloadUrl;
+			}
 		},
 		mimetype: "text/json",
 		formNode: document.getElementById(formId)

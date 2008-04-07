@@ -28,9 +28,13 @@
  */
 package com.sitescape.team.search.filter;
 
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.apache.lucene.document.DateTools;
 import org.apache.lucene.document.DateTools.Resolution;
@@ -42,15 +46,17 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.lucene.LanguageTaster;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.task.TaskHelper;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.util.DateHelper;
 
 /*********************************************************************
@@ -92,6 +98,7 @@ public class SearchFilterToSearchBooleanConverter {
 
 		List liFilterTerms = filterTerms.selectNodes(SearchFilterKeys.FilterTerms);
 		List liFilterTermsTerm = filterTerms.selectNodes("./" + SearchFilterKeys.FilterTerm);
+		String listType = filterTerms.attributeValue(SearchFilterKeys.FilterListType);
 		
 		if (!liFilterTerms.isEmpty() || !liFilterTermsTerm.isEmpty()) {
 			Element block = parent.addElement(joiner);
@@ -102,76 +109,169 @@ public class SearchFilterToSearchBooleanConverter {
 	    		convertFilterTerms(block, filterTermsChild, lang, currentBinderId);
 	    	}
 			
-			Iterator filterTermsTermIt = liFilterTermsTerm.iterator();
-			while (filterTermsTermIt.hasNext()) {
-	    		// add term to current block
-	    		Element filterTerm = (Element) filterTermsTermIt.next();
-	    		String filterType = filterTerm.attributeValue(SearchFilterKeys.FilterType, "");
-	    		if (filterType.equals(SearchFilterKeys.FilterTypeSearchText)) {
-	    			lang = checkLanguage(filterTerm.getText(),parent, lang);
-	    			addSearchTextField(block, filterTerm.getText());
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCreatorByName)) {
-	    			lang = checkLanguage(filterTerm.getText(),parent, lang);
-	    			addAuthorField(block, filterTerm.getText());
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTags)) {
-	    			lang = checkLanguage(filterTerm.getText(),parent, lang);
-	    			addTagsField(block, filterTerm.getText());
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryDefinition) || filterType.equals(SearchFilterKeys.FilterTypeCreatorById)) {	    			
-	    			parseAndAddEntryField(block, filterTerm);
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTopEntry)) {
-	    			addTopEntryField(block);
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeWorkflow)) {
-	    			parseAndAddWorkflowField(block, filterTerm);
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFolders)) {
-	    			addFolderField(block, filterTerm.attributeValue(SearchFilterKeys.FilterFolderId, ""));
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestry)) {
-	    			addAncestryField(block, filterTerm.attributeValue(SearchFilterKeys.FilterFolderId, ""));
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFoldersList)) {
-	    			addFoldersListField(block, filterTerm);
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestriesList)) {
-	    			addAncestriesListField(block, filterTerm);
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryId)) {
-	    			addEntryIdField(block, filterTerm.attributeValue(SearchFilterKeys.FilterEntryId, ""));
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeBinderParent)) {
-	    			addBinderParentIdField(block, filterTerm.attributeValue(SearchFilterKeys.FilterBinderId, ""));    	    			
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntityTypes)) {
-	    			parseAndAddEntityTypesField(block, filterTerm);
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryTypes)) {
-	    			parseAndAddEntryTypesField(block, filterTerm);    	    			
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeDocTypes)) {
-	    			parseAndAddDocTypesField(block, filterTerm);
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeElement)) {
-	    			addElementField(block, filterTerm);
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCommunityTagSearch)) {
-	    			lang = checkLanguage(filterTerm.getText(),parent, lang);
-	    			addCommunityTagField(block, filterTerm.getText());
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypePersonalTagSearch)) {
-	    			lang = checkLanguage(filterTerm.getText(),parent, lang);
-	    			addPersonalTagField(block, filterTerm.getText());
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
-	    			addEventField(block, filterTerm);    	    			
-		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
-		    		String fieldName = filterTerm.attributeValue(SearchFilterKeys.FilterElementName, "");
-		    		if (fieldName.equalsIgnoreCase(EntityIndexUtils.CREATION_DAY_FIELD) || fieldName.equalsIgnoreCase(EntityIndexUtils.MODIFICATION_DAY_FIELD)) 
-		    			addDayRange(block, fieldName, filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
-		    		else
-		    			addDateRange(block, fieldName, filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
-		    	} else if (filterType.equals(SearchFilterKeys.FilterTypeRelative)) {
-	    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
-	    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
-	    				createRelativeDateRange(block, new Integer(filterTerm.getTextTrim()));
-	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
-	    				createRelativeUser(block);
-	    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
-	    				createRelativePlace(block, filterTerm.getTextTrim(), currentBinderId);
-	    			}
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeItemTypes)) {
-	    			addItemTypesField(block, filterTerm);
-	    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTaskStatus)) {
-	    			addTaskStatus(block, filterTerm);
-	    		} 
-        	}
+			if (SearchFilterKeys.FilterListTypeUserGroupTeam.equals(listType)) {
+				parseUserGroupTeamAttributes(block, liFilterTermsTerm);
+			} else {
+				Iterator filterTermsTermIt = liFilterTermsTerm.iterator();
+				while (filterTermsTermIt.hasNext()) {
+		    		// add term to current block
+		    		Element filterTerm = (Element) filterTermsTermIt.next();
+		    		String filterType = filterTerm.attributeValue(SearchFilterKeys.FilterType, "");
+		    		if (filterType.equals(SearchFilterKeys.FilterTypeSearchText)) {
+		    			lang = checkLanguage(filterTerm.getText(),parent, lang);
+		    			addSearchTextField(block, filterTerm.getText());
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCreatorByName)) {
+		    			lang = checkLanguage(filterTerm.getText(),parent, lang);
+		    			addAuthorField(block, filterTerm.getText());
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTags)) {
+		    			lang = checkLanguage(filterTerm.getText(),parent, lang);
+		    			addTagsField(block, filterTerm.getText());
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryDefinition) || filterType.equals(SearchFilterKeys.FilterTypeCreatorById)) {	    			
+		    			parseAndAddEntryField(block, filterTerm);
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTopEntry)) {
+		    			addTopEntryField(block);
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeWorkflow)) {
+		    			parseAndAddWorkflowField(block, filterTerm);
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFolders)) {
+		    			addFolderField(block, filterTerm.attributeValue(SearchFilterKeys.FilterFolderId, ""));
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestry)) {
+		    			addAncestryField(block, filterTerm.attributeValue(SearchFilterKeys.FilterFolderId, ""));
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeFoldersList)) {
+		    			addFoldersListField(block, filterTerm);
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeAncestriesList)) {
+		    			addAncestriesListField(block, filterTerm);
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryId)) {
+		    			addEntryIdField(block, filterTerm.attributeValue(SearchFilterKeys.FilterEntryId, ""));
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeBinderParent)) {
+		    			addBinderParentIdField(block, filterTerm.attributeValue(SearchFilterKeys.FilterBinderId, ""));    	    			
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntityTypes)) {
+		    			parseAndAddEntityTypesField(block, filterTerm);
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEntryTypes)) {
+		    			parseAndAddEntryTypesField(block, filterTerm);    	    			
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeDocTypes)) {
+		    			parseAndAddDocTypesField(block, filterTerm);
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeElement)) {
+		    			addElementField(block, filterTerm);
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeCommunityTagSearch)) {
+		    			lang = checkLanguage(filterTerm.getText(),parent, lang);
+		    			addCommunityTagField(block, filterTerm.getText());
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypePersonalTagSearch)) {
+		    			lang = checkLanguage(filterTerm.getText(),parent, lang);
+		    			addPersonalTagField(block, filterTerm.getText());
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
+		    			addEventField(block, filterTerm);    	    			
+			    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
+			    		String fieldName = filterTerm.attributeValue(SearchFilterKeys.FilterElementName, "");
+			    		if (fieldName.equalsIgnoreCase(EntityIndexUtils.CREATION_DAY_FIELD) || fieldName.equalsIgnoreCase(EntityIndexUtils.MODIFICATION_DAY_FIELD)) 
+			    			addDayRange(block, fieldName, filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
+			    		else
+			    			addDateRange(block, fieldName, filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
+			    	} else if (filterType.equals(SearchFilterKeys.FilterTypeRelative)) {
+		    			String filterRelativeType = filterTerm.attributeValue(SearchFilterKeys.FilterRelativeType, "");
+		    			if (filterRelativeType.equals(SearchFilterKeys.FilterTypeDate)) {
+		    				createRelativeDateRange(block, new Integer(filterTerm.getTextTrim()));
+		    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
+		    				createRelativeUser(block);
+		    			} else if (filterRelativeType.equals(SearchFilterKeys.FilterTypePlace)) {
+		    				createRelativePlace(block, filterTerm.getTextTrim(), currentBinderId);
+		    			}
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeItemTypes)) {
+		    			addItemTypesField(block, filterTerm);
+		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeTaskStatus)) {
+		    			addTaskStatus(block, filterTerm);
+		    		} 
+	        	}				
+			}
+
+			
+			if (block.elements().isEmpty()) {
+				parent.remove(block);
+			}
 		}
+	}
+
+	private static void parseUserGroupTeamAttributes(Element block, List liFilterTermsTerm) {
+		if (liFilterTermsTerm == null || liFilterTermsTerm.isEmpty()) {
+			return;
+		}
+		
+		ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+		BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
+		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+			
+		// find user list, group list, and team list
+		Element userListElem = null;
+		Element groupListElem = null;
+		Element teamListElem = null;
+		
+		Iterator filterTermsTermIt = liFilterTermsTerm.iterator();
+		while (filterTermsTermIt.hasNext()) {
+    		Element filterTerm = (Element) filterTermsTermIt.next();
+    		String filterValueType = filterTerm.attributeValue(SearchFilterKeys.FilterElementValueType, "");
+    		if ("user_list".equals(filterValueType)) {
+    			userListElem = filterTerm;
+    		} else if ("group_list".equals(filterValueType)) {
+    			groupListElem = filterTerm;
+    		} else if ("team_list".equals(filterValueType)) {
+    			teamListElem = filterTerm;
+    		}
+		}
+		
+		Set usersGroups = new HashSet();
+		Set usersAndGroupsTeams = new HashSet();
+		
+		if (userListElem != null) {
+			// find user's groups
+			Iterator it = userListElem.selectNodes(SearchFilterKeys.FilterElementValue).iterator();
+			while (it.hasNext()) {
+				Element termValue = (Element)it.next();
+				String value = termValue.getText();
+				Long userId = null;
+				if (SearchFilterKeys.CurrentUserId.equals(value)) {
+					userId = RequestContextHolder.getRequestContext().getUserId();
+				} else {
+					try {
+						userId = Long.parseLong(value);
+					} catch (NumberFormatException e) {
+						// ignore it...
+					}
+				}
+				if (userId != null) {
+					usersGroups.addAll(profileDao.getAllGroupMembership(userId, zoneId));
+				
+					Iterator teamMembershipsIt = binderModule.getTeamMemberships(userId).iterator();
+					while (teamMembershipsIt.hasNext()) {
+						usersAndGroupsTeams.add(((Map)teamMembershipsIt.next()).get(EntityIndexUtils.DOCID_FIELD));
+					}
+				}
+			}
+		}
+				
+		if (groupListElem != null) {
+			// find user's groups
+			Iterator it = groupListElem.selectNodes(SearchFilterKeys.FilterElementValue).iterator();
+			while (it.hasNext()) {
+				Element termValue = (Element)it.next();
+				String value = termValue.getText();
+				Long groupId = null;
+				try {
+					groupId = Long.parseLong(value);
+				} catch (NumberFormatException e) {
+					// ignore it...
+				}
+				if (groupId != null) {
+					Iterator teamMembershipsIt = binderModule.getTeamMemberships(groupId).iterator();
+					while (teamMembershipsIt.hasNext()) {
+						usersAndGroupsTeams.add(((Map)teamMembershipsIt.next()).get(EntityIndexUtils.DOCID_FIELD));
+					}				
+				}
+			}
+		}		
+
+		parseAndAddEntryField(block, userListElem);
+		parseAndAddEntryField(block, groupListElem, usersGroups);
+		parseAndAddEntryField(block, teamListElem, usersAndGroupsTeams);
+			
 	}
 
 	private static void createRelativeUser(Element block) {
@@ -372,7 +472,20 @@ public class SearchFilterToSearchBooleanConverter {
 		Element field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
 	    Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
-	    child.setText(filterTerm.getText());
+	    
+	    String value = null;
+		Iterator itTermValues = filterTerm.selectNodes(SearchFilterKeys.FilterElementValue).iterator();
+		if (itTermValues.hasNext()) {// should be only one
+			Element termValue = (Element) itTermValues.next();
+			value = termValue.getText();
+		}
+		
+		 // for backward compatibility (there was error in prev. version)
+	    if (value == null) {
+	    	value = filterTerm.getText();
+	    }
+	    
+	    child.setText(value);
 	}
 
 	private static void parseAndAddDocTypesField(Element block, Element filterTerm) {
@@ -602,6 +715,13 @@ public class SearchFilterToSearchBooleanConverter {
 	}
 
 	private static void parseAndAddEntryField(Element block, Element filterTerm) {
+		parseAndAddEntryField(block, filterTerm, null);
+	}
+	
+	private static void parseAndAddEntryField(Element block, Element filterTerm, Collection additionalValue) {
+		if (filterTerm == null) {
+			return;
+		}
 		//This is an entry term. Build booleans from the element name and values.
 		String defId = filterTerm.attributeValue(SearchFilterKeys.FilterEntryDefId, "");
 		String elementName = filterTerm.attributeValue(SearchFilterKeys.FilterElementName, "");
@@ -619,10 +739,13 @@ public class SearchFilterToSearchBooleanConverter {
 			}
 		} else {
 			Iterator itTermValues = filterTerm.selectNodes(SearchFilterKeys.FilterElementValue).iterator();
+			String valueType = filterTerm.attributeValue(SearchFilterKeys.FilterElementValueType);
 			while (itTermValues.hasNext()) {
 				Element termValue = (Element) itTermValues.next();
 				String value = termValue.getText();
-				String valueType = termValue.attributeValue(SearchFilterKeys.FilterElementValueType);
+				if (termValue.attributeValue(SearchFilterKeys.FilterElementValueType) != null) {
+					valueType = termValue.attributeValue(SearchFilterKeys.FilterElementValueType);
+				}
 				if (!value.equals("")) {
 					Element field;
 					Element child;
@@ -655,8 +778,32 @@ public class SearchFilterToSearchBooleanConverter {
 	    			}
 				}
 			}
+			if (additionalValue != null) {
+				Iterator itAdditionalValue = additionalValue.iterator();
+				while (itAdditionalValue.hasNext()) {
+					Object value = (Object) itAdditionalValue.next();
+					if (value != null) {
+						Element field;
+						Element child;
+						Element andField = block;
+		    			if (defId != null &&!defId.equals("")) {
+		    				andField = block.addElement(QueryBuilder.AND_ELEMENT);
+			    			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+			    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+			    	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			    	    	child.setText(defId);
+		    			}
+		    			
+		    	    	field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
+		    			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, elementName);
+		    				   
+		    			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+	    				child.setText(value.toString());
+					}
+				}				
+			}
 		}
-	}
+	}	
 
 	private static void addTagsField(Element block, String text) {
 		Element subOr = block.addElement(QueryBuilder.OR_ELEMENT);

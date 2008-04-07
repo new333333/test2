@@ -61,6 +61,8 @@ public class Question {
 	
 	private int maxLastAnswerIndex = 0;
 	
+	private Boolean requiredAnswer = false;
+	
 	private SurveyModel parent;
 
 	public Question(JSONObject jsonObj, SurveyModel surveyModel) {
@@ -76,6 +78,9 @@ public class Question {
 			this.index = surveyModel.getNextIndex();
 			this.jsonObj.put("index", this.index);
 		}
+		try {
+			this.requiredAnswer = jsonObj.getBoolean("answerRequired");
+		} catch (JSONException e) {}
 		
 		this.answers = new ArrayList();
 		try {
@@ -96,7 +101,10 @@ public class Question {
 	@Override
 	public String toString() {
 		return new ToStringBuilder(this).append("type", type).append(
-				"question", question).append("index", index).append("answers", answers).toString();
+				"question", question).append("index", index).append("answers", answers)
+				.append("requiredAnswer", this.requiredAnswer)
+				.append("totalResponses", this.totalResponses)
+				.toString();
 	}
 
 	public List<Answer> getAnswers() {
@@ -179,12 +187,31 @@ public class Question {
 				answers.add(answer);
 			}
 		}
-		this.totalResponses++;
 		
-		this.jsonObj.remove("totalResponses");
-		this.jsonObj.put("totalResponses", this.totalResponses);
-		
+		setTotalResponses(++this.totalResponses);
+				
 		return answers;
+	}
+	
+	public void removeVote() {
+		boolean hasVoted = false;
+		Iterator<Answer> it = answers.iterator();
+		while (it.hasNext()) {
+			Answer answer = (Answer)it.next();
+			if (answer.isAlreadyVotedCurrentUser()) {
+				hasVoted = true;
+				if (this.type.equals(Type.multiple) || this.type.equals(Type.single)) {
+					answer.removeVote();
+				} else {
+					removeInputAnswer(answer);
+					it.remove();
+				}
+			}
+		}
+
+		if (hasVoted) {
+			setTotalResponses(--this.totalResponses);
+		}
 	}
 
 	private Answer addInputAnswer(String txt) {
@@ -209,5 +236,61 @@ public class Question {
 		
 		return answer;
 	}
+	
+	private void removeInputAnswer(Answer answer) {
+		try {
+			JSONArray filteredAnswers = new JSONArray();
+			Iterator<JSONObject> answersIt = jsonObj.getJSONArray("answers").iterator();
+			while (answersIt.hasNext()) {
+				JSONObject jsonAnswer = answersIt.next();
+				int answerIndex = jsonAnswer.getInt("index");
+				if (answerIndex != answer.getIndex()) {
+					filteredAnswers.put(jsonAnswer);
+				}
+			}
+			
+			jsonObj.remove("answers");
+			if (filteredAnswers.length() > 0) {
+				jsonObj.put("answers", filteredAnswers);
+			}
+		} catch (JSONException e) { 
+			// input has no answers
+		}
+	}
 
+	public boolean isRequiredAnswer() {
+		return requiredAnswer;
+	}
+	
+	public void setTotalResponses(int newTotalResponses) {
+		this.totalResponses = newTotalResponses;
+		this.jsonObj.remove("totalResponses");
+		this.jsonObj.put("totalResponses", newTotalResponses);
+	}
+
+	public void updateFrom(Question oldQuestion) {
+		if (this.index != oldQuestion.index) {
+			return;
+		}
+		
+		setTotalResponses(oldQuestion.totalResponses);
+		
+		if (oldQuestion.answers == null || oldQuestion.answers.isEmpty()) {
+			return;
+		}
+		
+		if (this.type.equals(Type.single) || this.type.equals(Type.multiple)) {
+			Iterator<Answer> newAnswersIt = this.answers.iterator();
+			while (newAnswersIt.hasNext()) {
+				Answer newAnswer = newAnswersIt.next();
+				Answer oldAnswer = oldQuestion.getAnswerByIndex(newAnswer.getIndex());
+				if (oldAnswer != null) {
+					newAnswer.updateFrom(oldAnswer);	
+				}
+			}
+		} else {
+			this.answers.addAll(oldQuestion.getAnswers());
+			jsonObj.put("answers", oldQuestion.jsonObj.getJSONArray("answers"));
+		}
+	}
 }

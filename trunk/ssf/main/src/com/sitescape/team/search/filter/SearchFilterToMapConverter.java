@@ -47,6 +47,8 @@ import org.dom4j.Element;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule;
@@ -335,6 +337,20 @@ public class SearchFilterToMapConverter {
 						if (users.hasNext()) {
 							formattedValue = ((User)users.next()).getTitle();
 						}
+					}
+				} else if (valueType.equals("group_list")) {
+					Iterator groups = profileModule.getGroups(Collections.singleton(Long.parseLong(value))).iterator();
+					if (groups.hasNext()) {
+						formattedValue = ((Group)groups.next()).getTitle();
+					}
+				} else if (valueType.equals("team_list")) {
+					try {
+						Binder team = binderModule.getBinder(Long.parseLong(value));
+						if (team != null) {
+							formattedValue = team.getTitle();
+						}
+					} catch (NoBinderByTheIdException e) {
+						formattedValue = "[" + value + " - " + NLT.get("binder.deleted") + "]";
 					}
 				}
 				

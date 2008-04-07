@@ -114,6 +114,12 @@ dojo.widget.defineWidget(
 				case "user_list":
 					this.addUserListField();
 					break;
+				case "group_list":
+					this.addGroupListField();
+					break;
+				case "team_list":
+					this.addTeamListField();
+					break;										
 				case "checkbox":
 					this.addCheckboxField();
 					break;
@@ -141,6 +147,12 @@ dojo.widget.defineWidget(
 				case "user_list":
 					this.addUserListField(userValue, userValueLabel);
 					break;
+				case "group_list":
+					this.addGroupListField(userValue, userValueLabel);
+					break;
+				case "team_list":
+					this.addTeamListField(userValue, userValueLabel);
+					break;									
 				case "checkbox":
 					this.addCheckboxField(userValue, userValueLabel);
 					break;
@@ -221,7 +233,7 @@ dojo.widget.defineWidget(
 		},
 		
 		addUserListField: function(value, label) {
-			var url = ss_AjaxBaseUrl + "&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
+			var url = ss_AjaxBaseUrl + "&action=advanced_search&operation=get_users_widget&searchText=%{searchString}&pager=%{pagerString}";
 			var prop = {dataUrl:url, 
 						id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, maxListLength : 12, autoComplete: false};
 			var userListWidgt = dojo.widget.createWidget("SelectPageable", prop, this.widgetContainer, "last");
@@ -231,6 +243,30 @@ dojo.widget.defineWidget(
 				userListWidgt.setLabel(label);
 			}
 		},
+		
+		addGroupListField: function(value, label) {
+			var url = ss_AjaxBaseUrl + "&action=advanced_search&operation=get_groups_widget&searchText=%{searchString}&pager=%{pagerString}";
+			var prop = {dataUrl:url, 
+						id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, maxListLength : 12, autoComplete: false};
+			var groupListWidgt = dojo.widget.createWidget("SelectPageable", prop, this.widgetContainer, "last");
+			this.nextNodeRefs.push(groupListWidgt);
+			if (value && label) {
+				groupListWidgt.setValue(value);
+				groupListWidgt.setLabel(label);
+			}
+		},
+		
+		addTeamListField: function(value, label) {
+			var url = ss_AjaxBaseUrl + "&action=advanced_search&operation=get_teams_widget&searchText=%{searchString}&pager=%{pagerString}";
+			var prop = {dataUrl:url, 
+						id:"elementValue" + this.searchFieldIndex, name:"elementValue" + this.searchFieldIndex, searchFieldIndex:this.searchFieldIndex, nodeObj:this.widgetContainer, maxListLength : 12, autoComplete: false};
+			var teamListWidgt = dojo.widget.createWidget("SelectPageable", prop, this.widgetContainer, "last");
+			this.nextNodeRefs.push(teamListWidgt);
+			if (value && label) {
+				teamListWidgt.setValue(value);
+				teamListWidgt.setLabel(label);
+			}
+		},			
 
 		addCheckboxField: function(value, label) {
 			var localElementName="checkbox";

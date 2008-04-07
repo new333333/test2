@@ -1,3 +1,4 @@
+<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -26,46 +27,34 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.survey;
+%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+<%@ taglib prefix="portlet" uri="http://java.sun.com/portlet" %>
+<%@ taglib prefix="portletadapter" uri="http://www.sitescape.com/tags-portletadapter" %>
 
-import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.UpdateAttributeSupport;
-
-import net.sf.json.JSONObject;
-
-public class Survey implements UpdateAttributeSupport {
-
-	private JSONObject jsonObj;
-
-	private SurveyModel survey;
-
-	public Survey(String jsonStringRepresentation) {
-		super();
-		this.jsonObj = JSONObject.fromString(jsonStringRepresentation);
-		this.survey = new SurveyModel(this.jsonObj);
-	}
-
-	public SurveyModel getSurveyModel() {
-		return this.survey;
-	}
-
-	public String toString() {
-		return jsonObj.toString();
-	}
-
-	public boolean update(Object obj) {
-		Survey newSurvey = (Survey)obj;
-		
-		if (!newSurvey.getSurveyModel().isVoteRequest()) {
-			newSurvey.getSurveyModel().updateFrom(getSurveyModel());
-		}
-		newSurvey.getSurveyModel().removeVoteRequest();
-		throw new ClassCastException();
-	}
-
-}
+<portletadapter:defineObjects1/>
+<ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
+<ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
+<c:if test="${ssConfigJspStyle != 'mobile'}">
+	<img border="0" src="<html:imagesPath/>trees/people.gif" />
+		<span class="${ss_showTeamTitleStyle}"><c:out value="${ss_showTeamTeam.title}" /></span>
+	<a href="javascript: //"
+	onclick="dojo.html.toggleShowing('ss_show_team_${ss_showTeamInstanceCount}'); return false;" class="ss_fineprint"><ssf:nlt tag="showTeam.team.members"><ssf:param name="value" value="${fn:length(ss_showTeamTeamMembers)}"/></ssf:nlt></a>
+	<div id="ss_show_team_${ss_showTeamInstanceCount}" style="display: none;">
+  		<ul>
+			<c:forEach var="member" items="${ss_showTeamTeamMembers}" >
+		 	 <li><ssf:showUser user="${member}" showPresence="${ss_showTeamShowPresence}"/></li>
+			</c:forEach>
+  		</ul>
+	</div>
+</c:if>
+<c:if test="${ssConfigJspStyle == 'mobile'}">
+  <span class="${ss_showTeamTitleStyle}">${ss_showTeamTeam.title}</span>
+	<ul>
+		<c:forEach var="member" items="${ss_showTeamTeamMembers}" >
+			<li><ssf:showUser user="${member}" showPresence="${ss_showTeamShowPresence}"/></li>
+		</c:forEach>
+	</ul>
+</c:if>

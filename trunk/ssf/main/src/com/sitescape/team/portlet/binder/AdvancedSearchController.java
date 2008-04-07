@@ -41,6 +41,7 @@ import java.util.Set;
 import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
 import java.text.DateFormat;
 
 import javax.portlet.ActionRequest;
@@ -120,7 +121,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 			return ajaxGetEntryFields(request, response);
 		} else if (op.equals(WebKeys.OPERATION_FIND_USERS_WIDGET)) {
 			return ajaxGetUsers(request, response);
-		}	
+		} else if (op.equals(WebKeys.OPERATION_FIND_GROUPS_WIDGET)) {
+			return ajaxGetGroups(request, response);
+		} else if (op.equals(WebKeys.OPERATION_FIND_TEAMS_WIDGET)) {
+			return ajaxGetTeams(request, response);
+		}
 		Map model = new HashMap();
 		//Set up the standard beans
 		//These have been documented, so don't delete any
@@ -502,5 +507,140 @@ public class AdvancedSearchController extends AbstractBinderController {
 		return new ModelAndView("forum/json/find_users_widget", model);
 	}
 
+	private ModelAndView ajaxGetGroups(RenderRequest request, RenderResponse response) {
+		Map model = new HashMap();
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		String search = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String pagerText = PortletRequestUtils.getStringParameter(request, "pager", "");
+
+		List users = new ArrayList();
+		if (WebHelper.isUserLoggedIn(request)) {
+				
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+			
+			int startPageNo = 1;
+			int endPageNo = 10;
+			if (!pagerText.equals("")) {
+				String[] pagesNos = pagerText.split(";");
+				startPageNo = Integer.parseInt(pagesNos[0]);
+				endPageNo = Integer.parseInt(pagesNos[1]);
+			}
 	
+			options.put(ObjectKeys.SEARCH_MAX_HITS, (endPageNo - startPageNo) + 1);
+			options.put(ObjectKeys.SEARCH_OFFSET, startPageNo - 1);
+			
+			if (!search.equals("")) {
+				SearchFilter searchTermFilter = new SearchFilter();
+				search += "*";
+				
+				searchTermFilter.addTitleFilter(search);
+				searchTermFilter.addLoginNameFilter(search);
+							
+				options.put(ObjectKeys.SEARCH_SEARCH_FILTER, searchTermFilter.getFilter());
+			}
+			
+			Map entries = getProfileModule().getGroups(currentUser.getParentBinder().getId(), options);
+			users = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
+		
+			
+			int searchCountTotal = ((Integer)entries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+			int totalSearchRecordsReturned = ((Integer)entries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED)).intValue();
+			
+			
+			if (startPageNo + totalSearchRecordsReturned < searchCountTotal) {
+				Map next = new HashMap();
+				next.put("start", startPageNo + totalSearchRecordsReturned);
+				if (startPageNo + totalSearchRecordsReturned + 10 < searchCountTotal) {
+					next.put("end",  startPageNo + totalSearchRecordsReturned + 10);
+				} else {
+					next.put("end",  searchCountTotal);
+				}
+				model.put(WebKeys.PAGE_NEXT, next);
+			}
+	
+			if (startPageNo > 1) {
+				Map prev = new HashMap();
+				prev.put("start", startPageNo - 10);
+				prev.put("end", startPageNo - 1);
+				model.put(WebKeys.PAGE_PREVIOUS, prev);
+			}
+		}
+
+		model.put(WebKeys.USERS, users);
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/find_users_widget", model);
+	}	
+	
+	private ModelAndView ajaxGetTeams(RenderRequest request, RenderResponse response) {
+		Map model = new HashMap();
+		User currentUser = RequestContextHolder.getRequestContext().getUser();
+		String search = PortletRequestUtils.getStringParameter(request, "searchText", "");
+		String pagerText = PortletRequestUtils.getStringParameter(request, "pager", "");
+
+		List users = new ArrayList();
+		if (WebHelper.isUserLoggedIn(request)) {
+				
+			Map options = new HashMap();
+			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
+			
+			int startPageNo = 1;
+			int endPageNo = 10;
+			if (!pagerText.equals("")) {
+				String[] pagesNos = pagerText.split(";");
+				startPageNo = Integer.parseInt(pagesNos[0]);
+				endPageNo = Integer.parseInt(pagesNos[1]);
+			}
+	
+			options.put(ObjectKeys.SEARCH_MAX_HITS, (endPageNo - startPageNo) + 1);
+			options.put(ObjectKeys.SEARCH_OFFSET, startPageNo - 1);
+			
+			SearchFilter searchTermFilter = new SearchFilter();
+			
+			String newStr = search;
+			Matcher matcher = TypeToFindAjaxController.replacePtrn.matcher(newStr);
+			while (matcher.find()) {
+				newStr = matcher.replaceFirst(" ");
+				matcher = TypeToFindAjaxController.replacePtrn.matcher(newStr);
+			}
+			newStr = newStr.replaceAll(" \\*", "\\*");
+			
+			search = newStr;
+		    
+			searchTermFilter.addWorkspaceFilter(search + "*");
+			
+			Map entries = getBinderModule().executeSearchQuery( searchTermFilter.getFilter(), options);
+			users = (List)entries.get(ObjectKeys.SEARCH_ENTRIES);
+
+		
+			
+			int searchCountTotal = ((Integer)entries.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue();
+			int totalSearchRecordsReturned = ((Integer)entries.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED)).intValue();
+			
+			
+			if (startPageNo + totalSearchRecordsReturned < searchCountTotal) {
+				Map next = new HashMap();
+				next.put("start", startPageNo + totalSearchRecordsReturned);
+				if (startPageNo + totalSearchRecordsReturned + 10 < searchCountTotal) {
+					next.put("end",  startPageNo + totalSearchRecordsReturned + 10);
+				} else {
+					next.put("end",  searchCountTotal);
+				}
+				model.put(WebKeys.PAGE_NEXT, next);
+			}
+	
+			if (startPageNo > 1) {
+				Map prev = new HashMap();
+				prev.put("start", startPageNo - 10);
+				prev.put("end", startPageNo - 1);
+				model.put(WebKeys.PAGE_PREVIOUS, prev);
+			}
+		}
+
+		model.put(WebKeys.USERS, users);
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/find_users_widget", model);
+	}	
 }

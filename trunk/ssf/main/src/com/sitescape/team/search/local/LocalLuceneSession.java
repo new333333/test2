@@ -466,12 +466,12 @@ public class LocalLuceneSession implements LuceneSession {
 					String[] fields = null;
 					if (type != null
 							&& type
-									.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_PERSONAL_TAGS)) {
+									.equals(WebKeys.FIND_TYPE_PERSONAL_TAGS)) {
 						fields = new String[1];
 						fields[0] = BasicIndexUtils.ACL_TAG_FIELD_TTF;
 					} else if (type != null
 							&& type
-									.equals(WebKeys.USER_SEARCH_USER_GROUP_TYPE_COMMUNITY_TAGS)) {
+									.equals(WebKeys.FIND_TYPE_COMMUNITY_TAGS)) {
 						fields = new String[1];
 						fields[0] = BasicIndexUtils.TAG_FIELD_TTF;
 					} else {

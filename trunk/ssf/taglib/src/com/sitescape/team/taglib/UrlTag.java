@@ -181,13 +181,13 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
-					adapterUrl.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
+					adapterUrl.setParameter((String) me.getKey(), (String[])me.getValue());
 				}
 				if (_params != null ) {
 					Iterator _it = _params.entrySet().iterator();
 					while (_it.hasNext()) {
 						Map.Entry me = (Map.Entry) _it.next();
-						adapterUrl.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
+						adapterUrl.setParameter((String) me.getKey(), (String[])me.getValue());
 					}
 				}
 				pageContext.getOut().print(adapterUrl.toString());
@@ -210,13 +210,13 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 				Iterator it = params.entrySet().iterator();
 				while (it.hasNext()) {
 					Map.Entry me = (Map.Entry) it.next();
-					portletURL.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
+					portletURL.setParameter((String) me.getKey(), (String[])me.getValue());
 				}
 				if (_params != null) {
 					it = _params.entrySet().iterator();
 					while (it.hasNext()) {
 						Map.Entry me = (Map.Entry) it.next();
-						portletURL.setParameter((String) me.getKey(), ((String[])me.getValue())[0]);
+						portletURL.setParameter((String) me.getKey(), (String[])me.getValue());
 					}
 				}
 				if (!Validator.isNull(action)) {

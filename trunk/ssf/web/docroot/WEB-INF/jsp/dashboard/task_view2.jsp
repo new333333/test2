@@ -137,18 +137,33 @@
 		<td class="ss_iconsContainer"  style="text-align: center;"><c:if test="${! empty entry.status}"><c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}"><c:if test="${entry.status == status.key}"><img src="<html:imagesPath/>icons/status_${status.key}.gif" class="ss_taskStatus" alt="${status.value}" title="${status.value}" /></c:if></c:forEach></c:if></td>
 		<td>
 			<c:set var="assignment" value="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment")) %>" />
-			<c:choose>
-				<c:when test="${!empty assignment}">
-					<ul>
-						<c:forEach var="assigned" items="${assignment}">
-							<li><ssf:showUser user="${assigned}"/></li>
-						</c:forEach>
-					</ul>
-				</c:when>
-				<c:otherwise>
+			<c:set var="assignment_groups" value="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment_groups")) %>" />
+			<c:set var="assignment_teams" value="<%= com.sitescape.team.util.ResolveIds.getBinders(entry.get("assignment_teams")) %>" />
+			<c:if test="${!empty assignment}">
+				<ul>
+					<c:forEach var="assigned" items="${assignment}">
+						<li><ssf:showUser user="${assigned}"/></li>
+					</c:forEach>
+				</ul>
+			</c:if>
+			<c:if test="${!empty assignment_groups}">
+				<ul>
+					<c:forEach var="assigned" items="${assignment_groups}">
+						<li><ssf:showUser user="${assigned}"/></li>
+					</c:forEach>
+				</ul>
+			</c:if>	
+			<c:if test="${!empty assignment_teams}">
+				<ul>
+					<c:forEach var="assigned" items="${assignment_teams}">
+						<li><ssf:showTeam team="${assigned}"/></li>
+					</c:forEach>
+				</ul>
+			</c:if>							
+			
+			<c:if test="${empty assignment && empty assignment_groups && empty assignment_teams}">
 				&nbsp;
-				</c:otherwise>
-			</c:choose>			
+			</c:if>
 		</td>
 		<td>
 			<c:if test="${! empty entry.completed && !empty entry.ssEntryDefinitionElementData.completed.values}">

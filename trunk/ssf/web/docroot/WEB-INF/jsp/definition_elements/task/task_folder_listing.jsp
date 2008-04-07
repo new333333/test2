@@ -332,6 +332,24 @@
 							</c:forEach>
 						</ul>
 					</c:if>
+					
+					<c:set var="assignment_groups" value="<%= com.sitescape.team.util.ResolveIds.getPrincipals(entry.get("assignment_groups")) %>" />
+					<c:if test="${!empty assignment_groups}">
+						<ul>
+							<c:forEach var="assigned" items="${assignment_groups}">
+								<li><ssf:showUser user="${assigned}"/></li>
+							</c:forEach>
+						</ul>
+					</c:if>		
+					
+					<c:set var="assignment_teams" value="<%= com.sitescape.team.util.ResolveIds.getBinders(entry.get("assignment_teams")) %>" />
+					<c:if test="${!empty assignment_teams}">
+						<ul>
+							<c:forEach var="assigned" items="${assignment_teams}">
+								<li><ssf:showTeam team="${assigned}"/></li>
+							</c:forEach>
+						</ul>
+					</c:if>									
 				</td>
 				<td id="ss_tasks_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${entry._docId}_completed">
 					<c:if test="${! empty entry.completed}">

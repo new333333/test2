@@ -39,41 +39,56 @@
 
 	<taconite-replace contextNodeID="<c:out value="${ss_divId}"/>" parseInBrowser="true">
 	  <c:set var="count" value="0"/>
-	  <div id="<c:out value="${ss_divId}"/>" style="padding:2px;">
-		<c:if test="${empty ss_tags}">
-		<c:if test="${ssTagLengthWarning != null}">
-			<ul>
-			<li><c:out value="${ssTagLengthWarning}"/></li>
-			</ul>
-		</c:if>
-		</c:if>
-		<c:if test="${!empty ss_tags}">
+	  <div id="<c:out value="${ss_divId}"/>" style="padding:2px;margin:2px;">
+		<c:if test="${empty ssEntries}">
+			<c:if test="${ssTagLengthWarning != null}">
+				<ul>
+				<li><c:out value="${ssTagLengthWarning}"/></li>
+				</ul>
+			</c:if>
+		</c:if>	  
+		<c:if test="${!empty ssEntries}">
 	      <ul>
-			
-		    <c:forEach var="tag" items="${ss_tags}">
-		      <c:set var="count" value="${count + 1}"/>
-
-		      <li id="<c:out value="ss_findTag_id_${tag.ssTag}"/>"><a 
-		          href="javascript: ;" onClick="
-		          <c:if test="${ss_userGroupType == 'personalTags' || ss_userGroupType == 'communityTags' }">
-		      		ss_putValueInto('ss_findTag_searchText_${ss_namespace}', '${tag.ssTag}');
-		      	  </c:if>
-  		          <c:if test="${ss_userGroupType != 'personalTags' && ss_userGroupType != 'communityTags' }">
-  		          	ss_findTagSelectItem('${ss_namespace}', this.parentNode);return false;
-  		          </c:if>"><span style="white-space:nowrap;"><c:out value="${tag.ssTag}"/></span></a></li>
-		    </c:forEach>
+			<c:forEach var="entry" items="${ssEntries}">
+			  <c:set var="count" value="${count + 1}"/>
+			  <li id="ss_findUser_id_<c:choose><%--
+		          --%><c:when test="${ssFindType == 'personalTags' || ssFindType == 'communityTags' || ssFindType == 'tags' }"><%--
+		      		--%><c:out value="${entry.ssTag}"/><%--
+		      	  --%></c:when><%--
+  		          --%><c:otherwise><%--
+  		          	--%><c:out value="${entry._docId}"/><%--
+  		          --%></c:otherwise></c:choose>"><a 
+			    onClick="<c:choose><%--
+		    			--%><c:when test="${ssFindType == 'personalTags' || ssFindType == 'communityTags'}"><%--
+		    				--%>ss_putValueInto('ss_findUser_searchText_${ss_namespace}', '${entry.ssTag}');<%--
+		    			--%></c:when><%--
+						--%><c:otherwise><%--
+							--%>ss_findUserSelectItem('${ss_namespace}', this.parentNode, '${entry._entityType}');return false;<%--
+						--%></c:otherwise><%--
+			   		 --%></c:choose>" 
+			    href="javascript: ;"><span style="white-space:nowrap;"><c:choose><%--
+		          --%><c:when test="${!empty entry.ssTag}"><%--
+		      		--%><c:out value="${entry.ssTag}"/><%--
+		      	  --%></c:when><%--
+		          --%><c:when test="${!empty entry._extendedTitle}"><%--
+		      		--%><c:out value="${entry._extendedTitle}"/><%--
+		      	  --%></c:when><%--		      	  
+  		          --%><c:otherwise><%--
+  		          	--%><c:out value="${entry.title}"/><%--
+  		          --%></c:otherwise></c:choose></span></a></li>
+			</c:forEach>			
 	      </ul>
           <c:if test="${ss_searchTotalHits > ss_pageSize}">
 			<table class="ss_typeToFindNav" cellpadding="0" cellspacing="0" border="0"><tbody>
 			<tr><td width="10%">
             <c:if test="${ss_pageNumber > 0}">
-              <a href="javascript:;" onClick="ss_findTagPrevPage('${ss_namespace}');return false;"
-              ><img border="0" title="<ssf:nlt tag="general.Previous"/>" src="<html:imagesPath/>pics/sym_arrow_left_.gif"/></a>
+              <a href="javascript:;" onClick="ss_findUserPrevPage('${ss_namespace}');return false;"
+              ><img border="0" style="margin-right: 20px;" title="<ssf:nlt tag="general.Previous"/>" src="<html:imagesPath/>pics/sym_arrow_left_.gif"/></a>
              </c:if>
              </td><td width="80%"></td><td width="10%">
             <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
-              <a href="javascript:;" onClick="ss_findTagNextPage('${ss_namespace}');return false;"
-              ><img border="0" title="<ssf:nlt tag="general.Next"/>" src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
+              <a href="javascript: ;" onClick="ss_findUserNextPage('${ss_namespace}');return false;"
+              ><img border="0" style="margin-left: 20px;" title="<ssf:nlt tag="general.Next"/>" src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
             </c:if>
            </td></tr></tbody></table>
            </c:if>
