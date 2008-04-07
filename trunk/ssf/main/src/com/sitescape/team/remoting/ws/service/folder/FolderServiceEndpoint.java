@@ -65,6 +65,10 @@ public class FolderServiceEndpoint implements ServiceLifecycle, FolderService {
 		getFolderService().uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName);
 	}
 
+	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String stagedFileRelativePath) {
+		getFolderService().uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, stagedFileRelativePath);
+	}
+
 	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState) {
 		getFolderService().addEntryWorkflow(accessToken, binderId, entryId, definitionId, startState);
 	}

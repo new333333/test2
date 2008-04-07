@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.folder;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -41,9 +42,12 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.util.DomInputData;
+import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
@@ -168,6 +172,43 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 	}
 	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState) {
 		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, startState);
+	}
+
+	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String stagedFileRelativePath) {
+		boolean enable = SPropsUtil.getBoolean("staging.upload.files.enable", false);
+		if(enable) {
+			fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
+			stagedFileRelativePath = StringCheckUtil.check(stagedFileRelativePath);
+			
+			// Get the staged file
+			String rootPath = SPropsUtil.getString("staging.upload.files.rootpath", "").trim();
+			File file = new File(rootPath, stagedFileRelativePath);
+			
+			// Wrap it in a datastructure expected by our app.
+			SimpleMultipartFile mf = new SimpleMultipartFile(file.getName(), file, false);
+			
+			// Create a map of file item names to items 
+			Map fileItems = new HashMap();
+			fileItems.put(fileUploadDataItemName, mf);
+			
+			try {
+				// Finally invoke the business method. 
+				getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
+					new EmptyInputData(), fileItems, null, null, null);
+				// If you're here, the transaction was successful. 
+				// Check if we need to delete the staged file or not.
+				if(SPropsUtil.getBoolean("staging.upload.files.delete.after", false)) {
+					file.delete();
+				}
+			}
+			catch(WriteFilesException e) {
+				throw new RemotingException(e);
+			}
+		}
+		else {
+			throw new UnsupportedOperationException("Staged file upload is disabled: " + binderId + ", " + 
+					entryId + ", " + fileUploadDataItemName + ", " + stagedFileRelativePath);
+		}
 	}
 	
 }

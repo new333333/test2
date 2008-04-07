@@ -106,6 +106,8 @@ public class WSClient extends WSClientBase
 				wsClient.justDoIt("FolderService", "modifyFolderEntry", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), s});
 			} else if(args[0].equals("uploadFile")) {
 				wsClient.justDoIt("FolderService", "uploadFolderFile", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);
+			} else if(args[0].equals("uploadFileStaged")) {
+				wsClient.justDoIt("FolderService", "uploadFolderFileStaged", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]});
 			} else if(args[0].equals("uploadCalendar")) {
 				String s = readText(args[2]);
 				System.out.println("XML: " + s);
@@ -224,6 +226,7 @@ public class WSClient extends WSClientBase
 		System.out.println("addWorkflow <folder id> <entry id> <definition id> [<startState>]");
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
 		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
+		System.out.println("uploadFileStaged <folder id> <entry id> <fileDataFieldName> <stagedFileRelativePath>");
 		System.out.println("uploadCalendar <folder id> <xmlFilename> [<iCalFilename>]");
 		System.out.println("search <xmlFilename> <offset> <maxResults>");
 		System.out.println("addUserToGroup <user id> <group id>");
