@@ -785,6 +785,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		return getProfileDao().findUserByName(username, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
+	public Collection<Principal> getPrincipalsByName(Collection<String> names) throws AccessControlException {
+		Map params = new HashMap();
+		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
+		params.put("name", names);
+		return getCoreDao().loadObjects("from com.sitescape.team.domain.Principal where zoneId=:zoneId and name in (:name)", params);
+
+	}
 	public class ElementInputData implements InputDataAccessor {
 		private Element source;
 		public ElementInputData(Element source) {
