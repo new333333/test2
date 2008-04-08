@@ -1463,6 +1463,53 @@ function ss_ShowHideDivXY(divName, x, y) {
     }
 }
 
+/* IE6 workaround - divs under selectboxes */
+function ss_showBackgroundIFrame(divid, frmId) {
+	if (!ss_isIE) {
+		return;
+	}
+	var div = document.getElementById(divid);
+	if (!div) {
+		return;
+	}
+	if (!div.style.zIndex) {
+		div.style.zIndex = ssLightboxZ - 1;
+	}
+	var frm = document.createElement("iframe");
+	frm.frameBorder = 0;
+	frm.scrolling = "no";
+	document.body.appendChild(frm);
+	frm.id = frmId;
+	frm.className = "ss_background_iframe";
+	if (div.style.zIndex) {
+		frm.style.zIndex = div.style.zIndex * 1 - 1;
+	} else {
+		frm.style.zIndex = ssLightboxZ - 2;
+	}
+	var top = dojo.html.getAbsolutePosition(div, true).y;
+	var left = dojo.html.getAbsolutePosition(div, true).x;
+    ss_setObjectTop(frm, top);
+    ss_setObjectLeft(frm, left);
+
+	frm.style.height = ss_getObjectHeight(div) + "px";
+	frm.style.width = ss_getObjectWidth(div) + "px";
+	
+	frm.style.display = "block";
+}
+
+/* IE6 workaround - divs under selectboxes */
+function ss_hideBackgroundIFrame(frmId) {
+	if (!ss_isIE) {
+		return;
+	}
+	var frm = document.getElementById(frmId);
+	try {
+		if (frm) {
+			frm.parentNode.removeChild(frm);
+		}
+	} catch (e) {}
+}
+
 function ss_showDivActivate(divName) {
     if (ss_divBeingShown != null) {
         ss_hideDiv(ss_divBeingShown)
@@ -1508,6 +1555,7 @@ function ss_showDiv(divName) {
     if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
     	document.getElementById(divName).style.display = "block";
     }
+	ss_showBackgroundIFrame(divName, "ss_background_iframe");
 
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
@@ -1522,6 +1570,7 @@ function ss_hideDiv(divName) {
 			document.getElementById(divName).style.visibility = "hidden";
     ss_divToBeDelayHidden[divName] = null
     ss_divBeingShown = null;
+    ss_hideBackgroundIFrame("ss_background_iframe");
     
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
@@ -1630,6 +1679,7 @@ function captureXY(e) {
 	        }
 	    }
 	    ss_divToBeHidden = new Array();
+		ss_hideBackgroundIFrame("ss_background_iframe");
     }
     if (ss_isNSN6 || ss_isMoz5) {
         ss_mousePosX = e.pageX
