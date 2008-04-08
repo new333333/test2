@@ -157,4 +157,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.facade.setTeamMembers(binderId, memberIds);
 	}
 
+	public void synchronizeMirroredFolder(long binderId) {
+		this.facade.synchronizeMirroredFolder(binderId);
+	}
 }
