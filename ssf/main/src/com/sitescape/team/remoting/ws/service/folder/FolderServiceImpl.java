@@ -210,5 +210,9 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 					entryId + ", " + fileUploadDataItemName + ", " + stagedFileRelativePath);
 		}
 	}
+
+	public void synchronizeMirroredFolder(String accessToken, long binderId) {
+		getFolderModule().synchronize(binderId, null);
+	}
 	
 }

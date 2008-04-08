@@ -175,6 +175,8 @@ public class WSClient extends WSClientBase
 				wsClient.justDoIt("BinderService", "setFunctionMembershipInherited", new Object[] {null, Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("setOwner")) {
 				wsClient.justDoIt("BinderService", "setOwner", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
+			} else if(args[0].equals("synchronize")) {
+				wsClient.justDoIt("FolderService", "synchronizeMirroredFolder", new Object[] {null, Long.parseLong(args[1])});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -261,6 +263,7 @@ public class WSClient extends WSClientBase
 		System.out.println("setFunctionMembership <binderId> <functionDataXml>");
 		System.out.println("setFunctionMembershipInherited <binderId> <boolean>");
 		System.out.println("setOwner <binderId> <userId>");
+		System.out.println("synchronize <mirrored folder id>");
 		
 		// an example of addZoneUnderPortal invocation - 
 		// addZoneUnderPortal fake-bestbuy www.fake-bestbuy.com mail.fake-bestbuy.com
