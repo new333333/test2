@@ -72,8 +72,13 @@ public class FolderServiceEndpoint implements ServiceLifecycle, FolderService {
 	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState) {
 		getFolderService().addEntryWorkflow(accessToken, binderId, entryId, definitionId, startState);
 	}
+	
 	public void init(Object context) throws ServiceException {
 		this.folderService = (FolderService) SpringContextUtil.getBean("folderService");
+	}
+	
+	public void synchronizeMirroredFolder(String accessToken, long binderId) {
+		getFolderService().synchronizeMirroredFolder(accessToken, binderId);
 	}
 	
 	public void destroy() {
