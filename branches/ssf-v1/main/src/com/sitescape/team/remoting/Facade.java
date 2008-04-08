@@ -133,5 +133,6 @@ public interface Facade {
 	 */
 	public void setTeamMembers(long binderId, List<Long> memberIds);
 
+	public void synchronizeMirroredFolder(long binderId);
 }
 

@@ -140,6 +140,8 @@ public class WSClient
 					}
 				}
 				justDoIt("setDefinitions", new Object[] {Long.parseLong(args[1]), idsList, wfs});
+			} else if(args[0].equals("synchronize")) {
+				justDoIt("synchronizeMirroredFolder", new Object[] {Long.parseLong(args[1])});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -261,5 +263,6 @@ public class WSClient
 		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
 		System.out.println("getBinderTitle <binder id>");
 		System.out.println("setDefinitions <folder id> <comma separated definitionIds> comma separated definitionId,workflowId>");
+		System.out.println("synchronize <mirrored folder id>");
 	}
 }

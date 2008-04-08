@@ -208,6 +208,11 @@ public class FacadeImpl extends AbstractFacade {
 		}
 	}
 
+
+	public void synchronizeMirroredFolder(long binderId) {
+		getFolderModule().synchronize(binderId, null);
+	}
+
 	/**
 	* Extract attachments from the current request
 	* @return a list of attachmentparts or an empty array for no attachments 
