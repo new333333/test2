@@ -4829,5 +4829,13 @@ table.ssMeetingRecords .ssHeader {
 	font-weight: bold;
 }
 
+.ss_background_iframe {
+	position: absolute;
+	display: none;
+	border: none!important;
+	margin: 0;
+	padding: 0;
+}
+
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>
