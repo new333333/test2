@@ -140,6 +140,14 @@ public class WSClient
 					}
 				}
 				justDoIt("setDefinitions", new Object[] {Long.parseLong(args[1]), idsList, wfs});
+			} else if(args[0].equals("setFunctionMembership")) {
+				String s = FacadeClientHelper.readText(args[2]);
+				System.out.println("XML: " + s);
+				justDoIt("setFunctionMembership", new Object[] {Long.parseLong(args[1]), s});
+			} else if(args[0].equals("setFunctionMembershipInherited")) {
+				justDoIt("setFunctionMembershipInherited", new Object[] {Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
+			} else if(args[0].equals("setOwner")) {
+				justDoIt("setOwner", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("synchronize")) {
 				justDoIt("synchronizeMirroredFolder", new Object[] {Long.parseLong(args[1])});
 			} else {
@@ -263,6 +271,9 @@ public class WSClient
 		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
 		System.out.println("getBinderTitle <binder id>");
 		System.out.println("setDefinitions <folder id> <comma separated definitionIds> comma separated definitionId,workflowId>");
+		System.out.println("setFunctionMembership <binderId> <functionDataXml>");
+		System.out.println("setFunctionMembershipInherited <binderId> <boolean>");
+		System.out.println("setOwner <binderId> <userId>");
 		System.out.println("synchronize <mirrored folder id>");
 	}
 }
