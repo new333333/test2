@@ -28,7 +28,6 @@
  */
 package com.sitescape.team.liferay.events;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,6 +37,7 @@ import javax.servlet.http.HttpSession;
 import com.liferay.portal.struts.ActionException;
 
 import com.liferay.portal.util.PortalUtil;
+import com.sitescape.team.liferay.util.Util;
 import com.sitescape.team.portalmodule.web.security.AuthenticationManager;
 import com.sitescape.team.portalmodule.web.session.SessionManager;
 
@@ -73,26 +73,8 @@ public class LoginPostAction extends AbstractAction {
 				password = ""; // I'm not sure if we should allow this...
 			
 			//sync user attributes
-			Map updates = new HashMap();
-			if(user.getFirstName() != null)
-				updates.put("firstName", user.getFirstName());
-			if(user.getMiddleName() != null)
-				updates.put("middleName", user.getMiddleName());
-			if(user.getLastName() != null)
-				updates.put("lastName", user.getLastName());
-			if(user.getEmailAddress() != null)
-				updates.put("emailAddress", user.getEmailAddress());
-			if(user.getLocale() != null)
-				updates.put("locale", user.getLocale());
-			if(user.getTimeZone() != null)
-				updates.put("timeZone", user.getTimeZone());
-			// Due to a bug in Liferay, the following information we get directly
-			// from the user model object does not match the user attributes
-			// obtainable from the portal in a portable way (using
-			// javax.portlet.PortletRequest.USER_INFO). So do not deal with it
-			// here. Additional information, if any, can be updated when the
-			// user actually accesses the system. 
-			//updates.put("organization", user.getOrganization().getName());
+			Map updates = Util.getUpdatesMap(user);
+
 			// First, authenticate the user against SSF user database.
 			AuthenticationManager.authenticate(company.getWebId(), user.getScreenName(), password, updates);
 			
