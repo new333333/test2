@@ -147,7 +147,7 @@ public class ZoneModuleImpl extends CommonDependencyInjection implements ZoneMod
 	        	public Object doInTransaction(TransactionStatus status) {
 	        		for (int i=0; i<companies.size(); ++i) {
 	        			Workspace zone = (Workspace)companies.get(i);
-	        			String superName = SZoneConfig.getString(zone.getName(), "property[@name='adminUser']", "admin");
+	        			String superName = SZoneConfig.getAdminUserName(zone.getName());
 	        			//	get super user from config file - must exist or throws and error
 	        			User superU = getProfileDao().findUserByName(superName, zone.getName());
 	        			if (!ObjectKeys.SUPER_USER_INTERNALID.equals(superU.getInternalId())) {

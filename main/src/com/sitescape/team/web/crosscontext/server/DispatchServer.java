@@ -29,6 +29,7 @@
 package com.sitescape.team.web.crosscontext.server;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.GenericServlet;
@@ -44,11 +45,22 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.asmodule.bridge.SiteScapeBridgeUtil;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextUtil;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.NoUserByTheNameException;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.authentication.AuthenticationManager;
 import com.sitescape.team.security.authentication.PasswordDoesNotMatchException;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.team.util.SessionUtil;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.crosscontext.CrossContextConstants;
@@ -60,6 +72,9 @@ public class DispatchServer extends GenericServlet {
 	private static final String PORTAL_CC_DISPATCHER = "portalCCDispatcher";
 	private static final String SSF_CONTEXT_PATH_DEFAULT = "/ssf";
 	
+	private static final String PORTAL_PROFILE_DELETE_USER_WORKSPACE = "portal.profile.deleteUserWorkspace";
+	private static final boolean PORTAL_PROFILE_DELETE_USER_WORKSPACE_DEFAULT_VALUE = false;
+
 	public void init(ServletConfig config) throws ServletException {
 		RequestDispatcher rd = config.getServletContext().getNamedDispatcher(PORTAL_CC_DISPATCHER);
 		SiteScapeBridgeUtil.setCCDispatcher(rd);
@@ -134,6 +149,101 @@ public class DispatchServer extends GenericServlet {
 			if(logger.isDebugEnabled())
 				logger.debug("Server name:port is " + req.getServerName() + ":" + req.getServerPort() + " for user " + userName + " at the time of login");
 		}
+		else if(operation.equals(CrossContextConstants.OPERATION_MODIFY_SCREEN_NAME)) {
+			HttpServletRequest request = (HttpServletRequest) req;
+			
+			String contextZoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
+			if(contextZoneName == null)
+				contextZoneName = SZoneConfig.getDefaultZoneName();
+			// Use admin as the context user for this operation.
+			String adminName = SZoneConfig.getAdminUserName(contextZoneName);
+			
+			String oldScreenName = req.getParameter(CrossContextConstants.OLD_SCREEN_NAME);
+			String newScreenName = req.getParameter(CrossContextConstants.SCREEN_NAME);
+			
+			boolean closeSession = false;
+			if (!SessionUtil.sessionActive()) {
+				SessionUtil.sessionStartup();	
+				closeSession = true;
+			}
+			try {
+				User user = getProfileDao().findUserByName(oldScreenName, contextZoneName);
+				
+				RequestContext oldCtx = RequestContextHolder.getRequestContext();
+				try {
+					RequestContextUtil.setThreadContext(user);
+					
+					HashMap map = new HashMap();
+					map.put("name", newScreenName);
+					map.put("foreignName", newScreenName);
+	
+					getProfileModule().modifyEntry(user.getParentBinder().getId(), 
+						user.getId(), new MapInputData(map));
+				}
+				finally {
+					RequestContextHolder.setRequestContext(oldCtx); // Restore old context					
+				}
+			} catch (NoUserByTheNameException e) {
+				// The user doesn't exist on the Teaming side.
+				// This is possible, so don't throw an error.
+				logger.warn(e.toString());
+				return;
+			} catch (WriteFilesException e) {
+				logger.error(e.getLocalizedMessage(), e);
+				throw new ServletException(e.getLocalizedMessage());
+			}
+			finally {
+				if (closeSession) 
+					SessionUtil.sessionStop();
+			}
+		}
+		else if(operation.equals(CrossContextConstants.OPERATION_DELETE_USER)) {
+			HttpServletRequest request = (HttpServletRequest) req;
+			
+			String contextZoneName = req.getParameter(CrossContextConstants.ZONE_NAME);
+			if(contextZoneName == null)
+				contextZoneName = SZoneConfig.getDefaultZoneName();
+			// Use admin (rather than the user being deleted) as the context user for this operation.
+			String adminName = SZoneConfig.getAdminUserName(contextZoneName);
+			
+			String screenName = req.getParameter(CrossContextConstants.SCREEN_NAME);
+			
+			boolean closeSession = false;
+			if (!SessionUtil.sessionActive()) {
+				SessionUtil.sessionStartup();	
+				closeSession = true;
+			}
+			try {
+				User user = getProfileDao().findUserByName(screenName, contextZoneName);
+				
+				RequestContext oldCtx = RequestContextHolder.getRequestContext();
+				
+				try {
+					RequestContextUtil.setThreadContext(user);
+					
+					boolean deleteWS = 
+						SPropsUtil.getBoolean(PORTAL_PROFILE_DELETE_USER_WORKSPACE, 
+							PORTAL_PROFILE_DELETE_USER_WORKSPACE_DEFAULT_VALUE);
+	
+					getProfileModule().deleteEntry(user.getParentBinder().getId(), user.getId(), deleteWS);
+				}
+				finally {
+					RequestContextHolder.setRequestContext(oldCtx); // Restore old context	
+				}
+			} catch (NoUserByTheNameException e) {
+				// The user doesn't exist on the Teaming side.
+				// This is possible, so don't throw an error.
+				logger.warn(e.toString());
+				return;
+			} catch (WriteFilesException e) {
+				logger.error(e.getLocalizedMessage(), e);
+				throw new ServletException(e.getLocalizedMessage());
+			}
+			finally {
+				if (closeSession) 
+					SessionUtil.sessionStop();
+			}
+		}
 		else {
 			logger.error("Unrecognized operation [" + operation + "]");
 		}
@@ -141,5 +251,11 @@ public class DispatchServer extends GenericServlet {
 	
 	private AuthenticationManager getAuthenticationManager() {
 		return (AuthenticationManager) SpringContextUtil.getBean("authenticationManager");
+	}
+	private ProfileModule getProfileModule() {
+		return (ProfileModule) SpringContextUtil.getBean("profileModule");
+	}
+	private static ProfileDao getProfileDao() {
+		return (ProfileDao) SpringContextUtil.getBean("profileDao");
 	}
 }

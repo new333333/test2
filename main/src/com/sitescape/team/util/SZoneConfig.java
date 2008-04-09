@@ -155,4 +155,8 @@ public class SZoneConfig {
     	return instance;
     }
     
+    public static String getAdminUserName(String zoneName) {
+    	return getString(zoneName, "property[@name='adminUser']", "admin");
+    }
+    
 }
