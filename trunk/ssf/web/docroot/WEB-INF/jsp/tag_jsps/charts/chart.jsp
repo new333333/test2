@@ -29,24 +29,17 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%
-	Integer percent = (Integer) request.getAttribute("percent"); 
-	String count = request.getAttribute("count").toString(); 
-%>
-<c:set var="percent" value="<%= percent %>" scope="request"/>
 
 <div class="ss_chartContainer">
 	<table class="ss_total">
 		<tr>
 			<c:if test="${percent > 0}">
-			<td class="ss_bar" style="width:<%= percent %>%;">&nbsp;</td>
+			<td class="ss_bar" style="width:${percent}%;">&nbsp;</td>
 			</c:if>
 			<c:if test="${percent < 100}">
 			<td>&nbsp;</td>
 			</c:if>
 		</tr>
 	</table>
-	<%= percent %>% <ssf:nlt tag="survey.xvotes"><ssf:param name="value" value="<%= count %>"/></ssf:nlt>
+	${percent}% <ssf:nlt tag="survey.xvotes"><ssf:param name="value" value="${count}"/></ssf:nlt>
 </div>
-
-

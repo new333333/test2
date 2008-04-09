@@ -22,6 +22,8 @@
 
 package com.sitescape.team.taglib;
 
+import java.util.HashMap;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspTagException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
 public class ChartTag extends BodyTagSupport {
@@ -49,15 +52,17 @@ public class ChartTag extends BodyTagSupport {
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 
 			float p = (float)(this.count * 100) / this.total;
-			httpReq.setAttribute("percent", Math.round(p));
-			httpReq.setAttribute("count", count);
+			
+			ServletRequest req = null;
+			req = new DynamicServletRequest(httpReq, new HashMap());
+			req.setAttribute("percent", Math.round(p));
+			req.setAttribute("count", count);
 			
 			String jsp = "/WEB-INF/jsp/tag_jsps/charts/chart.jsp";
 			RequestDispatcher rd = httpReq.getRequestDispatcher(jsp);
-			ServletRequest req = pageContext.getRequest();
 			StringServletResponse res = new StringServletResponse(httpRes);
 			rd.include(req, res);
-			pageContext.getOut().print(res.getString().trim());
+			pageContext.getOut().print(res.getString());
 		}
 		catch (Exception e) {
 			throw new JspTagException(e.getLocalizedMessage());
