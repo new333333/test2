@@ -1850,7 +1850,7 @@ div.ss_box_top_rounded {
 /* -------------------Skins-------------------- */
 div.ss_content_outer {
     position: relative;
-    background: #EFEFEF;
+    background: #FFFFFF;
 	margin-top:0;
 	border: solid 1px #CCC;
 }
@@ -1956,7 +1956,7 @@ div.ss_content_outer table, div.ss_portlet table, table.ss_style, div.ss_popup_b
 td.ss_view_sidebar {
     width: 200px;
     background-color: #D8D8D8;
-    border-right: 6px solid #EFEFEF;
+    border-right: 6px solid #FFFFFF;
 }
 
 td.ss_view_info {

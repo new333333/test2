@@ -41,12 +41,13 @@
 	</div>
 	</ssf:param>
 	
-<div id="ss_para">
+<div id="ss_para" "ss_link_5">
+<div id="ss_hints"><em>These are my folders I have chosen to track. To track a folder  you must click on the "TRACK:" button above. </em>  </div>
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'folder'}">
 	
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
-	    <a class="ss_link_2"
+	    <a class="ss_link_5"
 	      href="<ssf:url adapter="true" portletName="ss_forum" 
 	    	action="view_permalink"
 	    	binderId="${binder.id}">
@@ -58,6 +59,7 @@
 	    <c:forEach var="calendar" items="${ss_trackedCalendars}">
 	      <c:if test="${calendar.id == binder.id}"> <span class="ss_fineprint">(<ssf:nlt tag="relevance.trackedCalendar"/>)</span></c:if>
 	    </c:forEach>
+	    &nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
 	    <img style="padding:4px 0px 0px 2px;" align="texttop"
       src="<html:rootPath/>images/pics/delete.gif"
       onClick="ss_trackedItemsDelete(this, '${binder.id}');"/>
@@ -76,11 +78,12 @@
 		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"> <ssf:nlt tag="relevance.trackedWorkspaces"/> </div>
 	</ssf:param>
 	
-<div id="ss_para">
+<div id="ss_para" class="ss_paraC">
+<div id="ss_hints"><em>These are my Global and Team Workspaces I have chosen to track. To track a workspace you must click on the "TRACK:" button above while visiting your favorite workspaces. </em>  </div>
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'workspace' && binder.definitionType == 8}">
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
-	    <a class="ss_link_2"
+	    <a class="ss_link_5"
 	      href="<ssf:url adapter="true" portletName="ss_forum" 
 	    	action="view_permalink"
 	    	binderId="${binder.id}">
@@ -88,13 +91,14 @@
 	    	<ssf:param name="newTab" value="1" />
 			</ssf:url>"
 		  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'workspace', '${ss_namespace}', 'yes');"
-	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a><img style="padding:4px 0px 0px 2px;" align="texttop"
-      src="<html:rootPath/>images/pics/delete.gif"
+	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a><img src="<html:rootPath/>images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />&nbsp;
+	    <img style="padding:4px 0px 0px 2px;" align="texttop" src="<html:rootPath/>images/pics/delete.gif"
       onClick="ss_trackedItemsDelete(this, '${binder.id}');"/>
       </td></tr></tbody></table>
   </c:if>
 </c:forEach>
 	</div> <!-- end of ss_para -->
+
 	</ssf:canvas>
 
       </div><!-- end of col2 -->
@@ -106,10 +110,13 @@
 		</div>
 	</ssf:param>
 	
-	  <div id="ss_para">
+	  <div id="ss_today">
+	  <div id="trackedPeople">
+	  <div id="ss_hints"><em>These are my Peeps I have chosen to track. To track a person you must click on the "TRACK:" button above while visitng their profile page. </em>  </div>
 	  <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
 	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_buddies.jsp" />
-	  </div><!-- end of ss_para -->
+	  </div><!-- end of trackedPeople -->
+	  </div><!-- end of ss_today -->
 	 
 	</ssf:canvas>
 

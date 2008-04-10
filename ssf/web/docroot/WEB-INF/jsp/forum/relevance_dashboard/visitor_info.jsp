@@ -45,7 +45,7 @@
 		  <li>
 		    <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
 		    <c:if test="${!empty user.status}">
-		    <br/><span class="ss_smallprint ss_italic" style="padding-left:20px;">${user.status}</span>
+		    <br/><span class="ss_status">${user.status}</span>
 		    </c:if>
 		  </li>
 		  </div><!-- end of ss_para -->

@@ -42,7 +42,7 @@
     </c:if>
     </td></tr>
     <c:if test="${!empty user.status}">
-    <tr><td><div id="ss_hints" ><em>${user.status}</em></div>
+    <tr><td><div id="ss_im_status" class="ss_im_status_active">Status:</div><em><div id="ss_im_status">${user.status}</em></div>
     </td></tr>
     </c:if>
     </tbody></table>

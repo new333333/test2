@@ -35,9 +35,8 @@
 </c:if>
 <c:if test="${!empty ss_whatsHot}">
 <div id="ss_para">
-<div id="ss_today">
-<div id="ss_hints"><em>This is What's Hot!</em></div>
 <div id="ss_hot_para">
+<div id="ss_hints"><em>This is What's Hot!</em></div>
   <c:forEach var="entry" items="${ss_whatsHot}">
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
     <li>
@@ -70,7 +69,7 @@
     	<a href="javascript: ;"
 			onClick="return ss_gotoPermalink('${entry.parentBinder.id}', '${entry.parentBinder.id}', 'folder', '${ss_namespace}', 'yes');"
 			><span>${entry.parentBinder.title} (${entry.parentBinder.parentBinder.title})</span></a>
-	  </span>
+	  </span>&nbsp;<images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
 	  <c:if test="${!empty entry.description}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 
@@ -80,7 +79,7 @@
 	
     </li><br/>
   </c:forEach>
-	</div><!-- end of para -->
-    </div><!-- end of today -->
-    </div><!-- end of ss_para -->
+	</div><!-- end of  ss_para -->
+    </div><!-- ss_hot_para -->
+
 </c:if>
