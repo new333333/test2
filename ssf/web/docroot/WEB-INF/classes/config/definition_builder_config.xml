@@ -75,7 +75,7 @@
 	
 	
 <!-- Items -->
-	<item name="title" caption="__title" type="data" canBeDeleted="false" 
+	<item name="title" caption="__title" type="data" canBeDeleted="true" 
 		multipleAllowed="false" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
@@ -208,7 +208,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
 		</jsps>
 	</item>
-	<item name="entryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false" display="form">
+	<item name="entryFormForm" caption="__form" canBeDeleted="true" multipleAllowed="false" display="form">
 		<properties>
 			<property name="name" caption="__form_name" type="text" characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$" 
 				value="form1" setAttribute="formName"/>
