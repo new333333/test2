@@ -37,7 +37,7 @@
 <div id="ss_para">
   <c:forEach var="activity" items="${ss_activities}">
   
-    <li>
+    <li class="ss_activity">
 	  <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				      value="${activity.date}" type="both" 
 					  timeStyle="short" dateStyle="short" /><br/>

@@ -36,7 +36,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 /* CSS Document - container for navigation and search */
 	
-
+	/*WRAPPER*/
+#ss_top_nav_wrapper{
+	width: 100%;
+	background-color:#D8D8D8;
+	display: table;
+	border-color:#CCCCCC;
+	border: 1px;
+	color: #CCCCCC;
+	}
+	
 	/* COLUMN CONTAINER */
 #ss_dashboard_content {
 	position:relative; /* This fixes the IE7 overflow hidden bug */
@@ -67,7 +76,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	right: 20%;
 	/* width of the right column */
 	/* Need to change this to change background color */
-	background-color: #EFEFEF;
+	background-color: #FFFFFF;
 	}
 .ss_tricolumn .ss_colleft {
 	right:20%;				/* placement from right of the middle column */
@@ -83,6 +92,96 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_tricolumn .ss_col3 {
 	width:18%;				/* Width of right column content (column width minus padding on either side) */
 	left:45%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
+	}
+	/* NAVIGATION BUTTONS -MOVE */	
+
+#ss_top_nav_button{
+	position:relative;
+	display:block;
+	height:16px;
+	background-color:#A7A9AC;
+	border:solid;
+	padding-top:6px;	
+	}
+#ss_top_nav_buttontwo a {
+	font-family:  Arial, sans-serif;
+	font-size: 10px;
+	background: #8B9BBA;
+	color: #FFF!important;
+	display: block;
+	font-weight: bold;
+	letter-spacing: 0px;
+}
+#ss_top_nav_buttontwo ul{
+	margin:0px;
+	padding:0px;
+	padding-left:10px;
+	list-style-type:none;
+	width:auto;
+	}
+#ss_top_nav_buttontwo ul li{
+	display:block;
+	float:left;
+	margin:6px 3px 0px 0px;
+	}
+#ss_top_nav_buttontwo ul li a{
+	display:block;
+	float:left;
+	color:#333;
+	border-style: solid;
+	border-color: white;
+	border-width: .01em;
+	padding:5px 15px 0 15px;
+	height:16px;
+	}
+#ss_top_nav_buttontwo ul li a:hover{
+	color: #FFF;
+	background-color: #CCC;
+	border-style: solid;
+	border-color: #FFF;
+	border-width: .01em;
+	}	
+#ss_top_nav_buttontwo ul li a.current{	
+	color:#333;
+	background-color: #B2CBE7;
+	border-style: solid;
+	border-color: #FFF;
+	border-width: .01em;
+	}
+#ss_top_nav_view{					/* "buttons" for portal and expanded view */
+	position:relative;
+	display:inline;
+	height:16px;
+	padding-top:6px;	
+	}
+#ss_top_nav_view a {
+	font-family:  Arial, sans-serif;
+	font-size: 10px;
+	letter-spacing: 0px;
+}
+#ss_top_nav_view ul{
+	margin:0px;
+	padding:0px;
+	list-style-type:none;
+	width:auto;
+	}
+#ss_top_nav_view ul li{
+	display:inline;
+	margin:6px 3px 0px 0px;
+	width:100%;
+	}
+#ss_top_nav_view ul li a{
+	float:left;
+	color:#333;
+	padding:5px 15px 0px 15px;
+	height:16px;
+	}
+#ss_top_nav_view ul li a:hover{
+	color: #EF2121!important;
+	}	
+	
+#ss_top_nav_view ul li a.current{	
+	color:#526394!important;
 	}
 	
 div.ss_canvas {
@@ -135,7 +234,12 @@ div.ss_canvas {
 	background-image: url("<html:rootPath/>images/pics/tracking20x16.png");
 	background-repeat: no-repeat;
 	background-position: 95% center;
-	}				
+	}	
+.ss_recentfolder_img {
+	background-image: url("<html:rootPath/>images/pics/folder_blue_recent.png");
+	background-repeat: no-repeat;
+	background-position: 95% center;
+	}			
 /* BOX STYLES*/	
 
 #ss_Box{
@@ -146,16 +250,15 @@ div.ss_canvas {
 #ss_networkupdates{
 	padding: 0;
 	margin: 2% 0 2% 0;
-	color:#333333;
+	color:#444444;
 	}
 #ss_shared{
 	margin: 1% 0 5% 0;
 	color:#444444;
-	background-color:#FFFFFF;
-	line-height:1.25em;
+	line-height:1.6em;
 	}
 .ss_shared_para {
-	line-height:1.25em;
+	line-height:1.6em;
 	padding-top:5px;
 	padding-left:1%;
 	}
@@ -177,7 +280,7 @@ div.ss_canvas {
 	}
 #ss_tasks_para {
 	line-height:1.6em;
-	padding-top:5px;
+	padding:5px 0 0 15px;
 	}
 #ss_tasks_para .ss_link_1 a {
 	text-decoration:underline!important;
@@ -190,9 +293,8 @@ div.ss_canvas {
 	}
 #ss_tasks_para {
 	list-style-type: square!important;
-	padding-top:3px;
-	padding-bottom:3px;
-	border-bottom:1px dotted #666666;
+	padding-top:5px;
+
 	}
 	/*TRACKED ITEMS*/
 #ss_trackedItems{
@@ -200,26 +302,39 @@ div.ss_canvas {
 	color:#444444;
 	}
 #ss_trackedPeople{
-	padding: 0;
-	margin: 1% 0 5% 0;
 	color:#444444;
 	background-color:#CCD2E3;
 	line-height: 1.6em;
 	}
 #ss_hints{
 	font-size: 11px;
-	font-style: italic;
-	padding-left:2px;
-	line-height:14px;
+	line-height: 13px;
+	padding-right: 2px;
 	padding-bottom:5px;
+	color:#1176D4;
+	margin-right: 5px;
+	margin-bottom: 10px;
+	}
+#ss_im_status{
+	font-size: 11px;
+	line-height: 13px;
+	padding-left:4px;
+	padding-bottom:1px;
+	border: 1px dotted #666666;
 	color:#555555;
-	}		
+	background: #FFFFFF;
+	}
+.ss_im_status_active{
+	font-weight: bold;
+	background: #FFFBD6!important;
+	
+
+	}					
 	/*CALENDAR*/
 #ss_calendar{
 	padding: 0;
 	margin: 1% 0 5% 0;
 	color:#444444;
-	background-color:#ffffff;
 	padding: 0.5% 0 0px;
 	color: #666666;
 	line-height: 1.5em;
@@ -289,7 +404,7 @@ div.ss_canvas {
 	}
 	/*CALENDAR*/
 #ss_cal_para{
-	padding-top:5px;
+	padding: 5px 0 0 15px;
 	}
 #ss_cal_para li{
 	list-style-type: square;
@@ -310,7 +425,8 @@ div.ss_canvas {
 	/*MY DOCUMENTS*/
 #ss_mydocs_para {
 	line-height:1.6em;
-	padding-top:5px;
+	padding:5px 0 0 15px;
+	
 	}
 #ss_mydocs_para li{
 	list-style-type: square;
@@ -330,8 +446,7 @@ div.ss_canvas {
 	/* WHATS HOT */
 #ss_whatshot{
 	margin: 1% 0 5% 0;
-	background-color:#FFFFFF;
-	padding: 0% 0 1% 5px;
+	padding: 0% 0 1% 0;
 	color: #666666;
 	line-height: 1.6em;
 	}
@@ -341,28 +456,31 @@ div.ss_canvas {
 	}
 #ss_hot_para li{
 	list-style-type: square;	
-	padding-bottom:3px;
-	border-bottom:1px dotted #0C4E84;	
-	}
+	border-bottom:1px dotted #0C4E84;
+	margin:0pt 0pt 0pt 15px;
+	}	
+	
 	/* SURVEY*/
 #ss_survey{
 	margin: 1% 0 5% 0;
 	color:#444444;
 	border:1px solid #A7A9AC;
-	background-color:#ffffff;
 	}
 	/* NOTES */
 #ss_notes{
 	margin: 1% 0 5% 0;
 	color:#444444;
 	border:1px solid #A7A9AC;
-	background-color:#ffffff;
 	}
 	/* BOOKMARKS */
 #ss_bookmarks{
 	margin: 1% 0 5% 0;
 	color:#444444;
-	background-color:#ffffff;
+	}
+	/* ACTIVITIES */
+#ss_activity{
+	margin: 1% 0 5% 0;
+	color:#444444;
 	}
 	/* WHATS NEW */
 #ss_whatsnew{
@@ -374,7 +492,7 @@ div.ss_canvas {
 	margin: 1% 0 5% 0;
 	color:#444444;
 	border:1px solid #A7A9AC;
-	background-color:#ffffff;
+
 	}
 	/* EMAIL */
 #ss_email{
@@ -396,13 +514,15 @@ div.ss_canvas {
 	font-weight: 400;
 	color: #333;
 	}
+.ss_title_im
+	background: #FFFFFF;
+	}	
 #ss_subtitle{
 	font-size:14px;
 	color:#555555;
 	padding: 0.5% 0 1% 6px;
 	}
 
-	
 /*  BOX TITLES */
 .ss_pt_title{
 	color: #000000;
@@ -436,8 +556,13 @@ div.ss_canvas {
 	padding:0 3px 0 3px;
 	}
 /* BACKGROUND COLORS */	
-.ss_paraC                     {
+.ss_paraC{
 	background-color:#DEE7EE;
+	padding-left: 15px;	
+	}
+.ss_paraD{                    
+	background-color:#DEE7EE;
+	padding-bottom: 15px;
 	}	
 /* TIMEBLOCK STYLES */	
 #ss_today {
@@ -472,16 +597,20 @@ div.ss_canvas {
 	line-height: 12px;
 	padding: 0;
 	}
-.ss_status						/* to use when need to display twitter status of person */
-{
+	
+/* to use when need to display twitter status of person */
+.ss_status{						
 	font-style: italic;
-	padding: 0 0 0 15px;
+	font-size: 11px;
+	line-height: 1.6em;
+	padding: 5px 0 15px 20px;
 }
 #ss_para {
-	margin-top: 1%;
 	border: 1px dotted #cccccc;
 	padding-left: 15px;
+	padding-bottom: 15px;
 	color: #555555;
+	margin-top: 1%;
 	}
 #ss_para ul{
 	color:#555555;
@@ -530,9 +659,15 @@ div.ss_canvas {
 	}
 .ss_link_4, .ss_link_4 span{
 	text-decoration: none!important;
-	color:#555555!important;
+	color:#999999!important;
 	font-size:9px!important;
 	padding-left:6px;
+	}
+.ss_link_5, .ss_link_5 span	{
+	text-decoration: underline!important;
+	color:#4AAA42!important;
+	font-size:10px!important;
+	font-height:14px;
 	}			
 /* ============ End link styles =========================== */		
 
@@ -572,12 +707,11 @@ div.ss_canvas {
 #ss_tabsC {
     float:left;
     width:100%;
-    background:#D4DAE7;
+    background:#C9CFE0;
     font-size:93%;
     line-height:normal;
     border-bottom: 1px solid #666;
     border-right: 10px solid #EFEFEF;
-
       }
  #ss_tabsC ul {
     margin:0;
@@ -620,9 +754,7 @@ div.ss_canvas {
         }
 #ss_tabsC .ss_tabsCCurrent a span {
      background-position:100% -42px;
-        }
-	
-	
+        }	
 /* FOOTER STYLES*/
 
 #ss_footer{
@@ -655,7 +787,6 @@ div.ss_canvas {
 	padding: 0;
 	margin: 1% 0 2% 2%;
 	color:#333333;
-	background-color:#FFF;
 	border:1px solid #A7A9AC;
 	}
 #ss_task_list p{
@@ -694,6 +825,6 @@ div.ss_canvas {
 	visibility:hidden;
 	border:1px solid black;
 	padding:10px;
-	background-color:#ffffff;
+
 }
 

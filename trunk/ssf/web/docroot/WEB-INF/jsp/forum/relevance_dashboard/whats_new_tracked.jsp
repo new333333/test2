@@ -78,7 +78,7 @@
 				title="${path}"
 				><span>${title}</span></a>
 		</c:if>
-	  </span>&nbsp;<img src="<html:rootPath/>images/pics/folder_icons16x16.png" alt="folder" width="16" height="16" hspace="2" border="0" align="absmiddle" />
+	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
 	  <c:if test="${!empty entry._desc}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 

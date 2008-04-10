@@ -44,7 +44,7 @@
 	
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.documents"/></div>
+		<div id="ss_title" class="ss_pt_title ss_blue ss_recentfolder_image"><ssf:nlt tag="relevance.documents"/></div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
 	</ssf:canvas>

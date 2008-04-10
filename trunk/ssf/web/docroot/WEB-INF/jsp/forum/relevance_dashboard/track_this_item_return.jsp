@@ -45,7 +45,7 @@
 	</taconite-replace>
 	<taconite-replace contextNodeID="ss_track_this_ok${ss_namespace}" parseInBrowser="true">
 		<div id="ss_track_this_ok${ss_namespace}" 
-		  style="position:absolute;visibility:hidden; display:none;border:1px solid black;margin:10px;padding:10px;background-color:#ffffff;">
+		  style="position:absolute;visibility:hidden; display:none;">
 		  <c:if test="${!empty ssEntry}">
 		    <span>
 		      <ssf:nlt tag="relevance.nowTracking">
