@@ -49,7 +49,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width:30%;
 	min-width:335px;
 	padding-left:10px;
-	padding-top:auto;
 	vertical-align:top;
 	display:inline;
 
@@ -109,7 +108,6 @@ a.ss_STButton {
 #ss_top_nav_buttontwo{
 	height:16px;
 	padding-top:0px;	/* adding in the following to make right sided div */
-	float:top;
 	vertical-align:top;
 	margin-left:40%;	
 	width:100%;
