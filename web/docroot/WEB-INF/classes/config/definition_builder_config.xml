@@ -63,7 +63,7 @@
 
 	
 <!-- Items -->
-	<item name="title" caption="__title" type="data" canBeDeleted="false" 
+	<item name="title" caption="__title" type="data" canBeDeleted="true" 
 		multipleAllowed="false" >
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
@@ -186,7 +186,7 @@
 			<jsp name="form" value="/WEB-INF/jsp/definition_elements/entry_form.jsp" />
 		</jsps>
 	</item>
-	<item name="entryFormForm" caption="__form" canBeDeleted="false" multipleAllowed="false">
+	<item name="entryFormForm" caption="__form" canBeDeleted="true" multipleAllowed="false">
 		<properties>
 			<property name="name" caption="__form_name" type="text" characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" 
 				value="form1" setAttribute="formName"/>
@@ -728,7 +728,7 @@
 	
 <!-- Profile entry form -->
 
-	<item name="profileEntryFormForm" caption="__form" canBeDeleted="false" 
+	<item name="profileEntryFormForm" caption="__form" canBeDeleted="true" 
 		  multipleAllowed="false">
 		<properties>
 			<property name="name" caption="__form_name" type="text" 
