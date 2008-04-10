@@ -72,7 +72,7 @@
 
 	} else {
         %>
-        It's <%= itemType %>, baby!
+        Unknown definition element: <%= itemType %>
         <%
 	}
 	
