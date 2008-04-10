@@ -117,7 +117,6 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		return this.facade.addReply(binderId, parentId, definitionId, inputDataAsXML, attachedFileName);
 	}
 
-	/*
 	
 	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords) {
 		return this.facade.getAllPrincipalsAsXML(firstRecord, maxRecords);
