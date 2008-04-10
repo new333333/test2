@@ -48,7 +48,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	float:left;
 	width:30%;
 	min-width:335px;
-	padding-left:10px;
+	padding-left:5px;
 	vertical-align:top;
 	display:inline;
 
@@ -108,9 +108,10 @@ a.ss_STButton {
 #ss_top_nav_buttontwo{
 	height:16px;
 	padding-top:0px;	/* adding in the following to make right sided div */
-	vertical-align:top;
-	margin-left:40%;	
-	width:100%;
+	float:right;
+	vertical-align:top;	
+	margin-right:5px;
+
 	}
 
 #ss_top_nav_buttontwo a {
@@ -132,7 +133,7 @@ a.ss_STButton {
 #ss_top_nav_buttontwo ul li{
 	display:inline;
 	float:left;
-	margin:0px 3px 0px 0px;
+	margin:0px 2px 0px 0px;
 	}
 #ss_top_nav_buttontwo ul li a{
 	float:left;
@@ -141,7 +142,7 @@ a.ss_STButton {
 	border-style: solid;
 	border-color: white;
 	border-width: .01em;
-	padding:5px 15px 0px 15px;
+	padding:5px 5px 0px 5px;
 	height:16px;
 	}
 #ss_top_nav_buttontwo ul li a:hover{
@@ -301,27 +302,31 @@ a.ss_STButton {
 		width:100%;
 		}
 		
-	/* FULL MENU BUTTON */	
+	/* FULL MENU BUTTON */		
+	
+a.ss_fullMenuButton:focus, a.ss_fullMenuButton:hover {
+  	background-image:url("<html:rootPath/>images/pics/fullmenubkg.png")!important;   
+	background-position: left -20px;
+	background-repeat:no-repeat;
+  color: ${ss_linkbutton_link_hover_color};
+  font-size: 9px;       /* old sizing ${ss_style_font_fineprint}; */
+  padding: 1px 4px 1px 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  height:20px;
+}
+a.ss_fullMenuButton {
+  	background-image:url("<html:rootPath/>images/pics/fullmenubkg.png");   
+	background-position: top left;
+	background-repeat:no-repeat;
+  color: #333333!important;
+  font-size: 9px;       /* old sizing ${ss_style_font_fineprint}; */
+  padding: 1px 4px 1px 3px;
+  cursor: pointer;
+  white-space: nowrap;
+  height:20px;
+}
 		
-a.ss_fullMenuButton img {
-	width: 15px;
-	height: 20px;
-	margin: 0px;
-	padding: 0px;
-	border: 0px;
-	vertical-align: middle;
-}
-
-a.ss_fullMenuButton img, a.ss_fullMenuButton:link img , a.ss_fullMenuButton:focus img, a.ss_fullMenuButton:visited img { 
-	background: transparent url(<html:rootPath/>images/pics/fullmenubkg.png) no-repeat top left; 
-}
-
-a.ss_fullMenuButton:hover img {
-    background-position:  left -20px; 
-<ssf:ifaccessible>
-  outline: dotted 1px gray;
-</ssf:ifaccessible>  
-}		
 		
 	/* LEGACY GLOBAL TOOLBAR CSS */				
 

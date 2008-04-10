@@ -93,6 +93,10 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 		if (divObj != null) {
 			divObj.className = "ss_pseudoPortal"
 		}
+		var divObj = self.document.getElementById('ss_logobar${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.className = "ss_5col1 ss_logo1"
+		}
 	}
 }
 
@@ -154,8 +158,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   <div class="ss_5colmid">
   <div class="ss_5colleftctr">
     <div class="ss_5colleft">
-      <div class="ss_5col1 ss_logo1">
+      <div id="ss_logobar${renderResponse.namespace}" class="ss_5col1">
       <div id="ss_top_nav_view">
+
+<!-- Beginning of Find Bar:  Portal Full Screen Find People/Places/Search  -->      
         <ul>
     
      
@@ -323,7 +329,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 </ssf:ifaccessible>
       </div><!-- end of col4-->
       <div class="ss_5col5">
-      	<!-- Search -->
+
+<!-- Beginning of Search Buttons -->
 <ssf:ifnotaccessible>
 	<div class="ss_global_toolbar_quick">
 	
@@ -423,7 +430,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   </div><!-- end of colmidright-->
 </div>   <!-- end of colmask fivecol-->
 <div class="ss_darkline"></div>
- <div class="ss_clear_float"></div> 
+
+<div align="right">
 <div id="ss_statusArea" class="ss_global_toolbar_maximized"><!-- beginning of other rows-->  
 
 
@@ -494,8 +502,7 @@ ss_statusCurrent = "${ssUser.status}";
 </li>
 
 </div><!-- end of status line area -->
-<div >
-<div id="ss_top_nav_buttontwo" align="right">
+<div id="ss_top_nav_buttontwo">
         <ul>
           
           <li>
@@ -536,14 +543,17 @@ ss_statusCurrent = "${ssUser.status}";
 		      style="visibility:hidden;margin:20px 0px 0px -150px;padding:0px;"
 		      ></div>
           </li>
-          
-          <li><a title="<ssf:nlt tag="alt.fullMenu"/>" 
-					  href="#" ><img 
-					  src="<html:rootPath/>images/pics/1pix.gif" /><ssf:nlt tag="relevance.fullMenu"/></a>
-			</li>        
+          <li>
+			<a style="display:inline;" class="ss_fullMenuButton ss_smallprint" 
+  			href="#" 
+			title="<ssf:nlt tag="alt.fullMenu"/>">
+			<span class="ss_smallprint"><ssf:nlt tag="alt.fullMenu"/></span>
+			</a>
+			</li>
+                 
         </ul>
       </div>
- </div><!--end align right -->
+ </div>
       <div class="ss_clear_float"></div>
 
 
@@ -650,7 +660,7 @@ ss_statusCurrent = "${ssUser.status}";
 </div>
 </ssf:popupPane>
 </div>
-<!-- End of favorites pane -->
+<!-- End of myteams pane -->
 <c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes')}" >
 <!-- iframe div -->
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
