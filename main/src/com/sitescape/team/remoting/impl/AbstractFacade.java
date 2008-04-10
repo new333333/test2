@@ -27,13 +27,16 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.remoting.impl;
+import java.io.StringBufferInputStream;
 
 import java.io.IOException;
-import java.io.StringBufferInputStream;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.HashSet;
 import java.util.SortedSet;
 
 import net.fortuna.ical4j.data.ParserException;
@@ -60,6 +63,7 @@ import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.security.function.Function;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.ws.ElementBuilder;
@@ -78,6 +82,7 @@ import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.tree.WebSvcTreeHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.team.util.LongIdUtil;
 
 /**
  * POJO implementation of Facade interface.
@@ -594,6 +599,48 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	}
 	public void addEntryWorkflow(long binderId, long entryId, String definitionId, String startState) {
 		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, startState);
+	}
+	public void setFunctionMembership(long binderId, String inputDataAsXml) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		List<Function> functions = getAdminModule().getFunctions();
+		Document doc = getDocument(inputDataAsXml);
+		Map wfms = new HashMap();
+		List<Element> wfmElements = doc.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP);
+		for (Element wfmElement:wfmElements) {
+			 String functionName = XmlUtils.getProperty(wfmElement, ObjectKeys.XTAG_WA_FUNCTION_NAME);
+			 Function func = null;
+			 for (Function f:functions) {
+				 if (f.getName().equals(functionName)) {
+					 func = f;
+					 break;
+				 }
+			 }
+			 if (func == null) continue;
+			 List<Element> nameElements = wfmElement.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_PROPERTY + "[@name='" + ObjectKeys.XTAG_WA_MEMBER_NAME + "']");
+			 Set<String> names = new HashSet();
+			 for (Element e:nameElements) {
+				 names.add(e.getTextTrim());				 
+			 }
+			 Collection<Principal> principals = getProfileModule().getPrincipalsByName(names);
+			 Set<Long>ids = new HashSet();
+			 for (Principal p:principals) {
+				 ids.add(p.getId());
+			 }
+			 ids.addAll(LongIdUtil.getIdsAsLongSet(XmlUtils.getProperty(wfmElement, ObjectKeys.XTAG_WA_MEMBERS), ","));
+
+			 if (ids.isEmpty()) continue;
+			 wfms.put(func.getId(), ids);
+		}
+		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, false); 
+		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
+	}
+	public void setFunctionMembershipInherited(long binderId, boolean inherit) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, inherit); 		
+	}
+	public void setOwner(long binderId, long userId) {
+		Binder binder = getBinderModule().getBinder(binderId);
+		getAdminModule().setWorkAreaOwner(binder, userId, false); 		
 	}
 	
 }

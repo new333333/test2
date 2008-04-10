@@ -64,6 +64,15 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public void setDefinitions(long binderId, List<String>definitionIds, List<String>workflowAssociations) {
 		this.facade.setDefinitions(binderId, definitionIds, workflowAssociations);
 	}
+	public void setFunctionMembership(long binderId, String inputDataAsXml) {
+		this.facade.setFunctionMembership(binderId, inputDataAsXml);
+	}
+	public void setFunctionMembershipInherited(long binderId, boolean inherit) {
+		this.facade.setFunctionMembershipInherited(binderId, inherit);
+	}
+	public void setOwner(long binderId, long userId) {
+		this.facade.setOwner(binderId, userId);
+	}
 	public long addFolder(long parentBinderId, long binderConfigId, String title) {
 		return this.facade.addFolder(parentBinderId, binderConfigId, title);
 	}
