@@ -79,7 +79,7 @@ public interface Facade {
 	
 	public long addReply(long folderId, long parentEntryId, String definitionId, String inputDataAsXML, String attachedFileName);
 
-	/*
+
 	//
 	// Profile operations
 	//
