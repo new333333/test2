@@ -26,7 +26,7 @@ var TinyMCE_ssWikiLinkPlugin = {
 	getControlHTML : function(cn) {
 		switch (cn) {
 			case "ss_wikilink":
-				return tinyMCE.getButtonHTML(cn, 'lang_ss_wikilink_desc', '{$pluginurl}/images/wikilink.gif', 'mce_ssWikiLink');
+				return tinyMCE.getButtonHTML(cn, 'lang_wikilink_desc', '{$pluginurl}/images/wikilink.gif', 'mce_ssWikiLink');
 		}
 
 		return "";

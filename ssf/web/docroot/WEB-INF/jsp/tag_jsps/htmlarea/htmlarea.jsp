@@ -91,6 +91,10 @@ tinyMCE.init(
   theme_advanced_buttons3_add: "tablecontrols", 
   theme_advanced_resizing_use_cookie : false});
 
+tinyMCE.addToLang('',{
+wikilink_desc : '<ssf:nlt tag="editor.wikilink.title" text="Insert a link to another page"/>'
+});
+
 var ss_imageUploadError1 = "<ssf:nlt tag="imageUpload.badFile"/>"
 var ss_imageUploadUrl = "<ssf:url 
     adapter="true" 
