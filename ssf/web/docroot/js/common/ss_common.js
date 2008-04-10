@@ -5764,8 +5764,8 @@ function ss_showHideSidebar(namespace) {
 				tdObj.className = '';
 				sidebarShow.style.display = 'none'
 				sidebarHide.style.display = 'block'
-				sidebarVisibility = "none"
    		}).play();
+   		sidebarVisibility = "none";
 	} else {
 		//Show it
 		tdObj.className = 'ss_view_sidebar';
