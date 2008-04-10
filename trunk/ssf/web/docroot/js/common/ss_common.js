@@ -5066,7 +5066,7 @@ function ss_showSavedQueriesList(relObj, divId, resultUrl) {
 				txt += "</ul>";
 				divObj.innerHTML = txt;
 
-				ss_placeOnScreen(divId, relObj, 9, 9);
+				ss_placeOnScreen(divId, relObj, 12, -128);
 				dojo.html.setDisplay(divId, "block");
 				dojo.html.setVisibility(divId, "visible");
 	            dojo.html.setOpacity(divId,0);
