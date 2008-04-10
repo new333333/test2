@@ -88,6 +88,13 @@ public interface ProfileModule {
 	public SortedSet<Group> getGroups(Collection<Long> groupIds) throws AccessControlException;
  	public SortedSet<Principal> getPrincipals(Collection<Long> ids, Long zoneId);
     public Map getPrincipals(Long binderId, Map options) throws AccessControlException;
+	/**
+	 * Load principals using name
+	 * @param names
+	 * @return
+	 * @throws AccessControlException
+	 */
+	public Collection<Principal> getPrincipalsByName(Collection<String> names) throws AccessControlException;
 	public ProfileBinder getProfileBinder();
     public UserProperties getUserProperties(Long userId);
     public UserProperties getUserProperties(Long userId, Long folderId);

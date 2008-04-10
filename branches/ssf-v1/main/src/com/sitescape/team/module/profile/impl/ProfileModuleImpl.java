@@ -338,7 +338,14 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
  		result.addAll(getProfileDao().loadPrincipals(ids, zoneId, false));
  		return result;
 	}
-    
+	public Collection<Principal> getPrincipalsByName(Collection<String> names) throws AccessControlException {
+		Map params = new HashMap();
+		params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());
+		params.put("name", names);
+		return getCoreDao().loadObjects("from com.sitescape.team.domain.Principal where zoneId=:zoneId and name in (:name)", params);
+
+	}
+
     //***********************************************************************************************************	
     //NO transaction
     public Long addUser(Long binderId, String definitionId, InputDataAccessor inputData, Map fileItems) 
