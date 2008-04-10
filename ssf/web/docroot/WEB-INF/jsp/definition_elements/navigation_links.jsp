@@ -63,7 +63,7 @@
   </c:if>
     title="<ssf:nlt tag="helpSpot.breadCrumbs"/>"></ssHelpSpot>
 
-<ul style="margin-left:-15px;">
+<ul>
 <c:if test="${!empty ssDefinitionEntry.parentBinder}">
 <c:set var="parentBinder" value="${ssDefinitionEntry.parentBinder}"/>
 <jsp:useBean id="parentBinder" type="java.lang.Object" />
@@ -78,7 +78,7 @@
 		Binder nextBinder = (Binder) parentTree.pop();
 %>
 <c:set var="nextBinder" value="<%= nextBinder %>"/>
-<li style="float:left;">
+<li>
 <c:if test="${empty ssNavigationLinkTree[nextBinder.id]}">
 <a
 <c:if test="${nextBinder.entityType == 'folder'}">
@@ -113,7 +113,7 @@
 </div>
 </c:if>
 </li>
-<li style="float:left; padding-top:2px;">&nbsp;&nbsp;//&nbsp;&nbsp;</li>
+<li style="padding-top:11px;">//</li>
 <%
 	}
 %>
@@ -132,7 +132,7 @@
 		FolderEntry nextEntry = (FolderEntry) parentEntryTree.pop();
 %>
 <c:set var="nextEntry" value="<%= nextEntry %>"/>
-<li style="float:left;">
+<li>
 <a
   href="<ssf:url 
   folderId="${ssDefinitionEntry.parentBinder.id}" 
@@ -146,13 +146,13 @@
 <c:out value="${nextEntry.title}" /><img border="0" <ssf:alt/>
   style="width:1px;height:14px;" src="<html:imagesPath/>pics/1pix.gif"/></a>
 </li>
-<li style="float:left; padding-top:2px;">&nbsp;&nbsp;//&nbsp;&nbsp;</li>
+<li style="padding-top:11px;">//</li>
 <%
 	}
 %>
 </c:if>
 
-<li style="float:left;">
+<li>
 <c:if test="${ssDefinitionEntry.entityType == 'folderEntry' || empty ssNavigationLinkTree[ssDefinitionEntry.id]}">
 <a class="ss_bold"
 <c:if test="${ssDefinitionEntry.entityType == 'folderEntry'}">

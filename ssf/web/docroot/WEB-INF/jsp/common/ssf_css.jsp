@@ -2020,6 +2020,14 @@ span.ss_tabs_title {
 	padding:0px 5px 0px 0px;
 	font-size: ${ss_style_font_smallprint};
 }
+.ss_breadcrumb ul{
+	margin-left:-15px;
+}
+.ss_breadcrumb li{
+	float:left;
+	margin:auto;
+	padding:0px 5px 0 5px; 
+}  
 a.ss_breadcrumb {
 	font-size: ${ss_style_font_smallprint};
 }
@@ -4198,6 +4206,7 @@ table.ss_milestones_list td.ss_overdue, table.ss_milestones_list td.ss_overdue a
 .ss_navbarPopupPane ul, .ss_navbarPopupPane li {
 	margin: 0px;
 	padding: 0px;
+	list-style: none;
 	
 }
 
