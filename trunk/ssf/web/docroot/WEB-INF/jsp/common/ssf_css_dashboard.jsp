@@ -93,97 +93,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width:18%;				/* Width of right column content (column width minus padding on either side) */
 	left:45%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 	}
-	/* NAVIGATION BUTTONS -MOVE */	
 
-#ss_top_nav_button{
-	position:relative;
-	display:block;
-	height:16px;
-	background-color:#A7A9AC;
-	border:solid;
-	padding-top:6px;	
-	}
-#ss_top_nav_buttontwo a {
-	font-family:  Arial, sans-serif;
-	font-size: 10px;
-	background: #8B9BBA;
-	color: #FFF!important;
-	display: block;
-	font-weight: bold;
-	letter-spacing: 0px;
-}
-#ss_top_nav_buttontwo ul{
-	margin:0px;
-	padding:0px;
-	padding-left:10px;
-	list-style-type:none;
-	width:auto;
-	}
-#ss_top_nav_buttontwo ul li{
-	display:block;
-	float:left;
-	margin:6px 3px 0px 0px;
-	}
-#ss_top_nav_buttontwo ul li a{
-	display:block;
-	float:left;
-	color:#333;
-	border-style: solid;
-	border-color: white;
-	border-width: .01em;
-	padding:5px 15px 0 15px;
-	height:16px;
-	}
-#ss_top_nav_buttontwo ul li a:hover{
-	color: #FFF;
-	background-color: #CCC;
-	border-style: solid;
-	border-color: #FFF;
-	border-width: .01em;
-	}	
-#ss_top_nav_buttontwo ul li a.current{	
-	color:#333;
-	background-color: #B2CBE7;
-	border-style: solid;
-	border-color: #FFF;
-	border-width: .01em;
-	}
-#ss_top_nav_view{					/* "buttons" for portal and expanded view */
-	position:relative;
-	display:inline;
-	height:16px;
-	padding-top:6px;	
-	}
-#ss_top_nav_view a {
-	font-family:  Arial, sans-serif;
-	font-size: 10px;
-	letter-spacing: 0px;
-}
-#ss_top_nav_view ul{
-	margin:0px;
-	padding:0px;
-	list-style-type:none;
-	width:auto;
-	}
-#ss_top_nav_view ul li{
-	display:inline;
-	margin:6px 3px 0px 0px;
-	width:100%;
-	}
-#ss_top_nav_view ul li a{
-	float:left;
-	color:#333;
-	padding:5px 15px 0px 15px;
-	height:16px;
-	}
-#ss_top_nav_view ul li a:hover{
-	color: #EF2121!important;
-	}	
-	
-#ss_top_nav_view ul li a.current{	
-	color:#526394!important;
-	}
-	
 div.ss_canvas {
 	border-left: solid 1px ${ss_toolbar1_background_color};
 	border-right: solid 1px ${ss_toolbar1_background_color};
@@ -618,6 +528,7 @@ div.ss_canvas {
 #ss_para ul li{
 	list-style-type: square;
 	margin-left:-10px;
+
 	}
 	
 /* =========== LINK STYLES===================== */	

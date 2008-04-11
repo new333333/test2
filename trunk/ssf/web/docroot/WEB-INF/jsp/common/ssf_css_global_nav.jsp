@@ -316,7 +316,7 @@ a.ss_fullMenuButton:focus, a.ss_fullMenuButton:hover {
   height:20px;
 }
 a.ss_fullMenuButton {
-  	background-image:url("<html:rootPath/>images/pics/fullmenubkg.png");   
+  	background-image:url("<html:rootPath/>images/pics/fullmenubkg.png")!important;   
 	background-position: top left;
 	background-repeat:no-repeat;
   color: #333333!important;
