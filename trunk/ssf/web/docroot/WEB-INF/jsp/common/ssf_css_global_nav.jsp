@@ -79,34 +79,34 @@ a.ss_STButton:focus, a.ss_STButton:hover {
   	background-image:url("<html:rootPath/>images/pics/sharetrackbkg_grey.png")!important;   
 	background-position: 0px 0px;
 	background-repeat:no-repeat;
-  color: ${ss_linkbutton_link_hover_color};
-  font-family: ${ss_style_folder_view_font_family};
-  font-size: ${ss_style_font_fineprint};
-  padding: 1px 4px 1px 3px;
-  cursor: pointer;
-  white-space: nowrap;
-  width:35px;
-  height:16px;
+  	color: ${ss_linkbutton_link_hover_color};
+  	font-family: ${ss_style_folder_view_font_family};
+  	font-size: ${ss_style_font_fineprint};
+  	padding: 1px 2px 1px 3px;
+  	cursor: pointer;
+  	white-space: nowrap;
+  	width:35px;
+  	height:16px;
 }
 a.ss_STButton {
   	background-image:url("<html:rootPath/>images/pics/sharetrackbkg_blue.png");   
 	background-position: 0px 0px;
 	background-repeat:no-repeat;
-  color: #ffffff!important;
-  font-family: ${ss_style_folder_view_font_family};
-  font-size: ${ss_style_font_fineprint};
-  padding: 1px 4px 1px 3px;
-  cursor: pointer;
-  white-space: nowrap;
-  width:35px;
-  height:16px;
+  	color: #ffffff!important;
+  	font-family: ${ss_style_folder_view_font_family};
+  	font-size: ${ss_style_font_fineprint};
+  	padding: 1px 2px 1px 3px;
+  	cursor: pointer;
+  	white-space: nowrap;
+  	width:35px;
+  	height:16px;
 }
 		
 
 	/* NAVIGATION BUTTONS FOR MY WORKSPACE, MY TEAMS, FAVORITES */	
 
 #ss_top_nav_buttontwo{
-	height:16px;
+	height:14px;
 	padding-top:0px;	/* adding in the following to make right sided div */
 	float:right;
 	vertical-align:top;	
@@ -118,7 +118,6 @@ a.ss_STButton {
 	font-family:  Arial, sans-serif;
 	font-size: 9px;
 	color: #FFFFFF;
-	font-weight: bold;
 	letter-spacing: 0px;
 }
 #ss_top_nav_buttontwo ul{
@@ -133,24 +132,19 @@ a.ss_STButton {
 #ss_top_nav_buttontwo ul li{
 	display:inline;
 	float:left;
-	margin:0px 2px 0px 0px;
+	margin:0px 1px 0px 0px;
 	}
 #ss_top_nav_buttontwo ul li a{
 	float:left;
-	color:#FFFFFF;
-	background-color: #6B737B;
-	border-style: solid;
-	border-color: white;
-	border-width: .01em;
-	padding:5px 5px 0px 5px;
-	height:16px;
+	color:#FFF;
+	background-color: #CCCCCC;
+	padding:4px 10px 2px 10px;
+	height:14px;
 	}
 #ss_top_nav_buttontwo ul li a:hover{
-	color: #333333;
+	color: #333;
 	background-color: #CCC;
-	border-style: solid;
-	border-color: #FFF;
-	border-width: .01em;
+
 	}	
 	
 	/* NAVIGATION BUTTONS FOR PORTAL AND EXPANDED VIEW */		
@@ -158,7 +152,6 @@ a.ss_STButton {
 #ss_top_nav_view{					
 	position:relative;
 	display:inline;
-	text-align:left;
 	height:16px;
 	padding-top:5px;
 	margin-left:5px;	/* need to keep margin-left to push past logo */
@@ -176,7 +169,7 @@ a.ss_STButton {
 	}
 #ss_top_nav_view ul li{
 	display:inline;
-	padding:0px 2px 0px 0px;
+	padding:0px 0 0 40px;
 	width:100%;
 	}
 #ss_top_nav_view ul li a{
@@ -234,7 +227,7 @@ a.ss_STButton {
 	.ss_5col5 {
 		float:left;
 		position:relative;
-		padding:0px 0 1em 0;	/* no left and right padding on columns, we just make them narrower instead 
+		padding:3px 0 1em 0;	/* no left and right padding on columns, we just make them narrower instead 
 								only padding top and bottom is included here, make it whatever value you need */
 		overflow:hidden;
 	}
@@ -242,7 +235,7 @@ a.ss_STButton {
 	.ss_5col2,					
 	.ss_5col3,
 	.ss_5col4 {
-		padding-top:2px;		/* this lines up find divs with search div */
+		padding-top:5px;		/* this lines up find divs with search div */
 	}	
 	/* 5 Column settings */
 	.ss_fivecol {
@@ -269,24 +262,24 @@ a.ss_STButton {
 		left:70%;				/* 100% plus left padding of column */
 	}
 	.ss_fivecol .ss_5col2 {
-		width:12%;				/*  Width of find people column content (column width minus padding on either side) */
+		width:2%;				/*  Width of find people column content (column width minus padding on either side) */
 		left:70%;				/*  width of (right column) plus (center column left and right padding) plus (left column left padding) */
 		min-width:75px!important;
 	}
 	.ss_fivecol .ss_5col3 {
-		width:12%;				 			/* Width of find places column content (column width minus padding on either side) */
+		width:2%;				 			/* Width of find places column content (column width minus padding on either side) */
 		left:71%;				
 		min-width:75px!important;			/* Please make note of the brackets here:
 								(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 	}
 	.ss_fivecol .ss_5col4 {
-		width:12%;							/*  Width of find tags column content (column width minus padding on either side) */
+		width:2%;							/*  Width of find tags column content (column width minus padding on either side) */
 		left:72%;	
 		min-width:75px!important;			/* Please make note of the brackets here:
 								(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 	}
 	.ss_fivecol .ss_5col5 {
-		width:22%;				 			/* 	Width of right column content (column width minus padding on either side) */
+		width:25%;				 			/* 	Width of right column content (column width minus padding on either side) */
 		left:73%;	
 		min-width:150px!important;			/* Please make note of the brackets here:
 											(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
