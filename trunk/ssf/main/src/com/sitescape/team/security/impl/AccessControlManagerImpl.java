@@ -52,6 +52,7 @@ import com.sitescape.team.security.acl.AclContainer;
 import com.sitescape.team.security.acl.AclControlled;
 import com.sitescape.team.security.function.FunctionManager;
 import com.sitescape.team.security.function.OperationAccessControlException;
+import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaFunctionMembershipManager;
@@ -193,8 +194,16 @@ public class AccessControlManagerImpl implements AccessControlManager {
 	public void checkOperation(User user, WorkArea workArea, 
 			WorkAreaOperation workAreaOperation) 
     	throws AccessControlException {
-        if (!testOperation(user, workArea, workArea, workAreaOperation))
-        	throw new OperationAccessControlException(user.getName(), 
+        if (!testOperation(user, workArea, workArea, workAreaOperation)) {
+        	//Make sure the user is allowed to see the workarea at all
+        	if (!WorkAreaOperation.READ_ENTRIES.equals(workAreaOperation)) {
+        		throw new OperationAccessControlException(user.getName(), 
         			workAreaOperation.toString(), workArea.toString());
+        	} else {
+        		//This user shouldn't see anything about this workarea
+        		throw new OperationAccessControlExceptionNoName(user.getName(), 
+            			workAreaOperation.toString());
+        	}
+        }
     }
 }

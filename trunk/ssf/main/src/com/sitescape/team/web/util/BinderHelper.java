@@ -78,6 +78,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.TemplateBinder;
@@ -372,7 +373,19 @@ public class BinderHelper {
 		binderId = user.getWorkspaceId();
 		Binder binder = null;
 		if (binderId != null) {
-			binder = bs.getBinderModule().getBinder(binderId);
+			try {
+				binder = bs.getBinderModule().getBinder(binderId);
+			}
+			catch(AccessControlException e) {
+				if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					//Access is not allowed
+					throw e;
+				} else {
+					//Please log in
+					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
+				}
+			}
+			catch(NoBinderByTheIdException e) {}
 		}
 		if (binder != null) {
 			if (binder.getEntityType().name().equals(EntityType.folder.name()))
