@@ -967,6 +967,7 @@ public class WebKeys {
     public static final String VIEW_GUESTBOOK_SUMMARY="guestbook_summary/view";
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
     public static final String VIEW_IMPORT_TEMPLATE="administration/importTemplate";
+    public static final String VIEW_LOGIN_PLEASE="forum/login_please";
     public static final String VIEW_MOBILE="mobile/view";
     public static final String VIEW_MOBILE_EDIT="mobile/edit";
     public static final String VIEW_TASK_SUMMARY="task_summary/view";
