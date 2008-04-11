@@ -30,37 +30,11 @@
 %>
 <% //Event widget form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="java.util.Date" %>
-<%
-	Event initEvent = new Event();
 
-	//Get the formName of event being displayed
-	Element item = (Element) request.getAttribute("item");
-	Element nameProperty = (Element) item.selectSingleNode("properties/property[@name='name']");
-	String elementName = "event";
-	if (nameProperty != null) {
-		elementName = nameProperty.attributeValue("value", "event");
-	}
-	String formName = (String) request.getAttribute("formName");
-	String caption = (String) request.getAttribute("property_caption");
-	String hD = (String) request.getAttribute("property_hasDuration");
-	String hR = (String) request.getAttribute("property_hasRecurrence");
-	Boolean hasDur = new Boolean(hD);
-	Boolean hasRecur = new Boolean(hR);
-	if (caption == null) {caption = "";}
-	String required = (String) request.getAttribute("property_required");
-	Boolean req = Boolean.parseBoolean(required);
-	if (required == null) {required = "";}
-	if (required.equals("true")) {
-		required = "<span class=\"ss_required\">*</span>";
-	} else {
-		required = "";
-	}
-%>
 <div class="ss_entryContent">
-	<div class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></div>
-	<div id="<%= elementName %>_startError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.startDateError"/></span></div>
-	<div id="<%= elementName %>_endError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.endDateError"/></span></div>
+	<div class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></div>
+	<div id="${property_name}_startError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.startDateError"/></span></div>
+	<div id="${property_name}_endError" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="validation.endDateError"/></span></div>
 	<c:choose>
 		<c:when test="${!empty ssDefinitionEntry.customAttributes[property_name]}">
 			<c:set var="ev" value="${ssDefinitionEntry.customAttributes[property_name].value}" />	
@@ -69,11 +43,11 @@
 			<c:set var="ev" value="${ssInitialEvent}" />	
 		</c:when>	
 	</c:choose>
-
-	<ssf:eventeditor id="<%= elementName %>" 
-	         formName="<%= formName %>" 
+	<ssf:eventeditor id="${property_name}" 
+	         formName="${formName}" 
 	         initEvent="${ev}"
-	         required="<%= req %>"
-	         hasDuration="<%= hasDur %>"
-	         hasRecurrence="<%= hasRecur %>" />
+	         required="${property_required}"
+	         hasDuration="${property_hasDuration}"
+	         hasRecurrence="${property_hasRecurrence}" 
+	         isTimeZoneSensitiveActive="${property_timeZoneSensitiveActive}"/>
 </div>

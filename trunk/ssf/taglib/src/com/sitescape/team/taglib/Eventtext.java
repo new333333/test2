@@ -67,18 +67,13 @@ public class Eventtext extends TagSupport {
 	private Event event = null;
 
 	public int doStartTag() throws JspException {
-		JspWriter jspOut = pageContext.getOut();
 
 		try {
 			if (event == null) {
 				throw new JspException("You must provide an event");
 			}
 
-			/*
-			 * TODO To be removed - JK 8/23/05 commented out for now
-			 * ServletContext ctx =
-			 * pageContext.getServletContext().getContext(PropsUtil.get(PropsUtil.PORTAL_CTX));
-			 */
+
 			ServletContext ctx = null;
 			if (ctx == null) {
 				ctx = pageContext.getServletContext();
@@ -103,15 +98,21 @@ public class Eventtext extends TagSupport {
 			Calendar en = event.getDtEnd();
 
 			DateFormat dateFormat = null;
-			if (!event.isAllDayEvent()) {
-				dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
-						DateFormat.MEDIUM, user.getLocale());
-				dateFormat.setTimeZone(user.getTimeZone());
-			} else {
+			
+			if (event.isAllDayEvent()) {
 				dateFormat = DateFormat.getDateInstance(DateFormat.LONG, user
 						.getLocale());
 				dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			} else if (!event.isTimeZoneSensitive()) {
+				dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
+						DateFormat.MEDIUM, user.getLocale());
+				dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			} else {
+				dateFormat = DateFormat.getDateTimeInstance(DateFormat.MEDIUM,
+						DateFormat.MEDIUM, user.getLocale());
+				dateFormat.setTimeZone(user.getTimeZone());
 			}
+
 
 			String startString = dateFormat.format(st.getTime());
 			String endString = dateFormat.format(en.getTime());

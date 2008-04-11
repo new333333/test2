@@ -28,24 +28,10 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.Date" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
-<%@ page import="com.sitescape.team.domain.Event" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<% // these beans need to be here because we need to
-   // access them via scriptlets; they need to be 
-   // passed into other tags (can't be done via JSTL) %>
-<jsp:useBean id="evid" type="String" scope="request" />
-<jsp:useBean id="formName" type="String" scope="request" />
-<%
-	Event initEvent = (Event)request.getAttribute("initEvent");
-	Date startDate = (Date)request.getAttribute("startDate");
-	Date endDate = (Date)request.getAttribute("endDate");
-%>
-<c:set var="initEvent" value="<%= initEvent %>" />
 
-<jsp:useBean id="attMap" type="java.util.HashMap" scope="request" />
+
 <c:set var="allDayEventId" value="allDayEvent_${evid}" />
 <c:set var="dateId" value="dp_${evid}" />
 <c:set var="dateId2" value="dp2_${evid}" />
@@ -69,7 +55,7 @@
 	// - all day event
 %>
 <c:choose>
-	<c:when test="${initEvent.allDayEvent}">
+	<c:when test="${initEvent.allDayEvent || !initEvent.timeZoneSensitive}">
 		<c:set var="timeZoneID" value="GMT" />
 	</c:when>
 	<c:otherwise>
@@ -140,6 +126,8 @@
 							</c:otherwise>
 						</c:choose>
 						/>
+					<input type="hidden" name="${dateId}_timeZoneSensitive" id="${dateId}_timeZoneSensitive" value="" />
+					
 				</span>	
 			</td>
 			<c:if test="${attMap.hasDur}">
@@ -152,7 +140,7 @@
 				</td>
 			</c:if>
 		</tr>
-		
+	
 	<c:if test="${attMap.hasDur}">
 			<tr>
 				<td class="contentbold"><ssf:nlt tag="event.end" />:</td>
@@ -215,10 +203,21 @@
 								</c:otherwise>
 							</c:choose>
 							/>
+						<input type="hidden" name="${dateId2}_timeZoneSensitive" id="${dateId2}_timeZoneSensitive" value="" />							
 					</span>
 				</td>
 			</tr>
 	</c:if>
+	<c:if test="${attMap.isTimeZoneSensitiveActive}">
+		<tr>
+			<td colspan="4">
+				<input type="checkbox" name="timeZoneSensitive_${evid}"
+					<c:if test="${initEvent.timeZoneSensitive}">
+						checked="checked"
+					</c:if> id="timeZoneSensitive_${evid}" value="true" /><label for="timeZoneSensitive_${evid}"><ssf:nlt tag="event.timeZoneSensitive" /></label>
+			</td>
+		</tr>
+	</c:if>	
 	</table>
 	
 
@@ -515,6 +514,21 @@
 		djConfig.searchIds.push("${dateId}_time_${prefix}");
 		djConfig.searchIds.push("${dateId2}_time_${prefix}");
 	
+			function ${prefix}_onEventFormSubmit() {
+		
+			var eventTimeZoneSensitiveObj = document.getElementById("timeZoneSensitive_${evid}");
+			var startDateTimeZoneSensitiveObj = document.getElementById("${dateId}_timeZoneSensitive");
+			var endDateTimeZoneSensitiveObj = document.getElementById("${dateId2}_timeZoneSensitive");
+			if (eventTimeZoneSensitiveObj && startDateTimeZoneSensitiveObj && endDateTimeZoneSensitiveObj) {
+				startDateTimeZoneSensitiveObj.value = "" + eventTimeZoneSensitiveObj.checked;
+				endDateTimeZoneSensitiveObj.value = "" + eventTimeZoneSensitiveObj.checked;				
+			}
+		
+			return true;
+		}
+
+		 ss_createOnSubmitObj('${prefix}onsub', '${formName}', ${prefix}_onEventFormSubmit);
+		 
 	</script>
 
 </div>

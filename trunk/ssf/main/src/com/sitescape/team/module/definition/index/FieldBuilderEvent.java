@@ -61,8 +61,8 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 			return new Field[] { evDtStartField, evDtEndField};
 		}
 		Field evTimeZoneIDField = new Field(makeFieldName(dataElemName, EntityIndexUtils.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-		
-		return new Field[] { evDtStartField, evDtEndField, evTimeZoneIDField};
+		Field evTimeZoneSensitiveField = new Field(makeFieldName(dataElemName, EntityIndexUtils.EVENT_FIELD_TIME_ZONE_SENSITIVE), Boolean.toString(event.isTimeZoneSensitive()), Field.Store.YES, Field.Index.UN_TOKENIZED);
+		return new Field[] { evDtStartField, evDtEndField, evTimeZoneIDField, evTimeZoneSensitiveField};
 	}
 
 

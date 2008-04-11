@@ -67,7 +67,8 @@ events : [<%--
 		  	binderId : "${evim.entry['_binderId']}",
 		  	calendarId : "${evim.entry['_binderId']}",
 		  	<c:set var="timeZone" value="${ssUser.timeZone.ID}"/>
-		  	<c:if test="${evim.cal_allDay && evim.eventType == 'event'}">
+		  	<c:if test="${(evim.cal_allDay && evim.eventType == 'event') ||
+  						(!evim.cal_timeZoneSensitive && evim.eventType == 'event')}">
 		  		<c:set var="timeZone" value="GMT"/>
 		  	</c:if>
 		  	startDate : "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>",

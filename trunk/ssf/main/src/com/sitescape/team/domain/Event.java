@@ -2836,11 +2836,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	 * @return
 	 */
 	public boolean isTimeZoneSensitive() {
-		return timeZoneSensitive;
+		// v1.1 compatibility - default value was false (should be true) 
+		return !timeZoneSensitive;
 	}
 
 	public void setTimeZoneSensitive(boolean timeZoneSensitive) {
-		this.timeZoneSensitive = timeZoneSensitive;
+		this.timeZoneSensitive = !timeZoneSensitive;
 	}
 
 	/**
