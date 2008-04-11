@@ -154,7 +154,7 @@ a.ss_STButton {
 	display:inline;
 	height:16px;
 	padding-top:5px;
-	margin-left:5px;	/* need to keep margin-left to push past logo */
+
 	width:100%;	
 	}
 #ss_top_nav_view a {
@@ -163,13 +163,13 @@ a.ss_STButton {
 	letter-spacing: 0px;
 }
 #ss_top_nav_view ul{
-	margin:0 0 0 40px;
+	margin:0 0 0 30px;
 	list-style:none;
 	width:100%;
 	}
 #ss_top_nav_view ul li{
 	display:inline;
-	padding:0px 0 0 40px;
+	padding:0px 2px 0 0px;
 	width:100%;
 	}
 #ss_top_nav_view ul li a{
@@ -185,7 +185,7 @@ a.ss_STButton {
 	background-repeat:no-repeat;
 	color: #EF2121!important;
 	}	
-	
+
 	/* LOGO DIVS */	
 	
 .ss_logo1 {
