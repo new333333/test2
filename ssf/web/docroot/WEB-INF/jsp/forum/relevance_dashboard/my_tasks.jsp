@@ -108,7 +108,8 @@
 			</c:choose>				  
 		</div>
 		
-		<div class="ss_link_2">
+		<div>
+		<span class="ss_link_2">
 			<c:set var="path" value=""/>
 
 			<c:if test="${!empty ss_myTasksFolders[entry._binderId]}">
@@ -123,6 +124,7 @@
 					title="${path}"
 					><span class="ss_prioValue"">${title}</span></a>
 			</c:if>
+		</span>&nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
 		</div>
 	</li><br/>
 							
