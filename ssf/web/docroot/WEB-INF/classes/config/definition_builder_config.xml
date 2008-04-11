@@ -261,6 +261,7 @@
 			<property name="hasRecurrence" caption="__can_recur" type="boolean" default="true">
 				<help>ihelp.designers.recur</help>
 			</property>	
+			<property name="timeZoneSensitiveActive" caption="__time_zone_sensitive_active" type="boolean" default="false"/>
 			<property name="required" caption="__required" type="boolean" default="false" >
 				<help>ihelp.designers.required</help>
 			</property>

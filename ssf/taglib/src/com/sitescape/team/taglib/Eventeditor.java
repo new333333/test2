@@ -67,13 +67,12 @@ public class Eventeditor extends TagSupport {
   private String id;
   private String formName;
   private Event initEvent = null;
-  private Boolean hasDuration = new Boolean("false");
-  private Boolean hasRecurrence = new Boolean("true");
+  private Boolean hasDuration = false;
+  private Boolean hasRecurrence = true;
+  private Boolean isTimeZoneSensitiveActive = false;
   private Boolean required = false;
 
   public int doStartTag() throws JspException {
-    JspWriter jspOut = pageContext.getOut(); 
-	    
     try {
         if (id == null) {
         	throw new JspException("You must provide an element name"); 
@@ -82,15 +81,14 @@ public class Eventeditor extends TagSupport {
         	throw new JspException("You must provide a form name"); 
         }
         
-      HttpServletRequest req2 = (HttpServletRequest) pageContext.getRequest();
-      contextPath = req2.getContextPath();
+      HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
+      contextPath = httpReq.getContextPath();
       if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 				
       ServletRequest req = null;
       req = new DynamicServletRequest((HttpServletRequest)pageContext.getRequest());
 
       String jsp = "/WEB-INF/jsp/tag_jsps/eventeditor/eventeditor.jsp";
-      String icon = contextPath + "/images/pics/sym_s_repeat.gif";
       RequestDispatcher rd = req.getRequestDispatcher(jsp); 
       
       // if initEvent is provided, take it apart and pass in two dates
@@ -137,6 +135,7 @@ public class Eventeditor extends TagSupport {
       HashMap attMap = new HashMap();
       attMap.put("hasDur", hasDuration);
       attMap.put("hasRecur", hasRecurrence);
+      attMap.put("isTimeZoneSensitiveActive", isTimeZoneSensitiveActive);
       req.setAttribute("attMap", attMap);
       
       StringServletResponse res =
@@ -154,8 +153,9 @@ public class Eventeditor extends TagSupport {
 	  id = null;
 	  formName = null;
 	  initEvent = null;
-	  hasDuration = new Boolean("false");
-	  hasRecurrence = new Boolean("true");
+	  hasDuration = false;
+	  hasRecurrence = true;
+	  isTimeZoneSensitiveActive = false;
     }
     return SKIP_BODY;
   }
@@ -180,6 +180,10 @@ public class Eventeditor extends TagSupport {
       this.hasRecurrence = hasRecurrence;
   }
 
+  public void setIsTimeZoneSensitiveActive(Boolean isTimeZoneSensitiveActive) {
+      this.isTimeZoneSensitiveActive = isTimeZoneSensitiveActive;
+  }
+  
   public void setInitEvent(Event initEvent) {
       this.initEvent = initEvent;
   }

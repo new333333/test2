@@ -208,6 +208,11 @@ public class EventsViewHelper {
 			String recurrenceDatesField = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD);
 			String eventId = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_ID);
 			String timeZoneID = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_FIELD_TIME_ZONE_ID);
+			boolean timeZoneSensitive = true;
+			String timeZoneSensitiveString = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_FIELD_TIME_ZONE_SENSITIVE);
+			if ("false".equals(timeZoneSensitiveString)) {
+				timeZoneSensitive = false;
+			}
 			if (recurrenceDatesField != null) {
 				String[] recurrenceDates = recurrenceDatesField.split(",");
 				for (int recCounter = 0; recCounter < recurrenceDates.length; recCounter++) {
@@ -230,6 +235,7 @@ public class EventsViewHelper {
 					if (timeZoneID != null) {
 						event.setTimeZone(TimeZoneHelper.getTimeZone(timeZoneID));
 					}
+					event.setTimeZoneSensitive(timeZoneSensitive);
 					Calendar startCal = Calendar.getInstance();
 					startCal.setTime(evStartDate);
 					
@@ -288,6 +294,7 @@ public class EventsViewHelper {
 		eventBean.put("cal_endtime", event.getDtEnd().getTime());
 		eventBean.put("cal_oneDayEvent", event.isOneDayEvent());
 		eventBean.put("cal_allDay", event.isAllDayEvent());
+		eventBean.put("cal_timeZoneSensitive", event.isTimeZoneSensitive());
 		eventBean.put("cal_duration", (event.getDtEnd().getTime()
 				.getTime() - event.getDtStart().getTime()
 				.getTime()) / 60000);

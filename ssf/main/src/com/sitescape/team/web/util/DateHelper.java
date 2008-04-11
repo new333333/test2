@@ -159,9 +159,12 @@ public class DateHelper {
     	}
     	
         DateTimeZone dateTimeZone = null;
-        if (inputData.exists(datePrefix + "timezoneid")) {
+        if (inputData.exists(datePrefix + "timezoneid") ||
+        		inputData.exists(datePrefix + "timeZoneSensitive")) {
             String timeZoneString = inputData.getSingleValue(datePrefix + "timezoneid");
-            if ("".equals(timeZoneString)) {
+            String timeZoneSensitiveString = inputData.getSingleValue(datePrefix + "timeZoneSensitive");
+            if ("".equals(timeZoneString) || 
+            		"false".equals(timeZoneSensitiveString)) {
             	timeZoneString = DateTimeZone.UTC.getID();
             }
             dateTimeZone = DateTimeZone.forTimeZone(TimeZoneHelper.getTimeZone(timeZoneString));

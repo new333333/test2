@@ -41,6 +41,7 @@
           <property name="caption" value="__event"/>
           <property name="hasDuration" value="true"/>
           <property name="hasRecurrence" value="true"/>
+          <property name="timeZoneSensitiveActive" value="true"/>
           <property name="required" caption="__required" type="boolean" default="false" value="true">
             <help>ihelp.designers.required</help>
           </property>

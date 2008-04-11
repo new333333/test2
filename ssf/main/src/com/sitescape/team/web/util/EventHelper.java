@@ -32,16 +32,13 @@
  */
 package com.sitescape.team.web.util;
 
-import java.util.Date;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
 
 import org.joda.time.DateTime;
 
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.User;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.util.cal.DayAndPosition;
 
@@ -54,18 +51,13 @@ public class EventHelper {
     
     // default method assumes duration and recurrence patterns
     static public Event getEventFromMap (InputDataAccessor inputData, String id) {
-        Boolean hasDur = new Boolean("true");
-        Boolean hasRecur = new Boolean("true");
-        Event e = getEventFromMap(inputData, id, hasDur, hasRecur);
-        return e;
+        return getEventFromMap(inputData, id, true, true);
     }
 
     
     // basic method
     static public Event getEventFromMap (InputDataAccessor inputData, String id, 
     		Boolean hasDuration, Boolean hasRecurrence) {
-    	User user = RequestContextHolder.getRequestContext().getUser();
-    	
         // we make the id match what the event editor would do
     	String prefix = id + "_";
     	
@@ -112,7 +104,11 @@ public class EventHelper {
         		event.setDtEnd(endEvent.withMillisOfDay(DateHelper.MILIS_IN_THE_DAY).toGregorianCalendar());
         	}
         }
-
+        
+        String timeZoneSensitive = inputData.getSingleValue("timeZoneSensitive_" + id);
+        if ("true".equals(timeZoneSensitive)) {
+        	event.setTimeZoneSensitive(true);
+        }
         if (hasRecurrence.booleanValue()) {
             String repeatUnit = inputData.getSingleValue(prefix+"repeatUnit");
             String intervalStr = inputData.getSingleValue(prefix+"everyN");

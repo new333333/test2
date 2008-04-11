@@ -121,6 +121,7 @@ public class EntityIndexUtils {
     public static final String EVENT_FIELD = "_event";
     public static final String EVENT_FIELD_START_DATE = "StartDate";
     public static final String EVENT_FIELD_TIME_ZONE_ID = "TimeZoneID";
+    public static final String EVENT_FIELD_TIME_ZONE_SENSITIVE = "TimeZoneSensitive";
     public static final String EVENT_FIELD_END_DATE = "EndDate";    
     public static final String EVENT_COUNT_FIELD = "_eventCount";
     public static final String EVENT_DATES_FIELD = "_eventDates";

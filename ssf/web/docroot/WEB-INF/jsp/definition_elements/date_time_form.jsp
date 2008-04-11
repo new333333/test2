@@ -32,32 +32,10 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="com.sitescape.team.util.CalendarHelper" %>
-<%
-	//Get the formName of date being displayed
-	Element item = (Element) request.getAttribute("item");
-	Element nameProperty = (Element) item.selectSingleNode("properties/property[@name='name']");
-	String elementName = "date_time";
-	if (nameProperty != null) {
-		elementName = nameProperty.attributeValue("value", "date_time");
-	}
-	String formName = (String) request.getAttribute("formName");
-	String name = (String) request.getAttribute("property_name");
-	String caption = (String) request.getAttribute("property_caption");
-	if (caption != null && !caption.equals("")) {
-		caption = caption;
-	}
-	String required = (String) request.getAttribute("property_required");
-	if (required == null) {required = "";}
-	if (required.equals("true")) {
-		required = "<span class=\"ss_required\">*</span>";
-	} else {
-		required = "";
-	}
-%>
-<c:set var="elementName" value="<%= elementName %>" />
+
 <div class="ss_entryContent">
-	<span class="ss_labelAbove" id='<%= elementName %>_label'><%= caption %><%= required %></span>
-	<div id="<%= elementName %>_error" style="visibility:hidden; display:none;"><span class="ss_formError">Please enter a valid date.</span></div>
+	<span class="ss_labelAbove" id='${property_name}_label'>${property_caption}<c:if test="${property_required}"><span class="ss_required">*</span></c:if></span>
+	<div id="${property_name}_error" style="visibility:hidden; display:none;"><span class="ss_formError"><ssf:nlt tag="date.validate.error"/></span></div>
 	
 
 	<c:set var="initDate" value="<%= new Date() %>"/>
@@ -70,9 +48,9 @@
 		<tr>
 			<td>
 				<div dojoType="DropdownDatePickerActivateByInput" 
-					widgetId="date_${elementName}_${prefix}" 
-					id="date_${elementName}_${prefix}"
-					name="${elementName}_fullDate" 
+					widgetId="date_${property_name}_${prefix}" 
+					id="date_${property_name}_${prefix}"
+					name="${property_name}_fullDate" 
 					lang="<ssf:convertLocaleToDojoStyle />" 
 					weekStartsOn="<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
 					<c:if test="${property_initialSetting != 'none'}">
@@ -86,9 +64,9 @@
 			</td>
 			<td>
 				<div dojoType="DropdownTimePickerActivateByInput"
-					widgetId="date_time_${elementName}_${prefix}" 
-					id="date_time_${elementName}_${prefix}"
-					name="${elementName}_0_fullTime" 
+					widgetId="date_time_${property_name}_${prefix}" 
+					id="date_time_${property_name}_${prefix}"
+					name="${property_name}_0_fullTime" 
 					lang="<ssf:convertLocaleToDojoStyle />" 
 					<c:if test="${property_initialSetting != 'none'}">
 					  value="<fmt:formatDate value="${initDate}" 
@@ -98,7 +76,7 @@
 					  value=""
 					</c:if>
 				></div>
-				<input type="hidden" name="${elementName}_timezoneid" value="${ssUser.timeZone.ID}" />
+				<input type="hidden" name="${property_name}_timezoneid" value="${ssUser.timeZone.ID}" />
 			</td>
 		</tr>
 	</table>
@@ -106,8 +84,8 @@
 	<script type="text/javascript">
 		dojo.require("sitescape.widget.DropdownDatePickerActivateByInput");
 		dojo.require("sitescape.widget.DropdownTimePickerActivateByInput");
-		djConfig.searchIds.push("date_${elementName}_${prefix}");
-		djConfig.searchIds.push("date_time_${elementName}_${prefix}");
+		djConfig.searchIds.push("date_${property_name}_${prefix}");
+		djConfig.searchIds.push("date_time_${property_name}_${prefix}");
 	</script>
 	
 </div>
