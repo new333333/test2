@@ -426,7 +426,7 @@ div.ss_canvas {
 	font-weight: 400;
 	color: #333;
 	}
-.ss_title_im
+.ss_title_im{
 	background: #FFFFFF;
 	}	
 #ss_subtitle{
