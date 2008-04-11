@@ -28,7 +28,14 @@
  */
 package com.sitescape.team.client.ws;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Iterator;
 
 import javax.activation.DataHandler;
@@ -112,8 +119,9 @@ public class WebServiceClientUtil {
 	 * 
 	 * @param stub
 	 * @throws SOAPException 
+	 * @throws IOException 
 	 */
-	public static int extractFiles(Stub stub, File attachmentDir) throws SOAPException {
+	public static int extractFiles(Stub stub, File attachmentDir) throws SOAPException, IOException {
 		Object[] atts = stub.getAttachments();
 		int count = 0;
 		if(atts != null) {
@@ -128,7 +136,7 @@ public class WebServiceClientUtil {
 					s = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
 					//System.out.println("Attachment:" + s);
 					File src = new File(dhTab[i].getName());
-					src.renameTo((attachmentDir == null)? new File(s) : new File(attachmentDir, s));
+					move(src, (attachmentDir == null)? new File(s) : new File(attachmentDir, s));
 					count++;
 				}
 			}
@@ -206,8 +214,9 @@ public class WebServiceClientUtil {
 	 * if the directory doesn't exist, it will be created;
 	 * if <code>null</code> is passed, current directory is assumed.
 	 * @throws SOAPException 
+	 * @throws IOException 
 	 */
-	public static int extractFiles(Call call, File attachmentDir) throws SOAPException {
+	public static int extractFiles(Call call, File attachmentDir) throws SOAPException, IOException {
 		org.apache.axis.MessageContext messageContext = call.getMessageContext();
 		org.apache.axis.Message returnedMessage = messageContext.getResponseMessage();
 		Iterator iteAtta = returnedMessage.getAttachments();
@@ -223,11 +232,91 @@ public class WebServiceClientUtil {
 				s = s.substring(s.indexOf('"')+1, s.lastIndexOf('"'));
 				//System.out.println("Attachment:" + s);
 				File src = new File(dhTab[i].getName());
-				src.renameTo((attachmentDir == null)? new File(s) : new File(attachmentDir, s));
+				move(src, (attachmentDir == null)? new File(s) : new File(attachmentDir, s));
 				count++;
 			}
 		}
 		return count;
+	}
+
+	private static void move(File source, File destination) throws IOException {
+		if(!source.exists())
+			throw new IOException("Could not find source file " + source.getAbsolutePath());
+		
+		if(rename(source, destination))
+			return;
+		
+		// we could not rename; try copying the content
+		copy(source, destination);
+	}
+	
+	private static void delete(File file) throws IOException {
+		if(!file.exists())
+			return;
+		
+		int DELETE_MAX_TRIAL = 3;
+		
+		int count = 1;
+		while(count <= DELETE_MAX_TRIAL) {
+			if(file.delete())
+				return;
+			try {
+				Thread.sleep(10);
+			}
+			catch(InterruptedException e) {}
+			count++;
+		}
+
+        throw new IOException("Could not delete file " + file.getAbsolutePath());
+	}
+	
+	private static boolean rename(File source, File destination) throws IOException {
+		delete(destination);
+		
+		int RENAME_MAX_TRIAL = 3;
+		
+		int count = 1;
+		while(count <= RENAME_MAX_TRIAL) {
+			if(source.renameTo(destination)) {
+				//System.out.println(source.getAbsolutePath() + " renamed to " + destination.getAbsolutePath() + " on the " + count + " try");
+				return true;
+			}
+			try {
+				Thread.sleep(10);
+			}
+			catch(InterruptedException e) {}
+			count++;
+		}
+		return false;
+	}
+
+	private static void copy(File in, File out) throws IOException {
+		copy(new BufferedInputStream(new FileInputStream(in)),
+		    new BufferedOutputStream(new FileOutputStream(out)));
+		//System.out.println(in.getAbsolutePath() + " copied to " + out.getAbsoluteFile());
+	}
+	
+	private static void copy(InputStream in, OutputStream out) throws IOException {
+		int BUFFER_SIZE = 4096;
+		try {
+			byte[] buffer = new byte[BUFFER_SIZE];
+			int bytesRead = -1;
+			while ((bytesRead = in.read(buffer)) != -1) {
+				out.write(buffer, 0, bytesRead);
+			}
+			out.flush();
+			return;
+		}
+		finally {
+			try {
+				in.close();
+			}
+			catch (IOException ex) {}
+			try {
+				out.close();
+			}
+			catch (IOException ex) {}
+		}
 	}
 
 }
