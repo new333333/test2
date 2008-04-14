@@ -40,30 +40,6 @@ var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" po
 		name="binderId" value="ss_binderIdPlaceHolder" /><ssf:param 
 		name="namespace" value="${renderResponse.namespace}" /><ssf:param 
 		name="rn" value="ss_rnPlaceHolder" /></ssf:url>";
-function ss_selectRelevanceTab(obj, type, binderId, namespace) {
-	//Clear "current" tab
-	var currentTab = null;
-	eval("currentTab = ss_relevanceTabCurrent_"+namespace+";");
-	if (currentTab != null) {
-		currentTab.parentNode.className = "";
-	}
-	eval("ss_relevanceTabCurrent_"+namespace+" = obj;");
-	obj.parentNode.className = "ss_tabsCCurrent";
-	
-	//Switch to the new tab
-	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);
-	canvasObj.innerHTML = ss_Loading;
-	var url = "";
-	eval("url = ss_relevanceAjaxUrl"+namespace);
-	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
-	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
-	url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
-	ss_fetch_url(url, ss_showRelevanceTab, namespace)
-}
-function ss_showRelevanceTab(s, namespace) {
-	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);
-	canvasObj.innerHTML = s;
-}
 </script>
 
 <% //Tabs %>

@@ -30,11 +30,29 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:if test="${empty ss_whatsNewTrackedPlaces}">
-<span><ssf:nlt tag="relevance.none"/></span>
+<div id="ss_para">
+<div align="right">
+<c:if test="${ss_trackedPlacesPage > '0'}">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'newTracked', '${ss_trackedPlacesPage}', 'previous', 'ss_dashboardNewTracked${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+  title="<ssf:nlt tag="general.previousPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_trackedPlacesPage || ss_trackedPlacesPage <= '0'}">
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
 </c:if>
 <c:if test="${!empty ss_whatsNewTrackedPlaces}">
-<div id="ss_para">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'newTracked', '${ss_trackedPlacesPage}', 'next', 'ss_dashboardNewTracked${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+  title="<ssf:nlt tag="general.nextPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_whatsNewTrackedPlaces}">
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+</c:if>
+</div>
   <div id="ss_today">
   <div id="ss_mydocs_para" >
   <c:forEach var="entry" items="${ss_whatsNewTrackedPlaces}">
@@ -91,5 +109,4 @@
 	</div><!-- end of para -->
     </div><!-- end of today -->
     </div><!-- end of ss_para -->
-</c:if>
 
