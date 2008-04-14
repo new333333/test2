@@ -115,7 +115,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#getDefinitions}.
 	 */
-	public void setDefinitions(long binderId, List<String>definitionIds, List<String>workflowAssociations) {
+	public void setDefinitions(long binderId, String[] definitionIds, String[] workflowAssociations) {
 		this.binderService.setDefinitions(null, binderId, definitionIds, workflowAssociations);
 	}
 
@@ -289,7 +289,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		return this.searchService.getTeamsAsXML(null);
 	}
 	
-	public void setTeamMembers(long binderId, List<Long> memberIds) {
+	public void setTeamMembers(long binderId, Long[] memberIds) {
 		this.binderService.setTeamMembers(null, binderId, memberIds);
 	}	/**
 	 * @deprecated As of ICEcore version 1.1,

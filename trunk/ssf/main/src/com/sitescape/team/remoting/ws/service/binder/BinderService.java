@@ -1,11 +1,11 @@
 package com.sitescape.team.remoting.ws.service.binder;
-import java.util.List;
+
 public interface BinderService {
 	public long addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML);
 	
 	public String getTeamMembersAsXML(String accessToken, long binderId);
 	
-	public void setTeamMembers(String accessToken, long binderId, List<Long> memberIds);
+	public void setTeamMembers(String accessToken, long binderId, Long[] memberIds);
 	/**
 	 * 
 	 * @param accessToken
@@ -13,7 +13,7 @@ public interface BinderService {
 	 * @param definitionIds
 	 * @param workflowAssociations <Paris of entryDefinitionId,workflowDefinitionId
 	 */
-	public void setDefinitions(String accessToken, long binderId, List<String>definitionIds, List<String>workflowAssociations);
+	public void setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations);
 	/**
 	 * Set function membership for a binder.  Can mix and match memberName and/or members
 	 * <workAreaFunctionMembership>

@@ -28,12 +28,8 @@
  */
 package com.sitescape.team.remoting.ws.service.license;
 
-import java.util.Collection;
-
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
-
-import org.dom4j.Document;
 
 import com.sitescape.team.util.SpringContextUtil;
 
@@ -47,10 +43,6 @@ public class LicenseServiceEndpoint implements ServiceLifecycle, LicenseService 
 
 	public long getExternalUsers(String accessToken) {
 		return getLicenseService().getExternalUsers(accessToken);
-	}
-
-	public Collection<Document> getLicenses(String accessToken) {
-		return getLicenseService().getLicenses(accessToken);
 	}
 
 	public long getRegisteredUsers(String accessToken) {

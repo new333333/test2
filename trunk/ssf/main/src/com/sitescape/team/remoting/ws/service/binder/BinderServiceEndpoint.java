@@ -1,7 +1,5 @@
 package com.sitescape.team.remoting.ws.service.binder;
 
-import java.util.List;
-
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 
@@ -19,7 +17,7 @@ public class BinderServiceEndpoint implements ServiceLifecycle, BinderService {
 	public long addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML) {
 		return getBinderService().addBinder(accessToken, parentId, definitionId, inputDataAsXML);
 	}
-	public void setDefinitions(String accessToken, long binderId, List<String>definitionIds, List<String>workflowAssociations) {
+	public void setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
 		getBinderService().setDefinitions(accessToken, binderId, definitionIds, workflowAssociations);
 
 	}
@@ -27,7 +25,7 @@ public class BinderServiceEndpoint implements ServiceLifecycle, BinderService {
 		return getBinderService().getTeamMembersAsXML(accessToken, binderId);
 	}
 
-	public void setTeamMembers(String accessToken, long binderId, List<Long> memberIds) {
+	public void setTeamMembers(String accessToken, long binderId, Long[] memberIds) {
 		getBinderService().setTeamMembers(accessToken, binderId, memberIds);
 	}
 	public void setFunctionMembership(String accessToken, long binderId, String inputDataAsXml) {
@@ -45,4 +43,5 @@ public class BinderServiceEndpoint implements ServiceLifecycle, BinderService {
 	
 	public void destroy() {
 	}
+
 }
