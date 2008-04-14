@@ -113,6 +113,24 @@ public class RelevanceDashboardHelper {
 		}
 	}
 	
+	public static void setupRelevanceDashboardPageBeans(AllModulesInjected bs, Long binderId, 
+			String type, Map model) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		//No dashboard for the guest account
+		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
+        
+		//Figure out if this is a user workspace; dashboards are relative to the user workspace owner
+        if (binderId == null) binderId = user.getWorkspaceId();
+		Binder userWorkspace = bs.getBinderModule().getBinder(binderId);
+		model.put(WebKeys.BINDER, userWorkspace);
+		
+		if (ObjectKeys.RELEVANCE_PAGE_ENTRIES_VIEWED.equals(type)) {
+			setupViewedEntriesBean(bs, userWorkspace, model);
+		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_TRACKED.equals(type)) {
+			setupTrackedPlacesBeans(bs, userWorkspace, model);
+		}
+	}
+	
 	protected static void setupTasksBeans(AllModulesInjected bs, Binder binder, Map model) {		
 		//Get the tasks bean
 		//Prepare for a standard dashboard search operation
@@ -195,10 +213,17 @@ public class RelevanceDashboardHelper {
 	protected static void setupTrackedPlacesBeans(AllModulesInjected bs, Binder binder, Map model) {		
 		//Get the documents bean for the documents th the user just authored or modified
 		Map options = new HashMap();
+		String page = (String) model.get(WebKeys.PAGE_NUMBER);
+		if (page == null || page.equals("")) page = "0";
+		Integer pageNumber = Integer.valueOf(page);
+		if (pageNumber < 0) pageNumber = 0;
+		model.put(WebKeys.TRACKED_PLACES_PAGE, String.valueOf(pageNumber));
+		int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 		
 		//Prepare for a standard dashboard search operation
 		setupInitialSearchOptions(options);
 
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
@@ -347,13 +372,21 @@ public class RelevanceDashboardHelper {
 	private static void setupViewedEntriesBean(AllModulesInjected bs, Binder binder, Map model) {
 		//What entries have I visited?
 		if (binder != null) {
+			String page = (String) model.get(WebKeys.PAGE_NUMBER);
+			if (page == null || page.equals("")) page = "0";
+			Integer pageNumber = Integer.valueOf(page);
+			if (pageNumber < 0) pageNumber = 0;
+			model.put(WebKeys.ENTRIES_VIEWED_PAGE, String.valueOf(pageNumber));
+			int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 			GregorianCalendar start = new GregorianCalendar();
-		    //get users over last 2 weeks
+		    //get entries viewed over last 2 weeks
 			start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
 			List entries = bs.getReportModule().getEntriesViewed(binder.getOwnerId(),
 					start.getTime(), new java.util.Date(), 
-					Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
-			model.put(WebKeys.ENTRIES_VIEWED, entries);
+					(pageNumber + 1) * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
+			if (entries != null && entries.size() > pageStart) {
+				model.put(WebKeys.ENTRIES_VIEWED, entries.subList(pageStart, entries.size()));
+			}
 		}
 	}
 	

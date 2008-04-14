@@ -785,6 +785,43 @@ function ss_trackedItemsDelete(obj, id) {
 	trObj.parentNode.removeChild(trObj)
 }
 
+function ss_selectRelevanceTab(obj, type, binderId, namespace) {
+	//Clear "current" tab
+	var currentTab = null;
+	eval("currentTab = ss_relevanceTabCurrent_"+namespace+";");
+	if (currentTab != null) {
+		currentTab.parentNode.className = "";
+	}
+	eval("ss_relevanceTabCurrent_"+namespace+" = obj;");
+	obj.parentNode.className = "ss_tabsCCurrent";
+	
+	//Switch to the new tab
+	var url = "";
+	eval("url = ss_relevanceAjaxUrl"+namespace);
+	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
+	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
+	ss_fetch_url(url, ss_showRelevanceTab, namespace)
+}
+function ss_showRelevanceTab(s, namespace) {
+	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);
+	canvasObj.innerHTML = s;
+}
+
+function ss_showDashboardPage(binderId, op, currentPage, direction, divId) {
+	ss_setupStatusMessageDiv();
+	if (currentPage == "") currentPage = "0";
+	var page = parseInt(currentPage);
+	if (direction == 'next') page = page + 1;
+	if (direction == 'previous') page = page - 1;
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"get_dashboard_page", operation2:op, pageNumber:page, direction:direction}, "__ajax_relevance");
+	ss_fetch_url(url, ss_showDashboardPageDiv, divId)
+}
+function ss_showDashboardPageDiv(s, divId) {
+	var divObj = self.document.getElementById(divId);
+	divObj.innerHTML = s;
+}
+
 //Function to create a named div in the body
 function ss_createDivInBody(divId, className) {
 	var divObj = document.getElementById(divId);

@@ -39,7 +39,9 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.visitedEntries"/></div>
 	</ssf:param>
+		<div id="ss_dashboardEntriesViewed${renderResponse.namespace}">
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
+		</div>
 	</ssf:canvas>
 	
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">

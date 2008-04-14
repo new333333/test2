@@ -102,6 +102,8 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		//The user is logged in
 		if (op.equals(WebKeys.OPERATION_GET_RELEVANCE_DASHBOARD)) {
 			return ajaxGetRelevanceDashboard(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_RELEVANCE_DASHBOARD_PAGE)) {
+				return ajaxGetRelevanceDashboardPage(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SHARE_THIS_BINDER)) {
 			if (formData.containsKey("okBtn")) {
 				Map model = new HashMap();
@@ -222,6 +224,19 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/relevance_dashboard/ajax", model);
 	}
 	
+	private ModelAndView ajaxGetRelevanceDashboardPage(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
+		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
+		String direction = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIRECTION, "next");
+		Map model = new HashMap();
+		model.put(WebKeys.TYPE, type);
+		model.put(WebKeys.PAGE_NUMBER, page);
+		model.put(WebKeys.DIRECTION, direction);
+		setupDashboardPageBeans(this, type, request, response, model);
+		return new ModelAndView("forum/relevance_dashboard/ajax_page", model);
+	}
+	
 	private ModelAndView ajaxShareThisBinder(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
@@ -236,9 +251,21 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 	private void setupDashboardBeans(AllModulesInjected bs, String type, RenderRequest request, 
 			RenderResponse response, Map model) throws Exception {
 		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.NAMESPACE, "");
+		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0");
 		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.PAGE_NUMBER, page);
         Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, binderId, type, model);
+	}
+	
+	private void setupDashboardPageBeans(AllModulesInjected bs, String type, RenderRequest request, 
+			RenderResponse response, Map model) throws Exception {
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.NAMESPACE, "");
+		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE_NUMBER, "0");
+		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.PAGE_NUMBER, page);
+        Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		RelevanceDashboardHelper.setupRelevanceDashboardPageBeans(bs, binderId, type, model);
 	}
 	
 }

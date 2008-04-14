@@ -112,6 +112,7 @@ public class WebKeys {
 	public static final String URL_DATE_END="endDate";
 	public static final String URL_DEBUG="enableDebug";
 	public static final String URL_DELETE_SOURCE="deleteSource";
+	public static final String URL_DIRECTION="direction";
 	public static final String URL_DISPLAY_TYPE="displayType";
     public static final String URL_DIV_ID="divId";
     public static final String URL_DOWNLOAD_FILE="download";
@@ -144,6 +145,7 @@ public class WebKeys {
     public static final String URL_OPERATION2="operation2";
     public static final String URL_PAGE_NUMBER="pageNumber";
     public static final String URL_SEARCH_QUERY_NAME="ss_queryName";
+    public static final String URL_PAGE="page";
     public static final String URL_PAGE_SIZE="pageSize";
     public static final String URL_QUOTA_OPTION="ssQuotaOption";
     public static final String URL_QUOTA_THRESHOLD="ssQuotaThreshold";
@@ -342,6 +344,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_FAVORITES_TREE = "get_favorites_tree";
 	public static final String OPERATION_GET_FILTER_TYPE = "get_filter_type";
 	public static final String OPERATION_GET_RELEVANCE_DASHBOARD = "get_relevance_dashboard";
+	public static final String OPERATION_GET_RELEVANCE_DASHBOARD_PAGE = "get_dashboard_page";
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
 	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";
@@ -531,6 +534,7 @@ public class WebKeys {
     public static final String DEFINITION_ENTRY="ssDefinitionEntry";
     public static final String DEFINITION_CHOICES="ssDefinitionChoices";
     public static final String DEFINITION_FAMILY="ssDefinitionFamily";
+    public static final String DIRECTION="ss_direction";
     public static final String DISPLAY_STYLE="ss_displayStyle";
     public static final String DISPLAY_STYLE_BLOG="blog";
     public static final String DISPLAY_STYLE_SEARCH="search";
@@ -550,6 +554,7 @@ public class WebKeys {
 	public static final String ENTITY_ID = "ss_entityId";
 	public static final String ENTITY_TYPE="_entityType";
     public static final String ENTRIES_VIEWED="ssEntriesViewed";
+    public static final String ENTRIES_VIEWED_PAGE="ssEntriesViewedPage";
     public static final String ENTRY="ssEntry";
     public static final String ENTRY_ID="ssEntryId";
     public static final String ENTRY_ID_TO_BE_SHOWN="ssEntryIdToBeShown";
@@ -793,6 +798,7 @@ public class WebKeys {
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
+    public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
     
     public static final String FIND_TYPE="ssFindType";
     public static final String FIND_TYPE_GROUP="group";
