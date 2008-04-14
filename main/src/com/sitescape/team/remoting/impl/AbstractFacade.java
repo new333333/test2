@@ -30,6 +30,7 @@ package com.sitescape.team.remoting.impl;
 import java.io.StringBufferInputStream;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -133,12 +134,12 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		}
 		return root.asXML();
 	}
-	public void setDefinitions(long binderId, List<String>definitionIds, List<String>workflowAssociations) {
+	public void setDefinitions(long binderId, String[] definitionIds, String[] workflowAssociations) {
 		HashMap wfs = new HashMap();
-		for (int i=0; i+1<workflowAssociations.size(); i+=2) {
-			wfs.put(workflowAssociations.get(i), workflowAssociations.get(i+1));
+		for (int i=0; i+1<workflowAssociations.length; i+=2) {
+			wfs.put(workflowAssociations[i], workflowAssociations[i+1]);
 		}
-		getBinderModule().setDefinitions(binderId, definitionIds, wfs);
+		getBinderModule().setDefinitions(binderId, Arrays.asList(definitionIds), wfs);
 	}
 	public long addFolder(long parentBinderId, long binderConfigId, String title)
 	{
@@ -542,8 +543,8 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		return doc.getRootElement().asXML();
 	}
 	
-	public void setTeamMembers(long binderId, List<Long> memberIds) {
-		getBinderModule().setTeamMembers(binderId, memberIds);
+	public void setTeamMembers(long binderId, Long[] memberIds) {
+		getBinderModule().setTeamMembers(binderId, Arrays.asList(memberIds));
 	}
 	public String getTeamsAsXML()
 	{
