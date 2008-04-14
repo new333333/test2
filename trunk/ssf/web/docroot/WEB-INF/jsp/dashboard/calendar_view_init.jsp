@@ -67,6 +67,7 @@
 		readOnly: true,
 		calendarDataProvider: new ss_calendar_data_provider("${ssBinder.id}",
 									<c:choose><c:when test="${binderIds == ''}">"none"</c:when><c:otherwise>[${binderIds}]</c:otherwise></c:choose>
+									, "${ssBinder.id}_${componentId}"
 									<c:if test="${!empty ssDashboard}">, true</c:if>), 
 	    defaultCalendarId: "<c:choose><c:when test="${defaultCalendarId != ''}">${defaultCalendarId}</c:when><c:otherwise>${ssBinder.id}</c:otherwise></c:choose>",
 	    <c:if test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
@@ -101,7 +102,8 @@
 					bl: {radius:2}, 
 					br: {radius:2}}, [calendarHref]); 
 			}
-		}
+		},
+		stickyId : "${ssBinder.id}_${componentId}"
 	});
 	
 	ss_calendar_${prefix}.locale.workDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";

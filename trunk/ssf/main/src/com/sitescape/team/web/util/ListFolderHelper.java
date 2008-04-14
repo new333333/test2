@@ -537,9 +537,9 @@ public class ListFolderHelper {
 		
 		String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
 		Integer gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
-		Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, binderId, gridType, gridSize);
-		model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId)).type);
-		model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId)).size);
+		Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, binderId.toString(), gridType, gridSize);
+		model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).type);
+		model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId.toString())).size);
 		
 		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 		options.putAll(getSearchFilter(bs, request, userFolderProperties));
@@ -562,7 +562,7 @@ public class ListFolderHelper {
 		
    		String strSessGridType = null;
    		Integer sessGridSize = null;
-   		EventsViewHelper.Grid grid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId);
+   		EventsViewHelper.Grid grid = EventsViewHelper.getCalendarGrid(portletSession, userProperties, binderId.toString());
    		if (grid != null) {
    			strSessGridType = grid.type;
    			sessGridSize = grid.size;

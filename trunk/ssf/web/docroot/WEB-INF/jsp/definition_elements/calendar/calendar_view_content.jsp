@@ -45,7 +45,7 @@
 
 		ss_calendar_${prefix} = ss_calendar.createCalendar({
 			containerId: "ss_calendar_container${prefix}", 
-			calendarDataProvider: new ss_calendar_data_provider("${ssBinder.id}", "${ssBinder.id}"), 
+			calendarDataProvider: new ss_calendar_data_provider("${ssBinder.id}", "${ssBinder.id}", "${ssBinder.id}_${componentId}"), 
 		    defaultCalendarId: "${ssBinder.id}",
 		    <c:if test="${!empty ssUserProperties.calendarFirstDayOfWeek}">
 		    	weekFirstDay: "${ssUserProperties.calendarFirstDayOfWeek}",
@@ -65,7 +65,8 @@
 			calendarHoursSelectorId: "ss_selectCalendarHours${prefix}",
 			eventsTypeChooseId: "ss_calendarEventsTypeChoose${prefix}",
 			eventsTypeSelectId: "ss_calendarEventsTypeSelect${prefix}",
-			addEntryURL: "${addDefaultEntryURL}".replace("addEntryFromIFrame=1&", "")
+			addEntryURL: "${addDefaultEntryURL}".replace("addEntryFromIFrame=1&", ""),
+			stickyId: "${ssBinder.id}"
 		});
 
 		ss_calendar_${prefix}.locale.workDayGridTitle = "<ssf:nlt tag="calendar.hours.workday"/>";

@@ -384,8 +384,8 @@ public class EventsViewHelper {
 		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_EVENT_TYPE, eventType);
 	}
 
-	public static Map setCalendarGrid(PortletSession portletSession, UserProperties userProperties, Long binderId, String gridType, Integer gridSize) {
-		Grid currentGrid = getCalendarGrid(portletSession, userProperties, binderId);
+	public static Map setCalendarGrid(PortletSession portletSession, UserProperties userProperties, String stickyComponentId, String gridType, Integer gridSize) {
+		Grid currentGrid = getCalendarGrid(portletSession, userProperties, stickyComponentId);
 		if (gridType == null || !(gridType.equals(GRID_DAY) ||
 				gridType.equals(GRID_MONTH))) {
 			if (currentGrid != null) {
@@ -405,20 +405,20 @@ public class EventsViewHelper {
 		if (grids == null) {
 			grids = new HashMap();
 		}
-		grids.put(binderId, new Grid(gridType, gridSize));
+		grids.put(stickyComponentId, new Grid(gridType, gridSize));
 		
 		portletSession.setAttribute(WebKeys.CALENDAR_CURRENT_GRID, grids);
 		return grids;
 	}
 	
-	public static Grid getCalendarGrid(PortletSession portletSession, UserProperties userProperties, Long binderId) {
+	public static Grid getCalendarGrid(PortletSession portletSession, UserProperties userProperties, String stickyComponentId) {
 		Map grids = (Map)portletSession.getAttribute(WebKeys.CALENDAR_CURRENT_GRID);
-		if (grids != null && grids.containsKey(binderId)) {
-			return (Grid)grids.get(binderId);
+		if (grids != null && grids.containsKey(stickyComponentId)) {
+			return (Grid)grids.get(stickyComponentId);
 		}
 		grids = (Map)userProperties.getProperty(WebKeys.CALENDAR_CURRENT_GRID);
-		if (grids != null && grids.containsKey(binderId)) {
-			return (Grid)grids.get(binderId);
+		if (grids != null && grids.containsKey(stickyComponentId)) {
+			return (Grid)grids.get(stickyComponentId);
 		}
 	
 		return null;

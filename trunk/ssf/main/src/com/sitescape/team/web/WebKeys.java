@@ -52,6 +52,7 @@ public class WebKeys {
 	public static final String CALENDAR_WORK_DAY_START = "ssCalendarWorkDayStart";
 	public static final String CALENDAR_GRID_TYPE = "ssGridType";
 	public static final String CALENDAR_GRID_SIZE = "ssGridSize";
+	public static final String CALENDAR_STICKY_ID = "calendarStickyId";
 	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";
 	public static final String TASK_CURRENT_FILTER_TYPE = "ssCurrentTaskFilterType";
 	public static final String CALENDAR_PREV_DATE= "ssPrevDate";
