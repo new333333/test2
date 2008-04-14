@@ -85,7 +85,7 @@ public class EditUserAction extends com.liferay.portlet.enterpriseadmin.action.E
 		
 		if (Validator.isNotNull(oldScreenName)) {
 			// This means that the screen name has changed.
-			// Update user screen name first.
+			// Update user screen name first (requires a separate call).
 			modifyScreenName(PortalUtil.getCompany(req).getWebId(), oldScreenName, user.getScreenName());
 		}
 
