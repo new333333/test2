@@ -37,11 +37,13 @@ dojo.require("dojo.lfx");
 dojo.require("dojo.io.IframeIO");
 
 
-function ss_calendar_data_provider(binderId, calendarIds, isDashboard) {
+function ss_calendar_data_provider(binderId, calendarIds, stickyId, isDashboard) {
 	
 	var binderId = binderId;
 	
 	var calendarIds = calendarIds;
+	
+	var stickyId = stickyId;
 	
 	var isDashboard = (typeof isDashboard != "undefined")?isDashboard:false;
 	
@@ -61,7 +63,8 @@ function ss_calendar_data_provider(binderId, calendarIds, isDashboard) {
 	    	url: ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "find_calendar_events",
 										binderId: binderId, 
 										binderIds: calendarIds,
-										ssDashboardRequest: isDashboard}, reqParams)),
+										ssDashboardRequest: isDashboard,
+										calendarStickyId: stickyId}, reqParams)),
 			error: function(type, data, evt) {
 				alert(ss_not_logged_in);
 			},
@@ -99,7 +102,7 @@ function ss_calendar_data_provider(binderId, calendarIds, isDashboard) {
 	 	}
 		
 	 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, mergeObj({operation: "sticky_calendar_display_settings",
-								binderId: binderId}, options));
+								binderId: binderId, calendarStickyId: stickyId}, options));
 		
 		dojo.io.bind({
 	    	url: url,
@@ -133,7 +136,8 @@ function ss_calendarControl() {
 					(typeof props.eventsTypeChooseId!="undefined")?props.eventsTypeChooseId:null,
 					(typeof props.eventsTypeSelectId!="undefined")?props.eventsTypeSelectId:null,
 					(typeof props.onCalendarStyleChoose!="undefined")?props.onCalendarStyleChoose:null,
-					(typeof props.addEntryURL!="undefined")?props.addEntryURL:null);
+					(typeof props.addEntryURL!="undefined")?props.addEntryURL:null,
+					(typeof props.stickyId!="undefined")?props.stickyId:null);
 	}
 }
 
@@ -151,7 +155,8 @@ function ss_calendarEngine(
 					eventsTypeChooseId,
 					eventsTypeSelectId,
 					onCalendarStyleChoose,
-					addEntryURL) {
+					addEntryURL,
+					stickyId) {
 		
 	this.locale = {
 		dayNamesShort: ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],
@@ -232,6 +237,8 @@ function ss_calendarEngine(
 	var addEntryURL = addEntryURL;
 	
 	var viewSelectorHrefIds = viewSelectorHrefIds;
+	
+	var stickyId = stickyId;
 	
 	var templateInitialized = false;
 	

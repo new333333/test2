@@ -1162,6 +1162,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, null);
 		
 		String eventType = PortletRequestUtils.getStringParameter(request, "eventType", "");
 		if (!"".equals(eventType)) {
@@ -1174,10 +1175,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 			
 			UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
 			
-			Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, binderId, gridType, gridSize);
+			Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, calendarStickyId, gridType, gridSize);
 			
-			getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId)).type);
-			getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId)).size);
+			getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(calendarStickyId)).type);
+			getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(calendarStickyId)).size);
 		}
 		
 		String dayViewType = PortletRequestUtils.getStringParameter(request, "dayViewType", "");
@@ -1590,6 +1591,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			List binderIds = Arrays.asList(PortletRequestUtils.getStringParameters(request, WebKeys.URL_BINDER_IDS));
 			model.put(WebKeys.URL_DASHBOARD_REQUEST, PortletRequestUtils.getBooleanParameter(request, WebKeys.URL_DASHBOARD_REQUEST, false));
 			Binder binder = getBinderModule().getBinder(binderId);
+			String calendarStickyId = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_STICKY_ID, null);
+			
 			
 			Map options = new HashMap();
 			boolean eventsByEntry = PortletRequestUtils.getBooleanParameter(request, "ssEntryEvents", false);
@@ -1633,12 +1636,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 				String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
 				Integer gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
 				
-				Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, binderId, gridType, gridSize);
+				Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, calendarStickyId, gridType, gridSize);
 
 				getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID, grids);
 
-				model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId)).type);
-				model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId)).size);
+				model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(calendarStickyId)).type);
+				model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(calendarStickyId)).size);
 				
 				Integer weekFirstDay = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
 				weekFirstDay = weekFirstDay!=null?weekFirstDay:CalendarHelper.getFirstDayOfWeek();
