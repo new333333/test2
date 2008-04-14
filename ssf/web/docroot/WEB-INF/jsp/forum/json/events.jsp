@@ -44,11 +44,11 @@
 <c:if test="${!empty ssCurrentDate}">
 	currentDate : "<fmt:formatDate value="${ssCurrentDate}" pattern="yyyyMMdd" timeZone="${ssUser.timeZone.ID}"/>",
 </c:if>
-<c:if test="${!empty ssCurrentGridType}">
-	gridType : "${ssCurrentGridType}",
+<c:if test="${!empty ssGridType}">
+	gridType : "${ssGridType}",
 </c:if>
-<c:if test="${!empty ssCurrentGridSize}">
-	gridSize : ${ssCurrentGridSize},
+<c:if test="${!empty ssGridSize}">
+	gridSize : ${ssGridSize},
 </c:if>
 <c:if test="${!empty ssCalendarViewBean.monthInfo}">
 	monthViewInfo : {year : ${ssCalendarViewBean.monthInfo.year}, 

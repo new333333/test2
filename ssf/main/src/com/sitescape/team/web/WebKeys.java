@@ -46,8 +46,7 @@ public class WebKeys {
 	public static final String CALENDAR_ENDTIMESTRING = "cal_endtimestring";
 	public static final String CALENDAR_VIEWBEAN = "ssCalendarViewBean";
 	public static final String CALENDAR_CURRENT_EVENT_TYPE = "ssCurrentEventType";
-	public static final String CALENDAR_CURRENT_GRID_TYPE = "ssCurrentGridType";
-	public static final String CALENDAR_CURRENT_GRID_SIZE = "ssCurrentGridSize";
+	public static final String CALENDAR_CURRENT_GRID = "ssCurrentGrid";
 	public static final String CALENDAR_CURRENT_DAY_VIEW_TYPE = "ssCurrentDayViewType";
 	public static final String CALENDAR_WEEK_FIRST_DAY = "ssCalendarWeekFirstDay";
 	public static final String CALENDAR_WORK_DAY_START = "ssCalendarWorkDayStart";

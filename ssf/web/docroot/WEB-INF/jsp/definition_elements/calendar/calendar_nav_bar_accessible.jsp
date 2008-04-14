@@ -38,7 +38,7 @@ Calendar calendarNextDate = (java.util.Calendar) request.getAttribute("ssNextDat
 Calendar calendarCurrDate = (java.util.Calendar) request.getAttribute("ssCurrDate");
 Calendar calendarRangeEndDate = (java.util.Calendar) request.getAttribute("ssRangeEndDate");
 
-Integer gridSize = (java.lang.Integer) request.getAttribute("ssCurrentGridSize");
+Integer gridSize = (java.lang.Integer) request.getAttribute("ssGridSize");
 String strGridSize = "";
 if (gridSize != null) {
 	strGridSize = gridSize.toString();;
@@ -172,10 +172,10 @@ Date rangeEndDate = calendarRangeEndDate.getTime();
 	
 	<span>
 		&nbsp;&nbsp;
-		<c:if test="${ssCurrentGridType == 'month'}">
+		<c:if test="${ssGridType == 'month'}">
 			<fmt:formatDate value="${ssCurrDateFormat}" pattern="MMMM, yyyy" />
 		</c:if>
-		<c:if test="${ssCurrentGridType == 'day'}">
+		<c:if test="${ssGridType == 'day'}">
 			<c:choose>
 				<c:when test="${ssGridSize == '1' || ssGridSize == '' || ssGridSize == '-1'}">
 					<fmt:formatDate value="${ssCurrDateFormat}" pattern="d MMM yyyy" />		
