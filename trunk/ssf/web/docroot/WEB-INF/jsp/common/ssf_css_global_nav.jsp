@@ -66,6 +66,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 .ss_statusprint	{
 	font-size: ${ss_style_font_smallprint} !important; 
 	font-weight:bold;
+	color: #526394;
 	}
 .ss_fullMenuprint	{
 	font-size: ${ss_style_font_smallprint} !important; 
@@ -75,31 +76,21 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	/* SHARE AND TRACK BUTTONS */		
 	
-a.ss_STButton:focus, a.ss_STButton:hover {
-  	background-image:url("<html:rootPath/>images/pics/sharetrackbkg_grey.png")!important;   
-	background-position: 0px 0px;
-	background-repeat:no-repeat;
-  	color: ${ss_linkbutton_link_hover_color};
+a.ss_STButton:focus,{
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: ${ss_style_font_fineprint};
-  	padding: 1px 2px 1px 3px;
-  	cursor: pointer;
-  	white-space: nowrap;
-  	width:35px;
-  	height:16px;
+  	font-weight: bold
+}
+a.ss_STButton:hover{
+	color: #00ADEF;
+  	background:#00ADEF;
+  	font-weight: bold
 }
 a.ss_STButton {
-  	background-image:url("<html:rootPath/>images/pics/sharetrackbkg_blue.png");   
-	background-position: 0px 0px;
-	background-repeat:no-repeat;
-  	color: #ffffff!important;
+  	color: #526394!important;
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: ${ss_style_font_fineprint};
-  	padding: 1px 2px 1px 3px;
-  	cursor: pointer;
-  	white-space: nowrap;
-  	width:35px;
-  	height:16px;
+  	font-weight: bold
 }
 		
 
@@ -108,18 +99,16 @@ a.ss_STButton {
 #ss_top_nav_buttontwo{
 	height:14px;
 	padding-top:0px;	/* adding in the following to make right sided div */
-	float:right;
+	float:left;
 	vertical-align:top;	
 	margin-right:5px;
-
 	}
-
 #ss_top_nav_buttontwo a {
 	font-family:  Arial, sans-serif;
 	font-size: 9px;
 	color: #FFFFFF;
-	letter-spacing: 0px;
-}
+	letter-spacing: 1px;
+	}
 #ss_top_nav_buttontwo ul{
 	margin:0px;
 	padding:0px;
@@ -137,13 +126,13 @@ a.ss_STButton {
 #ss_top_nav_buttontwo ul li a{
 	float:left;
 	color:#FFF;
-	background-color: #CCCCCC;
+	background-color: #526394;
 	padding:4px 10px 2px 10px;
 	height:14px;
 	}
 #ss_top_nav_buttontwo ul li a:hover{
-	color: #333;
-	background-color: #CCC;
+	color: #FFF;
+	background-color: #00ADEF;
 
 	}	
 	
@@ -163,7 +152,7 @@ a.ss_STButton {
 	letter-spacing: 0px;
 }
 #ss_top_nav_view ul{
-	margin:0 0 0 30px;
+	margin:10px 0 0 0px;
 	list-style:none;
 	width:100%;
 	}
@@ -176,24 +165,23 @@ a.ss_STButton {
 	background-image:url("<html:rootPath/>images/pics/portalepand_grey.png");   
 	background-position: 0px 0px;
 	background-repeat:no-repeat;
-	color:#333;
+	color:#526394;
 	padding:0px 5px 0px 13px;		/* need to keep padding-left to push past box */
 	}
 #ss_top_nav_view ul li a:hover{
 	background-image:url("<html:rootPath/>images/pics/portalepand_red.png");   
 	background-position: 0px 0px;
 	background-repeat:no-repeat;
-	color: #EF2121!important;
+	color: #008EDF!important;
 	}	
 
 	/* LOGO DIVS */	
 	
-.ss_logo1 {
-	background-image:url("<html:rootPath/>images/pics/black_n.png");   
+.ss_logo1 { 
 	background-position: 0px 0px;
 	background-repeat:no-repeat;
-	margin-left: -20px;
-	margin-right: 20px;
+	margin-left: -43px;
+	margin-right: -20px;
 	padding-top: 0px;
 	padding-bottom: 0px;
 
@@ -250,16 +238,16 @@ a.ss_STButton {
 	/*	background:#ffff99;		 center column background colour */
 	}
 	.ss_fivecol .ss_5colleft {
-		right:14%;				/* width of the find places column */
+		right:20%;				/* width of the find places column */
 	/*	background:#B7C9E0;		 left column background colour */
 	}
 	.ss_fivecol .ss_5colleftctr {
-		right:14%;				/* width of the find people column */
+		right:6%;				/* width of the find people column */
 	/*	background:#dddeee;		 left column background colour */
 	}	
 	.ss_fivecol .ss_5col1 {
 		width:34%;				/* width of portal/expanded view column  */
-		left:70%;				/* 100% plus left padding of column */
+		left:65%;				/* 100% plus left padding of column */
 	}
 	.ss_fivecol .ss_5col2 {
 		width:2%;				/*  Width of find people column content (column width minus padding on either side) */
@@ -292,6 +280,13 @@ a.ss_STButton {
 		float:left;
 		height:10px;
 		background-color:#969696;
+		width:100%;
+		}
+	.ss_medline {
+		position:relative;
+		float:left;
+		height:23px;
+		background-color:#D8d8d8;
 		width:100%;
 		}
 		

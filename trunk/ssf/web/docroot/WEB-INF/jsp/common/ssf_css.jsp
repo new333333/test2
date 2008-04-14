@@ -333,7 +333,7 @@ div.ss_style input[type="text"],
 div.ss_style input[type="password"],
 div.ss_style select,
 div.ss_global_toolbar_quick input {
-  padding: 1px;
+  padding: 2px;
 }
 
   
