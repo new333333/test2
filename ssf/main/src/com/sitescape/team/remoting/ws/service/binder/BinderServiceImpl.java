@@ -1,5 +1,6 @@
 package com.sitescape.team.remoting.ws.service.binder;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,7 +14,6 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -22,10 +22,8 @@ import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.util.DomInputData;
 import com.sitescape.team.security.function.Function;
-import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
-import com.sitescape.team.util.ResolveIds;
 
 public class BinderServiceImpl extends BaseService implements BinderService {
 	public long addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML)
@@ -40,12 +38,12 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 			throw new RemotingException(e);
 		}
 	}
-	public void setDefinitions(String accessToken, long binderId, List<String>definitionIds, List<String>workflowAssociations) {
+	public void setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
 		HashMap wfs = new HashMap();
-		for (int i=0; i+1<workflowAssociations.size(); i+=2) {
-			wfs.put(workflowAssociations.get(i), workflowAssociations.get(i+1));
+		for (int i=0; i+1<workflowAssociations.length; i+=2) {
+			wfs.put(workflowAssociations[i], workflowAssociations[i+1]);
 		}
-		getBinderModule().setDefinitions(binderId, definitionIds, wfs);
+		getBinderModule().setDefinitions(binderId, Arrays.asList(definitionIds), wfs);
 	}
 	public String getTeamMembersAsXML(String accessToken, long binderId)
 	{
@@ -60,8 +58,8 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		
 		return doc.getRootElement().asXML();
 	}
-	public void setTeamMembers(String accessToken, long binderId, List<Long> memberIds) {
-		getBinderModule().setTeamMembers(binderId, memberIds);
+	public void setTeamMembers(String accessToken, long binderId, Long[] memberIds) {
+		getBinderModule().setTeamMembers(binderId, Arrays.asList(memberIds));
 	}
 	public void setFunctionMembership(String accessToken, long binderId, String inputDataAsXml) {
 		Binder binder = getBinderModule().getBinder(binderId);

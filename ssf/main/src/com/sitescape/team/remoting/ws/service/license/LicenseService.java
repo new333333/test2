@@ -28,15 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.service.license;
 
-import java.util.Collection;
-
-import org.dom4j.Document;
-
 public interface LicenseService {
 
 	public void updateLicense(String accessToken);
-	
-	public Collection<Document> getLicenses(String accessToken);
 
 	public long getRegisteredUsers(String accessToken);
 	

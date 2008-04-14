@@ -28,10 +28,6 @@
  */
 package com.sitescape.team.remoting.ws.service.license;
 
-import java.util.Collection;
-
-import org.dom4j.Document;
-
 import com.sitescape.team.license.LicenseException;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
@@ -41,11 +37,7 @@ public class LicenseServiceImpl extends BaseService implements LicenseService {
 	public long getExternalUsers(String accessToken) {
 		return getLicenseModule().getExternalUsers();
 	}
-
-	public Collection<Document> getLicenses(String accessToken) {
-		return getLicenseModule().getLicenses();
-	}
-
+	
 	public long getRegisteredUsers(String accessToken) {
 		return getLicenseModule().getRegisteredUsers();
 	}
