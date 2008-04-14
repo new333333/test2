@@ -1158,9 +1158,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 	}
 	
 	private void ajaxStickyCalendarDisplaySettings(ActionRequest request, 
-			ActionResponse response) {
+			ActionResponse response) throws PortletRequestBindingException {
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 		User user = RequestContextHolder.getRequestContext().getUser();
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 		
 		String eventType = PortletRequestUtils.getStringParameter(request, "eventType", "");
 		if (!"".equals(eventType)) {
@@ -1173,11 +1174,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 			
 			UserProperties userProperties = getProfileModule().getUserProperties(user.getId());
 			
-			gridType = EventsViewHelper.setCalendarGridType(portletSession, userProperties, gridType);
-			gridSize = EventsViewHelper.setCalendarGridSize(portletSession, userProperties, gridSize);
+			Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, binderId, gridType, gridSize);
 			
-			getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID_TYPE, gridType);
-			getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID_SIZE, gridSize);
+			getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId)).type);
+			getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId)).size);
 		}
 		
 		String dayViewType = PortletRequestUtils.getStringParameter(request, "dayViewType", "");
@@ -1633,14 +1633,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 				String gridType = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_GRID_TYPE, "");
 				Integer gridSize = PortletRequestUtils.getIntParameter(request, WebKeys.CALENDAR_GRID_SIZE, -1);
 				
-				gridType = EventsViewHelper.setCalendarGridType(portletSession, userProperties, gridType);
-				gridSize = EventsViewHelper.setCalendarGridSize(portletSession, userProperties, gridSize);
+				Map grids = EventsViewHelper.setCalendarGrid(portletSession, userProperties, binderId, gridType, gridSize);
 
-				getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID_TYPE, gridType);
-				getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID_SIZE, gridSize);
+				getProfileModule().setUserProperty(user.getId(), WebKeys.CALENDAR_CURRENT_GRID, grids);
 
-				model.put(WebKeys.CALENDAR_CURRENT_GRID_TYPE, gridType);
-				model.put(WebKeys.CALENDAR_CURRENT_GRID_SIZE, gridSize);
+				model.put(WebKeys.CALENDAR_GRID_TYPE, ((EventsViewHelper.Grid)grids.get(binderId)).type);
+				model.put(WebKeys.CALENDAR_GRID_SIZE, ((EventsViewHelper.Grid)grids.get(binderId)).size);
 				
 				Integer weekFirstDay = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
 				weekFirstDay = weekFirstDay!=null?weekFirstDay:CalendarHelper.getFirstDayOfWeek();
