@@ -116,7 +116,7 @@ public class FacadeImpl extends AbstractFacade {
 	}
 	
 	public void uploadFolderFileStaged(long binderId, long entryId, 
-			String fileUploadDataItemName, String stagedFileRelativePath) {
+			String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
 		boolean enable = SPropsUtil.getBoolean("staging.upload.files.enable", false);
 		if(enable) {
 			fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
@@ -127,7 +127,7 @@ public class FacadeImpl extends AbstractFacade {
 			File file = new File(rootPath, stagedFileRelativePath);
 			
 			// Wrap it in a datastructure expected by our app.
-			SimpleMultipartFile mf = new SimpleMultipartFile(file.getName(), file, false);
+			SimpleMultipartFile mf = new SimpleMultipartFile(fileName, file, false);
 						
 			// Create a map of file item names to items 
 			Map fileItems = new HashMap();

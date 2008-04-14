@@ -65,7 +65,7 @@ public interface Facade {
 			String fileUploadDataItemName, String fileName);
 
 	public void uploadFolderFileStaged(long folderId, long entryId, 
-			String fileUploadDataItemName, String stagedFileRelativePath);
+			String fileUploadDataItemName, String fileName, String stagedFileRelativePath);
 
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML);
 
