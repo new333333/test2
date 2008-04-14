@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.folder;
 
+import java.util.Calendar;
 import java.util.HashMap;
 
 import org.dom4j.Document;
@@ -35,7 +36,6 @@ import org.dom4j.Document;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoUserByTheNameException;
-import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.remoting.RemotingException;
@@ -46,7 +46,7 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 		MigrationService {
 
 	public long addFolder(String accessToken, long parentId, String definitionId,
-			String inputDataAsXML, Timestamps timestamps) {
+			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		try {
@@ -60,22 +60,23 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 
 	public long addFolderEntry(String accessToken, long binderId, String definitionId,
 			String inputDataAsXML, String attachedFileName,
-			Timestamps timestamps) {
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		long entryId = super.addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName);
-		alterTimestamps(binderId, entryId, timestamps);
+		alterTimestamps(binderId, entryId, 
+				new Timestamps(creator, creationDate, modifier, modificationDate));
 		return entryId;
 	}
 
 	public long addReply(String accessToken, long binderId, long parentId, String definitionId,
-			String inputDataAsXML, Timestamps timestamps) {
+			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		long entryId = super.addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML);
-		alterTimestamps(binderId, entryId, timestamps);
+		alterTimestamps(binderId, entryId, new Timestamps(creator, creationDate, modifier, modificationDate));
 		return entryId;
 	}
 
 	public void uploadFolderFile(String accessToken, long binderId, long entryId,
 			String fileUploadDataItemName, String fileName,
-			Timestamps timestamps) {
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		super.uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	
