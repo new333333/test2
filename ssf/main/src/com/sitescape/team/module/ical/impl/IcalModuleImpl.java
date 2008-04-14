@@ -112,6 +112,7 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.util.Html;
 import com.sitescape.util.cal.DayAndPosition;
 
 /**
@@ -224,7 +225,9 @@ public class IcalModuleImpl implements IcalModule {
 				Iterator it = todoComponent.getProperties(Property.ATTENDEE).iterator();
 				while (it.hasNext()) {
 					Attendee attendee = (Attendee)it.next();
-					attendees.add(attendee.getParameter(Parameter.CN).getValue());
+					if (attendee.getParameter(Parameter.CN) != null) {
+						attendees.add(attendee.getParameter(Parameter.CN).getValue());
+					}
 				}
 				
 				handler.handleTodo(event, description, summary, 
@@ -241,15 +244,31 @@ public class IcalModuleImpl implements IcalModule {
 		}
 	}
 	
+	/**
+	 * Parse VEVENT or VTODO.
+	 * 
+	 * @param start
+	 * @param end
+	 * @param due
+	 * @param duration
+	 * @param recurrence
+	 * @param recurrenceId
+	 * @param timeZones
+	 * @return
+	 */
 	private Event parseEvent(DtStart start, DtEnd end, Due due, Duration duration, RRule recurrence,
-			RecurrenceId recurrenceId, Map<String, TimeZone> timeZones) {
+			RecurrenceId recurrenceId, Map<String, TimeZone> timeZones) {	
+		if (start == null && end == null && due == null && duration == null) {
+			return null;
+		}
+		
 		Event event = new Event();
 		
-		GregorianCalendar startCal = new GregorianCalendar();
 		if (start != null) {
+			GregorianCalendar startCal = new GregorianCalendar();
 			startCal.setTime(start.getDate());
+			event.setDtStart(startCal);
 		}
-		event.setDtStart(startCal);
 		
 		event.setAllDaysEvent(isAllDaysEvent(start));
 		
@@ -319,7 +338,7 @@ public class IcalModuleImpl implements IcalModule {
 	}
 
 	private boolean isAllDaysEvent(DtStart start) {
-		return !((start.getParameter(Parameter.TZID) != null) || 
+		return start != null && !((start.getParameter(Parameter.TZID) != null) || 
 				(start.getParameter(Parameter.TZID) == null && 
 					start.getParameter(Value.DATE.getName()) == null));
 	}
@@ -389,6 +408,13 @@ public class IcalModuleImpl implements IcalModule {
 			public void handleEvent(Event event, String description, String summary) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 				
+				if (summary != null && summary.length() > 255) {
+					String summmaryTemp = summary.substring(0, 252);
+					int indexLastAllowedSpace = summmaryTemp.lastIndexOf(" ");
+					summmaryTemp = summary.substring(0, indexLastAllowedSpace) + "...";
+					description = "..." + summary.substring(indexLastAllowedSpace, summary.length()) + "\n\n" + (description != null ? description : "");
+					summary = summmaryTemp;
+				}
 				formData.put("description", new String[] {description != null ? description : ""});
 				formData.put("title", new String[] {summary != null ? summary : ""});
 				formData.put(eventName, event);
@@ -406,6 +432,14 @@ public class IcalModuleImpl implements IcalModule {
 			
 			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List attendee) {
 				Map<String, Object> formData = new HashMap<String, Object>();
+				
+				if (summary != null && summary.length() > 255) {
+					String summmaryTemp = summary.substring(0, 252);
+					int indexLastAllowedSpace = summmaryTemp.lastIndexOf(" ");
+					summmaryTemp = summary.substring(0, indexLastAllowedSpace) + "...";
+					description = "..." + summary.substring(indexLastAllowedSpace, summary.length()) + "\n\n" + (description != null ? description : "");
+					summary = summmaryTemp;
+				}
 				
 				formData.put("description", new String[] {description != null ? description : ""});
 				formData.put("title", new String[] {summary != null ? summary : ""});

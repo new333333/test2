@@ -33,9 +33,7 @@
 package com.sitescape.team.taglib;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Iterator;
 import java.util.TimeZone;
 
 import javax.servlet.RequestDispatcher;
@@ -44,15 +42,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.util.NLT;
-import com.sitescape.util.cal.DayAndPosition;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -94,8 +89,8 @@ public class Eventtext extends TagSupport {
 
 			User user = RequestContextHolder.getRequestContext().getUser();
 
-			Calendar st = event.getDtStart();
-			Calendar en = event.getDtEnd();
+			Calendar startDate = event.getDtStart();
+			Calendar endDate = event.getDtEnd();
 
 			DateFormat dateFormat = null;
 			
@@ -114,8 +109,8 @@ public class Eventtext extends TagSupport {
 			}
 
 
-			String startString = dateFormat.format(st.getTime());
-			String endString = dateFormat.format(en.getTime());
+			String startString = dateFormat.format(startDate.getTime());
+			String endString = dateFormat.format(endDate.getTime());
 
 			String repeatString = EventsViewHelper.eventToRepeatHumanReadableString(event, user.getLocale());
 
