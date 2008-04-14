@@ -3,38 +3,6 @@
 
 <beans>
 
-	<bean id="propertyPlaceholderConfigurer" 
-		class="com.sitescape.team.spring.beans.factory.config.PropertyPlaceholderConfigurer" 
-		depends-on="sPropsUtil">	
-		<property name="location"><value>config/ssf.properties</value></property>								
-	</bean>
-
-	<!-- MultipartResolver implementation (uses Jakarta Commons FileUpload) -->
-	<bean id="multipartResolver" 
-		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-	
-		<!-- Maximum file size in bytes = Integer.MAX_VALUE = 0x7fffffff -->
-		<property name="maxUploadSize">
-			<value>2147483647</value>
-		</property>
-		<!-- Maximum allowed in-memory size in bytes before uploads are written
-			 directly to disk. Keep it small so that we can handle large number
-			 of large files concurrently using small memory footprint. -->
-		<property name="maxInMemorySize">
-			<value>4096</value>
-		</property>
-		<!-- Temporary directory where uploaded files get stored. Temporary
-			 files are automatically cleared upon completion of request so
-			 they'd better be moved or copied to somewhere else before they
-			 are gone. -->
-		<property name="uploadTempDir">
-			<value>WEB-INF/tmp</value>
-		</property>	
-		<property name="defaultEncoding">
-			<value>${web.char.encoding}</value>
-		</property>
-	</bean>
-
 	<!-- Handler mapping implementation that maps from URLs to request handler beans -->
 	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="interceptors">
