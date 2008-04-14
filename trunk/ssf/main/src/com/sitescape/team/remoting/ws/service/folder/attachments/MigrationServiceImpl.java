@@ -28,13 +28,16 @@
  */
 package com.sitescape.team.remoting.ws.service.folder.attachments;
 
+import java.util.Calendar;
+
 public class MigrationServiceImpl extends com.sitescape.team.remoting.ws.service.folder.MigrationServiceImpl {
 
 	AttachmentUtilities attachmentUtilities = new AttachmentUtilities(this);
 	
 	@Override
 	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName, Timestamps timestamps) {
+			String fileUploadDataItemName, String fileName, 
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
 }

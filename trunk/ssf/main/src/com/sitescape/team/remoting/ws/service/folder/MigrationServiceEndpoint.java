@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.remoting.ws.service.folder;
 
+import java.util.Calendar;
+
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
 public class MigrationServiceEndpoint extends ServletEndpointSupport implements MigrationService {
@@ -41,20 +43,28 @@ public class MigrationServiceEndpoint extends ServletEndpointSupport implements 
 		return migrationService;
 	}
 	
-	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps) {
-		return getMigrationService().addFolder(accessToken, parentId, definitionId, inputDataAsXML, timestamps);
+	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML, String creator, 
+			Calendar creationDate, String modifier, Calendar modificationDate) {
+		return getMigrationService().addFolder(accessToken, parentId, definitionId, inputDataAsXML, 
+				 creator, creationDate, modifier, modificationDate);
 	}
 	
-	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Timestamps timestamps) {
-		return getMigrationService().addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, timestamps);
+	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, 
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return getMigrationService().addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, 
+				creator, creationDate, modifier, modificationDate);
 	}
 
-	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, Timestamps timestamps) {
-		return getMigrationService().addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, timestamps);
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, 
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return getMigrationService().addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, 
+				creator, creationDate, modifier, modificationDate);
 	}
 
-	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, Timestamps timestamps) {
-		getMigrationService().uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName, timestamps);
+	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, 
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		getMigrationService().uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName, 
+				creator, creationDate, modifier, modificationDate);
 	}
 
 }
