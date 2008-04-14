@@ -30,9 +30,13 @@ package com.sitescape.team.bridge;
 
 import java.util.HashMap;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.profile.ProfileModule;
@@ -43,21 +47,30 @@ import com.sitescape.team.util.SpringContextUtil;
 
 public class ProfileBridge {
 	
+	private static Log logger = LogFactory.getLog(ProfileBridge.class);
+
 	private static final String PORTAL_PROFILE_DELETE_USER_WORKSPACE = "portal.profile.deleteUserWorkspace";
 	private static final boolean PORTAL_PROFILE_DELETE_USER_WORKSPACE_DEFAULT_VALUE = false;
 	
-	public static void modifyScreenName(String oldScreenName, String newScreenName) 
-	throws AccessControlException, WriteFilesException {
+	public static void modifyScreenName(String oldScreenName,
+			String newScreenName) throws AccessControlException,
+			WriteFilesException {
 		String zoneName = RequestContextHolder.getRequestContext().getZoneName();
-		
-		User user = getProfileDao().findUserByName(oldScreenName, zoneName);
-		
+
 		HashMap map = new HashMap();
 		map.put("name", newScreenName);
 		map.put("foreignName", newScreenName);
-		
-		getProfileModule().modifyEntry(user.getParentBinder().getId(), 
-				user.getId(), new MapInputData(map));
+
+		try {
+			User user = getProfileDao().findUserByName(oldScreenName, zoneName);
+
+			getProfileModule().modifyEntry(user.getParentBinder().getId(),
+					user.getId(), new MapInputData(map));
+		} catch (NoUserByTheNameException e) {
+			// The user doesn't exist on the Teaming side.
+			// This is possible, so don't throw an error.
+			logger.warn(e.toString());
+		}
 	}
 	
 	public static void deleteUserByName(String userName) {
