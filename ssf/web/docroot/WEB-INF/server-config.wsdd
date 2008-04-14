@@ -124,7 +124,6 @@
 		<parameter name="wsdlPortType" value="MigrationServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
-		<beanMapping qname="ns:Timestamps" xmlns:ns="http://model.migration.service.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.service.folder.MigrationService$Timestamps"/>
 	</service>
 	<service name="BinderService" provider="java:RPC" style="rpc" use="encoded">
 	 	<requestFlow>
