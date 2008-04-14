@@ -28,8 +28,6 @@
  */
 package com.sitescape.team.remoting.ws;
 
-import java.util.List;
-
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
 import com.sitescape.team.remoting.Facade;
@@ -61,7 +59,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		return this.facade.getDefinitionListAsXML();
 	}
 
-	public void setDefinitions(long binderId, List<String>definitionIds, List<String>workflowAssociations) {
+	public void setDefinitions(long binderId, String[] definitionIds, String[] workflowAssociations) {
 		this.facade.setDefinitions(binderId, definitionIds, workflowAssociations);
 	}
 	public void setFunctionMembership(long binderId, String inputDataAsXml) {
@@ -161,7 +159,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public String getTeamsAsXML() {
 		return this.facade.getTeamsAsXML();
 	}
-	public void setTeamMembers(long binderId, List<Long> memberIds) {
+	public void setTeamMembers(long binderId, Long[] memberIds) {
 		this.facade.setTeamMembers(binderId, memberIds);
 	}
 
