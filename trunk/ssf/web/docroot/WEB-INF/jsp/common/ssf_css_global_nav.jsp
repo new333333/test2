@@ -83,7 +83,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background: #FFFFFF;
 	}
 	
-	/* SHARE AND TRACK BUTTONS */		
+	/* BLUE? SHARE AND TRACK BUTTONS */		
 	
 a.ss_STButton:focus,{
   	font-family: ${ss_style_folder_view_font_family};
@@ -99,7 +99,7 @@ a.ss_STButton {
   	font-size: ${ss_style_font_fineprint};
 }
 
-	/* SHARE AND TRACK BUTTONS */
+	/* WHITE? SHARE AND TRACK BUTTONS */
 
 .clearSTButton{ /* generic container (i.e. div) for floating buttons */
     overflow: hidden;
@@ -110,8 +110,8 @@ a.buttonSTButton {
     color: #444;
     display: block;
     float: left;
-    font: normal 12px arial, sans-serif;
-    height: 24px;
+    font: normal 10px arial, sans-serif;
+    height: 14px;
     margin-right: 6px;
     padding-right: 18px; /* sliding doors padding */
     text-decoration: none;
@@ -119,7 +119,7 @@ a.buttonSTButton {
 a.buttonSTButton span {
     background: transparent url('bg_button_span.gif') no-repeat;
     display: block;
-    line-height: 14px;
+    line-height: 11px;
     padding: 5px 0 5px 18px;
     a.button:active {
     background-position: bottom right;
