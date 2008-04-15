@@ -3581,6 +3581,7 @@ div.ss_cal_monthEventBody {
   border-left-style: solid;
   border-top: 0;
   border-bottom: 0;
+  overflow: hidden;
 }
 
 div.ss_cal_monthEventBody a, div.ss_cal_monthEventBody a:hover, 
