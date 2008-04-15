@@ -31,7 +31,8 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_para">
-<div align="right">
+
+<div id="ss_nextPage" align="right">
 <c:if test="${ss_trackedPlacesPage > '0'}">
 <a href="javascript: ;" 
   onClick="ss_showDashboardPage('${ssBinder.id}', 'newTracked', '${ss_trackedPlacesPage}', 'previous', 'ss_dashboardWhatsNewTracked${renderResponse.namespace}');return false;">
@@ -52,7 +53,8 @@
 <c:if test="${empty ss_whatsNewTrackedPlaces}">
 <img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
 </c:if>
-</div>
+</div><!--end of arrow division-->
+<div id="ss_hints"><em><ssf:nlt tag="relevance.placesBeingTracked"/></em></div>
   <div id="ss_today">
   <div id="ss_mydocs_para" >
   <c:forEach var="entry" items="${ss_whatsNewTrackedPlaces}">
@@ -96,7 +98,7 @@
 				title="${path}"
 				><span>${title}</span></a>
 		</c:if>
-	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
+	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" title="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
 	  <c:if test="${!empty entry._desc}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 

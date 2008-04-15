@@ -208,6 +208,22 @@ div.ss_canvas {
 	padding-top:5px;
 
 	}
+	/*COMMON STYLE ITEMS*/	
+#ss_hints{
+	font-size: 11px;
+	line-height: 13px;
+	padding-right: 2px;
+	padding-bottom:5px;
+	color:#1176D4;
+	margin-right: 5px;
+	margin-bottom: 5px;
+	}
+#ss_nextPage{			/* to use when need to display left right arrows */
+	margin-top:0px;
+	border-bottom:dashed 1px #777777;
+	margin-bottom:5px;
+	
+	}		
 	/*TRACKED ITEMS*/
 #ss_trackedItems{
 	margin: 1% 0 2% 0;
@@ -217,15 +233,6 @@ div.ss_canvas {
 	color:#444444;
 	background-color:#CCD2E3;
 	line-height: 1.6em;
-	}
-#ss_hints{
-	font-size: 11px;
-	line-height: 13px;
-	padding-right: 2px;
-	padding-bottom:5px;
-	color:#1176D4;
-	margin-right: 5px;
-	margin-bottom: 10px;
 	}
 #ss_im_status{
 	font-size: 11px;
