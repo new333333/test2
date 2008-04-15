@@ -543,13 +543,6 @@ ss_statusCurrent = "${ssUser.status}";
 		      style="visibility:hidden;margin:20px 0px 0px -150px;padding:0px;"
 		      ></div>
           </li>
-          <li>
-			<a style="display:inline;" class="ss_fullMenuButton ss_smallprint" 
-  			href="#" 
-			title="<ssf:nlt tag="alt.fullMenu"/>">
-			<span class="ss_smallprint"><ssf:nlt tag="alt.fullMenu"/></span>
-			</a>
-			</li>
                  
         </ul>
       </div>
@@ -574,29 +567,31 @@ ss_statusCurrent = "${ssUser.status}";
 <div class="ss_style_trans" id="ss_favorites_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">
 
-<ssf:popupPane width="250px" titleTag="favorites"
+<ssf:popupPane width="200px" titleTag=""
       closeScript="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();return false;">
 
 
-<div style="padding: 5px 10px 5px 10px;">
+<div style="padding: 2px 5px 2px 5px;">
 
   <c:if test="${ssBinder != null && ssEntry.entityType != 'folderEntry'}">
   	<div class="ss_style_trans">
+  	<img title="<ssf:alt tag="favorites.addCurrentPage"/>" src="<html:brandedImagesPath/>icons/button_new_bookmark.gif" border="0" />
 		<a href="javascript: ;" 
 		 onClick="ssMyFavorites${renderResponse.namespace}.addBinderToFavorites('<ssf:url 
 		    adapter="true" portletName="ss_forum" action="__ajax_request" actionUrl="true" >
 			<ssf:param name="operation" value="add_favorite_binder" />
 			<ssf:param name="binderId" value="${ssBinder.id}" />
 			<ssf:param name="viewAction" value="${action}" /></ssf:url>');return false;"
-		><img <ssf:alt tag="favorites.addCurrentPage"/> src="<html:brandedImagesPath/>icons/button_new_bookmark.gif" border="0" />
+		>
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.addCurrentPage" 
 			text="Add the current page to the favorites list..."/></span></a>
   	</div>
   </c:if>
   <div class="ss_style_trans">
+  		<img title="<ssf:alt tag="favorites.edit"/>" src="<html:brandedImagesPath/>icons/button_edit_bookmark.gif" border="0" />
 		<a href="javascript: ;" 
 		 onClick="ssMyFavorites${renderResponse.namespace}.showhideFavoritesEditor()"
-		><img <ssf:alt tag="favorites.edit"/> src="<html:brandedImagesPath/>icons/button_edit_bookmark.gif" border="0" />
+		>
 		<span class="ss_bold ss_smallprint"><ssf:nlt tag="favorites.edit" 
 			text="Edit Favorites"/></span></a>
   </div>
@@ -650,9 +645,9 @@ ss_statusCurrent = "${ssUser.status}";
 <!-- Start of myteams pane -->
 <div class="ss_style_trans" id="ss_myteams_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">
-<ssf:popupPane width="230px" titleTag="navigation.myTeams"
+<ssf:popupPane width="175px" titleTag=""
       closeScript="ssMyTeams${renderResponse.namespace}.hide();return false;">
-<div style="padding: 5px 10px 5px 10px;">
+<div style="padding: 2px 5px 2px 5px;">
   <div class="ss_style_trans" id="ss_myteams${renderResponse.namespace}" align="left">
 	  <div style="float: right;" id="ss_myteams_loading${renderResponse.namespace}"><ssf:nlt tag="Loading"/></div>
 	  <div id="ss_myteams_list${renderResponse.namespace}">&nbsp;</div>
