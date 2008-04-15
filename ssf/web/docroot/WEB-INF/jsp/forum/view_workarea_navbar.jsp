@@ -430,6 +430,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   </div><!-- end of colmidright-->
 </div>   <!-- end of colmask fivecol-->
 <div class="ss_darkline"></div>
+<div class="ss_medline">
 
 <div align="right">
 <div id="ss_statusArea" class="ss_global_toolbar_maximized"><!-- beginning of other rows-->  
@@ -453,7 +454,7 @@ ss_statusCurrent = "${ssUser.status}";
 
 <li>
 <c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-<a style="display:inline;" class="ss_STButton ss_smallprint" 
+<a style="display:inline;" class="ss_STButton ss_fineprint" 
   href="<ssf:url adapter="true" portletName="ss_forum" 
 		action="__ajax_relevance" actionUrl="false"><ssf:param 
 		name="operation" value="share_this_binder" /><ssf:param 
@@ -461,14 +462,14 @@ ss_statusCurrent = "${ssUser.status}";
   onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
 <c:if test="${ssBinder.entityType == 'workspace'}"> 
 	title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
-	<span class="ss_smallprint"><ssf:nlt tag="relevance.justShare"/></span></c:if>
+	<span class="ss_fineprint"><ssf:nlt tag="relevance.justShare"/></span></c:if>
 <c:if test="${ssBinder.entityType == 'folder'}">
   <c:if test="${ssDefinitionFamily != 'calendar'}">
   	title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
-  	<span class="ss_smallprint"><ssf:nlt tag="relevance.justShare"/></span></c:if>
+  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justShare"/></span></c:if>
   <c:if test="${ssDefinitionFamily == 'calendar'}">
   	title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
-  	<span class="ss_smallprint"><ssf:nlt tag="relevance.justShare"/></span></c:if>
+  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justShare"/></span></c:if>
 </c:if>
 </a>
 </c:if>
@@ -476,23 +477,23 @@ ss_statusCurrent = "${ssUser.status}";
 
 <li>
 <c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-<a style="display:inline;" class="ss_STButton ss_smallprint" href="javascript: ;" 
+<a style="display:inline;" class="ss_STButton ss_fineprint" href="javascript: ;" 
   onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
 <c:if test="${ssBinder.entityType == 'workspace'}">
   <c:if test="${ssBinder.definitionType != 12}">
   title="<ssf:nlt tag="relevance.trackThisWorkspace"/>" >
-  	<span class="ss_smallprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
   <c:if test="${ssBinder.definitionType == 12}">
   	title="<ssf:nlt tag="relevance.trackThisPerson"/>" >
-  	<span class="ss_smallprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
 </c:if>
 <c:if test="${ssBinder.entityType == 'folder'}">
   <c:if test="${ssDefinitionFamily != 'calendar'}">
   	title="<ssf:nlt tag="relevance.trackThisFolder"/>" >
-  	<span class="ss_smallprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
   <c:if test="${ssDefinitionFamily == 'calendar'}">
   	title="<ssf:nlt tag="relevance.trackThisCalendar"/>" >
-  	<span class="ss_smallprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
 </c:if>
 </a>
 </c:if>
@@ -543,10 +544,11 @@ ss_statusCurrent = "${ssUser.status}";
 		      style="visibility:hidden;margin:20px 0px 0px -150px;padding:0px;"
 		      ></div>
           </li>
+        
                  
         </ul>
       </div>
- </div>
+ </div></div>
       <div class="ss_clear_float"></div>
 
 
@@ -678,9 +680,9 @@ function ss_hideRecentPlacesDiv${renderResponse.namespace}() {
 }
 </script>
 
-<div style="padding-bottom:4px;"></div>
+<div style="padding-bottom:0px;"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
-<div style="padding-bottom:4px;"></div>
+<div style="padding-bottom:2px;"></div>
 
 <script type="text/javascript">
 ss_workarea_showPseudoPortal${renderResponse.namespace}()
