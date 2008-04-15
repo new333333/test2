@@ -2392,6 +2392,8 @@ if (!window["ss_calendar_import"]) {
 		},
 		
 		uploadFile : function (prefix) {
+			var box = dojo.byId("ss_calendar_import_form");
+			ss_toggleAjaxLoadingIndicator(box, true);			
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"uploadICalendarFile"});
 			dojo.debug("uploadFile");
 			dojo.io.bind({
@@ -2507,9 +2509,7 @@ if (!window.ss_calendar_settings) {
 					} else {
 						alert("Wrong server response.");
 					}
-					try {
-					  	document.location.reload();	  	
-	     			} catch (e) {alert(e);}
+				  	document.location.reload();	  	
 				},
 				preventCache: true,
 				mimetype: "text/json",
