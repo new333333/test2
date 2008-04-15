@@ -72,27 +72,64 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: ${ss_style_font_smallprint} !important; 
 	color:#333;
 	text-align:center!important;
+	}
+	
+	/* STATUS BACKGROUND CHANGE */
+	
+.ss_statusAreaBlur input{
+	background:	#CCCCCC;
 	}	
+.ss_statusArea input{
+	background: #FFFFFF;
+	}
 	
 	/* SHARE AND TRACK BUTTONS */		
 	
 a.ss_STButton:focus,{
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: ${ss_style_font_fineprint};
-  	font-weight: bold
 }
 a.ss_STButton:hover{
 	color: #00ADEF;
   	background:#00ADEF;
-  	font-weight: bold
 }
 a.ss_STButton {
   	color: #526394!important;
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: ${ss_style_font_fineprint};
-  	font-weight: bold
 }
-		
+
+	/* SHARE AND TRACK BUTTONS */
+
+.clearSTButton{ /* generic container (i.e. div) for floating buttons */
+    overflow: hidden;
+    width: 100%;
+	}
+a.buttonSTButton {
+    background: transparent url('bg_button_a.gif') no-repeat scroll top right;
+    color: #444;
+    display: block;
+    float: left;
+    font: normal 12px arial, sans-serif;
+    height: 24px;
+    margin-right: 6px;
+    padding-right: 18px; /* sliding doors padding */
+    text-decoration: none;
+	}
+a.buttonSTButton span {
+    background: transparent url('bg_button_span.gif') no-repeat;
+    display: block;
+    line-height: 14px;
+    padding: 5px 0 5px 18px;
+    a.button:active {
+    background-position: bottom right;
+    color: #000;
+    outline: none; /* hide dotted outline in Firefox */
+	}
+a.buttonSTButton:active span {
+    background-position: bottom left;
+    padding: 6px 0 4px 18px; /* push text down 1px */
+	}		
 
 	/* NAVIGATION BUTTONS FOR MY WORKSPACE, MY TEAMS, FAVORITES */	
 
@@ -247,7 +284,7 @@ a.ss_STButton {
 	}	
 	.ss_fivecol .ss_5col1 {
 		width:34%;				/* width of portal/expanded view column  */
-		left:65%;				/* 100% plus left padding of column */
+		left:68%;				/* 100% plus left padding of column */
 	}
 	.ss_fivecol .ss_5col2 {
 		width:2%;				/*  Width of find people column content (column width minus padding on either side) */
