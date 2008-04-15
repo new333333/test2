@@ -492,6 +492,7 @@ public class WebKeys {
 	public static final String CONDITION_ELEMENT_OPERATION="conditionElementOperation";
 	public static final String CONDITION_ELEMENT_VALUE="conditionElementValue";
 	public static final String CONFIG_ELEMENT="ssConfigElement";
+	public static final String CONFIG_ELEMENT_RELEVANCE_DASHBOARD="ssRelevanceDashboardConfigElement";
     public static final String CONFIG_DEFINITION="ssConfigDefinition";
     public static final String CONFIG_JSP_STYLE="ssConfigJspStyle";
     public static final String CONFIG_FALLBACK_JSP="ssConfigJsp";

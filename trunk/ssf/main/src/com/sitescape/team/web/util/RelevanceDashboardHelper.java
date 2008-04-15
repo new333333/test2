@@ -44,6 +44,9 @@ import java.util.SortedSet;
 import java.util.TimeZone;
 import java.util.TreeMap;
 
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
+
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Element;
 
@@ -51,6 +54,7 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.User;
@@ -75,8 +79,8 @@ import com.sitescape.team.web.WebKeys;
 
 public class RelevanceDashboardHelper {
 	
-	public static void setupRelevanceDashboardBeans(AllModulesInjected bs, Long binderId, 
-			String type, Map model) {
+	public static void setupRelevanceDashboardBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Long binderId, String type, Map model) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//No dashboard for the guest account
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
@@ -86,28 +90,29 @@ public class RelevanceDashboardHelper {
 		Binder userWorkspace = bs.getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, userWorkspace);
 		
-		if (ObjectKeys.RELEVANCE_DASHBOARD_DASHBOARD.equals(type)) {
-			setupTasksBeans(bs, userWorkspace, model);
+		if (ObjectKeys.RELEVANCE_DASHBOARD_PROFILE.equals(type)) {
+			setupProfileBeans(bs, request, response, userWorkspace, model);
+			
+		} else if (ObjectKeys.RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS.equals(type)) {
+			setupTasksBeans(bs, userWorkspace, model); 
 			setupTrackedCalendarBeans(bs, userWorkspace, model);
-			setupDocumentsBeans(bs, userWorkspace, model);
-			setupViewedEntriesBean(bs, userWorkspace, model);
 			setupTrackedItemsBeans(bs, userWorkspace, model);
 			
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_NETWORK_DASHBOARD.equals(type)) {
+		} else if (ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW.equals(type)) {
+			setupDocumentsBeans(bs, userWorkspace, model);
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
-			setupTrackedPeopleBeans(bs, userWorkspace, model);
-			setupSharedItemsBeans(bs, userWorkspace, model);
-			setupActivitiesBean(bs, userWorkspace, model);
-			
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_SITE_DASHBOARD.equals(type)) {
+			setupTrackedItemsBeans(bs, userWorkspace, model);
 			setupWhatsHotBean(bs, model);
 			setupWhatsNew(bs, userWorkspace, model);
+			setupTrackedPeopleBeans(bs, userWorkspace, model);
 			
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_VISITORS.equals(type)) {
+		} else if (ObjectKeys.RELEVANCE_DASHBOARD_ACTIVITIES.equals(type)) {
+			setupSharedItemsBeans(bs, userWorkspace, model);
+			setupActivitiesBean(bs, userWorkspace, model);
 			setupVisitorsBeans(bs, userWorkspace, model);
 			
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_TRACKED_ITEMS.equals(type)) {
-			setupTrackedItemsBeans(bs, userWorkspace, model);
+		} else if (ObjectKeys.RELEVANCE_DASHBOARD_VIEWED_ENTRIES.equals(type)) {
+			setupViewedEntriesBean(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_HIDDEN.equals(type)) {
 		}
@@ -130,6 +135,19 @@ public class RelevanceDashboardHelper {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
 		}
 	}
+	
+	protected static void setupProfileBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Binder binder, Map model) {
+		DefinitionHelper.getDefinitions(binder, model);
+		//Get the start of the view definition
+		Element viewElement = (Element) model.get(WebKeys.CONFIG_ELEMENT);
+		Element relevanceElement = (Element) viewElement.selectSingleNode("//item[@name='relevanceDashboard']");
+		model.put(WebKeys.CONFIG_ELEMENT_RELEVANCE_DASHBOARD, relevanceElement);
+		
+		try {
+			WorkspaceTreeHelper.setupWorkspaceBeans(bs, binder.getId(), request, response, model);
+		} catch(Exception e) {}
+}
 	
 	protected static void setupTasksBeans(AllModulesInjected bs, Binder binder, Map model) {		
 		//Get the tasks bean

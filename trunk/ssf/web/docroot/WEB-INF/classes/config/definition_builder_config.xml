@@ -1425,7 +1425,16 @@
 		</jsps>
 	</item>
 	
-	<item name="relevanceDashboard" caption="__relevance_dashboard" display="view">	
+	<item name="relevanceDashboard" caption="__relevance_dashboard" display="view" multipleAllowed="false">	
+		<options optionCaption="__standard_entry_options">
+			<option name="userWorkspaceBusinessCard" initial="true"/>
+			<option name="descriptionView" initial="true" />
+			<option name="dashboardCanvas" initial="true" />
+			<option name="workspaceDataItem" caption="__workspace_data_item" 
+				definitionType="12" />
+			<option name="workspaceBinderList" />
+			<option_select path="//item[@category='userWorkspaceViewData']" />
+		</options>
 		<jsps>
 			<jsp name="view" value="/WEB-INF/jsp/definition_elements/relevance_dashboard.jsp" />
 		</jsps>

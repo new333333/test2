@@ -35,22 +35,14 @@
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
       
-	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
+	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.visitedEntries"/></div>
+		<div id="ss_title" class="ss_pt_title ss_blue ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
 	</ssf:param>
-		<div id="ss_dashboardEntriesViewed${renderResponse.namespace}">
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
-		</div>
+		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
 	</ssf:canvas>
 	
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_recentfolder_image"><ssf:nlt tag="relevance.documents"/></div>
-	</ssf:param>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
-	</ssf:canvas>
-	
+<c:if test="1 == 0">
 	<ssf:canvas id="relevanceEmail" type="inline" styleId="ss_email">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_blue ss_email_img"> <ssf:nlt tag="relevance.email"/> 
@@ -86,37 +78,33 @@
           </div><!-- end of today -->
           </div><!-- end of ss_para -->
 	</ssf:canvas>
+</c:if>
 	
       </div><!-- end of ss_col 1 -->
         
       <div id="ss_col2" class="ss_col2">
 	<ssf:canvas id="relevanceCalendars" type="inline" styleId="ss_calendar">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_cal_img"> <ssf:nlt tag="relevance.calendar"/> 
+		<div id="ss_title" class="ss_pt_title ss_blue ss_cal_img"> 
+		  <ssf:nlt tag="relevance.calendar"/> 
 		</div>
 	</ssf:param>
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_calendars.jsp" />
 	</ssf:canvas>
 
-	<ssf:canvas id="relevanceTasks" type="inline" styleId="ss_tasks">
+	<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
 	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
+		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img">
+		  <ssf:nlt tag="relevance.trackedCalendars"/>
+	    </div>
 	</ssf:param>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
+	<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tracked_calendars.jsp" />
 	</ssf:canvas>
-	
+
       </div><!-- end of col2 -->
       
       <div id="ss_col3" class="ss_col3">
       
-	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedPeople">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_ping_img"><ssf:nlt tag="relevance.ping"/>
-				</div>
-	</ssf:param>
-	  <c:set var="ss_show_tracked_item_delete_button" value="false" scope="request"/>
-	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_buddies.jsp" />
-	</ssf:canvas>
       </div><!-- end of col3 -->
     </div><!-- end of col left -->
   </div><!-- end of col mid -->

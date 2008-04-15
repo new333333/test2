@@ -73,9 +73,14 @@ import com.sitescape.util.Validator;
 public class WorkspaceTreeHelper {
 	public static ModelAndView setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
 			RenderResponse response) throws Exception {
+ 		Map<String,Object> model = new HashMap<String,Object>();
+ 		String view = setupWorkspaceBeans(bs, binderId, request, response, model);
+ 		return new ModelAndView(view, model);
+	}
+	public static String setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
+			RenderResponse response, Map model) throws Exception {
 		String displayType = BinderHelper.getDisplayType(request);
         User user = RequestContextHolder.getRequestContext().getUser();
- 		Map<String,Object> model = new HashMap<String,Object>();
 
 		BinderHelper.setBinderPermaLink(bs, request, response);
 		try {
@@ -93,7 +98,7 @@ public class WorkspaceTreeHelper {
 			reloadUrl.setParameter(WebKeys.URL_RANDOM, random);
 			reloadUrl.setParameter(WebKeys.URL_OPERATION, "noop");
 			request.setAttribute(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
-			return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
+			return WebKeys.VIEW_WORKSPACE;
 		}
 
 		Binder binder = null;
@@ -117,7 +122,7 @@ public class WorkspaceTreeHelper {
 					reloadUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_VIEW_ENTRY);
 					reloadUrl.setParameter(WebKeys.URL_ENTRY_ID, entryIdString);
 					model.put(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());
-					return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
+					return WebKeys.VIEW_WORKSPACE;
 				}
 				workspaceId = binder.getId(); 
 			} else if (workspaceId != null) {
@@ -128,13 +133,13 @@ public class WorkspaceTreeHelper {
 					User entry = null;
 					entry = (User)bs.getProfileModule().getEntry(binderId, entryId);
 					model.put(WebKeys.USER_PRINCIPAL, entry);
-					return new ModelAndView(WebKeys.VIEW_NO_USER_WORKSPACE, model);
+					return WebKeys.VIEW_NO_USER_WORKSPACE;
 				}
 			} else {
 				User entry = null;
 				entry = (User)bs.getProfileModule().getEntry(binderId, entryId);
 				model.put(WebKeys.USER_PRINCIPAL, entry);
-				return new ModelAndView(WebKeys.VIEW_NO_USER_WORKSPACE, model);
+				return WebKeys.VIEW_NO_USER_WORKSPACE;
 			}
 			binderId = workspaceId;
 			entryId = null;
@@ -248,20 +253,17 @@ public class WorkspaceTreeHelper {
 		model.put(WebKeys.RELOAD_URL, reloadUrl.toString());
 		
 		if(binder == null) {
-			return new ModelAndView("binder/deleted_binder", model);
+			return "binder/deleted_binder";
 		}
-		
-		//Set up the relevance dashboard beans
-		RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, binderId, ObjectKeys.RELEVANCE_DASHBOARD_DASHBOARD, model);
 		
 		Object obj = model.get(WebKeys.CONFIG_ELEMENT);
 		if ((obj == null) || (obj.equals(""))) 
-			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+			return WebKeys.VIEW_NO_DEFINITION;
 		obj = model.get(WebKeys.CONFIG_DEFINITION);
 		if ((obj == null) || (obj.equals(""))) 
-			return new ModelAndView(WebKeys.VIEW_NO_DEFINITION, model);
+			return WebKeys.VIEW_NO_DEFINITION;
 		
-		return new ModelAndView(WebKeys.VIEW_WORKSPACE, model);
+		return WebKeys.VIEW_WORKSPACE;
 	}
 	
 	protected static void getShowWorkspace(AllModulesInjected bs, Map formData, 

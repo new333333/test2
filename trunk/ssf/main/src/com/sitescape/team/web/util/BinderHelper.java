@@ -269,7 +269,8 @@ public class BinderHelper {
 	    		model.put(WebKeys.NAMESPACE, namespace);
 	        }
 	        Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-	        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, binderId, ObjectKeys.RELEVANCE_DASHBOARD_DASHBOARD, model);
+	        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
+	        		binderId, ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW, model);
 	    	return new ModelAndView(WebKeys.VIEW_RELEVANCE_DASHBOARD, model); 		
 		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_BLOG_SUMMARY);		

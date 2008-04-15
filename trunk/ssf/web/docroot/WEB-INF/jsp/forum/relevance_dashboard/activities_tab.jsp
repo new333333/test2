@@ -30,24 +30,10 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-
 <div id="ss_dashboard_content" class="ss_tricolumn">
   <div class="ss_colmid">
     <div class="ss_colleft">
       <div id="ss_col1" class="ss_col1">
-
-	<ssf:canvas id="relevanceTracked" type="inline" styleId="ss_shared">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"><ssf:nlt tag="relevance.whatsNewTracked"/>
-				</div>
-	</ssf:param>
-		<div id="ss_dashboardNewTracked${renderResponse.namespace}">
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tracked.jsp" />
-		</div>
-	</ssf:canvas>
-
-        </div><!-- end of ss_col 1 -->
-      <div id="ss_col2" class="ss_col2">
 
 	<ssf:canvas id="relevanceActivities" type="inline" styleId="ss_shared">
 	<ssf:param name="title" useBody="true" >
@@ -56,8 +42,8 @@
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
 	</ssf:canvas>
 
-      </div><!-- end of col2 -->
-      <div id="ss_col3" class="ss_col3">
+        </div><!-- end of ss_col 1 -->
+      <div id="ss_col2" class="ss_col2">
 
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_shared">
 	<ssf:param name="title" useBody="true" >
@@ -66,10 +52,30 @@
 		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
 	</ssf:canvas>
 
-	
+      </div><!-- end of col2 -->
+      <div id="ss_col3" class="ss_col3">
+
+	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_people">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/></div>
+	</ssf:param>
+		
+		<c:forEach var="user" items="${ssUsers}">
+		<div id="ss_para">
+		  <li>
+		    <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
+		    <c:if test="${!empty user.status}">
+		    <br/><span class="ss_status">${user.status}</span>
+		    </c:if>
+		  </li>
+		  </div><!-- end of ss_para -->
+		</c:forEach>
+		
+	</ssf:canvas>
 
       </div><!-- end of col3 -->
     </div><!-- end of col left -->
   </div><!-- end of col mid -->
 </div><!-- end of content -->
 <div class="ss_clear_float"></div>
+

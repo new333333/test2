@@ -30,22 +30,17 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_dashboard_content" class="ss_tricolumn">
-  <div class="ss_colmid">
-    <div class="ss_colleft">
-      <div id="ss_col1" class="ss_col1">
-      
-	<ssf:canvas id="relevanceFolders" type="inline" styleId="ss_trackedItems">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"> <ssf:nlt tag="relevance.trackedFolders"/> 
-	</div>
-	</ssf:param>
-	
+
 <div id="ss_para" "ss_link_5">
-<div id="ss_hints"><em>These are my folders I have chosen to track. To track a folder  you must click on the "TRACK:" button above. </em>  </div>
+<div id="ss_hints"><em><ssf:nlt tag="relevance.foldersBeingTracked"/></em></div>
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'folder'}">
+	  <c:set var="showThisBinder" value="true"/>
+	  <c:forEach var="calendar" items="${ss_trackedCalendars}">
+	    <c:if test="${calendar.id == binder.id}"><c:set var="showThisBinder" value="false"/></c:if>
+	  </c:forEach>
 	
+	  <c:if test="${showThisBinder}">
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
 	    <a class="ss_link_5"
 	      href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -56,30 +51,17 @@
 			</ssf:url>"
 		  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
 	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a>
-	    <c:forEach var="calendar" items="${ss_trackedCalendars}">
-	      <c:if test="${calendar.id == binder.id}"> <span class="ss_fineprint">(<ssf:nlt tag="relevance.trackedCalendar"/>)</span></c:if>
-	    </c:forEach>
 	    &nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
 	    <img style="padding:4px 0px 0px 2px;" align="texttop"
-      src="<html:rootPath/>images/pics/delete.gif"
-      onClick="ss_trackedItemsDelete(this, '${binder.id}');"/>
-	      </td></tr></tbody></table>
-	
+          src="<html:rootPath/>images/pics/delete.gif"
+          onClick="ss_trackedItemsDelete(this, '${binder.id}');"/>
+	    </td></tr></tbody></table>
+	  </c:if>
   </c:if>
 </c:forEach>
-</div> <!-- end of ss_para -->
-	</ssf:canvas>
-
-        </div><!-- end of ss_col 1 -->
-      <div id="ss_col2" class="ss_col2">
-
-	<ssf:canvas id="relevanceWorkspaces" type="inline" styleId="ss_trackedItems">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"> <ssf:nlt tag="relevance.trackedWorkspaces"/> </div>
-	</ssf:param>
-	
-<div id="ss_para" class="ss_paraC">
-<div id="ss_hints"><em>These are my Global and Team Workspaces I have chosen to track. To track a workspace you must click on the "TRACK:" button above while visiting your favorite workspaces. </em>  </div>
+<br/>
+<br/>
+<div id="ss_hints"><em><ssf:nlt tag="relevance.workspacesBeingTracked"/></em></div>
 <c:forEach var="binder" items="${ss_trackedBinders}">
   <c:if test="${binder.entityType == 'workspace' && binder.definitionType == 8}">
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
@@ -99,29 +81,4 @@
 </c:forEach>
 	</div> <!-- end of ss_para -->
 
-	</ssf:canvas>
-
-      </div><!-- end of col2 -->
-      <div id="ss_col3" class="ss_col3">
-
-	<ssf:canvas id="relevancePeople" type="inline" styleId="ss_trackedPeople">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_tracked_img"> <ssf:nlt tag="relevance.trackedPeople"/> 
-		</div>
-	</ssf:param>
-	
-	  <div id="ss_today">
-	  <div id="trackedPeople">
-	  <div id="ss_hints"><em>These are my Peeps I have chosen to track. To track a person you must click on the "TRACK:" button above while visitng their profile page. </em>  </div>
-	  <c:set var="ss_show_tracked_item_delete_button" value="true" scope="request"/>
-	  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_buddies.jsp" />
-	  </div><!-- end of trackedPeople -->
-	  </div><!-- end of ss_today -->
-	 
-	</ssf:canvas>
-
-      </div><!-- end of col3 -->
-    </div><!-- end of col left -->
-  </div><!-- end of col mid -->
-</div><!-- end of content -->
 <div class="ss_clear_float"></div>
