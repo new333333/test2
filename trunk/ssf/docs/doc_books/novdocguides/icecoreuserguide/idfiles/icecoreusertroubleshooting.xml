@@ -4,15 +4,29 @@
 
  <target id="bbgkf7m" pid="bbgkf7m" name="Appendix" level="0" number="A"> <text>Troubleshooting</text> </target>
 
- <target id="bbiz5s2" pid="bbiz5s2" name="Sect1" level="1" number="A.1"> <text>WebDAV Link Does Not Work</text> </target>
+ <target id="beq83hs" pid="beq83hs" name="Sect1" level="1" number="A.1"> <text>Your Presence Icon Does Not Change Color</text> </target>
+
+ <target id="beq83pl" pid="beq83hs" name="FormalPara" level="2"> <text>Problem:</text> </target>
+
+ <target id="beq86bn" pid="beq83hs" name="Procedure" level="2" number="1"> <text>View your personal workspace.</text> </target>
+
+ <target id="beq86bo" pid="beq83hs" name="Step" level="3" number="1"> <text>View your personal workspace.</text> </target>
+
+ <target id="beq86lr" pid="beq83hs" name="Step" level="3" number="2"> <text>Click Modify profile.</text> </target>
+
+ <target id="beq86sf" pid="beq83hs" name="Step" level="3" number="3"> <text>Type your Conferencing user name for Novell Conferencing and its Pidgin client.</text> </target>
+
+ <target id="beq8a8s" pid="beq83hs" name="Step" level="3" number="4"> <text>Click OK.</text> </target>
+
+ <target id="bbiz5s2" pid="bbiz5s2" name="Sect1" level="1" number="A.2"> <text>WebDAV Link Does Not Work</text> </target>
 
  <target id="bbiz7jt" pid="bbiz5s2" name="FormalPara" level="2"> <text>Problem:</text> </target>
 
- <target id="bbizbuc" pid="bbizbuc" name="Sect1" level="1" number="A.2"> <text>Too Many Sign-Ins for WebDAV</text> </target>
+ <target id="bbizbuc" pid="bbizbuc" name="Sect1" level="1" number="A.3"> <text>Too Many Sign-Ins for WebDAV</text> </target>
 
  <target id="bbizc3a" pid="bbizbuc" name="FormalPara" level="2"> <text>Problem:</text> </target>
 
- <target id="bbizgel" pid="bbizgel" name="Sect1" level="1" number="A.3"> <text>Not Understanding Mirrored Folders</text> </target>
+ <target id="bbizgel" pid="bbizgel" name="Sect1" level="1" number="A.4"> <text>Not Understanding Mirrored Folders</text> </target>
 
  <target id="bbizgkh" pid="bbizgel" name="FormalPara" level="2"> <text>Problem:</text> </target>
 
