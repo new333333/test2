@@ -255,7 +255,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.PAGE_NUMBER, page);
         Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, binderId, type, model);
+		RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, binderId, type, model);
 	}
 	
 	private void setupDashboardPageBeans(AllModulesInjected bs, String type, RenderRequest request, 

@@ -180,10 +180,11 @@ public interface ObjectKeys {
     
     public static final String FOLDER_ENTRY_TO_BE_SHOWN = "folder_entry_to_be_shown";
     
-    public static final String RELEVANCE_DASHBOARD_DASHBOARD = "dashboard";
-    public static final String RELEVANCE_DASHBOARD_NETWORK_DASHBOARD = "networkDashboard";
-    public static final String RELEVANCE_DASHBOARD_SITE_DASHBOARD = "siteDashboard";
-    public static final String RELEVANCE_DASHBOARD_VISITORS = "visitors";
+    public static final String RELEVANCE_DASHBOARD_ACTIVITIES = "activities";
+    public static final String RELEVANCE_DASHBOARD_PROFILE = "profile";
+    public static final String RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS = "tasks_and_calendars";
+    public static final String RELEVANCE_DASHBOARD_VIEWED_ENTRIES = "viewed_entries";
+    public static final String RELEVANCE_DASHBOARD_WHATS_NEW = "whats_new";
     public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
     public static final String RELEVANCE_DASHBOARD_HIDDEN = "hiddenDashboard";
     public static final String RELEVANCE_TRACKED_BINDERS = "trackedBinders";

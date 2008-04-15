@@ -30,38 +30,26 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_dashboard_content" class="ss_tricolumn">
-  <div class="ss_colmid">
-    <div class="ss_colleft">
-      <div id="ss_col1" class="ss_col1">
 
-	<ssf:canvas id="relevanceVisitors" type="inline" styleId="ss_people">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/></div>
-	</ssf:param>
-		
-		<c:forEach var="user" items="${ssUsers}">
-		<div id="ss_para">
-		  <li>
-		    <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
-		    <c:if test="${!empty user.status}">
-		    <br/><span class="ss_status">${user.status}</span>
-		    </c:if>
-		  </li>
-		  </div><!-- end of ss_para -->
-		</c:forEach>
-		
-	</ssf:canvas>
+<div id="ss_para" "ss_link_5">
+<div id="ss_hints"><em><ssf:nlt tag="relevance.calendarsBeingTracked"/></em></div>
+<c:forEach var="binder" items="${ss_trackedCalendars}">
+	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
+	    <a class="ss_link_5"
+	      href="<ssf:url adapter="true" portletName="ss_forum" 
+	    	action="view_permalink"
+	    	binderId="${binder.id}">
+	    	<ssf:param name="entityType" value="folder" />
+	    	<ssf:param name="newTab" value="1" />
+			</ssf:url>"
+		  onClick="return ss_gotoPermalink('${binder.id}', '${binder.id}', 'folder', '${ss_namespace}', 'yes');"
+	    ><span>${binder.title} (${binder.parentBinder.title})</span> </a>
+	    &nbsp;<img src="<html:rootPath/>images/icons/folder_green_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
+	    <img style="padding:4px 0px 0px 2px;" align="texttop"
+          src="<html:rootPath/>images/pics/delete.gif"
+          onClick="ss_trackedItemsDelete(this, '${binder.id}');"/>
+	    </td></tr></tbody></table>
+</c:forEach>
+</div> <!-- end of ss_para -->
 
-        </div><!-- end of ss_col 1 -->
-      <div id="ss_col2" class="ss_col2">
-
-      </div><!-- end of col2 -->
-      <div id="ss_col3" class="ss_col3">
-
-      </div><!-- end of col3 -->
-    </div><!-- end of col left -->
-  </div><!-- end of col mid -->
-</div><!-- end of content -->
 <div class="ss_clear_float"></div>
-

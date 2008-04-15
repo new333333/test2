@@ -36,7 +36,7 @@
 <c:if test="${!empty ss_myTasks}">
 <div id="ss_para" class="ss_paraC">
 <div id="ss_today">
-<div id="ss_hints"><em>This is my To-Do List</em></div>
+<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.tasks"/></em></div>
 <div id="ss_tasks_para">
 <c:forEach var="entry" items="${ss_myTasks}">
 	<jsp:useBean id="entry" type="java.util.HashMap" />

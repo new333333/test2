@@ -28,19 +28,38 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
-<c:if test="${ss_type == 'profile'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" />
-</c:if>
-<c:if test="${ss_type == 'tasks_and_calendars'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" />
-</c:if>
-<c:if test="${ss_type == 'whats_new'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" />
-</c:if>
-<c:if test="${ss_type == 'activities'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" />
-</c:if>
-<c:if test="${ss_type == 'viewed_entries'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/viewed_entries_tab.jsp" />
-</c:if>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<div id="ss_dashboard_content" class="ss_tricolumn">
+  <div class="ss_colmid">
+    <div class="ss_colleft">
+      <div id="ss_col1" class="ss_col1">
+
+	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.visitedEntries"/></div>
+	</ssf:param>
+		<div id="ss_dashboardEntriesViewed${renderResponse.namespace}">
+		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
+		</div>
+	</ssf:canvas>
+	
+        </div><!-- end of ss_col 1 -->
+      <div id="ss_col2" class="ss_col2">
+
+	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
+	<ssf:param name="title" useBody="true" >
+		<div id="ss_title" class="ss_pt_title ss_blue ss_recentfolder_image"><ssf:nlt tag="relevance.documents"/></div>
+	</ssf:param>
+		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
+	</ssf:canvas>
+	
+      </div><!-- end of col2 -->
+      <div id="ss_col3" class="ss_col3">
+
+      </div><!-- end of col3 -->
+    </div><!-- end of col left -->
+  </div><!-- end of col mid -->
+</div><!-- end of content -->
+<div class="ss_clear_float"></div>
+
