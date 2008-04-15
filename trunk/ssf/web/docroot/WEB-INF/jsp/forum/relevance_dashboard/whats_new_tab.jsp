@@ -66,14 +66,18 @@
           <ssf:nlt tag="relevance.whatsNewSite"/>
         </div>
 	</ssf:param>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_site.jsp" />
+		<div id="ss_dashboardWhatsNewSite${renderResponse.namespace}">
+		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_site.jsp" />
+		</div>
 	</ssf:canvas>
 
 	<ssf:canvas id="relevanceHot" type="inline" styleId="ss_whatshot">
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.whatsHot"/></div>
 	</ssf:param>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
+		<div id="ss_dashboardWhatsHot${renderResponse.namespace}">
+		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
+		</div>
 	</ssf:canvas>
 	
       </div><!-- end of col2 -->

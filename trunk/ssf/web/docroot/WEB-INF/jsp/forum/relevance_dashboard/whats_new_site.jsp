@@ -31,11 +31,30 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<c:if test="${empty ss_whatsNew}">
-<span><ssf:nlt tag="relevance.none"/></span>
+<div id="ss_para">
+<div align="right">
+<c:if test="${ss_trackedSitePage > '0'}">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'newSite', '${ss_trackedSitePage}', 'previous', 'ss_dashboardWhatsNewSite${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+  title="<ssf:nlt tag="general.previousPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_trackedSitePage || ss_trackedSitePage <= '0'}">
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
 </c:if>
 <c:if test="${!empty ss_whatsNew}">
-<div id="ss_para">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'newSite', '${ss_trackedSitePage}', 'next', 'ss_dashboardWhatsNewSite${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+  title="<ssf:nlt tag="general.nextPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_whatsNew}">
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+</c:if>
+</div>
+<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.newTrackedSite"/></em></div>
 <div id="ss_today">
 <div id="ss_hints"><em><ssf:nlt tag="relevance.newSiteDesc"/></em></div>
   <div id="ss_mydocs_para" >
@@ -97,6 +116,5 @@
     </li><br/>
   </c:forEach>
 	</div><!-- end of para -->
-    </div><!-- end of today -->
-    </div><!-- end of ss_para -->
-</c:if>
+  </div><!-- end of today -->
+</div><!-- end of ss_para -->

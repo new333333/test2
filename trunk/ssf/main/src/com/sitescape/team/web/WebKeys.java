@@ -372,6 +372,7 @@ public class WebKeys {
 	public static final String OPERATION_SELECT_FILTER = "select_filter";
 	public static final String OPERATION_TRACK_THIS_BINDER = "track_this_binder";
 	public static final String OPERATION_TRACK_THIS_BINDER_DELETE = "track_this_binder_delete";
+	public static final String OPERATION_TRACK_THIS_PERSON_DELETE = "track_this_person_delete";
 	public static final String OPERATION_USER_FILTER = "user_filter";
 	public static final String OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String OPERATION_UPLOAD_IMAGE_FILE = "upload_image_file";
@@ -800,6 +801,8 @@ public class WebKeys {
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
+    public static final String TRACKED_SITE_PAGE="ss_trackedSitePage";
+    public static final String WHATS_HOT_PAGE="ss_whatsHotPage";
     
     public static final String FIND_TYPE="ssFindType";
     public static final String FIND_TYPE_GROUP="group";

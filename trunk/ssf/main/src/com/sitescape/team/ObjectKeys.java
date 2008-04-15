@@ -192,7 +192,9 @@ public interface ObjectKeys {
     public static final String RELEVANCE_TRACKED_PEOPLE = "trackedPeople";
     
     public static final String RELEVANCE_PAGE_ENTRIES_VIEWED = "entriesViewed";
+    public static final String RELEVANCE_PAGE_NEW_SITE = "newSite";
     public static final String RELEVANCE_PAGE_NEW_TRACKED = "newTracked";
+    public static final String RELEVANCE_PAGE_HOT = "hot";
     
     public static final String SEARCH_OFFSET = "offset";
     public static final String SEARCH_MAX_HITS = "maxHits";

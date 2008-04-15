@@ -63,7 +63,7 @@
 <br/>
 <div id="ss_hints"><em><ssf:nlt tag="relevance.workspacesBeingTracked"/></em></div>
 <c:forEach var="binder" items="${ss_trackedBinders}">
-  <c:if test="${binder.entityType == 'workspace' && binder.definitionType == 8}">
+  <c:if test="${binder.entityType == 'workspace'}">
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>
 	    <a class="ss_link_5"
 	      href="<ssf:url adapter="true" portletName="ss_forum" 
