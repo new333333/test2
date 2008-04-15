@@ -62,9 +62,6 @@ var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" po
 	<li><a href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'viewed_entries', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.viewedEntries"/></span></a></li>
-	<li><a href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'hiddenDashboard', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.hide"/></span></a></li>
   </ul>
 </div>
 <div class="ss_clear_float"></div>
