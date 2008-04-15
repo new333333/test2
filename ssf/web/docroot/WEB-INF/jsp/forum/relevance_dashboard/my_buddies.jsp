@@ -38,11 +38,10 @@
     <c:if test="${ss_show_tracked_item_delete_button == 'true'}">
     <img style="padding:4px 0px 0px 2px;" align="texttop"
       src="<html:rootPath/>images/pics/delete.gif"
-      onClick="ss_trackedItemsDelete(this, '${user.workspaceId}');"/>
+      onClick="ss_trackedPeopleDelete(this, '${user.id}');"/>
     </c:if>
-    </td></tr>
     <c:if test="${!empty user.status}">
-    <tr><td><div id="ss_im_status" class="ss_im_status_active">Status:</div><em><div id="ss_im_status">${user.status}</em></div>
+    <div id="ss_im_status"><em>${user.status}</em></div>
     </td></tr>
     </c:if>
     </tbody></table>

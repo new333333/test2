@@ -76,10 +76,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	/* STATUS BACKGROUND CHANGE */
 	
-.ss_statusAreaBlur input{
+input.ss_statusAreaBlur {
 	background:	#CCCCCC;
 	}	
-.ss_statusArea input{
+input.ss_statusArea {
 	background: #FFFFFF;
 	}
 	

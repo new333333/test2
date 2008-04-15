@@ -55,6 +55,7 @@
 </c:if>
 </div><!--end of arrow division-->
 <div id="ss_hints"><em><ssf:nlt tag="relevance.placesBeingTracked"/></em></div>
+<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.newTrackedFolders"/></em></div>
   <div id="ss_today">
   <div id="ss_mydocs_para" >
   <c:forEach var="entry" items="${ss_whatsNewTrackedPlaces}">

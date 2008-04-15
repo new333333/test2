@@ -748,6 +748,10 @@ function ss_updateStatusNow(obj) {
 		ajaxRequest.sendRequest();  //Send the request
 	}
 }
+function ss_setStatusBackground(obj, op) {
+	if (op == 'focus') obj.className = 'ss_statusArea';
+	if (op == 'blur') obj.className = 'ss_statusAreaBlur';
+}
 
 function ss_trackThisBinder(id, namespace) {
 	ss_setupStatusMessageDiv();
@@ -776,6 +780,18 @@ function ss_postRequestTrackThis(obj) {
 function ss_trackedItemsDelete(obj, id) {
 	ss_setupStatusMessageDiv();
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"track_this_binder_delete", binderId:id}, "__ajax_relevance");
+	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+	ajaxRequest.setPostRequest(ss_postRequestAlertError);
+	ajaxRequest.sendRequest();  //Send the request
+	
+	//Delete the row from the parent table
+	var trObj = obj.parentNode.parentNode
+	trObj.parentNode.removeChild(trObj)
+}
+
+function ss_trackedPeopleDelete(obj, id) {
+	ss_setupStatusMessageDiv();
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"track_this_person_delete", binderId:id}, "__ajax_relevance");
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.setPostRequest(ss_postRequestAlertError);
 	ajaxRequest.sendRequest();  //Send the request

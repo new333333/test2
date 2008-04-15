@@ -45,7 +45,10 @@
 	 <li> <ssf:nlt tag="relevance.sharedEntityLine">
 	 
 	  <ssf:param name="value" useBody="true">
-	    <ssf:showUser user="${sharedItem.referer}" titleStyle="ss_link_1" /><br/>
+	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+				      value="${sharedItem.sharedDate}" type="both" 
+					  timeStyle="short" dateStyle="short" /><br/>
+		<ssf:showUser user="${sharedItem.referer}" titleStyle="ss_link_1" /><br/>
 	  </ssf:param>
 
 	  <ssf:param name="value" useBody="true">

@@ -103,7 +103,7 @@ public class RelevanceDashboardHelper {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
 			setupTrackedItemsBeans(bs, userWorkspace, model);
 			setupWhatsHotBean(bs, model);
-			setupWhatsNew(bs, userWorkspace, model);
+			setupWhatsNewSite(bs, userWorkspace, model);
 			setupTrackedPeopleBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_ACTIVITIES.equals(type)) {
@@ -133,6 +133,10 @@ public class RelevanceDashboardHelper {
 			setupViewedEntriesBean(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_TRACKED.equals(type)) {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
+		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_SITE.equals(type)) {
+			setupWhatsNewSite(bs, userWorkspace, model);
+		} else if (ObjectKeys.RELEVANCE_PAGE_HOT.equals(type)) {
+			setupWhatsHotBean(bs, model);
 		}
 	}
 	
@@ -343,12 +347,20 @@ public class RelevanceDashboardHelper {
     	model.put(WebKeys.WHATS_NEW_TRACKED_PEOPLE_FOLDERS, places);
 	}
 	
-	protected static void setupWhatsNew(AllModulesInjected bs, Binder binder, Map model) {		
+	protected static void setupWhatsNewSite(AllModulesInjected bs, Binder binder, Map model) {		
 		//Get the new items I can see
 		Map options = new HashMap();
+		String page = (String) model.get(WebKeys.PAGE_NUMBER);
+		if (page == null || page.equals("")) page = "0";
+		Integer pageNumber = Integer.valueOf(page);
+		if (pageNumber < 0) pageNumber = 0;
+		model.put(WebKeys.TRACKED_SITE_PAGE, String.valueOf(pageNumber));
+		int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 		
 		//Prepare for a standard dashboard search operation
 		setupInitialSearchOptions(options);
+
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
@@ -508,6 +520,13 @@ public class RelevanceDashboardHelper {
 	}
 	
 	public static void setupWhatsHotBean(AllModulesInjected bs, Map model) {
+		String page = (String) model.get(WebKeys.PAGE_NUMBER);
+		if (page == null || page.equals("")) page = "0";
+		Integer pageNumber = Integer.valueOf(page);
+		if (pageNumber < 0) pageNumber = 0;
+		model.put(WebKeys.WHATS_HOT_PAGE, String.valueOf(pageNumber));
+		int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+
 		List hotEntries = new ArrayList();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		GregorianCalendar start = new GregorianCalendar();
@@ -516,18 +535,16 @@ public class RelevanceDashboardHelper {
 		Object[] entityTypes = new Object[] {EntityType.folderEntry.name()};
 		Collection<ActivityInfo> results = bs.getReportModule().culaEsCaliente(AuditType.view, 
 				start.getTime(), new java.util.Date(), entityTypes, 
-				Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
+				pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
 		for(ActivityInfo info : results) {
-			Element resultElem = null;
 			if (info.getWhoOrWhat().getEntityType().equals(EntityType.folderEntry)) {
 				FolderEntry entry = (FolderEntry) info.getWhoOrWhat();
 				hotEntries.add(entry);
 			}
-			if (hotEntries.size() >= Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")).intValue()) {
-				break;
-			}
 		}
-		model.put(WebKeys.WHATS_HOT, hotEntries);
+		if (hotEntries != null && hotEntries.size() > pageStart) {
+			model.put(WebKeys.WHATS_HOT, hotEntries.subList(pageStart, hotEntries.size()));
+		}
 	}
 	
 }

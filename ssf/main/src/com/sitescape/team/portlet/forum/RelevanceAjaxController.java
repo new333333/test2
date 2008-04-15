@@ -76,6 +76,8 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 				ajaxSaveTrackThisBinder(request, response, "add");
 			} else if (op.equals(WebKeys.OPERATION_TRACK_THIS_BINDER_DELETE)) {
 				ajaxSaveTrackThisBinder(request, response, "delete");
+			} else if (op.equals(WebKeys.OPERATION_TRACK_THIS_PERSON_DELETE)) {
+				ajaxSaveTrackThisBinder(request, response, "deletePerson");
 			} else if (op.equals(WebKeys.OPERATION_SHARE_THIS_BINDER)) {
 				ajaxSaveShareThisBinder(request, response);
 			}
@@ -174,11 +176,9 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 			} else if (type.equals("delete")) {
 				if (trackedBinders.contains(binderId)) trackedBinders.remove(binderId);
 				if (trackedCalendars.contains(binderId)) trackedCalendars.remove(binderId);
-				if (binder.getEntityType().equals(EntityType.workspace) && 
-						binder.getDefinitionType() == Definition.USER_WORKSPACE_VIEW) {
-					//This is a user workspace, so also track this user
-					if (trackedPeople.contains(binder.getOwnerId())) trackedPeople.remove(binder.getOwnerId());
-				}
+			} else if (type.equals("deletePerson")) {
+				//This is a user workspace, so also track this user
+				if (trackedPeople.contains(binderId)) trackedPeople.remove(binderId);
 			}
 			//Save the updated list
 			getProfileModule().setUserProperty(user.getId(), userWorkspaceId, 

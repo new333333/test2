@@ -30,13 +30,31 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:if test="${empty ss_whatsHot}">
-<span><ssf:nlt tag="relevance.none"/></span>
-</c:if>
-<c:if test="${!empty ss_whatsHot}">
 <div id="ss_para">
 <div id="ss_hot_para">
-<div id="ss_hints"><em><ssf:nlt tag="relevance.hotDesc"/></em></div>
+<div align="right">
+<c:if test="${ss_whatsHotPage > '0'}">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'hot', '${ss_whatsHotPage}', 'previous', 'ss_dashboardWhatsHot${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+  title="<ssf:nlt tag="general.previousPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_whatsHotPage || ss_whatsHotPage <= '0'}">
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+</c:if>
+<c:if test="${!empty ss_whatsHot}">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'hot', '${ss_whatsHotPage}', 'next', 'ss_dashboardWhatsHot${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+  title="<ssf:nlt tag="general.nextPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_whatsHot}">
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+</c:if>
+</div>
+<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.newTrackedSite"/></em></div>
   <c:forEach var="entry" items="${ss_whatsHot}">
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
     <li>
@@ -79,7 +97,5 @@
 	
     </li><br/>
   </c:forEach>
-	</div><!-- end of  ss_para -->
-    </div><!-- ss_hot_para -->
-
-</c:if>
+</div><!-- end of ss_hot_para -->
+</div><!-- end of ss_para -->
