@@ -89,6 +89,8 @@
 		    </c:if>
 		  </c:forEach>
 		</c:if>
+		</div>
+		<div>
 		<c:if test="${! empty entry.status}">
 		  <c:forEach var="status" items="${entry.ssEntryDefinitionElementData.status.values}">
 		      <c:if test="${entry.status == status.key}">
@@ -105,18 +107,19 @@
 		<div>
 			<c:choose>
 				<c:when test="${!empty entry['start_end#EndDate']}">
+					<ssf:nlt tag="task.dueDate"/>:
 					<c:choose>
 						<c:when test="${!empty entry['start_end#TimeZoneID']}">
-							<fmt:formatDate 
+							<span class="ss_prioValue"><fmt:formatDate 
 									timeZone="${ssUser.timeZone.ID}"
 									value="${entry['start_end#EndDate']}" type="date" 
-									dateStyle="medium" />						
+									dateStyle="medium" /></span>
 						</c:when>	
 						<c:otherwise>
-							<fmt:formatDate 
+							<span class="ss_prioValue"><fmt:formatDate 
 									timeZone="GMT"
 									value="${entry['start_end#EndDate']}" type="date" 
-									dateStyle="medium"/>
+									dateStyle="medium"/></span>
 						</c:otherwise>
 					</c:choose>
 					<c:if test="${overdue}">

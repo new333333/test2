@@ -217,15 +217,18 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 	
 	private ModelAndView ajaxGetRelevanceDashboard(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
 		Map model = new HashMap();
 		model.put(WebKeys.TYPE, type);
+		model.put(WebKeys.USER_PRINCIPAL, user);
 		setupDashboardBeans(this, type, request, response, model);
 		return new ModelAndView("forum/relevance_dashboard/ajax", model);
 	}
 	
 	private ModelAndView ajaxGetRelevanceDashboardPage(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION2, "");
 		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
 		String direction = PortletRequestUtils.getStringParameter(request, WebKeys.URL_DIRECTION, "next");
@@ -233,6 +236,7 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.TYPE, type);
 		model.put(WebKeys.PAGE_NUMBER, page);
 		model.put(WebKeys.DIRECTION, direction);
+		model.put(WebKeys.USER_PRINCIPAL, user);
 		setupDashboardPageBeans(this, type, request, response, model);
 		return new ModelAndView("forum/relevance_dashboard/ajax_page", model);
 	}

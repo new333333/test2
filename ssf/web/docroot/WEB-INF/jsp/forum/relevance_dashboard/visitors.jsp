@@ -30,7 +30,7 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_para">
+<div id="ss_today">
 <div id="ss_nextPage" align="right">
 <c:if test="${ss_visitorsPage > '0'}">
 <a href="javascript: ;" 
@@ -54,14 +54,14 @@
 </c:if>
 </div>
 
-		<c:forEach var="user" items="${ss_visitors}">
-		<div id="ss_para">
-		  <li>
+  <c:forEach var="user" items="${ss_visitors}">
+  <table cellpadding="0" cellspacing="0"><tbody>
+    <tr><td valign="top">
 		    <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
 		    <c:if test="${!empty user.status}">
-		    <br/><span class="ss_status">${user.status}</span>
+		      <div id="ss_im_status"><em>${user.status}</em></div>
 		    </c:if>
-		  </li>
-		  </div><!-- end of ss_para -->
-		</c:forEach>
+    </td></tr>
+  </tbody></table>
+  </c:forEach>
 </div>
