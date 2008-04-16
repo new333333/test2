@@ -31,9 +31,11 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <div id="ss_dashboard_content">
+<c:if test="${!empty ssConfigDefinition && !empty ssRelevanceDashboardConfigElement && !empty ssConfigJspStyle}">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
   configElement="${ssRelevanceDashboardConfigElement}" 
   configJspStyle="${ssConfigJspStyle}"
   entry="${ssDefinitionEntry}" />
+</c:if>
 </div><!-- end of content -->
 <div class="ss_clear_float"></div>

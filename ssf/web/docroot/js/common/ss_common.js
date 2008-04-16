@@ -822,6 +822,8 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 function ss_showRelevanceTab(s, namespace) {
 	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);
 	canvasObj.innerHTML = s;
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
 function ss_showDashboardPage(binderId, op, currentPage, direction, divId) {
@@ -836,6 +838,8 @@ function ss_showDashboardPage(binderId, op, currentPage, direction, divId) {
 function ss_showDashboardPageDiv(s, divId) {
 	var divObj = self.document.getElementById(divId);
 	divObj.innerHTML = s;
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
 //Function to create a named div in the body
