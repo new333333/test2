@@ -200,6 +200,17 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	          title="<ssf:nlt tag="navigation.goToMaximizedView"/>"
               ><ssf:nlt tag="navigation.expandedView"/></a>
           </li>
+                    <li>
+			  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
+			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
+			  </ssHelpSpot>
+              <a title="<ssf:nlt tag="navigation.myWorkspace"/>"
+				  href="<ssf:url 
+				    windowState="${ss_urlWindowState}"
+			      	action="view_ws_listing"
+			      	binderId="${ssUser.workspaceId}"/>"
+              ><ssf:nlt tag="navigation.myWorkspace"/> </a>
+          </li>
           </ul>
           </div>
       </div><!-- end of col1-->
@@ -436,7 +447,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <div id="ss_statusArea" class="ss_global_toolbar_maximized"><!-- beginning of other rows-->  
 
 
-<!-- Beginning of Find Bar:  Portal Full Screen Find People/Places/Search  -->
+<!-- Beginning of Status Bar:  Status Share/Track Buttons My Teams and Favorites  -->
 
 <!-- Start of Status line -->
 <ssf:ifLoggedIn>
@@ -446,78 +457,20 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 ss_statusCurrent = "${ssUser.status}";
 </script>
 <span class="ss_statusprint"><ssf:nlt tag="relevance.userStatus"/></span>
-<input class="ss_statusAreaBlur" type="text" size="40" style="font-size:8;" value="${ssUser.status}"
+<input class="ss_statusAreaBlur" type="text" size="50" style="font-size:8;" value="${ssUser.status}"
   onFocus="ss_setStatusBackground(this, 'focus');"
   onKeyPress="ss_updateStatusSoon(this);"
   onChange="ss_updateStatusNow(this);"
   />
 </li>
 
-<li>
-<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-<a style="display:inline;" class="ss_STButton ss_fineprint" 
-  href="<ssf:url adapter="true" portletName="ss_forum" 
-		action="__ajax_relevance" actionUrl="false"><ssf:param 
-		name="operation" value="share_this_binder" /><ssf:param 
-		name="binderId" value="${ssBinder.id}" /></ssf:url>" 
-  onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
-<c:if test="${ssBinder.entityType == 'workspace'}"> 
-	title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
-	<span class="ss_fineprint"><ssf:nlt tag="relevance.justShare"/></span></c:if>
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <c:if test="${ssDefinitionFamily != 'calendar'}">
-  	title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
-  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justShare"/></span></c:if>
-  <c:if test="${ssDefinitionFamily == 'calendar'}">
-  	title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
-  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justShare"/></span></c:if>
-</c:if>
-</a>
-</c:if>
-</li>
-
-<li>
-<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
-<a style="display:inline;" class="ss_STButton ss_fineprint" href="javascript: ;" 
-  onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
-<c:if test="${ssBinder.entityType == 'workspace'}">
-  <c:if test="${ssBinder.definitionType != 12}">
-  title="<ssf:nlt tag="relevance.trackThisWorkspace"/>" >
-  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
-  <c:if test="${ssBinder.definitionType == 12}">
-  	title="<ssf:nlt tag="relevance.trackThisPerson"/>" >
-  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
-</c:if>
-<c:if test="${ssBinder.entityType == 'folder'}">
-  <c:if test="${ssDefinitionFamily != 'calendar'}">
-  	title="<ssf:nlt tag="relevance.trackThisFolder"/>" >
-  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
-  <c:if test="${ssDefinitionFamily == 'calendar'}">
-  	title="<ssf:nlt tag="relevance.trackThisCalendar"/>" >
-  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
-</c:if>
-</a>
-</c:if>
-<div id="ss_track_this_anchor${renderResponse.namespace}"> </div>
-<div id="ss_track_this_ok${renderResponse.namespace}" 
-  style="position:absolute;display:none;visibility:hidden;border:1px solid black;padding:10px;background-color:#ffffff;"></div>
-</li>
-
 </div><!-- end of status line area -->
+
+<!-- Beginning of  My Teams and Favorites -->
 <div id="ss_top_nav_buttontwo">
         <ul>
           
-          <li>
-			  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
-			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
-			  </ssHelpSpot>
-              <a title="<ssf:nlt tag="navigation.myWorkspace"/>"
-				  href="<ssf:url 
-				    windowState="${ss_urlWindowState}"
-			      	action="view_ws_listing"
-			      	binderId="${ssUser.workspaceId}"/>"
-              ><ssf:nlt tag="navigation.myWorkspace"/> </a>
-          </li>
+
           <li><a title="<ssf:nlt tag="navigation.myTeams"/>"
 			  href="javascript:;" 
 			  onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
@@ -549,6 +502,64 @@ ss_statusCurrent = "${ssUser.status}";
                  
         </ul>
       </div>
+<!-- Beginning of  Share/Track Buttons -->
+<div class="ss_clearSTButton">
+
+
+
+<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+<a style="display:inline;" class="ss_buttonSTButton ss_fineprint" 
+  href="<ssf:url adapter="true" portletName="ss_forum" 
+		action="__ajax_relevance" actionUrl="false"><ssf:param 
+		name="operation" value="share_this_binder" /><ssf:param 
+		name="binderId" value="${ssBinder.id}" /></ssf:url>" 
+  onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
+<c:if test="${ssBinder.entityType == 'workspace'}"> 
+	title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
+	<span><ssf:nlt tag="relevance.justShare"/></span></c:if>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <c:if test="${ssDefinitionFamily != 'calendar'}">
+  	title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
+  	<span><ssf:nlt tag="relevance.justShare"/></span></c:if>
+  <c:if test="${ssDefinitionFamily == 'calendar'}">
+  	title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
+  	<span><ssf:nlt tag="relevance.justShare"/></span></c:if>
+</c:if>
+</a>
+</c:if>
+
+
+
+
+<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+<a class="ss_buttonSTButton ss_fineprint" href="javascript: ;" 
+  onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
+<c:if test="${ssBinder.entityType == 'workspace'}">
+  <c:if test="${ssBinder.definitionType != 12}">
+  title="<ssf:nlt tag="relevance.trackThisWorkspace"/>" >
+  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+  <c:if test="${ssBinder.definitionType == 12}">
+  	title="<ssf:nlt tag="relevance.trackThisPerson"/>" >
+  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+</c:if>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <c:if test="${ssDefinitionFamily != 'calendar'}">
+  	title="<ssf:nlt tag="relevance.trackThisFolder"/>" >
+  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+  <c:if test="${ssDefinitionFamily == 'calendar'}">
+  	title="<ssf:nlt tag="relevance.trackThisCalendar"/>" >
+  	<span class="ss_fineprint"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+</c:if>
+</a>
+</c:if>
+<div id="ss_track_this_anchor${renderResponse.namespace}"> </div>
+<div id="ss_track_this_ok${renderResponse.namespace}" 
+  style="position:absolute;display:none;visibility:hidden;border:1px solid black;padding:10px;background-color:#ffffff;"></div>
+
+
+
+</div><!-- end of share button div -->
+
  </div></div>
       <div class="ss_clear_float"></div>
 
