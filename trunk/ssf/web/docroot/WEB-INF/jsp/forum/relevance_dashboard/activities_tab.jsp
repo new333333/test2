@@ -39,7 +39,9 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.activities"/></div>
 	</ssf:param>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
+		<div id="ss_dashboardActivities${renderResponse.namespace}">
+		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
+		</div>
 	</ssf:canvas>
 
         </div><!-- end of ss_col 1 -->
@@ -49,7 +51,9 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_blue"> <ssf:nlt tag="relevance.sharedItems"/> </div>
 	</ssf:param>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
+		<div id="ss_dashboardShared${renderResponse.namespace}">
+		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
+		</div>
 	</ssf:canvas>
 
       </div><!-- end of col2 -->
@@ -59,18 +63,9 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.visitedInPastTwoWeeks"/></div>
 	</ssf:param>
-		
-		<c:forEach var="user" items="${ssUsers}">
-		<div id="ss_para">
-		  <li>
-		    <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
-		    <c:if test="${!empty user.status}">
-		    <br/><span class="ss_status">${user.status}</span>
-		    </c:if>
-		  </li>
-		  </div><!-- end of ss_para -->
-		</c:forEach>
-		
+		<div id="ss_dashboardVisitors${renderResponse.namespace}">
+		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/visitors.jsp" />
+		</div>
 	</ssf:canvas>
 
       </div><!-- end of col3 -->

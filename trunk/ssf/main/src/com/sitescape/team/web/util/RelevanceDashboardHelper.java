@@ -99,7 +99,6 @@ public class RelevanceDashboardHelper {
 			setupTrackedItemsBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW.equals(type)) {
-			setupDocumentsBeans(bs, userWorkspace, model);
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
 			setupTrackedItemsBeans(bs, userWorkspace, model);
 			setupWhatsHotBean(bs, model);
@@ -113,6 +112,7 @@ public class RelevanceDashboardHelper {
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_VIEWED_ENTRIES.equals(type)) {
 			setupViewedEntriesBean(bs, userWorkspace, model);
+			setupDocumentsBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_HIDDEN.equals(type)) {
 		}
@@ -135,8 +135,18 @@ public class RelevanceDashboardHelper {
 			setupTrackedPlacesBeans(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_NEW_SITE.equals(type)) {
 			setupWhatsNewSite(bs, userWorkspace, model);
+		} else if (ObjectKeys.RELEVANCE_PAGE_ACTIVITIES.equals(type)) {
+			setupActivitiesBean(bs, userWorkspace, model);
+		} else if (ObjectKeys.RELEVANCE_PAGE_DOCS.equals(type)) {
+			setupDocumentsBeans(bs, userWorkspace, model);
 		} else if (ObjectKeys.RELEVANCE_PAGE_HOT.equals(type)) {
 			setupWhatsHotBean(bs, model);
+		} else if (ObjectKeys.RELEVANCE_PAGE_SHARED.equals(type)) {
+			setupSharedItemsBeans(bs, userWorkspace, model);
+		} else if (ObjectKeys.RELEVANCE_PAGE_TASKS.equals(type)) {
+			setupTasksBeans(bs, userWorkspace, model);
+		} else if (ObjectKeys.RELEVANCE_PAGE_VISITORS.equals(type)) {
+			setupVisitorsBeans(bs, userWorkspace, model);
 		}
 	}
 	
@@ -157,7 +167,16 @@ public class RelevanceDashboardHelper {
 		//Get the tasks bean
 		//Prepare for a standard dashboard search operation
 		Map options = new HashMap();
+		String page = (String) model.get(WebKeys.PAGE_NUMBER);
+		if (page == null || page.equals("")) page = "0";
+		Integer pageNumber = Integer.valueOf(page);
+		if (pageNumber < 0) pageNumber = 0;
+		model.put(WebKeys.MY_TASKS_PAGE, String.valueOf(pageNumber));
+		int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+
 		setupInitialSearchOptions(options);
+
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
@@ -203,9 +222,17 @@ public class RelevanceDashboardHelper {
 	protected static void setupDocumentsBeans(AllModulesInjected bs, Binder binder, Map model) {		
 		//Get the documents bean for the documents th the user just authored or modified
 		Map options = new HashMap();
+		String page = (String) model.get(WebKeys.PAGE_NUMBER);
+		if (page == null || page.equals("")) page = "0";
+		Integer pageNumber = Integer.valueOf(page);
+		if (pageNumber < 0) pageNumber = 0;
+		model.put(WebKeys.MY_DOCUMENTS_PAGE, String.valueOf(pageNumber));
+		int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 		
 		//Prepare for a standard dashboard search operation
 		setupInitialSearchOptions(options);
+
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
@@ -390,12 +417,20 @@ public class RelevanceDashboardHelper {
 	private static void setupVisitorsBeans(AllModulesInjected bs, Binder binder, Map model) {
 		//Who has visited my page?
 		if (binder != null) {
+			String page = (String) model.get(WebKeys.PAGE_NUMBER);
+			if (page == null || page.equals("")) page = "0";
+			Integer pageNumber = Integer.valueOf(page);
+			if (pageNumber < 0) pageNumber = 0;
+			model.put(WebKeys.VISITORS_PAGE, String.valueOf(pageNumber));
+			int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 			GregorianCalendar start = new GregorianCalendar();
 		    //get users over last 2 weeks
 		   start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
-		   Collection users = bs.getReportModule().getUsersActivity(binder, AuditType.view, 
+		   List users = bs.getReportModule().getUsersActivity(binder, AuditType.view, 
 				   start.getTime(), new java.util.Date());
-		   model.put(WebKeys.USERS, users);
+			if (users != null && users.size() > pageStart) {
+				model.put(WebKeys.VISITORS, users.subList(pageStart, users.size()));
+			}
 		}
 	}
 	
@@ -423,6 +458,13 @@ public class RelevanceDashboardHelper {
 	private static void setupActivitiesBean(AllModulesInjected bs, Binder binder, Map model) {
 		//What activities have been happening?
 		if (binder != null) {
+			String page = (String) model.get(WebKeys.PAGE_NUMBER);
+			if (page == null || page.equals("")) page = "0";
+			Integer pageNumber = Integer.valueOf(page);
+			if (pageNumber < 0) pageNumber = 0;
+			model.put(WebKeys.ACTIVITIES_PAGE, String.valueOf(pageNumber));
+			int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+
 			List<Long> trackedPeople = new ArrayList();
 			if (!model.containsKey(WebKeys.RELEVANCE_TRACKED_PEOPLE)) {
 				UserProperties userForumProperties = bs.getProfileModule().getUserProperties(binder.getOwnerId(), binder.getId());
@@ -442,10 +484,12 @@ public class RelevanceDashboardHelper {
 				GregorianCalendar start = new GregorianCalendar();
 			    //get activities over last 2 weeks
 				start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
-				Collection activities = bs.getReportModule().getUsersActivities(binder.getOwnerId(),
+				List activities = bs.getReportModule().getUsersActivities(binder.getOwnerId(),
 						userIds, start.getTime(), new java.util.Date(), 
-						Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
-				model.put(WebKeys.ACTIVITIES, activities);
+						pageStart + Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox")));
+				if (activities != null && activities.size() > pageStart) {
+					model.put(WebKeys.ACTIVITIES, activities.subList(pageStart, activities.size()));
+				}
 			}
 		}
 	}
@@ -480,10 +524,19 @@ public class RelevanceDashboardHelper {
 		if (binder != null && EntityType.workspace.equals(binder.getEntityType()) && 
 				binder.getDefinitionType() != null && 
 				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
+			String page = (String) model.get(WebKeys.PAGE_NUMBER);
+			if (page == null || page.equals("")) page = "0";
+			Integer pageNumber = Integer.valueOf(page);
+			if (pageNumber < 0) pageNumber = 0;
+			model.put(WebKeys.RELEVANCE_SHARED_ENTITIES_PAGE, String.valueOf(pageNumber));
+			int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+
 			GregorianCalendar since = new GregorianCalendar();
 			since.add(Calendar.WEEK_OF_MONTH, -2);
-			Collection<SharedEntity>sharedEntities = bs.getProfileModule().getShares(binder.getOwnerId(), since.getTime());
-			model.put(WebKeys.RELEVANCE_SHARED_ENTITIES, sharedEntities);
+			List<SharedEntity>sharedEntities = bs.getProfileModule().getShares(binder.getOwnerId(), since.getTime());
+			if (sharedEntities != null && sharedEntities.size() > pageStart) {
+				model.put(WebKeys.RELEVANCE_SHARED_ENTITIES, sharedEntities.subList(pageStart, sharedEntities.size()));
+			}
 		}
 	}
     

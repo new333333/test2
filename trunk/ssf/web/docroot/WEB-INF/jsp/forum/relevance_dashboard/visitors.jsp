@@ -30,38 +30,38 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_dashboard_content" class="ss_tricolumn">
-  <div class="ss_colmid">
-    <div class="ss_colleft">
-      <div id="ss_col1" class="ss_col1">
+<div id="ss_para">
+<div id="ss_nextPage" align="right">
+<c:if test="${ss_visitorsPage > '0'}">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'visitors', '${ss_visitorsPage}', 'previous', 'ss_dashboardVisitors${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+  title="<ssf:nlt tag="general.previousPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_visitorsPage || ss_visitorsPage <= '0'}">
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+</c:if>
+<c:if test="${!empty ss_visitors}">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'visitors', '${ss_visitorsPage}', 'next', 'ss_dashboardVisitors${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+  title="<ssf:nlt tag="general.nextPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_visitors}">
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+</c:if>
+</div>
 
-	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue"><ssf:nlt tag="relevance.visitedEntries"/></div>
-	</ssf:param>
-		<div id="ss_dashboardEntriesViewed${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_visited_entries.jsp" />
-		</div>
-	</ssf:canvas>
-	
-        </div><!-- end of ss_col 1 -->
-      <div id="ss_col2" class="ss_col2">
-
-	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
-	<ssf:param name="title" useBody="true" >
-		<div id="ss_title" class="ss_pt_title ss_blue ss_recentfolder_image"><ssf:nlt tag="relevance.documents"/></div>
-	</ssf:param>
-		<div id="ss_dashboardDocs${renderResponse.namespace}">
-		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
-		</div>
-	</ssf:canvas>
-	
-      </div><!-- end of col2 -->
-      <div id="ss_col3" class="ss_col3">
-
-      </div><!-- end of col3 -->
-    </div><!-- end of col left -->
-  </div><!-- end of col mid -->
-</div><!-- end of content -->
-<div class="ss_clear_float"></div>
-
+		<c:forEach var="user" items="${ss_visitors}">
+		<div id="ss_para">
+		  <li>
+		    <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
+		    <c:if test="${!empty user.status}">
+		    <br/><span class="ss_status">${user.status}</span>
+		    </c:if>
+		  </li>
+		  </div><!-- end of ss_para -->
+		</c:forEach>
+</div>

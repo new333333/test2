@@ -38,6 +38,21 @@
 <c:if test="${ss_type == 'newSite'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_site.jsp" />
 </c:if>
+<c:if test="${ss_type == 'docs'}">
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_docs.jsp" />
+</c:if>
 <c:if test="${ss_type == 'hot'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_hot.jsp" />
+</c:if>
+<c:if test="${ss_type == 'tasks'}">
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
+</c:if>
+<c:if test="${ss_type == 'activities'}">
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities.jsp" />
+</c:if>
+<c:if test="${ss_type == 'shared'}">
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/shared_items.jsp" />
+</c:if>
+<c:if test="${ss_type == 'visitors'}">
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/visitors.jsp" />
 </c:if>

@@ -37,6 +37,28 @@
 <c:if test="${!empty ss_myDocs}">
 <div id="ss_para">
 <div id="ss_today">
+<div id="ss_nextPage" align="right">
+<c:if test="${ss_myDocsPage > '0'}">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'docs', '${ss_myDocsPage}', 'previous', 'ss_dashboardDocs${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+  title="<ssf:nlt tag="general.previousPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_myDocsPage || ss_myDocsPage <= '0'}">
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+</c:if>
+<c:if test="${!empty ss_myDocs}">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'docs', '${ss_myDocsPage}', 'next', 'ss_dashboardDocs${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+  title="<ssf:nlt tag="general.nextPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_myDocs}">
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+</c:if>
+</div>
   <div id="ss_mydocs_para" >
   <c:forEach var="entry" items="${ss_myDocs}">
     <jsp:useBean id="entry" type="java.util.Map" />
