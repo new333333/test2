@@ -634,6 +634,7 @@ public class SearchFilterToSearchBooleanConverter {
 			andField = block.addElement(QueryBuilder.AND_ELEMENT);
 			field = andField.addElement(QueryBuilder.FIELD_ELEMENT);
 			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_PROCESS_FIELD);
+			field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
 	    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 	    	child.setText(defId);
 		}
