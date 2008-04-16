@@ -116,7 +116,7 @@ public class ImageOpenOfficeConverter
 	 *  @param timeout Export process timeout in milliseconds.
 	 *  @return <code>true</code> if successful, <code>false</code> otherwise
 	 */
-	public void convert(String ifp, String ofp, long timeout, ImageConverter.Parameters parameters)
+	public void convert(String origFileName, String ifp, String ofp, long timeout, ImageConverter.Parameters parameters)
 		throws Exception
 	{
 		FileInputStream is = null;

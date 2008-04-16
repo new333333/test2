@@ -30,17 +30,13 @@ package com.sitescape.team.docconverter;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.IOException;
-
-import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.module.file.FileModule;
-import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FileHelper;
 import com.sitescape.team.util.FilePathUtil;
 import com.sitescape.team.util.FileStore;
@@ -68,7 +64,7 @@ public abstract class Converter<T>
 	 *   which does the actual file-to-file conversion.  Intermediate classes (like TextConverter) just
 	 *   leave it undefined and declare themselves abstract.
 	 */
-	public abstract void convert(String ifp, String ofp, long timeout, T parameters)
+	public abstract void convert(String origFileName, String ifp, String ofp, long timeout, T parameters)
 		throws Exception;
 
 	/*
@@ -99,7 +95,10 @@ public abstract class Converter<T>
 			}
 		}
 
-		return new FileInputStream(convertedFile);
+		if(convertedFile.exists())
+			return new FileInputStream(convertedFile);
+		else
+			throw new DocConverterException("Conversion failed");
 	}
 
 	protected abstract void createConvertedFileWithDefaultContent(File convertedFile) throws IOException;
@@ -125,11 +124,18 @@ public abstract class Converter<T>
 
 			tempConvertedFile = TempFileUtil.createTempFile("t" + timestamp, getSuffix(convertedFile), convertedFile.getParentFile(), false);
 			
-			convert(copyOfOriginalFile.getAbsolutePath(), tempConvertedFile.getAbsolutePath(), 30000, parameters);
+			convert(relativeFilePath, copyOfOriginalFile.getAbsolutePath(), tempConvertedFile.getAbsolutePath(), 30000, parameters);
 			
 			FileHelper.move(tempConvertedFile, convertedFile);
 		}
+		catch(IOException e) {
+			throw e;
+		}
+		catch(RuntimeException e) {
+			throw e;
+		}
 		catch(Exception e) {
+			throw new DocConverterException(e);
 		}
 		finally
 		{
