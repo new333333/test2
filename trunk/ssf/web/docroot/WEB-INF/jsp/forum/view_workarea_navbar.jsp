@@ -457,10 +457,13 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 ss_statusCurrent = "${ssUser.status}";
 </script>
 <span class="ss_statusprint"><ssf:nlt tag="relevance.userStatus"/></span>
-<input class="ss_statusAreaBlur" type="text" size="50" style="font-size:8;" value="${ssUser.status}"
+<input type="text" size="50" style="font-size:8; background-color:#cccccc;" value="${ssUser.status}"
   onFocus="ss_setStatusBackground(this, 'focus');"
-  onKeyPress="ss_updateStatusSoon(this);"
+  onKeyPress="ss_updateStatusSoon(this, event);"
   onChange="ss_updateStatusNow(this);"
+  onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
+  onMouseover="ss_setStatusBackground(this, 'mouseOver');"
+  onMouseout="ss_setStatusBackgroundCheck(this);"
   />
 </li>
 

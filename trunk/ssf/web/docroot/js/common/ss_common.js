@@ -132,6 +132,7 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_statusCurrent = "";
 	var ss_statusTimer = null;
 	var ss_statusObj = null;
+	var ss_statusOnMouseOver = false;
 }
 var ss_common_loaded = 1;
 
@@ -724,33 +725,66 @@ function ss_moveDivToTopOfBody(divId) {
 }
 
 //Functions to save the user status
-function ss_updateStatusSoon(obj) {
+function ss_updateStatusSoon(obj, evt) {
 	ss_statusObj = obj;
 	if (ss_statusTimer != null) {
 		clearTimeout(ss_statusTimer)
 		ss_statusTimer = null;
 	}
-	ss_statusTimer = setTimeout('ss_updateStatusNow(ss_statusObj);', 10000);
+    var charCode = (evt.which) ? evt.which : event.keyCode
+    if (charCode == 10 || charCode == 13) {
+    	ss_updateStatusNow(obj)
+    } else {
+		ss_setStatusBackground(obj, 'focus');
+    }
 }
 function ss_updateStatusNow(obj) {
+	ss_statusObj = obj;
 	if (ss_statusTimer != null) {
 		clearTimeout(ss_statusTimer)
 		ss_statusTimer = null;
 	}
-	if (ss_statusCurrent != obj.value) {
-		ss_statusCurrent = obj.value;
-		var status = ss_replaceSubStrAll(obj.value, "\"", "&quot;");
-		
-		ss_setupStatusMessageDiv();
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_status", status:status}, "");
-		var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-		ajaxRequest.setPostRequest(ss_postRequestAlertError);
-		ajaxRequest.sendRequest();  //Send the request
+	if (obj != null) {
+	    if (ss_statusCurrent != obj.value) {
+			ss_statusCurrent = obj.value;
+			var status = ss_replaceSubStrAll(obj.value, "\"", "&quot;");
+			
+			ss_setupStatusMessageDiv();
+			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"save_user_status", status:status}, "");
+			var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
+			ajaxRequest.setPostRequest(ss_postRequestAlertError);
+			ajaxRequest.sendRequest();  //Send the request
+			setTimeout('ss_flashStatus();', 200);
+		}
+		ss_setStatusBackground(obj, 'blur');
 	}
 }
 function ss_setStatusBackground(obj, op) {
-	if (op == 'focus') obj.className = 'ss_statusArea';
-	if (op == 'blur') obj.className = 'ss_statusAreaBlur';
+	ss_statusObj = obj;
+	if (op == 'focus') {
+		obj.style.backgroundColor = '#ffffff';
+		ss_statusOnMouseOver = true;
+		if (ss_statusTimer != null) {
+			clearTimeout(ss_statusTimer)
+			ss_statusTimer = null;
+		}
+		if (ss_statusObj != null) ss_statusTimer = setTimeout('ss_updateStatusNow(ss_statusObj);', 10000);
+	}
+	if (op == 'mouseOver') {
+		obj.style.backgroundColor = '#ffffff';
+		ss_statusOnMouseOver = true;
+	}
+	if (op == 'blur') {
+		obj.style.backgroundColor = '#cccccc';
+		ss_statusOnMouseOver = false;
+	}
+}
+function ss_flashStatus() {
+	ss_statusObj.style.backgroundColor = "lime";
+	setTimeout("ss_setStatusBackground(ss_statusObj, 'blur');", 300);
+}
+function ss_setStatusBackgroundCheck(obj) {
+	if (ss_statusOnMouseOver && ss_statusTimer == null) ss_setStatusBackground(obj, 'blur');
 }
 
 function ss_trackThisBinder(id, namespace) {
