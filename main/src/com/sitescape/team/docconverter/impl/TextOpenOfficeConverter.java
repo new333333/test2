@@ -126,7 +126,7 @@ public class TextOpenOfficeConverter
 	 *  @param timeout Export process timeout in milliseconds.
 	 *  @return <code>true</code> if successful, <code>false</code> otherwise
 	 */
-	public void convert(String ifp, String ofp, long timeout, String parameters)
+	public void convert(String origFileName, String ifp, String ofp, long timeout, String parameters)
 		throws Exception
 	{
 		org.dom4j.Document doc = null;
