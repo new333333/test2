@@ -89,37 +89,44 @@ a.ss_STButton {
   	font-size: ${ss_style_font_fineprint};
 	}
 
-	/* WHITE? SHARE AND TRACK BUTTONS */
+	/* WHITE CHICLET-STYLE SHARE AND TRACK BUTTONS */
 
-.clearSTButton{ /* generic container (i.e. div) for floating buttons */
-    overflow: hidden;
+.ss_clearSTButton{ /* generic container (i.e. div) for floating buttons */
+    white-space:nowrap;
     width: 100%;
+    padding-top:4px; /* this pushes the buttons down from the top of the bar */
 	}
-a.buttonSTButton {
-    background: transparent url('bg_button_a.gif') no-repeat scroll top right;
+a.ss_buttonSTButton {  
+    background-image: url("<html:rootPath/>images/pics/button_whtslide.png"); 
+    background-color:transparent;
+    background-repeat:no-repeat;
+    background-attachment: scroll;
+    background-position: top right;
     color: #444;
     display: block;
     float: left;
-    font: normal 10px arial, sans-serif;
     height: 14px;
     margin-right: 6px;
-    padding-right: 18px; /* sliding doors padding */
+    padding-right: 8px; /* sliding doors padding */
     text-decoration: none;
 	}
-a.buttonSTButton span {
-    background: transparent url('bg_button_span.gif') no-repeat;
+a.ss_buttonSTButton span {
+    background-image:url("<html:rootPath/>images/pics/button_wht.png");
+    background-color:transparent;    
+    background-repeat:no-repeat;
     display: block;
     line-height: 11px;
-    padding: 5px 0 5px 18px;
+    padding: 2px 0 1px 8px;
     }
-a.button:active {
+a.ss_buttonSTButton:active {
     background-position: bottom right;
+    height: 14px;
     color: #000;
     outline: none; /* hide dotted outline in Firefox */
 	}
-a.buttonSTButton:active span {
+a.ss_buttonSTButton:active span {
     background-position: bottom left;
-    padding: 6px 0 4px 18px; /* push text down 1px */
+    padding: 2px 0 1px 8px; /* push text down 1px */
 	}		
 
 	/* NAVIGATION BUTTONS FOR MY WORKSPACE, MY TEAMS, FAVORITES */	
@@ -178,13 +185,12 @@ a.buttonSTButton:active span {
 	letter-spacing: 0px;
 	}
 #ss_top_nav_view ul{
-	margin:10px 0 0 0px;
+	margin:0px 0 0 0px;
 	list-style:none;
 	width:100%;
 	}
 #ss_top_nav_view ul li{
 	display:inline;
-	padding:0px 2px 0 0px;
 	width:100%;
 	}
 #ss_top_nav_view ul li a{
@@ -192,12 +198,15 @@ a.buttonSTButton:active span {
 	background-position: 0px 0px;
 	background-repeat:no-repeat;
 	color:#526394;
+	white-space: nowrap;
+	margin-bottom:3px;
 	padding:0px 5px 0px 13px;		/* need to keep padding-left to push past box */
 	}
 #ss_top_nav_view ul li a:hover{
 	background-image:url("<html:rootPath/>images/pics/portalepand_red.png");   
 	background-position: 0px 0px;
 	background-repeat:no-repeat;
+  	white-space: nowrap;	
 	color: #008EDF!important;
 	}	
 
@@ -220,7 +229,7 @@ a.buttonSTButton:active span {
 	    float:right;
         width:100%;			/* width of whole page */
 		overflow:hidden;	/* This chops off any overhanging divs */
-		height:40px;
+		/* height:40px;		need to not define a height so that the text will wrap when width is condensed */
 		}
 		
 	/* 5 COLUMN SETTINGS */
@@ -243,7 +252,7 @@ a.buttonSTButton:active span {
 		position:relative;
 		padding:3px 0 1em 0;	/* no left and right padding on columns, we just make them narrower instead 
 								only padding top and bottom is included here, make it whatever value you need */
-		overflow:hidden;
+		/* overflow:hidden;     not going to use hidden overflow for individual columns */
 		}
 	
 	.ss_5col2,					
@@ -296,7 +305,7 @@ a.buttonSTButton:active span {
 		min-width:150px!important;	/* Please make note of the brackets here:(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 		}	
 
-	/* DIV FOR LINE ACROSS GLOBAL NAV */	
+	/* DIV FOR LINEs ACROSS GLOBAL NAV */	
 		
 	.ss_darkline {
 		position:relative;
@@ -308,7 +317,7 @@ a.buttonSTButton:active span {
 	.ss_medline {
 		position:relative;
 		float:left;
-		height:23px;
+		height:21px;
 		background-color:#D8d8d8;
 		width:100%;
 		}
@@ -392,6 +401,7 @@ div.ss_global_toolbar_maximized .ss_global_toolbar_quick {
 div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_label_text {
 	text-align: left;	
 	vertical-align: top;
+	white-space:normal;
 	}
 div.ss_global_toolbar_maximized .ss_global_toolbar_quick .ss_global_toolbar_quick_advanced {
 	text-align: right;
@@ -516,7 +526,7 @@ div.ss_global_toolbar_help {
 span.ss_global_toolbar_label_text, span.ss_global_toolbar_label_text_quickSearch {
 	color:#333333;
 	background-color: transparent;
-	white-space: nowrap;
+	white-space: normal;
 	}
 span.ss_global_toolbar_label_text_quickSearch {
 	font-size: ${ss_style_font_fineprint};
