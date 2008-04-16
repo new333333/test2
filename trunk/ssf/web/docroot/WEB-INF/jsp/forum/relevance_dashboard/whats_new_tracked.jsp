@@ -54,7 +54,6 @@
 <img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
 </c:if>
 </div><!--end of arrow division-->
-<div id="ss_hints"><em><ssf:nlt tag="relevance.placesBeingTracked"/></em></div>
 <div id="ss_hints"><em><ssf:nlt tag="relevance.hint.newTrackedFolders"/></em></div>
   <div id="ss_today">
   <div id="ss_mydocs_para" >
@@ -99,7 +98,9 @@
 				title="${path}"
 				><span>${title}</span></a>
 		</c:if>
-	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" title="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
+	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" 
+	    title="<ssf:nlt tag="general.type.folder"/>" width="11" height="10" 
+	    hspace="2" border="0" align="absmiddle" />
 	  <c:if test="${!empty entry._desc}">
 	    <br/>
 	    <span class="ss_summary"><ssf:textFormat 

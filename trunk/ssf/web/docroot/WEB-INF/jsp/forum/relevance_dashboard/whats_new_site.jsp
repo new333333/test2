@@ -56,7 +56,6 @@
 </div>
 <div id="ss_hints"><em><ssf:nlt tag="relevance.hint.newTrackedSite"/></em></div>
 <div id="ss_today">
-<div id="ss_hints"><em><ssf:nlt tag="relevance.newSiteDesc"/></em></div>
   <div id="ss_mydocs_para" >
   <c:forEach var="entry" items="${ss_whatsNew}">
     <jsp:useBean id="entry" type="java.util.Map" />
