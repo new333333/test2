@@ -111,7 +111,8 @@ a.buttonSTButton span {
     display: block;
     line-height: 11px;
     padding: 5px 0 5px 18px;
-    a.button:active {
+    }
+a.button:active {
     background-position: bottom right;
     color: #000;
     outline: none; /* hide dotted outline in Firefox */
