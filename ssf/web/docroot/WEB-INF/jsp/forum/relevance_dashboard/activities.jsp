@@ -30,11 +30,30 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<c:if test="${empty ss_activities}">
-<span><ssf:nlt tag="relevance.none"/></span>
+<div id="ss_para">
+<div id="ss_nextPage" align="right">
+<c:if test="${ss_activitiesPage > '0'}">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'activities', '${ss_activitiesPage}', 'previous', 'ss_dashboardActivities${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+  title="<ssf:nlt tag="general.previousPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_activitiesPage || ss_activitiesPage <= '0'}">
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
 </c:if>
 <c:if test="${!empty ss_activities}">
-<div id="ss_para">
+<a href="javascript: ;" 
+  onClick="ss_showDashboardPage('${ssBinder.id}', 'activities', '${ss_activitiesPage}', 'next', 'ss_dashboardActivities${renderResponse.namespace}');return false;">
+<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+  title="<ssf:nlt tag="general.nextPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_activities}">
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+</c:if>
+</div>
+<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.activities"/></em></div>
   <c:forEach var="activity" items="${ss_activities}">
   
     <li class="ss_activity">
@@ -62,4 +81,3 @@
     
   </c:forEach>
 </div><!-- end of ss_para -->
-</c:if>

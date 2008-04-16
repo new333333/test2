@@ -1126,7 +1126,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         return loadProcessor(binder).getBinderEntries(binder, allPrincipalDocType, searchOptions);        
 	}
     //RO transaction
-    public Collection<SharedEntity> getShares(Long userId, Date after) {
+    public List<SharedEntity> getShares(Long userId, Date after) {
 	    User user = getUser(userId, false);
 	    //get list of all groups user is a member of.
 	    Set<Long> accessIds = getProfileDao().getPrincipalIds(user);

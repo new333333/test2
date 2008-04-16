@@ -194,7 +194,12 @@ public interface ObjectKeys {
     public static final String RELEVANCE_PAGE_ENTRIES_VIEWED = "entriesViewed";
     public static final String RELEVANCE_PAGE_NEW_SITE = "newSite";
     public static final String RELEVANCE_PAGE_NEW_TRACKED = "newTracked";
+    public static final String RELEVANCE_PAGE_ACTIVITIES = "activities";
+    public static final String RELEVANCE_PAGE_DOCS = "docs";
     public static final String RELEVANCE_PAGE_HOT = "hot";
+    public static final String RELEVANCE_PAGE_SHARED = "shared";
+    public static final String RELEVANCE_PAGE_TASKS = "tasks";
+    public static final String RELEVANCE_PAGE_VISITORS = "visitors";
     
     public static final String SEARCH_OFFSET = "offset";
     public static final String SEARCH_MAX_HITS = "maxHits";

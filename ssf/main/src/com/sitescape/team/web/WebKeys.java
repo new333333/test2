@@ -447,6 +447,7 @@ public class WebKeys {
 	public static final String ACCESSIBLE_URL = "ss_accessibleUrl";
 	public static final String ACTION = "action";
 	public static final String ACTIVITIES = "ss_activities";
+	public static final String ACTIVITIES_PAGE = "ss_activitiesPage";
 	public static final String ADD_ENTRY_DEFINITIONS="ssAddEntryDefinitions";
 	public static final String ADD_ENTRY_TITLE="ssAddEntryTitle";
 	public static final String ADD_ENTRY_TITLES="ssAddEntryTitles";
@@ -691,9 +692,11 @@ public class WebKeys {
 	public static final String MY_CALENDAR_ENTRIES = "ss_myCalendarEntries";
 	public static final String MY_DOCUMENTS = "ss_myDocs";
 	public static final String MY_DOCUMENTS_FOLDERS = "ss_myDocsFolders";
+	public static final String MY_DOCUMENTS_PAGE = "ss_myDocsPage";
 	public static final String MY_ENTRIES = "ss_myEntries";
 	public static final String MY_TASKS = "ss_myTasks";
 	public static final String MY_TASKS_FOLDERS = "ss_myTasksFolders";
+	public static final String MY_TASKS_PAGE = "ss_myTasksPage";
     public static final String MY_TEAMS="ss_myTeams"; 
     public static final String NAMING_PREFIX="ssNamespace";
     public static final String NAVIGATION_LINK_TREE="ssNavigationLinkTree";
@@ -748,6 +751,7 @@ public class WebKeys {
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String RECORDS_DIV_ID="ss_recordsDivId";
     public static final String RELEVANCE_SHARED_ENTITIES="ss_sharedEntities";
+    public static final String RELEVANCE_SHARED_ENTITIES_PAGE="ss_sharedEntitiesPage";
     public static final String RELEVANCE_TRACKED_BINDERS="ss_trackedBinders";
     public static final String RELEVANCE_TRACKED_CALENDARS="ss_trackedCalendars";
     public static final String RELEVANCE_TRACKED_PEOPLE="ss_trackedPeople";
@@ -883,6 +887,8 @@ public class WebKeys {
     public static final String USER_PROPERTIES="ssUserProperties";
     public static final String USER_FOLDER_PROPERTIES="ssUserFolderProperties";
     public static final String USER_WORKSPACE="ss_userWorkspace";
+    public static final String VISITORS="ss_visitors";
+    public static final String VISITORS_PAGE="ss_visitorsPage";
     public static final String WHATS_HOT="ss_whatsHot";
     public static final String WHATS_HOT_FOLDERS="ss_whatsHotFolders";
     public static final String WHATS_NEW="ss_whatsNew";

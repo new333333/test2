@@ -39,7 +39,9 @@
 	<ssf:param name="title" useBody="true" >
 		<div id="ss_title" class="ss_pt_title ss_blue ss_tasks_img"><ssf:nlt tag="relevance.tasks"/></div>
 	</ssf:param>
-		<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
+		<div id="ss_dashboardTasks${renderResponse.namespace}">
+		  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/my_tasks.jsp" />
+		</div>
 	</ssf:canvas>
 	
 <c:if test="1 == 0">

@@ -210,7 +210,7 @@ public class ReportModuleImpl extends HibernateDaoSupport implements ReportModul
 	public void addLicenseStats(LicenseStats stats) {
 		getCoreDao().save(stats);
 	}
-	public Collection<User> getUsersActivity(final DefinableEntity entity, final AuditType type, final Date startDate, final Date endDate) {
+	public List<User> getUsersActivity(final DefinableEntity entity, final AuditType type, final Date startDate, final Date endDate) {
 		
 		List ids = (List)getHibernateTemplate().execute(new HibernateCallback() {
 			public Object doInHibernate(Session session) throws HibernateException {

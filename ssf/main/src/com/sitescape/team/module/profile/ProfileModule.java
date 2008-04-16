@@ -34,6 +34,7 @@ package com.sitescape.team.module.profile;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 
@@ -234,7 +235,7 @@ public interface ProfileModule {
 	 * @param after
 	 * @return
 	 */
-    public Collection<SharedEntity> getShares(Long userId, Date after);
+    public List<SharedEntity> getShares(Long userId, Date after);
 	/**
 	 * Return general user properties
 	 * @param userId - null for current user
