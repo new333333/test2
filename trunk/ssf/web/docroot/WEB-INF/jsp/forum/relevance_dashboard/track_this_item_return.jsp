@@ -33,20 +33,24 @@
 
 <c:choose>
 <c:when test="${!empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-	<span><ssf:nlt tag="general.notLoggedIn"/></span>
+	<span style="whitespace:nowrap;"><ssf:nlt tag="general.notLoggedIn"/></span>
 </c:when>
 <c:otherwise>
   <c:if test="${!empty ssEntry}">
-    <span>
+    <span style="whiteSpace:nowrap;">
       <ssf:nlt tag="relevance.nowTracking">
-      	<ssf:param name="value" useBody="true"><span class="ss_bold">${ssEntry.title}</span></ssf:param>
+      	<ssf:param name="value" useBody="true">
+      	  <span class="ss_bold">${ssEntry.title}</span>
+      	</ssf:param>
       </ssf:nlt>
     </span>
   </c:if>
   <c:if test="${empty ssEntry}">
-    <span>
+    <span style="whiteSpace:nowrap;">
       <ssf:nlt tag="relevance.nowTracking">
-        <ssf:param name="value" useBody="true"><span class="ss_bold">${ssBinder.title}</span></ssf:param>
+        <ssf:param name="value" useBody="true">
+          <span class="ss_bold">${ssBinder.title}</span>
+        </ssf:param>
       </ssf:nlt>
     </span>
   </c:if>
