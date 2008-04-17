@@ -1347,14 +1347,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		//This replace has been done AJAX does not allow "&"
 		String strURL = adapterUrl.toString();
 		strURL = strURL.replaceAll("&", "&amp;");
-
-		// This is a hack for iChain which doesn't always rewrite the
-		// applet URL properly.  We force https if we're leaning that way.
-		String protocol;
-		protocol = SPropsUtil.getString("adapter.web.protocol", "context");
-		if (protocol.equalsIgnoreCase("https") || protocol.equalsIgnoreCase("context-https")) {
-			strURL = strURL.replaceFirst("http://","https://");
-		}
 		
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
@@ -1457,23 +1449,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		//This replace has been done AJAX does not allow "&"
 		String strURL = adapterUrl.toString();
 		strURL = strURL.replaceAll("&", "&amp;");
-
-		// This is a hack for iChain which doesn't always rewrite the
-		// applet URL properly.  We force https if we're leaning that way.
-		String protocol;
-		protocol = SPropsUtil.getString("adapter.web.protocol", "context");
-		if (protocol.equalsIgnoreCase("https") || protocol.equalsIgnoreCase("context-https")) {
-			strURL = strURL.replaceFirst("http://","https://");
-		}
 		
 		//This replace has been done AJAX does not allow "&"
 		String strRefreshURL = adapterFolderRefreshUrl.toString();
 		//strRefreshURL = strRefreshURL.replaceAll("&", "&amp;");
-		
-		// Same iChain hack as above...
-		if (protocol.equalsIgnoreCase("https") || protocol.equalsIgnoreCase("context-https")) {
-			strRefreshURL = strRefreshURL.replaceFirst("http://","https://");
-		}
 		
 		Map model = new HashMap();
 		model.put(WebKeys.NAMESPACE, namespace);
