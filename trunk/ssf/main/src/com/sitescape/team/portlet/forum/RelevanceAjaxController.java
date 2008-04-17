@@ -114,7 +114,6 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 				return ajaxShareThisBinder(this, request, response);
 			}
 		} else if (op.equals(WebKeys.OPERATION_TRACK_THIS_BINDER)) {
-			response.setContentType("text/xml");
 			Map model = new HashMap();
 			Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
 			Long entryId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_ENTRY_ID);

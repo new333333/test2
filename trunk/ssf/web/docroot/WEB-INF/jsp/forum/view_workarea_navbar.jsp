@@ -553,13 +553,13 @@ ss_statusCurrent = "${ssUser.status}";
 </c:if>
 </a>
 </c:if>
-<div id="ss_track_this_anchor${renderResponse.namespace}"> </div>
-<div id="ss_track_this_ok${renderResponse.namespace}" 
-  style="position:absolute;display:none;visibility:hidden;border:1px solid black;padding:10px;background-color:#ffffff;"></div>
 
 
 
 </div><!-- end of share and track buttons div -->
+<div id="ss_track_this_ok${renderResponse.namespace}" 
+  style="position:relative; display:none; visibility:hidden; top:16px;
+         border:1px solid black; padding:10px; background-color:#ffffff;"></div>
 
 
  </div><!-- end of medline -->
