@@ -72,7 +72,7 @@ var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElemen
 <% //Changeable tab canvas; this gets replaced when a tab is clicked %>
 
 <div id="relevanceCanvas_${renderResponse.namespace}" style="margin:4px 10px 10px 10px;">
-<c:set var="ssRelevanceDashboardConfigElement" value="${item}" scope="request"/>
+<c:if test="${empty ssRelevanceDashboardConfigElement}"><c:set var="ssRelevanceDashboardConfigElement" value="${item}" scope="request"/></c:if>
 <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" />
 </div>
 </div>
