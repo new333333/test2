@@ -3758,7 +3758,7 @@ function ssFavorites(namespace) {
 
 	function setFavoritesList(favList) {
 		var d = dojo.byId("ss_favorites_list" + namespace);
-		var t = '<ul style="margin: 0px 0px 0px 5px; list-style-type: none;">';
+		var t = '<ul style="margin: 0px 0px 0px 1px; list-style-type: none;">';
 		for (var i = 0; i < favList.length; i++) {
 			var f = favList[i];
 			if (f.eletype != 'favorite') continue
