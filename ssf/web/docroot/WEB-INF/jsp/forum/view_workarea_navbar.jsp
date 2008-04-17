@@ -93,10 +93,7 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 		if (divObj != null) {
 			divObj.className = "ss_pseudoPortal"
 		}
-		var divObj = self.document.getElementById('ss_logobar${renderResponse.namespace}');
-		if (divObj != null) {
-			divObj.className = "ss_5col1 ss_logo1"
-		}
+
 	}
 }
 
@@ -158,7 +155,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   <div class="ss_5colmid">
   <div class="ss_5colleftctr">
     <div class="ss_5colleft">
-      <div id="ss_logobar${renderResponse.namespace}" class="ss_5col1">
+      <div class="ss_5col1">
       <div id="ss_top_nav_view">
 
 <!-- Beginning of Find Bar:  Portal Full Screen Find People/Places/Search  -->      
@@ -432,7 +429,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			</form>
      	</div>
      	
-	</div>
+
 </ssf:ifaccessible>
       </div><!-- end of col5-->
    </div><!-- end of colleft-->
@@ -443,7 +440,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <div class="ss_darkline"></div>
 <div class="ss_medline">
 
-<div align="right">
+
 <div id="ss_statusArea" class="ss_global_toolbar_maximized"><!-- beginning of other rows-->  
 
 
@@ -504,7 +501,8 @@ ss_statusCurrent = "${ssUser.status}";
         
                  
         </ul>
-      </div>
+</div> <!-- end of My Teams and Favorites div -->
+
 <!-- Beginning of  Share/Track Buttons -->
 <div class="ss_clearSTButton">
 
@@ -561,12 +559,12 @@ ss_statusCurrent = "${ssUser.status}";
 
 
 
-</div><!-- end of share button div -->
-
- </div></div>
-      <div class="ss_clear_float"></div>
+</div><!-- end of share and track buttons div -->
 
 
+ </div><!-- end of medline -->
+ 
+ <div class="ss_clear_float"></div>
 
 </ssf:ifLoggedIn>
 
