@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting;
 
+import java.util.Calendar;
 /**
  * WS facade for business tier.
  * 
@@ -41,10 +42,45 @@ public interface Facade {
 	public String getDefinitionAsXML(String definitionId);
 	
 	public String getDefinitionConfigAsXML();
+	/**
+	 * Return a list of definitions with their titles,id and type
+	 * @return
+	 */
 	public String getDefinitionListAsXML();
-	public void setDefinitions(long binderId, String[] definitionIds, String[] workflowAssociations);
+	/**
+	 * 
+	 * @param accessToken
+	 * @param binderId
+	 * @param definitionIds
+	 * @param workflowAssociations <Pairs of entryDefinitionId,workflowDefinitionId
+	 */
+	public void setDefinitions(long binderId, String[] definitionIds, String[]workflowAssociations);
+	/**
+	 * Set function membership for a binder.  Can mix and match memberName and/or members.
+	 * <workAreaFunctionMemberships>  
+	 * <workAreaFunctionMembership>
+	 * <property name="functionName">__role.visitor</property>
+	 * <property name="memberName">kelly</property>
+	 * <property name="memberName">jenny</property>
+	 * <property name="members">1,2,3</property>
+	 * </workAreaFunctionMembership>
+	 * </workAreaFunctionMemberships>  
+	 * @param accessToken
+	 * @param binderId
+	 * @param inputDataAsXml
+	 */
 	public void setFunctionMembership(long binderId, String inputDataAsXml);
+	/**
+	 * Set function inheritance.  Calling <code>setFunctionMembership<code> will automatically set this to false.
+	 * @param binderId
+	 * @param inherit
+	 */
 	public void setFunctionMembershipInherited(long binderId, boolean inherit);
+	/**
+	 * Set the binder owner
+	 * @param binderId
+	 * @param userId
+	 */
 	public void setOwner(long binderId, long userId);
 	// 
 	// Folder operations
@@ -64,8 +100,6 @@ public interface Facade {
 	public void uploadFolderFile(long folderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 
-	public void uploadFolderFileStaged(long folderId, long entryId, 
-			String fileUploadDataItemName, String fileName, String stagedFileRelativePath);
 
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML);
 
@@ -88,17 +122,7 @@ public interface Facade {
 	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords);
 	public String getPrincipalAsXML(long binderId, long principalId);
 
-	/*
-	public long addUser(long binderId, String definitionId, String inputDataAsXML);
 
-	public long addGroup(long binderId, String definitionId, String inputDataAsXML);
-	
-	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML);
-	
-	public void deletePrincipal(long binderId, long principalId);
-
-	*/
-	
 	//
 	// Workspace operations
 	//
@@ -136,5 +160,22 @@ public interface Facade {
 	public void setTeamMembers(long binderId, Long[] memberIds);
 
 	public void synchronizeMirroredFolder(long binderId);
+	public void indexFolder(long folderId);
+	//Migration services from sitescape forum
+	public long migrateBinder(long parentId, String definitionId, String inputDataAsXML,
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate);
+	
+	public long migrateFolderEntry(long binderId, String definitionId, String inputDataAsXML, 
+							   String creator, Calendar creationDate, String modifier, Calendar modificationDate);
+		
+	public long migrateReply(long binderId, long parentId, String definitionId,
+					     String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate);
+
+	public void migrateFolderFile(long binderId, long entryId, String fileUploadDataItemName,
+								 String fileName, String modifier, Calendar modificationDate);
+	public void migrateFolderFileStaged(long binderId, long entryId, 
+			String fileUploadDataItemName, String stagedFileRelativePath, String modifier, Calendar modificationDate);
+
+
 }
 

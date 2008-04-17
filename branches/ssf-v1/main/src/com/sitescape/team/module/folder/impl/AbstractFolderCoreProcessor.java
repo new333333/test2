@@ -110,11 +110,12 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
  
     //***********************************************************************************************************
     //no transaction    
-    public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems) 
+    public FolderEntry addReply(final FolderEntry parent, Definition def, final InputDataAccessor inputData, Map fileItems, Map options) 
    		throws AccessControlException, WriteFilesException {
         // This default implementation is coded after template pattern. 
                
     	final Map ctx = new HashMap();
+    	if (options != null) ctx.putAll(options);
 
     	Map entryDataAll = addReply_toEntryData(parent, def, inputData, fileItems, ctx);
         final Map entryData = (Map) entryDataAll.get(ObjectKeys.DEFINITION_ENTRY_DATA);
@@ -224,7 +225,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //no transaction
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
     		InputDataAccessor inputData, List fileData, Map ctx) {
-    	addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData, ctx);
+  	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
+  	   addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData, ctx);
     	//Also re-index the top entry (to catch the change in lastActivity and total reply count)
     	indexEntry(entry.getTopEntry());
     }
@@ -253,7 +255,9 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, Map ctx) {
-    	super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
+ 
+  	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
+  	   super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
        	//Also re-index the top entry (to catch the change in lastActivity)
     	FolderEntry fEntry = (FolderEntry)entry;
     	if (!fEntry.isTop()) indexEntry(fEntry.getTopEntry());

@@ -191,6 +191,9 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 			case addFolder:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_FOLDERS);
 				break;
+			case changeEntryTimestamps:
+				getAccessControlManager().checkOperation(folder, WorkAreaOperation.SITE_ADMINISTRATION);
+				break;
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
 				
@@ -227,6 +230,9 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 				break;
 			case report:
 				getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.GENERATE_REPORTS);
+				break;
+			case changeEntryTimestamps:
+				getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.SITE_ADMINISTRATION);
 				break;
 			default:
 				throw new NotSupportedException(operation.toString(), "checkAccess");
@@ -309,11 +315,18 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		return result;
 	}
     //no transaction by default
-   public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
-    		Map fileItems) throws AccessControlException, WriteFilesException {
+	public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
+			Map fileItems) throws AccessControlException, WriteFilesException {
+		return addFolder(parentFolderId, definitionId, inputData, fileItems, null);
+	}
+	public Long addFolder(Long parentFolderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
     	afCount.incrementAndGet();
 		Folder parentFolder = loadFolder(parentFolderId);
 		checkAccess(parentFolder, FolderOperation.addFolder);
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(parentFolder, FolderOperation.changeEntryTimestamps);
 		Definition def = null;
 		if (Validator.isNotNull(definitionId)) { 
 			def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
@@ -321,7 +334,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 			def = parentFolder.getEntryDef();
 		}
     			
-		Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems);
+		Binder binder = loadProcessor(parentFolder).addBinder(parentFolder, def, Folder.class, inputData, fileItems, options);
 		if(parentFolder.isMirrored() && binder.isMirrored())
 			getBinderModule().setDefinitions(binder.getId(), true);
 		return binder.getId();
@@ -329,10 +342,15 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     //no transaction by default
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
-    	aeCount.incrementAndGet();
-
+    	return addEntry(folderId, definitionId, inputData, fileItems, null);
+    }
+    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
         Folder folder = loadFolder(folderId);
         checkAccess(folder, FolderOperation.addEntry);
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(folder, FolderOperation.changeEntryTimestamps);
         
         FolderCoreProcessor processor = loadProcessor(folder);
        
@@ -343,22 +361,29 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         } else {
         	def = folder.getDefaultEntryDef();
         }
+        Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         
-        Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems);
         return entry.getId();
     }
-    //no transaction    
+    //no transaction    	
+    public Long addReply(Long folderId,  Long parentId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems) throws AccessControlException, WriteFilesException {
+    	return addReply(folderId, parentId, definitionId, inputData, fileItems, null);
+    }
 	public Long addReply(Long folderId, Long parentId, String definitionId, 
-    		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException {
+    		InputDataAccessor inputData, Map fileItems, Map options) throws AccessControlException, WriteFilesException {
     	arCount.incrementAndGet();
     	
         Folder folder = loadFolder(folderId);
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(folder, FolderOperation.changeEntryTimestamps);
         Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         FolderCoreProcessor processor = loadProcessor(folder);
         //load parent entry
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId);
         checkAccess(entry, FolderOperation.addReply);
-        FolderEntry reply = processor.addReply(entry, def, inputData, fileItems);
+        FolderEntry reply = processor.addReply(entry, def, inputData, fileItems, options);
         Date stamp = reply.getCreation().getDate();
         scheduleSubscription(folder, reply, new Date(stamp.getTime()-1));
         
@@ -379,20 +404,28 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
  
     	Date stamp = entry.getModification().getDate();
 		try {
-			processor.modifyEntry(folder, entry, inputData, null, null, null);
+			processor.modifyEntry(folder, entry, inputData, null, null, null, null);
       		if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);    		
     	} catch (WriteFilesException ex) {
     	    //should never happen   
     	}
 	}
     //no transaction    
+	public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+	    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+	    throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
+		modifyEntry(folderId, entryId, inputData, fileItems, deleteAttachments, fileRenamesTo, null);
+	}
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
-    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
         
     	meCount.incrementAndGet();
 
         Folder folder = loadFolder(folderId);
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(folder, FolderOperation.changeEntryTimestamps);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkAccess(entry, FolderOperation.modifyEntry);
@@ -411,7 +444,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	Date stamp = entry.getModification().getDate();
     	
     	try {
-    		processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo);
+    		processor.modifyEntry(folder, entry, inputData, fileItems, delAtts, fileRenamesTo, options);
        		if (!stamp.equals(entry.getModification().getDate())) scheduleSubscription(folder, entry, stamp);
     		
     	} catch (WriteFilesException ex) {

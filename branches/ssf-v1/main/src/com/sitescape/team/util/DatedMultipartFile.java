@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.util;
 
+import java.io.File;
 import java.io.InputStream;
 import java.util.Date;
 
@@ -35,6 +36,7 @@ import java.util.Date;
 public class DatedMultipartFile extends SimpleMultipartFile implements FileModDateSupport {
 
 	private Date modDate;
+	private String modifier=null;
 
 	public DatedMultipartFile(String fileName, InputStream content) {
 		super(fileName, content);
@@ -45,9 +47,22 @@ public class DatedMultipartFile extends SimpleMultipartFile implements FileModDa
 		super(fileName, content);
 		this.modDate = modificationDate;
 	}
+	
+	public DatedMultipartFile(String fileName, File file, boolean deleteOnClose, Date modificationDate) {
+		super(fileName, file, deleteOnClose);
+		this.modDate = modificationDate;
+	}
 
+	public DatedMultipartFile(String fileName, File file, boolean deleteOnClose, String modifier, Date modificationDate) {
+		super(fileName, file, deleteOnClose);
+		this.modDate = modificationDate;
+		this.modifier = modifier;
+	}
 	public Date getModDate() {
 		return modDate;
+	}
+	public String getModifier() {
+		return modifier;
 	}
 
 }

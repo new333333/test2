@@ -101,11 +101,11 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	//***********************************************************************************************************	
     
 	public Entry addEntry(final Binder binder, Definition def, Class clazz, 
-    		final InputDataAccessor inputData, Map fileItems) 
+    		final InputDataAccessor inputData, Map fileItems, Map options) 
     	throws WriteFilesException {
         // This default implementation is coded after template pattern. 
         
-        final Map ctx = addEntry_setCtx(binder, null);
+        final Map ctx = addEntry_setCtx(binder, options);
     	Map entryDataAll;
     	
     	SimpleProfiler.startProfiler("addEntry_toEntryData");
@@ -342,9 +342,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
-        User user = RequestContextHolder.getRequestContext().getUser();
-        entry.setCreation(new HistoryStamp(user));
-        entry.setModification(entry.getCreation());
+        processCreationTimestamp(entry, ctx);
+        processModificationTimestamp(entry, entry.getCreation(), ctx);
         entry.setParentBinder(binder);
         entry.setLogVersion(Long.valueOf(1));
         
@@ -387,6 +386,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 
     protected void addEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, Map ctx){
+ 	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
         //no tags typically exists on a new entry - reduce db lookups by supplying list
     	List tags = null;
     	if (ctx != null) tags = (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS);
@@ -415,9 +415,10 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //***********************************************************************************************************
     public void modifyEntry(final Binder binder, final Entry entry, 
     		final InputDataAccessor inputData, Map fileItems, 
-    		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo)  
+    		final Collection deleteAttachments, final Map<FileAttachment,String> fileRenamesTo,
+    		Map options)  
     		throws WriteFilesException {
-       final Map ctx = modifyEntry_setCtx(entry, null);
+       final Map ctx = modifyEntry_setCtx(entry, options);
 
     	Map entryDataAll;
 
@@ -429,23 +430,27 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    List fileUploadItems = (List) entryDataAll.get(ObjectKeys.DEFINITION_FILE_DATA);
         
 	    try {	    	
-	    	SimpleProfiler.startProfiler("modifyEntry_transactionExecute");
 	    	// The following part requires update database transaction.
 	    	//ctx can be used by sub-classes to pass info
-	    	getTransactionTemplate().execute(new TransactionCallback() {
-	    		public Object doInTransaction(TransactionStatus status) {
-	    			SimpleProfiler.startProfiler("modifyEntry_fillIn");
-	    			modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
-	    			SimpleProfiler.stopProfiler("modifyEntry_fillIn");
-	    			SimpleProfiler.startProfiler("modifyEntry_startWorkflow");
-	    	    	modifyEntry_startWorkflow(entry, ctx);
-	    	    	SimpleProfiler.stopProfiler("modifyEntry_startWorkflow");
-	    	    	SimpleProfiler.startProfiler("modifyEntry_postFillIn");
-	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
-	    			SimpleProfiler.stopProfiler("modifyEntry_postFillIn");
- 	    			return null;
-	    		}});
-	    	SimpleProfiler.stopProfiler("modifyEntry_transactionExecute");
+	    	if ((inputData.getCount() != 0) || (fileRenamesTo != null && !fileRenamesTo.isEmpty())) {
+	    		//the above test allows file uploads for migration, without changing the 
+	    		//modification timestamp on the entry
+		    	SimpleProfiler.startProfiler("modifyEntry_transactionExecute");
+		    	getTransactionTemplate().execute(new TransactionCallback() {
+		    		public Object doInTransaction(TransactionStatus status) {
+		    			SimpleProfiler.startProfiler("modifyEntry_fillIn");
+		    			modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
+		    			SimpleProfiler.stopProfiler("modifyEntry_fillIn");
+		    			SimpleProfiler.startProfiler("modifyEntry_startWorkflow");
+		    			modifyEntry_startWorkflow(entry, ctx);
+		    			SimpleProfiler.stopProfiler("modifyEntry_startWorkflow");
+		    			SimpleProfiler.startProfiler("modifyEntry_postFillIn");
+		    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
+		    			SimpleProfiler.stopProfiler("modifyEntry_postFillIn");
+		    			return null;
+		    		}});
+		    	SimpleProfiler.stopProfiler("modifyEntry_transactionExecute");
+	    	}
 	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
 	        SimpleProfiler.startProfiler("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
@@ -589,8 +594,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     //inside write transaction
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
-        User user = RequestContextHolder.getRequestContext().getUser();
-        entry.setModification(new HistoryStamp(user));
+        processModificationTimestamp(entry, null, ctx);
         entry.incrLogVersion();
         for (Iterator iter=entryData.entrySet().iterator(); iter.hasNext();) {
         	Map.Entry mEntry = (Map.Entry)iter.next();
@@ -630,6 +634,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, Map ctx) {
+  	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
     	//tags will be null for now
     	indexEntry(binder, entry, fileUploadItems, filesToIndex, false, 
     			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )));

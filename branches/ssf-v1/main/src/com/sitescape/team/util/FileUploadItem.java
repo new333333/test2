@@ -228,6 +228,13 @@ public class FileUploadItem {
 		else
 			return null;
 	}
+	public String getModifierName() {
+		if(mf instanceof FileModDateSupport)
+			return ((FileModDateSupport) mf).getModifier();
+		else
+			return null;
+	}
+
 
 	public boolean isSynchToRepository() {
 		return synchToRepository;

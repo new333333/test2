@@ -355,7 +355,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         checkAccess(binder, ProfileOperation.addEntry);
         Definition definition = getCoreDao().loadDefinition(definitionId, binder.getZoneId());
         try {
-        	return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems).getId();
+        	return loadProcessor(binder).addEntry(binder, definition, User.class, inputData, fileItems, null).getId();
         } catch (DataIntegrityViolationException de) {
         	throw new ObjectExistsException("errorcode.user.exists", (Object[])null, de);
         }
@@ -402,7 +402,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
     			if (a != null) atts.add(a);
     		}
     	}
-    	processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo);
+    	processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo, null);
       }
 
    //NO transaction
@@ -626,7 +626,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
   				updates.put(ObjectKeys.FIELD_BINDER_NAME, entry.getName());
   				updates.put(ObjectKeys.FIELD_ENTITY_TITLE, wsTitle);
         		updates.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
-  				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null);				
+  				ws = (Workspace)processor.addBinder(entry.getParentBinder(), userDef, Workspace.class, new MapInputData(updates), null, null);				
   			}
    		} catch (WriteFilesException wf) {
    			logger.error("Error create user workspace: ", wf);
@@ -652,7 +652,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
         	definition = getDefinitionModule().addDefaultDefinition(Definition.PROFILE_GROUP_VIEW);
         }
         try {
-        	return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems).getId();
+        	return loadProcessor(binder).addEntry(binder, definition, Group.class, inputData, fileItems, null).getId();
         } catch (DataIntegrityViolationException de) {
         	throw new ObjectExistsException("errorcode.group.exists", (Object[])null, de);
         }

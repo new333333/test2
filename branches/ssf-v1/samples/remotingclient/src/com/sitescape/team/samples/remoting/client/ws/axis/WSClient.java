@@ -35,7 +35,8 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ArrayList;
-
+import java.text.DateFormat;
+import java.util.Calendar;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.security.auth.callback.Callback;
@@ -63,7 +64,7 @@ public class WSClient
 			printUsage();
 			return;
 		}
-
+		DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
 		try {
 			if(args[0].equals("printWorkspaceTree")) {
 				fetchAndPrintXML("getWorkspaceTreeAsXML", new Object[] {Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
@@ -93,14 +94,48 @@ public class WSClient
 					filename = args[4];
 				}
 				fetchAndPrintIdentifier("addFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s, filename}, filename);
+			} else if(args[0].equals("migrateEntry")) {
+				String s = FacadeClientHelper.readText(args[3]);
+				System.out.println("XML: " + s);
+				Calendar c1 = Calendar.getInstance();
+				c1.setTime(df.parse((String)args[5]));
+				Calendar c2 = Calendar.getInstance();
+				c2.setTime(df.parse((String)args[7]));
+				
+				fetchAndPrintIdentifier("migrateFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s, args[4], c1,
+						args[6], c2});
+			} else if(args[0].equals("migrateReply")) {
+				String s = FacadeClientHelper.readText(args[4]);
+				System.out.println("XML: " + s);
+				Calendar c1 = Calendar.getInstance();
+				c1.setTime(df.parse((String)args[6]));
+				Calendar c2 = Calendar.getInstance();
+				c2.setTime(df.parse((String)args[8]));
+				
+				fetchAndPrintIdentifier("migrateReply", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], s, args[5], c1,
+						args[7], c2});
+			} else if(args[0].equals("migrateBinder")) {
+				String s = FacadeClientHelper.readText(args[3]);
+				System.out.println("XML: " + s);
+				Calendar c1 = Calendar.getInstance();
+				c1.setTime(df.parse((String)args[5]));
+				Calendar c2 = Calendar.getInstance();
+				c2.setTime(df.parse((String)args[7]));
+				fetchAndPrintIdentifier("migrateBinder", new Object[] {Long.parseLong(args[1]), args[2], s, args[4], c1, args[6], c2});
 			} else if(args[0].equals("modifyEntry")) {
 				String s = FacadeClientHelper.readText(args[3]);
 				System.out.println("XML: " + s);
 				justDoIt("modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});
 			} else if(args[0].equals("uploadFile")) {
 				justDoIt("uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);
-			} else if(args[0].equals("uploadFileStaged")) {
-				justDoIt("uploadFolderFileStaged", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5]});
+			} else if(args[0].equals("migrateFile")) {
+				Calendar c1 = Calendar.getInstance();
+				c1.setTime(df.parse((String)args[6]));
+				justDoIt("migrateFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1}, args[4]);
+			} else if(args[0].equals("migrateFileStaged")) {
+				Calendar c1 = Calendar.getInstance();
+				c1.setTime(df.parse((String)args[6]));
+				justDoIt("migrateFolderFileStaged", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1}, null);
 			} else if(args[0].equals("uploadCalendar")) {
 				String s = FacadeClientHelper.readText(args[2]);
 				System.out.println("XML: " + s);
@@ -150,6 +185,8 @@ public class WSClient
 				justDoIt("setOwner", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("synchronize")) {
 				justDoIt("synchronizeMirroredFolder", new Object[] {Long.parseLong(args[1])});
+			} else if(args[0].equals("indexFolder")) {
+				justDoIt("indexFolder", new Object[] {Long.parseLong(args[1])});
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -266,14 +303,20 @@ public class WSClient
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
 		System.out.println("addWorkflow <folder id> <entry id> <definition id> <startState>");
 		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
-		System.out.println("uploadFileStaged <folder id> <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath>");
 		System.out.println("uploadCalendarEntries <folder id> <xmlFilename> [<iCalFilename>]");
-		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
-		System.out.println("getBinderTitle <binder id>");
 		System.out.println("setDefinitions <folder id> <comma separated definitionIds> comma separated definitionId,workflowId>");
 		System.out.println("setFunctionMembership <binderId> <functionDataXml>");
 		System.out.println("setFunctionMembershipInherited <binderId> <boolean>");
 		System.out.println("setOwner <binderId> <userId>");
 		System.out.println("synchronize <mirrored folder id>");
+		System.out.println("indexFolder <folder id>");
+		System.out.println("migrateBinder <parentBinder id> <definition id> <entryDataXMLString> <creator> <createDate> <modifier> <modDate> ");
+		System.out.println("migrateEntry <folder id> <definition id> <entryDataXMLString> <creator> <createDate> <modifier> <modDate> ");
+		System.out.println("migrateReply <folder id> <entry id> <definition id> <entryDataXMLString> <creator> <createDate> <modifier> <modDate> ");
+		System.out.println("migrateFile <folder id> <entry id> <fileDataFieldName> <filename> <modifier> <modDate>");
+		System.out.println("migrateFileStaged <folder id> <entry id> <fileDataFieldName> <stagedFileRelativePath> <modifier> <modDate>");
+		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
+		System.out.println("getBinderTitle <binder id>");
+
 	}
 }

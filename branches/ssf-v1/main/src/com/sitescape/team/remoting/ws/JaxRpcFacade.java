@@ -28,6 +28,10 @@
  */
 package com.sitescape.team.remoting.ws;
 
+
+import java.util.Calendar;
+import java.util.List;
+
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
 import com.sitescape.team.remoting.Facade;
@@ -100,10 +104,6 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.facade.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	
-	public void uploadFolderFileStaged(long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
-		this.facade.uploadFolderFileStaged(binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath);
-	}
 	
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
 	{
@@ -166,4 +166,31 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public void synchronizeMirroredFolder(long binderId) {
 		this.facade.synchronizeMirroredFolder(binderId);
 	}
+	public void indexFolder(long folderId) {
+		this.facade.indexFolder(folderId);
+	}
+	public long migrateBinder(long parentId, String definitionId, String inputDataAsXML,
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return this.facade.migrateBinder(parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+	}
+	
+	public long migrateFolderEntry(long binderId, String definitionId,  String inputDataAsXML,  
+							   String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return this.facade.migrateFolderEntry(binderId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+	}
+		
+	public long migrateReply(long binderId, long parentId, String definitionId,
+					     String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return this.facade.migrateReply(binderId, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+	}
+
+	public void migrateFolderFile(long binderId, long entryId, String fileUploadDataItemName,
+								 String fileName, String modifier, Calendar modificationDate) {
+		this.facade.migrateFolderFile(binderId, entryId, fileUploadDataItemName, fileName, modifier, modificationDate);
+	}
+	public void migrateFolderFileStaged(long binderId, long entryId, 
+			String fileUploadDataItemName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
+		this.facade.migrateFolderFileStaged(binderId, entryId, fileUploadDataItemName, stagedFileRelativePath, modifier, modificationDate);
+	}
+
 }

@@ -64,6 +64,7 @@ import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderProcessor;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
@@ -104,7 +105,10 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
 		case addWorkspace:
 	    	getAccessControlManager().checkOperation(workspace, WorkAreaOperation.CREATE_WORKSPACES);
 	    	break;
-	    default:
+		case changeEntryTimestamps:
+			getAccessControlManager().checkOperation(workspace, WorkAreaOperation.SITE_ADMINISTRATION);
+			break;
+		default:
 	    	throw new NotSupportedException(operation.toString(), "checkAccess");
 		}
 	}
@@ -514,23 +518,34 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     //no transaction by default     
     public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException {
- 
+    	return addFolder(parentWorkspaceId, definitionId, inputData, fileItems, null);
+    }
+    //no transaction by default     
+    public Long addFolder(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
+
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
     	checkAccess(parentWorkspace, WorkspaceOperation.addFolder);
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(parentWorkspace, WorkspaceOperation.changeEntryTimestamps);
     	Definition def = null;
     	if (Validator.isNotNull(definitionId)) { 
     		def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
     	}
     	        
-    	Binder binder = loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems);
+    	Binder binder = loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Folder.class, inputData, fileItems, options);
     	return binder.getId();
    }
  
-    //no transaction by default
+    public Long addWorkspace(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems) throws AccessControlException, WriteFilesException {
+    	return addWorkspace(parentWorkspaceId, definitionId, inputData, fileItems, null);
+    }
     public Long addWorkspace(Long parentWorkspaceId, String definitionId, InputDataAccessor inputData,
-       		Map fileItems) throws AccessControlException, WriteFilesException {
+       		Map fileItems, Map options) throws AccessControlException, WriteFilesException {
     	Workspace parentWorkspace = loadWorkspace(parentWorkspaceId);
-   		    
+ 		    
     	Definition def = null;
     	if (Validator.isNotNull(definitionId)) { 
     		def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
@@ -543,8 +558,11 @@ public class WorkspaceModuleImpl extends CommonDependencyInjection implements Wo
     	} else {
     		checkAccess(parentWorkspace, WorkspaceOperation.addWorkspace);
     	}
-    	
-    	return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems).getId();
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(parentWorkspace, WorkspaceOperation.changeEntryTimestamps);
+      	
+    	return loadProcessor(parentWorkspace).addBinder(parentWorkspace, def, Workspace.class, inputData, fileItems, options).getId();
     }
  
 }
