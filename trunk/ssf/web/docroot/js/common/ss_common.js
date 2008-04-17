@@ -3578,6 +3578,10 @@ function ss_showForumEntry(url, isDashboard) {
 	}
 }
 function ss_showForumEntryInIframe_Overlay(url) {
+	if (self.parent && self != self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
+		self.parent.ss_showForumEntryInIframe(url);
+		return
+	}
     var wObj = self.document.getElementById('ss_showentryframe')
     var wObj1 = self.document.getElementById('ss_showentrydiv')
 	if (wObj1 == null){
