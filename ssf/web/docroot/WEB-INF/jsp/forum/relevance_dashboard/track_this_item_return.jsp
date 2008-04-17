@@ -31,38 +31,25 @@
 <%@ page session="false" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<%@ page contentType="text/xml; charset=UTF-8" %>
-<taconite-root xml:space="preserve">
 <c:choose>
 <c:when test="${!empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
-		<div id="ss_status_message" style="visibility:hidden; display:none;">error</div>
-	</taconite-replace>
+	<span><ssf:nlt tag="general.notLoggedIn"/></span>
 </c:when>
 <c:otherwise>
-	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
-		<div id="ss_status_message" style="visibility:hidden; display:none;">ok</div>
-	</taconite-replace>
-	<taconite-replace contextNodeID="ss_track_this_ok${ss_namespace}" parseInBrowser="true">
-		<div id="ss_track_this_ok${ss_namespace}" 
-		  style="position:absolute;visibility:hidden; display:none;">
-		  <c:if test="${!empty ssEntry}">
-		    <span>
-		      <ssf:nlt tag="relevance.nowTracking">
-		      	<ssf:param name="value" useBody="true"><span class="ss_bold">${ssEntry.title}</span></ssf:param>
-		      </ssf:nlt>
-		    </span>
-		  </c:if>
-		  <c:if test="${empty ssEntry}">
-		    <span>
-		      <ssf:nlt tag="relevance.nowTracking">
-		        <ssf:param name="value" useBody="true"><span class="ss_bold">${ssBinder.title}</span></ssf:param>
-		      </ssf:nlt>
-		    </span>
-		  </c:if>
-		</div>
-	</taconite-replace>
+  <c:if test="${!empty ssEntry}">
+    <span>
+      <ssf:nlt tag="relevance.nowTracking">
+      	<ssf:param name="value" useBody="true"><span class="ss_bold">${ssEntry.title}</span></ssf:param>
+      </ssf:nlt>
+    </span>
+  </c:if>
+  <c:if test="${empty ssEntry}">
+    <span>
+      <ssf:nlt tag="relevance.nowTracking">
+        <ssf:param name="value" useBody="true"><span class="ss_bold">${ssBinder.title}</span></ssf:param>
+      </ssf:nlt>
+    </span>
+  </c:if>
 </c:otherwise>
 </c:choose>
-</taconite-root>
 
