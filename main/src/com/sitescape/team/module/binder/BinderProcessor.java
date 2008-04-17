@@ -49,7 +49,7 @@ import com.sitescape.team.util.StatusTicket;
 public interface BinderProcessor {
     public static final String PROCESSOR_KEY = "processorKey_binderCoreProcessor";
 
-    public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems) 
+    public Binder addBinder(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options) 
     	throws AccessControlException, WriteFilesException;
   	public void deleteBinder(Binder binder, boolean deleteMirroredSource) throws AccessControlException;
   	//return search results

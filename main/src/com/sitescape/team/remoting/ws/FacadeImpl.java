@@ -53,6 +53,7 @@ import org.apache.axis.MessageContext;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.attachments.Attachments;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.mail.MailHelper;
@@ -62,8 +63,6 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.impl.AbstractFacade;
 import com.sitescape.team.remoting.impl.RemotingException;
 import com.sitescape.team.repository.RepositoryUtil;
-import com.sitescape.team.util.SPropsUtil;
-import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.util.FileUtil;
 
@@ -76,8 +75,19 @@ import com.sitescape.util.FileUtil;
  */
 public class FacadeImpl extends AbstractFacade {
 
+	public void migrateFolderFile(long binderId, long entryId,
+			String fileUploadDataItemName, String fileName,
+			String modifier, java.util.Calendar modificationDate) {
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+		uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName, modifier, modificationDate, options);
+	}
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
+		uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName, null, null, null);
+	}
+	protected void uploadFolderFile(long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName, String modifier, java.util.Calendar modificationDate, Map options) {
 		fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
 		File originalFile = new File(fileName);
 		fileName = StringCheckUtil.check(originalFile.getName());
@@ -99,7 +109,7 @@ public class FacadeImpl extends AbstractFacade {
 		}
 
 		// Wrap it up in a datastructure expected by our app.
-		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh);
+		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh, modifier, modificationDate==null?null:modificationDate.getTime());
 		
 		// Create a map of file item names to items 
 		Map fileItems = new HashMap();
@@ -108,48 +118,10 @@ public class FacadeImpl extends AbstractFacade {
 		try {
 			// Finally invoke the business method. 
 			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-				new EmptyInputData(), fileItems, null, null);
+				new EmptyInputData(), fileItems, null, null, options);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
-		}
-	}
-	
-	public void uploadFolderFileStaged(long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
-		boolean enable = SPropsUtil.getBoolean("staging.upload.files.enable", false);
-		if(enable) {
-			fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
-			stagedFileRelativePath = StringCheckUtil.check(stagedFileRelativePath);
-			
-			// Get the staged file
-			String rootPath = SPropsUtil.getString("staging.upload.files.rootpath", "").trim();
-			File file = new File(rootPath, stagedFileRelativePath);
-			
-			// Wrap it in a datastructure expected by our app.
-			SimpleMultipartFile mf = new SimpleMultipartFile(fileName, file, false);
-						
-			// Create a map of file item names to items 
-			Map fileItems = new HashMap();
-			fileItems.put(fileUploadDataItemName, mf);
-			
-			try {
-				// Finally invoke the business method. 
-				getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-					new EmptyInputData(), fileItems, null, null);
-				// If you're here, the transaction was successful. 
-				// Check if we need to delete the staged file or not.
-				if(SPropsUtil.getBoolean("staging.upload.files.delete.after", false)) {
-					file.delete();
-				}
-			}
-			catch(WriteFilesException e) {
-				throw new RemotingException(e);
-			}
-		}
-		else {
-			throw new UnsupportedOperationException("Staged file upload is disabled: " + binderId + ", " + 
-					entryId + ", " + fileUploadDataItemName + ", " + stagedFileRelativePath);			
 		}
 	}
 	

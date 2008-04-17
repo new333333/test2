@@ -52,14 +52,14 @@ public interface EntryProcessor extends BinderProcessor {
  
  	public Map getBinderEntries(Binder binder, String[] entryTypes, Map options) throws AccessControlException;
     
-    public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems)
+    public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options)
     	throws WriteFilesException;
     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, String startState);  
     public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource);
     public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition);
     public Entry getEntry(Binder binder, Long entryId);
     public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
-    		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo)
+    		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options)
     	throws WriteFilesException;
     public void modifyWorkflowState(Binder binder, Entry entry, Long tokenId, String toState);
     public void setWorkflowResponse(Binder binder, Entry entry, Long tokenId, InputDataAccessor inputData);

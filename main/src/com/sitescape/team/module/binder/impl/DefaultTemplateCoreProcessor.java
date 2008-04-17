@@ -54,7 +54,7 @@ public class DefaultTemplateCoreProcessor extends AbstractBinderProcessor
 	//In this case we are configuring the target binder properties which may be workspace or folder
 	//Many attribute are setup already as part of the actual template creation
 	public Binder addBinder(final Binder binder, Definition def, Class clazz, 
-	    		final InputDataAccessor inputData, Map fileItems) 
+	    		final InputDataAccessor inputData, Map fileItems, Map options) 
 	    	throws AccessControlException, WriteFilesException {
 		throw new NotSupportedException("Add", "TemplateBinder");
 

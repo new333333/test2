@@ -48,7 +48,9 @@ import com.sitescape.team.web.tree.DomTreeBuilder;
 public interface WorkspaceModule {
 	public enum WorkspaceOperation {
 		addFolder,
-		addWorkspace
+		addWorkspace,
+	   changeEntryTimestamps
+
 	}
     public boolean testAccess(Workspace workspace, WorkspaceOperation operation);
     public void checkAccess(Workspace workspace, WorkspaceOperation operation) throws AccessControlException;
@@ -85,7 +87,11 @@ public interface WorkspaceModule {
 
     public Long addWorkspace(Long folderId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException;
-    public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
+    public Long addWorkspace(Long folderId, String definitionId, InputDataAccessor inputData,
+       		Map fileItems, Map options) throws AccessControlException, WriteFilesException;
+     public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException;
+     public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
+        		Map fileItems, Map options) throws AccessControlException, WriteFilesException;
 }
 

@@ -75,7 +75,8 @@ public interface FolderModule {
 	   report,
 	   reserveEntry,
 	   overrideReserveEntry,
-	   synchronize
+	   synchronize,
+	   changeEntryTimestamps
    }
 
 	   /**
@@ -89,13 +90,19 @@ public interface FolderModule {
      */
     public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
     		Map fileItems) throws AccessControlException, WriteFilesException;
+    public Long addEntry(Long folderId, String definitionId, InputDataAccessor inputData, 
+    		Map fileItems, Map options) throws AccessControlException, WriteFilesException;
     public void addEntryWorkflow(Long folderId, Long entryId, String definitionId) throws AccessControlException;
     public void addEntryWorkflow(Long folderId, Long entryId, String definitionId, String startState) throws AccessControlException;
     public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems) throws AccessControlException, WriteFilesException;
+    public Long addReply(Long folderId, Long parentId, String definitionId, 
+    		InputDataAccessor inputData, Map fileItems, Map options) throws AccessControlException, WriteFilesException;
 
     public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
        		Map fileItems) throws AccessControlException, WriteFilesException;
+     public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
+       		Map fileItems, Map options) throws AccessControlException, WriteFilesException;
     public void addSubscription(Long folderId, Long entryId, int style); 
 	public void addVote(Long folderId, Long entryId, InputDataAccessor inputData) throws AccessControlException;
 
@@ -184,6 +191,9 @@ public interface FolderModule {
      */
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
     		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo) 
+    	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
+    public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
+    		Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
     	throws AccessControlException, WriteFilesException, ReservedByAnotherUserException;
     public void modifyWorkflowState(Long folderId, Long entryId, Long stateId, String toState) throws AccessControlException;
 

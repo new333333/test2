@@ -1485,17 +1485,20 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
     	Long fileSize = null;
     	if(versionName != null)
     		fileSize = Long.valueOf(session.getContentLengthVersioned(binder, entry, relativeFilePath, versionName));
-		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate());
+		updateFileAttachment(fAtt, user, versionName, fileSize, fui.getModDate(), fui.getModifierName());
     }
 
     private void updateFileAttachment(FileAttachment fAtt, 
 			Principal user, String versionName, Long contentLength,
-			Date modDate) {
+			Date modDate, String modName) {
     	HistoryStamp now = new HistoryStamp(user);
     	HistoryStamp mod;
-    	if(modDate != null)
+    	if(modDate != null) {
+			if (Validator.isNotNull(modName)) {
+				user = getProfileDao().findUserByName(modName, RequestContextHolder.getRequestContext().getZoneName());
+			}
     		mod = new HistoryStamp(user, modDate);
-    	else
+    	} else
     		mod = now;
     	
 		fAtt.setModification(mod);
@@ -1666,9 +1669,13 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		fAtt.setOwner(entry);
 		fAtt.setCreation(new HistoryStamp(user));
 		HistoryStamp mod;
-		if(fui.getModDate() != null) // mod date specified
+		if(fui.getModDate() != null) { // mod date specified
+			String name = fui.getModifierName();
+			if (Validator.isNotNull(name)) {
+				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneName());
+			}
 			mod = new HistoryStamp(user, fui.getModDate());
-		else // set mod date equal to creation date
+		} else // set mod date equal to creation date
 			mod = fAtt.getCreation();
 		fAtt.setModification(mod);
     	fAtt.setRepositoryName(fui.getRepositoryName());
@@ -1883,7 +1890,7 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 					// the returned version name against all versions.
 					Long contentLength = Long.valueOf(session.getContentLengthVersioned(binder, entity, 
 							relativeFilePath, versionName));
-					updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null);
+					updateFileAttachment(fa, lock.getOwner(), versionName, contentLength, null, null);
 					metadataDirty = true;
 				}  
 			}

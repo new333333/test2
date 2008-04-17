@@ -27,17 +27,19 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.remoting.impl;
-import java.io.StringBufferInputStream;
-
+import java.io.File;
 import java.io.IOException;
+import java.io.StringBufferInputStream;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.HashSet;
 import java.util.SortedSet;
 
 import net.fortuna.ical4j.data.ParserException;
@@ -64,7 +66,6 @@ import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.security.function.Function;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.ws.ElementBuilder;
@@ -72,18 +73,23 @@ import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
+import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.security.function.Function;
 import com.sitescape.team.util.AbstractAllModulesInjected;
+import com.sitescape.team.util.DatedMultipartFile;
+import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
-import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.tree.WebSvcTreeHelper;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
-import com.sitescape.team.util.LongIdUtil;
 
 /**
  * POJO implementation of Facade interface.
@@ -236,7 +242,12 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	static int count = 0;
 	static SimpleProfiler profiler = null;
 	
-	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
+	public long migrateFolderEntry(long binderId, String definitionId,
+			String inputDataAsXML, 
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+		getTimestamps(options, creator, creationDate, modifier, modificationDate);
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
@@ -246,8 +257,8 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		}
 		SimpleProfiler.setProfiler(profiler);
 		try {
-			return getFolderModule().addEntry(new Long(binderId), definitionId, 
-				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} )).longValue();
+			return  getFolderModule().addEntry(new Long(binderId), definitionId, 
+				new DomInputData(doc, getIcalModule()), null , options).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -259,14 +270,34 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			}
 		}
 	}
-	
+	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
+		
+		Document doc = getDocument(inputDataAsXML);
+		if(profiler == null) {
+			profiler = new SimpleProfiler("webServices");
+			count = 0;
+		}
+		SimpleProfiler.setProfiler(profiler);
+		try {
+			return getFolderModule().addEntry(new Long(binderId), definitionId, 
+				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), null).longValue();
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		} finally {
+			if(++count == 10000) {
+				logger.info(SimpleProfiler.toStr());
+				profiler = null;
+				SimpleProfiler.clearProfiler();
+			}
+		}
+	}
 	public Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
 	{
 		return new HashMap();
 	}
 	
-	public abstract void uploadFolderFile(long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName);
 
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
 	{
@@ -341,7 +372,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		
 		try {
 			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-				new DomInputData(doc, getIcalModule()), new HashMap(), null, null);
+				new DomInputData(doc, getIcalModule()), new HashMap(), null, null, null);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -354,6 +385,24 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	}
 	*/
 	
+	public long migrateReply(long binderId, long parentId, String definitionId,
+			String inputDataAsXML,  String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+		getTimestamps(options, creator, creationDate, modifier, modificationDate);
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
+
+		Document doc = getDocument(inputDataAsXML);
+		
+		try {
+			return getFolderModule().addReply(new Long(binderId), new Long(parentId), 
+				definitionId, new DomInputData(doc, getIcalModule()), null, options).longValue();
+		}
+		catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
 	public long addReply(long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
@@ -361,7 +410,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		
 		try {
 			return getFolderModule().addReply(new Long(binderId), new Long(parentId), 
-				definitionId, new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} )).longValue();
+				definitionId, new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), null).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -606,7 +655,8 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		List<Function> functions = getAdminModule().getFunctions();
 		Document doc = getDocument(inputDataAsXml);
 		Map wfms = new HashMap();
-		List<Element> wfmElements = doc.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP);
+		List<Element> wfmElements = doc.getRootElement().selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP);
+		
 		for (Element wfmElement:wfmElements) {
 			 String functionName = XmlUtils.getProperty(wfmElement, ObjectKeys.XTAG_WA_FUNCTION_NAME);
 			 Function func = null;
@@ -632,6 +682,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			 if (ids.isEmpty()) continue;
 			 wfms.put(func.getId(), ids);
 		}
+		if (wfms.isEmpty()) return;
 		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, false); 
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
@@ -643,5 +694,83 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		Binder binder = getBinderModule().getBinder(binderId);
 		getAdminModule().setWorkAreaOwner(binder, userId, false); 		
 	}
-	
+	public long migrateBinder(long parentId, String definitionId,
+			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
+		
+		try {
+			Map options = new HashMap();
+			//let binder be indexed, so it can be found
+			getTimestamps(options, creator, creationDate, modifier, modificationDate);
+			Document doc = getDocument(inputDataAsXML);
+			Definition def = getDefinitionModule().getDefinition(definitionId);
+			Binder binder = getBinderModule().getBinder(parentId);
+			InputDataAccessor inputData = new DomInputData(doc, getIcalModule());
+			Long binderId;
+			if (def.getType() == Definition.WORKSPACE_VIEW) {
+				binderId = getWorkspaceModule().addWorkspace(binder.getId(), def.getId(), inputData, null, options);
+		   } else {
+			   if (binder instanceof Workspace)
+				   binderId =  getWorkspaceModule().addFolder(binder.getId(), def.getId(), inputData, null, options);
+			   else
+				   binderId = getFolderModule().addFolder(binder.getId(), def.getId(), inputData, null, options);
+		   }
+			return binderId;
+		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
+
+
+	public void migrateFolderFileStaged(long binderId, long entryId, 
+			String fileUploadDataItemName, String stagedFileRelativePath, String modifier, Calendar modificationDate){
+		boolean enable = SPropsUtil.getBoolean("staging.upload.files.enable", false);
+		if(enable) {
+			fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
+			stagedFileRelativePath = StringCheckUtil.check(stagedFileRelativePath);
+			
+			// Get the staged file
+			String rootPath = SPropsUtil.getString("staging.upload.files.rootpath", "").trim();
+			File file = new File(rootPath, stagedFileRelativePath);
+			
+			// Wrap it in a datastructure expected by our app.
+			DatedMultipartFile mf = new DatedMultipartFile(file.getName(), file, false, modifier, modificationDate.getTime());
+						
+			// Create a map of file item names to items 
+			Map fileItems = new HashMap();
+			fileItems.put(fileUploadDataItemName, mf);
+			
+			Map options = new HashMap();
+			options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+			try {
+				// Finally invoke the business method. 
+				getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
+					new EmptyInputData(), fileItems, null, null, options);
+				// If you're here, the transaction was successful. 
+				// Check if we need to delete the staged file or not.
+				if(SPropsUtil.getBoolean("staging.upload.files.delete.after", false)) {
+					file.delete();
+				}
+			}
+			catch(WriteFilesException e) {
+				throw new RemotingException(e);
+			}
+		}
+		else {
+			throw new UnsupportedOperationException("Staged file upload is disabled: " + binderId + ", " + 
+					entryId + ", " + fileUploadDataItemName + ", " + stagedFileRelativePath);			
+		}
+	}
+	public void indexFolder(long folderId) {
+		getBinderModule().indexBinder(folderId, true);
+	}
+	protected void getTimestamps(Map options, String creator, Calendar creationDate,
+			  String modifier, Calendar modificationDate)
+	{
+		if (creator != null) options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, creator);
+		if (creationDate != null) options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, creationDate);
+		if (modifier != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, modifier);
+		if (modificationDate != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modificationDate);
+	}
+
 }
