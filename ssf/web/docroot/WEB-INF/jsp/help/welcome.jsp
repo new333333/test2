@@ -62,7 +62,6 @@ function ${renderResponse.namespace}_wsTree_showId(id, obj, action) {
 			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
 	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
 	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-alert(url)
 	self.location.href = url;
 	return false;
 }
@@ -80,7 +79,7 @@ alert(url)
 				<ssf:tree treeName="${renderResponse.namespace}_wsTree" 
 				  topId="${ssWsDomTreeBinderId}" 
 				  treeDocument="${ssWsDomTree}"  
-				  rootOpen="false"
+				  rootOpen="true"
 				  showIdRoutine="${renderResponse.namespace}_wsTree_showId"
 				   />
 			</c:when>

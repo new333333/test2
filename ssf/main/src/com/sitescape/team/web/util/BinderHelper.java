@@ -211,7 +211,8 @@ public class BinderHelper {
 			}
 			Document wsTree;
 			//when at the top, don't expand
-			if (request.getWindowState().equals(WindowState.NORMAL)) {
+			if (request.getWindowState().equals(WindowState.NORMAL) &&
+					!WELCOME_PORTLET.equals(displayType)) {
 				wsTree = bs.getBinderModule().getDomBinderTree(binder.getId(), new WsDomTreeBuilder(null, true, bs), 0);
 			} else {
 				wsTree = bs.getBinderModule().getDomBinderTree(binder.getId(), new WsDomTreeBuilder((Workspace)binder, true, bs), 1);									
