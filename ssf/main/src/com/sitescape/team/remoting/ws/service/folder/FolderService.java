@@ -44,6 +44,6 @@ public interface FolderService {
 	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
-			String fileUploadDataItemName, String stagedFileRelativePath);
+			String fileUploadDataItemName, String fileName, String stagedFileRelativePath);
 	public void synchronizeMirroredFolder(String accessToken, long binderId);
 }

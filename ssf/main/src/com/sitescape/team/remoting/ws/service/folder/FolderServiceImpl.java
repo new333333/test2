@@ -174,7 +174,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, startState);
 	}
 
-	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String stagedFileRelativePath) {
+	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
 		boolean enable = SPropsUtil.getBoolean("staging.upload.files.enable", false);
 		if(enable) {
 			fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
@@ -185,7 +185,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 			File file = new File(rootPath, stagedFileRelativePath);
 			
 			// Wrap it in a datastructure expected by our app.
-			SimpleMultipartFile mf = new SimpleMultipartFile(file.getName(), file, false);
+			SimpleMultipartFile mf = new SimpleMultipartFile(fileName, file, false);
 			
 			// Create a map of file item names to items 
 			Map fileItems = new HashMap();
