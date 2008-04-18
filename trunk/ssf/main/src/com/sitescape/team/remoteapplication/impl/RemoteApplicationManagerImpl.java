@@ -218,4 +218,19 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		System.out.println("STATUS CODE: " + statusCode);
 		System.out.println(method.getStatusLine());
 	}*/
+	
+	/*
+	public static void main(String[] args) {
+		String inStr = "<strong>Hey, pay attention everyone!</strong><br><pre>Hello!</pre>";
+		java.io.ByteArrayInputStream in = new java.io.ByteArrayInputStream(inStr.getBytes());
+		java.io.ByteArrayOutputStream out = new java.io.ByteArrayOutputStream();
+		
+		Tidy tidy = new Tidy();
+		tidy.setXHTML(true);
+		tidy.setOnlyErrors(true);
+		Document doc = tidy.parseDOM(in, null);
+		tidy.pprint(doc, out);
+		String outStr = new String(out.toByteArray());
+		System.out.println(outStr);
+	}*/
 }
