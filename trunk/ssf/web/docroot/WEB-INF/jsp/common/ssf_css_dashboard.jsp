@@ -91,7 +91,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 .ss_tricolumn .ss_col3 {
 	width:18%;				/* Width of right column content (column width minus padding on either side) */
-	left:45%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
+	left:44%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 	}
 	
 	}

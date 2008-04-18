@@ -42,13 +42,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-bottom:2px;
 	}
 	
-	/* NAVIGATION AREA FOR STATUS LINE AND SHARE AND TRACK BUTTONS */
+	/* NAVIGATION AREA FOR STATUS LINE */
 
 #ss_statusArea{
 	float:left;
-	width:30%;
-	min-width:335px;
-	padding-left:5px;
+	width:27%;
+	min-width:300px;
+	margin-left:5px;
 	vertical-align:top;
 	display:inline;
 	}	
@@ -93,8 +93,9 @@ a.ss_STButton {
 
 .ss_clearSTButton{ /* generic container (i.e. div) for floating buttons */
     white-space:nowrap;
-    width: 100%;
-    padding-top:4px; /* this pushes the buttons down from the top of the bar */
+    padding-top:4px;   /* this pushes the buttons down from the top of the bar */
+    padding-left:5px;  /* this pushes the buttons from the My Teams and Favorites buttons */
+
 	}
 a.ss_buttonSTButton {  
     background-image: url("<html:rootPath/>images/pics/button_whtslide.png"); 
@@ -129,7 +130,7 @@ a.ss_buttonSTButton:active span {
     padding: 2px 0 1px 8px; /* push text down 1px */
 	}		
 
-	/* NAVIGATION BUTTONS FOR MY WORKSPACE, MY TEAMS, FAVORITES */	
+	/* NAVIGATION BUTTONS FOR MY TEAMS, FAVORITES */	
 
 #ss_top_nav_buttontwo{
 	height:14px;
@@ -170,14 +171,14 @@ a.ss_buttonSTButton:active span {
 	background-color: #00ADEF;
 	}	
 	
-	/* NAVIGATION BUTTONS FOR PORTAL AND EXPANDED VIEW */		
+	/* NAVIGATION BUTTONS FOR PORTAL, EXPANDED VIEW, AND MY WORKSPACE */		
 	
 #ss_top_nav_view{					
 	position:relative;
 	display:inline;
 	height:16px;
-	padding-top:5px;
-	width:100%;	
+	padding-top:15px;
+	margin:0px;
 	}
 #ss_top_nav_view a {
 	font-family:  Arial, sans-serif;
@@ -229,7 +230,7 @@ a.ss_buttonSTButton:active span {
 	    float:right;
         width:100%;			/* width of whole page */
 		overflow:hidden;	/* This chops off any overhanging divs */
-		/* height:40px;		need to not define a height so that the text will wrap when width is condensed */
+		
 		}
 		
 	/* 5 COLUMN SETTINGS */
@@ -273,35 +274,35 @@ a.ss_buttonSTButton:active span {
 	/*	background:#ffff99;		 center column background colour */
 		}
 	.ss_fivecol .ss_5colleft {
-		right:20%;				/* width of the find places column */
+		right:14%;				/* width of the find places column */
 	/*	background:#B7C9E0;		 left column background colour */
 		}
 	.ss_fivecol .ss_5colleftctr {
-		right:6%;				/* width of the find people column */
+		right:14%;				/* width of the find people column */
 	/*	background:#dddeee;		 left column background colour */
 		}	
 	.ss_fivecol .ss_5col1 {
-		width:34%;				/* width of portal/expanded view column  */
-		left:65%;				/* 100% plus left padding of column */
+		width:26%;				/* width of portal/expanded view column  */
+		left:67%;				/* 100% plus left padding of column */
 	}
 	.ss_fivecol .ss_5col2 {
 		width:2%;				/*  Width of find people column content (column width minus padding on either side) */
-		left:70%;				/*  width of (right column) plus (center column left and right padding) plus (left column left padding) */
+		left:69%;				/*  width of (right column) plus (center column left and right padding) plus (left column left padding) */
 		min-width:75px!important;
 		}
 	.ss_fivecol .ss_5col3 {
 		width:2%;				 	/* Width of find places column content (column width minus padding on either side) */
-		left:71%;				
+		left:70%;				
 		min-width:75px!important;	/* Please make note of the brackets here:(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 		}
 	.ss_fivecol .ss_5col4 {
 		width:2%;					/*  Width of find tags column content (column width minus padding on either side) */
-		left:72%;	
+		left:71%;	
 		min-width:75px!important;	/* Please make note of the brackets here:(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 		}
 	.ss_fivecol .ss_5col5 {
-		width:25%;				 	/* 	Width of right column content (column width minus padding on either side) */
-		left:73%;	
+		width:22%;				 	/* 	Width of right column content (column width minus padding on either side) */
+		left:72%;	
 		min-width:150px!important;	/* Please make note of the brackets here:(100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 		}	
 
