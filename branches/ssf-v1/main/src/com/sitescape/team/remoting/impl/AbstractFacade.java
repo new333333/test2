@@ -723,7 +723,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 
 
 	public void migrateFolderFileStaged(long binderId, long entryId, 
-			String fileUploadDataItemName, String stagedFileRelativePath, String modifier, Calendar modificationDate){
+			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate){
 		boolean enable = SPropsUtil.getBoolean("staging.upload.files.enable", false);
 		if(enable) {
 			fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
@@ -734,7 +734,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			File file = new File(rootPath, stagedFileRelativePath);
 			
 			// Wrap it in a datastructure expected by our app.
-			DatedMultipartFile mf = new DatedMultipartFile(file.getName(), file, false, modifier, modificationDate.getTime());
+			DatedMultipartFile mf = new DatedMultipartFile(fileName, file, false, modifier, modificationDate.getTime());
 						
 			// Create a map of file item names to items 
 			Map fileItems = new HashMap();
