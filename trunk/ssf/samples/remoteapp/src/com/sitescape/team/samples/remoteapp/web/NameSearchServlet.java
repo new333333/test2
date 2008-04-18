@@ -126,7 +126,12 @@ public class NameSearchServlet extends HttpServlet {
 					int idx2 = body.indexOf("\"", idx+7);
 					if(idx2 >= 0) {
 						String value = body.substring(idx+7, idx2);
-						result = "About " + value + " matches for " + userTitle + " on Google";
+						StringBuilder sb = new StringBuilder();
+						sb.append("<strong>Hey, pay attention everyone!</strong><br>");
+						sb.append("<pre>");
+						sb.append("About " + value + " matches for " + userTitle + " on Google");
+						sb.append("</pre>");
+						result = sb.toString();
 					}
 				}
 				return result;
