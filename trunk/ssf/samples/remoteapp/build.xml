@@ -25,6 +25,7 @@
 			<fileset dir="${project.dir}/lib">
 				<include name="addressing.jar" />
 				<include name="dom4j.jar" />
+				<include name="jaxen.jar" />
 				<include name="commons-httpclient.jar" />
 			</fileset>
 		</copy>
