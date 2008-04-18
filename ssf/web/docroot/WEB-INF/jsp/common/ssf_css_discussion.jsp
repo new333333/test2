@@ -34,31 +34,9 @@
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
 
-/* CSS Document - container for navigation and search */
+/* CSS Document - container for two column pages */
 	
-	
-	/* COLUMN CONTAINER */
-#ss_dashboard_content {
-	position:relative; /* This fixes the IE7 overflow hidden bug */
-	clear:both;
-	float:left;
-    width:100%;	/* width of whole page */
-	overflow:hidden; /* This chops off any overhanging divs */
-	}
 
-/* COMMON COLUMN SETTINGS */
-.ss_colright,.ss_colmid,.ss_colleft{
-	float:left;
-	width:100%; /* width of page */
-	position:relative;
-	}
-.ss_col1,.ss_col2,.ss_col3 {
-	float:left;
-	position:relative;
-	padding:0 0 1em 0; /* no left and right padding on columns, we just make them narrower instead 
-	only padding top and bottom is included here, make it whatever value you need */
-	overflow:hidden;
-	}	
 /* 2 COLUMN PAGE STYLE SETTINGS */	
 
 .ss_doublecolumn{
@@ -70,20 +48,19 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	}
 #ss_column_R{
 	/* holder for left column */
-	background-color:#ffff99;
 	height:100%;
 	}	
 .ss_doublecolumn .ss_colleft{		/* right column width */
 	right:50%;		
 	}
 .ss_doublecolumn .ss_col1{
-	width:46%;						/* left column content width (column width minus left and right padding) */
-	left:52%;						/* (right column width) plus (left column padding) */
+	width:49%;						/* left column content width (column width minus left and right padding) */
+	left:50%;						/* (right column width) plus (left column padding) */
 	background-color:#fff;			/* left column background color */
 	}	
 .ss_doublecolumn .ss_col2{
-	width:46%;						/* right column content width (column width minus left and right padding) */
-	left:52%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
+	width:49%;						/* right column content width (column width minus left and right padding) */
+	left:51%;						/* (right column column width) plus (left column left and right padding) plus (right column left padding) */
 	overflow:hidden;
 	}	
 		
