@@ -2016,6 +2016,7 @@ span.ss_tabs_title {
 
 /* breadcrumbs */
 .ss_breadcrumb {
+	margin-top:0px;
 	margin-left:-10px;
 	padding:0px 5px 0px 0px;
 	font-size: ${ss_style_font_smallprint};
@@ -2025,7 +2026,7 @@ span.ss_tabs_title {
 }
 .ss_breadcrumb li{
 	float:left;
-	margin:auto;
+	margin:0px;
 	padding:0px 5px 0 5px; 
 }  
 a.ss_breadcrumb {
@@ -4729,6 +4730,7 @@ table.ssMeetingRecords .ssHeader {
 
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_global_nav.jsp" />
+<jsp:include page="/WEB-INF/jsp/common/ssf_css_discussion.jsp" />
 
 <% // Place all CSS code above this line %>
 </c:if> <%// test="${empty ss_skipCssStyles || ss_skipCssStyles != true} %>
