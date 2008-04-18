@@ -30,10 +30,10 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-<div id="ss_dashboard_content" class="ss_tricolumn">
-  <div class="ss_colmid">
-    <div class="ss_colleft">
-      <div id="ss_col1" class="ss_col1">
+<div id="ss_dashboard_content" class="ss_doublecolumn">
+  <div id="ss_column_L" class="ss_colleft">
+      <div class="ss_col1">
+      <!-- Start Left Column -->
 
 	<ssf:canvas id="relevanceVisitedEntries" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
@@ -45,7 +45,8 @@
 	</ssf:canvas>
 	
         </div><!-- end of ss_col 1 -->
-      <div id="ss_col2" class="ss_col2">
+        <!-- Start Right Column -->
+      	<div id="ss_column_R" class="ss_col2">
 
 	<ssf:canvas id="relevanceDocuments" type="inline" styleId="ss_documents">
 	<ssf:param name="title" useBody="true" >
@@ -56,12 +57,9 @@
 		</div>
 	</ssf:canvas>
 	
-      </div><!-- end of col2 -->
-      <div id="ss_col3" class="ss_col3">
-
-      </div><!-- end of col3 -->
+      </div><!-- end of col2 (right column) -->
+      
     </div><!-- end of col left -->
-  </div><!-- end of col mid -->
 </div><!-- end of content -->
 <div class="ss_clear_float"></div>
 
