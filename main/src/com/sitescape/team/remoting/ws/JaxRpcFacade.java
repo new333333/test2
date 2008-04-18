@@ -189,8 +189,8 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.facade.migrateFolderFile(binderId, entryId, fileUploadDataItemName, fileName, modifier, modificationDate);
 	}
 	public void migrateFolderFileStaged(long binderId, long entryId, 
-			String fileUploadDataItemName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
-		this.facade.migrateFolderFileStaged(binderId, entryId, fileUploadDataItemName, stagedFileRelativePath, modifier, modificationDate);
+			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
+		this.facade.migrateFolderFileStaged(binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath, modifier, modificationDate);
 	}
 
 }

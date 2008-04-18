@@ -174,7 +174,7 @@ public interface Facade {
 	public void migrateFolderFile(long binderId, long entryId, String fileUploadDataItemName,
 								 String fileName, String modifier, Calendar modificationDate);
 	public void migrateFolderFileStaged(long binderId, long entryId, 
-			String fileUploadDataItemName, String stagedFileRelativePath, String modifier, Calendar modificationDate);
+			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate);
 
 
 }
