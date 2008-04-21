@@ -293,6 +293,13 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			}
 		}
 	}
+	public void migrateEntryWorkflow(long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate) {
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+		options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, startState);
+		getTimestamps(options, null, null, modifier, modificationDate);
+		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, options);
+	}
 	public Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
 	{
 		return new HashMap();
@@ -451,6 +458,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		} else {
 			entryElem.addAttribute("name", (String)user.get(ProfileIndexUtils.GROUPNAME_FIELD));			
 		}
+		
 /*
  * I don't know how to get this from the map
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
@@ -498,56 +506,9 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		return xml;
 	}
 	
-	public long addUser(long binderId, String definitionId, String inputDataAsXML) {
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-
-		Document doc = getDocument(inputDataAsXML);
-		
-		try {
-			return getProfileModule().addUser(new Long(binderId), definitionId, new DomInputData(doc, getIcalModule()), null).longValue();
-		}
-		catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
-
-	}
-	
-	public long addGroup(long binderId, String definitionId, String inputDataAsXML) {
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-
-		Document doc = getDocument(inputDataAsXML);
-		
-		try {
-			return getProfileModule().addGroup(new Long(binderId), definitionId, new DomInputData(doc, getIcalModule()), null).longValue();
-		}
-		catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
-
-	}
-	
-	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-
-		Document doc = getDocument(inputDataAsXML);
-		
-		try {
-			getProfileModule().modifyEntry(new Long(binderId), new Long(principalId), new DomInputData(doc, getIcalModule()));
-		}
-		catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
-
-	}
-	
-	public void deletePrincipal(long binderId, long principalId) {
-		try {
-			getProfileModule().deleteEntry(new Long(binderId), new Long(principalId), false);
-		}
-		catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
-
+	public long addUserWorkspace(long userId) {
+		User user = (User)getProfileModule().getEntry(getProfileModule().getProfileBinder().getId(), userId);
+		return getProfileModule().addUserWorkspace(user).getId();
 	}
 	
 	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
@@ -646,9 +607,6 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		
 		getDefinitionModule().walkDefinition(entry, visitor, null);
 		
-	}
-	public void addEntryWorkflow(long binderId, long entryId, String definitionId, String startState) {
-		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, startState);
 	}
 	public void setFunctionMembership(long binderId, String inputDataAsXml) {
 		Binder binder = getBinderModule().getBinder(binderId);

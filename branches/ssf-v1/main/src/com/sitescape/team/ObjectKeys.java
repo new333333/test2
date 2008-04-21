@@ -140,6 +140,7 @@ public interface ObjectKeys {
     public static final String INPUT_OPTION_CREATION_DATE="com.sitescape.team.entity.creation.timestamp";
     public static final String INPUT_OPTION_MODIFICATION_NAME="com.sitescape.team.entity.modification.name";
     public static final String INPUT_OPTION_MODIFICATION_DATE="com.sitescape.team.entity.modification.timestamp";
+    public static final String INPUT_OPTION_FORCE_WORKFLOW_STATE="com.sitescape.team.entity.workflow.state";
     public static final int LISTING_MAX_PAGE_SIZE = 100;
     public static final int MAX_TAG_LENGTH = 60;
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;

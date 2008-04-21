@@ -95,8 +95,8 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
 		this.facade.modifyFolderEntry(binderId, entryId, inputDataAsXML);
 	}
-	public void addEntryWorkflow(long binderId, long entryId, String definitionId, String startState) {
-		this.facade.addEntryWorkflow(binderId, entryId, definitionId, startState);
+	public void migrateEntryWorkflow(long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate) {
+		this.facade.migrateEntryWorkflow(binderId, entryId, definitionId, startState, modifier, modificationDate);
 	}
 
 	public void uploadFolderFile(long binderId, long entryId, 
@@ -131,23 +131,10 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	public String getPrincipalAsXML(long binderId, long principalId) {
 		return this.facade.getPrincipalAsXML(binderId, principalId);
 	}
-	/*
-	public long addUser(long binderId, String definitionId, String inputDataAsXML) {
-		return this.facade.addUser(binderId, definitionId, inputDataAsXML);
+	public long addUserWorkspace(long userId) {
+		return this.facade.addUserWorkspace(userId);
 	}
 
-	public long addGroup(long binderId, String definitionId, String inputDataAsXML) {
-		return this.facade.addGroup(binderId, definitionId, inputDataAsXML);
-	}
-
-	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
-		this.facade.modifyPrincipal(binderId, principalId, inputDataAsXML);
-	}
-
-	public void deletePrincipal(long binderId, long principalId) {
-		this.facade.deletePrincipal(binderId, principalId);
-	}
-	*/
 	public String getWorkspaceTreeAsXML(long binderId, int levels, String page) {
 		return this.facade.getWorkspaceTreeAsXML(binderId, levels, page);
 	}

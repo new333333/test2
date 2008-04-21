@@ -95,7 +95,6 @@ public interface Facade {
 	
 	public void modifyFolderEntry(long folderId, long entryId, String inputDataAsXML);
 	
-	public void addEntryWorkflow(long binderId, long entryId, String definitionId, String startState);
 
 	public void uploadFolderFile(long folderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
@@ -121,7 +120,7 @@ public interface Facade {
 	//
 	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords);
 	public String getPrincipalAsXML(long binderId, long principalId);
-
+	public long addUserWorkspace(long userId);
 
 	//
 	// Workspace operations
@@ -176,6 +175,7 @@ public interface Facade {
 	public void migrateFolderFileStaged(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate);
 
+	public void migrateEntryWorkflow(long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate);
 
 }
 
