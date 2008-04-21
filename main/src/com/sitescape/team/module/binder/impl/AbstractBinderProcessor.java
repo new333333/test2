@@ -1934,7 +1934,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		} else if (fallback != null) {
 			entity.setModification(fallback);
 		} else {
-			entity.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));			
+			entity.setModification(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));			
 		}
 	}
 

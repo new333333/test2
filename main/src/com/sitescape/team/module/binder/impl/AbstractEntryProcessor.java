@@ -29,6 +29,7 @@
 package com.sitescape.team.module.binder.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -742,13 +743,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    	
     }
      //***********************************************************************************************************
-     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, String startState) {
+     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
  		if (!(entry instanceof WorkflowSupport)) return;
   		WorkflowSupport wEntry = (WorkflowSupport)entry;
-  		//set up version for all loggin
+  		//set up version for all logging
   		entry.incrLogVersion();
-  		getWorkflowModule().addEntryWorkflow(wEntry, entry.getEntityIdentifier(), definition, startState);
+
+  		getWorkflowModule().addEntryWorkflow(wEntry, entry.getEntityIdentifier(), definition, options);
   		processChangeLog(entry, ChangeLog.STARTWORKFLOW);
+  		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
   		indexEntry(entry);
      }
      //***********************************************************************************************************

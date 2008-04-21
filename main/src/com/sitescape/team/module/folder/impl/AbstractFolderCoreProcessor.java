@@ -335,9 +335,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
     //***********************************************************************************************************
     //inside write transaction
-    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, String startState) {
-    	super.addEntryWorkflow(binder, entry, definition, startState);
-    	//reindex top whose lastActivity has changed
+    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
+    	super.addEntryWorkflow(binder, entry, definition, options);
+ 		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
+ 		//reindex top whose lastActivity has changed
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();
  		   indexEntry(top);

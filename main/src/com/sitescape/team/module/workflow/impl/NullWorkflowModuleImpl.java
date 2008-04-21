@@ -27,7 +27,7 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.workflow.impl;
-
+import java.util.Map;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.WorkflowState;
@@ -40,7 +40,7 @@ public class NullWorkflowModuleImpl extends CommonDependencyInjection implements
    public void startScheduledJobs(Workspace zone) {	   
     }
 
-	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef, String startState) {
+	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef, Map options) {
 	}
 	public void deleteEntryWorkflow(WorkflowSupport entry) {
 	}	
