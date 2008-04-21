@@ -142,8 +142,9 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	}
 	public void setDefinitions(long binderId, String[] definitionIds, String[] workflowAssociations) {
 		HashMap wfs = new HashMap();
-		for (int i=0; i+1<workflowAssociations.length; i+=2) {
-			wfs.put(workflowAssociations[i], workflowAssociations[i+1]);
+		for (int i=0; i<workflowAssociations.length; i++) {
+			String [] vals = workflowAssociations[i].split(",");
+			wfs.put(vals[0], vals[1]);
 		}
 		getBinderModule().setDefinitions(binderId, Arrays.asList(definitionIds), wfs);
 	}
