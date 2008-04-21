@@ -1837,7 +1837,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTeamlist" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderTeamlist" />
-		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPlaces" />
 	</item>		
 
 	<item name="survey" caption="__survey_queries" type="data" category="entryData" display="form">

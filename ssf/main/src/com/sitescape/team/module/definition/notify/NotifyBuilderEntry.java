@@ -30,7 +30,6 @@ package com.sitescape.team.module.definition.notify;
 
 import java.util.List;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 import org.dom4j.Element;
 import com.sitescape.team.module.definition.DefinitionUtils;
 /**
@@ -71,7 +70,7 @@ public class NotifyBuilderEntry extends AbstractNotifyBuilder {
     }
     protected void doTitle(NotifyVisitor visitor, VelocityContext ctx) {
        	try {
-    		Velocity.mergeTemplate("digestTitle.vtl", ctx, visitor.getWriter());
+    		NotifyBuilderUtil.getVelocityEngine().mergeTemplate("digestTitle.vtl", ctx, visitor.getWriter());
     	} catch (Exception ex) {
     		NotifyBuilderUtil.logger.error("Error processing template " + "digestTitle", ex);
     	}

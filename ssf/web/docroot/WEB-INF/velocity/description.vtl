@@ -29,9 +29,13 @@
 #parse ("icecore.vm")
 <div style="#ss_entryContent()">
 <span style="#ss_labelAbove()">${property_caption}</span>
-<div style="#ss_entryDescription()">
 #if ($ssDescription_markup)
+#if ($ssVisitor.NotifyDef.Type == 'summary')
+$ssDescription_markup
+#else
+<div style="#ss_entryDescription()">
 <span>$ssDescription_markup</span>
-#end
 </div>
+#end
+#end
 </div>
