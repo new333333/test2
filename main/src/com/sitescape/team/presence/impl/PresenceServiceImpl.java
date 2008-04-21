@@ -85,6 +85,10 @@ public class PresenceServiceImpl implements PresenceService, PresenceServiceImpl
 			pl.start();
 		}
 	}
+	protected String fixName(String name) {
+		if (name == null) return null;
+		return name.replaceAll(" ", "+");
+	}
 
 	public void destroy() throws Exception {
 		
@@ -96,7 +100,7 @@ public class PresenceServiceImpl implements PresenceService, PresenceServiceImpl
 		if (!enabled) 
 			return -99;
 		if (user == null) return -1;
-		String zonName = user.getZonName();
+		String zonName = fixName(user.getZonName());
 		if (presenceMap.containsKey(zonName)) {
 			return ((Integer)presenceMap.get(zonName)).intValue();
 		} else {
@@ -107,6 +111,7 @@ public class PresenceServiceImpl implements PresenceService, PresenceServiceImpl
 	public int getPresenceInfo(String zonName) {
 		if (!enabled) 
 			return -99;
+		zonName = fixName(zonName);
 		if (presenceMap.containsKey(zonName)) {
 			return ((Integer)presenceMap.get(zonName)).intValue();
 		} else {
