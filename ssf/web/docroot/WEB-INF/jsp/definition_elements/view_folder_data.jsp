@@ -55,5 +55,11 @@
 	} else if (itemType.equals("attachFiles")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" %><%		
 	
+	} else {
+        %>
+        <ssf:nlt tag="definition.error.unknownDefinitionElement">
+         <ssf:param name="name" value="<%= itemType %>"/>
+        </ssf:nlt><br/>
+        <%
 	}
 %>
