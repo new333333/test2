@@ -32,11 +32,15 @@
 package com.sitescape.team.module.definition;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
@@ -101,6 +105,36 @@ public class DefinitionUtils {
 		}
 		return null;
 
+   }
+   public static Map getOptionalArgs(Element indexingElem) {
+       Map map = new HashMap();
+       for (Iterator it = indexingElem.selectNodes("./args/arg")
+               .listIterator(); it.hasNext();) {
+           Element argElem = (Element) it.next();
+           String key = argElem.attributeValue("name");
+           String type = argElem.attributeValue("type");
+           String valueStr = argElem.attributeValue("value");
+           Object value = null;
+
+           if (type.equals("boolean")) {
+               if (valueStr.equals("true"))
+                   value = Boolean.TRUE;
+               else if (valueStr.equals("false"))
+                   value = Boolean.FALSE;
+               else
+                   throw new ConfigurationException("Invalid value '"
+                           + valueStr + "' for boolean type: ["
+                           + indexingElem.toString() + "]");
+           } else if (type.equals("text") || type.equals("string")) {
+               value = valueStr;
+           } else {
+               throw new ConfigurationException("Illegal type '" + type
+                       + "': [" + indexingElem.toString() + "]");
+           }
+
+           map.put(key, value);
+       }
+       return map;
    }
 
    public static String getViewURL(FolderEntry fEntry, FileAttachment att)

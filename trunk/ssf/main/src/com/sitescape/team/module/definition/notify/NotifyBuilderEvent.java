@@ -29,26 +29,14 @@
 package com.sitescape.team.module.definition.notify;
 
 import java.text.DateFormat;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.Calendar;
 import java.util.TimeZone;
 
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.joda.time.DateTime;
-import org.joda.time.YearMonthDay;
+import org.apache.velocity.VelocityContext;
 
 import com.sitescape.team.calendar.EventsViewHelper;
-import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.util.NLT;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebUrlUtil;
 
 /**
 *
@@ -56,44 +44,29 @@ import com.sitescape.team.web.util.WebUrlUtil;
 */
 public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 	
-	   protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-		   DefinableEntity entity = attribute.getOwner().getEntity();
-		   	Object obj = attribute.getValue();
-	    	if (obj == null) return true;
-	    	if (obj instanceof Event) {
-	    		Event event = (Event)obj;
-	    		
-	    		YearMonthDay startDate = (new DateTime(event.getDtStart().getTime())).toYearMonthDay();
-	    		YearMonthDay endDate = (new DateTime(event.getDtEnd().getTime())).toYearMonthDay();
-	    		
-	    		DateFormat dateFormat = notifyDef.getDateFormat();
-	    		if (event.isAllDayEvent()) {
-	    			dateFormat = DateFormat.getDateInstance(DateFormat.LONG, notifyDef.getLocale());
-	    			dateFormat.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
-	    		}
-	    		
-	    		Element startDateEl = element.addElement("startDate");
-	    		startDateEl.setText(dateFormat.format(event.getDtStart().getTime()));
-	    		Element endDateEl = element.addElement("endDate");
-	    		if (((event.isAllDayEvent() && startDate.isEqual(endDate))) || !event.hasDuration()) {
-	    			endDateEl.setText("");
-	    		} else {
-	    			endDateEl.setText(dateFormat.format(event.getDtEnd().getTime())); 
-	    		}
-	    		
-	    		String freqString = event.getFrequencyString();
-	    		
-	    		Element frequencyEl = element.addElement("frequency");
-	    		if (freqString == null) {
-	    			frequencyEl.setText("");
-	    		} else {
-	    			frequencyEl.setText(NLT.get("calendar.frequency", notifyDef.getLocale()) + ": " + EventsViewHelper.eventToRepeatHumanReadableString(event, notifyDef.getLocale()));
-	    		}
-	    		  
-	    		notifyDef.addEvent(entity, event);
-	    	} else { 
-	    		element.setText(obj.toString());
-	    	}
-	    	return true;
-	    }
+    public String getDefaultTemplate() {
+    	return "event.vtl";
+    }
+	protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
+		Object obj = attr.getValue();
+		if (!(obj instanceof Event)) return;
+		Event event = (Event)obj;
+		visitor.getNotifyDef().addEvent(visitor.getEntity(), event);
+
+		Calendar st = event.getDtStart();
+		Calendar en = event.getDtEnd();
+			
+		DateFormat dateFormat = null;
+		if (!event.isAllDayEvent()) {
+			dateFormat = visitor.getNotifyDef().getDateFormat();
+		} else {
+			dateFormat = DateFormat.getDateInstance(DateFormat.LONG, visitor.getNotifyDef().getLocale());
+			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		}
+
+		ctx.put("ssEvent_startString", dateFormat.format(st.getTime()));
+		ctx.put("ssEvent_endString", dateFormat.format(en.getTime()));
+		ctx.put("ssEvent_repeatString", EventsViewHelper.eventToRepeatHumanReadableString(event, visitor.getNotifyDef().getLocale()));
+		super.build(visitor, template, ctx);
+	}
 }

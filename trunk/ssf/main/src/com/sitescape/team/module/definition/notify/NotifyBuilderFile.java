@@ -28,42 +28,22 @@
  */
 package com.sitescape.team.module.definition.notify;
 
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-
-import org.dom4j.Element;
+import org.apache.velocity.VelocityContext;
 
 import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebUrlUtil;
 /**
 * Handle file field in mail notification.
 * @author Janet McCann
 */
 public class NotifyBuilderFile extends AbstractNotifyBuilder {
 
-	   protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-		   DefinableEntity entry = attribute.getOwner().getEntity();
-		   Set files = attribute.getValueSet();
-		   for (Iterator iter=files.iterator(); iter.hasNext();) {
-		    	Element value = element.addElement("file");		    		
-		    	FileAttachment att = (FileAttachment)iter.next();
-		    	if (att != null && att.getFileItem() != null) {
-		    		value.setText(att.getFileItem().getName());
-		    		if (notifyDef.isAttachmentsIncluded())	
-		    			notifyDef.addAttachment(att);
-		    		else if (entry instanceof FolderEntry) {
-		    			FolderEntry fEntry = (FolderEntry)entry;
-		    			String webUrl = DefinitionUtils.getViewPermalinkURL(fEntry, att); 
-		    			value.addAttribute("href", webUrl);
-		    		}
-		    	}
-	    	}
-	    	return true;
-	    }
+    public String getDefaultTemplate() {
+    	return "file.vtl";
+    }
+    public void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
+    	if (visitor.getNotifyDef().isAttachmentsIncluded()) {
+    		visitor.getNotifyDef().getAttachments().addAll(attr.getValueSet());					
+		}
+    	super.build(visitor, template, ctx);
+    }
 }

@@ -28,51 +28,168 @@
  */
 package com.sitescape.team.module.definition.notify;
 
-import java.util.Map;
 import java.io.Writer;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
 import org.dom4j.Element;
-import org.dom4j.DocumentHelper;
+
 import com.sitescape.team.InternalException;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
+import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
-import org.apache.velocity.VelocityContext;
+import com.sitescape.util.Validator;
 
 /**
  *
  * @author Jong Kim
  */
 public class NotifyBuilderUtil {
+	public static Log logger = LogFactory.getLog(NotifyBuilderUtil.class);
 
-    public static void buildElement(Element parent, Notify notifyDef, DefinableEntity entity, String dataElemName, 
-    			String fieldBuilderClassName, Map args) {
-        try {
-            Class fieldBuilderClass = ReflectHelper.classForName(fieldBuilderClassName);
-            NotifyBuilder fieldBuilder = (NotifyBuilder) fieldBuilderClass.newInstance();
-            Element element = DocumentHelper.createElement("attribute");
-            if (fieldBuilder.buildElement(element, entity, notifyDef, dataElemName, args))
-            	parent.add(element);
-        } catch (ClassNotFoundException e) {
-            throw new InternalException (e);
-        } catch (InstantiationException e) {
-            throw new InternalException (e);
-        } catch (IllegalAccessException e) {
-            throw new InternalException (e);
+    public static void buildElements(DefinableEntity entity, Element item, Notify notifyDef, Writer writer, Map params, DefinitionConfigurationBuilder definitionBuilderConfig, boolean processItem) {
+        String flagElementPath = "./notify";
+        List<Element> items;
+        if (processItem) {  //starting poing
+        	items = new ArrayList();
+        	items.add(item);
+        } else {
+            items = item.elements("item");
+        	
+        }
+        if (items == null) return;
+        for (Element nextItem:items) {
+        	Element flagElem = (Element) nextItem.selectSingleNode(flagElementPath);
+           	if (flagElem == null) {
+              	 // The current item in the entry definition does not contain
+              	 // the flag element. Check the corresponding item in the default
+               	 // config definition to see if it has it.
+               	 // This two level mechanism allows entry definition (more specific
+               	 // one) to override the settings in the default config definition
+               	 // (more general one). This overriding works in its 
+               	 // entirity only, that is, partial overriding is not supported.
+           		 //Find the item in the base configuration definition to see if it is a data item
+                 String itemName = (String) nextItem.attributeValue("name");	
+                 if ("entryDataItem".equals(itemName)) {
+                	 itemName = nextItem.attributeValue("formItem");
+                 }
+     			Element configItem = definitionBuilderConfig.getItem(null, itemName);
+     			if (configItem != null) flagElem = (Element) configItem.selectSingleNode(flagElementPath);
+            }
+
+           	if (flagElem == null) {
+           		//proceed to contents
+           		buildElements(entity, nextItem, notifyDef, writer, params, definitionBuilderConfig, false);
+           		continue;
+           	}
+           	Map oArgs = DefinitionUtils.getOptionalArgs(flagElem);
+           	NotifyVisitor visitor = new NotifyVisitor(entity, notifyDef, nextItem, writer, params, definitionBuilderConfig);
+           	buildElement(entity, visitor, flagElem, oArgs);
         }
     }
-    public static void buildElement(Element flagElement, Element entryElement, Notify notifyDef, DefinableEntity entity, VelocityContext ctx, Writer writer) {
-    try {
-    	String fieldBuilderClassName = flagElement.attributeValue("notifyBuilder");
-        Class fieldBuilderClass = ReflectHelper.classForName(fieldBuilderClassName);
-        NotifyBuilder fieldBuilder = (NotifyBuilder) fieldBuilderClass.newInstance();
-        String template = flagElement.attributeValue("vm");
-        fieldBuilder.buildElement(template, entryElement, notifyDef, entity, ctx, writer);
+    protected static void buildElement(DefinableEntity entity, NotifyVisitor visitor,	Element flagElement, Map oArgs) {
+	    VelocityContext ctx = new VelocityContext(oArgs);
+		//Each item property that has a value is added as a "request attribute". 
+		//  The key name is "property_xxx" where xxx is the property name.
+		//At a minimum, make sure the name and caption variables are defined
+		ctx.put("property_name", "");
+		ctx.put("property_caption", "");
+		ctx.put("ssVisitor", visitor);
+		
+		String itemType = visitor.getItem().attributeValue("name", "");
+		//get Item from main config document
+		Element itemDefinition = visitor.getDefinitionConfigurationBuilder().getItem(null, itemType);
+
+		//Also set up the default values for all properties defined in the definition configuration
+		//  These will be overwritten by the real values (if they exist) below
+		List<Element> itemDefinitionProperties = itemDefinition.selectNodes("properties/property");
+		Map propertyValuesMap = new HashMap();
+		Map savedReqAttributes = new HashMap();
+		for (Element property:itemDefinitionProperties) {
+			String propertyName = property.attributeValue("name", "");
+			if (Validator.isNull(propertyName)) continue;
+			//Get the type from the config definition
+			String propertyConfigType = property.attributeValue("type", "text");
+			String propertyValue = "";	
+			//Get the value(s) from the actual definition
+			if (propertyConfigType.equals("selectbox")) {
+				//get all items with same name
+				List<Element> selProperties = visitor.getItem().selectNodes("properties/property[@name='"+propertyName+"']");
+				if (selProperties == null) continue;
+				//There might be multiple values so bulid a list
+				List propertyValues = new ArrayList();
+				for (Element selItem:selProperties) {
+					String selValue = NLT.getDef(selItem.attributeValue("value", ""));
+					if (Validator.isNotNull(selValue)) propertyValues.add(selValue);
+					
+				}
+				propertyValuesMap.put("propertyValues_"+propertyName, propertyValues);
+				propertyValuesMap.put("property_"+propertyName, "");
+			} else {
+				Element selItem = (Element)visitor.getItem().selectSingleNode("properties/property[@name='"+propertyName+"']");
+				if (selItem == null) selItem=property;
+				if (propertyConfigType.equals("textarea")) {
+					propertyValue = selItem.getText();
+				} else {										
+					propertyValue = NLT.getDef(selItem.attributeValue("value", ""));
+				}
+				//defaults don't apply here
+				//Set up any "setAttribute" values that need to be passed along. Save the old value so it can be restored
+				String reqAttrName = property.attributeValue("setAttribute", "");
+				if (Validator.isNotNull(reqAttrName)) {
+					//Find this property in the current config
+					savedReqAttributes.put(reqAttrName, ctx.get(reqAttrName));
+					ctx.put(reqAttrName, propertyValue);
+				}
+				if (Validator.isNull(propertyValue)) {
+					propertyValue = property.attributeValue("default", "");
+					if (!Validator.isNull(propertyValue)) propertyValue = NLT.getDef(propertyValue);
+				}
+				propertyValuesMap.put("property_"+propertyName, propertyValue);
+			
+			}
+				
+		}
+	
+		Iterator itPropertyValuesMap = propertyValuesMap.entrySet().iterator();
+		while (itPropertyValuesMap.hasNext()) {
+			Map.Entry entry = (Map.Entry)itPropertyValuesMap.next();
+			ctx.put((String)entry.getKey(), entry.getValue());
+		}
+			
+	   	try {
+    		String fieldBuilderClassName = flagElement.attributeValue("notifyBuilder");
+       		String template = flagElement.attributeValue("vtl");
+       		if (Validator.isNotNull(fieldBuilderClassName)) {
+       			Class fieldBuilderClass = ReflectHelper.classForName(fieldBuilderClassName);
+       			NotifyBuilder fieldBuilder = (NotifyBuilder) fieldBuilderClass.newInstance();
+        		fieldBuilder.buildElement(visitor, template, ctx);
+       		} else {
+       			if (Validator.isNull(template)) template = "dataElement.vtl";
+       			try {
+       				Velocity.mergeTemplate(template, ctx, visitor.getWriter());
+       			} catch (Exception ex) {
+       				NotifyBuilderUtil.logger.error("Error processing template", ex);
+       			}
+       		}
        
-    } catch (ClassNotFoundException e) {
-        throw new InternalException (e);
-    } catch (InstantiationException e) {
-        throw new InternalException (e);
-    } catch (IllegalAccessException e) {
-        throw new InternalException (e);
+    	} catch (ClassNotFoundException e) {
+    		throw new InternalException (e);
+    	} catch (InstantiationException e) {
+    		throw new InternalException (e);
+    	} catch (IllegalAccessException e) {
+    		throw new InternalException (e);
+    	}
+
     }
-}    
+ 
 }

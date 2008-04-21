@@ -372,7 +372,11 @@ public class DefinitionHelper {
     		return Collections.EMPTY_MAP;
     	}
     	Document definitionConfig = definition.getDefinition();
-    	if (definitionConfig == null) {
+    	return findSelectboxSelectionsAsMap(attributeName, definitionConfig);
+     	
+    }
+    public static Map findSelectboxSelectionsAsMap(String attributeName, Document definitionConfig) {
+  	if (definitionConfig == null) {
     		return Collections.EMPTY_MAP;
     	}
     	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='selectbox' and properties/property[@name='name' and @value='"+attributeName+"']]");
@@ -448,11 +452,22 @@ public class DefinitionHelper {
     }
     
     public static List findRadioSelections(String attributeName, Document definitionConfig) {
-    	List nodes = definitionConfig.selectNodes("//item[@type='form']//item[@name='entryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName+"']]//item[@name='radioSelection']/properties");
+    	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName+"']]");
+    	if (node == null) {
+    		return Collections.EMPTY_LIST;
+    	}
+    	return findRadioSelections((Element)node);
+    }
+    
+    public static List findRadioSelections(Element element) {
+       	if (element == null) {
+    		return Collections.EMPTY_LIST;
+    	}    	
+    	List nodes = element.selectNodes("item[@name='radioSelection']/properties");
     	if (nodes == null) {
     		return Collections.EMPTY_LIST;
     	}
-    	
+   	
     	List result = new ArrayList();
     	Iterator nodesIt = nodes.iterator();
     	while (nodesIt.hasNext()) {
@@ -469,7 +484,39 @@ public class DefinitionHelper {
     	
     	return result;
     }
-    
+    public static Map findRadioSelectionsAsMap(String attributeName, Document definitionConfig) {
+       	Node node = definitionConfig.selectSingleNode("//item[@type='form']//item[@name='entryFormForm']//item[@name='radio' and properties/property[@name='name' and @value='"+attributeName+"']]");
+    	if (node == null) {
+    		return Collections.EMPTY_MAP;
+    	}
+    	return findRadioSelectionsAsMap((Element)node);
+    }
+    public static Map findRadioSelectionsAsMap(Element element) {
+    	Map result = new HashMap();
+    	if (element == null) {
+    		return result;
+    	}
+		Iterator attributeValuesIt = DefinitionHelper.findRadioSelections(element).iterator();
+		while (attributeValuesIt.hasNext()) {
+			
+			String name = null;
+			String caption = null;
+			
+			Iterator attributeValueIt = ((Map)attributeValuesIt.next()).entrySet().iterator();
+			while (attributeValueIt.hasNext()) {
+				Map.Entry mapEntry = (Map.Entry)attributeValueIt.next();
+				if ("name".equals(mapEntry.getKey())) {
+					name = (String)mapEntry.getValue();
+				} else if ("caption".equals(mapEntry.getKey())) {
+					caption = (String)mapEntry.getValue();
+				}
+			}
+			result.put(name, caption);
+			
+		}
+		return result;
+    }
+
     public static String findFamily(Document definitionConfig) {
     	if (definitionConfig != null) {
     		org.dom4j.Element root = definitionConfig.getRootElement();

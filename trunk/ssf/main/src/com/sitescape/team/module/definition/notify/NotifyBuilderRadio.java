@@ -28,49 +28,27 @@
  */
 package com.sitescape.team.module.definition.notify;
 
-import java.util.Iterator;
 import java.util.Map;
 
-import org.dom4j.Element;
+import org.apache.velocity.VelocityContext;
 
 import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.survey.Answer;
-import com.sitescape.team.survey.Question;
-import com.sitescape.team.survey.Survey;
-import com.sitescape.team.survey.SurveyModel;
+import com.sitescape.team.web.util.DefinitionHelper;
 
-public class NotifyBuilderSurvey extends AbstractNotifyBuilder {
+/**
+*
+* @author Janet McCann
+*/
+public class NotifyBuilderRadio extends AbstractNotifyBuilder {
 
-    protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-     	Object obj = attribute.getValue();
-    	if (obj instanceof Survey) {
-    		Survey survey = (Survey)obj;
-    		SurveyModel surveyModel = survey.getSurveyModel();
-    		if (surveyModel != null) {
-    			Iterator questionsIt = surveyModel.getQuestions().iterator();
-    			while (questionsIt.hasNext()) {
-    				Question question = (Question)questionsIt.next();
-    				Element questionEl = element.addElement("question");
-    				
-    				Element questionTextEl = questionEl.addElement("text");
-    				questionTextEl.setText(question.getQuestion());
-    				
-    				Iterator answersIt = question.getAnswers().iterator();
-    				while (answersIt.hasNext()) {
-    					Answer answer = (Answer)answersIt.next();
-    					Element answerEl = questionEl.addElement("answer");
-    					
-    					Element answerTextEl = answerEl.addElement("text");
-    					answerTextEl.setText(answer.getText());
-    					
-    					Element answerVotesCountEl = answerEl.addElement("votesCount");
-    					answerVotesCountEl.setText(Integer.toString(answer.getVotesCount()));
-    				}
-    			}
-    		}
-    	} else if (obj != null) {
-	    	element.setText(obj.toString());
-    	}
-    	return true;
-   }
+    public String getDefaultTemplate() {
+    	return "radio.vtl";
+    }
+	   protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attribute) {
+		   Map selectboxSelections = DefinitionHelper.findRadioSelectionsAsMap(attribute.getName(), visitor.getItem().getDocument());
+	        ctx.put("ssCaptions", selectboxSelections);
+	        super.build(visitor, template, ctx);
+	    }
+
 }
+

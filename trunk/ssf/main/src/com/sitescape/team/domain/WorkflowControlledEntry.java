@@ -67,7 +67,7 @@ public abstract class WorkflowControlledEntry extends Entry
         } else this.workflowChange = null;
     }
 
-    public Set getWorkflowResponses() {
+    public Set<WorkflowResponse> getWorkflowResponses() {
     	if (workflowResponses == null) workflowResponses = new HashSet();
    	 	return workflowResponses;  
      }
@@ -77,7 +77,7 @@ public abstract class WorkflowControlledEntry extends Entry
     public void removeWorkflowResponse(WorkflowResponse workflowResponse) {
     	getWorkflowResponses().remove(workflowResponse);
     }
-    public Set getWorkflowStates() {
+    public Set<WorkflowState> getWorkflowStates() {
     	if (iWorkflowStates != null) return iWorkflowStates;
     	if (workflowStates == null) workflowStates = new HashSet();
    	 	return workflowStates;  

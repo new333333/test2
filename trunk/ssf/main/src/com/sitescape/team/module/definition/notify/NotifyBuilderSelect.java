@@ -28,45 +28,27 @@
  */
 package com.sitescape.team.module.definition.notify;
 
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Set;
 
-import org.dom4j.Element;
+import org.apache.velocity.VelocityContext;
 
 import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.web.util.DefinitionHelper;
 
 /**
 *
 * @author Janet McCann
 */
 public class NotifyBuilderSelect extends AbstractNotifyBuilder {
+    public String getDefaultTemplate() {
+    	return "selectbox.vtl";
+    }
+	   
+    public void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
+    	Map selectboxSelections = DefinitionHelper.findSelectboxSelectionsAsMap(attr.getName(), visitor.getItem().getDocument());
+    	ctx.put("ssCaptions", selectboxSelections);
+    	super.build(visitor, template, ctx);
+	   }
 
-	   protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-	    	Object obj = attribute.getValue();
-	    	Map<String, String> valueCaptions = (Map)args.get("_selectboxSelectionsCaptions");
-	    	if (obj instanceof Set) {
-	    		Set set = (Set)obj;
-	    		for (Iterator iter=set.iterator();iter.hasNext();) {
-		    		Element value = element.addElement("value");		    		
-		    		obj = iter.next();
-		    		if (valueCaptions != null && valueCaptions.containsKey(obj.toString())) {
-		    			value.setText(valueCaptions.get(obj.toString()));	
-		    		} else {
-		    			value.setText(obj.toString());
-		    		}
-	    		}
-	    	} else if (obj != null) {
-		    	Element value = element.addElement("value");
-	    		if (valueCaptions != null && valueCaptions.containsKey(obj.toString())) {
-	    			value.setText(valueCaptions.get(obj.toString()));	
-	    		} else {
-	    			value.setText(obj.toString());
-	    		}
-	    	} else {
-	    		element.addElement("value");
-	    	}
-	    	return true;
-	    }
 }
 
