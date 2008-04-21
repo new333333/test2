@@ -28,11 +28,11 @@
  */
 package com.sitescape.team.module.definition.notify;
 
-import java.util.Iterator;
 import java.util.Collection;
-import java.util.Map;
+import java.util.Iterator;
+import java.util.TreeSet;
 
-import org.dom4j.Element;
+import org.apache.velocity.VelocityContext;
 
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Principal;
@@ -41,18 +41,20 @@ import com.sitescape.team.util.ResolveIds;
 *
 * @author Janet McCann
 */
-public class NotifyBuilderUserlist extends AbstractNotifyBuilder {
+public class NotifyBuilderPrincipalList extends AbstractNotifyBuilder {
 
-	   protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-		   Collection users = ResolveIds.getPrincipals(attribute);
-		   if ((users != null) && !users.isEmpty()) {
-	    		for (Iterator iter=users.iterator();iter.hasNext();) {
-		    		Element value = element.addElement("value");		    		
-		    		value.setText(((Principal)iter.next()).getTitle());
-	    		}
-	    	} else {
-	    		element.addElement("value");
-	    	}
-	    	return true;
-	   }
+    public String getDefaultTemplate() {
+    	return "principallist.vtl";
+    }
+    protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
+    	Collection users = ResolveIds.getPrincipals(attr);
+    	TreeSet titles = new TreeSet();
+    	for (Iterator iter=users.iterator(); iter.hasNext();) {
+    		Principal p = (Principal)iter.next();
+    		titles.add(p.getTitle());
+    	}
+    	ctx.put("ssTitles", titles);
+    	super.build(visitor, template, ctx);
+    }
+
 }

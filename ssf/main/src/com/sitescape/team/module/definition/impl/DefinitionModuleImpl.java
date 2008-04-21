@@ -1700,36 +1700,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	List defs = coreDao.loadDefinitions(RequestContextHolder.getRequestContext().getZoneId(), type);
     	return defs;
     }
-    private Map getOptionalArgs(Element indexingElem) {
-        Map map = new HashMap();
-        for (Iterator it = indexingElem.selectNodes("./args/arg")
-                .listIterator(); it.hasNext();) {
-            Element argElem = (Element) it.next();
-            String key = argElem.attributeValue("name");
-            String type = argElem.attributeValue("type");
-            String valueStr = argElem.attributeValue("value");
-            Object value = null;
-
-            if (type.equals("boolean")) {
-                if (valueStr.equals("true"))
-                    value = Boolean.TRUE;
-                else if (valueStr.equals("false"))
-                    value = Boolean.FALSE;
-                else
-                    throw new ConfigurationException("Invalid value '"
-                            + valueStr + "' for boolean type: ["
-                            + indexingElem.toString() + "]");
-            } else if (type.equals("text") || type.equals("string")) {
-                value = valueStr;
-            } else {
-                throw new ConfigurationException("Illegal type '" + type
-                        + "': [" + indexingElem.toString() + "]");
-            }
-
-            map.put(key, value);
-        }
-        return map;
-    }
 
 	//Routine to get the data elements for use in search queries
     public Map getEntryDefinitionElements(String id) {
@@ -1906,7 +1876,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
                     	}
 
                     	if (flagElem != null) {
-                        	 Map oArgs = getOptionalArgs(flagElem);
+                        	 Map oArgs = DefinitionUtils.getOptionalArgs(flagElem);
                         	 //add in caller supplied arguments
                         	 if (args != null) oArgs.putAll(args);
                         	 visitor.visit(nextItem, flagElem, oArgs);
@@ -1917,48 +1887,5 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         }
 		SimpleProfiler.stopProfiler("DefinitionModuleImpl.walkDefinition");
     }
-	public void walkViewDefinition(DefinableEntity entry, DefinitionVisitor visitor, Map args) {
-		SimpleProfiler.startProfiler("DefinitionModuleImpl.walkDefinition");
-		//access check not needed = assumed okay from entry
-        Definition def = entry.getEntryDef();
-        if(def == null) return;
-        String flagElementPath = "./" + visitor.getFlagElementName();
-        Document definitionTree = def.getDefinition();
-        if (definitionTree != null) {
-            Element root = definitionTree.getRootElement();
 
-            //Get a list of all of the items in the definition
-			Element entryFormItem = (Element)root.selectSingleNode("//item[@name='entryView' or @name='profileEntryView']");
-            if (entryFormItem != null) {
-                List<Element> items = entryFormItem.elements();
-                if (items != null) {
-                    for (Element nextItem:items) {
-
-                    	Element flagElem = (Element) nextItem.selectSingleNode(flagElementPath);
-                    	if (flagElem == null) {
-                        	 // The current item in the entry definition does not contain
-                        	 // the flag element. Check the corresponding item in the default
-                        	 // config definition to see if it has it.
-                        	 // This two level mechanism allows entry definition (more specific
-                        	 // one) to override the settings in the default config definition
-                        	 // (more general one). This overriding works in its 
-                        	 // entirity only, that is, partial overriding is not supported.
-     						//Find the item in the base configuration definition to see if it is a data item
-                    		String itemName = (String) nextItem.attributeValue("name");						
-     						Element configItem = this.definitionBuilderConfig.getItem(this.definitionConfig, itemName);
-     						if (configItem != null) flagElem = (Element) configItem.selectSingleNode(flagElementPath);
-                    	}
-
-                    	if (flagElem != null) {
-                        	 Map oArgs = getOptionalArgs(flagElem);
-                        	 //add in caller supplied arguments
-                        	 if (args != null) oArgs.putAll(args);
-                        	 visitor.visit(nextItem, flagElem, oArgs);
-                        }
-                    }
-                }
-            }
-        }
-		SimpleProfiler.stopProfiler("DefinitionModuleImpl.walkDefinition");
-    }
 }

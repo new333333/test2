@@ -26,32 +26,37 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.domain;
+package com.sitescape.team.module.definition.notify;
 
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.velocity.VelocityContext;
+
+import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.WorkflowSupport;
+import com.sitescape.team.module.workflow.WorkflowUtils;
 
 /**
- * @author Jong Kim
- *
- */
-public interface WorkflowSupport  {
-	public void addWorkflowResponse(WorkflowResponse workflowResponse);
-    public void addWorkflowState(WorkflowState workflowState);
-	public boolean hasAclSet();
-	public boolean isWorkAreaAccess(WfAcl.AccessType type);
-	public Long getOwnerId();
-	public Set<WorkflowResponse> getWorkflowResponses();
-	public Set getStateMembers(WfAcl.AccessType type);
-    public WorkflowState getWorkflowState(Long id);
-    public WorkflowState getWorkflowStateByThread(Definition def, String threadName);
-    public Set<WorkflowState> getWorkflowStates();
-    public HistoryStamp getWorkflowChange();
-   /**
-     * @return Returns a list of <code>WorkflowStates</code>.
-     */
-    public void removeWorkflowState(WorkflowState workflowState);
-    public void removeWorkflowResponse(WorkflowResponse workflowResponse);
-	public void setStateChange(WorkflowState workflowState);
-	public ChangeLog getStateChanges();
-    public void setWorkflowChange(HistoryStamp workflowChange);
+*
+* @author Janet McCann
+*/
+public class NotifyBuilderWorkflow extends AbstractNotifyBuilder {
+    public String getDefaultTemplate() {
+    	return "workflow.vtl";
+    }
+
+	protected void build(NotifyVisitor visitor, String template, VelocityContext ctx) {
+		if (!(visitor.getEntity() instanceof WorkflowSupport)) return;
+		WorkflowSupport wEntry = (WorkflowSupport)visitor.getEntity();
+		if (wEntry.getWorkflowStates().isEmpty()) return;
+		Map captionMap = new HashMap();
+		for (WorkflowState ws: wEntry.getWorkflowStates()) {
+			captionMap.put(ws.getTokenId(), WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
+		}
+   		
+	    	
+		ctx.put("ssCaptions", captionMap);
+		super.build(visitor, template, ctx);
+	}
 }

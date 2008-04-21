@@ -28,11 +28,7 @@
  */
 package com.sitescape.team.module.definition.notify;
 
-import java.util.Map;
-
-import org.dom4j.Element;
-
-import com.sitescape.team.domain.CustomAttribute;
+import org.apache.velocity.VelocityContext;
 
 /**
  *
@@ -40,15 +36,13 @@ import com.sitescape.team.domain.CustomAttribute;
  */
 public class NotifyBuilderCheck extends AbstractNotifyBuilder {
 
-    
-    protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-     	Object obj = attribute.getValue();
-    	if (obj != null) {
-    		element.setText(obj.toString());
-    	} else {
-    		element.setText(obj.toString());
-    	}
-    	return true;
-   }
+    public String getDefaultTemplate() {
+    	return "checkbox.vtl";
+    }
+
+    protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, String propertyName) {
+    	//no attribute, show that
+    	super.build(visitor, template, ctx);
+    }
 
 }

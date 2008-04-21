@@ -66,7 +66,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		List<Function> functions = getAdminModule().getFunctions();
 		Document doc = getDocument(inputDataAsXml);
 		Map wfms = new HashMap();
-		List<Element> wfmElements = doc.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP);
+		List<Element> wfmElements = doc.getRootElement().selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_FUNCTION_MEMBERSHIP);
 		for (Element wfmElement:wfmElements) {
 			 String functionName = XmlUtils.getProperty(wfmElement, ObjectKeys.XTAG_WA_FUNCTION_NAME);
 			 Function func = null;

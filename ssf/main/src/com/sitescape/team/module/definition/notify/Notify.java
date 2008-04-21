@@ -54,7 +54,7 @@ public class Notify {
 	
 	protected NotifyType type=NotifyType.summary;
 	protected Locale locale;
-	protected DateFormat dateFormat;
+	protected DateFormat dateFormat,dateTimeFormat;
 	protected Set files= null;
 	protected Map events= null;// sorted by entry
 	protected Timestamp startTs;
@@ -68,10 +68,15 @@ public class Notify {
 		 * compareTo doesn't work on a Date that is not a Timestamp
 		 */
 		this.startTs = new Timestamp(startDate.getTime());
-		this.dateFormat=DateFormat.getDateTimeInstance(DateFormat.LONG, DateFormat.FULL, locale);
+		this.dateTimeFormat=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,  DateFormat.MEDIUM, locale);
 		if (timezone == null) timezone = TimeZoneHelper.getDefault();
 		this.timezone = timezone;
+		this.dateTimeFormat.setTimeZone(timezone);
+		
+		this.dateFormat=DateFormat.getDateInstance(DateFormat.MEDIUM, locale);
+		this.timezone = timezone;
 		this.dateFormat.setTimeZone(timezone);
+		
 
 	}
 	public Set getAttachments() {
@@ -111,11 +116,14 @@ public class Notify {
 	public Locale getLocale() {
 		return this.locale;
 	}
+	public TimeZone getTimeZone() {
+		return this.timezone;
+	}
 	public DateFormat getDateFormat() {
 		return dateFormat;
 	}
-	public void setDateFormat(DateFormat dateFormat) {
-		this.dateFormat = dateFormat;
+	public DateFormat getDateTimeFormat() {
+		return dateTimeFormat;
 	}
 	public Date getStartDate() {
 		return startTs;

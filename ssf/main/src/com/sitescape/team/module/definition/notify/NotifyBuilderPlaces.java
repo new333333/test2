@@ -30,7 +30,10 @@ package com.sitescape.team.module.definition.notify;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.TreeSet;
 
+
+import org.apache.velocity.VelocityContext;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
@@ -42,17 +45,18 @@ import com.sitescape.team.util.ResolveIds;
  */
 public class NotifyBuilderPlaces extends AbstractNotifyBuilder {
 
-	protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-		Map binders = ResolveIds.getBinderTitlesAndIcons(attribute);
-		if (!binders.isEmpty()) {
-			for (Iterator iter = binders.entrySet().iterator(); iter.hasNext();) {
-				Map.Entry binderData = (Map.Entry) iter.next();
-				Element value = element.addElement("value");
-				value.setText((String) ((Map) binderData.getValue()).get("title"));
-			}
-		} else {
-			element.addElement("value");
+    public String getDefaultTemplate() {
+    	return "places.vtl";
+    }
+    protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
+		Map binders = ResolveIds.getBinderTitlesAndIcons(attr);
+		TreeSet titles = new TreeSet();
+		for (Iterator iter=binders.values().iterator(); iter.hasNext();) {
+			Map b = (Map)iter.next();
+			titles.add(b.get("title"));
 		}
-		return true;
-	}
+		ctx.put("ssTitles", titles);
+    	super.build(visitor, template, ctx);
+    }
+
 }

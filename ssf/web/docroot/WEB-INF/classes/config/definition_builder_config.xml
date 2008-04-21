@@ -113,7 +113,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature.jsp" />
 		</jsps>
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSignature" vtl="signature.vtl"/>
+		<notify vtl="signature.vtl"/>
 	</item>
 	
 	<item name="entryCreatorView" caption="__entry_creator" category="commonEntryViewData" display="view">
@@ -124,7 +124,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_creator.jsp" />
 		</jsps>
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderCreator" vtl="creator.vtl" />
+		<notify vtl="creator.vtl"/>
 	</item>
 	
 	<item name="entryDateView" caption="__entry_date" category="commonEntryViewData" display="view">
@@ -135,7 +135,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_date.jsp" />
 		</jsps>
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDate" vtl="date.vtl" />
+		<notify vtl="creationdate.vtl"/>
 	</item>
 	
 	<item name="descriptionView" caption="__description" category="commonEntryViewData" display="view">
@@ -146,7 +146,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/description_view.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_description.jsp" />
 		</jsps>
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" vtl="description.vtl" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription"/>
 	</item>
 	<item name="entryAttachments" caption="__entry_attachments" category="commonEntryViewData" display="view">
 		<properties>
@@ -157,6 +157,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_attachments.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_attachments.jsp" />
 		</jsps>
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderAttachments"/>
 	</item>
 	
 	<item name="dashboardCanvas" caption="__dashboard_canvas" multipleAllowed="false" display="view">
@@ -272,8 +273,7 @@
 		<help>ihelp.designers.event</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderEvent" />
 	    <webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderEvent" />
-<!-- In order to get ICAl attachments all the time, summary must be true -->
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEvent"/>
 	</item>
 
 	<item name="subscribe" caption="__subscribe" multipleAllowed="false" category="entryData" display="form">
@@ -324,6 +324,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/entry_view.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/entry_view.jsp" />
 		</jsps>
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEntry"/>
 	</item>
 <!-- folder entry view items -->
 		<item name="titleView" caption="__title" category="entryViewData"  display="view">
@@ -335,7 +336,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_title.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_title.jsp" />
 		</jsps>
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderTitle" vtl="title.vtl" />
+		<notify vtl="title.vtl"/>
 	</item>
 	
 	
@@ -377,6 +378,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_workflow.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_workflow.jsp" />
 		</jsps>
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderWorkflow"/>
 	</item>
 		
 			
@@ -1110,7 +1112,6 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_entry_graphic_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />
 	</item>
 
 <!-- Profile entry view-->
@@ -1467,7 +1468,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderText" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderText" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderText" />
+		<notify />
 	</item>
 	
 	<item name="htmlEditorTextarea" caption="__html_editor_text_area" type="data" category="commonEntryData" display="form">
@@ -1486,8 +1487,8 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html_editor_textarea_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
-	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
 	<item name="selectbox" caption="__selectbox" type="data" category="commonEntryData" display="form">
@@ -1512,7 +1513,7 @@
 		<help>ihelp.designers.selectbox</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
 	</item>
 
 	<item name="selectboxSelection" caption="__selection" display="form">
@@ -1553,8 +1554,7 @@
 			fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserListSelect"/>
 		<webService apply="true"
 			elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserListSelect"/>
-		<notify summary="false" full="true"
-			notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserListSelect"/>
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
 
 	<item name="radio" caption="__radio_buttons" type="data" category="commonEntryData" display="form">
@@ -1581,8 +1581,8 @@
 		</jsps>
 		<help>ihelp.designers.radio_buttons</help>		
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSelect" />
-	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSelect" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSelect" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderRadio"/>
 	</item>
 	
 	<item name="radioSelection" caption="__radio_button" display="form">
@@ -1618,7 +1618,7 @@
 		<help>ihelp.designers.places</help>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderPlaces" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderPlaces" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPlaces" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPlaces"/>
 	</item>
 
 	<item name="checkbox" caption="__checkbox" type="data" category="commonEntryData" display="form">
@@ -1636,8 +1636,8 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/checkbox_form.jsp" />
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderCheck" />
-	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderCheck" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderCheck" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderCheck" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderCheck" />
 	</item>
 
 	<item name="hidden" caption="__hidden" type="data" category="commonEntryData" display="form">
@@ -1677,7 +1677,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/graphic_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGraphic" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGraphic" />
+		<notify  notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile" />
 	</item>
 
 	<item name="attachFiles" caption="__attach_files" type="data" canBeDeleted="false"
@@ -1695,8 +1695,6 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/attach_files_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderAttachments" />
-<!-- summary=true for attachments will include all graphic and file elements.  This just means the attachments are processed.  Won't be sent unless asked for -->
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderAttachments" />
 	</item>
 	<item name="description" caption="__description" type="data" multipleAllowed="false" category="commonEntryData" display="form">
 		<properties>
@@ -1715,7 +1713,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDescription" />
 	<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDescription" />
-		<notify summary="true" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
+		<notify  notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDescription" />
 	</item>
 	
 	<item name="file" caption="__file_upload" type="data" category="commonEntryData" display="form">
@@ -1736,7 +1734,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/file_form.jsp" />
 		</jsps>
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderFile" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile" />
+		<notify  notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderFile"/>
 	</item>
 	
 	<item name="date" caption="__date" type="data" category="commonEntryData" display="form">
@@ -1759,7 +1757,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDate" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDate" />
+		<notify vtl="date.vtl"/> 
 	</item>
 	
 	<item name="date_time" caption="__date_time" type="data" category="commonEntryData" display="form">
@@ -1782,7 +1780,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDateTime" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderDate" />
+		<notify vtl="date_time.vtl"/> 
 	</item>
 	
 	<item name="user_list" caption="__user_list" type="data" category="commonEntryData" display="form">
@@ -1801,7 +1799,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderUserlist" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserlist" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderUserlist" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>
 	
 	<item name="group_list" caption="__group_list" type="data" category="commonEntryData" display="form">
@@ -1820,7 +1818,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderGrouplist" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderGrouplist" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderGrouplist" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>	
 	
 	<item name="team_list" caption="__team_list" type="data" category="commonEntryData" display="form">
@@ -1839,7 +1837,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderTeamlist" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderTeamlist" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderTeamlist" />
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
 	</item>		
 
 	<item name="survey" caption="__survey_queries" type="data" category="entryData" display="form">
@@ -1858,7 +1856,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSurvey" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSurvey" />
-		<notify summary="false" full="true" notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderSurvey" />
+		<notify vtl="survey.vtl" />
 	</item>
 
 <!-- Entry layout items -->
@@ -1981,6 +1979,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/box.jsp" />
 		</jsps>
+		<notify vtl="box.vtl" />
 	</item>
 		
 	<item name="expandableDiv" caption="__expandable_div" category="generalLayout" display="form">
@@ -2043,6 +2042,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/expandable_div.jsp" />
 		</jsps>
+		<notify vtl="expandable_div.vtl" />
 	</item>
 		
 	<item name="fieldset" caption="__fieldset" category="generalLayout" display="form">
@@ -2093,6 +2093,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
 		</jsps>
+		<notify vtl="fieldset.vtl"/>
 	</item>
 		
 	<item name="divider" caption="__divider" category="generalLayout" display="form">
@@ -2105,6 +2106,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
+		<notify vtl="divider.vtl" />
 	</item>
 		
 	<item name="table2" caption="__two_column_table" category="generalLayout" display="form">
@@ -2164,6 +2166,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
 	
 		</jsps>
+		<notify vtl="table2.vtl" />
 	</item>
 	<item name="table3" caption="__three_column_table" category="generalLayout" display="form">
 		<properties>
@@ -2221,6 +2224,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
 		</jsps>
+		<notify vtl="table3.vtl" />
 	</item>
 	<item name="html" caption="__html" category="generalLayout" display="form">
 		<properties>
@@ -2276,6 +2280,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
+		<notify vtl="html.vtl" />
 	</item>
 	<item name="customJsp" caption="__custom_jsp" type="data" category="generalLayout" display="form">
 		<properties>

@@ -11,17 +11,19 @@ public interface BinderService {
 	 * @param accessToken
 	 * @param binderId
 	 * @param definitionIds
-	 * @param workflowAssociations <Paris of entryDefinitionId,workflowDefinitionId
+	 * @param workflowAssociations <Pairs of entryDefinitionId,workflowDefinitionId
 	 */
 	public void setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations);
 	/**
 	 * Set function membership for a binder.  Can mix and match memberName and/or members
+	 * <workAreaFunctionMemberships>
 	 * <workAreaFunctionMembership>
 	 * <property name="functionName">__role.visitor</property>
 	 * <property name="memberName">kelly</property>
 	 * <property name="memberName">jenny</property>
 	 * <property name="members">1,2,3</property>
 	 * </workAreaFunctionMembership>
+	 * </workAreaFunctionMemberships>
 	 * @param accessToken
 	 * @param binderId
 	 * @param inputDataAsXml

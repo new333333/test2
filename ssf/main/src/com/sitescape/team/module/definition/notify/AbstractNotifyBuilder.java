@@ -27,62 +27,53 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.definition.notify;
-import java.io.Writer;
-import java.util.Map;
-import org.apache.velocity.app.Velocity;
 import org.apache.velocity.VelocityContext;
-import org.dom4j.Element;
+import org.apache.velocity.app.Velocity;
 
 import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.util.InvokeUtil;
-import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
+import com.sitescape.util.Validator;
 /**
  *
  * @author Jong Kim
  */
 public abstract class AbstractNotifyBuilder implements NotifyBuilder {
     
-    public boolean buildElement(Element element, DefinableEntity entity, Notify notifyDef, String dataElemName, Map args) {
-    	element.addAttribute("name", dataElemName);
-    	element.addAttribute("caption", (String)args.get("_caption"));
-        element.addAttribute("type", (String)args.get("_itemName"));
-        CustomAttribute attribute = entity.getCustomAttribute(dataElemName);
-		try {
-			if (attribute != null) 
-    			return build(element, notifyDef, attribute, args);
-			else 
-    			return build(element, notifyDef, entity, dataElemName, args);
-		} catch (Exception e) {
-			element.setText(NLT.get("notify.error.attribute", notifyDef.getLocale()));
-			return true;
-    	}
+ 
+    public abstract String getDefaultTemplate();
+    public void buildElement(NotifyVisitor visitor, String template, VelocityContext ctx) {
+    	if (Validator.isNull(template)) template = getDefaultTemplate();
+		String name = (String)ctx.get("property_name");
+		if (Validator.isNull(name)) {
+			build(visitor, template, ctx);
+		} else {
+			CustomAttribute attribute = visitor.getEntity().getCustomAttribute(name);
+			if (attribute != null) {
+				build(visitor, template, ctx, attribute);
+			}
+			else build(visitor, template, ctx, name);
+		}
     }
-	protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-	   	Object obj = attribute.getValue();
-	   	if (obj != null) {
-	   		element.setText(obj.toString());
-	   	}
-	   	return true;
-	}   
-    protected boolean build(Element element, Notify notifyDef, DefinableEntity entity, String dataElemName, Map args) {
+    protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
+    	build(visitor, template, ctx);
+    }
+    protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, String propertyName) {
 	   	try {
-	   		Object obj = InvokeUtil.invokeGetter(entity, dataElemName);
+	   		Object obj = InvokeUtil.invokeGetter(visitor.getEntity(), propertyName);
 		   	if (obj != null) {
-		   		element.setText(obj.toString());
+		   		ctx.put("ssObject", obj);
+		   		build(visitor, template, ctx);
 		   	}
 		} catch (ObjectPropertyNotFoundException ex) {
-	   		return false;
+	   		build(visitor, template, ctx);	   		
 	   	}
-	   	return true;
     }
-    public void buildElement(String template, Element entryElement, Notify notifyDef, DefinableEntity entity, VelocityContext ctx, Writer writer) {
+    protected void build(NotifyVisitor visitor, String template, VelocityContext ctx) {
     	try {
-    		Velocity.mergeTemplate(template, ctx, writer);
+    		Velocity.mergeTemplate(template, ctx, visitor.getWriter());
     	} catch (Exception ex) {
-    		System.out.println(ex);
+    		NotifyBuilderUtil.logger.error("Error processing template " + template, ex);
     	}
-    }
- 
+    } 
 }

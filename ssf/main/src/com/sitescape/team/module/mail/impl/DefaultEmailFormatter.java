@@ -62,6 +62,7 @@ import org.apache.velocity.app.Velocity;
 import org.apache.velocity.VelocityContext;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
@@ -78,6 +79,7 @@ import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
+import com.sitescape.team.module.definition.notify.NotifyVisitor;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
@@ -392,11 +394,11 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			buf.append(NLT.get("notify.subject.entry", notify.getLocale()));
 			buf.append(":");
 			if (checkDate(entry.getCreation(), notify.getStartDate()) > 0) {
-				buf.append(NLT.get("strings.xml.newEntry", notify.getLocale()));
+				buf.append(NLT.get("notify.newEntry", notify.getLocale()));
 			} else if (checkDate(entry.getWorkflowChange(), entry.getModification()) >= 0) {
-				buf.append(NLT.get("strings.xml.workflowEntry", notify.getLocale()));
+				buf.append(NLT.get("notify.workflowEntry", notify.getLocale()));
 			} else {
-				buf.append(NLT.get("strings.xml.modifiedEntry", notify.getLocale()));
+				buf.append(NLT.get("notify.modifiedEntry", notify.getLocale()));
 			} 
 			buf.append(" - ");
 			if (Notify.NotifyType.text.equals(notify.getType())) {
@@ -444,38 +446,23 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		return checkDate(dt1, dt2.getDate());
 	}
 
-	protected void doFolder(Element element, Folder folder) {
-		element.addAttribute("name", folder.getId().toString());
-		element.addAttribute("title", folder.getTitle());
-		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getEntityIdentifier().getEntityId().toString());
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityType().toString());
-		element.addAttribute("href", adapterUrl.toString());
-		PostingDef post = folder.getPosting();
-		if (post != null && !PostingDef.REPLY_RETURN_TO_SENDER.equals(post.getReplyPostingOption())) {
-			element.addAttribute("replyTo", post.getEmailAddress());
-		}
-
-	}
-
-	protected void doEntry(final Element element, final FolderEntry entry, final Notify notifyDef, boolean hasChanges) {
+	protected void doEntry(Element element, FolderEntry entry, Notify notifyDef, boolean hasChanges) {
 		HistoryStamp stamp;
 		String title = null;
 		if (entry.getCreation() != null && entry.getCreation().getPrincipal() != null) title = entry.getCreation().getPrincipal().getTitle();
 		if (Validator.isNull(title)) element.addAttribute("notifyFrom",NLT.get("entry.noTitle", notifyDef.getLocale()));
 		else element.addAttribute("notifyFrom", title);
 		if (hasChanges) {
-			//style sheet will translate these tags
+			//template will translate these tags
 			element.addAttribute("hasChanges", "true");
 			if (checkDate(entry.getCreation(), notifyDef.getStartDate()) > 0) {
-				element.addAttribute("notifyType", "newEntry");
+				element.addAttribute("notifyType", "notify.newEntry");
 				stamp = entry.getCreation();
 			} else if (checkDate(entry.getWorkflowChange(), entry.getModification()) >= 0) {
 				stamp = entry.getWorkflowChange();
-				element.addAttribute("notifyType", "workflowEntry");
+				element.addAttribute("notifyType", "notify.workflowEntry");
 			} else {
-				element.addAttribute("notifyType", "modifiedEntry");
+				element.addAttribute("notifyType", "notify.modifiedEntry");
 				stamp = entry.getModification();
 			} 
 		} else {
@@ -491,119 +478,37 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		
 		Date date = stamp.getDate();
 		if (date == null) element.addAttribute("notifyDate", "");
-		else element.addAttribute("notifyDate", notifyDef.getDateFormat().format(date));
+		else element.addAttribute("notifyDate", notifyDef.getDateTimeFormat().format(date));
 
 		element.addAttribute("name", entry.getId().toString());
 		element.addAttribute("title", entry.getTitle());			    
 		element.addAttribute("docNumber", entry.getDocNumber());			    
 		element.addAttribute("docLevel", String.valueOf(entry.getDocLevel()));
-		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, entry.getParentBinder().getId().toString());
-		adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entry.getId().toString());
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
-		element.addAttribute("href", adapterUrl.toString());
-		
-		final String fullOrSummaryAttribute = (notifyDef.getType().name());
-		
-		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
-			public void visit(Element entryElement, Element flagElement, Map args)
-			{
-				String include = flagElement.attributeValue(fullOrSummaryAttribute);
-				if("true".equals(include)) {
-					String fieldBuilder = flagElement.attributeValue("notifyBuilder");
-					String itemName = entryElement.attributeValue("name");
-					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
-					if (Validator.isNull(nameValue)) {nameValue = itemName;}
-                    String captionValue;
-                    if (!args.containsKey("caption")) {
-                        captionValue = DefinitionUtils.getPropertyValue(entryElement, "caption");
-                       	if (Validator.isNull(captionValue)) {
-                            	captionValue = entryElement.attributeValue("caption");
-                        }
-                    } else {
-                       	captionValue = (String) args.get("caption");
-                    }
-                    
-                    Map selectboxSelections = DefinitionHelper.findSelectboxSelectionsAsMap(entryElement);
-                    if (selectboxSelections != null && !selectboxSelections.isEmpty()) {
-                    	Map selectboxSelectionsNLTed = new HashMap();
-                    	Iterator<Map.Entry<String, String>> selectboxSelectionsIt = selectboxSelections.entrySet().iterator();
-                    	while (selectboxSelectionsIt.hasNext()) {
-                    		Map.Entry<String, String> selectboxSelEntry = selectboxSelectionsIt.next();
-                    		selectboxSelectionsNLTed.put(selectboxSelEntry.getKey(), NLT.getDef(selectboxSelEntry.getValue(), notifyDef.getLocale()));
-                    		
-                    	}
-                    	args.put("_selectboxSelectionsCaptions", selectboxSelectionsNLTed);
-                    }
-                                      
-                    args.put("_caption", NLT.getDef(captionValue, notifyDef.getLocale()));
-                    args.put("_itemName", itemName);
-                    NotifyBuilderUtil.buildElement(element, notifyDef, entry,
-                                    			   nameValue, fieldBuilder, args);
-                }
-			}
-			public String getFlagElementName() { return "notify"; }
-		};
 
-		definitionModule.walkDefinition(entry, visitor, null);	
-	}
-	// get cached template.  If not cached yet,load it
-	protected Transformer getTransformer(String zoneName, String type) throws TransformerConfigurationException {
-		//convert mail templates into cached transformer temlates
-		Templates trans;
-		trans = (Templates)transformers.get(zoneName + ":" + type);
-		if (trans == null) {
-			String templateName = mailModule.getMailProperty(zoneName, type);
-			Source xsltSource = new StreamSource(new File(DirPath.getXsltDirPath(),templateName));
-			trans = transFactory.newTemplates(xsltSource);
-			//replace name with actual template
-			if (GetterUtil.getBoolean(mailModule.getMailProperty(zoneName, MailModule.Property.NOTIFY_TEMPLATE_CACHE_DISABLED), false) == false)
-				transformers.put(zoneName + ":" + type, trans);
-		} 
-		return trans.newTransformer();
-	}
-
-	protected String doTransform(Document document, String zoneName, String type, Locale locale, Notify.NotifyType notifyType) {
-		StreamResult result = new StreamResult(new StringWriter());
-		try {
-			Transformer trans = getTransformer(zoneName, type);
-			trans.setParameter("Lang", locale.toString());
-//			trans.setParameter("TOC", Boolean.valueOf(oneEntry).toString());
-			trans.transform(new DocumentSource(document), result);
-		} catch (Exception ex) {
-			return ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage();
-		}
-		return result.getWriter().toString();
 	}
 
 	public Map buildNotificationMessage(Folder folder, Collection entries,  Notify notify) {
 	    Map result = new HashMap();
 	    if (notify.getStartDate() == null) return result;
 		Set seenIds = new TreeSet();
-		Document mailDigest = DocumentHelper.createDocument();
-		
-    	Element rootElement = mailDigest.addElement("mail");
-       	rootElement.addAttribute("summary", String.valueOf(Notify.NotifyType.summary.equals(notify.getType())));
+
+		Document toc = DocumentHelper.createDocument();		
+    	Element rootElement = toc.addElement("toc");
 		Element element;
 		Folder lastFolder=null;
 		Element fElement=null;
 		ArrayList parentChain = new ArrayList();
 		element = rootElement.addElement("topFolder");
 		element.addAttribute("changeCount", String.valueOf(entries.size()));
-      	element.addAttribute("title", folder.getTitle());
-		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
-		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folder.getEntityIdentifier().getEntityId().toString());
-		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, folder.getEntityType().toString());
-		element.addAttribute("href", adapterUrl.toString());
-
+		final StringWriter entryWriter = new StringWriter();
+		final StringWriter tocWriter = new StringWriter();
 		for (Iterator i=entries.iterator();i.hasNext();) {
 			parentChain.clear();
 			FolderEntry entry = (FolderEntry)i.next();	
 			if (!entry.getParentFolder().equals(lastFolder)) {
-				fElement = rootElement.addElement("folder");
-				doFolder(fElement, entry.getParentFolder());
+				fElement = rootElement.addElement("folder"); //build TOC
+				fElement.addAttribute("title", entry.getParentFolder().getTitle());
+				doFolderDigest(entry.getParentFolder(), entryWriter, notify);
 				lastFolder = entry.getParentFolder();
 			}
 			//make sure change of entries exist from topentry down to changed entry
@@ -618,151 +523,85 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				element = fElement.addElement("folderEntry");
 				parent = (FolderEntry)parentChain.get(pos);
 				doEntry(element, parent, notify, false);
+				doDigestEntry(parent, notify, entryWriter, element);
 				seenIds.add(parent.getId());
 			}
 					
 			seenIds.add(entry.getId());
 			element = fElement.addElement("folderEntry");
 			doEntry(element, entry, notify, true);
+			doDigestEntry(entry, notify, entryWriter, element);
 		}
 		
-		
+			
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
-		result.put(EmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_TEMPLATE_HTML.getKey(), notify.getLocale(), notify.getType()));
+		doTOC(folder, toc, notify, tocWriter);
+		result.put(EmailFormatter.HTML, tocWriter.toString() + entryWriter.toString());
 		
 		return result;
+	}
+	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, Element element) {
+		Definition def = entry.getEntryDef();
+		if (def == null) return;
+		Document definitionTree = def.getDefinition();
+		if (definitionTree != null) {
+			Element root = definitionTree.getRootElement();
+			Map params = new HashMap();
+			params.put("ssElement", element);
+			//	Get a list of all of the items in the definition
+			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
+			if (entryItem == null) return;
+			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, params, this.definitionBuilderConfig, true);
+		}
+	}
+	protected void doTOC(Folder folder, Document document, Notify notifyDef, StringWriter writer) {
+		try {
+		    VelocityContext ctx = new VelocityContext();
+           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null, definitionBuilderConfig);
+			ctx.put("ssDocument", document);
+			ctx.put("ssVisitor", visitor);
+			Velocity.mergeTemplate("digestTOC.vtl", ctx, writer);
+		} catch (Exception ex) {
+			NotifyBuilderUtil.logger.error("Error processing template", ex);
+		}
+		
+	}
+	protected void doFolderDigest(Folder folder, StringWriter writer, Notify notifyDef) {
+		try {
+		    VelocityContext ctx = new VelocityContext();
+           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null, definitionBuilderConfig);
+			ctx.put("ssVisitor", visitor);
+			Velocity.mergeTemplate("folder.vtl", ctx, writer);
+		} catch (Exception ex) {
+			NotifyBuilderUtil.logger.error("Error processing template", ex);
+		}
+
 	}
 	public Map buildNotificationMessage(Folder folder, FolderEntry entry,  Notify notify) {
 	    Map result = new HashMap();
 	    if (notify.getStartDate() == null) return result;
-//	    return buildNotificationMessageVelocity(folder, entry, notify);
-	    Document mailDigest = DocumentHelper.createDocument();
-		
-    	Element rootElement = mailDigest.addElement("mail");
-		Element element;
-		Element fElement=null;
-		ArrayList parentChain = new ArrayList();
-		Folder topFolder = folder.getTopFolder();
-		if (topFolder == null) topFolder = folder;
-		element = rootElement.addElement("topFolder");
-     	element.addAttribute("title", folder.getTitle());
-		fElement = rootElement.addElement("folder");
-		doFolder(fElement, entry.getParentFolder());
- 		
-		FolderEntry parent = entry.getParentEntry();
-		while (parent != null) {
-			parentChain.add(parent);
-			parent=parent.getParentEntry();
-		}
-		for (int pos=parentChain.size()-1; pos>=0; --pos) {
-			element = fElement.addElement("folderEntry");
-			parent = (FolderEntry)parentChain.get(pos);
-			doEntry(element, parent, notify, false);
-		}
-					
-		element = fElement.addElement("folderEntry");
-		doEntry(element, entry, notify, true);
-		
-//		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), false));
-		result.put(EmailFormatter.HTML, doTransform(mailDigest, RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_TEMPLATE_HTML.getKey(), notify.getLocale(), notify.getType()));
-		
-		return result;
-	}
-	protected Map buildNotificationMessageVelocity(Folder folder, final FolderEntry entry,  final Notify notify) {
-	    	
-		final String fullOrSummaryAttribute = (notify.getType().name());
-		final StringWriter writer = new StringWriter();
-		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
-			public void visit(Element entryElement, Element flagElement, Map args)
-			{
-				String include = flagElement.attributeValue(fullOrSummaryAttribute);
-				if("true".equals(include)) {
-				    VelocityContext ctx = new VelocityContext();
-				    ctx.put(WebKeys.DEFINITION_ENTRY, entry);
-					//Each item property that has a value is added as a "request attribute". 
-					//  The key name is "property_xxx" where xxx is the property name.
-					//At a minimum, make sure the name and caption variables are defined
-					ctx.put("property_name", "");
-					ctx.put("property_caption", "");
-					ctx.put("notify", notify);
-					String itemType = entryElement.attributeValue("name", "");
-					//get Item from main config document
-					Element itemDefinition = definitionBuilderConfig.getItem(definitionModule.getDefinitionConfig(), itemType);
-	
-					//Also set up the default values for all properties defined in the definition configuration
-					//  These will be overwritten by the real values (if they exist) below
-					List<Element> itemDefinitionProperties = itemDefinition.selectNodes("properties/property");
-					Map propertyValuesMap = new HashMap();
-					Map savedReqAttributes = new HashMap();
-					for (Element property:itemDefinitionProperties) {
-						String propertyName = property.attributeValue("name", "");
-						if (Validator.isNull(propertyName)) continue;
-						//Get the type from the config definition
-						String propertyConfigType = property.attributeValue("type", "text");
-						String propertyValue = "";	
-						//Get the value(s) from the actual definition
-						if (propertyConfigType.equals("selectbox")) {
-							//get all items with same name
-							List<Element> selProperties = entryElement.selectNodes("properties/property[@name='"+propertyName+"']");
-							if (selProperties == null) continue;
-							//There might be multiple values so bulid a list
-							List propertyValues = new ArrayList();
-							for (Element selItem:selProperties) {
-								String selValue = NLT.getDef(selItem.attributeValue("value", ""));
-								if (Validator.isNotNull(selValue)) propertyValues.add(selValue);
-								
-							}
-							propertyValuesMap.put("propertyValues_"+propertyName, propertyValues);
-							propertyValuesMap.put("property_"+propertyName, "");
-						} else {
-							Element selItem = (Element)entryElement.selectSingleNode("properties/property[@name='"+propertyName+"']");
-							if (selItem == null) selItem=property;
-							if (propertyConfigType.equals("textarea")) {
-								propertyValue = selItem.getText();
-							} else {										
-								propertyValue = NLT.getDef(selItem.attributeValue("value", ""));
-							}
-							//defaults don't apply here
-							//Set up any "setAttribute" values that need to be passed along. Save the old value so it can be restored
-							String reqAttrName = property.attributeValue("setAttribute", "");
-							if (Validator.isNotNull(reqAttrName)) {
-								//Find this property in the current config
-								savedReqAttributes.put(reqAttrName, ctx.get(reqAttrName));
-								ctx.put(reqAttrName, propertyValue);
-							}
-							if (Validator.isNull(propertyValue)) {
-								propertyValue = property.attributeValue("default", "");
-								if (!Validator.isNull(propertyValue)) propertyValue = NLT.getDef(propertyValue);
-							}
-							propertyValuesMap.put("property_"+propertyName, propertyValue);
-						
-						}
-							
-					}
-				
-					Iterator itPropertyValuesMap = propertyValuesMap.entrySet().iterator();
-					while (itPropertyValuesMap.hasNext()) {
-						Map.Entry entry = (Map.Entry)itPropertyValuesMap.next();
-						ctx.put((String)entry.getKey(), entry.getValue());
-					}
-						
-					NotifyBuilderUtil.buildElement(flagElement, entryElement, notify, entry,
-							ctx, writer);
-				}
-                
-			}
-			public String getFlagElementName() { return "notify"; }
-		};
 
-		definitionModule.walkViewDefinition(entry, visitor, null);	
-		
-		Map result = new HashMap();
+		final StringWriter writer = new StringWriter();
+		doEntry(entry, notify, writer);
 		result.put(EmailFormatter.HTML, writer.toString());
 		
 		return result;
 
+	}
+	protected void doEntry(FolderEntry entry, Notify notify, StringWriter writer) {
+		if (entry == null) return;
+		doEntry(entry.getParentEntry(), notify, writer); 
+		Definition def = entry.getEntryDef();
+		if (def == null) return;
+		Document definitionTree = def.getDefinition();
+		if (definitionTree != null) {
+			Element root = definitionTree.getRootElement();
 
-
+			//	Get a list of all of the items in the definition
+			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
+			if (entryItem == null) return;
+			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, null, this.definitionBuilderConfig, true);
+		}
 	}
 	protected class AclChecker {
 		private User user;

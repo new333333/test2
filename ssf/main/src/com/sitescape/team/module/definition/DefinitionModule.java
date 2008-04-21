@@ -106,7 +106,6 @@ public interface DefinitionModule {
   	 */
   	public void updateDefinitionReferences(String defId);
   	public void walkDefinition(DefinableEntity entry, DefinitionModule.DefinitionVisitor visitor, Map args);
-	public void walkViewDefinition(DefinableEntity entry, DefinitionVisitor visitor, Map args);
 
   	interface DefinitionVisitor
   	{

@@ -1,4 +1,4 @@
-/**
+#*
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
  * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
@@ -25,30 +25,50 @@
  * 
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
- */
-package com.sitescape.team.module.definition.notify;
-
-import java.util.Date;
-import java.util.Map;
-
-import org.dom4j.Element;
-
-import com.sitescape.team.domain.CustomAttribute;
-
-/**
- *
- * @author Janet McCann
- */
-public class NotifyBuilderDate extends AbstractNotifyBuilder {
-
-	   protected boolean build(Element element, Notify notifyDef, CustomAttribute attribute, Map args) {
-	    	Object obj = attribute.getValue();
-	    	if (obj instanceof Date) {
-	    		Date date = (Date)obj;
-	    		element.setText(notifyDef.getDateFormat().format(date));
-	    	} else if (obj != null) {
-	    		element.setText(obj.toString());
-	    	}
-	    	return true;
-	    }
-}
+ *#
+#macro (ss_entryContent)
+  font-size:12px;font-weight:normal;font-family:Arial;margin:0px;padding:2px;padding-left:22px;background-color:inherit;
+#end
+#macro (ss_entryTitle)
+  font-weight:bold;font-size:14px;font-family:Arial,Helvetica,sans-serif;margin-bottom:4px;margin-top:4px;
+#end
+#macro (ss_entryDescription)
+  padding-left:24px;padding-right:14px;padding-top:4px;padding-bottom:4px;background-color:inherit;font-size:12px;
+  color: #333333;
+#end
+#macro (ss_entrySignature)
+  font-size:10px;padding-left:5px;color:#666666;
+#end 
+#macro (ss_labelLeft)
+  font-weight:bold;font-size:12px;display:inline;padding-right:2px;
+#end
+#macro (ss_labelRight)
+  font-weight:bold;font-size:12px;display:inline;padding-left:2px;
+#end
+#macro (ss_labelAbove)
+   font-weight:bold;font-size:12px;padding-top:2px;padding-bottom:2px;display:block;
+#end
+#macro (ss_workflow)
+  border:1px #666666 solid;padding:2px;
+#end
+#macro (ss_fineprint)
+  font-size:10px !important; 
+#end
+#macro (ss_underline) 
+   text-decoration:underline;
+#end
+#macro (ss_light)
+  color: #999999;   
+#end
+#macro (ss_legend)
+  font-family:Arial;font-weight:bold;font-size:12px;color:#333333;
+#end
+#macro (ss_fieldset)
+  margin-top:6px;margin-bottom:4px;border:1px solid #CCCCCC;
+#end
+#macro (ss_ul)
+margin-left:0em;padding-left:0em;margin-top:0px;margin-bottom:2px;
+#end
+#macro (ss_li)
+list-style-type:none;margin-left:0px;margin-bottom:0px;padding-left:0px;
+#end

@@ -192,9 +192,7 @@
 	<xsd:sequence>
 	  <xsd:element name="args" type="optionalArgsType" minOccurs="0" maxOccurs="1"/>
 	</xsd:sequence>
-	<xsd:attribute name="summary" type="xsd:boolean" use="required" />
-	<xsd:attribute name="full" type="xsd:boolean" use="required" />
-	<xsd:attribute name="notifyBuilder" type="xsd:string" use="required" />
+	<xsd:attribute name="notifyBuilder" type="xsd:string"/>
 	<xsd:attribute name="vtl" type="xsd:string"/>
   </xsd:complexType>
   

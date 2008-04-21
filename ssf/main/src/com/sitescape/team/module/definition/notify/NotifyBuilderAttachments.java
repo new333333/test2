@@ -28,39 +28,24 @@
  */
 package com.sitescape.team.module.definition.notify;
 
-import java.util.Collection;
-import java.util.Map;
-
-import org.dom4j.Element;
-
-import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.module.definition.DefinitionUtils;
+import org.apache.velocity.VelocityContext;
 
 /**
-* Handle unnamed attachments in mail notification.  This implememtation will
-* send the file name only in a notification for both summary and full types. 
-* See <code>NotifyBuilderAttachmentsSend</code>to send the actual file.
+* Handle unnamed attachments in mail notification.  
 * @author Janet McCann
 */
 public class NotifyBuilderAttachments extends AbstractNotifyBuilder {
 
-	   protected boolean build(Element element, Notify notifyDef, DefinableEntity entity, String dataElemName, Map args) {
-	    	Collection<FileAttachment> atts = entity.getFileAttachments();
-	    	for (FileAttachment att : atts) {
-		    	Element value = element.addElement("file");		    		
-		    	if (att != null && att.getFileItem() != null) {
-		    		value.setText(att.getFileItem().getName());
-		    		if (notifyDef.isAttachmentsIncluded())	
-		    			notifyDef.addAttachment(att);
-		    		else if (entity instanceof FolderEntry) {
-		    			FolderEntry fEntry = (FolderEntry)entity;
-		    			String webUrl = DefinitionUtils.getViewPermalinkURL(fEntry, att); 
-		    			value.addAttribute("href", webUrl);
-		    		}
-		    	}
-   		}
-	    	return true;
-	   }
+    public String getDefaultTemplate() {
+    	return "attachments.vtl";
+    }
+	protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, String propertyName) {
+		build(visitor, template, ctx);
+	}
+	protected void build(NotifyVisitor visitor, String template, VelocityContext ctx) {
+		Notify notifyDef = visitor.getNotifyDef();
+		if (notifyDef.isAttachmentsIncluded())	
+			notifyDef.getAttachments().addAll(visitor.getEntity().getFileAttachments());
+		super.build(visitor, template, ctx);
+	}
 }
