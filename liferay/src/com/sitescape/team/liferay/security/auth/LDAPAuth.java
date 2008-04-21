@@ -430,7 +430,7 @@ public class LDAPAuth implements Authenticator {
 				attrs, userMappings.getProperty("emailAddress"));
 		}
 
-		Locale locale = Locale.US;
+		Locale locale = Locale.getDefault();
 		String firstName = LDAPUtil.getAttributeValue(
 			attrs, userMappings.getProperty("firstName"));
 		String middleName = LDAPUtil.getAttributeValue(
