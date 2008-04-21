@@ -60,11 +60,11 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="action" value="manage_applications"/></portlet:actionURL>" onSubmit="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this))">
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationName"/></span><ssf:inlineHelp tag="ihelp.applications.data_name"/><br/>
-	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
-		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTitle"/></span><br/>
 	<input type="text" class="ss_text" size="70" name="title"><br/><br/>
+		
+	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationName"/></span><ssf:inlineHelp tag="ihelp.applications.data_name"/><br/>
+	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationPostUrl"/></span><br/>
 	<input type="text" class="ss_text" size="70" name="postUrl"><br/><br/>
