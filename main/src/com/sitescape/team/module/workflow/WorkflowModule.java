@@ -39,7 +39,7 @@ public interface WorkflowModule {
     public final static String ENTRY_TYPE = "__entryType";
     public final static String ENTRY_ID = "__entryId";
     public final static String BINDER_ID = "__binderId";
-    public final static String FORCE_STATE = "__skipNotifyOnEnter";
+    public final static String FORCE_STATE = "__forceState";
 	/**
 	 * Start workflow on entry.
 	 * @param entry
