@@ -21,6 +21,7 @@
 				includes="${libraries.wsclient}" />
 		</copy>
 		<!-- Copy additional libraries needed by the remote application sample -->
+		<copy file="${project.dir}/util/ssf-util.jar" todir="war/WEB-INF/lib"/>
 		<copy todir="war/WEB-INF/lib">
 			<fileset dir="${project.dir}/lib">
 				<include name="addressing.jar" />
