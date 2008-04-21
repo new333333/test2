@@ -247,7 +247,10 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 			}
 		}
 	}
-
+	protected String fixName(String name) {
+		if (name == null) return null;
+		return name.replaceAll(" ", "+");
+	}
 	public void destroy() throws Exception {
 		// Close the socket connection that you established in
 		// afterPropertiesSet.
@@ -258,7 +261,6 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		if (!isEnabled()) {
 			return null;
 		}
-		
 		String userId = null;
 		
 		getSessionId();
@@ -301,6 +303,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 
 	public boolean getScreenNameExists(String screenname) throws ICException {
 		if (!isEnabled()) return false;
+		screenname = fixName(screenname);
 		Object result = findUserByScreenName(screenname);
 		// System.out.println("Object is " + result);
 		// the result is buried 4 deep (vectors within vectors)
@@ -348,8 +351,8 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		}
 		if (from.length() == 0)
 			from = "aspen";
-		from = from + "@" + jabberDomain;
-		recipient = recipient + "@" + jabberDomain;
+		from = fixName(from) + "@" + jabberDomain;
+		recipient = fixName(recipient) + "@" + jabberDomain;
 
 		// Build our parameter list.
 		Vector params = new Vector();
@@ -373,6 +376,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		Object result = null;
 		
 		getSessionId();
+		screenname = fixName(screenname);
 
 		String userId = findUserIdByScreenName(screenname);
 
@@ -408,6 +412,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 
 		getSessionId();
 
+		screenname = fixName(screenname);
 		String userId = findUserIdByScreenName(screenname);
 
 		if (userId == null) {
@@ -619,12 +624,12 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		while (userIt.hasNext()) {
 			User participant = (User) userIt.next();
 			Vector part = new Vector();
-			part.add(participant.getZonName());
+			part.add(fixName(participant.getZonName()));
 			part.add(participant.getTitle());
 			part.add(participant.getPhone());
 			part.add(participant.getEmailAddress());
 			part.add(0);
-			part.add(participant.getZonName());// TODO: is this right value?
+			part.add(fixName(participant.getZonName()));// TODO: is this right value?
 			part.add(participant.equals(user) ? 1 : 0);
 
 			participants.add(part);
@@ -763,14 +768,14 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		return documents;
 	}
 	
-	public List findUserMeetings(String screenName) throws ICException {
+	public List findUserMeetings(String screenname) throws ICException {
 		List meetings = new ArrayList();
 		
 		if (!isEnabled()) {
 			return meetings;
 		}
-		
-		String userId = findUserIdByScreenName(screenName);
+		screenname = fixName(screenname);
+		String userId = findUserIdByScreenName(screenname);
 		if (userId == null) {
 			return meetings;
 		}
@@ -797,9 +802,10 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		return meetings;
 	}
 	
-	public Map getUserMeetingAttachments(String screenName, int held) throws ICException {
+	public Map getUserMeetingAttachments(String screenname, int held) throws ICException {
+		screenname = fixName(screenname);
 		Map meetingAttachments = new HashMap();
-		Iterator<List> meetings = findUserMeetings(screenName).iterator();
+		Iterator<List> meetings = findUserMeetings(screenname).iterator();
 		while (meetings.hasNext()) {
 			List meeting = meetings.next();
 			String meetingId = (String)meeting.get(0);
