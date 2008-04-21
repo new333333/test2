@@ -21,4 +21,26 @@
 		<url-pattern>/namesearch/*</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>taskList</servlet-name>
+		<servlet-class>com.sitescape.team.samples.remoteapp.web.TaskListServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>taskList</servlet-name>
+		<url-pattern>/tasklist/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>addEntry</servlet-name>
+		<servlet-class>com.sitescape.team.samples.remoteapp.web.AddEntryServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>addEntry</servlet-name>
+		<url-pattern>/addentry/*</url-pattern>
+	</servlet-mapping>
+
 </web-app>
