@@ -47,12 +47,19 @@ var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" po
 <div id="ss_tabsC" sytle="margin-top:10px;">
   <ul>
 	<!-- CSS Tabs -->
+<c:if test="${!empty ssRelevanceDashboardConfigElement}">
 	<li class="ss_tabsCCurrent"><a id="ss_relevanceProfileTab${renderResponse.namespace}" href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'profile', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.profile"/></span></a></li>
 	<li><a href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'whats_new', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
+</c:if>
+<c:if test="${empty ssRelevanceDashboardConfigElement}">
+	<li class="ss_tabsCCurrent"><a href="javascript: ;"
+		onClick="ss_selectRelevanceTab(this, 'whats_new', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
+		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
+</c:if>
 	<li><a href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'tasks_and_calendars', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.tasksAndCalendars"/></span></a></li>
@@ -72,8 +79,12 @@ var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElemen
 <% //Changeable tab canvas; this gets replaced when a tab is clicked %>
 
 <div id="relevanceCanvas_${renderResponse.namespace}" style="margin:4px 10px 10px 10px;">
-<c:if test="${empty ssRelevanceDashboardConfigElement}"><c:set var="ssRelevanceDashboardConfigElement" value="${item}" scope="request"/></c:if>
-<jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" />
+<c:if test="${empty ssRelevanceDashboardConfigElement}">
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" />
+</c:if>
+<c:if test="${!empty ssRelevanceDashboardConfigElement}">
+  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" />
+</c:if>
 </div>
 </div>
 </ssf:ifLoggedIn>

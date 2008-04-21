@@ -99,11 +99,7 @@ public class RelevanceDashboardHelper {
 			setupTrackedItemsBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_WHATS_NEW.equals(type)) {
-			setupTrackedPlacesBeans(bs, userWorkspace, model);
-			setupTrackedItemsBeans(bs, userWorkspace, model);
-			setupWhatsHotBean(bs, model);
-			setupWhatsNewSite(bs, userWorkspace, model);
-			setupTrackedPeopleBeans(bs, userWorkspace, model);
+			setupWhatsNewDashboardBeans(bs, userWorkspace, model);
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_ACTIVITIES.equals(type)) {
 			setupSharedItemsBeans(bs, userWorkspace, model);
@@ -150,17 +146,31 @@ public class RelevanceDashboardHelper {
 		}
 	}
 	
+	protected static void setupWhatsNewDashboardBeans(AllModulesInjected bs, Binder binder, Map model) {
+		setupTrackedPlacesBeans(bs, binder, model);
+		setupTrackedItemsBeans(bs, binder, model);
+		setupWhatsHotBean(bs, model);
+		setupWhatsNewSite(bs, binder, model);
+		setupTrackedPeopleBeans(bs, binder, model);
+	}
+
 	protected static void setupProfileBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model) {
 		DefinitionHelper.getDefinitions(binder, model);
 		//Get the start of the view definition
 		Element viewElement = (Element) model.get(WebKeys.CONFIG_ELEMENT);
 		Element relevanceElement = (Element) viewElement.selectSingleNode("//item[@name='relevanceDashboard']");
-		model.put(WebKeys.CONFIG_ELEMENT_RELEVANCE_DASHBOARD, relevanceElement);
+		//See if there is anything to display inside the relevance dashboard definition
+		if (!relevanceElement.selectNodes("item").isEmpty()) {
+			model.put(WebKeys.CONFIG_ELEMENT_RELEVANCE_DASHBOARD, relevanceElement);
+			try {
+				WorkspaceTreeHelper.setupWorkspaceBeans(bs, binder.getId(), request, response, model);
+			} catch(Exception e) {}
+		} else {
+			//There is no profile display, so load the "what's new" beans
+			setupWhatsNewDashboardBeans(bs, binder, model);
+		}
 		
-		try {
-			WorkspaceTreeHelper.setupWorkspaceBeans(bs, binder.getId(), request, response, model);
-		} catch(Exception e) {}
 }
 	
 	protected static void setupTasksBeans(AllModulesInjected bs, Binder binder, Map model) {		
