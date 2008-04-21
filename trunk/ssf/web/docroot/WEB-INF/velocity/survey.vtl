@@ -31,12 +31,8 @@
 <div style="#ss_entryContent() ">
 <span style="#ss_labelLeft()">${property_caption}</span>
 <ul>
-#foreach ($question in ${ssVisitor.Entity.getCustomAttribute($property_name).Value.Questions})
-		<li>$question.Question			
-		#foreach ($answer in $question.Answers)
-			<ol>${answer.Answer}&nbsp;(${answer.VotesCount})</ol>
-		#end
-		</li>
+#foreach ($question in ${ssVisitor.Entity.getCustomAttribute($property_name).Value.SurveyModel.Questions})
+		<li>$question.Question</li>
 #end
 </ul>
 </div>

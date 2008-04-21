@@ -29,8 +29,6 @@
 
 package com.sitescape.team.module.mail.impl;
 
-import java.beans.BeanInfo;
-import java.io.File;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -43,23 +41,12 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Properties;
 
-import javax.xml.transform.Source;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.dom4j.io.DocumentSource;
-
-import org.apache.velocity.app.Velocity;
-import org.apache.velocity.VelocityContext;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Definition;
@@ -67,55 +54,36 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NotificationDef;
-import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
-import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.team.module.definition.notify.NotifyVisitor;
-import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.EmailFormatter;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.AccessUtils;
-import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.util.DirPath;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.util.GetterUtil;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 /**
  * @author Janet McCann
  *
  */
-public class DefaultEmailFormatter extends CommonDependencyInjection implements org.springframework.beans.factory.InitializingBean , EmailFormatter {
-    private FolderModule folderModule;
-    private BinderModule binderModule;
+public class DefaultEmailFormatter extends CommonDependencyInjection implements EmailFormatter {
     protected DefinitionModule definitionModule;
     protected MailModule mailModule;
-	private TransformerFactory transFactory = TransformerFactory.newInstance();
-	protected Properties velocityProperties;
 	protected Map transformers = new HashMap();
     public DefaultEmailFormatter () {
 	}
     public void setDefinitionModule(DefinitionModule definitionModule) {
         this.definitionModule = definitionModule;
-    }
-    public void setFolderModule(FolderModule folderModule) {
-    	this.folderModule = folderModule;
-    }
-    public void setBinderModule(BinderModule binderModule) {
-    	this.binderModule = binderModule;
     }
  	public void setMailModule(MailModule mailModule) {
 		this.mailModule = mailModule;
@@ -134,18 +102,12 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
     public void setDefinitionBuilderConfig(DefinitionConfigurationBuilder definitionBuilderConfig) {
         this.definitionBuilderConfig = definitionBuilderConfig;
     }
-   public void setVelocityProperties(Properties velocityProperties) {
-        this.velocityProperties = velocityProperties;
+    private VelocityEngine velocityEngine;
+   public void setVelocityEngine(VelocityEngine velocityEngine) {
+        this.velocityEngine = velocityEngine;
     }
 
-   public void afterPropertiesSet() throws Exception {
-	    try {
-	    	velocityProperties.put("file.resource.loader.path", DirPath.getVelocityDirPath());
-	    	velocityProperties.put("file.resource.loader.modificationCheckInterval", "2");
-	    	Velocity.init(velocityProperties);
-	    } catch (Exception ex) {};
-
-   }
+ 
    /**
 	 * Determine which users have access to the entry.
 	 * Return a map from locale to a collection of email Addresses
@@ -551,16 +513,16 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			//	Get a list of all of the items in the definition
 			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
 			if (entryItem == null) return;
-			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, params, this.definitionBuilderConfig, true);
+			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, params, true);
 		}
 	}
 	protected void doTOC(Folder folder, Document document, Notify notifyDef, StringWriter writer) {
 		try {
 		    VelocityContext ctx = new VelocityContext();
-           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null, definitionBuilderConfig);
+           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null);
 			ctx.put("ssDocument", document);
 			ctx.put("ssVisitor", visitor);
-			Velocity.mergeTemplate("digestTOC.vtl", ctx, writer);
+			velocityEngine.mergeTemplate("digestTOC.vtl", ctx, writer);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template", ex);
 		}
@@ -569,9 +531,9 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	protected void doFolderDigest(Folder folder, StringWriter writer, Notify notifyDef) {
 		try {
 		    VelocityContext ctx = new VelocityContext();
-           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null, definitionBuilderConfig);
+           	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null);
 			ctx.put("ssVisitor", visitor);
-			Velocity.mergeTemplate("folder.vtl", ctx, writer);
+			velocityEngine.mergeTemplate("folder.vtl", ctx, writer);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template", ex);
 		}
@@ -600,7 +562,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			//	Get a list of all of the items in the definition
 			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
 			if (entryItem == null) return;
-			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, null, this.definitionBuilderConfig, true);
+			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, null, true);
 		}
 	}
 	protected class AclChecker {

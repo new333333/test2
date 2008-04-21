@@ -38,15 +38,17 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
+import org.apache.velocity.app.VelocityEngine;
 import org.dom4j.Element;
 
 import com.sitescape.team.InternalException;
+import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
 
 /**
@@ -55,8 +57,33 @@ import com.sitescape.util.Validator;
  */
 public class NotifyBuilderUtil {
 	public static Log logger = LogFactory.getLog(NotifyBuilderUtil.class);
+	protected VelocityEngine velocityEngine;
+	protected  DefinitionConfigurationBuilder definitionConfigurationBuilder;
+	private static NotifyBuilderUtil instance;
+	public NotifyBuilderUtil() {
+		if(instance != null)
+			throw new SingletonViolationException(SZoneConfig.class);
+		
+		instance = this;
+	}
+	public static DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
+        return getInstance().definitionConfigurationBuilder;
+    }
+    public void setDefinitionBuilderConfig(DefinitionConfigurationBuilder definitionBuilderConfig) {
+        this.definitionConfigurationBuilder = definitionBuilderConfig;
+    }
 
-    public static void buildElements(DefinableEntity entity, Element item, Notify notifyDef, Writer writer, Map params, DefinitionConfigurationBuilder definitionBuilderConfig, boolean processItem) {
+	public void setVelocityEngine(VelocityEngine velocityEngine) {
+	        this.velocityEngine = velocityEngine;
+	}
+	public static VelocityEngine getVelocityEngine() {
+        return getInstance().velocityEngine;
+	}
+
+	private static NotifyBuilderUtil getInstance() {
+		return instance;
+	}
+    public static void buildElements(DefinableEntity entity, Element item, Notify notifyDef, Writer writer, Map params, boolean processItem) {
         String flagElementPath = "./notify";
         List<Element> items;
         if (processItem) {  //starting poing
@@ -82,17 +109,17 @@ public class NotifyBuilderUtil {
                  if ("entryDataItem".equals(itemName)) {
                 	 itemName = nextItem.attributeValue("formItem");
                  }
-     			Element configItem = definitionBuilderConfig.getItem(null, itemName);
+     			Element configItem = getDefinitionBuilderConfig().getItem(null, itemName);
      			if (configItem != null) flagElem = (Element) configItem.selectSingleNode(flagElementPath);
             }
 
            	if (flagElem == null) {
            		//proceed to contents
-           		buildElements(entity, nextItem, notifyDef, writer, params, definitionBuilderConfig, false);
+           		buildElements(entity, nextItem, notifyDef, writer, params, false);
            		continue;
            	}
            	Map oArgs = DefinitionUtils.getOptionalArgs(flagElem);
-           	NotifyVisitor visitor = new NotifyVisitor(entity, notifyDef, nextItem, writer, params, definitionBuilderConfig);
+           	NotifyVisitor visitor = new NotifyVisitor(entity, notifyDef, nextItem, writer, params);
            	buildElement(entity, visitor, flagElem, oArgs);
         }
     }
@@ -107,7 +134,7 @@ public class NotifyBuilderUtil {
 		
 		String itemType = visitor.getItem().attributeValue("name", "");
 		//get Item from main config document
-		Element itemDefinition = visitor.getDefinitionConfigurationBuilder().getItem(null, itemType);
+		Element itemDefinition = getDefinitionBuilderConfig().getItem(null, itemType);
 
 		//Also set up the default values for all properties defined in the definition configuration
 		//  These will be overwritten by the real values (if they exist) below
@@ -176,7 +203,7 @@ public class NotifyBuilderUtil {
        		} else {
        			if (Validator.isNull(template)) template = "dataElement.vtl";
        			try {
-       				Velocity.mergeTemplate(template, ctx, visitor.getWriter());
+       				getVelocityEngine().mergeTemplate(template, ctx, visitor.getWriter());
        			} catch (Exception ex) {
        				NotifyBuilderUtil.logger.error("Error processing template", ex);
        			}

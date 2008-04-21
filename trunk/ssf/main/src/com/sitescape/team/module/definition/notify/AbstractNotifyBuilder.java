@@ -28,7 +28,6 @@
  */
 package com.sitescape.team.module.definition.notify;
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.Velocity;
 
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.util.InvokeUtil;
@@ -71,7 +70,7 @@ public abstract class AbstractNotifyBuilder implements NotifyBuilder {
     }
     protected void build(NotifyVisitor visitor, String template, VelocityContext ctx) {
     	try {
-    		Velocity.mergeTemplate(template, ctx, visitor.getWriter());
+    		NotifyBuilderUtil.getVelocityEngine().mergeTemplate(template, ctx, visitor.getWriter());
     	} catch (Exception ex) {
     		NotifyBuilderUtil.logger.error("Error processing template " + template, ex);
     	}

@@ -9,7 +9,6 @@ import org.dom4j.Element;
 import java.util.Map;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
@@ -19,17 +18,15 @@ public class NotifyVisitor {
 	DefinableEntity entity;
 	Notify notifyDef; 
 	Writer writer;
-	DefinitionConfigurationBuilder definitionConfigurationBuilder;
 	Element currentElement;
 	List items=null;
 	Map params;
-	public NotifyVisitor(DefinableEntity entity, Notify notifyDef, Element currentElement, Writer writer, Map params, DefinitionConfigurationBuilder definitionConfigurationBuilder) {
+	public NotifyVisitor(DefinableEntity entity, Notify notifyDef, Element currentElement, Writer writer, Map params) {
 		this.entity = entity;
 		this.notifyDef = notifyDef;
 		this.currentElement = currentElement;
 		this.writer = writer;
 		this.params = params;
-		this.definitionConfigurationBuilder = definitionConfigurationBuilder;
 	}
  	
  	public DefinableEntity getEntity() {
@@ -37,9 +34,6 @@ public class NotifyVisitor {
  	}
  	public Notify getNotifyDef() {
  		return notifyDef;
- 	}
- 	public DefinitionConfigurationBuilder getDefinitionConfigurationBuilder() {
- 		return definitionConfigurationBuilder;
  	}
  	public Element getItem() {
  		return currentElement;
@@ -62,7 +56,7 @@ public class NotifyVisitor {
  	}
 	public void visit() {
 		try {
-			NotifyBuilderUtil.buildElements(entity, currentElement, notifyDef, writer, params, definitionConfigurationBuilder, false);
+			NotifyBuilderUtil.buildElements(entity, currentElement, notifyDef, writer, params, false);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template:", ex);
 		}
@@ -70,7 +64,7 @@ public class NotifyVisitor {
 	//process this item
 	public void visit(Element nextItem) {
 		try {
-			NotifyBuilderUtil.buildElements(entity, nextItem, notifyDef, writer, params, definitionConfigurationBuilder, true);
+			NotifyBuilderUtil.buildElements(entity, nextItem, notifyDef, writer, params, true);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template:", ex);
 		}
