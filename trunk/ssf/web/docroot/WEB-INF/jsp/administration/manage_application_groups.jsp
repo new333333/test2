@@ -60,11 +60,11 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 	name="binderId" value="${ssBinder.id}"/><portlet:param 
 	name="action" value="manage_application_groups"/></portlet:actionURL>" onSubmit="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this))">
 		
-	<span class="ss_bold"><ssf:nlt tag="administration.add.application.groupName"/></span><ssf:inlineHelp tag="ihelp.groups.data_name"/><br/>
-	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
-		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.application.groupTitle"/></span><br/>
 	<input type="text" class="ss_text" size="70" name="title"><br/><br/>
+		
+	<span class="ss_bold"><ssf:nlt tag="administration.add.application.groupName"/></span><ssf:inlineHelp tag="ihelp.groups.data_name"/><br/>
+	<input type="text" class="ss_text" size="70" name="name"><br/><br/>
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.application.groupDescription"/></span><br/>
 	<textarea name="description" wrap="virtual" rows="4" cols="80"></textarea><br/><br/>
