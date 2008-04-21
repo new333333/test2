@@ -192,6 +192,9 @@ public class WorkspaceTreeHelper {
 								profileDef.getRootElement().selectSingleNode("//item[@name='profileEntryBusinessCard']"));
 						model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 						model.put(WebKeys.USER_WORKSPACE, true);
+
+				        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
+				        		binder.getId(), ObjectKeys.RELEVANCE_DASHBOARD_PROFILE, model);
 					} catch (Exception ex) {} //user may have been deleted, but ws left around
 				}
 			}
