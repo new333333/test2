@@ -72,7 +72,9 @@
 
 	} else {
         %>
-        Unknown definition element: <%= itemType %>
+        <ssf:nlt tag="definition.error.unknownDefinitionElement">
+         <ssf:param name="name" value="<%= itemType %>"/>
+        </ssf:nlt><br/>
         <%
 	}
 	
