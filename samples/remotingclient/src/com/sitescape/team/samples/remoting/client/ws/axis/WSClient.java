@@ -174,8 +174,8 @@ public class WSClient
 				List wfs = new ArrayList();
 				if (args.length > 3) {
 					ids = args[3].split(","); //entryDef,workflowDef
-					for (int i=0; i<ids.length; ++i) {
-						wfs.add(ids[i]);
+					for (int i=0; i+1<ids.length; i+=2) {
+						wfs.add(ids[i] + "," + ids[i+1]);
 					}
 				}
 				justDoIt("setDefinitions", new Object[] {Long.parseLong(args[1]), idsList, wfs});
