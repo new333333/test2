@@ -91,7 +91,10 @@ public class RelevanceDashboardHelper {
 		model.put(WebKeys.BINDER, userWorkspace);
 		
 		if (ObjectKeys.RELEVANCE_DASHBOARD_PROFILE.equals(type)) {
-			setupProfileBeans(bs, request, response, userWorkspace, model);
+			if (!setupProfileBeans(bs, request, response, userWorkspace, model)) {
+				//The profile isn't being shown in the dashboard, so get the what's new beans instead
+				setupWhatsNewDashboardBeans(bs, userWorkspace, model);
+			}
 			
 		} else if (ObjectKeys.RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS.equals(type)) {
 			setupTasksBeans(bs, userWorkspace, model); 
@@ -154,7 +157,7 @@ public class RelevanceDashboardHelper {
 		setupTrackedPeopleBeans(bs, binder, model);
 	}
 
-	protected static void setupProfileBeans(AllModulesInjected bs, RenderRequest request, 
+	protected static boolean setupProfileBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model) {
 		DefinitionHelper.getDefinitions(binder, model);
 		//Get the start of the view definition
@@ -164,13 +167,16 @@ public class RelevanceDashboardHelper {
 		if (!relevanceElement.selectNodes("item").isEmpty()) {
 			model.put(WebKeys.CONFIG_ELEMENT_RELEVANCE_DASHBOARD, relevanceElement);
 			try {
-				WorkspaceTreeHelper.setupWorkspaceBeans(bs, binder.getId(), request, response, model);
+				if (!model.containsKey(WebKeys.WORKSPACE_BEANS_SETUP)) {
+					model.put(WebKeys.WORKSPACE_BEANS_SETUP, true);
+					WorkspaceTreeHelper.setupWorkspaceBeans(bs, binder.getId(), request, response, model);
+				}
 			} catch(Exception e) {}
 		} else {
 			//There is no profile display, so load the "what's new" beans
-			setupWhatsNewDashboardBeans(bs, binder, model);
+			return false;
 		}
-		
+		return true;
 }
 	
 	protected static void setupTasksBeans(AllModulesInjected bs, Binder binder, Map model) {		
