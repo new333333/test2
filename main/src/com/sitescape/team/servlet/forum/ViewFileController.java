@@ -322,7 +322,7 @@ public class ViewFileController extends SAbstractController {
 			return file;
 		}
 		else if(BrowserSniffer.is_mozilla(request)) {
-			String file = MimeUtility.encodeText(fileName, "UTF8", "B");
+			String file = MimeUtility.encodeText(fileName, "UTF8", "Q");
 			file = StringUtils.replace(file, "+", "%20");
 			file = StringUtils.replace(file, "%2B", "+");
 			return file;
