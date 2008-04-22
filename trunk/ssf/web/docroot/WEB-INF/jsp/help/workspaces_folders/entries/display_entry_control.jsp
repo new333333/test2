@@ -36,7 +36,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.displayEntryControl"/></span>
 </div>
 
-<p><ssf:nlt tag="help.displayEntryControl.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.displayEntryControl.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <div class="picture">
 <img border="0" <ssf:alt tag="helpTitleAlt.displayEntryIcon"/> src="<html:imagesPath/>pics/downarrow.gif" /> 
@@ -53,7 +53,7 @@
 <img border="0" <ssf:alt tag="helpTitleAlt.presence.unavailable"/> src="<html:imagesPath/>pics/sym_s_white_dude.gif" /> 
 </div>
 
-<p><ssf:nlt tag="help.displayEntryControl.presenceIconDescription"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt> <ssf:nlt tag="help.displayEntryControl.contactPeople"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.displayEntryControl.presenceIconDescription"><ssf:param name="value" value="${ssProductConferencingTitle}"/></ssf:nlt> <ssf:nlt tag="help.displayEntryControl.contactPeople"><ssf:param name="value" value="${ssProductConferencingTitle}"/></ssf:nlt></p>
 
 </div>
 

@@ -38,11 +38,11 @@
 
 <p><ssf:nlt tag="ihelp.email.notify.understanding.intro" /></p>
 
-<p><ssf:nlt tag="ihelp.email.notify.understanding.types"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.notify.understanding.types"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="ihelp.email.notify.understanding.textMessages"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.notify.understanding.textMessages"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="ihelp.email.notify.understanding.users"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.notify.understanding.users"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

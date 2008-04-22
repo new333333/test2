@@ -33,15 +33,15 @@
 <div class="ss_help_style">
 
 <div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span><br />
+<span class="ss_titlebold"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></span><br />
 <span class="subtitle"><ssf:nlt tag="help.getStartedProduct.subtopic.getStarted"/></span>
 </div>
 
-<p><ssf:nlt tag="help.getStartedProduct.getStarted.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.getStartedProduct.getStarted.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.getStartedProduct.getStarted.team"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.getStartedProduct.getStarted.team"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.getStartedProduct.getStarted.teamWorkspace"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.getStartedProduct.getStarted.teamWorkspace"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 
@@ -52,7 +52,7 @@
 
 <div class="ss_help_moreinfo">
 <p><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale}/pdfs/ICEcore Quick Start Guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
+  <ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a></p>
 </div>
 
 <div class="ss_help_more_pages_section"><a id="skip_nav_titles" />

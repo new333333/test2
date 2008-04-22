@@ -36,7 +36,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="help.favoritesicon.title"/></span>
 </div>
 
-<p><ssf:nlt tag="help.favoritesicon.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.favoritesicon.content.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.favoritesicon.content.using"/></p>
 

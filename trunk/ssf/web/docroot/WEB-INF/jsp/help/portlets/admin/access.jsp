@@ -36,13 +36,13 @@
 <span class="ss_titlebold"><ssf:nlt tag="help.accessIntro.title"/></span>
 </div>
 
-<p><ssf:nlt tag="help.accessIntro.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.accessIntro.content.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.accessIntro.content.roles"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.accessIntro.content.roles"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.accessIntro.content.inheritance" /></p>
 
-<p><ssf:nlt tag="help.accessIntro.content.multiplePlaces"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.accessIntro.content.multiplePlaces"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

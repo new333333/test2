@@ -36,14 +36,23 @@
 <span class="ss_titlebold"><ssf:nlt tag="help.controlPanel.helpOnHelp.title"/></span>
 </div>
 
-<p><ssf:nlt tag="help.controlPanel.helpOnHelp.iIcons"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.controlPanel.helpOnHelp.iIcons"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.controlPanel.helpOnHelp.controlPanel"/></p>
 
 <p><ssf:nlt tag="help.controlPanel.helpOnHelp.exiting"/></p>
 
-<p><ssf:nlt tag="help.controlPanel.helpOnHelp.moreInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.controlPanel.helpOnHelp.moreInfo"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
+
+<p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/>
+<a href="#skip_nav_titles" title="<ssf:nlt tag="helpTitleAlt.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
+</p>
+
+<div class="ss_help_moreinfo">
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('trademarks', 'ss_moreinfo_panel');"><ssf:nlt tag="help.trademarks.topic"/></a><a id="skip_nav_titles" /></p>
+</div>
+
 
 </div>

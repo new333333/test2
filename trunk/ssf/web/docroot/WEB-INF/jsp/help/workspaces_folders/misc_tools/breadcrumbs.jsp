@@ -38,7 +38,7 @@
 
 <p><ssf:nlt tag="help.breadCrumbs.intro" /></p>
 
-<p><ssf:nlt tag="help.breadCrumbs.opensInNewTab"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.breadCrumbs.opensInNewTab"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.workspaceTreePortlet.using" /></p>
 

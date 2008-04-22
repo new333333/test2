@@ -32,19 +32,34 @@
 <div class="ss_style">
 <div class="ss_help_style">
 
-<p><ssf:nlt tag="ihelp.folderManagement.mirroredFiles.def"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="ihelp.folderManagement.mirroredFiles.serverFile" /></p>
-
-<p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/>
-<a href="#skip_nav_titles" title="<ssf:nlt tag="helpTitleAlt.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
-</p>
-
-<div class="ss_help_moreinfo">
-<p><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Installation and Configuration Guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/><a id="skip_nav_titles"/></p>
+<div class="ss_help_title">
+<span class="ss_titlebold"><ssf:nlt tag="help.trademarks.topic"/></span>
 </div>
 
-</div>
+<p><ssf:nlt tag="help.trademarks.intro"/></p>
+
+<p><ssf:nlt tag="help.trademarks.further"/></p>
+
+<p><ssf:nlt tag="help.trademarks.export"/></p>
+
+<p><ssf:nlt tag="help.trademarks.copyright"/></p>
+
+<p><ssf:nlt tag="help.trademarks.intellPropRights"/></p>
+
+<p><ssf:nlt tag="help.trademarks.address"/></p>
+
+<p><ssf:nlt tag="help.trademarks.onlineDocs"/></p>
+
+<p class="ss_help_moreinfo"><ssf:nlt tag="help.trademarks.subtitle.novellTrademarks"/></p>
+
+<p><ssf:nlt tag="help.trademarks.novellTrademarks.para"/></p>
+
+<p class="ss_help_moreinfo"><ssf:nlt tag="help.trademarks.subtitle.thirdPartyMaterials"/></p>
+
+<p><ssf:nlt tag="help.trademarks.thirdPartyMaterials.para"/></p>
+
+<p><ssf:nlt tag="help.trademarks.thirdPartyMaterials.ICEcore"/></p>
+
+<p><ssf:nlt tag="help.trademarks.thirdPartyMaterials.ICEcore.copyright"/></p>
 
 </div>

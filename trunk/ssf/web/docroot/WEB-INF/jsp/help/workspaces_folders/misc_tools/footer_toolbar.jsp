@@ -36,15 +36,15 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.bottomLinks"/></span>
 </div>
 
-<p><ssf:nlt tag="help.bottomLinks.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.bottomLinks.intro"><ssf:param name="value" value="${ssProductConferencingTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.bottomLinks.exceptions"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.bottomLinks.exceptions"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.bottomLinks.clipboard"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.bottomLinks.clipboard"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.bottomLinks.iCal"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.bottomLinks.iCal"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.bottomLinks.webDAV"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.bottomLinks.webDAV"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

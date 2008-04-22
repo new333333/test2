@@ -45,7 +45,7 @@
 
 <li><ssf:nlt tag="help.accessIntro.usersGroups.listItem.teamMembers"/></li>
 
-<li><ssf:nlt tag="help.accessIntro.usersGroups.listItem.allUsers"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.accessIntro.usersGroups.listItem.allUsers"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.accessIntro.usersGroups.listItem.superAdmin"/></li>
 
@@ -59,7 +59,7 @@
 
 <li><ssf:nlt tag="help.accessIntro.usersGroups.listItem.participant"/></li>
 
-<li><ssf:nlt tag="help.accessIntro.usersGroups.listItem.teamMember"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.accessIntro.usersGroups.listItem.teamMember"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.accessIntro.usersGroups.listItem.wsFldrAdmin"/></li>
 

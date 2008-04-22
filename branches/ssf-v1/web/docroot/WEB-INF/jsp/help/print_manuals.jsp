@@ -38,41 +38,41 @@
 
 <p><ssf:nlt tag="help.viewBooks.content.intro"/></p>
 
-<p><span class="header"><ssf:nlt tag="help.viewBooks.content.header.users"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></p>
+<p><span class="header"><ssf:nlt tag="help.viewBooks.content.header.users"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></span></p>
 
 <ul>
 <li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale}/pdfs/ICEcore Quick Start Guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a>
+  <ssf:nlt tag="help.viewBooks.content.listItem.quickStart"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a>
 
 <p><ssf:nlt tag="help.viewBooks.content.quickTips.explain"/></p>
 </li>
 
 <li><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore User Guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.userGetStart"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/>
+  <ssf:nlt tag="help.viewBooks.content.listItem.userGetStart"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/>
 
 <p><ssf:nlt tag="help.viewBooks.content.userGuide.explain"/></p>
 </li>
 
 </ul>
 
-<p><span class="header"><ssf:nlt tag="help.viewBooks.content.header.administrators"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></p>
+<p><span class="header"><ssf:nlt tag="help.viewBooks.content.header.administrators"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></span></p>
 
 <ul>
 <li><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Administration Guide.pdf">
   <span class="document_title"><ssf:nlt tag="help.viewBooks.content.listItem.administrationGuide"
-    text="${ssProductName} Administration Guide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></a> 
+    text="${ssProductTitle} Administration Guide"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></span></a> 
   <ssf:nlt tag="help.globalStrings.englishOnly"/>
 </li>
 
 <li><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Installation and Configuration Guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/>
+  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/>
 
-<p><ssf:nlt tag="help.viewBooks.content.installConfigGuide.explain"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.viewBooks.content.installConfigGuide.explain"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 </li>
 
 <li><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Web Services Guide.pdf">
   <span class="document_title"><ssf:nlt tag="help.viewBooks.content.listItem.webServicesGuide"
-    text="${ssProductName} Web Services Guide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span></a> 
+    text="${ssProductTitle} Web Services Guide"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></span></a> 
   <ssf:nlt tag="help.globalStrings.englishOnly"/>
 </li>
 

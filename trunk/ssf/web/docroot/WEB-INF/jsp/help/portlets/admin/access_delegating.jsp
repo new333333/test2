@@ -39,7 +39,7 @@
 
 <p><ssf:nlt tag="help.accessIntro.delegating.intro" /></p>
 
-<p><ssf:nlt tag="help.accessIntro.delegating.howTo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.accessIntro.delegating.howTo"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.accessIntro.delegating.limitedAdmin" /></p>
 

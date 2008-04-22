@@ -41,7 +41,7 @@
 
 <p><ssf:nlt tag="help.configIntro.designers.getStarted" /></p>
 
-<p><ssf:nlt tag="help.configIntro.designers.listIntro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.configIntro.designers.listIntro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <ul>
 

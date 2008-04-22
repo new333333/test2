@@ -42,7 +42,7 @@
 
 <ul>
 
-<li><ssf:nlt tag="help.calendarTools.tools.listItem.countDays"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.calendarTools.tools.listItem.countDays"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.calendarTools.tools.listItem.folderPage" /></li>
 
