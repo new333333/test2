@@ -1201,7 +1201,7 @@ public class ListFolderHelper {
 					model.put(WebKeys.URL_ADD_DEFAULT_ENTRY, adapterUrl.toString());
 				}
 			}
-		} else {
+		} else if (defaultEntryDefinitions.size() != 0) {
 			// Only one option
 			Definition def = (Definition) defaultEntryDefinitions.get(0);
 			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
