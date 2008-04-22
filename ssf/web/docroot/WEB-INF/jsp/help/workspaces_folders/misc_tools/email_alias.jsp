@@ -32,9 +32,9 @@
 <div class="ss_style">
 <div class="ss_help_style">
 
-<p><ssf:nlt tag="ihelp.email.from"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.from"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="ihelp.email.from.moreInfo"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.from.moreInfo"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

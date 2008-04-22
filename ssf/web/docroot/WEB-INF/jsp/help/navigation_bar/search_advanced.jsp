@@ -39,9 +39,9 @@
 
 <p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.advancedSearch.intro" /></p>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.advancedSearch.access"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.advancedSearch.access"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.advancedSearch.moreCriteria"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.advancedSearch.moreCriteria"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

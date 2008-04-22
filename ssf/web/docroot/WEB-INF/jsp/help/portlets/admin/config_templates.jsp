@@ -39,13 +39,13 @@
 
 <p><ssf:nlt tag="help.configIntro.templates.intro" /></p>
 
-<p><ssf:nlt tag="help.configIntro.templates.hierarchy"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.configIntro.templates.hierarchy"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.configIntro.templates.example"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.configIntro.templates.example"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.configIntro.templates.using" /></p>
 
-<p><ssf:nlt tag="help.configIntro.templates.moreUsing"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.configIntro.templates.moreUsing"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

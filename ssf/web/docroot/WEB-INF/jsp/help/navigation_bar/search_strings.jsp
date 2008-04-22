@@ -40,11 +40,11 @@
 <p><ssf:nlt tag="help.searchboxes.searchStrings.content.intro" /></p>
 
 <ul>
-<li><ssf:nlt tag="help.searchboxes.searchStrings.content.listItem.case"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.searchboxes.searchStrings.content.listItem.case"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
-<li><ssf:nlt tag="help.searchboxes.searchStrings.content.listItem.severalWords"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.searchboxes.searchStrings.content.listItem.severalWords"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
-<li><ssf:nlt tag="help.searchboxes.searchStrings.content.listItem.quotedPhrase"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.searchboxes.searchStrings.content.listItem.quotedPhrase"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.searchboxes.searchStrings.content.listItem.exclude" /></li>
 

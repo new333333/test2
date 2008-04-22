@@ -47,7 +47,7 @@
 </p>
 
 <div class="ss_help_moreinfo">
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/team_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.understandingTeams.topic"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a><a id="skip_nav_titles" /></p>
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/team_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.understandingTeams.topic"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a><a id="skip_nav_titles" /></p>
 </div>
 
 </div>

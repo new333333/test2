@@ -38,7 +38,7 @@
 
 <p><ssf:nlt tag="help.moreBlogTools.intro" /></p>
 
-<p><ssf:nlt tag="help.moreBlogTools.sidebar"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.moreBlogTools.sidebar"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.moreBlogTools.comments" /></p>
 

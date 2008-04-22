@@ -32,13 +32,13 @@
 <div class="ss_style">
 <div class="ss_help_style">
 
-<p><ssf:nlt tag="ihelp.other.linksToEntries.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.other.linksToEntries.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="ihelp.other.linksToEntries.invokeTool"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.other.linksToEntries.invokeTool"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="ihelp.other.linksToEntries.explainTool"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.other.linksToEntries.explainTool"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="ihelp.other.linksToEntries.newLinkText"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.other.linksToEntries.newLinkText"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

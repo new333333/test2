@@ -36,7 +36,7 @@
 
 <p><ssf:nlt tag="help.folderBookmarksPortlet.info" /></p>
 
-<p><ssf:nlt tag="help.folderBookmarksPortlet.using"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.folderBookmarksPortlet.using"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.folderBookmarksPortlet.viewingUnread" /></p>
 
@@ -47,7 +47,7 @@
 </p>
 
 <div class="ss_help_moreinfo">
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a><a id="skip_nav_titles"/></p>
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('portlets/get_started/product_intro', 'ss_moreinfo_panel');"><ssf:nlt tag="help.getStartedProduct.title"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a><a id="skip_nav_titles"/></p>
 </div>
 
 </div>

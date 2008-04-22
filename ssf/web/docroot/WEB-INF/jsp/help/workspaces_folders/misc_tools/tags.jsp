@@ -36,7 +36,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.tags" /></span>
 </div>
 
-<p><ssf:nlt tag="help.tags.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.tags.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.tags.types" /></p>
 

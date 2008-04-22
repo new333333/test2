@@ -40,11 +40,11 @@
 
 <ul>
 
-<li><ssf:nlt tag="help.moreFolderNavigation.listItem.entryNumbers"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.moreFolderNavigation.listItem.entryNumbers"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.moreFolderNavigation.listItem.howManyEntries" /></li>
 
-<li><ssf:nlt tag="help.moreFolderNavigation.listItem.goToPage"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.moreFolderNavigation.listItem.goToPage"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.moreFolderNavigation.listItem.goToPageNumber" /></li>
 

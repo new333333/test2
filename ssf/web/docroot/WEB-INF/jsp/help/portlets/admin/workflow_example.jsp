@@ -37,7 +37,7 @@
 <span style="font-weight:bold;"><ssf:nlt tag="help.workflowIntro.subtopic.example"/></span>
 </div>
 
-<p><ssf:nlt tag="help.workflowIntro.example.content.listIntro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.workflowIntro.example.content.listIntro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <ol>
 

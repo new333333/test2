@@ -37,7 +37,7 @@
 <span style="font-weight:bold;"><ssf:nlt tag="help.configIntro.subTopic.dedicatedApps"/></span>
 </div>
 
-<p><ssf:nlt tag="help.configIntro.dedicatedApps.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.configIntro.dedicatedApps.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.configIntro.dedicatedApps.listIntro" /></p>
 
