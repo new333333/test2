@@ -70,6 +70,7 @@
 <div id="${ss_namespace}_add_entry_from_iframe" style="display:none; visibility:hidden;">
 <iframe id="${ss_namespace}_new_guestbook_entry_iframe"
   name="${ss_namespace}_new_guestbook_entry_iframe"
+  src="<html:rootPath/>js/forum/null.html" 
   onLoad="ss_showSignGuestbookIframe('${ss_namespace}', this);" 
   width="100%" frameBorder="0">xxx</iframe>
 </div>
