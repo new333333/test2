@@ -48,7 +48,7 @@ var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" po
   <ul>
 	<!-- CSS Tabs -->
 <c:if test="${!empty ssRelevanceDashboardConfigElement}">
-	<li class="ss_tabsCCurrent"><a id="ss_relevanceProfileTab${renderResponse.namespace}" href="javascript: ;"
+	<li class="ss_tabsCCurrent"><a id="ss_relevanceInitialTab${renderResponse.namespace}" href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'profile', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.profile"/></span></a></li>
 	<li><a href="javascript: ;"
@@ -56,7 +56,7 @@ var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" po
 		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
 </c:if>
 <c:if test="${empty ssRelevanceDashboardConfigElement}">
-	<li class="ss_tabsCCurrent"><a href="javascript: ;"
+	<li class="ss_tabsCCurrent"><a id="ss_relevanceInitialTab${renderResponse.namespace}" href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'whats_new', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
 </c:if>
@@ -73,7 +73,7 @@ var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" po
 </div>
 <div class="ss_clear_float"></div>
 <script type="text/javascript">
-var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElementById('ss_relevanceProfileTab${renderResponse.namespace}');
+var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElementById('ss_relevanceInitialTab${renderResponse.namespace}');
 </script>
 
 <% //Changeable tab canvas; this gets replaced when a tab is clicked %>
