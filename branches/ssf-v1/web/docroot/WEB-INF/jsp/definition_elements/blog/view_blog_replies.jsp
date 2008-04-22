@@ -104,6 +104,7 @@ title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry
 <iframe <ssf:title tag="title.add.reply" />
   id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
   name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
+  src="<html:rootPath/>js/forum/null.html" 
   onLoad="if (parent.ss_showBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>) parent.ss_showBlogReplyIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(this, '${ssDefinitionEntry.id}');" 
   width="100%" frameBorder="0">xxx</iframe>
 </div>

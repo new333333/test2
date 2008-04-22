@@ -3205,13 +3205,13 @@ function ss_showAddAttachmentDropbox(binderId, entryId, namespace) {
 	var frameId = 'ss_iframe_dropbox' + entryId + namespace;
 	var frameObj = document.getElementById(frameId);
 	
-	if (frameObj.src == "") {
-		frameObj.src = url;
-	}
-	
 	ss_showDiv(divId);
 	frameObj.style.visibility = "visible";
 
+	if (frameObj.src == "" || frameObj.src.indexOf("null.html") >= 0) {
+		frameObj.src = url;
+	}
+	
 	divObj.style.width = "300px";
 	divObj.style.height = "100px";
 
