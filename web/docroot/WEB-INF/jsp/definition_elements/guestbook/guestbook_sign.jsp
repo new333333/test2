@@ -41,6 +41,7 @@
 <div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_add_entry_from_iframe" style="display:none; visibility:hidden;">
 <iframe id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_new_guestbook_entry_iframe"
   name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_new_guestbook_entry_iframe"
+  src="<html:rootPath/>js/forum/null.html" 
   onLoad="ss_showSignGuestbookIframe('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', this);" 
   width="100%" frameBorder="0">xxx</iframe>
 </div>

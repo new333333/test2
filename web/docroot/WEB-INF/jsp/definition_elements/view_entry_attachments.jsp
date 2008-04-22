@@ -116,6 +116,7 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 			<iframe frameborder="0" scrolling="no" 
 			  id="ss_iframe_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 			  name="ss_iframe_fileopen${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+			  src="<html:rootPath/>js/forum/null.html" 
 			  height="1" width="1">xxx</iframe>
 		</div>
 	  </div>
@@ -133,6 +134,7 @@ boolean isAppletSupported = SsfsUtil.supportApplets();
 						<iframe <ssf:title tag="entry.AttachFilesByApplet" /> frameborder="0" scrolling="no" 
 						  id="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
 						  name="ss_iframe_dropbox${ssDefinitionEntry.id}${ss_attachments_namespace}" 
+						src="<html:rootPath/>js/forum/null.html" 
 						height="70%" width="100%" 
 						onClick="ss_hideAddAttachmentDropbox('${ssDefinitionEntry.id}', '${ss_attachments_namespace}'); return false;">xxx</iframe>
 					</div>

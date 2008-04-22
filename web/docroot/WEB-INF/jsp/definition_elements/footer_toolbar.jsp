@@ -199,7 +199,11 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 			--%></a><%--
 		--%></div><%--
 	
-		--%><iframe frameborder="0" scrolling="no" id="ss_iframe_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" name="ss_iframe_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" height="80%" width="100%">xxx</iframe><%--
+		--%><iframe frameborder="0" scrolling="no" 
+		  id="ss_iframe_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+		  name="ss_iframe_folder_dropbox${ssFolder.id}<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" 
+		  src="<html:rootPath/>js/forum/null.html" 
+		  height="80%" width="100%">xxx</iframe><%--
 	
 	--%></div><%--
 
