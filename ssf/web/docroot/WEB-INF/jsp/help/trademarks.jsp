@@ -33,26 +33,33 @@
 <div class="ss_help_style">
 
 <div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="help.controlPanel.helpOnHelp.title"/></span>
+<span class="ss_titlebold"><ssf:nlt tag="help.trademarks.topic"/></span>
 </div>
 
-<p><ssf:nlt tag="help.controlPanel.helpOnHelp.iIcons"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.trademarks.intro"/></p>
 
-<p><ssf:nlt tag="help.controlPanel.helpOnHelp.controlPanel"/></p>
+<p><ssf:nlt tag="help.trademarks.further"/></p>
 
-<p><ssf:nlt tag="help.controlPanel.helpOnHelp.exiting"/></p>
+<p><ssf:nlt tag="help.trademarks.export"/></p>
 
-<p><ssf:nlt tag="help.controlPanel.helpOnHelp.moreInfo"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.trademarks.copyright"/></p>
 
-</div>
+<p><ssf:nlt tag="help.trademarks.intellPropRights"/></p>
 
-<p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/>
-<a href="#skip_nav_titles" title="<ssf:nlt tag="helpTitleAlt.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
-</p>
+<p><ssf:nlt tag="help.trademarks.address"/></p>
 
-<div class="ss_help_moreinfo">
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('trademarks', 'ss_moreinfo_panel');"><ssf:nlt tag="help.trademarks.topic"/></a><a id="skip_nav_titles" /></p>
-</div>
+<p><ssf:nlt tag="help.trademarks.onlineDocs"/></p>
 
+<p class="ss_help_moreinfo"><ssf:nlt tag="help.trademarks.subtitle.novellTrademarks"/></p>
+
+<p><ssf:nlt tag="help.trademarks.novellTrademarks.para"/></p>
+
+<p class="ss_help_moreinfo"><ssf:nlt tag="help.trademarks.subtitle.thirdPartyMaterials"/></p>
+
+<p><ssf:nlt tag="help.trademarks.thirdPartyMaterials.para"/></p>
+
+<p><ssf:nlt tag="help.trademarks.thirdPartyMaterials.ICEcore"/></p>
+
+<p><ssf:nlt tag="help.trademarks.thirdPartyMaterials.ICEcore.copyright"/></p>
 
 </div>
