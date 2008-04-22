@@ -79,6 +79,7 @@ public class WorkspaceTreeHelper {
 	}
 	public static String setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
 			RenderResponse response, Map model) throws Exception {
+		model.put(WebKeys.WORKSPACE_BEANS_SETUP, true);
 		String displayType = BinderHelper.getDisplayType(request);
         User user = RequestContextHolder.getRequestContext().getUser();
 
