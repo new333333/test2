@@ -975,7 +975,7 @@ DIV.ss_help_more_pages_section DIV.no_prev_page {
 
 
 /*  Word styling */
-DIV.ss_help_style .clickable_item, .document_title, .light_emphasis, .new_term, .keyboard_keys, .variable {
+DIV.ss_help_style .clickable_item, .document_title, .light_emphasis, .keyboard_keys, .variable, .page_item {
     font-style: italic;
 }
 
@@ -983,13 +983,15 @@ DIV.ss_help_moreinfo .document_title {
     font-style: italic;
 }
 
-DIV.ss_style .clickable_item, .new_term {
-    font-style: italic;
+DIV.ss_help_style .new_term {
+    font-weight: bold;
+    color: ${ss_title_line_color};  
 }
 
 DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
     font-weight: bold;
 }
+
 /* Getting Started Portal */
 
 
