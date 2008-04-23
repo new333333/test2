@@ -108,6 +108,8 @@ var ss_baseBinderUrlNoWS${renderResponse.namespace} = '<ssf:url><ssf:param
 	name="newTab" value="ssNewTabPlaceHolder"/></ssf:url>';
 var ss_baseBinderUrlNoWS = ss_baseBinderUrlNoWS${renderResponse.namespace};
 
+var ss_baseRootPathUrl = '<html:rootPath/>';
+
 </c:if>
 
 </c:if>
