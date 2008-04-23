@@ -1809,6 +1809,10 @@ function ss_showBackgroundIFrame(divid, frmId) {
 		div.style.zIndex = ssLightboxZ - 1;
 	}
 	var frm = document.createElement("iframe");
+	if (typeof ss_baseRootPathUrl != 'undefined') {
+		var teaming_url = ss_baseRootPathUrl + 'js/forum/null.html';
+		frm.src = teaming_url;
+	}
 	frm.frameBorder = 0;
 	frm.scrolling = "no";
 	document.body.appendChild(frm);
@@ -1827,6 +1831,7 @@ function ss_showBackgroundIFrame(divid, frmId) {
 	frm.style.height = ss_getObjectHeight(div) + "px";
 	frm.style.width = ss_getObjectWidth(div) + "px";
 	
+	frm.style.position = "absolute";
 	frm.style.display = "block";
 }
 
