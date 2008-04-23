@@ -1409,10 +1409,10 @@
 		multipleAllowed="false"  display="view">
 		<options optionCaption="__standard_entry_options">
 			<option name="workspaceTitleView"/>
-			<option name="userWorkspaceBusinessCard" initial="true"/>
-			<option name="descriptionView" initial="true" />
+			<option name="userWorkspaceBusinessCard"/>
+			<option name="descriptionView"/>
 			<option name="relevanceDashboard" initial="true" />
-			<option name="dashboardCanvas" initial="true" />
+			<option name="dashboardCanvas"/>
 			<option name="workspaceDataItem" caption="__workspace_data_item" 
 				definitionType="12" />
 			<option name="workspaceBinderList" />
