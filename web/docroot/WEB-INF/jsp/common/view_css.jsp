@@ -99,6 +99,7 @@ var ss_AjaxBaseUrl;
 var ss_viewEntryURL;
 var ss_validationErrorMessage;
 var ss_savedSearchTitle;
+var ss_baseRootPathUrl;
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_urlBase = self.location.protocol + "//" + self.location.host;
 	ss_rootPath = "<html:rootPath/>";
@@ -199,6 +200,9 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 				portletName="ss_forum" 
 				action="view_folder_entry" 
 				actionUrl="true" />";
+	
+	ss_baseRootPathUrl = '<html:rootPath/>';
+	
 
 <ssf:ifnotadapter>
 var ss_tagSearchResultUrl = "<portlet:actionURL windowState="maximized" 
