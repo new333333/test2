@@ -29,7 +29,7 @@
 #parse ("icecore.vm")
 <div style="#ss_entryContent()">
 <div style="#ss_entrySignature()">
-  ${property_caption}
+  ${property_caption}&nbsp;
 #if ($ssVisitor.Entity.Creation.Principal)
 	  <a href="$ssVisitor.getPermaLink(${ssVisitor.Entity.Creation.Principal.ParentBinder.Id}, ${ssVisitor.Entity.Creation.Principal.Id}, 'workspace')">
 	  ${ssVisitor.Entity.Creation.Principal.Title}</a>

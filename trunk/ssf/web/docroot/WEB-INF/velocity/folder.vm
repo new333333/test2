@@ -27,6 +27,7 @@
  * are trademarks of SiteScape, Inc.
  *#
 #parse ("icecore.vm")
+
 <div style="#ss_entryContent()">
 $ssVisitor.getNLT("notify.forum.label")
 <a href="$ssVisitor.getPermaLink($ssVisitor.Entity.Id, $ssVisitor.Entity.Id, "folder")">

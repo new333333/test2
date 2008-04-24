@@ -54,9 +54,7 @@
 #macro (ss_fineprint)
   font-size:10px !important; 
 #end
-#macro (ss_underline) 
-   text-decoration:underline;
-#end
+
 #macro (ss_light)
   color: #999999;   
 #end

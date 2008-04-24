@@ -27,9 +27,7 @@
  * are trademarks of SiteScape, Inc.
  *#
 #parse ("icecore.vm")
-<div style="#ss_entryContent() #ss_entrySignature()">
- <span style="#ss_labelLeft()">$property_caption</span>
- <span>$ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
- </span>
-
-</div>
+<div style="#ss_entryContent()">
+<div style="#ss_entrySignature()">
+ ${property_caption}&nbsp;$ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
+</div></div>
