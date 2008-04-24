@@ -34,6 +34,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+import java.io.IOException;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -66,15 +69,23 @@ public class ImportDefinitionController extends  SAbstractController {
 						myFile = (MultipartFile)fileMap.get("definition" + i);
 						if (myFile == null) break;
 						if (Validator.isNull(myFile.getOriginalFilename())) continue; //not filled in
-						SAXReader xIn = new SAXReader();
-						InputStream fIn = myFile.getInputStream();
-						Document doc = xIn.read(fIn);   
-						fIn.close();
-						getDefinitionModule().addDefinition(doc, true);
+						if(myFile.getOriginalFilename().toLowerCase().endsWith(".zip")) {
+							ZipInputStream zipIn = new ZipInputStream(myFile.getInputStream());
+							ZipEntry entry = null;
+							while((entry = zipIn.getNextEntry()) != null) {
+								loadDefinitions(entry.getName(), new ZipStreamWrapper(zipIn), errors);
+								zipIn.closeEntry();
+							}
+						} else {
+							loadDefinitions(myFile.getOriginalFilename(), myFile.getInputStream(), errors);
+						}
+						myFile.getInputStream().close();
 					} catch (Exception fe) {
 						errors.add((myFile==null ? "" : myFile.getOriginalFilename()) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
 					}
+
 				}
+
 				if (!errors.isEmpty()) response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 			}
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
@@ -92,6 +103,34 @@ public class ImportDefinitionController extends  SAbstractController {
 		}
 	}
 
+	static class ZipStreamWrapper extends InputStream
+	{
+		ZipInputStream zipIn;
+		public ZipStreamWrapper(ZipInputStream zipIn)
+		{
+			this.zipIn = zipIn;
+		}
+		
+		public int read() throws IOException
+		{
+			return zipIn.read();
+		}
+		
+		public void close() throws IOException
+		{
+		}
+	}
+	protected String loadDefinitions(String fileName, InputStream fIn, List errors)
+	{
+		try {
+			SAXReader xIn = new SAXReader();
+			Document doc = xIn.read(fIn);   
+			return getDefinitionModule().addDefinition(doc, true);
+		} catch (Exception fe) {
+			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
+		}
+		return null;
+	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 			
