@@ -201,6 +201,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //inside write transaction
     protected void addReply_startWorkflow(FolderEntry entry, Map ctx) {
+       	if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_WORKFLOW))) return;
     	FolderEntry parent = entry.getParentEntry();
    		if (getWorkflowModule().modifyWorkflowStateOnReply(parent)) {
    	   		parent.incrLogVersion();

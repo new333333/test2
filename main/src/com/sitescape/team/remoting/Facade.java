@@ -154,9 +154,9 @@ public interface Facade {
 	/**
 	 * Set team members for the binder
 	 * @param binderId
-	 * @param memberIds
+	 * @param memberNames
 	 */
-	public void setTeamMembers(long binderId, Long[] memberIds);
+	public void setTeamMembers(long binderId, String[] memberNames);
 
 	public void synchronizeMirroredFolder(long binderId);
 	public void indexFolder(long folderId);

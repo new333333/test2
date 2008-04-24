@@ -248,6 +248,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
 		getTimestamps(options, creator, creationDate, modifier, modificationDate);
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
@@ -398,6 +399,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
 		getTimestamps(options, creator, creationDate, modifier, modificationDate);
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
@@ -554,8 +556,14 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		return doc.getRootElement().asXML();
 	}
 	
-	public void setTeamMembers(long binderId, Long[] memberIds) {
-		getBinderModule().setTeamMembers(binderId, Arrays.asList(memberIds));
+	public void setTeamMembers(long binderId, String[] memberNames) {
+		Collection<Principal> principals = getProfileModule().getPrincipalsByName(Arrays.asList(memberNames));
+		Set<Long>ids = new HashSet();
+		for (Principal p:principals) {
+			ids.add(p.getId());
+		}
+		
+		getBinderModule().setTeamMembers(binderId, ids);
 	}
 	public String getTeamsAsXML()
 	{
@@ -687,10 +695,17 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		if(enable) {
 			fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
 			stagedFileRelativePath = StringCheckUtil.check(stagedFileRelativePath);
+			fileName = StringCheckUtil.check(fileName);
 			
 			// Get the staged file
 			String rootPath = SPropsUtil.getString("staging.upload.files.rootpath", "").trim();
-			File file = new File(rootPath, stagedFileRelativePath);
+			String filePath=stagedFileRelativePath;
+			if (Validator.isNull(filePath)) {
+				filePath = fileName;
+			} else {
+				filePath += File.separator + fileName;
+			}
+			File file = new File(rootPath, filePath);
 			
 			// Wrap it in a datastructure expected by our app.
 			DatedMultipartFile mf = new DatedMultipartFile(fileName, file, false, modifier, modificationDate.getTime());
@@ -701,6 +716,8 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			
 			Map options = new HashMap();
 			options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+			options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
+	    	options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
 			try {
 				// Finally invoke the business method. 
 				getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
