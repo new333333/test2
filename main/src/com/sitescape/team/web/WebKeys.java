@@ -659,6 +659,8 @@ public class WebKeys {
 	public static final String PRODUCT_TITLE="ssProductTitle";
 	public static final String PRODUCT_NICKNAME="ssProductNickname";
 	public static final String PRODUCT_EDITION="ssProductEdition";
+	public static final String PRODUCT_CONFERENCING_NAME="ssProductConferencingName";
+	public static final String PRODUCT_CONFERENCING_TITLE="ssProductConferencingTitle";
 	public static final String PROFILE_CONFIG_ELEMENT="ssProfileConfigElement";
     public static final String PROFILE_CONFIG_DEFINITION="ssProfileConfigDefinition";
     public static final String PROFILE_CONFIG_JSP_STYLE="ssProfileConfigJspStyle";

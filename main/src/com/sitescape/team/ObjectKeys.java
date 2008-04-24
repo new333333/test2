@@ -41,6 +41,8 @@ public interface ObjectKeys {
 	public static final String PRODUCT_TITLE_DEFAULT="ICEcore";
 	public static final String PRODUCT_NICKNAME_DEFAULT="ICEcore";
 	public static final String PRODUCT_EDITION_DEFAULT="OpenSource";
+	public static final String PRODUCT_CONFERENCING_NAME_DEFAULT="Conference";
+	public static final String PRODUCT_CONFERENCING_TITLE_DEFAULT="ICEcore Conference";
 
 	 // reserved internalIds for Definitions (not necessarily databaseId)
 	public static final String DEFAULT_FOLDER_DEF="402883b90cc53079010cc539bf260001";
