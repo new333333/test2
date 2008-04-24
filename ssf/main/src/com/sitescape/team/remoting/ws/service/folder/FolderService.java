@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.folder;
 
+
 public interface FolderService {
 
 	public String getFolderEntriesAsXML(String accessToken, long binderId);
@@ -38,9 +39,9 @@ public interface FolderService {
 	
 	public void modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML);
 	
-	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML);
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName);
 
-	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState);
+	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId);
 	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, 

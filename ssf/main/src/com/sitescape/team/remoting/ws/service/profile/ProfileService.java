@@ -43,4 +43,5 @@ public interface ProfileService {
 	public void modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML);
 	
 	public void deletePrincipal(String accessToken, long binderId, long principalId);
+	public long addUserWorkspace(String accessToken, long userId);
 }

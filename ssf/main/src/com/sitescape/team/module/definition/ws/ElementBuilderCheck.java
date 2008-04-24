@@ -28,25 +28,27 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.Set;
-import java.util.Map;
-
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.domain.DefinableEntity;
 /**
  *
  * @author Jong Kim
  */
 public class ElementBuilderCheck extends AbstractElementBuilder {
-	   protected boolean build(Element element, Object val) {
-		   if(val instanceof Boolean) {
-			   element.setText(val.toString());
-		   } else {
-			   element.setText(Boolean.FALSE.toString());
-		   }
-		   return true;
-	    }
-
+	protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
+		Object val = attribute.getValue();
+		if(val instanceof Boolean) {
+			element.setText(val.toString());
+		} else {
+			element.setText(Boolean.FALSE.toString());
+		}
+		return true;
+	}
+	//no value found
+	protected boolean build(Element element, DefinableEntity entity, String dataElemName) {
+		element.setText(Boolean.FALSE.toString());
+		return true;
+	}
 }

@@ -28,15 +28,9 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.Map;
-import java.util.Set;
-
 import org.dom4j.Element;
 
-import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Description;
-import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.search.BasicIndexUtils;
 
 /**
  * 

@@ -289,7 +289,16 @@ public interface ObjectKeys {
 	public static final String INPUT_OPTION_COPY_BINDER_CASCADE="com.sitescape.team.options.cascade.copy";
 	//Default=Boolean.FALSE; When deleteing a profile entry, delete the associated workspace and all source/sub binders
 	public static final String INPUT_OPTION_DELETE_USER_WORKSPACE="com.sitescape.team.options.delete.userworkspace";
-	//Reserved data field names
+	//migration flags
+	public static final String INPUT_OPTION_NO_INDEX="com.sitescape.team.options.no_indexing";
+    public static final String INPUT_OPTION_NO_WORKFLOW="com.sitescape.team.options.no_workflow_processing";
+    public static final String INPUT_OPTION_CREATION_NAME="com.sitescape.team.options.entity.creation.name";
+    public static final String INPUT_OPTION_CREATION_DATE="com.sitescape.team.options.entity.creation.timestamp";
+    public static final String INPUT_OPTION_MODIFICATION_NAME="com.sitescape.team.options.entity.modification.name";
+    public static final String INPUT_OPTION_MODIFICATION_DATE="com.sitescape.team.options.entity.modification.timestamp";
+    public static final String INPUT_OPTION_FORCE_WORKFLOW_STATE="com.sitescape.team.options.entity.workflow.state";
+    public static final String INPUT_OPTION_NO_MODIFICATION_DATE="com.sitescape.team.options.no_modificationdate_processing";
+ 	//Reserved data field names
     public static final String FIELD_ID="id";
     public static final String FIELD_ZONE="zoneId";
     public static final String FIELD_INTERNALID="internalId";

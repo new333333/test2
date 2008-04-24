@@ -31,7 +31,7 @@ package com.sitescape.team.remoting.ws.service.folder.attachments;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.util.Calendar;
 import javax.activation.DataHandler;
 import javax.xml.soap.SOAPException;
 
@@ -62,6 +62,12 @@ public class AttachmentUtilities {
 	
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
+		
+		uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName, null, null, null);
+	}
+	public void uploadFolderFile(long binderId, long entryId, 
+				String fileUploadDataItemName, String fileName, String modifier, Calendar modificationDate, Map options) {
+			
 		fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
 		File originalFile = new File(fileName);
 		fileName = StringCheckUtil.check(originalFile.getName());
@@ -83,7 +89,7 @@ public class AttachmentUtilities {
 		}
 
 		// Wrap it up in a datastructure expected by our app.
-		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh);
+		AxisMultipartFile mf = new AxisMultipartFile(fileName, dh, modifier, modificationDate==null?null:modificationDate.getTime());
 		
 		// Create a map of file item names to items 
 		Map fileItems = new HashMap();
@@ -92,7 +98,7 @@ public class AttachmentUtilities {
 		try {
 			// Finally invoke the business method. 
 			getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-				new EmptyInputData(), fileItems, null, null, null);
+				new EmptyInputData(), fileItems, null, null, options);
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);

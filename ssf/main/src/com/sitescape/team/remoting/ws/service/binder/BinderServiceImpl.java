@@ -40,8 +40,9 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 	}
 	public void setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
 		HashMap wfs = new HashMap();
-		for (int i=0; i+1<workflowAssociations.length; i+=2) {
-			wfs.put(workflowAssociations[i], workflowAssociations[i+1]);
+		for (int i=0; i<workflowAssociations.length; i++) {
+			String [] vals = workflowAssociations[i].split(",");
+			wfs.put(vals[0], vals[1]);
 		}
 		getBinderModule().setDefinitions(binderId, Arrays.asList(definitionIds), wfs);
 	}
@@ -58,8 +59,14 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		
 		return doc.getRootElement().asXML();
 	}
-	public void setTeamMembers(String accessToken, long binderId, Long[] memberIds) {
-		getBinderModule().setTeamMembers(binderId, Arrays.asList(memberIds));
+	public void setTeamMembers(String accessToken, long binderId, String []memberNames) {
+		Collection<Principal> principals = getProfileModule().getPrincipalsByName(Arrays.asList(memberNames));
+		Set<Long>ids = new HashSet();
+		for (Principal p:principals) {
+			ids.add(p.getId());
+		}
+		
+		getBinderModule().setTeamMembers(binderId, ids);
 	}
 	public void setFunctionMembership(String accessToken, long binderId, String inputDataAsXml) {
 		Binder binder = getBinderModule().getBinder(binderId);
@@ -103,5 +110,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		Binder binder = getBinderModule().getBinder(binderId);
 		getAdminModule().setWorkAreaOwner(binder, userId, false); 		
 	}
-
+	public void indexBinder(String accessToken, long binderId) {
+		getBinderModule().indexBinder(binderId, true);
+	}
 }

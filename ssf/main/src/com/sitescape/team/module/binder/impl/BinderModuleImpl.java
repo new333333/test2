@@ -172,6 +172,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	 			case report:
 	 				 getAccessControlManager().checkOperation(binder, WorkAreaOperation.GENERATE_REPORTS);
 	 				 break;
+				case changeEntryTimestamps:
+					getAccessControlManager().checkOperation(binder, WorkAreaOperation.SITE_ADMINISTRATION);
+					break;
 	  			default:
 	   				throw new NotSupportedException(operation.toString(), "checkAccess");
 
@@ -254,6 +257,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			def = parentBinder.getEntryDef();
 		} 
    		
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(parentBinder, BinderOperation.changeEntryTimestamps);
 		if (def.getType() == Definition.FOLDER_VIEW) {
 			checkAccess(parentBinder, BinderOperation.addFolder);
 			Binder binder = loadBinderProcessor(parentBinder).addBinder(parentBinder, def, Folder.class, inputData, fileItems, options);

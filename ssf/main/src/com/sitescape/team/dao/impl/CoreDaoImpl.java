@@ -40,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
+import java.util.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -399,6 +399,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * @return
 	 */
 	public List loadObjects(final String query, final Map values) {
+		if (values.isEmpty()) return Collections.EMPTY_LIST;
 		return (List)getHibernateTemplate().execute(
 		        new HibernateCallback() {
 		            public Object doInHibernate(Session session) throws HibernateException {

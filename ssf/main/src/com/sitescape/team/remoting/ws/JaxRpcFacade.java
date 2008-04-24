@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,6 +48,7 @@ import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.remoting.ws.service.binder.BinderService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
+import com.sitescape.team.remoting.ws.service.folder.MigrationService;
 import com.sitescape.team.remoting.ws.service.ical.IcalService;
 import com.sitescape.team.remoting.ws.service.profile.ProfileService;
 import com.sitescape.team.remoting.ws.service.search.SearchService;
@@ -75,6 +77,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	private ProfileService profileService;
 	private ZoneService zoneService;
 	private BinderService binderService;
+	private MigrationService migrationService;
 	
 	protected void onInit() {
 		this.templateService = (TemplateService) getWebApplicationContext().getBean("templateService");
@@ -174,6 +177,13 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 
 	/**
 	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#addReply}.
+	 */
+	public long addReply(long binderId, long parentEntryId, String definitionId, String inputDataAsXML, String attachedFileName) {
+		return this.folderService.addReply(null, binderId, parentEntryId, definitionId, inputDataAsXML, attachedFileName);
+	}
+	/**
+	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#modifyFolderEntry}.
 	 */
 	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
@@ -184,18 +194,18 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#uploadFolderFile}.
 	 */
+	public void synchronizeMirroredFolder(long binderId) {
+		this.folderService.synchronizeMirroredFolder(null, binderId);
+	}
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#uploadFolderFile}.
+	 */
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
 		this.folderService.uploadFolderFile(null, binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	
-	/**
-	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#addEntryWorkflow}.
-	 */
-	public void addEntryWorkflow(long binderId, long entryId, String definitionId, String startState) {
-		this.folderService.addEntryWorkflow(null, binderId, entryId, definitionId, startState);
-	}
 	/**
 	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.ical#uploadCalendarEntries}.
@@ -241,29 +251,19 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#addUserWorkspace}.
+	 */
+	public long addUserWorkspace(long userId) {
+		return this.profileService.addUserWorkspace(null, userId);
+	}
+	/**
+	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#addUserToGroup}.
 	 */
 	public void addUserToGroup(long userId, String username, long groupId) {
 		this.profileService.addUserToGroup(null, userId, username, groupId);
 	}
 	
-	/*
-	public long addUser(long binderId, String definitionId, String inputDataAsXML) {
-		return this.facade.addUser(binderId, definitionId, inputDataAsXML);
-	}
-
-	public long addGroup(long binderId, String definitionId, String inputDataAsXML) {
-		return this.facade.addGroup(binderId, definitionId, inputDataAsXML);
-	}
-
-	public void modifyPrincipal(long binderId, long principalId, String inputDataAsXML) {
-		this.facade.modifyPrincipal(binderId, principalId, inputDataAsXML);
-	}
-
-	public void deletePrincipal(long binderId, long principalId) {
-		this.facade.deletePrincipal(binderId, principalId);
-	}
-	*/
 	
 	/**
 	 * @deprecated As of ICEcore version 1.1,
@@ -289,8 +289,8 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		return this.searchService.getTeamsAsXML(null);
 	}
 	
-	public void setTeamMembers(long binderId, Long[] memberIds) {
-		this.binderService.setTeamMembers(null, binderId, memberIds);
+	public void setTeamMembers(long binderId, String[] memberNames) {
+		this.binderService.setTeamMembers(null, binderId, memberNames);
 	}	/**
 	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.zone#addZoneUnderPortal}.
@@ -315,5 +315,63 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 		this.zoneService.deleteZoneUnderPortal(null, zoneName);
 	}
 
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.zone#deleteZoneUnderPortal}.
+	 */
+	public void indexFolder(long folderId) {
+		this.binderService.indexBinder(null, folderId);
+	}
+	//Migration services from sitescape forum
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder.migration#addBinder}.
+	 */
+	public long migrateBinder(long parentId, String definitionId, String inputDataAsXML,
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return this.migrationService.addBinder(null, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+	}
+	
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.migration#addFolderEntry}.
+	 */
+	public long migrateFolderEntry(long binderId, String definitionId, String inputDataAsXML, 
+							   String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return this.migrationService.addFolderEntry(null, binderId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+	}
+		
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.migration#addReply}.
+	 */
+	public long migrateReply(long binderId, long parentId, String definitionId,
+					     String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		return this.migrationService.addReply(null, binderId, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+	}
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.migration#uploadFolderFile}.
+	 */
+	public void migrateFolderFile(long binderId, long entryId, String fileUploadDataItemName,
+								 String fileName, String modifier, Calendar modificationDate) {
+		this.migrationService.uploadFolderFile(null, binderId, entryId, fileUploadDataItemName, fileName, modifier,  modificationDate);
+	}
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.migration#uploadFolderFileStaged}.
+	 */
+	public void migrateFolderFileStaged(long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
+		this.migrationService.uploadFolderFileStaged(null, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath, modifier,  modificationDate);
+	}
+
+	/**
+	 * @deprecated As of ICEcore version 1.1,
+	 * replaced by {@link com.sitescape.team.remoting.ws.service.migration#addEntryWorkflow}.
+	 */
+	public void migrateEntryWorkflow(long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate) {
+		this.migrationService.addEntryWorkflow(null, binderId, entryId, definitionId, startState, modifier, modificationDate);
+	}
 
 }

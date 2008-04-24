@@ -42,10 +42,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
-/**
-* Handle file field in mail notification.
-* @author Janet McCann
-*/
+
 public class AbstractElementBuilderFile extends AbstractElementBuilder {
 	protected void generateValues(Collection files, Element element, FolderEntry fEntry, String elementName)
 	{

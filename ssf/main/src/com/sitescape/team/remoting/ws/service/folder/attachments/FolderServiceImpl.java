@@ -33,6 +33,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringBufferInputStream;
 import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
@@ -60,7 +62,11 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 			String fileUploadDataItemName, String fileName) {
 		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
-	
+	protected Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
+	{
+		return attachmentUtilities.getFileAttachments(fileUploadDataItemName, fileNames);
+	}
+
 	private static class CalendarDataSource implements DataSource
 	{
 		String data = "";

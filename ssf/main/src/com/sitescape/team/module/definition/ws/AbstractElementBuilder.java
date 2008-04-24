@@ -27,12 +27,10 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.definition.ws;
-import java.util.Map;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;

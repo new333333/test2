@@ -79,17 +79,17 @@ public class NotifyVisitor {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		if (entityId != null) adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, binderId.toString());
+		if (entityId != null) adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entityId.toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, type);
 		return adapterUrl.toString();
 	}
-	public String getPermaLink(Long binderId, Long entityId, String type, FileAttachment file) {
+	public String getFileLink(Long binderId, Long entityId, String type, Object file) {
 		AdaptedPortletURL adapterUrl = AdaptedPortletURL.createAdaptedPortletURLOutOfWebContext("ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, binderId.toString());
-		if (entityId != null) adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, binderId.toString());
+		if (entityId != null) adapterUrl.setParameter(WebKeys.URL_ENTITY_ID, entityId.toString());
 		adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, type);
-		adapterUrl.setParameter(WebKeys.URL_FILE_ID, file.getId().toString());
+		adapterUrl.setParameter(WebKeys.URL_FILE_ID, ((FileAttachment)file).getId().toString());
 		return adapterUrl.toString();
 	}
 }

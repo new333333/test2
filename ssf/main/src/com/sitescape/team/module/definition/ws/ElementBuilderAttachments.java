@@ -28,25 +28,23 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.Collection;
-
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.module.definition.DefinitionUtils;
 
-/**
-* Handle unnamed attachments in mail notification.  This implememtation will
-* send the file name only in a notification for both summary and full types. 
-* See <code>NotifyBuilderAttachmentsSend</code>to send the actual file.
-* @author Janet McCann
-*/
-public class ElementBuilderAttachments extends AbstractElementBuilderFile {
+
+public class ElementBuilderAttachments extends AbstractElementBuilder {
 	protected boolean build(Element element, DefinableEntity entity, String dataElemName) {
-		if (entity instanceof FolderEntry) {
-			FolderEntry fEntry = (FolderEntry)entity;
-			Collection atts = entity.getFileAttachments();
-			generateValues(atts, element, fEntry, "file");
+		for (FileAttachment att:entity.getFileAttachments()) {
+			if (att != null && att.getFileItem() != null) {
+				Element value = element.addElement("file");
+				value.setText(att.getFileItem().getName());
+				String webUrl = DefinitionUtils.getViewURL(entity, att); 
+				value.addAttribute("href", webUrl);
+				context.handleAttachment(att, webUrl);
+			}
 		}
 		return true;
 	}

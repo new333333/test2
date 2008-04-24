@@ -32,19 +32,23 @@ import java.util.Calendar;
 
 public interface MigrationService {
 
-	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML,
+	public long addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML,
 			String creator, Calendar creationDate, String modifier, Calendar modificationDate);
 	
 	public long addFolderEntry(String accessToken, long binderId, String definitionId,
-							   String inputDataAsXML, String attachedFileName, 
+							   String inputDataAsXML, 
 							   String creator, Calendar creationDate, String modifier, Calendar modificationDate);
 		
 	public long addReply(String accessToken, long binderId, long parentId, String definitionId,
 					     String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate);
 
 	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName,
-								 String fileName, String creator, Calendar creationDate, String modifier, Calendar modificationDate);
+								 String fileName, String modifier, Calendar modificationDate);
 	
+	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate);
+	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate);
+
 	public static class Timestamps implements java.io.Serializable
 	{
 		String creator;

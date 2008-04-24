@@ -28,35 +28,32 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map;
+import java.util.Collection;
 
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Principal;
+import com.sitescape.team.util.ResolveIds;
 
 /**
  *
  * @author Jong Kim
  */
 public class ElementBuilderUserListSelect extends AbstractElementBuilder {
-	   protected boolean build(Element element, Object obj) {
-	    	if (obj instanceof Set) {
-	    		Set set = (Set)obj;
-	    		for (Iterator iter=set.iterator();iter.hasNext();) {
+/*	   protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
+		   Collection<Principal> users = ResolveIds.getPrincipals(attribute);
+		   if ((users != null) && !users.isEmpty()) {
+	    		for (Principal p:users) {
 		    		Element value = element.addElement("value");		    		
-		    		obj = iter.next();
-		    		value.setText(obj.toString());
+//		    		value.setText(((Principal)iter.next()).getTitle());
+		    		value.setText(p.getId().toString());
 	    		}
-	    	} else if (obj != null) {
-		    	Element value = element.addElement("value");
-	    		value.setText(obj.toString());
 	    	} else {
 	    		element.addElement("value");
 	    	}
 	    	return true;
 	    }
-
+	    */
 }

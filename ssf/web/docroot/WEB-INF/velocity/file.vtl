@@ -38,7 +38,7 @@
 		${selection.fileItem.name}
 	#else
 		<a style="text-decoration:underline;" 
-			href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.Id, $ssVisitor.Entity.Id, $ssVisitor.Entity.EntityType, $selection)">
+			href="$ssVisitor.getFileLink(${ssVisitor.Entity.ParentBinder.Id}, ${ssVisitor.Entity.Id}, ${ssVisitor.Entity.EntityType}, ${selection})">
 			${selection.fileItem.name}</a>
 	#end
 	</li>

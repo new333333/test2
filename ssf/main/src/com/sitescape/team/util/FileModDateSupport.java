@@ -38,4 +38,9 @@ public interface FileModDateSupport {
 	 * @return
 	 */
 	public Date getModDate();
+	/**
+	 * Return modifier user name. It may be <code>null</code>.
+	 * @return
+	 */
+	public String getModifier();
 }

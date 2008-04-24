@@ -5,7 +5,7 @@ public interface BinderService {
 	
 	public String getTeamMembersAsXML(String accessToken, long binderId);
 	
-	public void setTeamMembers(String accessToken, long binderId, Long[] memberIds);
+	public void setTeamMembers(String accessToken, long binderId, String[] memberNames);
 	/**
 	 * 
 	 * @param accessToken
@@ -31,5 +31,5 @@ public interface BinderService {
 	public void setFunctionMembership(String accessToken, long binderId, String inputDataAsXml);
 	public void setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit);
 	public void setOwner(String accessToken, long binderId, long userId);
-
+	public void indexBinder(String accessToken, long binderId);
 }

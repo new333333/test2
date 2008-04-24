@@ -33,20 +33,23 @@ import java.util.Collection;
 import java.util.Iterator;
 
 public class LongIdUtil {
-	public static final String DEFAULT_SEPARATOR=" ";
-
+	//different services used different values
+	private static String SPACE_SEPARATOR = " ";
+	private static String COMMA_SEPARATOR = ",";
+	
 	public static Set<Long> getIdsAsLongSet(String []sIds) {
 		Set<Long> memberIds = new HashSet();
 		if (sIds != null) {
 			for (int i = 0; i < sIds.length; i++) {
-				memberIds.addAll(getIdsAsLongSet(sIds[i], DEFAULT_SEPARATOR));
+				memberIds.addAll(getIdsAsLongSet(sIds[i]));
 			}
 		}
 		return memberIds;		
 	}
 	
 	public static Set<Long> getIdsAsLongSet(String ids) {
-		return getIdsAsLongSet(ids, DEFAULT_SEPARATOR);
+		if (ids.contains(",")) return getIdsAsLongSet(ids, COMMA_SEPARATOR);
+		return getIdsAsLongSet(ids, SPACE_SEPARATOR);
 	}
 	public static Set<Long> getIdsAsLongSet(String ids, String separator) {
 		Set<Long> idSet = new HashSet<Long>();
@@ -60,7 +63,8 @@ public class LongIdUtil {
 		return idSet;
 	}
 	public static Set<String> getIdsAsStringSet(String ids) {
-		return getIdsAsStringSet(ids, DEFAULT_SEPARATOR);
+		if (ids.contains(",")) return getIdsAsStringSet(ids, COMMA_SEPARATOR);
+		return getIdsAsStringSet(ids, SPACE_SEPARATOR);
 	}
 	public static Set<String> getIdsAsStringSet(String ids, String separator) {
 		Set<String> idSet = new HashSet<String>();
@@ -79,7 +83,7 @@ public class LongIdUtil {
 		StringBuffer buf = new StringBuffer();
 		if (ids != null) {
 			for (int i = 0; i < ids.length; i++) {
-				String[] uIds = ids[i].split(DEFAULT_SEPARATOR);
+				String[] uIds = ids[i].split(SPACE_SEPARATOR);
 				for (int j = 0; j < uIds.length; j++) {
 					if (uIds[j].length() > 0) {
 						buf.append(uIds[j].trim());
@@ -97,7 +101,7 @@ public class LongIdUtil {
 			Object id = iter.next();
 			if (id == null) continue;
 			buf.append(id.toString());
-			buf.append(DEFAULT_SEPARATOR);
+			buf.append(SPACE_SEPARATOR);
 		}
 		return buf.toString();
 	}
