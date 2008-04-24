@@ -384,8 +384,10 @@
 		</copy>
 	</target>
 	
+
 	<target name="make-strings.xml">
-			<java 	classname="com.sitescape.team.tools.strings.GenerateStringsXml"
+		<!-- not needed with replacement of velocity
+					<java 	classname="com.sitescape.team.tools.strings.GenerateStringsXml"
 					fork="true"
 					newenvironment="true"
 					failonerror="true"
@@ -393,8 +395,8 @@
 				<classpath refid="project.classpath" />
 				<arg value="${web.dir}/WEB-INF" />
 			</java>	 
-		</target>
-	
+-->
+	</target>
 	<target name="make-portlet.xml">
 				<java 	classname="com.sitescape.team.tools.portlet.GeneratePortletXml"
 						fork="true"

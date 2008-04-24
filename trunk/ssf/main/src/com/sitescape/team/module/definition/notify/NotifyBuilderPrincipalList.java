@@ -44,7 +44,7 @@ import com.sitescape.team.util.ResolveIds;
 public class NotifyBuilderPrincipalList extends AbstractNotifyBuilder {
 
     public String getDefaultTemplate() {
-    	return "principallist.vtl";
+    	return "principallist.vm";
     }
     protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
     	Collection users = ResolveIds.getPrincipals(attr);

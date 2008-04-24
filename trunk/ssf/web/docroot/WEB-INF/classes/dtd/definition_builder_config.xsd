@@ -193,7 +193,7 @@
 	  <xsd:element name="args" type="optionalArgsType" minOccurs="0" maxOccurs="1"/>
 	</xsd:sequence>
 	<xsd:attribute name="notifyBuilder" type="xsd:string"/>
-	<xsd:attribute name="vtl" type="xsd:string"/>
+	<xsd:attribute name="velocity" type="xsd:string"/>
   </xsd:complexType>
   
  <xsd:complexType name="webServiceType">

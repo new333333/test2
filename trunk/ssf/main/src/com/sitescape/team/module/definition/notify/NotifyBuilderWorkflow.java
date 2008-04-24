@@ -43,7 +43,7 @@ import com.sitescape.team.module.workflow.WorkflowUtils;
 */
 public class NotifyBuilderWorkflow extends AbstractNotifyBuilder {
     public String getDefaultTemplate() {
-    	return "workflow.vtl";
+    	return "workflow.vm";
     }
 
 	protected void build(NotifyVisitor visitor, String template, VelocityContext ctx) {

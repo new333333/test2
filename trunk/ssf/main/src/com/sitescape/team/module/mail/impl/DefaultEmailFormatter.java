@@ -522,7 +522,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
            	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null);
 			ctx.put("ssDocument", document);
 			ctx.put("ssVisitor", visitor);
-			velocityEngine.mergeTemplate("digestTOC.vtl", ctx, writer);
+			velocityEngine.mergeTemplate("digestTOC.vm", ctx, writer);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template", ex);
 		}
@@ -533,7 +533,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		    VelocityContext ctx = new VelocityContext();
            	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null);
 			ctx.put("ssVisitor", visitor);
-			velocityEngine.mergeTemplate("folder.vtl", ctx, writer);
+			velocityEngine.mergeTemplate("folder.vm", ctx, writer);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template", ex);
 		}

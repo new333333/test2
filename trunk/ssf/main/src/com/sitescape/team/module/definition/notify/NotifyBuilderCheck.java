@@ -37,7 +37,7 @@ import org.apache.velocity.VelocityContext;
 public class NotifyBuilderCheck extends AbstractNotifyBuilder {
 
     public String getDefaultTemplate() {
-    	return "checkbox.vtl";
+    	return "checkbox.vm";
     }
 
     protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, String propertyName) {
