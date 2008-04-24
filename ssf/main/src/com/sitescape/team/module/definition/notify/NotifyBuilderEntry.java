@@ -38,7 +38,7 @@ import com.sitescape.team.module.definition.DefinitionUtils;
  */
 public class NotifyBuilderEntry extends AbstractNotifyBuilder {
     public String getDefaultTemplate() {
-    	return "entry.vtl";
+    	return "entry.vm";
     }
     protected void build(NotifyVisitor visitor, String template, VelocityContext ctx) {
     	if (!Notify.NotifyType.summary.equals(visitor.getNotifyDef().getType())) {
@@ -70,7 +70,7 @@ public class NotifyBuilderEntry extends AbstractNotifyBuilder {
     }
     protected void doTitle(NotifyVisitor visitor, VelocityContext ctx) {
        	try {
-    		NotifyBuilderUtil.getVelocityEngine().mergeTemplate("digestTitle.vtl", ctx, visitor.getWriter());
+    		NotifyBuilderUtil.getVelocityEngine().mergeTemplate("digestTitle.vm", ctx, visitor.getWriter());
     	} catch (Exception ex) {
     		NotifyBuilderUtil.logger.error("Error processing template " + "digestTitle", ex);
     	}

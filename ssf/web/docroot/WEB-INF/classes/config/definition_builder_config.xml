@@ -113,7 +113,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_signature.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_signature.jsp" />
 		</jsps>
-		<notify vtl="signature.vtl"/>
+		<notify velocity="signature.vm"/>
 	</item>
 	
 	<item name="entryCreatorView" caption="__entry_creator" category="commonEntryViewData" display="view">
@@ -124,7 +124,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_creator.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_creator.jsp" />
 		</jsps>
-		<notify vtl="creator.vtl"/>
+		<notify velocity="creator.vm"/>
 	</item>
 	
 	<item name="entryDateView" caption="__entry_date" category="commonEntryViewData" display="view">
@@ -135,7 +135,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_date.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_date.jsp" />
 		</jsps>
-		<notify vtl="creationdate.vtl"/>
+		<notify velocity="creationdate.vm"/>
 	</item>
 	
 	<item name="descriptionView" caption="__description" category="commonEntryViewData" display="view">
@@ -336,7 +336,7 @@
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_title.jsp" />
 			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_title.jsp" />
 		</jsps>
-		<notify vtl="title.vtl"/>
+		<notify velocity="title.vm"/>
 	</item>
 	
 	
@@ -1757,7 +1757,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDate" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
-		<notify vtl="date.vtl"/> 
+		<notify velocity="date.vm"/> 
 	</item>
 	
 	<item name="date_time" caption="__date_time" type="data" category="commonEntryData" display="form">
@@ -1780,7 +1780,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderDateTime" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderDate" />
-		<notify vtl="date_time.vtl"/> 
+		<notify velocity="date_time.vm"/> 
 	</item>
 	
 	<item name="user_list" caption="__user_list" type="data" category="commonEntryData" display="form">
@@ -1856,7 +1856,7 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderSurvey" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderSurvey" />
-		<notify vtl="survey.vtl" />
+		<notify velocity="survey.vm" />
 	</item>
 
 <!-- Entry layout items -->
@@ -1979,7 +1979,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/box.jsp" />
 		</jsps>
-		<notify vtl="box.vtl" />
+		<notify velocity="box.vm" />
 	</item>
 		
 	<item name="expandableDiv" caption="__expandable_div" category="generalLayout" display="form">
@@ -2042,7 +2042,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/expandable_div.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/expandable_div.jsp" />
 		</jsps>
-		<notify vtl="expandable_div.vtl" />
+		<notify velocity="expandable_div.vm" />
 	</item>
 		
 	<item name="fieldset" caption="__fieldset" category="generalLayout" display="form">
@@ -2093,7 +2093,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/fieldset.jsp" />
 		</jsps>
-		<notify vtl="fieldset.vtl"/>
+		<notify velocity="fieldset.vm"/>
 	</item>
 		
 	<item name="divider" caption="__divider" category="generalLayout" display="form">
@@ -2106,7 +2106,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/divider.jsp" />
 		</jsps>
-		<notify vtl="divider.vtl" />
+		<notify velocity="divider.vm" />
 	</item>
 		
 	<item name="table2" caption="__two_column_table" category="generalLayout" display="form">
@@ -2166,7 +2166,7 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table2.jsp" />
 	
 		</jsps>
-		<notify vtl="table2.vtl" />
+		<notify velocity="table2.vm" />
 	</item>
 	<item name="table3" caption="__three_column_table" category="generalLayout" display="form">
 		<properties>
@@ -2224,7 +2224,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/table3.jsp" />
 		</jsps>
-		<notify vtl="table3.vtl" />
+		<notify velocity="table3.vm" />
 	</item>
 	<item name="html" caption="__html" category="generalLayout" display="form">
 		<properties>
@@ -2280,7 +2280,7 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/html.jsp" />
 		</jsps>
-		<notify vtl="html.vtl" />
+		<notify velocity="html.vm" />
 	</item>
 	<item name="customJsp" caption="__custom_jsp" type="data" category="generalLayout" display="form">
 		<properties>

@@ -45,7 +45,7 @@ import com.sitescape.team.domain.Event;
 public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 	
     public String getDefaultTemplate() {
-    	return "event.vtl";
+    	return "event.vm";
     }
 	protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
 		Object obj = attr.getValue();

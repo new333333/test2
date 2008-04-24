@@ -195,13 +195,13 @@ public class NotifyBuilderUtil {
 			
 	   	try {
     		String fieldBuilderClassName = flagElement.attributeValue("notifyBuilder");
-       		String template = flagElement.attributeValue("vtl");
+       		String template = flagElement.attributeValue("velocity");
        		if (Validator.isNotNull(fieldBuilderClassName)) {
        			Class fieldBuilderClass = ReflectHelper.classForName(fieldBuilderClassName);
        			NotifyBuilder fieldBuilder = (NotifyBuilder) fieldBuilderClass.newInstance();
         		fieldBuilder.buildElement(visitor, template, ctx);
        		} else {
-       			if (Validator.isNull(template)) template = "dataElement.vtl";
+       			if (Validator.isNull(template)) template = "dataElement.vm";
        			try {
        				getVelocityEngine().mergeTemplate(template, ctx, visitor.getWriter());
        			} catch (Exception ex) {
