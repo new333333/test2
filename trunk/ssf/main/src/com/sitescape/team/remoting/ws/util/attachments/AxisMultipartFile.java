@@ -31,13 +31,14 @@ package com.sitescape.team.remoting.ws.util.attachments;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.util.Date;
 import javax.activation.DataHandler;
 
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.util.FileHelper;
+import com.sitescape.team.util.FileModDateSupport;
 
 /**
  * <code>MultipartFile</code> implementation for Apache Axis attachment support.
@@ -53,13 +54,15 @@ import com.sitescape.team.util.FileHelper;
  * @author jong
  *
  */
-public class AxisMultipartFile implements MultipartFile {
+public class AxisMultipartFile implements MultipartFile, FileModDateSupport {
 
 	private String fileName;
 	private DataHandler dataHandler;
 	private File file;
 	private long size;
-	
+	private Date modDate;
+	private String modifier=null;
+
 	public AxisMultipartFile(String fileName, DataHandler dataHandler) {
 		this.fileName = fileName;
 		this.dataHandler = dataHandler;
@@ -67,6 +70,15 @@ public class AxisMultipartFile implements MultipartFile {
 		this.size = file.length();
 	}
 	
+	public AxisMultipartFile(String fileName, DataHandler dataHandler, String modifier, Date modDate) {
+		this.fileName = fileName;
+		this.dataHandler = dataHandler;
+		this.file = new File(dataHandler.getName());
+		this.size = file.length();
+		this.modifier = modifier;
+		this.modDate = modDate;
+	}
+
 	public String getName() {
 		throw new UnsupportedOperationException();
 	}
@@ -100,5 +112,16 @@ public class AxisMultipartFile implements MultipartFile {
 	public void transferTo(File dest) throws IOException, IllegalStateException {
 		FileHelper.move(this.file, dest);
 	}
-
+	public Date getModDate() {
+		return modDate;
+	}
+	public void setModDate(Date modDate) {
+		this.modDate = modDate;
+	}
+	public String getModifier() {
+		return modifier;
+	}
+	public void setModifier(String modifier) {
+		this.modifier = modifier;
+	}
 }

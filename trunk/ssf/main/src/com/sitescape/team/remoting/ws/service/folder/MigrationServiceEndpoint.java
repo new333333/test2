@@ -43,15 +43,15 @@ public class MigrationServiceEndpoint extends ServletEndpointSupport implements 
 		return migrationService;
 	}
 	
-	public long addFolder(String accessToken, long parentId, String definitionId, String inputDataAsXML, String creator, 
+	public long addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML, String creator, 
 			Calendar creationDate, String modifier, Calendar modificationDate) {
-		return getMigrationService().addFolder(accessToken, parentId, definitionId, inputDataAsXML, 
+		return getMigrationService().addBinder(accessToken, parentId, definitionId, inputDataAsXML, 
 				 creator, creationDate, modifier, modificationDate);
 	}
 	
-	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, 
+	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, 
 			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		return getMigrationService().addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, 
+		return getMigrationService().addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, 
 				creator, creationDate, modifier, modificationDate);
 	}
 
@@ -62,9 +62,17 @@ public class MigrationServiceEndpoint extends ServletEndpointSupport implements 
 	}
 
 	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, 
-			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+			String modifier, Calendar modificationDate) {
 		getMigrationService().uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName, 
-				creator, creationDate, modifier, modificationDate);
+				modifier, modificationDate);
+	}
+	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
+		getMigrationService().uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName,
+				fileName, stagedFileRelativePath, modifier, modificationDate);
+	}
+	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate) {
+		getMigrationService().addEntryWorkflow(accessToken, binderId, entryId, definitionId, startState, modifier, modificationDate);
 	}
 
 }

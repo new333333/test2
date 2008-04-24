@@ -29,6 +29,7 @@
 package com.sitescape.team.remoting.ws.service.folder;
 
 import java.io.File;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -46,10 +47,11 @@ import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.util.DomInputData;
+import com.sitescape.team.util.DatedMultipartFile;
 import com.sitescape.team.util.SPropsUtil;
-import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
+import com.sitescape.util.Validator;
 
 public class FolderServiceImpl extends BaseService implements FolderService {
 
@@ -116,6 +118,10 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 	}
 	
 	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
+		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, null);
+	}
+	protected long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
+
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
@@ -126,7 +132,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		SimpleProfiler.setProfiler(profiler);
 		try {
 			return getFolderModule().addEntry(new Long(binderId), definitionId, 
-				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), null).longValue();
+				new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -153,39 +159,59 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}			
 	}
 
-	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML) {
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
+		return addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, attachedFileName, null);
+	}
+	
+	protected long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
 		
 		try {
 			return getFolderModule().addReply(new Long(binderId), new Long(parentId), 
-				definitionId, new DomInputData(doc, getIcalModule()), null, null).longValue();
+				definitionId, new DomInputData(doc, getIcalModule()), getFileAttachments("ss_attachFile", new String[]{attachedFileName} ), options).longValue();
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
 	}
 
+	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
+		addEntryWorkflow(accessToken, binderId, entryId, definitionId, null);
+	}
+	protected void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, Map options) {
+		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, options);
+
+	}
 	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
-	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState) {
-		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, startState);
-	}
 
 	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
+		uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, 
+				stagedFileRelativePath, null, null, null);
+	}
+	protected void uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, 
+			String stagedFileRelativePath, String modifier, Calendar modificationDate, Map options) {
 		boolean enable = SPropsUtil.getBoolean("staging.upload.files.enable", false);
 		if(enable) {
 			fileUploadDataItemName = StringCheckUtil.check(fileUploadDataItemName);
 			stagedFileRelativePath = StringCheckUtil.check(stagedFileRelativePath);
+			fileName = StringCheckUtil.check(fileName);
 			
 			// Get the staged file
 			String rootPath = SPropsUtil.getString("staging.upload.files.rootpath", "").trim();
-			File file = new File(rootPath, stagedFileRelativePath);
+			String filePath=stagedFileRelativePath;
+			if (Validator.isNull(filePath)) {
+				filePath = fileName;
+			} else {
+				filePath += File.separator + fileName;
+			}
+			File file = new File(rootPath, filePath);
 			
 			// Wrap it in a datastructure expected by our app.
-			SimpleMultipartFile mf = new SimpleMultipartFile(fileName, file, false);
+			DatedMultipartFile mf = new DatedMultipartFile(fileName, file, false, modifier, modificationDate==null?null:modificationDate.getTime());
 			
 			// Create a map of file item names to items 
 			Map fileItems = new HashMap();
@@ -194,7 +220,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 			try {
 				// Finally invoke the business method. 
 				getFolderModule().modifyEntry(new Long(binderId), new Long(entryId), 
-					new EmptyInputData(), fileItems, null, null, null);
+					new EmptyInputData(), fileItems, null, null, options);
 				// If you're here, the transaction was successful. 
 				// Check if we need to delete the staged file or not.
 				if(SPropsUtil.getBoolean("staging.upload.files.delete.after", false)) {
@@ -207,7 +233,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}
 		else {
 			throw new UnsupportedOperationException("Staged file upload is disabled: " + binderId + ", " + 
-					entryId + ", " + fileUploadDataItemName + ", " + stagedFileRelativePath);
+					entryId + ", " + fileUploadDataItemName + ", " + stagedFileRelativePath + ", " + fileName);
 		}
 	}
 

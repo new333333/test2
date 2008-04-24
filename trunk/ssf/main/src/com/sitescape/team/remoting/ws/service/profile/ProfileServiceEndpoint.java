@@ -69,6 +69,9 @@ public class ProfileServiceEndpoint implements ServiceLifecycle, ProfileService 
 		getProfileService().modifyPrincipal(accessToken, binderId, principalId, inputDataAsXML);
 	}
 	
+	public long addUserWorkspace(String accessToken, long userId) {
+		return getProfileService().addUserWorkspace(accessToken, userId);
+	}
 	public void init(Object context) throws ServiceException {
 		this.profileService = (ProfileService) SpringContextUtil.getBean("profileService");
 	}

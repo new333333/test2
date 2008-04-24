@@ -28,16 +28,13 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.Collection;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.Map;
 
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.util.ResolveIds;
 
 /**
@@ -46,17 +43,19 @@ import com.sitescape.team.util.ResolveIds;
  */
 public class ElementBuilderPlaces extends AbstractElementBuilder {
 
-	   protected boolean build(Element element, CustomAttribute attribute) {
+/*	   protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
 			Map binders = ResolveIds.getBinderTitlesAndIcons(attribute);
 			if (!binders.isEmpty()) {
 				for (Iterator iter = binders.entrySet().iterator(); iter.hasNext();) {
 					Map.Entry binderData = (Map.Entry) iter.next();
 					Element value = element.addElement("value");
-					value.setText((String) ((Map) binderData.getValue()).get("title"));
+					value.setText((String) ((Map) binderData.getValue()).get("id"));
+//					value.setText((String) ((Map) binderData.getValue()).get("title"));
 				}
 			} else {
 				element.addElement("value");
 			}
 			return true;
 	    }
+	    */
 }

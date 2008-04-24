@@ -327,9 +327,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     
     protected void addEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
-        User user = RequestContextHolder.getRequestContext().getUser();
-        entry.setCreation(new HistoryStamp(user));
-        entry.setModification(entry.getCreation());
+        processCreationTimestamp(entry, ctx);
+        processModificationTimestamp(entry, entry.getCreation(), ctx);
         entry.setParentBinder(binder);
         entry.setLogVersion(Long.valueOf(1));
         
@@ -375,6 +374,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     		InputDataAccessor inputData, List fileUploadItems, Map ctx){
         //no tags typically exists on a new entry - reduce db lookups by supplying list
     	List tags = null;
+  	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
     	if (ctx != null) tags = (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS);
     	if (tags == null) tags = new ArrayList();
     	indexEntry(binder, entry, fileUploadItems, null, true, tags);
@@ -386,6 +386,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //inside write transaction
     protected void addEntry_startWorkflow(Entry entry, Map ctx){
     	if (!(entry instanceof WorkflowSupport)) return;
+    	if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_WORKFLOW))) return;
     	Binder binder = entry.getParentBinder();
     	Map workflowAssociations = (Map) binder.getWorkflowAssociations();
     	if (workflowAssociations != null) {
@@ -427,15 +428,16 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    			modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
 	    			SimpleProfiler.stopProfiler("modifyEntry_fillIn");
 	    			SimpleProfiler.startProfiler("modifyEntry_startWorkflow");
-	    	    	modifyEntry_startWorkflow(entry, ctx);
-	    	    	SimpleProfiler.stopProfiler("modifyEntry_startWorkflow");
-	    	    	SimpleProfiler.startProfiler("modifyEntry_postFillIn");
+	    			modifyEntry_startWorkflow(entry, ctx);
+	    			SimpleProfiler.stopProfiler("modifyEntry_startWorkflow");
+	    			SimpleProfiler.startProfiler("modifyEntry_postFillIn");
 	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
 	    			SimpleProfiler.stopProfiler("modifyEntry_postFillIn");
- 	    			return null;
+	    			return null;
 	    		}});
 	    	SimpleProfiler.stopProfiler("modifyEntry_transactionExecute");
-	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
+		    	
+	    	//handle outside main transaction so main changeLog doesn't reflect attactment changes
 	        SimpleProfiler.startProfiler("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
 	    	List<FileAttachment> filesToReindex = new ArrayList<FileAttachment>();	    
@@ -576,8 +578,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     }
     //inside write transaction
     protected void modifyEntry_fillIn(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {  
-        User user = RequestContextHolder.getRequestContext().getUser();
-        entry.setModification(new HistoryStamp(user));
+        processModificationTimestamp(entry, null, ctx);
         entry.incrLogVersion();
         for (Iterator iter=entryData.entrySet().iterator(); iter.hasNext();) {
         	Map.Entry mEntry = (Map.Entry)iter.next();
@@ -595,6 +596,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //inside write transaction
     protected void modifyEntry_startWorkflow(Entry entry, Map ctx) {
     	if (!(entry instanceof WorkflowSupport)) return;
+    	if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_WORKFLOW))) return;
     	WorkflowSupport wEntry = (WorkflowSupport)entry;
     	//see if updates to entry, trigger transitions in workflow
     	if (!wEntry.getWorkflowStates().isEmpty()) getWorkflowModule().modifyWorkflowStateOnUpdate(wEntry);
@@ -618,7 +620,8 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, Map ctx) {
-    	//tags will be null for now
+  	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
+  	    	//tags will be null for now
     	indexEntry(binder, entry, fileUploadItems, filesToIndex, false, 
     			(ctx == null ? null : (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS )));
     }
@@ -771,13 +774,14 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
     }
      //***********************************************************************************************************
-     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, String startState) {
- 		if (!(entry instanceof WorkflowSupport)) return;
+     public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
+    	  		if (!(entry instanceof WorkflowSupport)) return;
   		WorkflowSupport wEntry = (WorkflowSupport)entry;
   		//set up version for all loggin
   		entry.incrLogVersion();
-  		getWorkflowModule().addEntryWorkflow(wEntry, entry.getEntityIdentifier(), definition, startState);
+  		getWorkflowModule().addEntryWorkflow(wEntry, entry.getEntityIdentifier(), definition, options);
   		if (wEntry.getWorkflowChange() != null) processChangeLog(entry, ChangeLog.STARTWORKFLOW);
+  		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
   		indexEntry(entry);
      }
      //***********************************************************************************************************
@@ -1249,22 +1253,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         fillInIndexDocWithCommonPart(indexDoc, binder, entry, fieldsOnly);
     }
     
-    public void changeEntryTimestamps(final Binder binder, final Entry entry,
-    								  final HistoryStamp creation, final HistoryStamp modification)
-    {
-    	final User user = RequestContextHolder.getRequestContext().getUser();
-    	getTransactionTemplate().execute(new TransactionCallback() {
-    		public Object doInTransaction(TransactionStatus status) {
-    			entry.setCreation(creation);
-    			entry.setModification(modification);
-    			ChangeLog changes = new ChangeLog(entry, ChangeLog.CHANGETIMESTAMPS, user);
-    			ChangeLogUtils.buildLog(changes, entry);
-    			getCoreDao().save(changes);
-    			return null;
-    		}
-    	});
-    	indexEntry(binder, entry, null, null, false, null); 
-    }
 
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		return processChangeLog(entry, operation, true);

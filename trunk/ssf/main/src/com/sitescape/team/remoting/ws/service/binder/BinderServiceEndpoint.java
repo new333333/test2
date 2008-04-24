@@ -25,8 +25,8 @@ public class BinderServiceEndpoint implements ServiceLifecycle, BinderService {
 		return getBinderService().getTeamMembersAsXML(accessToken, binderId);
 	}
 
-	public void setTeamMembers(String accessToken, long binderId, Long[] memberIds) {
-		getBinderService().setTeamMembers(accessToken, binderId, memberIds);
+	public void setTeamMembers(String accessToken, long binderId, String[] memberNames) {
+		getBinderService().setTeamMembers(accessToken, binderId, memberNames);
 	}
 	public void setFunctionMembership(String accessToken, long binderId, String inputDataAsXml) {
 		getBinderService().setFunctionMembership(accessToken, binderId, inputDataAsXml);
@@ -36,6 +36,9 @@ public class BinderServiceEndpoint implements ServiceLifecycle, BinderService {
 	}
 	public void setOwner(String accessToken, long binderId, long userId) {
 		getBinderService().setOwner(null, binderId, userId);
+	}
+	public void indexBinder(String accessToken, long binderId) {
+		getBinderService().indexBinder(accessToken, binderId);
 	}
 	public void init(Object context) throws ServiceException {
 		this.binderService = (BinderService) SpringContextUtil.getBean("binderService");

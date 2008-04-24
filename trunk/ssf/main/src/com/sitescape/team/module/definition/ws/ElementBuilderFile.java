@@ -28,8 +28,6 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import org.dom4j.Element;
@@ -37,21 +35,15 @@ import org.dom4j.Element;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.WebUrlUtil;
-/**
-* Handle file field in mail notification.
-* @author Janet McCann
-*/
-public class ElementBuilderFile extends AbstractElementBuilderFile {
-	protected boolean build(Element element, CustomAttribute attribute) {
-		DefinableEntity entry = attribute.getOwner().getEntity();
-		if (entry instanceof FolderEntry) {
-			FolderEntry fEntry = (FolderEntry)entry;
-			Set files = attribute.getValueSet();
-			generateValues(files, element, fEntry, "file");
+
+public class ElementBuilderFile extends AbstractElementBuilder {
+	protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
+		Set<FileAttachment> files = attribute.getValueSet();
+		for (FileAttachment att:files) {
+			if (att != null && att.getFileItem() != null) {
+				Element value = element.addElement("value");
+				value.setText(att.getFileItem().getName());
+			}
 		}
 		return true;
 	}

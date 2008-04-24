@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.module.workflow;
 
+import java.util.Map;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.WorkflowState;
@@ -38,15 +39,15 @@ public interface WorkflowModule {
     public final static String ENTRY_TYPE = "__entryType";
     public final static String ENTRY_ID = "__entryId";
     public final static String BINDER_ID = "__binderId";
-    public final static String SKIP_NOTIFY_ON_ENTER = "__skipNotifyOnEnter";
+    public final static String FORCE_STATE = "__forceState";
 	/**
 	 * Start workflow on entry.
 	 * @param entry
 	 * @param id
 	 * @param workflowDef
-	 * @param startState Optional
+	 * @param  Optional
 	 */
-	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef, String startState);
+	public void addEntryWorkflow(WorkflowSupport entry, EntityIdentifier id, Definition workflowDef, Map options);
 	/**
 	 * Delete all workflows associated with an entry
 	 * @param entry

@@ -28,14 +28,8 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.Set;
-import java.util.Map;
-
 import org.dom4j.Document;
 import org.dom4j.Element;
-
-import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.search.BasicIndexUtils;
 
 public class ElementBuilderSurvey extends AbstractElementBuilder {
 	   protected boolean build(Element element, Object val) {

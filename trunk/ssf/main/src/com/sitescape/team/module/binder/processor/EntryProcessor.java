@@ -54,7 +54,7 @@ public interface EntryProcessor extends BinderProcessor {
     
     public Entry addEntry(Binder binder, Definition def, Class clazz, InputDataAccessor inputData, Map fileItems, Map options)
     	throws WriteFilesException;
-    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, String startState);  
+    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options);  
     public Entry copyEntry(Binder binder, Entry entry, Binder destination, Map options);
     public void copyEntries(Binder source, Binder binder, Map options);
     public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource, Map options);
@@ -69,6 +69,4 @@ public interface EntryProcessor extends BinderProcessor {
   	public void indexEntry(Entry entry);
     public void moveEntry(Binder binder, Entry entry, Binder destination, Map options);
 	public ChangeLog processChangeLog(DefinableEntity entity, String operation);
-    public void changeEntryTimestamps(final Binder binder, final Entry entry,
-			  final HistoryStamp creation, final HistoryStamp modification);
-}
+ }

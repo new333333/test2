@@ -27,16 +27,13 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.remoting.ws.service.folder;
-
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.dom4j.Document;
 
-import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.HistoryStamp;
-import com.sitescape.team.domain.NoUserByTheNameException;
-import com.sitescape.team.domain.User;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.util.DomInputData;
@@ -45,62 +42,71 @@ import com.sitescape.team.util.stringcheck.StringCheckUtil;
 public class MigrationServiceImpl extends FolderServiceImpl implements
 		MigrationService {
 
-	public long addFolder(String accessToken, long parentId, String definitionId,
-			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
-		
-		try {
-			Document doc = getDocument(inputDataAsXML);
-			return getBinderModule().addBinder(new Long(parentId), definitionId, 
-					new DomInputData(doc, getIcalModule()), new HashMap(), null).longValue();
-		} catch(WriteFilesException e) {
-			throw new RemotingException(e);
-		}
-	}
+
 
 	public long addFolderEntry(String accessToken, long binderId, String definitionId,
-			String inputDataAsXML, String attachedFileName,
-			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		long entryId = super.addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName);
-		alterTimestamps(binderId, entryId, 
-				new Timestamps(creator, creationDate, modifier, modificationDate));
-		return entryId;
+			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		HashMap options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
+		getTimestamps(options, creator, creationDate, modifier, modificationDate);
+		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, null, options);
 	}
 
 	public long addReply(String accessToken, long binderId, long parentId, String definitionId,
 			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		long entryId = super.addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML);
-		alterTimestamps(binderId, entryId, new Timestamps(creator, creationDate, modifier, modificationDate));
-		return entryId;
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
+		getTimestamps(options, creator, creationDate, modifier, modificationDate);
+		return addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, null, options);
 	}
 
 	public void uploadFolderFile(String accessToken, long binderId, long entryId,
 			String fileUploadDataItemName, String fileName,
-			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		super.uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName);
+			String modifier, Calendar modificationDate) {
+		throw new UnsupportedOperationException();
 	}
 	
-	protected void alterTimestamps(long binderId, long entryId, Timestamps timestamps)
-	{
-		User user = RequestContextHolder.getRequestContext().getUser();
-		User creator = null;
+	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
+			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate){
+			
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+		options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
+		uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, 
+				stagedFileRelativePath, modifier, modificationDate, options);
+	}
+	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate) {
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+		options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, startState);
+		getTimestamps(options, null, null, modifier, modificationDate);
+		addEntryWorkflow(accessToken, binderId, entryId, definitionId, options);
+	}
+	public long addBinder(String accessToken, long parentId, String definitionId,
+			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
+		
 		try {
-			creator = getProfileModule().findUserByName(timestamps.getCreator());
-		} catch(NoUserByTheNameException e) {
-			creator = user;
-		}
-		HistoryStamp creation = new HistoryStamp(creator, timestamps.getCreationDate().getTime());
-		User modifier = user;
-		try {
-			modifier = getProfileModule().findUserByName(timestamps.getModifier());
-		} catch(NoUserByTheNameException e) {
-			modifier = user;
-		}
-		HistoryStamp modification = new HistoryStamp(modifier, timestamps.getModificationDate().getTime());
-		try {
-			getFolderModule().changeEntryTimstamps(binderId, entryId, creation, modification);
+			Map options = new HashMap();
+			//let binder be indexed, so it can be found
+			getTimestamps(options, creator, creationDate, modifier, modificationDate);
+			Document doc = getDocument(inputDataAsXML);
+			DomInputData inputData = new DomInputData(doc, getIcalModule());
+			return getBinderModule().addBinder(parentId, definitionId, inputData, null, options).longValue();
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}
+	}
+
+	protected void getTimestamps(Map options, String creator, Calendar creationDate,
+			  String modifier, Calendar modificationDate)
+	{
+		if (creator != null) options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, creator);
+		if (creationDate != null) options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, creationDate);
+		if (modifier != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, modifier);
+		if (modificationDate != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modificationDate);
 	}
 }

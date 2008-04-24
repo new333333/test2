@@ -29,15 +29,12 @@
 package com.sitescape.team.module.definition.ws;
 
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map;
 
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.ResolveIds;
 
 /**
@@ -46,16 +43,18 @@ import com.sitescape.team.util.ResolveIds;
  */
 public class ElementBuilderGrouplist extends AbstractElementBuilder {
 
-	   protected boolean build(Element element, CustomAttribute attribute) {
-		   Collection users = ResolveIds.getPrincipals(attribute);
+/*	   protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
+		   Collection<Principal> users = ResolveIds.getPrincipals(attribute);
 		   if ((users != null) && !users.isEmpty()) {
-	    		for (Iterator iter=users.iterator();iter.hasNext();) {
+	    		for (Principal p:users) {
 		    		Element value = element.addElement("value");		    		
-		    		value.setText(((Principal)iter.next()).getTitle());
+//		    		value.setText(((Principal)iter.next()).getTitle());
+		    		value.setText(p.getId().toString());
 	    		}
 	    	} else {
 	    		element.addElement("value");
 	    	}
 	    	return true;
 	    }
+	    */
 }

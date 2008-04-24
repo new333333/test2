@@ -207,7 +207,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     }
     //inside write transaction
     protected void addReply_startWorkflow(FolderEntry entry, Map ctx) {
-    	FolderEntry parent = entry.getParentEntry();
+       	if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_WORKFLOW))) return;
+       	FolderEntry parent = entry.getParentEntry();
    		if (getWorkflowModule().modifyWorkflowStateOnReply(parent)) {
    	   		parent.incrLogVersion();
    			processChangeLog(parent, ChangeLog.MODIFYWORKFLOWSTATEONREPLY);
@@ -231,7 +232,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     //no transaction
     protected void addReply_indexAdd(FolderEntry parent, FolderEntry entry, 
     		InputDataAccessor inputData, List fileData, Map ctx) {
-    	addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData, ctx);
+  	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
+  	   addEntry_indexAdd(entry.getParentFolder(), entry, inputData, fileData, ctx);
     	//Also re-index the top entry (to catch the change in lastActivity and total reply count)
     	indexEntry(entry.getTopEntry());
     }
@@ -260,7 +262,8 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     protected void modifyEntry_indexAdd(Binder binder, Entry entry, 
     		InputDataAccessor inputData, List fileUploadItems, 
     		Collection<FileAttachment> filesToIndex, Map ctx) {
-    	super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
+  	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
+  	   super.modifyEntry_indexAdd(binder, entry, inputData, fileUploadItems, filesToIndex, ctx);
        	//Also re-index the top entry (to catch the change in lastActivity)
     	FolderEntry fEntry = (FolderEntry)entry;
     	if (!fEntry.isTop()) indexEntry(fEntry.getTopEntry());
@@ -346,9 +349,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    }
     //***********************************************************************************************************
     //inside write transaction
-    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, String startState) {
-    	super.addEntryWorkflow(binder, entry, definition, startState);
-    	
+    public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
+    	super.addEntryWorkflow(binder, entry, definition, options);
+ 		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
+     	
     	//reindex top whose lastActivity has changed
     	if (!entry.isTop()) {
  		   FolderEntry top = ((FolderEntry)entry).getTopEntry();

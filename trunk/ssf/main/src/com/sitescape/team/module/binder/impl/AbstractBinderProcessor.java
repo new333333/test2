@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Calendar;
 import java.lang.reflect.Constructor;
 
 import org.apache.lucene.document.Field;
@@ -337,12 +338,11 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
     //inside write transaction    
     protected void addBinder_fillIn(Binder parent, Binder binder, InputDataAccessor inputData, Map entryData, Map ctx) {  
-        User user = RequestContextHolder.getRequestContext().getUser();
         binder.setZoneId(parent.getZoneId());
-        binder.setCreation(new HistoryStamp(user));
-        binder.setModification(binder.getCreation());
+        processCreationTimestamp(binder, ctx);
+        processModificationTimestamp(binder, binder.getCreation(), ctx);
         binder.setLogVersion(Long.valueOf(1));
-        binder.setOwner(user);
+        binder.setOwner(binder.getCreation().getPrincipal());
 
        	//force a lock so contention on the sortKey is reduced
         Object lock = ctx.get(ObjectKeys.INPUT_OPTION_FORCE_LOCK);
@@ -497,6 +497,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		InputDataAccessor inputData, List fileUploadItems, Map ctx) {
         //no tags typically exists on a new binder - reduce db lookups by supplying list
     	List tags = null;
+ 	   if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_INDEX))) return;
     	if (ctx != null) tags = (List)ctx.get(ObjectKeys.INPUT_FIELD_TAGS);
     	if (tags == null) tags = new ArrayList();
         
@@ -2052,4 +2053,38 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			}
 		}
 	}
+	protected void processCreationTimestamp(DefinableEntity entity, Map options) {
+		User user;
+		if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE)) {
+			Calendar date = (Calendar)options.get(ObjectKeys.INPUT_OPTION_CREATION_DATE);
+			String name = (String)options.get(ObjectKeys.INPUT_OPTION_CREATION_NAME);
+			if (Validator.isNull(name)) {
+				user = RequestContextHolder.getRequestContext().getUser();
+			} else {
+				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneName());
+			}
+			entity.setCreation(new HistoryStamp(user, date.getTime()));
+		} else {
+			entity.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+		}
+	}
+	protected void processModificationTimestamp(DefinableEntity entity, HistoryStamp fallback, Map options) {
+		User user;
+		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE))) return;
+		if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)) {
+			Calendar date = (Calendar)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE);
+			String name = (String)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME);
+			if (Validator.isNull(name)) {
+				user = RequestContextHolder.getRequestContext().getUser();
+			} else {
+				user = getProfileDao().findUserByName(name, RequestContextHolder.getRequestContext().getZoneName());
+			}
+			entity.setModification(new HistoryStamp(user, date.getTime()));
+		} else if (fallback != null) {
+			entity.setModification(fallback);
+		} else {
+			entity.setModification(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));			
+		}
+	}
+
 }

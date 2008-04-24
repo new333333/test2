@@ -1529,64 +1529,38 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						//Use the helper routine to parse the date into a date object
 						Survey survey = inputData.getSurveyValue(nameValue);
 						if (survey != null) {entryData.put(nameValue, survey);}
-					} else if (itemName.equals("user_list")) {
+					} else if (itemName.equals("user_list") || itemName.equals("group_list") || 
+								itemName.equals("team_list") || itemName.equals("userListSelectbox")) {
 						if (inputData.exists(nameValue)) {
-							Set<String>userIds = LongIdUtil.getIdsAsStringSet(inputData.getSingleValue(nameValue));
+							Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
 							CommaSeparatedValue v = new CommaSeparatedValue();
-							v.setValue(userIds);
-							entryData.put(nameValue, v);
-						}
-					} else if (itemName.equals("group_list")) {
-						if (inputData.exists(nameValue)) {
-							Set<String>groupIds = LongIdUtil.getIdsAsStringSet(inputData.getSingleValue(nameValue));
-							CommaSeparatedValue v = new CommaSeparatedValue();
-							v.setValue(groupIds);
-							entryData.put(nameValue, v);
-						}		
-					} else if (itemName.equals("team_list")) {
-						if (inputData.exists(nameValue)) {
-							Set<String>teamIds = LongIdUtil.getIdsAsStringSet(inputData.getSingleValue(nameValue));
-							CommaSeparatedValue v = new CommaSeparatedValue();
-							v.setValue(teamIds);
+							v.setValue(ids);
 							entryData.put(nameValue, v);
 						}
 					} else if (itemName.equals("places")) {
 						if (inputData.exists(WebKeys.URL_ID_CHOICES)) {
-							ArrayList ids = new ArrayList();
+							Set<Long> longIds = new HashSet();
 							String[] idChoices = inputData.getValues(WebKeys.URL_ID_CHOICES);
 							for (int i = 0; i < idChoices.length; i++) {
 								String[] idc = idChoices[i].split(" ");
 								for (int j = 0; j < idc.length; j++) {
-									if (!idc[j].equals("")) ids.add(String.valueOf(idc[j]));
+									if (idc[j].startsWith(nameValue)) {
+										try {
+											//	validate as long
+											longIds.add(Long.parseLong(idc[j].substring(nameValue.length()))); 
+										} catch (NumberFormatException ne) {}
+									}
 								}
-							}
-							Set longIds = new HashSet();
-							for (int i = 0; i < ids.size(); i++) {
-								if (((String)ids.get(i)).startsWith(nameValue)) {
-									ids.set(i, ((String)ids.get(i)).substring(nameValue.length()));
-								}
-								try {
-									Long.parseLong((String)ids.get(i)); //validate as long
-									longIds.add((String)ids.get(i));	//but store string
-								} catch (NumberFormatException ne) {}
 							}
 							CommaSeparatedValue v = new CommaSeparatedValue();
 							v.setValue(longIds);
 							entryData.put(nameValue, v);
-						}
-					} else if (itemName.equals("userListSelectbox")) {
-						if (inputData.exists(nameValue)) {
-							String[] ids = inputData.getValues(nameValue);
-							Set longIds = new HashSet();
-							for (int i = 0; i < ids.length; i++) {
-								try {
-									Long.parseLong(ids[i]); //validate as long
-									longIds.add(ids[i]);	//but store string
-								} catch (NumberFormatException ne) {}
-							}
+						} else if (inputData.exists(nameValue)) {
+							Set<Long> ids = LongIdUtil.getIdsAsLongSet(inputData.getValues(nameValue));
 							CommaSeparatedValue v = new CommaSeparatedValue();
-							v.setValue(longIds);
+							v.setValue(ids);
 							entryData.put(nameValue, v);
+							
 						}
 					} else if (itemName.equals("selectbox")) {
 						if (inputData.exists(nameValue)) {
@@ -1598,11 +1572,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					    	}
 						}
 					} else if (itemName.equals("checkbox")) {
-						if (inputData.exists(nameValue) && inputData.getSingleValue(nameValue).equals("on")) {
-							entryData.put(nameValue, Boolean.TRUE);
-						} else {
-							entryData.put(nameValue, Boolean.FALSE);
-						}
+						entryData.put(nameValue, Boolean.valueOf(GetterUtil.getBoolean(inputData.getSingleValue(nameValue), false)));
 					} else if (itemName.equals("profileTimeZone")) {
 						if (inputData.exists(nameValue)) {
 							Object val = inputData.getSingleObject(nameValue);

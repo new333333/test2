@@ -38,6 +38,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
@@ -139,6 +140,10 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 			throw new RemotingException(e);
 		}
 
+	}
+	public long addUserWorkspace(String accessToken, long userId) {
+		User user = (User)getProfileModule().getEntry(getProfileModule().getProfileBinder().getId(), userId);
+		return getProfileModule().addUserWorkspace(user, null).getId();
 	}
 
 }

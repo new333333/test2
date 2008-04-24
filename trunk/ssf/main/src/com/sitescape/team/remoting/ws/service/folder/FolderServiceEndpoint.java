@@ -45,8 +45,8 @@ public class FolderServiceEndpoint implements ServiceLifecycle, FolderService {
 		return getFolderService().addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName);
 	}
 
-	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML) {
-		return getFolderService().addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML);
+	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
+		return getFolderService().addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, attachedFileName);
 	}
 
 	public String getFolderEntriesAsXML(String accessToken, long binderId) {
@@ -61,6 +61,9 @@ public class FolderServiceEndpoint implements ServiceLifecycle, FolderService {
 		getFolderService().modifyFolderEntry(accessToken, binderId, entryId, inputDataAsXML);
 	}
 	
+	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
+		getFolderService().addEntryWorkflow(accessToken, binderId, entryId, definitionId);
+	}
 	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		getFolderService().uploadFolderFile(accessToken, binderId, entryId, fileUploadDataItemName, fileName);
 	}
@@ -69,9 +72,6 @@ public class FolderServiceEndpoint implements ServiceLifecycle, FolderService {
 		getFolderService().uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath);
 	}
 
-	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState) {
-		getFolderService().addEntryWorkflow(accessToken, binderId, entryId, definitionId, startState);
-	}
 	
 	public void init(Object context) throws ServiceException {
 		this.folderService = (FolderService) SpringContextUtil.getBean("folderService");

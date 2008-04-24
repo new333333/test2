@@ -31,6 +31,7 @@ package com.sitescape.team.domain;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Collection;
 import com.sitescape.util.StringUtil;
 /**
  * This is a wrapper object that converts a set of objects to
@@ -59,6 +60,12 @@ public class CommaSeparatedValue implements Serializable {
 	}
      public void setValue(Set<String> value) {
  		this.values = value;
+ 	}
+     public void setValue(Collection<Long> value) {
+ 		this.values = new HashSet();
+	    for (Long val:value) {
+	    	values.add(val.toString());
+	    }	 
  	}
  	public Set getValueSet() {
  		if (values == null) return new HashSet();

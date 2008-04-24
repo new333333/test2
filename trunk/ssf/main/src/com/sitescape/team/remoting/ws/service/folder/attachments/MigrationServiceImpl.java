@@ -29,15 +29,23 @@
 package com.sitescape.team.remoting.ws.service.folder.attachments;
 
 import java.util.Calendar;
-
+import java.util.Map;
+import java.util.HashMap;
+import com.sitescape.team.ObjectKeys;
 public class MigrationServiceImpl extends com.sitescape.team.remoting.ws.service.folder.MigrationServiceImpl {
 
 	AttachmentUtilities attachmentUtilities = new AttachmentUtilities(this);
 	
 	@Override
-	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
-			String fileUploadDataItemName, String fileName, 
-			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
+	public void uploadFolderFile(String accessToken, long binderId, long entryId,
+			String fileUploadDataItemName, String fileName,
+			String modifier, Calendar modificationDate) {
+		Map options = new HashMap();
+		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
+		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName,
+				modifier, modificationDate, options);
 	}
+
 }

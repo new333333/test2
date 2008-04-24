@@ -312,6 +312,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 
         Folder folder = loadFolder(folderId);
         checkAccess(folder, FolderOperation.addEntry);
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(folder, FolderOperation.changeEntryTimestamps);
         
         FolderCoreProcessor processor = loadProcessor(folder);
        
@@ -332,6 +335,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	arCount.incrementAndGet();
     	
         Folder folder = loadFolder(folderId);
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(folder, FolderOperation.changeEntryTimestamps);
         FolderCoreProcessor processor = loadProcessor(folder);
         //load parent entry
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId);
@@ -355,6 +361,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	   	meCount.incrementAndGet();
    	
         Folder folder = loadFolder(folderId);
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(folder, FolderOperation.changeEntryTimestamps);
         FolderCoreProcessor processor = loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkAccess(entry, FolderOperation.addReply);
@@ -369,17 +378,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	    //should never happen   
     	}
 	}
-    public void changeEntryTimstamps(Long folderId, Long entryId,
-    								 HistoryStamp creation, HistoryStamp modification)
-    				throws AccessControlException, WriteFilesException {
-        Folder folder = loadFolder(folderId);
-        checkAccess(folder, FolderOperation.changeEntryTimestamps);
-        
-        FolderCoreProcessor processor = loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-       
-        processor.changeEntryTimestamps(folder, entry, creation, modification);
-    }
+ 
 
     //no transaction    
     public void modifyEntry(Long folderId, Long entryId, InputDataAccessor inputData, 
@@ -389,7 +388,10 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	meCount.incrementAndGet();
 
         Folder folder = loadFolder(folderId);
-        FolderCoreProcessor processor=loadProcessor(folder);
+		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
+			checkAccess(folder, FolderOperation.changeEntryTimestamps);
+		FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkAccess(entry, FolderOperation.modifyEntry);
         User user = RequestContextHolder.getRequestContext().getUser();
