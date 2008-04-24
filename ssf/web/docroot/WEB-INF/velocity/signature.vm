@@ -71,16 +71,3 @@
 </table>
 #end
 
-#if ($ssVisitor.Entity.Reservation.Principal)
-	<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
-	 <tr>
-	  <td valign="top" style="padding-left:30px;">
-	<div style="#ss_entryContent() #ss_entrySignature()">
-		  <span style="padding-right:8px;">$ssVisitor.getNLT("entry.reservedBy") </span>
-	  <a href="$ssVisitor.getPermaLink(${ssVisitor.Entity.Reservation.Principal.ParentBinder.Id}, ${ssVisitor.Entity.Reservation.Principal.Id}, 'workspace')">
-	  ${ssVisitor.Entity.Modification.Principal.Title}</a>
-		</div>
-	  </td>
-	 </tr>
-	</table>
-#end
