@@ -910,7 +910,7 @@ DIV.ss_help_style DIV.example, DIV.note {
     margin-bottom: 5px;
 }
 
-P.ss_help_moreinfo {
+P.ss_help_moreinfo, P.ss_help_body_header {
     margin: 0px;
     font-weight: bold;
     color: ${ss_title_line_color};  
@@ -972,6 +972,7 @@ DIV.ss_help_moreinfo .document_title {
 DIV.ss_help_style .new_term {
     font-weight: bold;
     color: ${ss_title_line_color};  
+    font-style: italic;
 }
 
 DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
