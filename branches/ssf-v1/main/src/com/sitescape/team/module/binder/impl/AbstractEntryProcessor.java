@@ -401,6 +401,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //inside write transaction
     protected void addEntry_startWorkflow(Entry entry, Map ctx){
     	if (!(entry instanceof WorkflowSupport)) return;
+    	if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_WORKFLOW))) return;
     	Binder binder = entry.getParentBinder();
     	Map workflowAssociations = (Map) binder.getWorkflowAssociations();
     	if (workflowAssociations != null) {
@@ -433,25 +434,22 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
 	    try {	    	
 	    	// The following part requires update database transaction.
 	    	//ctx can be used by sub-classes to pass info
-	    	if ((inputData.getCount() != 0) || (fileRenamesTo != null && !fileRenamesTo.isEmpty())) {
-	    		//the above test allows file uploads for migration, without changing the 
-	    		//modification timestamp on the entry
-		    	SimpleProfiler.startProfiler("modifyEntry_transactionExecute");
-		    	getTransactionTemplate().execute(new TransactionCallback() {
-		    		public Object doInTransaction(TransactionStatus status) {
-		    			SimpleProfiler.startProfiler("modifyEntry_fillIn");
-		    			modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
-		    			SimpleProfiler.stopProfiler("modifyEntry_fillIn");
-		    			SimpleProfiler.startProfiler("modifyEntry_startWorkflow");
-		    			modifyEntry_startWorkflow(entry, ctx);
-		    			SimpleProfiler.stopProfiler("modifyEntry_startWorkflow");
-		    			SimpleProfiler.startProfiler("modifyEntry_postFillIn");
-		    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
-		    			SimpleProfiler.stopProfiler("modifyEntry_postFillIn");
-		    			return null;
-		    		}});
-		    	SimpleProfiler.stopProfiler("modifyEntry_transactionExecute");
-	    	}
+	    	SimpleProfiler.startProfiler("modifyEntry_transactionExecute");
+	    	getTransactionTemplate().execute(new TransactionCallback() {
+	    		public Object doInTransaction(TransactionStatus status) {
+	    			SimpleProfiler.startProfiler("modifyEntry_fillIn");
+	    			modifyEntry_fillIn(binder, entry, inputData, entryData, ctx);
+	    			SimpleProfiler.stopProfiler("modifyEntry_fillIn");
+	    			SimpleProfiler.startProfiler("modifyEntry_startWorkflow");
+	    			modifyEntry_startWorkflow(entry, ctx);
+	    			SimpleProfiler.stopProfiler("modifyEntry_startWorkflow");
+	    			SimpleProfiler.startProfiler("modifyEntry_postFillIn");
+	    			modifyEntry_postFillIn(binder, entry, inputData, entryData, fileRenamesTo, ctx);
+	    			SimpleProfiler.stopProfiler("modifyEntry_postFillIn");
+	    			return null;
+	    		}});
+	    	SimpleProfiler.stopProfiler("modifyEntry_transactionExecute");
+	    	
 	        //handle outside main transaction so main changeLog doesn't reflect attactment changes
 	        SimpleProfiler.startProfiler("modifyBinder_removeAttachments");
 	    	List<FileAttachment> filesToDeindex = new ArrayList<FileAttachment>();
@@ -612,6 +610,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //inside write transaction
     protected void modifyEntry_startWorkflow(Entry entry, Map ctx) {
     	if (!(entry instanceof WorkflowSupport)) return;
+    	if (ctx != null && Boolean.TRUE.equals(ctx.get(ObjectKeys.INPUT_OPTION_NO_WORKFLOW))) return;
     	WorkflowSupport wEntry = (WorkflowSupport)entry;
     	//see if updates to entry, trigger transitions in workflow
     	if (!wEntry.getWorkflowStates().isEmpty()) getWorkflowModule().modifyWorkflowStateOnUpdate(wEntry);

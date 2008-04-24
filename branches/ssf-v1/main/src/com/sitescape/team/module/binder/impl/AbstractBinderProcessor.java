@@ -1921,7 +1921,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	}
 	protected void processModificationTimestamp(DefinableEntity entity, HistoryStamp fallback, Map options) {
 		User user;
-	
+		if (options != null && Boolean.TRUE.equals(options.get(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE))) return;
 		if (options != null && options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)) {
 			Calendar date = (Calendar)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE);
 			String name = (String)options.get(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME);

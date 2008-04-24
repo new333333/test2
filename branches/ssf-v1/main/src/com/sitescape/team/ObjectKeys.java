@@ -135,12 +135,16 @@ public interface ObjectKeys {
     public static final String SENDMAIL_STATUS_FAILED="failed";
     public static final String SENDMAIL_STATUS_SCHEDULED="scheduled";
     	
-    public static final String INPUT_OPTION_NO_INDEX="com.sitescape.team.no_indexing";
-    public static final String INPUT_OPTION_CREATION_NAME="com.sitescape.team.entity.creation.name";
-    public static final String INPUT_OPTION_CREATION_DATE="com.sitescape.team.entity.creation.timestamp";
-    public static final String INPUT_OPTION_MODIFICATION_NAME="com.sitescape.team.entity.modification.name";
-    public static final String INPUT_OPTION_MODIFICATION_DATE="com.sitescape.team.entity.modification.timestamp";
-    public static final String INPUT_OPTION_FORCE_WORKFLOW_STATE="com.sitescape.team.entity.workflow.state";
+	//migration flags
+	public static final String INPUT_OPTION_NO_INDEX="com.sitescape.team.options.no_indexing";
+    public static final String INPUT_OPTION_NO_WORKFLOW="com.sitescape.team.options.no_workflow_processing";
+    public static final String INPUT_OPTION_CREATION_NAME="com.sitescape.team.options.entity.creation.name";
+    public static final String INPUT_OPTION_CREATION_DATE="com.sitescape.team.options.entity.creation.timestamp";
+    public static final String INPUT_OPTION_MODIFICATION_NAME="com.sitescape.team.options.entity.modification.name";
+    public static final String INPUT_OPTION_MODIFICATION_DATE="com.sitescape.team.options.entity.modification.timestamp";
+    public static final String INPUT_OPTION_FORCE_WORKFLOW_STATE="com.sitescape.team.options.entity.workflow.state";
+    public static final String INPUT_OPTION_NO_MODIFICATION_DATE="com.sitescape.team.options.no_modificationdate_processing";
+ 
     public static final int LISTING_MAX_PAGE_SIZE = 100;
     public static final int MAX_TAG_LENGTH = 60;
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;

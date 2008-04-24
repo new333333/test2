@@ -80,6 +80,8 @@ public class FacadeImpl extends AbstractFacade {
 			String modifier, java.util.Calendar modificationDate) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
+    	options.put(ObjectKeys.INPUT_OPTION_NO_MODIFICATION_DATE, Boolean.TRUE);
 		uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName, modifier, modificationDate, options);
 	}
 	public void uploadFolderFile(long binderId, long entryId, 

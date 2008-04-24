@@ -136,8 +136,8 @@ public class WSClient
 				justDoIt("migrateFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1}, args[4]);
 			} else if(args[0].equals("migrateFileStaged")) {
 				Calendar c1 = Calendar.getInstance();
-				c1.setTime(df.parse((String)args[6]));
-				justDoIt("migrateFolderFileStaged", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1}, null);
+				c1.setTime(df.parse((String)args[7]));
+				justDoIt("migrateFolderFileStaged", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
 			} else if(args[0].equals("uploadCalendar")) {
 				String s = FacadeClientHelper.readText(args[2]);
 				System.out.println("XML: " + s);
@@ -159,12 +159,8 @@ public class WSClient
 			} else if(args[0].equals("listDefinitions")) {
 				fetchAndPrintXML("getDefinitionListAsXML", new Object[] {});
 			} else if(args[0].equals("setTeamMembers")) {
-				String ids[] = args[2].split(",");
-				List idsList = new ArrayList();
-				for (int i=0; i<ids.length; ++i) {
-					idsList.add(Long.parseLong((String)ids[i]));
-				}
-				justDoIt("setTeamMembers", new Object[] {Long.parseLong(args[1]), idsList});
+				String names[] = args[2].split(",");
+				justDoIt("setTeamMembers", new Object[] {Long.parseLong(args[1]), names});
 			} else if(args[0].equals("setDefinitions")) {
 				String ids[] = args[2].split(",");
 				List idsList = new ArrayList();
@@ -319,7 +315,7 @@ public class WSClient
 		System.out.println("migrateReply <folder id> <entry id> <definition id> <entryDataXMLString> <creator> <createDate> <modifier> <modDate> ");
 		System.out.println("migrateWorkflow <folder id> <entry id> <definition id> <startState> <modifier> <modDate>");
 		System.out.println("migrateFile <folder id> <entry id> <fileDataFieldName> <filename> <modifier> <modDate>");
-		System.out.println("migrateFileStaged <folder id> <entry id> <fileDataFieldName> <stagedFileRelativePath> <modifier> <modDate>");
+		System.out.println("migrateFileStaged <folder id> <entry id> <fileDataFieldName> <filename> <stagedFileRelativePath> <modifier> <modDate>");
 		System.out.println("-- The following is to be used only in conjunction with extendedws sample --");
 		System.out.println("getBinderTitle <binder id>");
 
