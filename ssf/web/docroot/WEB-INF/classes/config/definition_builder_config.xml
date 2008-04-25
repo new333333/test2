@@ -507,6 +507,7 @@
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
 			<option name="folderIcon" initial="true" />
+			<option name="folderRemoteApp" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
 			<option name="file" />
@@ -534,6 +535,18 @@
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
 	</item>
+
+		<item name="folderRemoteApp" caption="__remoteApp" type="data" multipleAllowed="true" 
+			category="folderData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__remoteApp"/>
+			<property name="name" caption="__name" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_form.jsp" />
+		</jsps>
+	</item>
+	
 <!-- Folder view	-->
 	
 	<item name="forumView" caption="__folder_view" 
@@ -1283,6 +1296,7 @@
 		<!-- no title modifications on user workspaces -->
 			<option name="title" initial="true" definitionType="8"/>
 			<option name="description" initial="true" />
+			<option name="workspaceRemoteApp" />
 			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
@@ -1293,6 +1307,17 @@
 		</options>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/workspace_form.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="workspaceRemoteApp" caption="__remoteApp" type="data" multipleAllowed="true" 
+			category="workspaceData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__remoteApp"/>
+			<property name="name" caption="__name" type="text"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_form.jsp" />
 		</jsps>
 	</item>
 	

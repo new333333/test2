@@ -761,6 +761,7 @@ public class WebKeys {
     public static final String RELEVANCE_TYPE_TRACKED_ITEMS="trackedItems";
     public static final String RELOAD_URL="ss_reloadUrl";
     public static final String RELOAD_URL_FORCED="ssReloadUrl";
+    public static final String REMOTE_APPLICATION_LIST="ss_remoteApplicationList";
     public static final String REPLY_BLOG_URL="replyBlogUrl";
     public static final String REPORT="report";
     public static final String REPORT_END_DATE="endDate";

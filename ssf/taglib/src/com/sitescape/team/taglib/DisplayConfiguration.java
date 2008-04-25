@@ -42,14 +42,21 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
+import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.util.Validator;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
@@ -67,7 +74,10 @@ public class DisplayConfiguration extends TagSupport {
     private boolean processThisItem = false;
     private DefinableEntity entry;
     
+    private ProfileModule profileModule;
+    
 	public int doStartTag() throws JspException {
+		profileModule = (ProfileModule)SpringContextUtil.getBean("profileModule");
 		DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
 		try {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
@@ -236,6 +246,28 @@ public class DisplayConfiguration extends TagSupport {
 								//Store the entry object
 								if (this.entry != null) {
 									req.setAttribute(WebKeys.DEFINITION_ENTRY, this.entry);
+								}
+								
+								//Set up any item specific beans
+								if (itemType.equals(ObjectKeys.DEFINITION_WORKSPACE_REMOTE_APPLICATION) ||
+										itemType.equals(ObjectKeys.DEFINITION_FOLDER_REMOTE_APPLICATION) ||
+										itemType.equals(ObjectKeys.DEFINITION_ENTRY_REMOTE_APPLICATION)) {
+									Map options = new HashMap();
+									options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+									options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+									//get them all
+									options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
+
+									Document searchFilter = DocumentHelper.createDocument();
+									Element field = searchFilter.addElement(QueryBuilder.FIELD_ELEMENT);
+							    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+							    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+							    	child.setText(EntityIndexUtils.ENTRY_TYPE_APPLICATION);
+							    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
+							    	
+									Map searchResults = profileModule.getApplications(profileModule.getProfileBinder().getId(), options);
+									List remoteAppList = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+									req.setAttribute(WebKeys.REMOTE_APPLICATION_LIST, remoteAppList);
 								}
 									
 								StringServletResponse res = new StringServletResponse(httpRes);
