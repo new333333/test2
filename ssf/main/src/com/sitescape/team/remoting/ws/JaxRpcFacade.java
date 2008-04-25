@@ -291,28 +291,6 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	
 	public void setTeamMembers(long binderId, String[] memberNames) {
 		this.binderService.setTeamMembers(null, binderId, memberNames);
-	}	/**
-	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.remoting.ws.service.zone#addZoneUnderPortal}.
-	 */
-	public void addZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
-		this.zoneService.addZoneUnderPortal(null, zoneName, virtualHost, mailDomain);
-	}
-
-	/**
-	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.remoting.ws.service.zone#modifyZoneUnderPortal}.
-	 */
-	public void modifyZoneUnderPortal(String zoneName, String virtualHost, String mailDomain) {
-		this.zoneService.modifyZoneUnderPortal(null, zoneName, virtualHost, mailDomain);
-	}
-
-	/**
-	 * @deprecated As of ICEcore version 1.1,
-	 * replaced by {@link com.sitescape.team.remoting.ws.service.zone#deleteZoneUnderPortal}.
-	 */
-	public void deleteZoneUnderPortal(String zoneName) {
-		this.zoneService.deleteZoneUnderPortal(null, zoneName);
 	}
 
 	/**
