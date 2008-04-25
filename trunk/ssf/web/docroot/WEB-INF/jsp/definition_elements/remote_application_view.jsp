@@ -1,4 +1,5 @@
 <%
+// The dashboard "iframe" component
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -28,41 +29,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // View workspace data dispatcher %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="property_name" type="String" scope="request" />
-<jsp:useBean id="property_caption" type="String" scope="request" />
-<%
-	//Get the item being displayed
-	Element item = (Element) request.getAttribute("item");
-	String itemType = (String) item.attributeValue("formItem", "");
-
-	if (itemType.equals("title")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_folder_title.jsp" %><%
-
-	} else if (itemType.equals("description")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_description.jsp" %><%
-
-	} else if (itemType.equals("htmlEditorTextarea")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_html_textarea.jsp" %><%
-		
-	} else if (itemType.equals("file")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_file.jsp" %><%
-		
-	} else if (itemType.equals("graphic")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_graphic.jsp" %><%
-		
-	} else if (itemType.equals("attachFiles")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" %><%		
-	
-	} else if (itemType.equals("folderRemoteApp")) {
-		%><%@ include file="/WEB-INF/jsp/definition_elements/remote_application_view.jsp" %><%
-
-	} else {
-        %>
-        <ssf:nlt tag="definition.error.unknownDefinitionElement">
-         <ssf:param name="name" value="<%= itemType %>"/>
-        </ssf:nlt><br/>
-        <%
-	}
-%>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
+<ssf:remoteAccessory applicationId="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+</c:if>
