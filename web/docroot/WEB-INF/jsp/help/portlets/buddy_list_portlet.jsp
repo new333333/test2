@@ -36,7 +36,10 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.buddyListPortlet"/></span>
 </div>
 
-<p><ssf:nlt tag="help.buddyListPortlet.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.buddyListPortlet.intro">
+  <ssf:param name="value" value="${ssProductName}"/>
+  <ssf:param name="value" value="${ssProductConferencingName}"/>
+</ssf:nlt></p>
 
 <p><ssf:nlt tag="help.buddyListPortlet.contacting" /> <ssf:nlt tag="help.displayEntryControl.presenceIconDescription"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
 
