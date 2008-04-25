@@ -699,13 +699,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 			
 			// Get the staged file
 			String rootPath = SPropsUtil.getString("staging.upload.files.rootpath", "").trim();
-			String filePath=stagedFileRelativePath;
-			if (Validator.isNull(filePath)) {
-				filePath = fileName;
-			} else {
-				filePath += File.separator + fileName;
-			}
-			File file = new File(rootPath, filePath);
+			File file = new File(rootPath, stagedFileRelativePath);
 			
 			// Wrap it in a datastructure expected by our app.
 			DatedMultipartFile mf = new DatedMultipartFile(fileName, file, false, modifier, modificationDate.getTime());
@@ -734,7 +728,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		}
 		else {
 			throw new UnsupportedOperationException("Staged file upload is disabled: " + binderId + ", " + 
-					entryId + ", " + fileUploadDataItemName + ", " + stagedFileRelativePath);			
+					entryId + ", " + fileUploadDataItemName + ", " + fileName + ", " + stagedFileRelativePath);			
 		}
 	}
 	public void indexFolder(long folderId) {
