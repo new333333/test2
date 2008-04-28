@@ -29,25 +29,13 @@
 package com.sitescape.team.remoting.ws;
 
 import java.util.Calendar;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
-import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.remoting.ws.service.binder.BinderService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
-import com.sitescape.team.remoting.ws.service.definition.DefinitionServiceImpl;
+import com.sitescape.team.remoting.ws.service.definition.DefinitionServiceInternal;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
 import com.sitescape.team.remoting.ws.service.folder.MigrationService;
 import com.sitescape.team.remoting.ws.service.ical.IcalService;
@@ -55,8 +43,6 @@ import com.sitescape.team.remoting.ws.service.profile.ProfileService;
 import com.sitescape.team.remoting.ws.service.search.SearchService;
 import com.sitescape.team.remoting.ws.service.template.TemplateService;
 import com.sitescape.team.remoting.ws.service.zone.ZoneService;
-import com.sitescape.team.security.function.Function;
-import com.sitescape.team.util.LongIdUtil;
 
 /**
  * JAX-RPC compliant implementation that simply delegates to the Facade 
@@ -104,7 +90,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.definition#getDefinitionConfigAsXML}.
 	 */
 	public String getDefinitionConfigAsXML() {
-		return ((DefinitionServiceImpl) this.definitionService).getDefinitionConfigAsXML(null);
+		return ((DefinitionServiceInternal) this.definitionService).getDefinitionConfigAsXML(null);
 	}
 	
 	/**
