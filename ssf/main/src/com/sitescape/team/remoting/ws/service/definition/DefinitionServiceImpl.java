@@ -43,6 +43,9 @@ public class DefinitionServiceImpl extends BaseService implements DefinitionServ
 		return getDefinitionModule().getDefinition(definitionId).getDefinition().getRootElement().asXML();
 	}
 	
+	/**
+	 * @deprecated As of ICEcore version 1.1
+	 */
 	public String getDefinitionConfigAsXML(String accessToken) {
 		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
 	}
