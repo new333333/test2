@@ -390,7 +390,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * @return
 	 */
 	public List loadObjects(final String query, final Map values) {
-		if (values.isEmpty()) return Collections.EMPTY_LIST;
+		if (values == null || values.isEmpty()) return Collections.EMPTY_LIST;
 		return (List)getHibernateTemplate().execute(
 		        new HibernateCallback() {
 		            public Object doInHibernate(Session session) throws HibernateException {
