@@ -47,6 +47,7 @@ import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.remoting.ws.service.binder.BinderService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
+import com.sitescape.team.remoting.ws.service.definition.DefinitionServiceImpl;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
 import com.sitescape.team.remoting.ws.service.folder.MigrationService;
 import com.sitescape.team.remoting.ws.service.ical.IcalService;
@@ -103,7 +104,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.definition#getDefinitionConfigAsXML}.
 	 */
 	public String getDefinitionConfigAsXML() {
-		return this.definitionService.getDefinitionConfigAsXML(null);
+		return ((DefinitionServiceImpl) this.definitionService).getDefinitionConfigAsXML(null);
 	}
 	
 	/**
