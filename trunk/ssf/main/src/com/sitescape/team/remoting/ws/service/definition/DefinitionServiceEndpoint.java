@@ -45,6 +45,10 @@ public class DefinitionServiceEndpoint implements ServiceLifecycle, DefinitionSe
 		return getDefinitionService().getDefinitionAsXML(accessToken, definitionId);
 	}
 
+	public String getDefinitionConfigAsXML(String accessToken) {
+		return getDefinitionService().getDefinitionConfigAsXML(accessToken);
+	}
+
 	public String getDefinitionListAsXML(String accessToken) {
 		return getDefinitionService().getDefinitionListAsXML(accessToken);
 	}
