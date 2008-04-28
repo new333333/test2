@@ -48,6 +48,7 @@ public class LongIdUtil {
 	}
 	
 	public static Set<Long> getIdsAsLongSet(String ids) {
+		if(ids == null) return new HashSet<Long>();
 		if (ids.contains(",")) return getIdsAsLongSet(ids, COMMA_SEPARATOR);
 		return getIdsAsLongSet(ids, SPACE_SEPARATOR);
 	}
