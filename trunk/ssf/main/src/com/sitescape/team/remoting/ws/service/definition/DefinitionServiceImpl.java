@@ -37,15 +37,12 @@ import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.remoting.ws.BaseService;
 
-public class DefinitionServiceImpl extends BaseService implements DefinitionService {
+public class DefinitionServiceImpl extends BaseService implements DefinitionService, DefinitionServiceInternal {
 
 	public String getDefinitionAsXML(String accessToken, String definitionId) {
 		return getDefinitionModule().getDefinition(definitionId).getDefinition().getRootElement().asXML();
 	}
 	
-	/**
-	 * @deprecated As of ICEcore version 1.1
-	 */
 	public String getDefinitionConfigAsXML(String accessToken) {
 		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
 	}
