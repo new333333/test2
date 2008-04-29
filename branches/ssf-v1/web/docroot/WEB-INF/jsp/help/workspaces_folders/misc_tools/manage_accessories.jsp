@@ -50,7 +50,7 @@
 
 </ul>
 
-<p><ssf:nlt tag="helpSpot.accessory.adding"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="helpSpot.accessory.adding"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="helpSpot.accessory.using" /></p>
 

@@ -36,15 +36,15 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.attachments"/></span>
 </div>
 
-<p><ssf:nlt tag="help.attachments.intro" /></p>
+<p><ssf:nlt tag="help.attachments.intro"><ssf:param name="value" value="${ssProductConferencingTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.attachments.dragDrop.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.attachments.dragDrop.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.attachments.dragDrop.folders"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.attachments.dragDrop.folders"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.attachments.dragDrop.viewPics"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.attachments.dragDrop.viewPics"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.attachments.dragDrop.workWithNonPics"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.attachments.dragDrop.workWithNonPics"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

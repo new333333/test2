@@ -38,9 +38,9 @@
 
 <p><ssf:nlt tag="help.manageSubscriptionsMenu.intro" /></p>
 
-<p><ssf:nlt tag="help.manageSubscriptionsMenu.emailNotifications"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.manageSubscriptionsMenu.emailNotifications"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.manageSubscriptionsMenu.rss"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.manageSubscriptionsMenu.rss"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

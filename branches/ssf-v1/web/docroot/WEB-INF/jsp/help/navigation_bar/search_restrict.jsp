@@ -44,7 +44,7 @@
 
 <li><ssf:nlt tag="help.searchboxes.restrictingSearches.listItem.workspaceTree" /></li>
 
-<li><ssf:nlt tag="help.searchboxes.restrictingSearches.listItem.searchSubs"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.searchboxes.restrictingSearches.listItem.searchSubs"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.searchboxes.restrictingSearches.listItem.moreCriteria" /></li>
 

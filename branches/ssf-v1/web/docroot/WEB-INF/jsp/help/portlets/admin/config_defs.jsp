@@ -37,13 +37,13 @@
 <span style="font-weight:bold;"><ssf:nlt tag="help.configIntro.subTopic.definitions"/></span>
 </div>
 
-<p><ssf:nlt tag="help.configIntro.understandDefs.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.configIntro.understandDefs.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.configIntro.understandDefs.subcategories" /></p>
 
-<p><ssf:nlt tag="help.configIntro.understandDefs.definitions"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.configIntro.understandDefs.definitions"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.configIntro.understandDefs.instances"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.configIntro.understandDefs.instances"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.configIntro.understandDefs.templates" /></p>
 

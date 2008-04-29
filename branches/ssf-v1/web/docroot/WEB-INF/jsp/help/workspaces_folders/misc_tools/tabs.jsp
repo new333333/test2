@@ -36,9 +36,9 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.tabs"/></span>
 </div>
 
-<p><ssf:nlt tag="help.tabs.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.tabs.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.tabs.using"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.tabs.using"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.tabs.types.listIntro" /></p>
 
@@ -54,7 +54,7 @@
 
 </ul>
 
-<p><ssf:nlt tag="help.tabs.entries"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.tabs.entries"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

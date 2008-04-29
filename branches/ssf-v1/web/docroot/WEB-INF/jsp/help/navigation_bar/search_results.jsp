@@ -43,7 +43,7 @@
 
 <p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.rankingsTags" /></p>
 
-<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.criteria"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p style="margin-bottom:6px;"><ssf:nlt tag="help.searchboxes.searchResults.criteria"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 
 </div>
@@ -54,9 +54,9 @@
 </p>
 
 <div class="ss_help_moreinfo">
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/search_advanced', 'ss_moreinfo_panel');"><ssf:nlt tag="help.searchboxes.subtopic.advancedSearch"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/search_restrict', 'ss_moreinfo_panel');"><ssf:nlt tag="help.searchboxes.subtopic.restrictingSearches"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
-<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/search_strings', 'ss_moreinfo_panel');"><ssf:nlt tag="help.searchboxes.subtopic.searchStrings"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a></p>
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/search_advanced', 'ss_moreinfo_panel');"><ssf:nlt tag="help.searchboxes.subtopic.advancedSearch"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a></p>
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/search_restrict', 'ss_moreinfo_panel');"><ssf:nlt tag="help.searchboxes.subtopic.restrictingSearches"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a></p>
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('navigation_bar/search_strings', 'ss_moreinfo_panel');"><ssf:nlt tag="help.searchboxes.subtopic.searchStrings"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a></p>
 </div>
 
 <div class="ss_help_more_pages_section"><a id="skip_nav_titles" />

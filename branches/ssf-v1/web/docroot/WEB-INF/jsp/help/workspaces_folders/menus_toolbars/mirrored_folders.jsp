@@ -32,7 +32,7 @@
 <div class="ss_style">
 <div class="ss_help_style">
 
-<p><ssf:nlt tag="ihelp.folderManagement.mirroredFiles.def"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.folderManagement.mirroredFiles.def"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="ihelp.folderManagement.mirroredFiles.serverFile" /></p>
 
@@ -42,7 +42,7 @@
 
 <div class="ss_help_moreinfo">
 <p><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Installation and Configuration Guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/><a id="skip_nav_titles"/></p>
+  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/><a id="skip_nav_titles"/></p>
 </div>
 
 </div>

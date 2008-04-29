@@ -44,7 +44,7 @@
 
 <li><ssf:nlt tag="help.folderTable.listItem.sortColumn" /></li>
 
-<li><ssf:nlt tag="help.folderTable.listItem.seeWholeTitle"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.folderTable.listItem.seeWholeTitle"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.folderTable.listItem.viewEntry" /></li>
 

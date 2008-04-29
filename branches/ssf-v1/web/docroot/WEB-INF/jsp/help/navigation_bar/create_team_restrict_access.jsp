@@ -33,7 +33,7 @@
 <div class="ss_help_style">
 
 <div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="help.understandingTeams.topic"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span><br />
+<span class="ss_titlebold"><ssf:nlt tag="help.understandingTeams.topic"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></span><br />
 <span class="subtitle"><ssf:nlt tag="help.createTeam.subTopic.grantAccess"/></span>
 </div>
 
@@ -45,11 +45,11 @@
 
 <li><ssf:nlt tag="help.setTeamAccess.content.listItem.viewPage"/></li>
 
-<li><ssf:nlt tag="help.setTeamAccess.content.listItem.aclMenu"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.setTeamAccess.content.listItem.aclMenu"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.setTeamAccess.content.listItem.noInherit"/></li>
 
-<li><ssf:nlt tag="help.setTeamAccess.content.listItem.addUser"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.setTeamAccess.content.listItem.addUser"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.setTeamAccess.content.listItem.enableUser"/></li>
 

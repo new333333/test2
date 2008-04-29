@@ -36,7 +36,7 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.myWorkspaceButton"/></span>
 </div>
 
-<p><ssf:nlt tag="help.myWorkspaceIcon.content.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.myWorkspaceIcon.content.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <ul>
 
@@ -54,7 +54,7 @@
 
 </ul>
 
-<p><ssf:nlt tag="help.myWorkspaceIcon.content.ifNew"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.myWorkspaceIcon.content.ifNew"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 </div>
