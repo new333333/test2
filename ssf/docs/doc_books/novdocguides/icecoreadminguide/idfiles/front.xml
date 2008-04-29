@@ -2,9 +2,11 @@
 
 <targets>
 
- <target id="bookinfo" pid="bookinfo" name="BookInfo" level="0"> <text>ICEcore Administration Guide</text> </target>
+ <target id="bookinfo" pid="bookinfo" name="BookInfo" level="0"> <text>Novell Teaming 1.0.3 Administration Guide</text> </target>
 
  <target id="legalnotices" pid="bookinfo" name="LegalNotice" level="1"> <text>Legal Notices</text> </target>
+
+ <target id="trademarks" pid="bookinfo" name="LegalNotice" level="1"> <text>Novell Trademarks</text> </target>
 
  <target id="thirdparty" pid="bookinfo" name="LegalNotice" level="1"> <text>Third-Party Materials</text> </target>
 
