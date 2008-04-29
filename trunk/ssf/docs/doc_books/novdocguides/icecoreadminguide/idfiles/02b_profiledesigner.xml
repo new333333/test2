@@ -2,11 +2,11 @@
 
 <targets>
 
- <target id="bbmqmww" pid="bbmqmww" name="Chapter" level="0" number="3"> <text>The Profile Designer</text> </target>
+ <target id="bbmqmww" pid="bbmqmww" name="Chapter" level="0" number="4"> <text>The Profile Designer</text> </target>
 
- <target id="bbmqu0h" pid="bbmqmww" name="Procedure" level="1" number="1"> <text>From the ICEcore Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
+ <target id="bbmqu0h" pid="bbmqmww" name="Procedure" level="1" number="1"> <text>From the Teaming Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
 
- <target id="bbn46tl" pid="bbmqmww" name="Step" level="2" number="1"> <text>From the ICEcore Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
+ <target id="bbn46tl" pid="bbmqmww" name="Step" level="2" number="1"> <text>From the Teaming Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
 
  <target id="bbmqu0i" pid="bbmqmww" name="Step" level="2" number="2"> <text>Click Profile designer.</text> </target>
 

@@ -2,15 +2,15 @@
 
 <targets>
 
- <target id="bbfekr8" pid="bbfekr8" name="Chapter" level="0" number="2"> <text>Custom Entries</text> </target>
+ <target id="bbfekr8" pid="bbfekr8" name="Chapter" level="0" number="3"> <text>Using Custom Entries</text> </target>
 
- <target id="bbfequg" pid="bbfequg" name="Sect1" level="1" number="2.1"> <text>Creating a Custom Entry</text> </target>
+ <target id="bbfequg" pid="bbfequg" name="Sect1" level="1" number="3.1"> <text>Creating a Custom Entry</text> </target>
 
- <target id="bbfzhdh" pid="bbfequg" name="Sect2" level="2" number="2.1.1"> <text>Create the Custom Entry</text> </target>
+ <target id="bbfzhdh" pid="bbfequg" name="Sect2" level="2" number="3.1.1"> <text>Create the Custom Entry</text> </target>
 
- <target id="bbferji" pid="bbfequg" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
+ <target id="bbferji" pid="bbfequg" name="Procedure" level="3" number="1"> <text>From the Teaming Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
 
- <target id="bbferjj" pid="bbfequg" name="Step" level="4" number="1"> <text>From the ICEcore Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
+ <target id="bbferjj" pid="bbfequg" name="Step" level="4" number="1"> <text>From the Teaming Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
 
  <target id="bbfeu64" pid="bbfequg" name="Step" level="4" number="2"> <text>Click Entry designer.</text> </target>
 
@@ -18,7 +18,7 @@
 
  <target id="bbfigvt" pid="bbfequg" name="Step" level="4" number="4"> <text>On the right-side of the window, click Add a new entry definition.</text> </target>
 
- <target id="bbfion2" pid="bbfequg" name="Step" level="4" number="5"> <text>Type the name for the entry that you want to see in ICEcore into the Caption field.</text> </target>
+ <target id="bbfion2" pid="bbfequg" name="Step" level="4" number="5"> <text>Type the name for the entry that you want to see in Novell Teaming into the Caption field.</text> </target>
 
  <target id="bbfijdy" pid="bbfequg" name="Step" level="4" number="6"> <text>In the entry form that appears, type the name for this entry type into the Name field.</text> </target>
 
@@ -28,9 +28,9 @@
 
  <target id="bbfze22" pid="bbfequg" name="Step" level="4" number="9"> <text>Click OK at the bottom of the entry form.</text> </target>
 
- <target id="bbfzhv1" pid="bbfequg" name="Sect2" level="2" number="2.1.2"> <text>The Entry Designer Editing Window</text> </target>
+ <target id="bbfzhv1" pid="bbfequg" name="Sect2" level="2" number="3.1.2"> <text>The Entry Designer Editing Window</text> </target>
 
- <target id="bbfzt0g" pid="bbfequg" name="Sect2" level="2" number="2.1.3"> <text>Create a Custom Form for an Entry</text> </target>
+ <target id="bbfzt0g" pid="bbfequg" name="Sect2" level="2" number="3.1.3"> <text>Create a Custom Form for an Entry</text> </target>
 
  <target id="bbg07aq" pid="bbfequg" name="Procedure" level="3" number="1"> <text>Click the plus sign (+) to the left of Entry form definition to expand this section. </text> </target>
 
@@ -108,7 +108,7 @@
 
  <target id="bbmqdhd" pid="bbfequg" name="Step" level="6" number="9h"> <text>Select Move into the selected item and click OK.</text> </target>
 
- <target id="bbg05pu" pid="bbfequg" name="Sect2" level="2" number="2.1.4"> <text>Create a Custom View for an Entry</text> </target>
+ <target id="bbg05pu" pid="bbfequg" name="Sect2" level="2" number="3.1.4"> <text>Create a Custom View for an Entry</text> </target>
 
  <target id="bbg1ly1" pid="bbfequg" name="Procedure" level="3" number="1"> <text>Expand Entry view definition.</text> </target>
 
@@ -124,9 +124,9 @@
 
  <target id="bbg1oxh" pid="bbfequg" name="Step" level="4" number="6"> <text>Move the Reason for Time Off element below the Entry creator and creation date element and move the Time Off Dates and Time element below the Reason for Time Off element.</text> </target>
 
- <target id="bbg062f" pid="bbg062f" name="Sect1" level="1" number="2.2"> <text>Using a Custom Entry</text> </target>
+ <target id="bbg062f" pid="bbg062f" name="Sect1" level="1" number="3.2"> <text>Using a Custom Entry</text> </target>
 
- <target id="bbg26pg" pid="bbg062f" name="Sect2" level="2" number="2.2.1"> <text>Configure a Folder to Use Your Custom Entry</text> </target>
+ <target id="bbg26pg" pid="bbg062f" name="Sect2" level="2" number="3.2.1"> <text>Configure a Folder to Use Your Custom Entry</text> </target>
 
  <target id="bbg1x4g" pid="bbg062f" name="Procedure" level="3" number="1"> <text>Find the folder you want to use for the teams time off entries (Engineering &#62; Time Off Entries for this procedure).</text> </target>
 
@@ -142,7 +142,7 @@
 
  <target id="bbg23bs" pid="bbg062f" name="Step" level="4" number="6"> <text>At the top or bottom of this window, click Close.</text> </target>
 
- <target id="bbgehyt" pid="bbg062f" name="Sect2" level="2" number="2.2.2"> <text>Add a Time Off Entry</text> </target>
+ <target id="bbgehyt" pid="bbg062f" name="Sect2" level="2" number="3.2.2"> <text>Add a Time Off Entry</text> </target>
 
  <target id="bbgei4f" pid="bbg062f" name="Procedure" level="3" number="1"> <text>Select the New &#62; Time Off menu item.</text> </target>
 
@@ -152,7 +152,7 @@
 
  <target id="bbgejfx" pid="bbg062f" name="Step" level="4" number="3"> <text>Click OK.</text> </target>
 
- <target id="bbgeol1" pid="bbg062f" name="Sect2" level="2" number="2.2.3"> <text>View the Time Off Entry</text> </target>
+ <target id="bbgeol1" pid="bbg062f" name="Sect2" level="2" number="3.2.3"> <text>View the Time Off Entry</text> </target>
 
  <target id="bbgeow9" pid="bbg062f" name="Procedure" level="3" number="1"> <text>Click the title of the Time Off entry you want to view.</text> </target>
 
