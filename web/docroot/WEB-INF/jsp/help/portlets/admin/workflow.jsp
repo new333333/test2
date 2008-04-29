@@ -42,7 +42,7 @@
 
 <p><ssf:nlt tag="help.workflowIntro.content.status"/></p>
 
-<p><ssf:nlt tag="help.workflowIntro.content.workflowDef"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.workflowIntro.content.workflowDef"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 

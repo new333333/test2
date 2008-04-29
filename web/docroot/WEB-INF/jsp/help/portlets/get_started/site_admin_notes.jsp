@@ -33,7 +33,7 @@
 <div class="ss_help_style">
 
 <div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="help.understandingTeams.topic"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></span><br />
+<span class="ss_titlebold"><ssf:nlt tag="help.understandingTeams.topic"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></span><br />
 <span class="subtitle"><ssf:nlt tag="help.createTeam.subTopic.siteAdminNotes"/></span>
 </div>
 

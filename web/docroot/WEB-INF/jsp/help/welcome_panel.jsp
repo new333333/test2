@@ -31,7 +31,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <table class="ss_popup" cellpadding="0" cellspacing="0" border="0" style="width: 300px;"><tbody>
 <tr>
- <td width="100%"><div class="ss_popup_top"><div class="ss_popup_title"><ssf:nlt tag="help.welcome"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt>
+ <td width="100%"><div class="ss_popup_top"><div class="ss_popup_title"><ssf:nlt tag="help.welcome"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt>
 	<img id="ss_help_cpanel_show_control" border="0" src="<html:imagesPath/>pics/1pix.gif"
    <c:if test="${help_cpanel_show}">
    class="ss_help_cpanel_show"

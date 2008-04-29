@@ -36,14 +36,11 @@
 <span class="ss_titlebold"><ssf:nlt tag="helpSpot.buddyListPortlet"/></span>
 </div>
 
-<p><ssf:nlt tag="help.buddyListPortlet.intro">
-  <ssf:param name="value" value="${ssProductName}"/>
-  <ssf:param name="value" value="${ssProductConferencingName}"/>
-</ssf:nlt></p>
+<p><ssf:nlt tag="help.buddyListPortlet.intro"><ssf:param name="value" value="${ssProductTitle}"/><ssf:param name="value" value="${ssProductConferencingTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.buddyListPortlet.contacting" /> <ssf:nlt tag="help.displayEntryControl.presenceIconDescription"><ssf:param name="value" value="${ssProductConferencingName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.buddyListPortlet.contacting" /> <ssf:nlt tag="help.displayEntryControl.presenceIconDescription"><ssf:param name="value" value="${ssProductConferencingTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.displayEntryControl.contactPeople"><ssf:param name="value" value="${ssProductConferencingName}"/></ssf:nlt> <ssf:nlt tag="help.buddyListPortlet.contactingContinued" /></p>
+<p><ssf:nlt tag="help.displayEntryControl.contactPeople"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt> <ssf:nlt tag="help.buddyListPortlet.contactingContinued" /></p>
 
 <p><ssf:nlt tag="help.buddyListPortlet.configure" /></p>
 

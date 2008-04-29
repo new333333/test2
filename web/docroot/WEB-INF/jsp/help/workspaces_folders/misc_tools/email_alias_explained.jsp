@@ -36,20 +36,15 @@
 <span class="ss_titlebold"><ssf:nlt tag="ihelp.email.from.moreInfo.topic" /></span>
 </div>
 
-<p><ssf:nlt tag="ihelp.email.from.moreInfo.intro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.from.moreInfo.intro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="ihelp.email.from.moreInfo.routing"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.from.moreInfo.aliases" /></p>
 
-<div class="example">
-<ssf:nlt tag="ihelp.email.from.moreInfo.example" />
-</div>
+<p><ssf:nlt tag="ihelp.email.from.moreInfo.aliases.example" /></p>
 
-<p><ssf:nlt tag="ihelp.email.from.moreInfo.explained"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.from.moreInfo.accounts"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-
-<p><ssf:nlt tag="ihelp.email.from.moreInfo.consult"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
-
-<p><ssf:nlt tag="ihelp.email.from.moreInfo.deletedAfterRouting"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="ihelp.email.from.moreInfo.deletedAfterRouting"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 </div>
 
@@ -59,7 +54,7 @@
 
 <div class="ss_help_moreinfo">
 <p><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Installation and Configuration Guide.pdf">
-  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/><a id="skip_nav_titles"/></p>
+  <ssf:nlt tag="help.viewBooks.content.listItem.installGuide"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></a> <ssf:nlt tag="help.globalStrings.englishOnly"/><a id="skip_nav_titles"/></p>
 </div>
 
 </div>

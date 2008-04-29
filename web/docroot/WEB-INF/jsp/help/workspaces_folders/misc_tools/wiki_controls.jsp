@@ -38,9 +38,9 @@
 
 <p><ssf:nlt tag="help.wikiControls.intro" /></p>
 
-<p><ssf:nlt tag="help.wikiControls.default"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.wikiControls.default"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
-<p><ssf:nlt tag="help.wikiControls.search"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.wikiControls.search"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <p><ssf:nlt tag="help.wikiControls.sidebar" /></p>
 

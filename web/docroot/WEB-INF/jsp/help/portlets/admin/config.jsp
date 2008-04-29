@@ -36,15 +36,15 @@
 <span class="ss_titlebold"><ssf:nlt tag="help.configIntro.title"/></span>
 </div>
 
-<p><ssf:nlt tag="help.configIntro.content.listIntro"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></p>
+<p><ssf:nlt tag="help.configIntro.content.listIntro"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <ul>
 
-<li><ssf:nlt tag="help.configIntro.content.listItem.initial"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.configIntro.content.listItem.initial"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.configIntro.content.listItem.prepopulation" /></li>
 
-<li><ssf:nlt tag="help.configIntro.content.listItem.placeEnhancement"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt></li>
+<li><ssf:nlt tag="help.configIntro.content.listItem.placeEnhancement"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>
 
 <li><ssf:nlt tag="help.configIntro.content.listItem.useEnhancement" /></li>
 
