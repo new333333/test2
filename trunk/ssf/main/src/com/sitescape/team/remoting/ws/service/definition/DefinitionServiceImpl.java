@@ -37,16 +37,16 @@ import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.remoting.ws.BaseService;
 
-public class DefinitionServiceImpl extends BaseService implements DefinitionService {
+public class DefinitionServiceImpl extends BaseService implements DefinitionService, DefinitionServiceInternal {
 
-	public String getDefinitionAsXML(String accessToken, String definitionId) {
+	public String definition_getDefinitionAsXML(String accessToken, String definitionId) {
 		return getDefinitionModule().getDefinition(definitionId).getDefinition().getRootElement().asXML();
 	}
 	
-	public String getDefinitionConfigAsXML(String accessToken) {
+	public String definition_getDefinitionConfigAsXML(String accessToken) {
 		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
 	}
-	public String getDefinitionListAsXML(String accessToken) {
+	public String definition_getDefinitionListAsXML(String accessToken) {
 		List<Definition> defs = getDefinitionModule().getDefinitions();
 		Document doc = DocumentHelper.createDocument();
 		doc.addElement("definitions");

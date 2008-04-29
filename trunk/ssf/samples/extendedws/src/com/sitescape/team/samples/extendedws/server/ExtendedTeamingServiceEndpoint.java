@@ -26,30 +26,13 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.remoting.ws.service.ical;
+package com.sitescape.team.samples.extendedws.server;
 
-import javax.xml.rpc.ServiceException;
-import javax.xml.rpc.server.ServiceLifecycle;
+import com.sitescape.team.remoting.ws.TeamingServiceEndpoint;
 
-import com.sitescape.team.util.SpringContextUtil;
+public class ExtendedTeamingServiceEndpoint extends TeamingServiceEndpoint implements ExtendedFolderService {
 
-public class IcalServiceEndpoint implements ServiceLifecycle, IcalService {
-
-	private IcalService icalService;
-	
-	protected IcalService getIcalService() {
-		return icalService;
+	public String folder_getFolderTitle(String accessToken, long folderId) {
+		return ((ExtendedFolderService) getFolderService()).folder_getFolderTitle(accessToken, folderId); 
 	}
-
-	public void uploadCalendarEntries(String accessToken, long folderId, String iCalDataAsXML) {
-		getIcalService().uploadCalendarEntries(accessToken, folderId, iCalDataAsXML);
-	}
-
-	public void init(Object context) throws ServiceException {
-		this.icalService = (IcalService) SpringContextUtil.getBean("icalService");
-	}
-	
-	public void destroy() {
-	}
-
 }

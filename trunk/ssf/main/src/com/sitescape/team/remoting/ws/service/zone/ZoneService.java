@@ -30,9 +30,9 @@ package com.sitescape.team.remoting.ws.service.zone;
 
 public interface ZoneService {
 
-	public void addZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain);
+	public void zone_addZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain);
 
-	public void modifyZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain);
+	public void zone_modifyZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain);
 
-	public void deleteZoneUnderPortal(String accessToken, String zoneName);
+	public void zone_deleteZoneUnderPortal(String accessToken, String zoneName);
 }

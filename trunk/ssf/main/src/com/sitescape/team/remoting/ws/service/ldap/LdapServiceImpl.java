@@ -35,9 +35,17 @@ import com.sitescape.team.remoting.ws.BaseService;
 
 public class LdapServiceImpl extends BaseService implements LdapService {
 
-	public void syncUser(String accessToken, Long userId) {
+	public void ldap_syncUser(String accessToken, Long userId) {
 		try {
 			getLdapModule().syncUser(userId);
+		} catch (NamingException e) {
+			throw new RemotingException(e);
+		}
+	}
+
+	public void ldap_syncAll(String accessToken) {
+		try {
+			getLdapModule().syncAll();
 		} catch (NamingException e) {
 			throw new RemotingException(e);
 		}

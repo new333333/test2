@@ -30,18 +30,18 @@ package com.sitescape.team.remoting.ws.service.profile;
 
 public interface ProfileService {
 
-	public String getAllPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords);
+	public String profile_getAllPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords);
 	
-	public String getPrincipalAsXML(String accessToken, long binderId, long principalId);
+	public String profile_getPrincipalAsXML(String accessToken, long binderId, long principalId);
 	
-	public long addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML);
+	public long profile_addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML);
 	
-	public long addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML);
+	public long profile_addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML);
 	
-	public void addUserToGroup(String accessToken, long userId, String username, long groupId);
+	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId);
 	
-	public void modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML);
+	public void profile_modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML);
 	
-	public void deletePrincipal(String accessToken, long binderId, long principalId);
-	public long addUserWorkspace(String accessToken, long userId);
+	public void profile_deletePrincipal(String accessToken, long binderId, long principalId);
+	public long profile_addUserWorkspace(String accessToken, long userId);
 }
