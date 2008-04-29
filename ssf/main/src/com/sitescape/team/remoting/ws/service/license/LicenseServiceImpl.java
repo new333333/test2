@@ -34,15 +34,15 @@ import com.sitescape.team.remoting.ws.BaseService;
 
 public class LicenseServiceImpl extends BaseService implements LicenseService {
 
-	public long getExternalUsers(String accessToken) {
+	public long license_getExternalUsers(String accessToken) {
 		return getLicenseModule().getExternalUsers();
 	}
 	
-	public long getRegisteredUsers(String accessToken) {
+	public long license_getRegisteredUsers(String accessToken) {
 		return getLicenseModule().getRegisteredUsers();
 	}
 
-	public void updateLicense(String accessToken) {
+	public void license_updateLicense(String accessToken) {
 		try {
 			getLicenseModule().updateLicense();
 		} catch (LicenseException e) {

@@ -40,11 +40,11 @@ public class IcalServiceImpl extends com.sitescape.team.remoting.ws.service.ical
 	 * Extend basic support in {@link com.sitescape.team.remoting.ws.service.ical.IcalServiceImpl#uploadCalendarEntries(long, String)} 
 	 * to include importing calendar entries from attachments.
 	 */
-	public void uploadCalendarEntries(String accessToken, long folderId, String iCalDataAsXML)
+	public void ical_uploadCalendarEntries(String accessToken, long folderId, String iCalDataAsXML)
 	{
 		iCalDataAsXML = StringCheckUtil.check(iCalDataAsXML);
 		
-		super.uploadCalendarEntries(accessToken, folderId, iCalDataAsXML);
+		super.ical_uploadCalendarEntries(accessToken, folderId, iCalDataAsXML);
 		try {
 			for(AttachmentPart part : AttachmentsHelper.getMessageAttachments()) {
 				getIcalModule().parseToEntries(folderId, part.getDataHandler().getInputStream());

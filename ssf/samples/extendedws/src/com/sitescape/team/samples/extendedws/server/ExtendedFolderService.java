@@ -40,5 +40,5 @@ public interface ExtendedFolderService extends FolderService {
 	 * @param folderId folder id
 	 * @return
 	 */
-	public String getFolderTitle(String accessToken, long folderId);
+	public String folder_getFolderTitle(String accessToken, long folderId);
 }

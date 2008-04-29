@@ -43,7 +43,7 @@ import com.sitescape.team.remoting.ws.BaseService;
 
 public class TemplateServiceImpl extends BaseService implements TemplateService {
 
-	public long addBinder(String accessToken, long parentBinderId, long binderConfigId, String title)
+	public long template_addBinder(String accessToken, long parentBinderId, long binderConfigId, String title)
 	{
 		try {
 			return getTemplateModule().addBinder(binderConfigId, parentBinderId, title, null);
@@ -51,7 +51,7 @@ public class TemplateServiceImpl extends BaseService implements TemplateService 
 			throw new RemotingException(e);
 		}
 	}
-	public String getTemplateListAsXML(String accessToken) {
+	public String template_getTemplateListAsXML(String accessToken) {
 		List<TemplateBinder> defs = getTemplateModule().getTemplates();
 		Document doc = DocumentHelper.createDocument();
 		doc.addElement("templates");

@@ -53,12 +53,8 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.client.ws.folder.FolderServiceSoapBindingStub;
-import com.sitescape.team.client.ws.folder.FolderServiceSoapServiceLocator;
-import com.sitescape.team.client.ws.profile.ProfileServiceSoapBindingStub;
-import com.sitescape.team.client.ws.profile.ProfileServiceSoapServiceLocator;
-import com.sitescape.team.client.ws.search.SearchServiceSoapBindingStub;
-import com.sitescape.team.client.ws.search.SearchServiceSoapServiceLocator;
+import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
+import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
@@ -67,7 +63,7 @@ import com.sitescape.util.servlet.StringServletResponse;
 
 public class AddEntryServlet extends HttpServlet {
 
-	private static final String SEARCH_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/FolderService";
+	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingService";
 	
 	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
 	private static final String PARAMETER_NAME_VERSION = "ss_version";
@@ -108,9 +104,9 @@ public class AddEntryServlet extends HttpServlet {
 	}
 
 	private Document getTaskList(String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
-		SearchServiceSoapServiceLocator locator = new SearchServiceSoapServiceLocator();
-		locator.setSearchServiceEndpointAddress(SEARCH_SERVICE_ADDRESS);
-		SearchServiceSoapBindingStub stub = (SearchServiceSoapBindingStub) locator.getSearchService();
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		Document query = DocumentHelper.createDocument();
 		Element rootElement = query.addElement(QueryBuilder.AND_ELEMENT);
 		Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
@@ -121,7 +117,7 @@ public class AddEntryServlet extends HttpServlet {
 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
 		child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
-		String searchResultsAsXML = stub.search(accessToken, query.asXML(), 0, 10);
+		String searchResultsAsXML = stub.search_search(accessToken, query.asXML(), 0, 10);
 		
 		Document doc = DocumentHelper.parseText(searchResultsAsXML);
 		Element rootElem = doc.getRootElement();
