@@ -178,7 +178,6 @@ a.ss_buttonSTButton:active span {
 	display:inline;
 	height:16px;
 	padding-top:15px;
-	margin:0px;
 	}
 #ss_top_nav_view a {
 	font-family:  Arial, sans-serif;
@@ -240,7 +239,6 @@ a.ss_buttonSTButton:active span {
 	.ss_5colright,
 	.ss_5colmid,
 	.ss_5colleft {
-		float:left;
 		width:100%;				/* width of page */
 		position:relative;
 		}
@@ -251,8 +249,8 @@ a.ss_buttonSTButton:active span {
 	.ss_5col5 {
 		float:left;
 		position:relative;
-		padding:3px 0 1em 0;	/* no left and right padding on columns, we just make them narrower instead 
-								only padding top and bottom is included here, make it whatever value you need */
+		padding:3px 0px 1px 0px;	
+		/* no left and right padding on columns, we just make them narrower instead only padding top and bottom is included here, make it whatever value you need */
 		/* overflow:hidden;     not going to use hidden overflow for individual columns */
 		}
 	
