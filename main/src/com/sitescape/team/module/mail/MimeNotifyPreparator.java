@@ -146,8 +146,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 				
 				String component = getICalComponentType(iCal);
 				//If okay to send todo or not a todo build alternatative
-				if (false) {
-				//	if (sendVTODO || !Component.VTODO.equals(component)) {
+				if (sendVTODO || !Component.VTODO.equals(component)) {
 					// 	attach alternative iCalendar content
 					if (eventsSize == 1 && Notify.NotifyType.full.equals(messageType)) {
 						//always send as attachment and alternative text
@@ -155,10 +154,12 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 					} else  {
 						//always send as attachment, not alternative
 						prepareICalendar(iCal, fileName, component, true, false, helper);
-						if (margedCalendars == null) {
+						if (eventsSize > 1) {
+							if (margedCalendars == null) {
 							margedCalendars = new Calendar();
+							}
+							margedCalendars = Calendars.merge(margedCalendars, iCal);
 						}
-						margedCalendars = Calendars.merge(margedCalendars, iCal);
 					}
 				} else {
 					//always send as attachment, not alternative

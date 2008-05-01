@@ -46,7 +46,7 @@ import com.sitescape.team.util.ResolveIds;
 public class NotifyBuilderPlaces extends AbstractNotifyBuilder {
 
     public String getDefaultTemplate() {
-    	return "places.vtl";
+    	return "places.vm";
     }
     protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
 		Map binders = ResolveIds.getBinderTitlesAndIcons(attr);

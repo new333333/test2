@@ -37,7 +37,7 @@ import org.apache.velocity.VelocityContext;
 public class NotifyBuilderAttachments extends AbstractNotifyBuilder {
 
     public String getDefaultTemplate() {
-    	return "attachments.vtl";
+    	return "attachments.vm";
     }
 	protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, String propertyName) {
 		build(visitor, template, ctx);

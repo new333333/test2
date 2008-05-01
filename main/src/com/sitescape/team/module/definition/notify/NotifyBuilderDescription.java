@@ -42,7 +42,7 @@ import com.sitescape.team.web.util.WebHelper;
 public class NotifyBuilderDescription extends AbstractNotifyBuilder {
 
     public String getDefaultTemplate() {
-    	return "description.vtl";
+    	return "description.vm";
     }
     public void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
     	Object obj = attr.getValue();

@@ -34,6 +34,7 @@ import java.util.TimeZone;
 
 import org.apache.velocity.VelocityContext;
 
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.EventsViewHelper;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Event;
@@ -45,14 +46,17 @@ import com.sitescape.team.domain.Event;
 public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 	
     public String getDefaultTemplate() {
-    	return "event.vtl";
+    	return "event.vm";
     }
 	protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
 		Object obj = attr.getValue();
 		if (!(obj instanceof Event)) return;
 		Event event = (Event)obj;
-		visitor.getNotifyDef().addEvent(visitor.getEntity(), event);
-
+		//if processing a calendar or task attach events to mail as icals
+    	String family = (String)visitor.getParam("ssFamily");
+    	if (ObjectKeys.FAMILY_CALENDAR.equals(family) || ObjectKeys.FAMILY_TASK.equals(family)) {
+    		visitor.getNotifyDef().addEvent(visitor.getEntity(), event);
+    	}
 		Calendar st = event.getDtStart();
 		Calendar en = event.getDtEnd();
 			

@@ -129,7 +129,7 @@
 		</replace>
 	</target>
 		
-	<target name="make-all-generated-files" depends="make-jboss-web.xml,make-web.xml,make-strings.xml,make-portlet.xml,make-portlet-properties">
+	<target name="make-all-generated-files" depends="make-jboss-web.xml,make-web.xml,make-portlet.xml,make-portlet-properties">
 	</target>
 	
 	<target name="war" depends="make-all-generated-files">
@@ -139,10 +139,6 @@
 			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl"
 			webxml="${web.dir}/WEB-INF/${generic.web.xml}"
 		>
-			<!-- No longer necessary
-			<manifest>
-				<attribute name="Class-Path" value="ssf-main.jar ${classpath.manifest.ss} ${classpath.manifest.3rd}" />
-			</manifest>-->
 		</war>
 	
 		<antcall target="add-image-themes"/>
@@ -384,25 +380,13 @@
 		</copy>
 	</target>
 	
-	<target name="make-strings.xml">
-			<java 	classname="com.sitescape.team.tools.strings.GenerateStringsXml"
-					fork="true"
-					newenvironment="true"
-					failonerror="true"
-			>
-				<classpath refid="project.classpath" />
-				<arg value="${web.dir}/WEB-INF" />
-			</java>	 
-		</target>
-	
 	<target name="make-portlet.xml">
 				<java 	classname="com.sitescape.team.tools.portlet.GeneratePortletXml"
-						fork="true"
 						newenvironment="true"
 						failonerror="true"
 				>
 					<classpath refid="project.classpath" />
-					<arg value="${web.dir}/WEB-INF" />
+					<arg value="web/${web.dir}/WEB-INF" />
 				</java>	 
 			</target>
 	

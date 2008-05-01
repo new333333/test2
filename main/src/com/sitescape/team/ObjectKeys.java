@@ -136,6 +136,9 @@ public interface ObjectKeys {
     public static final String DEFINITION_ENTRY_DATA="entryData";
     public static final String DEFINITION_FILE_DATA="fileData";
     public static final String DEFINITION_TEAM_TYPE="team";
+	public static final String DEFINITION_WORKSPACE_REMOTE_APPLICATION="workspaceRemoteApp";
+	public static final String DEFINITION_FOLDER_REMOTE_APPLICATION="folderRemoteApp";
+	public static final String DEFINITION_ENTRY_REMOTE_APPLICATION="entryRemoteApp";	
     
     //Default role titles
     public static final String ROLE_TITLE_VISITOR="__role.visitor";

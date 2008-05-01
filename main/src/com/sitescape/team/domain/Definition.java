@@ -96,10 +96,6 @@ public class Definition extends PersistentTimestampObject  {
 
 	protected static final Log logger = LogFactory.getLog(Definition.class);
 
-	public Definition() {
-		
-	}    
-
 
     /**
      * Unique name of definition.

@@ -70,6 +70,9 @@
 	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_workspace_data_user_list.jsp" %><%
 
+	} else if (itemType.equals("workspaceRemoteApp")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/remote_application_view.jsp" %><%
+
 	} else {
         %>
         <ssf:nlt tag="definition.error.unknownDefinitionElement">

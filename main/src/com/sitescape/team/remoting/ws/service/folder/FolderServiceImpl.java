@@ -202,13 +202,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 			
 			// Get the staged file
 			String rootPath = SPropsUtil.getString("staging.upload.files.rootpath", "").trim();
-			String filePath=stagedFileRelativePath;
-			if (Validator.isNull(filePath)) {
-				filePath = fileName;
-			} else {
-				filePath += File.separator + fileName;
-			}
-			File file = new File(rootPath, filePath);
+			File file = new File(rootPath, stagedFileRelativePath);
 			
 			// Wrap it in a datastructure expected by our app.
 			DatedMultipartFile mf = new DatedMultipartFile(fileName, file, false, modifier, modificationDate==null?null:modificationDate.getTime());
@@ -233,7 +227,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}
 		else {
 			throw new UnsupportedOperationException("Staged file upload is disabled: " + binderId + ", " + 
-					entryId + ", " + fileUploadDataItemName + ", " + stagedFileRelativePath + ", " + fileName);
+					entryId + ", " + fileUploadDataItemName + ", " + fileName + ", " + stagedFileRelativePath);
 		}
 	}
 

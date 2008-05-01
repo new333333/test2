@@ -55,6 +55,9 @@
 	} else if (itemType.equals("attachFiles")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" %><%		
 	
+	} else if (itemType.equals("folderRemoteApp")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/remote_application_view.jsp" %><%
+
 	} else {
         %>
         <ssf:nlt tag="definition.error.unknownDefinitionElement">
