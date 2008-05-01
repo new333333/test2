@@ -31,73 +31,15 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript" src="<html:rootPath/>js/common/ss_common.js"></script>
 <div class="ss_portlet_style ss_portlet">
-<div align="right">
-		<c:if test="${ss_windowState != 'maximized'}">
-		  <a href="javascript:;" onClick="ss_helpSystem.run();return false;"><img border="0" 
-  		    src="<html:imagesPath/>icons/help.png" 
-  		    alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
-		</c:if>
-</div>
 <div class="ss_style" style="padding:4px;" align="center">
+<img src="<html:brandedImagesPath/>pics/getting_started.gif">
 <p>
   <a href="javascript:;" 
        onClick="ss_helpSystem.showInlineHelpSpotInfo(this, 'print_manuals', '', 200, 230, 'center', 'middle');">
      <span class="ss_getting_started"><ssf:nlt tag="help.viewBooks.title"/></span>
    </a>
 </p>
-<img src="<html:brandedImagesPath/>pics/getting_started.gif">
-<jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 
 </div>
-<br/>
-
-<c:if test="${empty ss_portletInitialization}">
-<script type="text/javascript">
-function ${renderResponse.namespace}_wsTree_showId(id, obj, action) {
-	if (typeof ss_workarea_showId !== "undefined") {
-		return ss_workarea_showId(id, action);
-	}
-	//Build a url to go to
-	var url = "<ssf:url windowState="maximized" action="ssActionPlaceHolder"><ssf:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
-	return false;
-}
-
-</script>
-
-<table width="100%">
-	<tr>
-		<td align="left">
-	    <ssHelpSpot helpId="portlets/workspace_tree_portlet" offsetX="-13" 
-	      title="<ssf:nlt tag="helpSpot.workspaceTreePortlet"/>">
-			<div>
-			<c:choose>
-			<c:when test="${renderRequest.windowState == 'normal'}">
-				<ssf:tree treeName="${renderResponse.namespace}_wsTree" 
-				  topId="${ssWsDomTreeBinderId}" 
-				  treeDocument="${ssWsDomTree}"  
-				  rootOpen="true"
-				  showIdRoutine="${renderResponse.namespace}_wsTree_showId"
-				   />
-			</c:when>
-			<c:when test="${renderRequest.windowState == 'maximized'}">
-				<ssf:tree treeName="${renderResponse.namespace}_wsTree" 
-				  topId="${ssWsDomTreeBinderId}" 
-				  treeDocument="${ssWsDomTree}"  
-				  rootOpen="true"
-				  showIdRoutine="${renderResponse.namespace}_wsTree_showId"
-				  />
-			</c:when>
-			</c:choose>			
-			</div>
-	    </ssHelpSpot>
-		</td>
-	</tr>
-</table>
-</c:if>
-
 </div>
 
