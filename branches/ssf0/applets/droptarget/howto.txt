@@ -1,0 +1,1 @@
+c:\Program Files\Java\jdk1.5.0_06\bin\jarsigner -keystore sitescape.keystore -storepass spDJOQ target.jar mykey

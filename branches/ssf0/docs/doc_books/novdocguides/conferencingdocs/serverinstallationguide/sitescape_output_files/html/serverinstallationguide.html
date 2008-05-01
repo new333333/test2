@@ -1,0 +1,3324 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Wednesday, October 31, 2007" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2007" />
+
+<style type="text/css">
+body { 
+		margin-left: .2in;
+		padding:0;
+		font-family:arial, helvetica, sans-serif;
+		font-size: 75%;
+		font-weight: normal;
+		color: #000000;
+		background-color: #ffffff;
+}
+
+/* headings */
+	h1 {font-size: 125%; font-weight: bold; color: #000000;}
+	h2,h3,h4,h5,h6 {font-size: 100%; font-weight: bold; color: #000000; margin-bottom:-6px;}
+
+	/* single file heading adjustments */
+	.singlefile h1 {font-size: 185%; color: #CC0000; margin-top:10px;}
+	.singlefile h2 {font-size: 140%; margin-top:35px;}
+	.singlefile h3 {font-size: 125%; margin-top:25px;}
+
+/* sections */
+	div.sect1 { margin-bottom: 10pt; }
+	div.sect2 { }
+	div.sect3, div.sect4, div.sect5, div.sect6 {margin-left:18px;}
+	
+/* msgset */
+	div.msgexplan {margin: 0px 0px 7px 0px;}
+	div.msgexplan span.title {margin: 0px 7px 0px 0px; font-size: 100%; font-weight: bold; color: #000000;}
+	div.msgtext p.para {margin: 4px 0px 16px 0px; font-size: 100%; font-weight: bold; color: #b00000;}
+
+/* links */
+	a {color:#0000cc;}
+	a:hover {color:#3366ff;}
+	a:visited {color:#993333;}
+	li.listitem a:hover {color:#3366ff;}
+	a.ulink a:hover {text-decoration:none; color:#3366ff;}
+
+	a.nav:link,
+	a.nav:visited,
+	a.nav:active { vertical-align: middle; font-weight: bold; color: gray; text-decoration: none; font-size: 100%;}
+	a.nav:hover { vertical-align: middle; font-weight: bold; color: #999999; text-decoration: none; font-size: 100%;}  
+
+/* paragraphs */	
+	p.para {font-weight: normal; color: #000000;}
+/*	p.title {margin:10px 0 4px 0;} */
+	p.msgtext {font-style: italic; font-weight: normal}
+	p.trademark {font-size: 75%; font-weight: normal; font-style: italic;}
+	/*p.entry {font-size: 95%; font-weight: normal; color: #000000; margin-top: -5px;}
+	p.table {font-weight: bold;}*/
+	pre.screen {font-family: monospace; margin: 10px 5px 10px 0px; padding: 1px 0px 3px 5px;font-size: 110%;color: #000000;}
+	p.glossterm {font-weight: bold;}
+	div.glossdef {margin:-10pt 0 0 0;}
+	
+/* admonitions */	
+	div.note,
+	div.tip,
+	div.warning,
+	div.important {margin: 12px 0px 5px 0px; padding: 0px 15px 0px 15px; border-bottom: 1px solid #999999; border-top: 1px solid #999999;}
+
+	div.note p em.title,
+	div.tip p em.title,
+	div.warning p em.title,
+	div.important p em.title {margin: 0px 7px 0px 0px; font-weight: bold; font-style: normal;font-size:95%;}
+	div.warning em.title {color: #cc0000}
+
+/* figures and images */	
+	img.inline {vertical-align: middle;}
+	img {line-height: normal;}
+	br.img {line-height: normal;}
+	div.figure em.figure {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:5px 5px 0 0;}
+	div.figure em.title {font-family: times, serif; font-size: 95%; font-style: italic; font-weight: normal; color: #000000;}
+	div.figure p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
+	div.figure p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
+	div.informalfigure {margin:15px 0px 10px 0px;}
+	div.formalpara em.title {font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0 0;}
+	div.formalpara p.title {font-style: normal; font-weight: normal; color: #000000;}
+	
+/* tables */
+	div.table p.title em.num {font-size: 95%; font-style: normal; font-weight: bold; color: #000000; margin:0 5px 0px 0;}
+	td {font-size: 95%; font-weight: normal; color: #000000;}
+	div.table p.title {font-size: 95%; font-style: normal; font-weight: normal; color: #000000;}
+	div.formalpara table.topbot-lines {margin:0px 0 16px 0;}
+	div.informaltable table.topbot-lines {margin:10px 0 7px 0;}
+
+	table.topbot-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
+	table.topbot-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
+	table.topbot-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
+	table.topbot-lines tr.evenrow {background-color: white}
+	table.topbot-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
+	table.topbot-lines tr.oddrow {background-color: #f8f8f8}
+	table.topbot-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
+
+	table.all-lines {border-spacing: 0px; border-top:2px solid #000000; border-bottom:1px solid #606060;}
+	table.all-lines tr.headerrow th {border-bottom:1px solid #000000; border-top:none; padding: 4px 4px 4px 4px;}
+	table.all-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; margin:1px 0 0 0;}
+	table.all-lines tr.evenrow {background-color: white}
+	table.all-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px;}
+	table.all-lines tr.oddrow {background-color: #f8f8f8}
+	table.all-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: #f8f8f8}
+
+	table.no-lines tr.headerrow {background-color: white }
+	table.no-lines tr.headerrow th p.para {font-size: 95%; font-weight: bold; color: #404040; margin:1pt 0 0 0; background-color: white }
+	table.no-lines tr.evenrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white }
+	table.no-lines tr.evenrow td {background-color: white}
+	table.no-lines tr.oddrow td p.para {font-size: 95%; font-weight: normal; color: #000000; margin:1pt 0 2pt 0; padding: 4px 8px 4px 6px; background-color: white}
+	table.no-lines tr.oddrow td {background-color: white}
+	
+	table.calloutlist td {margin:0px; padding: 0px 6px 0px 0px;}
+	table.calloutlist p {margin: 5px 0px 5px 0px; padding: 0px;}
+	
+/* variablelists */
+	dt.term {font-style: normal; font-weight: bold; color: #000000;}
+	dd.listitem {margin-left: 22px; font-weight: normal;}
+	dt.refclass .application {font-size: 90%; font-style: normal; font-weight: bold; color: #000000; padding: 0px 20px 2px 0px;}
+	
+/* lists,procedures */
+	div.itemizedlist, div.orderedlist, div.procedure, div.substeps {margin-bottom:15px; font-weight: normal;}
+	ul.listbullet,ul.listcheck,ol {margin-left: 28px; padding-left: 0pt;}
+	ul.listcheck  {list-style-image : url("images/checkbox.gif"); list-style-type: square;}
+	ul.listbullet {list-style-type: disc; list-style-image : none;}
+	ul.simplelist {margin-left: 0px; list-style-type: none; list-style-image : none;padding-left: 0pt;}
+	div.orderedlist div.orderedlist > ol {list-style-type: lower-alpha;}
+	div.orderedlist div.orderedlist div.orderedlist > ol {list-style-type: lower-roman;}
+	div.substeps div.substeps div.substeps > ol {list-style-type:lower-alpha;}
+	div.substeps div.substeps > ol {list-style-type: decimal;}
+	div.substeps > ol {list-style-type: lower-alpha;}
+	li {margin: 5px 0 4px 0;}
+	li.member {margin:3px 0px 0px 10px;text-indent:-10px; font-weight: normal;}
+	li.step {font-weight: bold;color: #000000;}
+	div.procedure h1.title {font-weight: bold; color: #000000; margin-top: 22px; margin-bottom: -4pt;}
+
+/* bold inlines */	
+	em.refclass,em.glossterm,em.option {font-weight: bold; font-style: normal}
+
+/* italic inlines */	
+	em.diskname,em.emphasis,em.variable,em.versionvariable {font-style: italic; font-weight: normal}
+	span.citetitle,span.guimenu,span.replaceable {font-style: italic;}
+	tt,span.command,span.literal,span.filename {font-family: monospace; font-size: 130%;}
+	
+/* other inlines */	
+	em.msgtext {font-weight: bold; font-style: italic}
+	span.emphasis {font-weight: bold;}
+
+/* superscript and subscript */	
+	span.subscript,span.superscript {font-size: 80%;}
+
+/* single file toc elements */
+	div.toc {line-height: 11.5pt; background-color: #EEEEEE;  margin: 20px 0px 24px 0px; padding: 1px 0px 5px 0px}
+	div.toc h2 {margin-left: 5px}
+	div.toc div.toc1 {font-weight: normal; margin: 15px 10px 6px 5px}
+	div.toc div.toc2 {font-weight: normal; margin: 8px 10px 5px 25px}
+	div.toc div.toc3 {font-weight: normal; margin: 5px 10px 2px 50px}
+	div.toc div.toc4 {font-weight: normal; margin: 0px 10px 2px 75px}
+	
+</style>
+
+<title>ICEcore Conference Server Installation Guide</title>
+</head>
+<body>
+
+<div class="book singlefile"  id="bookinfo">
+
+<h1 class="title"> ICEcore Conference Server Installation Guide</h1>
+
+<p class="para">This guide covers the installation and initial configuration of the ICEcore Conference application software. The term “ICEcore Conference” in this guide applies to all versions of ICEcore Conference unless otherwise noted.</p>
+<h4 class="bridgehead" id="audience"> Audience</h4>
+
+<p class="para">This guide is intended for administrators or IT personnel in charge of installation.</p>
+<p class="para"></p>
+<h4 class="bridgehead" id="ban8e22"> Additional Documentation</h4>
+
+<p class="para">You may find more information in additional ICEcore Conference documentation:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">ICEcore Conference Help system</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Conference Quick Start Guide</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Conference User Guide</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Conference Operations Guide</p>
+<p class="listitem"></p></li></ul></div>
+
+<h4 class="bridgehead" id="b9yxnfu"> Contents of this Manual</h4>
+
+<p class="para">This manual provides information about the following:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">System Overview</p></li>
+<li class="listitem">
+<p class="listitem">Installation Procedures</p></li>
+<li class="listitem">
+<p class="listitem">Reconfiguring and Upgrading</p></li>
+<li class="listitem">
+<p class="listitem">Modifying Template Files</p></li>
+<li class="listitem">
+<p class="listitem">Various Appendices</p></li></ul></div>
+
+<p class="para"></p>
+<h4 class="bridgehead" id="b9yxnfv"> Document Conventions</h4>
+
+<p class="para">This manual uses the following conventions:</p>
+<p class="para">A greater-than symbol (&gt;) is used to separate actions within a step and items in a cross-reference path.</p>
+<p class="para">A trademark symbol (®, ™, etc.) denotes a SiteScape trademark. An asterisk (*) denotes a third-party trademark.</p>
+<p class="para">When a single pathname can be written with a backslash for some platforms or a forward slash for other platforms, the pathname is presented with a backslash. Users of platforms that require a forward slash, such as Linux or UNIX, should use forward slashes as required by your software.</p>
+<div class="informaltable">
+<table class="topbot-lines">
+          
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yxhs9"></a>
+<p class="para">What you see</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">What it means</p></th>
+</tr>
+        
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yxhsa"></a>
+<p class="para">Click the 
+       <span class="guimenu">Add toolbar</span> item.
+      </p>
+<p class="para">Click the 
+       <span class="guimenu">Getting Started</span> link.
+      </p>
+<p class="para">Click the 
+       <span class="guimenu">Add Document</span> menu item.
+      </p>
+<p class="para">Click 
+       <span class="guimenu">Close</span>.
+      </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">References to toolbar items, links, menu items, and buttons are presented in 
+       <span class="guimenu">italic</span> font.
+      </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yxhsb"></a>
+<p class="para">Type 
+       <span class="literal">status</span>, then press Enter.
+      </p>
+<p class="para">Open the 
+       <span class="literal">ManagerGuide.pdf</span> file.
+      </p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Text that you must type and file names are presented in 
+       <span class="filename">Courier</span> font.
+      </p></td>
+</tr></table>
+</div>
+
+<div class="chapter singlefile"  id="b9uab8e">
+
+<h1 class="title"><span class="number">1.0</span> System Overview</h1>
+
+<p class="para">This chapter provides an overview of the ICEcore Conference architecture and a description of the system components.</p>
+<p class="para">This chapter includes the following sections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uaf9s">Section 1.1, System Components</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9uai16">Section 1.2, Cluster Architecture</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="b9uaf9s">
+
+<h2 class="title"><span class="number">1.1</span> System Components</h2>
+
+<p class="para">The ICEcore Conference Server is a highly modular suite of components that you can configure to run on one or more servers. Each component provides a core service to the system through a well-defined XML API. Since all communication occurs over an XML transport, the allocation of components to physical hardware is very flexible.</p>
+<p class="para">The system components are as follows:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> XML Router - Routes XML data and APIs calls between other components.</p></li>
+<li class="listitem">
+<p class="listitem">Client Connector - Handles incoming connections from desktop clients and establishes user sessions with the Session Manager component.</p></li>
+<li class="listitem">
+<p class="listitem">Session Manager - Tracks connected users and related presence information, and allows users to exchange instant messages.</p></li>
+<li class="listitem">
+<p class="listitem">Meeting Controller - Manages in-progress meetings and dispatches meeting events to meeting participants.</p></li>
+<li class="listitem">
+<p class="listitem">Notification Server - Sends notification e-mails and IM messages on behalf of the Meeting Controller and Schedule Server components.</p></li>
+<li class="listitem">
+<p class="listitem">Address Book - Stores and retrieves community/personal address books and system profile information.</p></li>
+<li class="listitem">
+<p class="listitem">Schedule Server - Stores and retrieves meeting schedule, options, and participant information.</p></li>
+<li class="listitem">
+<p class="listitem">Voice Bridge - Controls telephony resources, connects calls to conferences, makes outbound calls, and provides telephone access to meeting features.</p></li>
+<li class="listitem">
+<p class="listitem">Meeting Archiver Server - Collects audio, application/desktop shared images, and chat sessions to create Macromedia Flash-based meeting archives, which are stored in a web accessible repository.</p></li>
+<li class="listitem">
+<p class="listitem">App Share Server - Forwards application shared data from meeting presenter to meeting participants and manages remote control access to the presenter’s desktop.</p></li>
+<li class="listitem">
+<p class="listitem">Invitation Web Service - Joins participants to meetings when they use the invitation URL.</p></li>
+<li class="listitem">
+<p class="listitem">External Web Service - Provides a web service API for external parties as needed for integration with existing service provider systems.</p></li></ul></div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9uai16">
+
+<h2 class="title"><span class="number">1.2</span> Cluster Architecture</h2>
+
+<p class="para">A cluster is a set of components providing services to a community of users. The following diagram illustrates the architecture of an example cluster (this is not a database fail-over cluster). This example displays a multiple server configuration.</p>
+<div class="informalfigure">
+            <img src="./clustearchitecture_a.png" alt="Cluster architecture" />
+          </div>
+
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="b9xzt9v">
+
+<h1 class="title"><span class="number">2.0</span> Installation Procedures</h1>
+
+<p class="para">The following chapter describes the installation requirements and procedures:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9xzzfu">Section 2.1, Installation Prerequisites</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#bbj2ipj">Section 2.2, Security</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9y00b7">Section 2.3, Installation Overview</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9y00b8">Section 2.4, Preparing for Installation</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9y0d1l">Section 2.5, Installing the ICEcore Conference Server</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9y00b9">Section 2.6, Review the ICEcore Conference Cluster Components Installation Process</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#bc53gyw">Section 2.7, Starting and Stopping the Cluster</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9y00ba">Section 2.8, ICEcore Conference Administration Console</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9y19ck">Section 2.9, ICEcore Conference Client Installation</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="b9xzzfu">
+
+<h2 class="title"><span class="number">2.1</span> Installation Prerequisites</h2>
+
+<p class="para">The following are requirements for the ICEcore Conference installation unless noted as optional.</p>
+<div class="sect2 singlefile"  id="b9y02nm">
+
+<h3 class="title"><span class="number">2.1.1</span> ICEcore Conference Server Requirements</h3>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>You need to install the
+     <span class="literal"> libneon </span>and
+     <span class="literal"> libpq </span>libraries before running the installer. On SLES 10, these libraries are not installed on the system by default.
+    </p></div>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<div class="formalpara" id="b9y03ko">
+              <p class="title"><em class="title">SUSE Enterprise Server 10 or Red Hat Enterprise Server 4</em>
+              - Each ICEcore Conference server host must be running SUSE Enterprise Server 10 or Linux.</p>
+            </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="b9y04gs">
+              <p class="title"><em class="title">PostgreSQL</em>
+              - The PostgreSQL database server must be installed on one of the ICEcore Conference hosts. A default Linux installation does not install the PostgreSQL database server. You must choose to install it explicitly. When installing the PostgreSQL software, select the
+       <span class="filename"> postgresql </span>server software. Once you have installed the PostgreSQL software, the ICEcore Conference installation initializes the database.
+      </p>
+            </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Ensure that you do not have any existing PostgreSQL databases on any of the servers in the ICEcore Conference cluster.</p></div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="b9y04i4">
+              <p class="title"><em class="title">Time synchronization</em>
+              - All ICEcore Conference hosts must be time synchronized and the system time zones must all be consistent. To maintain accurate system time, you can configure reliable time servers in
+       <span class="filename"> /etc/ntp.conf </span>and
+       <span class="filename"> /etc/ntp/step-tickers </span>(see the 
+       <span class="filename">ntpd(1)</span> man page).
+      </p>
+            </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="b9y04jj">
+              <p class="title"><em class="title">Emacs</em>
+              - During the installation, you have the opportunity to edit both the new user and invitation templates. You can do this by editing the templates and then importing them, or by using emacs on an install host. If you are going to use emacs on an install host, ensure that emacs has been installed, as it may not be part of the default Linux installation and must be explicitly installed.</p>
+            </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="b9y04l5">
+              <p class="title"><em class="title">License key</em>
+              - The installation script asks you to provide a license key for the ICEcore Conference Server.</p>
+            </div>
+</li></ul></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y03br">
+
+<h3 class="title"><span class="number">2.1.2</span> Network Requirements</h3>
+
+<div class="formalpara" id="b9y048g">
+          <p class="title"><em class="title">IP addresses</em>
+          - You must define at least three IP addresses that are used by ICEcore Conference clients to connect to ICEcore Conference services. The services that ICEcore Conference clients connect to are the XML router, web portal and desktop/app share server. The XML router and web portal each require a single IP address, and the desktop/app share services need an IP address for each instance. If any of the ICEcore Conference clients are outside your firewall, the IP addresses must be externally accessible.</p>
+        </div>
+
+<p class="para">See <a href="#b9y0732">DNS and Hostname Requirements</a> below.</p>
+</div>
+
+<div class="sect2 singlefile"  id="b9y0576">
+
+<h3 class="title"><span class="number">2.1.3</span> Firewall Requirements</h3>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<div class="formalpara" id="b9y05hb">
+              <p class="title"><em class="title">XML router IPs</em>
+              - IP addresses have ports 1270, 443, and 80 open.</p>
+            </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="b9y09f4">
+              <p class="title"><em class="title">Desktop/Application Sharing IPs</em>
+              - IP addresses have ports 1270, 443, and 80 open.</p>
+            </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="b9y09f5">
+              <p class="title"><em class="title">Web portal IPs</em>
+              - You must have port 80 open.</p>
+            </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Port 443 must be open if you have enabled SSL/TLS. Then, you may choose to block port 80 to disable unencrypted access.</p></div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="b9y09f6">
+              <p class="title"><em class="title">DMZ Configuration (optional)</em>
+              - If you choose to run ICEcore Conference services in the DMZ and you are concerned about database security, you can run the database inside the firewall. XML routers, Address Book and web portal HTTP servers connect to the database using port 5432.</p>
+            </div>
+</li></ul></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y0732">
+
+<h3 class="title"><span class="number">2.1.4</span> DNS and Hostname Requirements</h3>
+
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>All hostnames currently need to be lowercase.</p></div>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<div class="formalpara" id="b9y07ee">
+              <p class="title"><em class="title">Three hostnames</em>
+              - The XML router, desktop/application sharing, and web portal IP addresses each require a hostname resolvable by ICEcore Conference clients.</p>
+            </div>
+
+<p class="listitem">A ICEcore Conference server requires 3 IP addresses and host names for proper operation of all services:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+              
+<li class="listitem">
+<p class="listitem">Typically one address is given a friendly name and used for the XML router service--this is the service to which the ICEcore Conference client initially connects. </p></li>
+              
+<li class="listitem">
+<p class="listitem">The second address has “
+        <span class="literal">-share</span>” appended to the base name and is used for the desktop sharing components. 
+       </p></li>
+              
+<li class="listitem">
+<p class="listitem">The third address has “
+        <span class="literal">-portal</span>” appended to the name and is used for web services and client download.
+       </p></li>
+            </ol></div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="b9y09f7">
+              <p class="title"><em class="title">Fully qualified domain name</em>
+              - The web portal host requires a fully qualified domain name. For example, www.mycompany.com or webportal.conferenceinstall.com</p>
+            </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="b9y09f8">
+              <p class="title"><em class="title">Unique hostnames (multiple machines)</em>
+              - Multiple-machine ICEcore Conference installations require each machine to have a distinct host name. These host names do not need to be resolvable outside the local network.</p>
+            </div>
+</li></ul></div>
+
+<h4 class="bridgehead" id="baucv4o"> To Add IP Addresses to a SUSE Enterprise Server:</h4>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baucvfe">
+<p class="para">Open 
+      <span class="guimenu">YaST Administrator Settings,</span> select 
+      <span class="guimenu">Network Devices</span>, and then select 
+      <span class="guimenu">Network Card</span>.
+     </p></li>
+<li class="step" id="baucvm6">
+<p class="para">Click 
+      <span class="guimenu">Next</span>, select the desired network interface and click 
+      <span class="guimenu">Edit</span>.
+     </p></li>
+<li class="step" id="baucw96">
+<p class="para">Click 
+      <span class="guimenu">Advanced</span>, and select 
+      <span class="guimenu">Additional Addresses</span> from the drop-down list.
+     </p></li>
+<li class="step" id="baucwcp">
+<p class="para">Click 
+      <span class="guimenu">Add</span> and enter the IP addresses and netmasks appropriate for your network.
+     </p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bbkkpl3">
+
+<h3 class="title"><span class="number">2.1.5</span> VoIP Requirements</h3>
+
+<p class="para">The client connects to a gateway server using the IAX protocol and first attempts to UDP over port 4569. If that fails, it tries a TCP connection on port 443. The VoIP client does not attempt to do HTTP tunneling. The gateway then uses SIP to communicate with the voice bridge itself. The SIP traffic is sent to the voice bridge server itself, while all voice data is streamed via RTP to the NMS board.</p>
+<p class="para">To configure VoIP, you need to specify two additional IP addresses during server installation. One is for the gateway process and must be exposed to the external network; the second is assigned to the NMS board.</p>
+<div class="warning">
+<p class="para"><em class="title">WARNING:</em>VoIP is not encrypted.</p></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y07b6">
+
+<h3 class="title"><span class="number">2.1.6</span> Load Balancer Requirements</h3>
+
+<p class="para">Multi-host installations only:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">A load balancer is only required when either multiple web portal hosts or multiple XML router hosts are used.</p></li>
+<li class="listitem">
+<p class="listitem">ICEcore Conference clients need to maintain an open connection while a user is signed on.</p></li>
+<li class="listitem">
+<p class="listitem">Connections to the web portal should be sticky. For example, if a host is assigned to a web portal IP address, that host should continue to access the assigned web portal IP address.</p></li></ul></div>
+
+<p class="para"></p>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bbj2ipj">
+
+<h2 class="title"><span class="number">2.2</span> Security</h2>
+
+<p class="para">We recommend that you configure the length of any ICEcore Conference PINs (Invitee PINs and Meeting IDs) to six characters or more for increased security, see the ICEcore Conference Online Help, User Guide or Operations Guide for how to set the length of the ICEcore Conference PINs in your Administration Policies. </p>
+<div class="warning">
+<p class="para"><em class="title">WARNING:</em>VoIP is not encrypted.</p></div>
+
+<h4 class="bridgehead" id="bbtc4b8"> Enabling SSL</h4>
+
+<p class="para">If you are using LDAP synchronization, we recommend that you enable SSL on your server. The ICEcore Conference Client auti\omatically detects when you have SSL enabled on your server.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The communication channel between the recording server and the Conferencing server is not encrypted.</p></div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9y00b7">
+
+<h2 class="title"><span class="number">2.3</span> Installation Overview</h2>
+
+<p class="para">To install ICEcore Conference, you need to install the following:</p>
+<div class="sect2 singlefile"  id="b9y00qs">
+
+<h3 class="title"><span class="number">2.3.1</span> ICEcore Conference Cluster Components</h3>
+
+<p class="para">To install or upgrade the ICEcore Conference Cluster Components:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+          
+<li class="listitem">
+<p class="listitem">Verify the <a href="#b9xzzfu">Installation Prerequisites</a> are in place.</p></li>
+          
+<li class="listitem">
+<p class="listitem">Unzip/untar the file.</p></li>
+          
+<li class="listitem">
+<p class="listitem">Unpack the files.</p></li>
+          
+<li class="listitem">
+<p class="listitem">Backup the sitescape-conferencing directory (if applicable).</p></li>
+          
+<li class="listitem">
+<p class="listitem"> Install the software using the installation script, which is comprised of:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Initialization of the database server</p></li>
+<li class="listitem">
+<p class="listitem">Installation and configuration of the XML router services</p></li>
+<li class="listitem">
+<p class="listitem">Installation and configuration of the web portal services</p></li>
+<li class="listitem">
+<p class="listitem">Installation and configuration of the application/desktop sharing</p></li>
+<li class="listitem">
+<p class="listitem">Installation and configuration of e-mail configuration</p></li>
+<li class="listitem">
+<p class="listitem">Installation and configuration of Backup, Meeting Archive, Logging and Port Forwarding</p></li>
+<li class="listitem">
+<p class="listitem">Modification of the template files</p></li></ul></div>
+</li>
+        </ol></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y020c">
+
+<h3 class="title"><span class="number">2.3.2</span> ICEcore Conference Client Components</h3>
+
+<p class="para">To install and administer communities and new users:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+          
+<li class="listitem">
+<p class="listitem"> Launch the Administration Console.</p></li>
+          
+<li class="listitem">
+<p class="listitem"> Create a New Community with the Administration Console (see the “ICEcore Conference Operations Guide” for more information).</p></li>
+          
+<li class="listitem">
+<p class="listitem"> Install a ICEcore Conference Client.</p></li>
+          
+<li class="listitem">
+<p class="listitem">Use the ICEcore Conference Client to create users and perform other administrative tasks.</p></li>
+        </ol></div>
+
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9y00b8">
+
+<h2 class="title"><span class="number">2.4</span> Preparing for Installation</h2>
+
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>The following are important pre-installation steps.</p></div>
+
+<h4 class="bridgehead" id="bawyxgw"> Install “neon”, “postgresql” and “postgresql-server” packages</h4>
+
+<p class="para">These packages should be available from the original installation media or from the online update. Install dependencies as required.</p>
+<h4 class="bridgehead" id="b9y0a96"> Using ssh(1)</h4>
+
+<p class="para">For multi-machine installations, we strongly recommend that you configure
+   <span class="literal"> ssh(1) </span>public/private key authentication between the system administrator on the staging host and the root user on the ICEcore Conference hosts. Otherwise, you need to enter the root password for the ICEcore Conference hosts numerous times during the installation. See <a href="#b9yf724">Section A.0, Configuring ssh(1) private/public Key Authentication</a>.
+  </p>
+<h4 class="bridgehead" id="b9y0b4t"> Unpacking the Files</h4>
+
+<p class="para">You should have the ICEcore Conference distribution file in a compressed
+   <span class="filename"> .tar </span>archive named 
+   <span class="filename">sitescape-conferencing-&lt;version&gt;.tar.gz </span>(where &lt;version&gt; is the version of the system you received). You can extract the contents of the tar file on an installation-staging host (you can use one of the ICEcore Conference hosts) using:
+  </p><pre class="screen">
+tar -zxvf sitescape-conferencing-&lt;version&gt;.tar.gz
+</pre>
+<p class="para">Unpack the distribution compressed tar archive (
+   <span class="filename">sitescape-conferencing-&lt;version&gt;.tar.gz</span>) on a Linux staging machine (you can use one of the cluster nodes). After unpacking, you should see the following files and directories in the sitescape-conferencing directory:
+  </p><pre class="screen">
+sitescape-conferencing/utils.sh
+</pre><pre class="screen">
+sitescape-conferencing/control-cluster.sh
+</pre><pre class="screen">
+sitescape-conferencing/install-cluster.sh
+</pre><pre class="screen">
+sitescape-conferencing/config-cluster.sh
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/install.sh
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/check-config.sh
+</pre><pre class="screen">
+sitescape-conferencing/zon-svr-&lt;svrversion&gt;.tar.gz
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/installers_&lt;version&gt;.tar.gz
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/global-config
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/invitation-template.default
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/meeting-summary-template.default
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/new-mtgarchive-template.default
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/new-user-template.default
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/voiceconfig.xml
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/dialing.xml
+</pre><pre class="screen">
+sitescape-conferencing/cluster-prototype/ldap.xml.in
+</pre>
+<h4 class="bridgehead" id="b9y0c5v"> Backup the Directory</h4>
+
+<p class="para">After configuring the cluster (see following sections), backup the 
+   <span class="literal">sitescape-conferencing </span>directory, as it is the location where future upgrades and re-configurations are performed.
+  </p>
+<p class="para">You are now ready to install and configure the ICEcore Conference software.</p>
+</div>
+
+<div class="sect1 singlefile"  id="b9y0d1l">
+
+<h2 class="title"><span class="number">2.5</span> Installing the ICEcore Conference Server </h2>
+
+<p class="para">Perform this procedure after you extract the ICEcore Conference server distribution file (
+   <span class="filename">sitescape-conferencing-&lt;version&gt;.tar.gz</span>) on an installation-staging host (you can use one of the ICEcore Conference hosts):
+  </p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Open the
+     <span class="filename"> sitescape-conferencing </span>directory
+    </p></li>
+        
+<li class="listitem">
+<p class="listitem">Run:
+     <span class="filename"> ./install.sh</span>
+    </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>You need to install the
+      <span class="literal"> libneon </span>and
+      <span class="literal"> libpq </span>libraries before running the installer. On SLES 10, these libraries are not installed on the system by default.
+     </p></div>
+</li>
+        
+<li class="listitem">
+<p class="listitem">The installation script prompts you for the configuration information, license key and then installs the software.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>If you do not have the correct ports open, disable the firewall during installation (see <a href="#b9y0576">Section 2.1.3, Firewall Requirements</a>).</p></div>
+</li>
+      </ol></div>
+
+<p class="para">During the installation process, you are asked whether you want to modify the associated templates. See <a href="#b9yefsv">Section 4.0, Modifying Template Files</a>. </p>
+<h4 class="bridgehead" id="bc22n2u"> Running the Installer on SLES:</h4>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bc22nuf">
+<p class="para">Unpack the distribution compressed tar archive (sitescape-conferencing-&lt;version&gt;.tar.gz): </p><pre class="screen">
+#/ tar -zxf filename.tar.gz
+</pre></li>
+<li class="step" id="bc22oy7">
+<p class="para"> Copy the license key to the sitescape-conferencing directory that contains 
+     <span class="literal">install.sh</span> (the directory files exist after you unpack the compressed tar archive): 
+    </p><pre class="screen">
+# cp license_key.xml
+</pre></li>
+<li class="step" id="bc22qaz">
+<p class="para">Change directories to the sitescape-conferencing directory that contains 
+     <span class="literal">install.sh</span>:
+    </p><pre class="screen">
+# cd sitescape-conferencing
+</pre></li>
+<li class="step" id="bcbdn7d">
+<p class="para">If you plan on running Active Directory LDAP Synchronization, you need to edit the 
+     <span class="literal">ldap.xml.in </span>file in the 
+     <span class="literal">cluster-prototype</span> directory (see <a href="#b9varpy">Section E.0, LDAP User Authentication</a>):
+    </p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bcbdodl">
+<p class="para">Open the
+       <span class="literal"> ldap.xml.in </span>file.
+      </p></li>
+<li class="step" id="bcbdolr">
+<p class="para">Comment out the
+       <span class="literal"> eDirectory </span>attributes section and uncomment out the
+       <span class="literal"> ActiveDirectory </span>attributes section.
+      </p></li>
+<li class="step" id="bcbdpqq">
+<p class="para">Save the file.</p></li></ol>
+</div>
+</li>
+<li class="step" id="bc22sau">
+<p class="para">Run the installer:</p><pre class="screen">
+# ./install.sh
+</pre></li>
+<li class="step" id="bc22t5s">
+<p class="para">The installer prompts you to accept the license (the default is 
+     <span class="literal">N</span>), enter 
+     <span class="literal">Y</span>:
+    </p><pre class="screen">
+Accept License (Y/N): Y
+</pre></li>
+<li class="step" id="bc22vgc">
+<p class="para">The installer prompts you to proceed, enter 
+     <span class="literal">Y</span>:
+    </p><pre class="screen">
+Ready to proceed (Y/N): Y
+</pre></li>
+<li class="step" id="bc22x5o">
+<p class="para">The installer prompts you to select whether this is a new install or an upgrade (the default is 
+     <span class="literal">N</span>), enter
+     <span class="literal"> Y </span>to run a new installation:
+    </p><pre class="screen">
+New Install or upgrade (Y/N): Y
+</pre></li>
+<li class="step" id="bc22x5q">
+<p class="para">The installer prompts you to enter a name for the install (the default is
+     <span class="literal"> ourzon</span>), enter the name you want to use for the install:
+    </p><pre class="screen">
+Choose a name for Install: &lt;enter_install_name&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The name of the installation cannot contain spaces, but can contain any combination of ASCII and alphanumeric characters.</p></div>
+</li>
+<li class="step" id="bc22x5s">
+<p class="para">The installer prompts you to initialize the database for a new install (the default is
+     <span class="literal"> Y</span>), you must enter
+     <span class="literal"> Y </span>here for a new installation or the database service does not start:
+    </p><pre class="screen">
+Initialize Database for new install (Y/N): Y
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Ensure that you have created the
+      <span class="filename"> PostgreSQL </span>database prior to installation. Refer to the 
+      <a href="#b9xzzfu">Installation Prerequisite</a> section for additional information.
+     </p></div>
+
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>If your upgrading and have an existing database, you can enter
+      <span class="literal"> N</span>. For new installations, always enter
+      <span class="literal"> Y</span>.
+     </p></div>
+</li>
+<li class="step" id="bc2izri">
+<p class="para">The installer prompts you to enter a password for the administrator user (this should be set for security reasons since the Administrator account needs to be a controlled environment):</p><pre class="screen">
+Password for Administrator User: &lt;enter_password&gt;
+</pre></li>
+<li class="step" id="bc2j4li">
+<p class="para">The installer prompts you whether to enable SSL/TLS security (the default is
+     <span class="literal"> Y</span>):
+    </p><pre class="screen">
+Should System enable SSL/TLS security (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>SSL= Secure Socket Layer and TLS= Transport Layer Security. If you enable SSL/TLS security, the user and password information is encrypted on the network and shows up as hashes in the database table. If you select
+      <span class="literal"> N</span>, password information is still hashed but everything else is readable.
+     </p></div>
+</li>
+<li class="step" id="bc2j4lr">
+<p class="para">The installer prompts you to enter the path and name of the certificate for the XML router (the default is
+     <span class="literal"> /upt/lic/conf/server.pem</span>), enter the default certificate:
+    </p><pre class="screen">
+Insert path and name of certificate for XML router: 
+/upt/lic/conf/server.pem 
+</pre>
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>You must use the default XML router certificate at this time for the ICEcore Conference server to function correctly.</p></div>
+</li>
+<li class="step" id="bc2j9gx">
+<p class="para">The installer prompts you to enter the path and name of the certificate for the Web Server.</p><pre class="screen">
+/upt/iic/conf/webserv.pem
+</pre>
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>You must use the default Web Server certificate at this time for the ICEcore Conference server to function correctly.</p></div>
+</li>
+<li class="step" id="bc2jem9">
+<p class="para">The installer prompts you to identify whether you are installing on a Single-Host or a Multiple-Host installation (the default is
+     <span class="literal"> Y</span>), if you have multiple servers then select
+     <span class="literal"> N </span>and the installer will prompt you to enter the additional information for a Multiple-Host installation:
+    </p><pre class="screen">
+Are you installing on single host (Y/N): &lt;enter_value&gt;
+</pre></li>
+<li class="step" id="bc2jhxp">
+<p class="para">The installer prompts you to enter the IP address for thew XML router:</p><pre class="screen">
+What is IP address for XML router?: &lt;enter_ip_address&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The installer attempts to ping hosts and IP addresses to ensure that they are running and reachable. If an intervening firewall is filtering out ICMP messages or the host is intentionally down, it may not appear to be reachable even though the entered value is valid. </p></div>
+</li>
+<li class="step" id="bc536c9">
+<p class="para">The installer prompts you to enter the hostname of the conferencing server: </p><pre class="screen">
+What is hostname that conferencing clients will use to connect to XML?: &lt;enter_value&gt;
+</pre></li>
+<li class="step" id="bc536cb">
+<p class="para">The installer prompts you to enter the IP address for the Web Portal:</p><pre class="screen">
+What is IP address for Web Portal?: &lt;enter_ip_address&gt;
+</pre></li>
+<li class="step" id="bc536ce">
+<p class="para">The installer prompts you to enter the portal name: </p><pre class="screen">
+What is Web Portal name URL's?: &lt;enter_portal_name&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>For example, 
+      <span class="literal">Renaldo.homedns.org-portal</span>.
+     </p></div>
+</li>
+<li class="step" id="bc53b9d">
+<p class="para">The installer prompts you to enter the IP address for the App-Share:</p><pre class="screen">
+What is IP address for App-Share?: &lt;enter_ip_address&gt;
+</pre></li>
+<li class="step" id="bc53g24">
+<p class="para">The installer prompts you to enter the Hostname for the desktop App-Share:</p><pre class="screen">
+What is Hostname for desktop app-share: &lt;enter_hostname&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>For example,
+      <span class="literal"> renaldo.homedns.org-share</span>.
+     </p></div>
+</li>
+<li class="step" id="bc53g25">
+<p class="para">The installer prompts you to select whether you are running Conferencing Bridge (the default is
+     <span class="literal"> N</span>), if you enter
+     <span class="literal"> Y</span>, the installer will prompt you to enter the bridge information:
+    </p><pre class="screen">
+Are you running Conferencing Bridge? (Y/N): &lt;enter_value&gt;
+</pre></li>
+<li class="step" id="bc53g26">
+<p class="para">The installer prompts you to select whether you want to change the system administration e-mail configuration (the default is
+     <span class="literal"> N</span>), if you enter Y, the installer will prompt you to enter the new e-mail address configuration information instead of using default configuration:
+    </p><pre class="screen">
+Do you want to change system admin email configuration? (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0his">Section 2.6.2, System Administration E-mail Configuration (Optional)</a>.</p></div>
+</li>
+<li class="step" id="bc53g27">
+<p class="para">The installer prompts you to verify what you have entered up to this point (enter
+     <span class="literal"> Y </span>if the information is correct or enter
+     <span class="literal"> N </span>if you need to make any changes): 
+    </p><pre class="screen">
+Is this correct (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The questions from <a href="#bc53g28">Step 25</a> through <a href="#bc53nxe">Step 38</a> all have default values of
+      <span class="literal"> N</span>. If you select
+      <span class="literal"> Y</span>, the installer will prompt you to enter additional values and information to customize your server configuration. You can customize your configuration for information like how long a file is archived, with a different header look, the way summaries are viewed, security settings, etc. If you use the defaults and decide to customize your server configuration later, you have to re-run the installer to change these values.
+     </p></div>
+</li>
+<li class="step" id="bc53g28">
+<p class="para">The installer prompts you to select whether you want to change the mailer configuration:</p><pre class="screen">
+Do you want to change mailer config? (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0kfb">Section 2.6.4, Mailer Configuration (Optional)</a>.</p></div>
+</li>
+<li class="step" id="bc53g29">
+<p class="para">The installer prompts you to select whether you want to change the database backup configuration:</p><pre class="screen">
+Do you want to change DB backup config (Y/N): 
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0l01">Section 2.6.5, Database Backup Configuration (Optional)</a>.</p></div>
+</li>
+<li class="step" id="bc53g2a">
+<p class="para">The installer prompts you to select whether you want to change the meeting archive maintenance configuration:</p><pre class="screen">
+Do you want to change meeting archive maint? (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0m2n">Section 2.6.6, Meeting Archive and Document Sharing Repository Configurations (Optional)</a>.</p></div>
+</li>
+<li class="step" id="bc53g2b">
+<p class="para">The installer prompts you to select whether you want to change the document share repository maintenance configuration:</p><pre class="screen">
+Do you want to change doc share repository maint config? (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0m2n">Section 2.6.6, Meeting Archive and Document Sharing Repository Configurations (Optional)</a>.</p></div>
+</li>
+<li class="step" id="bc53nx5">
+<p class="para">The installer prompts you to select whether you want to change the audit logs:</p><pre class="screen">
+Do you want to change Audit logs? (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0ny2">Section 2.6.7, Chat Audit Log Configuration (Optional)</a>.</p></div>
+</li>
+<li class="step" id="bc53nx6">
+<p class="para">The installer prompts you to select whether you want to change the logging configuration:</p><pre class="screen">
+Do you want to change logging config? (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0ny2">Section 2.6.7, Chat Audit Log Configuration (Optional)</a>.</p></div>
+</li>
+<li class="step" id="bc53nx7">
+<p class="para">The installer prompts you to select whether you want to change the real-time call user-reservations logs:</p><pre class="screen">
+Do you want to change real-time call user-reservations logs? (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y0s79">Section 2.6.8, Event Logging Configuration (Optional)</a>.</p></div>
+</li>
+<li class="step" id="bc53nx8">
+<p class="para">The installer prompts you to select whether you want to change the security configuration:</p><pre class="screen">
+Do you want to change security configuration? (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#b9y15qu">Section 2.6.10, XML Router Security</a>.</p></div>
+</li>
+<li class="step" id="bc53nx9">
+<p class="para">The installer prompts you to select whether you want to change the LDAP configuration:</p><pre class="screen">
+Do you want to change LDAP (Y/N): &lt;enter_value&gt;
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#bcb9zhr">Section 2.6.3, Configuring LDAP Synchronization (Optional)</a>. For Active Directory LDAP Synchronization, you need to complete <a href="#bcbdn7d">Step 4</a> first.</p></div>
+</li>
+<li class="step" id="bc53nxa">
+<p class="para">The installer prompts you to select whether you want to change the system e-mail header configuration:</p><pre class="screen">
+Do you want to change system email header config? (Y/N): &lt;enter_value&gt;
+</pre></li>
+<li class="step" id="bc53nxb">
+<p class="para">The installer prompts you to select whether you want to change the e-mail template:</p><pre class="screen">
+Do you want to change Email template? (Y/N): &lt;enter_value&gt;
+</pre></li>
+<li class="step" id="bc53nxc">
+<p class="para">The installer prompts you to select whether you want to change the meeting invitation template:</p><pre class="screen">
+Do you want to change Meeting invite template? (Y/N): &lt;enter_value&gt;
+</pre></li>
+<li class="step" id="bc53nxd">
+<p class="para">The installer prompts you to select whether you want to change the summary e-mail template:</p><pre class="screen">
+Do you want to change Summary email template? Y/N): &lt;enter_value&gt;
+</pre></li>
+<li class="step" id="bc53nxe">
+<p class="para">The installer prompts you to select whether you want to change the meeting archive e-mail template:</p><pre class="screen">
+Do you want to change Meeting archive email template? (Y/N): &lt;enter_value&gt;
+</pre></li>
+<li class="step" id="bc53nxf">
+<p class="para">The installer lists all the services running on the local host, hit the 
+     <span class="literal">ENTER/RETURN</span> key to continue: 
+    </p><pre class="screen">
+All services running on local host
+</pre></li>
+<li class="step" id="bc53nxg">
+<p class="para">The installer lists all the configuration information, hit the 
+     <span class="literal">ENTER/RETURN</span> key to continue: 
+    </p><pre class="screen">
+View Config
+</pre></li>
+<li class="step" id="bc53tdg">
+<p class="para">The installer prompts you to select whether you are satisfied with the configuration (the default is
+     <span class="literal"> Y</span>), enter
+     <span class="literal"> N </span>to change the configuration:
+    </p><pre class="screen">
+Satisfied with config (Y/N): &lt;enter_value&gt;
+</pre></li>
+<li class="step" id="bc53tdh">
+<p class="para">The installation begins and uses whatever values you entered during the installation setup. </p></li>
+<li class="step" id="bc53tdi">
+<p class="para">The installation completes and displays information stating the services that should be running. </p></li></ol>
+</div>
+
+<h4 class="bridgehead" id="bcbv5sq"> Initial Address Book Configuration (Synchronization)</h4>
+
+<p class="para">If you are using LDAP synchronization, execute
+   <span class="literal"> /opt/iic/bin/ldap-sync.sh &lt;portal-server-hname&gt; </span>to perform the initial synchronization. 
+  </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>After starting the server, wait 20 seconds or so before executing this command; if you do not get an XML message back, you probably did not wait long enough.</p></div>
+
+<p class="para">This script displays an XML message if it fails (the fault message is clearly visible); if it succeeds, the XML data contains a single number that is the number of users actually synchronized. You can run this script manually as needed, or configured to run periodically using
+   <span class="literal"> cron</span> (the default setting is for it to run daily).
+  </p>
+</div>
+
+<div class="sect1 singlefile"  id="b9y00b9">
+
+<h2 class="title"><span class="number">2.6</span> Review the ICEcore Conference Cluster Components Installation Process</h2>
+
+<p class="para">The installation script takes you through the following to install and configure a new ICEcore Conference Server instance:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y0hd9">Section 2.6.1, Initial Installation</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y0his">Section 2.6.2, System Administration E-mail Configuration (Optional)</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bcb9zhr">Section 2.6.3, Configuring LDAP Synchronization (Optional)</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y0kfb">Section 2.6.4, Mailer Configuration (Optional)</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y0l01">Section 2.6.5, Database Backup Configuration (Optional)</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y0m2n">Section 2.6.6, Meeting Archive and Document Sharing Repository Configurations (Optional)</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y0ny2">Section 2.6.7, Chat Audit Log Configuration (Optional)</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y0s79">Section 2.6.8, Event Logging Configuration (Optional)</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y15iv">Section 2.6.9, Port Forwarding (Optional)</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y15qu">Section 2.6.10, XML Router Security</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y16eo">Section 2.6.11, Template Configuration (Optional)</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#b9y16f8">Section 2.6.12, Summary of Configuration</a>
+          </p></li></ul></div>
+
+<div class="sect2 singlefile"  id="b9y0hd9">
+
+<h3 class="title"><span class="number">2.6.1</span> Initial Installation</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbprvys">
+<p class="para">Create and name a new ICEcore Conference installation.</p>
+<p class="para">The name of the installation cannot contain spaces, but can contain any combination of ASCII and alphanumeric characters.</p></li>
+<li class="step" id="b9y0fcg">
+<p class="para"> Initialize the
+      <span class="filename"> PostgreSQL </span>database.
+     </p>
+<p class="para">Ensure that you have created the
+      <span class="filename"> PostgreSQL </span>database prior to installation. Refer to the 
+      <a href="#b9xzzfu">Installation Prerequisite</a> section for additional information.
+     </p></li>
+<li class="step" id="bc534ue">
+<p class="para">Identify a Single-Host or a Multiple-Host installation.</p></li>
+<li class="step" id="b9y0fde">
+<p class="para">Provide the IPs and the hostnames for the XML Router, Web Portal and Desktop/App Server.</p>
+<p class="para">The installer attempts to ping hosts and IP addresses to ensure that they are running and reachable. If an intervening firewall is filtering out ICMP messages or the host is intentionally down, it may not appear to be reachable even though the entered value is valid. </p></li>
+<li class="step" id="b9y0fdj">
+<p class="para">Install a ICEcore Conference Voice Bridge (optional).</p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y0his">
+
+<h3 class="title"><span class="number">2.6.2</span> System Administration E-mail Configuration (Optional)</h3>
+
+<p class="para">You can define a list of system administrator e-mail addresses that are used when an error or event occurs:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+          
+<li class="listitem">
+<p class="listitem">Type in the systems administrator e-mail address. </p></li>
+          
+<li class="listitem">
+<p class="listitem"> To configure multiple e-mail addresses, type in the first e-mail address (for example 
+      <span class="filename">admin@company.com</span>) and press 
+      <span class="guimenu">Enter</span>. At the next
+      <span class="filename"> EMAIL&gt;&gt;&gt;&gt; </span>prompt, type-in the second e-mail address and press 
+      <span class="guimenu">Enter</span>, etc.
+     </p></li>
+        </ol></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bcb9zhr">
+
+<h3 class="title"><span class="number">2.6.3</span> Configuring LDAP Synchronization (Optional)</h3>
+
+<p class="para">Synchronization between eDirectory or ActiveDirectory users and ICEcore Conference users is established when you install ICEcore Conference.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>If you plan on running Active Directory LDAP Synchronization, you need to edit the 
+     <span class="literal">ldap.xml.in </span>file in the
+     <span class="literal"> cluster-prototype directory</span> (see <a href="#b9varpy">Section E.0, LDAP User Authentication</a>) before running the installer.
+    </p></div>
+
+<p class="para">During the installation, you are prompted:</p><pre class="screen">
+Do you want to change the LDAP configuration? (y/n)
+</pre>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bcba2lr">
+<p class="para">Type
+      <span class="literal"> y</span>, then press Enter.
+     </p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Should the system enable LDAP synchronization? (y/n)
+</pre></li>
+<li class="step" id="bcba2sh">
+<p class="para">Type
+      <span class="literal"> y</span>, then press Enter.
+     </p>
+<p class="para">Next, you are prompted with options:</p><pre class="screen">
+LDAP servers
+</pre><pre class="screen">
+  1: URL=ldap://ldapserver, bindDN=cn=admin, o=yourcompany, bindPW=password, baseDN=ou=employees, dc=sleepy, dc=com, 
+import filter=(objectClass=User), auth filter=(uid=%s), 
+community=2
+</pre><pre class="screen">
+   A - Add
+</pre><pre class="screen">
+   E - Edit
+</pre><pre class="screen">
+   D - Delete
+</pre><pre class="screen">
+   Q - Quit
+</pre>
+<p class="para">The line of settings indicates the information that the Conferencing installation program gathers for each LDAP server.</p></li>
+<li class="step" id="bcba3k6">
+<p class="para">Type
+      <span class="literal"> e </span>for 
+      <span class="guimenu">Edit</span> to define your first LDAP server, then press Enter.
+     </p></li>
+<li class="step" id="bcbay56">
+<p class="para">Type
+      <span class="literal"> 1 </span>for the server number, then press Enter.
+     </p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the URL of the LDAP server:
+</pre></li>
+<li class="step" id="bcbdir2">
+<p class="para">Specify the URL in the following format, then press Enter.</p><pre class="screen">
+ldap://<span class="emphasis">hostname</span>
+</pre>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the dn with which to bind to the LDAP server:
+</pre></li>
+<li class="step" id="bcbdwgb">
+<p class="para">Specify the Admin-equivalent username with full context, then press Enter.</p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the password for the bind dn:
+</pre></li>
+<li class="step" id="bcbec5d">
+<p class="para">Type the password for the Admin-equivalent user, then press Enter.</p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the base dn under which to search for users:
+</pre></li>
+<li class="step" id="bcbecur">
+<p class="para">Specify the eDirectory/ActiveDirectory container that defines the search scope, then press Enter.</p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the filter used to select users for import:
+</pre></li>
+<li class="step" id="bcbsi89">
+<p class="para">Press Enter to accept the default value.</p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the filter used to select users for import:
+</pre></li>
+<li class="step" id="bcbsek6">
+<p class="para">Press Enter to accept the default value.</p>
+<p class="para">Next, you are prompted:</p><pre class="screen">
+Input the community into which to place users imported from LDAP:
+</pre></li>
+<li class="step" id="bcbsekz">
+<p class="para">Press Enter to accept the default value.</p>
+<p class="para">You return to the original options prompt, which displays the information you have provided for the first LDAP server.</p></li>
+<li class="step" id="bcbsg4l">
+<p class="para">To add more LDAP servers to the list, type a for Add, press Enter, then repeat <a href="#bcbay56">Step 4</a> through <a href="#bcbsekz">Step 11</a>, adjusting the information as needed for each LDAP server.</p></li>
+<li class="step" id="bcbsiqc">
+<p class="para">If you make a mistake and need to remove an LDAP server from the list, type d for Delete, press Enter, type the number of the server to delete, then press Enter, type y to confirm, then press Enter again.</p></li>
+<li class="step" id="bcbsj8v">
+<p class="para">When you are finished listing LDAP servers, type q for Quit, then press Enter.</p></li>
+<li class="step" id="bcbsji6">
+<p class="para">Continue as usual with the ICEcore Conference installation.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See <a href="#bbkkx32">Address Book Configuration (Synchronization)</a> for testing the LDAP synchronization.</p></div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y0kfb">
+
+<h3 class="title"><span class="number">2.6.4</span> Mailer Configuration (Optional)</h3>
+
+<p class="para">The mailer is used to notify ICEcore Conference users of events. By default, the mailer uses the SMTP service provided on its host, but you can change the SMTP Server and provide user and password authentication for that server, if required:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+          
+<li class="listitem">
+<p class="listitem"> Identify the SMTP Server.</p></li>
+          
+<li class="listitem">
+<p class="listitem">Configure the SMTP Server’s User and Password Authentication.</p></li>
+        </ol></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y0l01">
+
+<h3 class="title"><span class="number">2.6.5</span> Database Backup Configuration (Optional)</h3>
+
+<p class="para">Daily database backups are stored in the
+    <span class="filename"> /var/iic/db-backups </span>directory.
+   </p>
+<div class="orderedlist">
+<ol class="orderedlist">
+          
+<li class="listitem">
+<p class="listitem">Identify the directory where you want to store the database backups.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>We recommend that you do not store the database backups on the database server. Mount an external file system using NFS to maintain the daily database backup archives.</p></div>
+</li>
+          
+<li class="listitem">
+<p class="listitem">Configure the number of days backups are kept.</p></li>
+          
+<li class="listitem">
+<p class="listitem">Define when backups are performed.</p></li>
+        </ol></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y0m2n">
+
+<h3 class="title"><span class="number">2.6.6</span> Meeting Archive and Document Sharing Repository Configurations (Optional)</h3>
+
+<p class="para">The Meeting and Document Sharing (DocShare) Archive Repositories are both monitored daily at 4:00 a.m. to ensure that they have not reached a size of 2500MB. When a repository exceeds 2500MB, archives that have not been accessed within the last 30 days are deleted until the archive repository reaches 2000MB. If the system cannot delete archives to reach the 2500MB repository size, a warning e-mail is sent to the system administrator indicating the need for appropriate manual action. To avoid the automatic deletion of archives, the maintenance procedure can be configured to send daily notification when a meeting or document sharing archive repository reaches the specified maximum.</p>
+<p class="para">To modify the default maintenance procedure for a repository:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+          
+<li class="listitem">
+<p class="listitem">Determine the repository maximum size. Set the repository size in MBs.</p></li>
+          
+<li class="listitem">
+<p class="listitem">Identify the action to take if the archive repository maximum is exceeded. The two available options are to automatically clean up archives that have not been accessed within the last 30 days, or to send e-mail notification to the systems administrator with no automatic archive deletion.</p></li>
+          
+<li class="listitem">
+<p class="listitem">Determine what time of day the archive maintenance occurs.</p></li>
+          
+<li class="listitem">
+<p class="listitem">If automatic maintenance was specified in Step 2, do the following:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+              
+<li class="listitem">
+<p class="listitem">Determine the minimum target repository size after automatic clean up.</p></li>
+              
+<li class="listitem">
+<p class="listitem"> Identify the minimum days-since-accessed that an archive can be deleted during the automated clean up procedure. For example, if the minimum days-since-accessed was set to 60 days, the automated clean up procedure does not delete archives that have been accessed within the past 60 days.</p></li>
+              
+<li class="listitem">
+<p class="listitem">Determine if the archives should be permanently deleted, or moved into another designated folder, which must be monitored manually by the system administrator.</p></li>
+            </ol></div>
+</li>
+        </ol></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y0ny2">
+
+<h3 class="title"><span class="number">2.6.7</span> Chat Audit Log Configuration (Optional)</h3>
+
+<p class="para">You can configure chat audit logging at system installation or reconfiguration time using the 
+    <span class="literal">install.sh </span>script.
+   </p>
+<div class="orderedlist">
+<ol class="orderedlist">
+          
+<li class="listitem">
+<p class="listitem">The chat audit logs are placed in
+      <span class="literal"> /var/iic/chatlog </span>on the hosts assigned to run the XML router and meeting controller(s). ICEcore Conference IM and ICEcore Conference chat room messages are written to the file 
+      <span class="literal">/var/iic/chatlog/chat.log</span>. Meeting chat messages are written to 
+      <span class="literal">/var/iic/chatlog/mtgchat.log</span>.
+     </p></li>
+          
+<li class="listitem">
+<p class="listitem">The chat messages contained in 
+      <span class="literal">chat.log</span> are XML stanzas:
+     </p><pre class="screen">
+&lt;message type='&lt;"chat"|"groupchat"&gt;' from='&lt;from_jid&gt;' to='&lt;to_jid&gt;' time='&lt;timestamp&gt;' &gt;
+</pre><pre class="screen">
+&lt;body&gt; ... &lt;/body&gt;&lt;x xmlns='jabber:x:event' /&gt;
+</pre><pre class="screen">
+&lt;/message&gt;
+</pre>
+<p class="listitem">The
+      <span class="literal"> from_jid </span>and 
+      <span class="literal">to_jid </span>tags have the forms:
+     </p><pre class="screen">
+&lt;screenname&gt;@&lt;xmlrouter_hostname&gt;/&lt;resource&gt;
+</pre>
+<p class="listitem">Resource is a session identifier in the case where the message type is “chat” and it identifies the sender screen name in the case of “groupchat” type messages.</p>
+<p class="listitem">The timestamp has the form
+      <span class="literal">&lt;YYYY&gt;&lt;MM&gt;&lt;DD&gt;“T”&lt;hh&gt;&lt;mm&gt;&lt;ss&gt; a</span>nd uses GMT time.
+     </p></li>
+          
+<li class="listitem">
+<p class="listitem">Each chat message is logged to a line in
+      <span class="literal"> mtgchat.log</span>. The each line contains comma-separated fields. Each field is quoted with double quotes at the beginning and end of the field (for example, “field value”).
+     </p></li>
+        </ol></div>
+
+<p class="para">The fields are as follows:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+              
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9y0pw0"></a>
+<p class="para">Field </p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Type </p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+            
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9y0pw1"></a>
+<p class="para">timestamp</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String (YYYMMDDTHH:MM:SS)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The time of the chat message in GMT. </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9y0r43"></a>
+<p class="para">from_id</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The participant ID of the sender. A participant ID is assigned to each meeting participant and is sent in meeting invitations.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9y0r44"></a>
+<p class="para">from_name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The display name of the meeting participant who sent the chat message.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9y0r45"></a>
+<p class="para">delivery</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String (one of: ToAll, ToOne, ToHost, ToModerators, ToNonModerators)</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This field shows to whom the message was delivered.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9y0r46"></a>
+<p class="para">to_id</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This participant ID received the message. This field is empty unless the
+         <span class="literal"> delivery </span>field value is
+         <span class="literal"> ToOne</span>.
+        </p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9y0r47"></a>
+<p class="para">to_name</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The display name of the meeting participant who received the chat message. This field is empty unless the
+         <span class="literal"> delivery </span>field value is
+         <span class="literal"> ToOne</span>.
+        </p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9y0r48"></a>
+<p class="para">message</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">String</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The contents of the chat message.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y0s79">
+
+<h3 class="title"><span class="number">2.6.8</span> Event Logging Configuration (Optional)</h3>
+
+<p class="para">Log files are written to
+    <span class="literal"> /var/log/iic</span>, except for the web portal and external API server logs, which are written to files in 
+    <span class="literal">/usr/local/apache2/logs</span>. Additional information may be found in 
+    <span class="literal">/var/log/messages</span>.
+   </p>
+<p class="para">There are three levels for logging. You can modify these logging levels at any time from the Administration Console (see the “ICEcore Conference Operations Guide”):</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Error - Logs only error conditions. </p></li>
+<li class="listitem">
+<p class="listitem">Info - Logs error conditions as well as summary information about all server tasks. </p></li>
+<li class="listitem">
+<p class="listitem">Debug - This level logs error conditions, summary information and detailed debugging information.</p></li></ul></div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>We recommend that the Error logging level be the default logging level due to the increased CPU and I/O loads associated with more verbose logging.</p></div>
+
+<p class="para">To set the logging:</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9y0uyr">
+<p class="para">Set default logging levels for system components.</p></li>
+<li class="step" id="b9y0v0o">
+<p class="para">Determine at what size the logs should be rotated.</p></li>
+<li class="step" id="b9y0v0v">
+<p class="para">Configure the number of rotated logs that should be kept.</p></li>
+<li class="step" id="b9y0v0z">
+<p class="para">Configure real time, call, user and reservation logging.</p>
+<p class="para">You can configure the ICEcore Conference servers to produce real-time event logs for call, user and meeting reservation events. The real-time interface provides the event data records as they occur so that third-party systems (billing systems, cost accounting systems, management reporting systems, directory databases, etc.) can use them. The records are provided to event record consumers via a TCP connection to ICEcore Conference server hosts. Real time event logs are stored in the
+      <span class="literal"> /var/iic/cdr </span>directory.
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>You cannot modify real-time event logging from the Administration Console. If you do not install real-time event logging during installation, you need to re-run the installation script when you want to install real-time event logging.</p></div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y15iv">
+
+<h3 class="title"><span class="number">2.6.9</span> Port Forwarding (Optional)</h3>
+
+<p class="para">The ICEcore Conference client attempts to connect to ports 1270, 443 and 21 when the primary port (either 5222 for the XML router or 2182 for desktop/app-share server) is blocked by a firewall. Connections to these ports should be forwarded to the primary port. If you are not running a load balancer that performs this task, you must forward these ports locally on the XML router host(s) or the desktop/app-share server host(s).</p>
+</div>
+
+<div class="sect2 singlefile"  id="b9y15qu">
+
+<h3 class="title"><span class="number">2.6.10</span> XML Router Security</h3>
+
+<p class="para">In order for a ICEcore Conference service (meeting controller, voice bridge, etc.) to connect to the XML router it must use the correct authentication key. If your XML router allows connections from the Internet, change the Service Connection Key so that unauthorized services cannot access and connect to your router. Additionally, the meeting controller needs to provide a User Session Creation Key. You should change this key so that unauthorized meeting controllers cannot create sessions on behalf of your users.</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">The default value for the Service Connection Key is:
+      <span class="literal"> secret</span>
+     </p></li>
+<li class="listitem">
+<p class="listitem">The default value for the User Session Creation Key is:
+      <span class="literal"> QAZXSW88</span>
+     </p></li></ul></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y16eo">
+
+<h3 class="title"><span class="number">2.6.11</span> Template Configuration (Optional)</h3>
+
+<p class="para">You can modify the e-mail templates that ICEcore Conference uses to communicate with users (see <a href="#b9yefsv">Section 4.0, Modifying Template Files</a>).</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+          
+<li class="listitem">
+<p class="listitem">Configure system e-mail headers. </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Configure the New User e-mail 
+        <span class="guimenu">From</span> display name.
+       </p></li>
+<li class="listitem">
+<p class="listitem">Configure the New User e-mail 
+        <span class="guimenu">Subject</span>.
+       </p></li>
+<li class="listitem">
+<p class="listitem">Configure the Meeting Invitation e-mail 
+        <span class="guimenu">Subject</span>.
+       </p></li>
+<li class="listitem">
+<p class="listitem">Configure the New Meeting Archive e-mail 
+        <span class="guimenu">From</span> display name.
+       </p></li>
+<li class="listitem">
+<p class="listitem">Configure the New Meeting Archive e-mail 
+        <span class="guimenu">From</span> e-mail address.
+       </p></li></ul></div>
+</li>
+          
+<li class="listitem">
+<p class="listitem">Configure the New User e-mail template.</p></li>
+          
+<li class="listitem">
+<p class="listitem">Configure the Meeting Invitation template.</p></li>
+          
+<li class="listitem">
+<p class="listitem"> Configure the Meeting Summary e-mail template.</p></li>
+          
+<li class="listitem">
+<p class="listitem">Configure the New Meeting Archive e-mail template.</p></li>
+        </ol></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="b9y16f8">
+
+<h3 class="title"><span class="number">2.6.12</span> Summary of Configuration</h3>
+
+<p class="para">Once you have completed the installation script, you are presented with a summary of the choices you selected. If you are not satisfied with the configuration setup, you can either modify the configuration or you can exit the installer and run the script again. If you exit the installer, the current configuration is saved, and when you rerun the install script, it is used for the default values during the reconfiguration.</p>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bc53gyw">
+
+<h2 class="title"><span class="number">2.7</span> Starting and Stopping the Cluster</h2>
+
+<p class="para">You can start and stop the ICEcore Conference services for the entire cluster using the
+   <span class="literal"> control-cluster.sh </span>script.
+  </p>
+<p class="para">To Stop ICEcore Conference Services, type:</p><pre class="screen">
+./control-cluster.sh --cluster &lt;your-cluster&gt; [--single-host &lt;your-host&gt;] stop
+</pre>
+<p class="para">To Start ICEcore Conference Services, type:</p><pre class="screen">
+./control-cluster.sh --cluster &lt;your-cluster&gt; [--single-host &lt;your-host&gt;] start
+</pre>
+<p class="para">Use the
+   <span class="literal"> --single-host </span>argument with the script if there is only one host in your cluster.
+  </p>
+</div>
+
+<div class="sect1 singlefile"  id="b9y00ba">
+
+<h2 class="title"><span class="number">2.8</span> ICEcore Conference Administration Console</h2>
+
+<p class="para">Once you have successfully installed the ICEcore Conference System Components, you can access the web-based ICEcore Conference Administration Console. Use the Administration Console to monitor the state of the ICEcore Conference components and services, as well as to create ICEcore Conference communities.</p>
+<p class="para">The ICEcore Conference Administration Console is available via the URL:</p><pre class="screen">
+http://&lt;webportalhostname&gt;/imidio/console/
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>If you have SSL enabled, you should specify https in the URL instead of http.</p></div>
+
+<h4 class="bridgehead" id="b9y18eq"> Logging on to the Administration Console</h4>
+
+<p class="para">The initial installation creates the screen name 
+   <span class="guimenu">admin</span> with password 
+   <span class="guimenu">admin</span>. You can use these values to log on, and change them later (see the “ICEcore Conference Operations Guide” for further information on using the ICEcore Conference Administration Console).
+  </p>
+<h4 class="bridgehead" id="b9y18ff"> Creating ICEcore Conference Communities</h4>
+
+<p class="para">See the “ICEcore Conference Operations Guide” for information on adding ICEcore Conference Communities.</p>
+</div>
+
+<div class="sect1 singlefile"  id="b9y19ck">
+
+<h2 class="title"><span class="number">2.9</span> ICEcore Conference Client Installation</h2>
+
+<p class="para">The following procedures cover the creation of the ICEcore Conference Client RPM file to use for web download, how to install the ICEcore Conference Client using this file and how to install the Pidgin Instant Chat Client:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+            <a href="#bauddzz">Section 2.9.1, Building the ICEcore Conference Client RPM</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#baudo10">Section 2.9.2, Installing the ICEcore Conference Client</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="#bauv26x">Section 2.9.3, Installing the Pidgin Instant Chat Client</a>
+          </p></li></ul></div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The Windows executable file is automatically generated during the server install process and already in the web download directory.</p></div>
+
+<div class="sect2 singlefile"  id="bauddzz">
+
+<h3 class="title"><span class="number">2.9.1</span> Building the ICEcore Conference Client RPM</h3>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Installers are included for all client components in the server installation package, but the client package kits are still available so that you can customize the default values for site-specific options such as host name and security settings to make deployment easier.</p></div>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baudegv">
+<p class="para"> Untar the ICEcore Conference client package from root directory:</p><pre class="screen">
+tar -zxf zon-package-kit-&lt;version&gt;.tar.gz
+</pre></li>
+<li class="step" id="bawyu60">
+<p class="para">Build the ICEcore Conference Client Install RPM (specify 
+      <span class="literal">yes</span> or 
+      <span class="literal">no</span> for the “use-ssl” parameter below):
+     </p><pre class="screen">
+cd zon-package-kit
+</pre><pre class="screen">
+./build-rpm.sh &lt;conferencing-xml-router-external-hostname&gt; &lt;conferencing-portal-hostname&gt; &lt;use-ssl&gt;
+</pre></li>
+<li class="step" id="baudem6">
+<p class="para">If generated on the ICEcore Conference server, the RPM is automatically copied to the web download directory. Otherwise, copy the generated RPM manually to the ICEcore Conference server:</p><pre class="screen">
+cd /usr/src/packages/RPMS/i586
+</pre><pre class="screen">
+scp zon-binary-&lt;version&gt;-1.i586.rpm root@&lt;conferencing-portal-hostname&gt;/usr/local/apache2/htdocs/imidio/downloads/.rpm
+</pre></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="baudo10">
+
+<h3 class="title"><span class="number">2.9.2</span> Installing the ICEcore Conference Client</h3>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="baudj99">
+<p class="para">After installing the ICEcore Conference server, you can download the ICEcore Conference client from the following URLs:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> Windows: http://&lt;conferencing-portal-hostname&gt;/imidio/downloads/conferencing.exe</p></li>
+<li class="listitem">
+<p class="listitem"> Linux: http://&lt;conferencing-portal-hostname&gt;/imidio/downloads/conferencing.rpm</p></li></ul></div>
+
+<p class="para">You can send these ICEcore Conference client installation URLs to your ICEcore Conference users via e-mail for them to install the ICEcore Conference client on their desktops.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>If you have SSL enabled, you should specify https in the URL instead of http.</p></div>
+</li>
+<li class="step" id="baudmhm">
+<p class="para">Select
+      <span class="guimenu"> Open </span>or
+      <span class="guimenu"> Run </span>to invoke the installer after the download completes.
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>It may take a while for the installation to begin on a Linux desktop.</p></div>
+
+<p class="para">After you install the client, use the
+      <span class="guimenu"> admin </span>screen name (password = 
+      <span class="guimenu">admin</span>) or the screen name of the first user of the first community to sign on.
+     </p>
+<p class="para">Once you sign on, you can add ICEcore Conference users to the community (see the “ICEcore Conference Operations Guide”).</p></li></ol>
+</div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bauv26x">
+
+<h3 class="title"><span class="number">2.9.3</span> Installing the Pidgin Instant Chat Client</h3>
+
+<p class="para">After installing the Conferencing server, you can download the Pidgin client with ICEcore Conference protocol support from the following URLs. </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> Windows: http://&lt;conferencing-portal-hostname&gt;/imidio/downloads/pidgin.exe</p></li>
+<li class="listitem">
+<p class="listitem"> Linux: http://&lt;conferencing-portal-hostname&gt;/imidio/downloads/pidgin.rpm</p></li></ul></div>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bauv2ei">
+<p class="para">Download the 
+      <span class="literal">pidgin.exe</span> (Windows) or 
+      <span class="literal">pidgin.rpm</span> (Linux) executable file to your desktop.
+     </p>
+<p class="para">The URLs for downloading these files should be in your invitation e-mail.</p></li>
+<li class="step" id="bauv2z1">
+<p class="para">In Linux and Windows, double-click the 
+      <span class="guimenu">pidgin </span>(.rpm or .exe) installer (placed on the desktop during download), or select 
+      <span class="guimenu">Open</span> or 
+      <span class="guimenu">Run</span> to invoke the installer.
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>It may take a while for the installation to begin on the Linux desktop.</p></div>
+</li>
+<li class="step" id="bauv346">
+<p class="para">In the 
+      <span class="guimenu">Installer Language</span> dialog that appears, select your language from the drop-down list.
+     </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The installer wizard walks you through the installation process. The defaults should be fine for your install, though you may want to select the 
+       <span class="guimenu">Shortcut &gt; Desktop </span>option.
+      </p></div>
+</li>
+<li class="step" id="bauv3as">
+<p class="para">Click 
+      <span class="guimenu">Finish</span> to complete the installation process. 
+     </p>
+<p class="para">The integrated Pidgin instant chat client is now installed and ready for use.</p></li></ol>
+</div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>See the ICEcore Conference Online Help or the ICEcore Conference User Guide for information on using the integrated Pidgin client with ICEcore Conference.</p></div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="b9y1arq">
+
+<h1 class="title"><span class="number">3.0</span> Reconfiguring and Upgrading</h1>
+
+<p class="para">The following sections discuss both reconfiguration and upgrading the ICEcore Conference servers and clients:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ye6xq">Section 3.1, Backing Up and Restoring the Database</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ye7fk">Section 3.2, Reconfiguring ICEcore Conference Hosts</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ye7fl">Section 3.3, Upgrading the ICEcore Conference Client</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yeaid">Section 3.4, Upgrading the ICEcore Conference Servers</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9ye7fm">Section 3.5, Starting and Stopping ICEcore Conference Services</a>
+        </p></li></ul></div>
+
+<div class="sect1 singlefile"  id="b9ye6xq">
+
+<h2 class="title"><span class="number">3.1</span> Backing Up and Restoring the Database</h2>
+
+<p class="para">Before doing any reconfiguration or upgrade of the ICEcore Conference software, we recommend that you perform a backup of your existing database.</p>
+<h4 class="bridgehead" id="b9ye7og"> Backing Up the Database</h4>
+
+<p class="para">The system automatically backs up the database on a daily basis. The backups can be found in
+   <span class="filename"> /var/iic/db-backups </span>on the db-host (as defined in
+   <span class="filename"> /opt/iic/conf/global-config</span>). Each backup is a tar(1) archive compressed using the bzip2(1) utility. The current daily backup is called
+   <span class="filename"> db.tar.bz2</span>.
+  </p>
+<p class="para">You can also back up the database at any arbitrary time using the
+   <span class="filename"> pg_dump(1) </span>utility. The state of the database in the backup is that of all committed transactions at the time
+   <span class="filename"> pg_dump(1) </span>is run. Any updates done after the backup is started are ignored.
+  </p>
+<p class="para">The following command line shows how to dump the contents of the database to a tar(1) archive named
+   <span class="filename"> db.tar</span>:
+  </p><pre class="screen">
+pg_dump -b -F t -f db.tar &lt;db_name&gt;
+</pre><pre class="screen">
+bzip2 db.tar
+</pre>
+<p class="para">You can either execute 
+   <span class="filename">pg_dump </span>on the
+   <span class="literal"> db_host </span>machine or set up the PostgreSQL environment variables according to the database configuration in
+   <span class="filename"> /opt/iic/conf/global-config</span>.
+  </p>
+<h4 class="bridgehead" id="b9ye7p0"> Restoring the Database</h4>
+
+<p class="para">Restoring an archived database is done using the 
+   <span class="filename">pg_restore</span> command. To restore a backup in a 
+   <span class="literal">bzip2 </span>compressed tar file, the following command line can be used:
+  </p><pre class="screen">
+bunzip2 db.tar.bz2
+</pre><pre class="screen">
+pg_restore -d &lt;db_name&gt; db.tar
+</pre>
+<p class="para">You can either execute
+   <span class="filename"> pg_restore(1) </span>on the
+   <span class="literal"> db_host </span>machine or set up the PostgreSQL environment variables according to the database configuration in
+   <span class="filename"> /opt/iic/conf/global-config</span>.
+  </p>
+</div>
+
+<div class="sect1 singlefile"  id="b9ye7fk">
+
+<h2 class="title"><span class="number">3.2</span> Reconfiguring ICEcore Conference Hosts</h2>
+
+<p class="para">Follow these steps to reconfigure the installation:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Make a backup copy of the sitescape-conferencing directory:</p><pre class="screen">
+cp -r sitescape-conferencing sitescape-conferencing.bk
+</pre></li>
+        
+<li class="listitem">
+<p class="listitem">Open the 
+     <span class="filename">sitescape-conferencing</span> directory.
+    </p></li>
+        
+<li class="listitem">
+<p class="listitem">Run:
+     <span class="filename"> ./install.sh</span>
+    </p></li>
+        
+<li class="listitem">
+<p class="listitem">The installation script prompts you for the configuration information. The prior configuration is used as the default values for the new configuration.</p></li>
+      </ol></div>
+
+<p class="para">You are also asked whether you want to initialize the system database. You must initialize a database once before it can be used by the system. However, initializing a database that is already in use by the system results in all of the data being lost. Only initialize a database once on a database host.</p>
+</div>
+
+<div class="sect1 singlefile"  id="b9ye7fl">
+
+<h2 class="title"><span class="number">3.3</span> Upgrading the ICEcore Conference Client</h2>
+
+<p class="para">Follow these steps to upgrade the ICEcore Conference client:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Make a backup copy of the 
+     <span class="filename">sitescape-conferencing </span>directory:
+    </p><pre class="screen">
+cp -r sitescape-conferencing sitescape-conferencing.bk
+</pre></li>
+        
+<li class="listitem">
+<p class="listitem">Open the 
+     <span class="filename">sitescape-conferencing</span> directory.
+    </p></li>
+        
+<li class="listitem">
+<p class="listitem"> Copy the new
+     <span class="filename"> installers.tar.gz </span>archive into your installation directory
+    </p></li>
+        
+<li class="listitem">
+<p class="listitem">Run:
+     <span class="filename"> ./install.sh</span>
+    </p></li>
+      </ol></div>
+
+<p class="para">ICEcore Conference users are automatically upgraded the next time they log on.</p>
+</div>
+
+<div class="sect1 singlefile"  id="b9yeaid">
+
+<h2 class="title"><span class="number">3.4</span> Upgrading the ICEcore Conference Servers</h2>
+
+<p class="para">Follow these steps to upgrade the ICEcore Conference servers:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Make a backup copy of the 
+     <span class="filename">sitescape-conferencing</span> directory:
+    </p><pre class="screen">
+cp -r sitescape-conferencing sitescape-conferencing.bk
+</pre></li>
+        
+<li class="listitem">
+<p class="listitem">Extract the new distribution file using: </p><pre class="screen">
+tar zxvf sitescape-conferencing-&lt;version&gt;.tar.gz.
+</pre></li>
+        
+<li class="listitem">
+<p class="listitem">Open the 
+     <span class="filename">sitescape-conferencing</span> directory.
+    </p></li>
+        
+<li class="listitem">
+<p class="listitem"> Copy the prior configuration directory to the current location:</p><pre class="screen">
+cp -r ../sitescape-conferencing.bk/myzon
+</pre></li>
+        
+<li class="listitem">
+<p class="listitem">Run:
+     <span class="filename"> ./install.sh</span>
+    </p></li>
+        
+<li class="listitem">
+<p class="listitem">The installation script prompts you for the configuration information. The prior configuration is used as the default values for the upgrade.</p></li>
+      </ol></div>
+
+<div class="warning">
+<p class="para"><em class="title">WARNING:</em>When asked whether you want to initialize the system database, answer
+    <span class="literal"> no </span>unless you want to delete all of your data.
+   </p></div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9ye7fm">
+
+<h2 class="title"><span class="number">3.5</span> Starting and Stopping ICEcore Conference Services</h2>
+
+<h4 class="bridgehead" id="bbj228h"> Starting and Stopping the Cluster</h4>
+
+<p class="para">You can start or stop ICEcore Conference services for the entire cluster using the
+   <span class="literal"> control-cluster.sh </span>script.
+  </p>
+<p class="para">To Stop ICEcore Conference Services, type:</p><pre class="screen">
+./control-cluster.sh --cluster &lt;your-cluster&gt; [--single-host &lt;your-host&gt;] stop
+</pre>
+<p class="para">To Start ICEcore Conference Services, type:</p><pre class="screen">
+./control-cluster.sh --cluster &lt;your-cluster&gt; [--single-host &lt;your-host&gt;] start
+</pre>
+<p class="para">Use the
+   <span class="literal"> --single-host </span>argument with the script if there is only one host in your cluster.
+  </p>
+<h4 class="bridgehead" id="b9yedgd"> Starting and Stopping Individual Machines</h4>
+
+<p class="para">To start or stop services on only one of the machines on the cluster, use the script:
+   <span class="filename"> /opt/iic/conf/control-services.sh</span>.
+  </p>
+<p class="para">To Stop ICEcore Conference Services with 
+   <span class="filename">control-services.sh</span>, type:
+  </p><pre class="screen">
+/opt/iic/conf/control-services.sh stop
+</pre>
+<p class="para">To Start ICEcore Conference Services with
+   <span class="filename"> control-services.sh</span>, type:
+  </p><pre class="screen">
+/opt/iic/conf/control-services.sh start
+</pre>
+</div>
+
+</div>
+
+<div class="chapter singlefile"  id="b9yefsv">
+
+<h1 class="title"><span class="number">4.0</span> Modifying Template Files</h1>
+
+<p class="para">The installation script
+  <span class="filename"> install.sh </span>prompts you whether you want to modify various e-mail body templates. The following sections describe the available e-mail body templates:
+ </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yego1">Section 4.1, Modifying the Meeting Invitation Template</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yeh9r">Section 4.2, Using IF Statements</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yeh9s">Section 4.3, Modifying the Meeting Summary E-mail Template</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yeh9t">Section 4.4, Modifying the New User Greeting E-mail Template</a>
+        </p></li></ul></div>
+
+<p class="para">During the installation, you have the opportunity to edit both the new user and invitation templates. You can do this by editing the templates and then importing them, or by using emacs on an install host.</p>
+<p class="para"></p>
+<div class="sect1 singlefile"  id="b9yego1">
+
+<h2 class="title"><span class="number">4.1</span> Modifying the Meeting Invitation Template </h2>
+
+<p class="para">The meeting invitation template has two roles. The first role is to fill the body of the meeting invitation e-mail sent to meeting participants. The second role is to create the content of an IM invitation sent to meeting participants. In order to fulfill these two roles, the template is divided into sections. The purpose of each section is to specify whether the text produced in a section should be included in an e-mail body, IM content or both. The syntax for a section is as follows:</p><pre class="screen">
+#SECTION &lt;selector&gt;
+</pre><pre class="screen">
+.
+</pre><pre class="screen">
+.
+</pre><pre class="screen">
+.
+</pre><pre class="screen">
+#SECTION END
+</pre>
+<p class="para">The
+   <span class="literal">&lt;selector&gt; </span>variable represents one of the following values:
+  </p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yehw7"></a>
+<p class="para">Value </p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yehw8"></a>
+<p class="para">EMAIL_IM</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The text produced in this section is present in both e-mail and IM meeting invitations.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yeifb"></a>
+<p class="para">EMAIL_ONLY</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The text produced in this section is present only in e-mail meeting invitations.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yeifc"></a>
+<p class="para">IM_ONLY</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The text produced in this section is present only in IM meeting invitations.</p></td>
+</tr></table>
+</div>
+
+<p class="para">The basic operation in the section is to echo (i.e. output) text. For example:</p><pre class="screen">
+echo Click here to enter the meeting &lt;MEETINGURL&gt;&lt;NEWLINE&gt;
+</pre><pre class="screen">
+echo Pin: 
+</pre><pre class="screen">
+echo &lt;INVITEE-PIN&gt;&lt;NEWLINE&gt;
+</pre>
+<p class="para">There are several things to notice about these lines. One is that the output from an echo is appended to the result of the prior echoes. If you want a line break at a particular point, you must explicitly provide the line break using the
+   <span class="literal">&lt;NEWLINE&gt; </span>tag. Also, an echo line may contain tags that are replaced with values particular to the meeting to which the participant is invited. You can use the following tags:
+  </p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yejfu"></a>
+<p class="para">Tag </p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejfv"></a>
+<p class="para">&lt;TITLE&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the title of the meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejrr"></a>
+<p class="para">&lt;HOST&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the host of the meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejrs"></a>
+<p class="para">&lt;TIME&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the scheduled start time of the meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejrt"></a>
+<p class="para">&lt;DESCRIPTION&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the description of the meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejru"></a>
+<p class="para">&lt;MESSAGE&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the invite message (if any) that the host provided when creating the meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejrv"></a>
+<p class="para">&lt;INVITEE-NAME&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the name of the participant.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejrw"></a>
+<p class="para">&lt;INVITEE-PHONE&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the phone number of the participant.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejrx"></a>
+<p class="para">&lt;INVITEE-PIN&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the pin of the participant.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejry"></a>
+<p class="para">&lt;MEETING-URL&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with URL to click for the participant to join the meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejrz"></a>
+<p class="para">&lt;ANONYMOUS-URL&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with URL to click for an anonymous meeting participant to join the meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejs0"></a>
+<p class="para">&lt;MEETING-PHONE&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the title of the meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejs1"></a>
+<p class="para">&lt;ANONYMOUS-PIN&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the pin for an anonymous invited participant.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yejs2"></a>
+<p class="para">&lt;PASSWORD&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the meeting password for the meeting.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9yeh9r">
+
+<h2 class="title"><span class="number">4.2</span> Using IF Statements</h2>
+
+<p class="para">In addition to the echo command, conditional text may be generated. The way to specify conditional text is using an
+   <span class="literal"> %IF </span>statement. The
+   <span class="literal"> %IF </span>statement is as follows:
+  </p><pre class="screen">
+%IF &lt;variable-expression&gt;
+</pre><pre class="screen">
+.
+</pre><pre class="screen">
+.
+</pre><pre class="screen">
+%IF END
+</pre>
+<p class="para">The
+   <span class="literal">&lt;variable-expression&gt; </span>variable is either a Boolean variable or if prefixed with an exclamation point, the negation of the variable. If the
+   <span class="literal">&lt;variable-expression&gt; </span>is true, the contents of the
+   <span class="literal"> %IF </span>are executed. If false, they are not. Note that there is no 
+   <span class="literal">ELSE</span> clause.
+  </p>
+<p class="para">The following variables are available for use:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yf0av"></a>
+<p class="para">Variable</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf0aw"></a>
+<p class="para">CALL_IN</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">True when the meeting has a voice conference associated with it and the participant has no phone number.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf0ta"></a>
+<p class="para">CALL_OUT</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">True when the meeting has a voice conference associated with it and the participant has a phone number.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf0tb"></a>
+<p class="para">DESCRIPTION</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">True when a non-empty description exists for the meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf0tc"></a>
+<p class="para">MESSAGE</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">True when a non-empty invite message exists for the meeting.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf0td"></a>
+<p class="para">PASSWORD</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">True when a non-empty password exists for the meeting.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf0te"></a>
+<p class="para">PRIVATE</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">True when the meeting is a private meeting.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9yeh9s">
+
+<h2 class="title"><span class="number">4.3</span> Modifying the Meeting Summary E-mail Template</h2>
+
+<p class="para">The meeting summary e-mail body template contains text with embedded tags that are replaced with values particular to the meeting that ended. The non-tag text is left as is in the e-mail body.</p>
+<p class="para">The following table lists the available tags:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yf262"></a>
+<p class="para">Tag</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf263"></a>
+<p class="para">&lt;MeetingID&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the meeting ID of the meeting that ended.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf264"></a>
+<p class="para">&lt;StartDateTime&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the start time and date of the meeting that ended.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf265"></a>
+<p class="para">&lt;Duration&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with duration of the meeting that ended.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf266"></a>
+<p class="para">&lt;VoiceRecording&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with YES or NO depending on if there is a voice recording associated with the meeting that ended.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf267"></a>
+<p class="para">&lt;DataRecording&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with YES or NO depending if there is a recording of the app/desktop sharing session(s) associated with the meeting that ended.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf268"></a>
+<p class="para">&lt;MeetingParticipants&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with a list of the participants and some of their contact information for the meeting that ended.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9yeh9t">
+
+<h2 class="title"><span class="number">4.4</span> Modifying the New User Greeting E-mail Template</h2>
+
+<p class="para">When a new user is added to the system, they receive an e-mail notification informing them that they are now a user of the system and providing them with information on using ICEcore Conference. You can tailor the body of this e-mail by modifying the file: 
+   <span class="filename">sitescape-conferencing/&lt;cluster&gt;/new-user-template.default</span>.
+  </p>
+<p class="para">When the system creates the body of new user e-mail, it replaces a number of tags with information particular to the new user. Any remaining text that is not a tag is left as is.</p>
+<p class="para">The following table lists the available tags:</p>
+<div class="informaltable">
+<table class="topbot-lines">
+            
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yf4cb"></a>
+<p class="para">Tag</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+          
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf4cc"></a>
+<p class="para">&lt;IICNAME&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the user's full name.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf4cd"></a>
+<p class="para">&lt;IICUSERNAME&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the user's screen name.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf4ce"></a>
+<p class="para">&lt;IICPASSWORD&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the user's initial password.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf4cf"></a>
+<p class="para">&lt;IICDIALIN&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the voice bridge phone number.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf4cg"></a>
+<p class="para">&lt;IICPERSONALPIN&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the user's instant Meeting PIN.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yf4ch"></a>
+<p class="para">&lt;IICMEETINGID&gt;</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This tag is replaced with the user's instant Meeting ID.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+</div>
+
+<div class="appendix singlefile"  id="b9yf724">
+
+<h1 class="title"><span class="number">A.0</span> Configuring ssh(1) private/public Key Authentication</h1>
+
+<p class="para">The installation script uses 
+  <span class="literal">ssh(1)</span> and 
+  <span class="literal">scp(1)</span> to copy files to and execute scripts on the ICEcore Conference hosts. In order to avoid typing the root password for the ICEcore Conference hosts numerous times during the install, you can configure private/public key authentication for 
+  <span class="literal">ssh(1)</span>. If private/public key authentication is in place, rather than prompting for the root password, 
+  <span class="literal">ssh(1)/scp(1) </span>gets an authentication token generated using the private key. It authenticates the token on the ICEcore Conference host using the root user’s list of authorized public keys.
+ </p>
+<h4 class="bridgehead" id="b9yf7na"> Follow these steps to configure private/public key authentication:</h4>
+
+<div class="orderedlist">
+<ol class="orderedlist">
+      
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yf7xa">Section A.1, Generating a Private/Public Key Pair</a>
+        </p></li>
+      
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yf8ud">Section A.2, Configuring the ssh Key Agent</a>
+        </p></li>
+      
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yf9ub">Section A.3, Adding the Public Key to the Root User’s Set of Authorized Keys</a>
+        </p></li>
+    </ol></div>
+
+<p class="para"></p>
+<div class="sect1 singlefile"  id="b9yf7xa">
+
+<h2 class="title"><span class="number">A.1</span> Generating a Private/Public Key Pair</h2>
+
+<p class="para">To generate a key pair, use the 
+   <span class="literal">ssh-keygen(1)</span> command. 
+  </p>
+<p class="para">Here is a sample interaction with 
+   <span class="literal">ssh-keygen</span>:
+  </p><pre class="screen">
+-bash-2.05b$ ssh-keygen -t rsa
+</pre><pre class="screen">
+Generating public/private rsa key pair.
+</pre><pre class="screen">
+Enter file in which to save the key (/home/admin/.ssh/id_rsa):
+</pre><pre class="screen">
+Enter passphrase (empty for no passphrase): ******
+</pre><pre class="screen">
+Enter same passphrase again: ******
+</pre><pre class="screen">
+Your identification has been saved in /home/admin/.ssh/id_rsa.
+</pre><pre class="screen">
+Your public key has been saved in /home/admin/.ssh/id_rsa.pub.
+</pre><pre class="screen">
+The key fingerprint is:
+</pre><pre class="screen">
+8c:ff:d4:50:65:46:9f:6b:59:34:43:3a:5f:e7:5a:54 admin@staging.my.com
+</pre>
+<p class="para">At this point there are two new files in the home directory: 
+   <span class="filename">~/.ssh/id_rsa </span>and 
+   <span class="filename">~/.ssh/id_rsa.pub</span>. The first file is the private key (in binary form) and the second is the public key (in text form).
+  </p>
+</div>
+
+<div class="sect1 singlefile"  id="b9yf8ud">
+
+<h2 class="title"><span class="number">A.2</span> Configuring the ssh Key Agent</h2>
+
+<p class="para">In order to use the newly generated private key, you must start the ssh key agent,
+   <span class="literal"> ssh-agent</span>, and add the key to the set of keys held by the agent. In order to have the keys available whenever you log on, edit the file
+   <span class="filename"> ~/.bash_profile</span>. The following shell script snippet should be inserted at the end of the file:
+  </p><pre class="screen">
+if [ -z "$SSH_AUTH_SOCK" ]; then
+</pre><pre class="screen">
+  eval $(ssh-agent)
+</pre><pre class="screen">
+  ssh-add
+</pre><pre class="screen">
+fi
+</pre>
+<p class="para">After saving 
+   <span class="filename">~/.bash_profile</span>, log off and back into the staging host. You are prompted for the private key pass phrase entered when the key pair was generated. After successfully entering the pass phrase, the private key is available for generating authentication tokens.
+  </p>
+<p class="para"></p>
+</div>
+
+<div class="sect1 singlefile"  id="b9yf9ub">
+
+<h2 class="title"><span class="number">A.3</span> Adding the Public Key to the Root User’s Set of Authorized Keys</h2>
+
+<p class="para">The final step is to add the public key (
+   <span class="filename">~/.ssh/id_rsa.pub </span>on the staging host) to the set of authorized keys for the root user on the ICEcore Conference host. 
+  </p>
+<p class="para">Follow these steps to add the key:</p><pre class="screen">
+$ scp ~/.ssh/id_rsa.pub root@zonhost:/tmp
+</pre><pre class="screen">
+$ ssh root@zonhost
+</pre><pre class="screen">
+The authenticity of host 'zonhost (W.X.Y.Z)' can't be established.
+</pre><pre class="screen">
+RSA key fingerprint is df:c7:21:77:ec:53:89:77:4f:32:4d:a8:7a:a2:c2:7c.
+</pre><pre class="screen">
+Are you sure you want to continue connecting (yes/no)? yes
+</pre><pre class="screen">
+Warning: Permanently added 'jabber,10.0.1.3' (RSA) to the list of known hosts.
+</pre><pre class="screen">
+root@zonhost's password: ******
+</pre><pre class="screen">
+# cat /tmp/id_rsa.pub &gt;&gt; .ssh/authorized_keys
+</pre><pre class="screen">
+# chmod 700 .ssh
+</pre><pre class="screen">
+# chmod 600 .ssh/authorized_keys
+</pre>
+<p class="para">You need to repeat the above steps for all the ICEcore Conference hosts.</p>
+</div>
+
+</div>
+
+<div class="appendix singlefile"  id="b9yfaxx">
+
+<h1 class="title"><span class="number">B.0</span> Editing the global-config File</h1>
+
+<p class="para">The installation script 
+  <span class="literal">./install.sh</span> takes care of updating the 
+  <span class="literal">global-config</span> file. If you want to edit the file directly, see the following information.
+ </p>
+<p class="para">The overall cluster configuration is in the file 
+  <span class="literal">global-config</span>. The following steps are required to configure a ICEcore Conference server cluster. A later section describes optional configuration steps that you should review and may wish to consider implementing:
+ </p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yfbqw">Section B.1, Assigning Services to Nodes</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yfgd3">Section B.2, Configuring Web Services</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yfhsd">Section B.3, Configuring the Mailer</a>
+        </p></li>
+<li class="listitem">
+<p class="listitem">
+          <a href="#b9yfi1d">Section B.4, Using Port Forwarding</a>
+        </p></li></ul></div>
+
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>All hostnames currently need to be lowercase.</p></div>
+
+<div class="sect1 singlefile"  id="b9yfbqw">
+
+<h2 class="title"><span class="number">B.1</span> Assigning Services to Nodes</h2>
+
+<p class="para">The following steps are necessary to configure what services run on which cluster nodes.</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9yfbx2">
+<p class="para">Configure the database server</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="b9yfc9g">
+<p class="para">Change the
+       <span class="literal"> db_host </span>variable assignment to specify the database host.
+      </p></li>
+<li class="step" id="b9yfc9v">
+<p class="para">For new installations, it is not necessary to change 
+       <span class="literal">db_name</span>, 
+       <span class="literal">db_user</span> and 
+       <span class="literal">db_pswd</span>.
+      </p></li>
+<li class="step" id="b9yfc9y">
+<p class="para"> Define the host access to the database. The servers that run the address book, XML routers and web portals must have access to the database. You can specify access to the database host using a set of IP addresses and netmasks. An IP address/netmask pair specifies a range of IP addresses that are allowed to connect to the database. For instance, 10.1.1.1/255.255.255.0 allows IP addresses 10.1.1.* to connect to the database. The IP addresses are specified in 
+       <span class="literal">db_ip_addr</span> and the netmasks in 
+       <span class="literal">db_netmask</span>. Both are arrays so the above example would be:
+      </p><pre class="screen">
+db_ip_addr=( 10.1.1.1 )
+</pre><pre class="screen">
+db_netmask=( 255.255.255.0 )
+</pre></li></ol>
+</div>
+</li>
+<li class="step" id="b9yfc2b">
+<p class="para">Configure XML router services:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="b9yffwx">
+<p class="para">Set 
+       <span class="literal">external_hname</span> to the hostname used by ICEcore Conference clients to connect to XML router services.
+      </p></li>
+<li class="step" id="b9yffx4">
+<p class="para">Set the 
+       <span class="literal">lcl_xmlrouter</span> and 
+       <span class="literal">lcl_xmlrouter_ip</span> arrays to specify the cluster hosts and IP addresses for the XML router services. More than 2 XML routers are not currently supported.
+      </p></li></ol>
+</div>
+</li>
+<li class="step" id="b9yfc2d">
+<p class="para">Configure services connected to the XML router:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="b9yfeck">
+<p class="para">Configure the meeting controller service and the backup meeting controller service (if necessary). Specify the cluster host(s) to run each and the XML router listen ports. The host(s) is specified in the 
+       <span class="literal">controller_host</span> array and the listen ports in the 
+       <span class="literal">controller_port</span> array.
+      </p></li>
+<li class="step" id="b9yfed5">
+<p class="para">Configure the
+       <span class="literal"> addressbk </span>service. Specify the cluster host and XML router listen ports by setting the 
+       <span class="literal">addressbk_host</span> array and the 
+       <span class="literal">addressbk_port </span>array. Currently, only one
+       <span class="literal"> addressbk </span>is supported.
+      </p></li>
+<li class="step" id="b9yfed7">
+<p class="para">Configure the
+       <span class="literal"> mailer </span>service. Specify the cluster host and XML router listen ports by setting the 
+       <span class="literal">mailer_host</span> array and the
+       <span class="literal"> mailer_port </span>array. Currently, only one 
+       <span class="literal">mailer </span>is supported.
+      </p></li>
+<li class="step" id="b9yfed9">
+<p class="para">Configure the voice bridge(s). Multiple voice bridges may be configured for scaling purposes (see <a href="#b9yfiir">Section C.0, Editing the dialing.xml File</a>):</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="b9yff8j">
+<p class="para"> Specify the cluster host(s) and XML router listen ports by setting the
+         <span class="literal"></span>
+         <span class="literal">voice_host</span> array and the
+         <span class="literal"> voice_port</span> array.
+        </p></li>
+<li class="step" id="b9yff8t">
+<p class="para"> Specify the voice provider for the voice bridges using the 
+         <span class="literal">voice_provider</span> variable. If no voice support has been purchased, use the value
+         <span class="literal"> stub</span>. If an NMS voice bridge has been purchased, use the value
+         <span class="literal"> nms</span>.
+        </p></li>
+<li class="step" id="b9yffc2">
+<p class="para"> Also, specify the phone numbers allocated to each bridge using the 
+         <span class="literal">voice_phones</span> array. You can assign multiple phone numbers to a single voice bridge by separating the phone numbers with commas. Note that if spaces appear in phone numbers, the phone numbers must be quoted. Also, if the stub voice provider is in use, a dummy voice bridge number must be specified (e.g. “999-555-1234”).
+        </p></li></ol>
+</div>
+</li>
+<li class="step" id="b9yfedb">
+<p class="para">Configure the meeting archiver service(s). You can configure multiple meeting archivers for scaling purposes:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="b9yfeq9">
+<p class="para"> Specify the assigned cluster host(s) and XML router listen ports by setting the 
+         <span class="literal">mtgarchiver_host</span> array and the 
+         <span class="literal">mtgarchiver_port </span>array.
+        </p></li>
+<li class="step" id="b9yfesc">
+<p class="para"> If the meeting archiver hosts are separated from a voice bridge host by a NAT router, use the
+         <span class="literal"> mtgarchiver_voice_host </span>array to specify the voice bridge host(s) from the meeting archivers’ perspective. If no NAT router is involved, the meeting archivers attempt to connect to the voice bridge(s) using the hostnames found in 
+         <span class="literal">voice_host</span>.
+        </p></li></ol>
+</div>
+</li>
+<li class="step" id="b9yfedd">
+<p class="para">Configure the external API service:</p>
+<p class="para">Specify the cluster host and XML router listen ports by setting the 
+       <span class="literal">extapi_host </span>and 
+       <span class="literal">extapi_port </span>arrays. You can use multiple external API hosts.
+      </p></li></ol>
+</div>
+</li>
+<li class="step" id="b9yfc2f">
+<p class="para">Configure the app/desktop sharing servers:</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="b9yfe0w">
+<p class="para">Configure the 
+       <span class="literal">share_host</span> array to specify which hosts run as app/desktop sharing servers. Note that you can run multiple app/desktop servers on a single host by specifying a host multiple times. For instance if
+       <span class="literal"> share_host </span>was assigned the value 
+       <span class="literal">kanga kanga roo</span>, the host named kanga would run two servers and roo would run one. Also, be aware that you would need to define two distinct IP addresses on kanga because both servers use port 80 for tunneling through firewalls.
+      </p></li>
+<li class="step" id="b9yfe1a">
+<p class="para"> Configure the port to use for each share server using the
+       <span class="literal"> share_port </span>array. This port can remain 2182 since the IP addresses must be distinct for each share server. Port 2182 does not conflict with any default Linux service.
+      </p></li></ol>
+</div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9yfgd3">
+
+<h2 class="title"><span class="number">B.2</span> Configuring Web Services</h2>
+
+<p class="para">You can implement the web portal for the system across multiple hosts. When you use multiple web services the meeting archive repository must reside in a file system accessible to all HTTP daemons. For instance, it may reside on a NAS box or via an NFS exported file system on one of the cluster hosts. In any event, the shared file system must be accessible via
+   <span class="literal"> /usr/local/apache2/htdocs/repository/mtgarchive </span>on all the machines hosting the HTTP daemon. Also, you are responsible for configuring a load balancer for HTTP requests to these machines.
+  </p>
+<p class="para">When configuring the external API HTTP daemon(s), administrative functions are performed via HTTP on the external API hosts. For added security, these hosts may be placed behind a firewall. However, the hosts assigned to run the web portal must be able to connect to the external API hosts via port 8000 in order for the admin console to function properly.</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="b9yfgl4">
+<p class="para">Configure web portal host(s):</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="b9yfh3i">
+<p class="para">Modify the
+       <span class="literal"> portal_hname_local </span>array to specify all the cluster hosts for web service.
+      </p></li>
+<li class="step" id="b9yfh41">
+<p class="para"> Ensure that
+       <span class="literal"> /usr/local/apache2/htdocs/repository/mtgarchive </span>is the same-shared file system for all cluster hosts in
+       <span class="literal"> portal_hname_local</span>.
+      </p></li>
+<li class="step" id="b9yfh43">
+<p class="para">Modify the
+       <span class="literal"> portal_ip </span>array to include the IP addresses that the HTTP daemon should listen on for connections.
+      </p></li>
+<li class="step" id="b9yfh45">
+<p class="para">Modify the
+       <span class="literal"> portal_hname </span>variable to define the hostname used in URLs to the web portal.
+      </p></li></ol>
+</div>
+</li>
+<li class="step" id="b9yfgpj">
+<p class="para"> Configure external API host(s):</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="b9yfgrw">
+<p class="para">Modify the
+       <span class="literal"> extapi_hname_local </span>array to specify all the cluster hosts for the external API service.
+      </p></li>
+<li class="step" id="b9yfgry">
+<p class="para">Modify the
+       <span class="literal"> extapi_portal_ip </span>array to specify the IP addresses on which an external API HTTP daemon listens.
+      </p></li>
+<li class="step" id="b9yfgs0">
+<p class="para">Modify the
+       <span class="literal"> extapi_portal_hname </span>to specify the hostname in URLs to the external API.
+      </p></li></ol>
+</div>
+</li></ol>
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="b9yfhsd">
+
+<h2 class="title"><span class="number">B.3</span> Configuring the Mailer</h2>
+
+<p class="para">By default, the system is configured to assume that the cluster node assigned to the mailer is able to perform mail delivery. If that is not the case for some reason, you can configure the mailer to use an external SMTP host for mail delivery. You can use the variables
+   <span class="literal"> smtp_host</span>,
+   <span class="literal"> smtp_user</span>, and
+   <span class="literal"> smtp_pswd </span>in
+   <span class="literal"> global-config </span>for this purpose.
+  </p>
+</div>
+
+<div class="sect1 singlefile"  id="b9yfi1d">
+
+<h2 class="title"><span class="number">B.4</span> Using Port Forwarding</h2>
+
+<p class="para">By default, each cluster host running either an XML router or app/desktop sharing servers forwards ports 1270 and 443 to the respective service ports. If you have an installation that is running a load balancer that provides port forwarding, set the global-config variable
+   <span class="literal"> iptables_port_forwarding </span>to
+   <span class="literal"> no </span>and configure your load balancer accordingly.
+  </p>
+</div>
+
+</div>
+
+<div class="appendix singlefile"  id="b9yfiir">
+
+<h1 class="title"><span class="number">C.0</span> Editing the dialing.xml File</h1>
+
+<p class="para">This section applies only to those clusters that are running a voice bridge.</p>
+<p class="para">The role of the
+  <span class="literal"> dialing.xml </span>file is to specify the rules whereby a given phone number is transformed into the set of digits dialed by the voice server. For example, default area codes that must be appended to all 7-digit phone numbers. Most of the file consists of a collection of attributes and their values. The following table lists the attributes and their role:
+ </p>
+<div class="informaltable">
+<table class="topbot-lines">
+          
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="b9yfj05"></a>
+<p class="para">Attribute</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Description</p></th>
+</tr>
+        
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yfj06"></a>
+<p class="para">areaCode</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This attribute is a default area code to use when none is present in a phone number.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yfk9g"></a>
+<p class="para">tollPrefix</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This attribute is the prefix to dial in order to place a toll call. In the US, a 1.</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yfk9h"></a>
+<p class="para">i18nPrefix</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This attribute is the prefix to use when placing international calls. In the US, 011.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yfk9i"></a>
+<p class="para">country</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">A short description of the country the bridge is located in (e.g. US).</p></td>
+</tr>
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yfk9j"></a>
+<p class="para">countrycode</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">This is the international country code of the voice bridge. This code is used to decide whether a number requires that an international call be placed. For the US, the value is 1.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="b9yfk9k"></a>
+<p class="para">dialingMode</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">The attribute may be one of the following values:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">normal - Do not dial area code except for long distance calls.</p></li>
+<li class="listitem">
+<p class="listitem">dialAreaCodeAlways - The phone numbers always have an area code. The area code of the bridge may be used to supply missing area codes.</p></li>
+<li class="listitem">
+<p class="listitem">DialAreaCodeOnLD - Only dial an area code for long distance numbers (see areaCodes/exchanges lists below).</p></li></ul></div>
+</td>
+</tr></table>
+</div>
+
+<p class="para">The remaining components of the file are two lists: area codes and exchanges. The role of these lists is to determine whether a specified phone number requires a toll call by specifying a default condition (either local or long-distance) for area codes or exchanges. The list itself is a set of exceptions to the default. For instance, to specify that all area codes are long distance except for 978, the following may be used:</p><pre class="screen">
+&lt;areaCodes default="ld"&gt;
+</pre><pre class="screen">
+	&lt;local&gt;978&lt;/local&gt;
+</pre><pre class="screen">
+&lt;/areaCodes&gt;
+</pre>
+<p class="para">Similarly with exchanges, you could, for example, specify that most exchanges are long distance, but 865 is local: </p><pre class="screen">
+&lt;exchanges default="ld"&gt;
+</pre><pre class="screen">
+	&lt;local&gt;865&lt;/local&gt;
+</pre><pre class="screen">
+&lt;/exchanges&gt;
+</pre>
+</div>
+
+<div class="appendix singlefile"  id="b9yfl2j">
+
+<h1 class="title"><span class="number">D.0</span> Updating Meeting Invitation Web Pages</h1>
+
+<p class="para">The image that appears at the top of meeting invitation web pages can be found in
+  <span class="literal"> /usr/local/apache2/imidio/images/instant.jpg</span>. On the web portal host(s), you can replace that file with another logo. Be aware that this file is not preserved during updates or reconfigurations and has to be restored once the upgrade or reconfiguration is complete.
+ </p>
+<p class="para">If the dimensions of the new logo are different from the default, you may need to adjust the
+  <span class="literal">&lt;img&gt; </span>element in
+  <span class="literal"> /usr/local/apache2/htdocs/imidio/invite/frame_header.php</span>.
+ </p>
+<p class="para">You can modify the body of the meeting invitation web pages by updating
+  <span class="literal"> /usr/local/apache2/htdocs/imidio/invite/*.html</span>
+ </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>These files are not saved after upgrades or reconfigurations.</p></div>
+
+</div>
+
+<div class="appendix singlefile"  id="b9varpy">
+
+<h1 class="title"><span class="number">E.0</span> LDAP User Authentication</h1>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The password for
+   <span class="literal"> admin </span>always comes from the ICEcore Conference internal database so that an administrator is able to log on even if directory servers are not available. Because the password must be passed over the network in plain text, we recommend deployment using SSL.
+  </p></div>
+
+<h4 class="bridgehead" id="bcbugrb"> LDAP User Authentication Input File</h4>
+
+<p class="para">You can modify the
+  <span class="literal"> sitescape-conferencing/cluster-prototype/ldap.xml.in </span>input file to use ActiveDirectory synchronization instead of eDirectory synchronization and to map additional LDAP attributes to ICEcore Conference contact fields.
+ </p>
+<p class="para">To use ActiveDirectory synchronization, you need to comment out the eDirectory section in the file and uncomment out the Active Directory section, see examples below:</p>
+<p class="para">eDirectory Section:</p><pre class="screen">
+ 	&lt;!-- configuration for eDirectory and generic LDAP server --&gt;
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre>
+<p class="para">Move the closing XML comment tag (
+  <span class="literal">--&gt;</span>) after the
+  <span class="literal"> ...generic LDAP server </span>comment so that it follows the
+  <span class="literal">&lt;/attributes&gt; </span>tag under the eDirectory section:
+ </p><pre class="screen">
+ 	&lt;!-- configuration for eDirectory and generic LDAP server  
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre><pre class="screen">
+      --&gt;
+</pre>
+<p class="para">ActiveDirectory Section:</p><pre class="screen">
+	&lt;!-- configuration for ActiveDirectory
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre><pre class="screen">
+	--&gt;
+</pre>
+<p class="para">Move the closing XML comment tag (
+  <span class="literal">--&gt;</span>) after the 
+  <span class="literal">&lt;/attributes&gt; </span>tag so that it follows the 
+  <span class="literal">configuration for ActiveDirectory </span>comment:
+ </p><pre class="screen">
+	&lt;!-- configuration for ActiveDirectory --&gt;
+</pre><pre class="screen">
+	&lt;attributes&gt;
+</pre><pre class="screen">
+	  &lt;attribute&gt;
+</pre><pre class="screen">
+	    ...
+</pre><pre class="screen">
+	  &lt;/attribute&gt;
+</pre><pre class="screen">
+	&lt;/attributes&gt;
+</pre>
+<h4 class="bridgehead" id="bbkky1t"> ICEcore Conference Field Names</h4>
+
+<p class="para">Use these names to configure the mapping of LDAP attributes to ICEcore Conference contact fields:</p>
+<p class="para">“screenname” - “title” - “firstname” - “middlename” - “lastname” - “suffix” - “company” - “jobtitle” - “address1” - “address2” - “state” - “country” - “postalcode” - “aimname” - “email” - “email2” - “email3” - “busphone” - “homephone” - “mobilephone” - “otherphone” - “extension” - “msnscreen” - “yahooscreen” - “aimscreen” - “user1” - “user2” - “defphone”</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>For eDirectory, the
+   <span class="literal"> uid </span>attribute is mapped to the ICEcore Conference
+   <span class="literal"> screenname </span>by default. If you want to use the
+   <span class="literal"> cn </span>LDAP attribute instead of the
+   <span class="literal"> uid </span>attribute, you can change this mapping to map the
+   <span class="literal"> cn </span>attribute to the ICEcore Conference
+   <span class="literal"> screenname</span>.
+  </p></div>
+
+<h4 class="bridgehead" id="bbkkx32"> Address Book Configuration (Synchronization)</h4>
+
+<p class="para">Execute
+  <span class="literal"> /opt/iic/bin/ldap-sync.sh &lt;portal-server-hname&gt; </span>to perform the initial synchronization. 
+ </p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>After starting the server, wait 20 seconds or so before executing this command; if you do not get an XML message back, you probably did not wait long enough.</p></div>
+
+<p class="para">This script displays an XML message if it fails (the fault message is clearly visible); if it succeeds, the XML data contains a single number that is the number of users actually synchronized. You can run this script manually as needed, or configured to run periodically using
+  <span class="literal"> cron</span> (the default setting is for it to run daily).
+ </p>
+</div>
+
+<div class="appendix singlefile"  id="bcfyy50">
+
+<h1 class="title"><span class="number">F.0</span> NMS Board Installation</h1>
+
+<div class="warning">
+<p class="para"><em class="title">WARNING:</em>The CG 6565 and CG 6060 board is shipped in a protective anti-static container. Leave the board in its container until you are ready to install it. Handle the board carefully and hold it only by its edges and avoid touching its circuitry. NMS recommends that you wear an anti-static wrist strap connected to a good earth ground whenever you handle the board.</p></div>
+
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bcfz3k4">
+<p class="para">Ensure that your computer meets the systems requirement below:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">A chassis with an available PCI bus slot with 5.0 V and 3.3 V of supplied power.</p></li>
+<li class="listitem">
+<p class="listitem">32 bit SUSE Linux 10 SP1 kernel version 2.6.16.46-0.12</p></li></ul></div>
+</li>
+<li class="step" id="bcfz43a">
+<p class="para">Power down the chassis and disconnect it from the power source.</p></li>
+<li class="step" id="bcfz43s">
+<p class="para">Remove the cover and set it aside.</p></li>
+<li class="step" id="bcfz43v">
+<p class="para"> If you are installing more than one board, configure the two boards that are at the ends for H.100 bus termination. This is also a good time to configure the board(s) for PCI mode or PCI-X mode. This depends on the PCI slots in your chassis. Detailed instructions for both 
+    <a href="#bcfz7ez">H.100 termination</a> and 
+    <a href="#bcfzadi">PCI, PCI-X mode configurations</a> are provided below.
+   </p></li>
+<li class="step" id="bcfz43x">
+<p class="para">Arrange the CG board(s) in adjacent PCI bus slots. Make sure each board's PCI bus connector is seated securely in a slot. The picture below shows a CG board seated securely in a PCI slot.</p>
+<div class="informalfigure">
+              <img src="./nms_01_a.png" alt="" />
+            </div>
+</li>
+<li class="step" id="bcfz43z">
+<p class="para">Secure the end bracket on the board(s) to the chassis.</p></li>
+<li class="step" id="bcfz441">
+<p class="para">If you have multiple CG boards, connect the H.100 bus cable to each of the CG boards.</p>
+<div class="informalfigure">
+              <img src="./nms_02_a.png" alt="" />
+            </div>
+</li>
+<li class="step" id="bcfz442">
+<p class="para">Replace the cover and connect the computer to its power source.</p></li>
+<li class="step" id="bcfz444">
+<p class="para">Skip this step if your conference bridge only supports IP clients. If you have installed CG6565/64, now is the time to connect the mini RJ21 cable to the back of the CG6565/64 and the other end to the SEP panel to gain access to the 8 T1 or E1 trunks. </p></li>
+<li class="step" id="bcfz446">
+<p class="para">Run the ICEcore Conference installation script to install the software. If the ICEcore Conference software is already on the system, run “nmsconfig” at the command prompt to configure all the boards in the system. Refer to the 
+    <a href="#bcfzgxl">nmsconfig section</a> below for more information on nmsconfig.
+   </p></li></ol>
+</div>
+
+<div class="sect1 singlefile"  id="bcfz7ez">
+
+<h2 class="title"><span class="number">F.1</span> Configuring H.100 Bus Termination</h2>
+
+<p class="para">H.100 boards are connected to one another with an H.100 bus cable. The two boards located at either end of the H.100 bus must have bus termination enabled, as shown in the following illustration. Bus termination is controlled by a DIP switch as explained below.</p>
+<div class="informalfigure">
+            <img src="./nms_03_a.png" alt="" />
+          </div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bcfz993">
+
+<h2 class="title"><span class="number">F.2</span> Configuring the DIP Switches</h2>
+
+<p class="para">The CG 6565 DIP switches are located on the board, as shown in the following illustration:</p>
+<div class="informalfigure">
+            <img src="./nms_04_a.png" alt="" />
+          </div>
+
+<div class="sect2 singlefile"  id="bcfz9s5">
+
+<h3 class="title"><span class="number">F.2.1</span> S3 DIP Switch</h3>
+
+<p class="para">The S3 DIP switch controls the H.100 bus termination. By default, all S3 switches are set to OFF (H.100 bus termination disabled). Setting all S3 switches to ON enables H.100 bus termination. Set all S3 switches to ON only for the boards that are on the ends of the H.100 bus.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The switches in the S3 DIP switch must be set to either all ON or all OFF.</p></div>
+
+</div>
+
+<div class="sect2 singlefile"  id="bcfza6z">
+
+<h3 class="title"><span class="number">F.2.2</span> S2 DIP Switch</h3>
+
+<p class="para">Switch 5 in the S2 DIP switch allows you to control if the board LEDs can be off or on. (This is known as the dark office feature.) By default, switch 5 is set to OFF (all LEDs can be on). Setting switch 5 to ON turns off all LEDs on the board unless there is an error.</p>
+</div>
+
+<div class="sect2 singlefile"  id="bcfzadi">
+
+<h3 class="title"><span class="number">F.2.3</span> S1 DIP Switch</h3>
+
+<p class="para">The S1 DIP switch sets the mode of the board. By default, the switches set the board to the PCI mode.</p>
+<div class="informaltable">
+<table class="topbot-lines">
+              
+<tr class="headerrow"><th align="left" valign="top" colspan="1" rowspan="1" scope="col"><a name="bcfzaxe"></a>
+<p class="para">Mode</p></th>
+<th align="left" valign="top" colspan="1" rowspan="1" scope="col">
+<p class="para">Settings</p></th>
+</tr>
+            
+<tr class="oddrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bcfzaxf"></a>
+<p class="para">PCI</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Switch 1 is set to ON.</p>
+<p class="para">Switch 2 is set to OFF.</p>
+<p class="para">Switch 3 is set to ON for 33 MHz or to OFF for 66 MHz.</p>
+<p class="para">Switch 4 is set to ON.</p></td>
+</tr>
+<tr class="evenrow"><td align="left" valign="top" colspan="1" rowspan="1"><a name="bcfzaxg"></a>
+<p class="para">PCI-X</p></td>
+<td align="left" valign="top" colspan="1" rowspan="1">
+<p class="para">Switch 1 is set to OFF.</p>
+<p class="para">Switch 2 is set to ON for 66 MHz or to OFF for 100-133 MHz.</p>
+<p class="para">Switch 3 is set to OFF.</p>
+<p class="para">Switch 4 is set to ON.</p></td>
+</tr></table>
+</div>
+
+</div>
+
+</div>
+
+<div class="sect1 singlefile"  id="bcfzgxl">
+
+<h2 class="title"><span class="number">F.3</span> nmsconfig - Board Configuration Utility</h2>
+
+<p class="para">nmsconfig is a board configuration utility that detects the CG boards in the chassis and asks you a series of questions to configure the boards properly.</p>
+<p class="para">Fill out this worksheet below before running the install script.</p>
+<h4 class="bridgehead" id="bcfzn8d"> nmsconfig Worksheet</h4>
+
+<p class="para">Print out one worksheet for each board you install in the chassis.</p>
+<p class="para">________________________________________________________________________________</p>
+<p class="para">Board IP address: _________________</p>
+<p class="para">Board Subnet mask: _________________</p>
+<p class="para">Board Gateway address: _________________</p>
+<p class="para">Circle the number that best describes the conference bridge:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">The bridge will only support IP clients</p></li>
+        
+<li class="listitem">
+<p class="listitem">The bridge will support both IP and PSTN clients</p></li>
+      </ol></div>
+
+<p class="para">If 1 is circled above the worksheet is done for this board otherwise continue to fill out the rest of the worksheet.</p>
+<p class="para">Circle the type of trunks that will be used on the board:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">T1</p></li>
+        
+<li class="listitem">
+<p class="listitem">E1</p></li>
+      </ol></div>
+
+<p class="para">Circle the type of signaling that will be used:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">CAS (Channel Associated Signaling, i.e. wink start, ground start etc.)</p></li>
+        
+<li class="listitem">
+<p class="listitem"> ISDN</p></li>
+      </ol></div>
+
+<p class="para">If you circled T1 and CAS for the last two questions go to the T1 CAS section.</p>
+<p class="para">If you circled T1 and ISDN then go to the T1 ISDN section of the worksheet.</p>
+<p class="para">If you circled E1 and CAS then go to the E1 CAS section of the worksheet.</p>
+<p class="para">If you circled E1 and ISDN then go to the E1 ISDN section of the worksheet.</p>
+<h4 class="bridgehead" id="bcfzqzx"> T1 CAS Section</h4>
+
+<p class="para">Circle the trunk frame type:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">D4 (Superframe Formatting)</p></li>
+        
+<li class="listitem">
+<p class="listitem">ESF (Extended Superframe Formatting)</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk line code:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">B8ZS (Binary 8-Zero code Suppression)</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI (Alternate Mark Inversion)</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 7 zero code suppression</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 7 zero code suppression Bell Ver.</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with zero data byte replaced with 1001 1000</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 8 zero code suppression</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk protocol:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Wink start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Ground start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem"> Loop Start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Feature group D protocol </p></li>
+        
+<li class="listitem">
+<p class="listitem">Off-premises station protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Multi-frequency R2 protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">European Digital CAS protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Australian P2 protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">NEC PBX protocol</p></li>
+      </ol></div>
+
+<p class="para">The worksheet is done for this board.</p>
+<h4 class="bridgehead" id="bcfzvst"> T1 ISDN Section</h4>
+
+<p class="para">Circle the trunk frame type:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">D4 (Superframe Formatting)</p></li>
+        
+<li class="listitem">
+<p class="listitem"> ESF (Extended Superframe Formatting)</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk line code:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Binary 8-zero code suppression (B8ZS)</p></li>
+        
+<li class="listitem">
+<p class="listitem">Alternate mark inversion (AMI)</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 7 zero code suppression</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 7 zero code suppression Bell Ver.</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with zero data byte replaced with 1001 1000</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI with jammed bit 8 zero code suppression</p></li>
+      </ol></div>
+
+<p class="para">The worksheet is done for this board.</p>
+<h4 class="bridgehead" id="bcfzvsu"> E1 CAS Section</h4>
+
+<p class="para">Circle the trunk line code:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">HDB3 (High Density Bipolar 3 code)</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI (Alternate Mark Inversion)</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk impedance:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem"> G.703 - standard 75 ohm cables</p></li>
+        
+<li class="listitem">
+<p class="listitem">G.703 - standard 120 ohm cables</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk protocol:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">Wink start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Ground start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem"> Loop Start protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Feature group D protocol </p></li>
+        
+<li class="listitem">
+<p class="listitem">Off-premises station protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Multi-frequency R2 protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">European Digital CAS protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">Australian P2 protocol</p></li>
+        
+<li class="listitem">
+<p class="listitem">NEC PBX protocol</p></li>
+      </ol></div>
+
+<p class="para">The worksheet is done for this board.</p>
+<h4 class="bridgehead" id="bcg03jc"> E1 ISDN Section</h4>
+
+<p class="para">Circle the trunk line code:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">HDB3 (High Density Bipolar 3 code)</p></li>
+        
+<li class="listitem">
+<p class="listitem">AMI (Alternate Mark Inversion)</p></li>
+      </ol></div>
+
+<p class="para">Circle the trunk impedance:</p>
+<div class="orderedlist">
+<ol class="orderedlist">
+        
+<li class="listitem">
+<p class="listitem">G.703-standard 75 ohm cables</p></li>
+        
+<li class="listitem">
+<p class="listitem">G.703-standard 120 ohm cables</p></li>
+      </ol></div>
+
+<p class="para">The worksheet is now done for this board.</p>
+</div>
+
+</div>
+
+<div class="appendix singlefile"  id="legal">
+
+<h1 class="title"><span class="number">G.0</span> Legal Notices</h1>
+<div class="legalnotice" id="legalnotices">
+      
+      
+<p class="para">SiteScape, Inc., makes no representations or warranties with respect to the contents or use of this documentation, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, SiteScape, Inc., reserves the right to revise this publication and to make changes to its content, at any time, without obligation to notify any person or entity of such revisions or changes.</p>
+      
+<p class="para">Further, SiteScape, Inc., makes no representations or warranties with respect to any software, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, SiteScape, Inc., reserves the right to make changes to any and all parts of SiteScape software, at any time, without any obligation to notify any person or entity of such changes.</p>
+      
+<p class="para">Any products or technical information provided under this Agreement may be subject to U.S. export controls and the trade laws of other countries. You agree to comply with all export control regulations and to obtain any required licenses or classification to export, re-export or import deliverables. You agree not to export or re-export to entities on the current U.S. export exclusion lists or to any embargoed or terrorist countries as specified in the U.S. export laws. You agree to not use deliverables for prohibited nuclear, missile, or chemical biological weaponry end uses.</p>
+      
+<p class="para">SiteScape, Inc., has intellectual property rights relating to technology embodied in the product that is described in this document.</p>
+      <ul class="simplelist">
+        <li class="member">SiteScape, Inc.</li>
+        <li class="member">12 Clock Tower Place, Suite 210</li>
+        <li class="member">Maynard, MA 021754</li>
+        <li class="member">U.S.A.</li>
+        <li class="member">www.SiteScape.com</li>
+        <li class="member"></li>
+      </ul>
+    </div><div class="legalnotice" id="thirdparty">
+      
+<h1 class="title"> Third-Party Materials</h1>
+
+      <ul class="simplelist">
+        <li class="member">All third-party trademarks are the property of their respective owners.</li>
+      </ul>
+    </div>
+</div>
+
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1239 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "ICEcore Collaboration Tutorial: Making Teams Work"
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 44
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 26
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         414    bookinfo   ICEcore Collaboration Tutorial: Making Teams Wo
+         513    preface    About This Guide
+         397    chapter    How Can    ICEcore Help You? 
+         922    chapter    Common Roadblocks
+        2007    chapter    Facilitating the Use of    ICEcore 
+        3226    chapter    Planning Workspace Hierarchies
+         181    chapter    Next Steps
+        1171    appendix   A People Approach for Organizational Collaborat
+         147    appendix   References
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        8978    book       ICEcore Collaboration Tutorial: Making Teams Wo
+
+
+ GRAPHICS REFERENCED IN BOOK
+
+       Count       Filename
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           2       discussionforum_a.png
+           2       workspacewidgetch3_a.png
+           2       myworkspacewidget_a.png
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          15       xref
+           0       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           4       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://www.novell.com/documentation
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+       http://www.novell.com/company/legal/patents/
+       http://www.novell.com/info/exports/
+
+========================================================================-->
+
+<book revision="01/01/03" conformance="none,doc,no,,80" lang="en" id="icecorecollaborationtutorial">
+
+<bookinfo id="bookinfo" xml:base="front.xml">
+ <title>ICEcore Collaboration Tutorial: Making Teams Work</title>
+ <productname>ICEcore</productname>
+ <productnumber>#.#</productnumber>
+ <date>May, 2007</date>
+ <titleabbrev>Collaboration Tutorial</titleabbrev>
+ <legalnotice id="legalnotices">
+  <title>Legal Notices</title>
+  <para>Novell, Inc., makes no representations or warranties with respect to the contents or use of this documentation, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, Novell, Inc., reserves the right to revise this publication and to make changes to its content, at any time, without obligation to notify any person or entity of such revisions or changes.</para>
+  <para>Further, Novell, Inc., makes no representations or warranties with respect to any software, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, Novell, Inc., reserves the right to make changes to any and all parts of Novell software, at any time, without any obligation to notify any person or entity of such changes.</para>
+  <para>Any products or technical information provided under this Agreement may be subject to U.S. export controls and the trade laws of other countries. You agree to comply with all export control regulations and to obtain any required licenses or classification to export, re-export or import deliverables. You agree not to export or re-export to entities on the current U.S. export exclusion lists or to any embargoed or terrorist countries as specified in the U.S. export laws. You agree to not use deliverables for prohibited nuclear, missile, or chemical biological weaponry end uses. See the 
+   <ulink url="http://www.novell.com/info/exports/">Novell International Trade Services Web page</ulink> for more information on exporting Novell software. Novell assumes no responsibility for your failure to obtain any necessary export approvals.
+  </para>
+  <para>Copyright © 2007 Novell, Inc. All rights reserved. No part of this publication may be reproduced, photocopied, stored on a retrieval system, or transmitted without the express written consent of the publisher.</para>
+  <para>Novell, Inc., has intellectual property rights relating to technology embodied in the product that is described in this document. In particular, and without limitation, these intellectual property rights may include one or more of the U.S. patents listed on the 
+   <ulink url="http://www.novell.com/company/legal/patents/">Novell Legal Patents Web page</ulink> and one or more additional patents or pending patent applications in the U.S. and in other countries.
+  </para>
+  <simplelist>
+   <member>Novell, Inc.</member>
+   <member>404 Wyman Street, Suite 500</member>
+   <member>Waltham, MA 02451</member>
+   <member>U.S.A.</member>
+   <member>www.novell.com</member>
+  </simplelist>
+  <simplelist>
+   <member>
+    <emphasis>Online Documentation:</emphasis> To access the latest online documentation for this and other Novell products, see the 
+    <ulink url="http://www.novell.com/documentation">Novell Documentation Web page</ulink>.
+   </member>
+  </simplelist>
+ </legalnotice>
+ <legalnotice id="trademarks">
+  <title>Novell Trademarks</title>
+  <para>For Novell trademarks, see 
+   <ulink url="http://www.novell.com/company/legal/trademarks/tmlist.html">the Novell Trademark and Service Mark list</ulink>.
+  </para>
+ </legalnotice>
+ <legalnotice id="thirdparty">
+  <title>Third-Party Materials</title>
+  <simplelist>
+   <member>All third-party trademarks are the property of their respective owners.</member>
+  </simplelist>
+ </legalnotice>
+</bookinfo>
+
+<preface id="preface" xml:base="preface.xml">
+ <title>About This Guide</title>
+ <para>Most system administrators and managers who champion the use of 
+  <productname>ICEcore</productname> find that success requires more than merely the creation and initial configuration of a zone. This manual provides information about how you can increase the likelihood that people use SiteScape software and find it relevant to their daily work.
+ </para>
+ <bridgehead id="b9yxdge">Products Described in this Manual </bridgehead>
+ <para>This manual describes configuration steps for the following products: 
+  <productname>ICEcore</productname>, which combines synchronous and asynchronous online teamwork. For example, 
+  <productname>ICEcore</productname> allows you to determine your teammates' presence, create instant meetings based on participation in a discussion, and the ability to share the meeting materials with teammates by posting them back into the discussion.
+ </para>
+ <bridgehead id="b9yxdgf">Who Should Read this Manual</bridgehead>
+ <para>This manual is designed for:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para> Systems Administrators and Managers who want to ensure that 
+    <productname>ICEcore</productname> is used effectively.
+   </para>
+  </listitem>
+  <listitem>
+   <para>People who champion the use of 
+    <productname>ICEcore</productname> to enhance their teams.
+   </para>
+  </listitem>
+ </itemizedlist>
+ <bridgehead id="b9yxnfu">Contents of this Manual</bridgehead>
+ <para>This manual provides information about the following:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para>Chapter 1: How Can SiteScape Software Help You? </para>
+   <para>An introduction to SiteScape Forum, which provides information on the best way to being designing for SiteScape installation. </para>
+  </listitem>
+  <listitem>
+   <para>Chapter 2: Common Roadblocks </para>
+   <para>This chapter describes common roadblocks for efficient and effective us of SiteScape Form, and how to prevent them.</para>
+  </listitem>
+  <listitem>
+   <para>Chapter 3: Facilitating the Use of SiteScape Software</para>
+   <para>The most effective software is often unknown. This chapter describes the best way to incorporate others into your SiteScape Forum planning and use.</para>
+  </listitem>
+  <listitem>
+   <para>Chapter 4: Planning Workspace Hierarchies</para>
+   <para>This chapter helps you to begin planning your implementation of SiteScape Forum.</para>
+  </listitem>
+  <listitem>
+   <para>Chapter 5: Next Steps</para>
+   <para>Where do you go from here?.</para>
+  </listitem>
+  <listitem>
+   <para>Appendix: "A People Approach for Organizational Collaboration" by Gail Works</para>
+   <para>An essay of how to effectively design and set up collaborative software.</para>
+  </listitem>
+ </itemizedlist>
+ <bridgehead id="b9yxnfv">Conventions</bridgehead>
+ <para>This manual uses the following conventions:</para>
+ <para>A greater-than symbol (&gt;) is used to separate actions within a step and items in a cross-reference path.</para>
+ <para>When a single pathname can be written with a backslash for some platforms or a forward slash for other platforms, the pathname is presented with a backslash. Users of platforms that require a forward slash, such as Linux or UNIX, should use forward slashes as required by your software.</para>
+ <informaltable frame="topbot" rowsep="1" pgwide="0">
+  <tgroup cols="2"><colspec colnum="1" colname="1" colwidth="50*"/><colspec colnum="2" colname="2" colwidth="50*"/>
+   <thead>
+    <row rowsep="1" id="b9yxhs9">
+     <entry colname="1">
+      <para>What you see</para>
+     </entry>
+     <entry colname="2">
+      <para>What it means</para>
+     </entry>
+    </row>
+   </thead>
+   <tbody>
+    <row rowsep="1" id="b9yxhsa">
+     <entry colname="1">
+      <para>Click the 
+       <guimenu>Add toolbar</guimenu> item.
+      </para>
+      <para>Click the 
+       <guimenu>Getting Started</guimenu> link.
+      </para>
+      <para>Click the 
+       <guimenu>Add Document</guimenu> menu item.
+      </para>
+      <para>Click 
+       <guimenu>Close</guimenu>.
+      </para>
+     </entry>
+     <entry colname="2">
+      <para>References to toolbar items, links, menu items, and buttons are presented in 
+       <guimenu>italic</guimenu> font.
+      </para>
+     </entry>
+    </row>
+    <row rowsep="0" id="b9yxhsb">
+     <entry colname="1">
+      <para>Type 
+       <filename>status</filename>, then press Enter.
+      </para>
+      <para>Open the 
+       <filename>ManagerGuide.pdf</filename> file.
+      </para>
+     </entry>
+     <entry colname="2">
+      <para>Text that you must type and file names are presented in 
+       <filename>Courier</filename> font.
+      </para>
+     </entry>
+    </row>
+   </tbody>
+  </tgroup>
+ </informaltable>
+ <bridgehead id="b9yxhlg">Support</bridgehead>
+ <para>Forum: http://support.sitescape.com/forum/support/dispatch.cgi/support</para>
+ <para>Help: http://help.sitescape.com</para>
+ <para>Customization: http://support.sitescape.com/forum/support/dispatch.cgi/custom</para>
+ <bridgehead id="usercomments">Feedback</bridgehead>
+ <para/>
+ <bridgehead id="docupdates">Documentation Updates</bridgehead>
+ <para/>
+ <bridgehead id="additionaldoc">Additional Documentation</bridgehead>
+ <para>You may find more information in the 
+  <productname>ICEcore</productname> documentation, which is accessible from links within 
+  <productname>ICEcore</productname>: 
+ </para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para>
+    <productname>ICEcore</productname> Help system
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    <productname>ICEcore</productname> QuickStart Guide
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    <productname>ICEcore</productname> User Guide
+   </para>
+  </listitem>
+  <listitem>
+   <para>
+    <productname>ICEcore</productname> Installation &amp; Configuration Guide
+   </para>
+  </listitem>
+ </itemizedlist>
+ <para>The 
+  <productname>ICEcore</productname> online documents may be found from within the 
+  <productname>ICEcore</productname> Help system. To access the 
+  <productname>ICEcore</productname> Help system, after logging in (described later in this manual), click the 
+  <guimenu>Help</guimenu> link.
+ </para>
+ <para>In the 
+  <productname>ICEcore</productname> Help system, click the 
+  <guimenu>Getting Started Manuals</guimenu> link to access copies of the online documents listed above.
+ </para>
+</preface>
+
+<chapter id="b9yx9t2" lang="en" xml:base="01_howcanicecorehelpyou.xml">
+ <title>How Can 
+  <productname>ICEcore</productname> Help You?
+ </title>
+ <para>After configuring and evaluating SiteScape software, you may want to think about the ways Forum or WebWorkZone can be most useful to your organization. Because SiteScape software is flexible and customizable, customers use it to meet a variety of needs. This chapter discusses three common ways that customers use SiteScape software: as a traditional web application (internal to your organization, or external and shared with customers); as a remote-access knowledge library, available to your users twenty-four hours a day; and as a way of generating e-commerce direct revenue using the powerful e-mail notification features.</para>
+ <sect1 id="b9yxqdb">
+  <title>A Traditional Web Application</title>
+  <para>When you use SiteScape software in this capacity, your users visit your organization's existing web pages, click on a link, and then view the SiteScape product. In this way, your users see SiteScape software as a separate web application. They move from your organization's web page into the SiteScape product and back out again.</para>
+  <para>For example, on your web site, you can add a link that says, "To discuss the latest project, click here." Users can then use SiteScape features, which include document and file sharing, online discussions, calendars, chat rooms, messaging, and more, to work on the project. Then, they can log out and return to your Intranet web environment.</para>
+  <para>Here are two common scenarios in which customers use the SiteScape product:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Internal collaboration</para>
+    <para>People within your organization use SiteScape software to facilitate teamwork.</para>
+   </listitem>
+   <listitem>
+    <para> Customer interface ("Extranet")</para>
+    <para>Your organization uses SiteScape software as a way to communicate with, to serve, or to communicate with your customers and business associates. Examples include providing a Help desk, accepting problem reports about your product or service, marketing future products and services, and so on.</para>
+    <para>The web and SiteScape are changing the definition of what is "inside" and "outside" your business. Using SiteScape's hosted application beyond your firewall, company employees on your Intranet can meet and work with customers and associates on the Internet.</para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9yxrcu">
+  <title>A Remote-Access Repository</title>
+  <para> When your users are away from the office, they can still directly access your zone through the web. This maximizes each employee's ability to tap into the knowledge base stored in your zone. Entries can also be made remotely. In this way, your users see the SiteScape product as a highly accessible workspace that keeps them connected to their work and co-workers, even when they are out of the office.</para>
+ </sect1>
+</chapter>
+
+<chapter id="b9yy8ax" lang="en" xml:base="02_commonroadblocks.xml">
+ <title>Common Roadblocks</title>
+ <para>Consider the following scenario: You have created your zone. You have performed the initial configuration tasks. That should be enough, shouldn't it?</para>
+ <para>Generally, after performing these tasks, one of the following happens:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para>Nothing: nobody uses the application.</para>
+  </listitem>
+  <listitem>
+   <para>Employees "figure it out themselves," and develop a vibrant online collaborative space.</para>
+  </listitem>
+  <listitem>
+   <para>Everything in between.</para>
+  </listitem>
+ </itemizedlist>
+ <para>This chapter describes common roadblocks that prevent many organizations from achieving the full potential of SiteScape software:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para> Under population</para>
+  </listitem>
+  <listitem>
+   <para>Overpopulation</para>
+  </listitem>
+  <listitem>
+   <para>No Relationship to Work</para>
+  </listitem>
+  <listitem>
+   <para>Corporate Cultural Disincentives</para>
+  </listitem>
+  <listitem>
+   <para>Difficulties Logging In</para>
+  </listitem>
+ </itemizedlist>
+ <para>The following sections presents solutions to these problems:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para><xref linkend="b9yy9nx" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yyaaw" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yyaax" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yyaay" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yyaaz" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+ </itemizedlist>
+ <sect1 id="b9yy9nx">
+  <title>Under Population</title>
+  <para>After you complete the initial configuration, this is what a new user sees upon accepting your invitation, registering, and entering the workspace:</para>
+  <para>SiteScape provides links to five active forums, two of which are tutorials. However, at this point, the only connection between the links on the page and the users' work is the name of the organization. Your users may not understand which link they should click first or why.</para>
+  <para>The user may click on the User tutorial for [your organization] link and learn about the product, or they may click on the Discussion forum for [your organization] link. If you have not populated the discussion forum, the user sees this: </para>
+  <para>The problem here is called under population. Under population means that there is so little information and content on the page that the user cannot intuitively determine what to do next.</para>
+  <para>You can assume the following about your users:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Users need instruction.</para>
+   </listitem>
+   <listitem>
+    <para>Users need examples.</para>
+   </listitem>
+   <listitem>
+    <para>Users need to be able to immediately see the connection between the page and the work that they do.</para>
+    <para>For example, if there is a "Staff Meeting Agendas" folder in a discussion, your users know that this folder holds the agendas for their weekly staff meetings.</para>
+   </listitem>
+   <listitem>
+    <para> Users with very little computer experience will not randomly click on links unless they are convinced that it is safe to do so</para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9yyaaw">
+  <title>Overpopulation</title>
+  <para>Imagine that a zone manager wants to help out the users, but had a little bit too much energy. In this case, the user might be greeted with the page shown in the picture on the following page when he or she accesses the workspace page.</para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="myworkspacewidget_a.png" width="100%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="myworkspacewidget_a.png" width="100%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>The problem here is called overpopulation. Overpopulation happens when a manager places so much information in the zone that it is not clear where to begin. Overpopulated resources can feel overwhelming to users.</para>
+  <para>Another example of overpopulation occurs when you create a very large folder hierarchy (perhaps based on an organizational chart), and then bury an important document deep within the hierarchy. The SiteScape product has a highly capable search mechanism, but new users should not be forced to search for what they initially need.</para>
+  <para>Another problem with overpopulation is that it imposes on users an organizational structure that may or may not have a relationship to the ways in which the users actually do their work. Overpopulation prevents users from using SiteScape software productively and enjoyably.</para>
+ </sect1>
+ <sect1 id="b9yyaax">
+  <title>No Relationship to Work</title>
+  <para>As mentioned in the previous sections, users need to immediately see how the content of a zone relates to the ways in which they do their work. Also, it helps if the content can assist them in completing their work, or if participation is clearly connected to success and is rewarded within the organization.</para>
+  <para>The following are examples of information in SiteScape software with clear and unclear connections to how people do their work:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <formalpara id="b9yyv8k">
+     <title>Clear:</title>
+     <para>"If I participate in the 'Meeting Agenda' discussion, I will be better prepared for Monday's meeting."</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="b9yyx1g">
+     <title>Clear:</title>
+     <para>"I just received an e-mail message asking me to review a document in Marketing Collateral Forum."</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="b9yyx2e">
+     <title>Unclear:</title>
+     <para>"I see a file named prod_spec_453.ppt sitting in a near-empty folder."</para>
+    </formalpara>
+   </listitem>
+  </itemizedlist>
+  <para>Here are some other points to consider in regard to connecting the use of the SiteScape product to the ways in which people work:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>People use 
+     <productname>ICEcore</productname> if it is the only place to locate important information, such as Human Resources Policies and Procedures, or a Corporate Calendar.
+    </para>
+   </listitem>
+   <listitem>
+    <para>People use 
+     <productname>ICEcore</productname> if their managers do
+    </para>
+   </listitem>
+   <listitem>
+    <para>People use 
+     <productname>ICEcore</productname> if their managers reward them for it.
+    </para>
+   </listitem>
+   <listitem>
+    <para>People use 
+     <productname>ICEcore</productname> if the formal and informal team leaders do.
+    </para>
+   </listitem>
+   <listitem>
+    <para>People use 
+     <productname>ICEcore</productname> if you hold meetings online.
+    </para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9yyaay">
+  <title>Corporate Cultural Disincentives</title>
+  <para>If a company or organization rewards behavior that runs counter to using the SiteScape product (or punishes collaborative behavior), people will not use it. </para>
+  <para>For example, if a worker uses SiteScape software to share a document, and someone else takes the document, uses it, claims credit for it, and is rewarded for doing so, people will not use the software. </para>
+  <para>Another factor to consider is that people who are not used to computers will not be inclined to use SiteScape software. If you work in an organization or company in which people tend not to use computers to do their daily work, you may need to make an effort to increase computer use (such as setting up computer training or requiring computer use in some other way).</para>
+ </sect1>
+ <sect1 id="b9yyaaz">
+  <title>Difficulties Logging In</title>
+  <para>First impressions count when working with software. If a user has to struggle to figure out how to register and log in, the user may get the impression that using the SiteScape product is difficult and more trouble than it is worth. People do not want to feel as if their time is being wasted.</para>
+  <para>Facilitating the user's ability to log in quickly and easily (for example, by using the e-mail invitations) can increase the likelihood that the user will return to the software to collaborate online.</para>
+ </sect1>
+</chapter>
+
+<chapter id="b9yz2cw" lang="en" xml:base="03_facilitatingicecore.xml">
+ <title>Facilitating the Use of 
+  <productname>ICEcore</productname>
+ </title>
+ <para>This chapter describes the actions you can take to remove the roadblocks described in the previous chapter, including the following:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para><xref linkend="b9yz4yx" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yz65l" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yz65m" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yz65n" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yz65o" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yz65p" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yz65q" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9yz65r" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+ </itemizedlist>
+ <sect1 id="b9yz4yx">
+  <title>Communicating with Users</title>
+  <para>On one level, communicating with users means making sure that the organization of your workspaces and forums is logical and that the pages contain adequate instructional information. Consider the following picture of a workspace page:</para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="workspacewidgetch3_a.png" width="100%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="workspacewidgetch3_a.png" width="100%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>The workspace page in the previous picture contains information that assists new users and contains contact information, in case users need to talk to a real person about getting started. Also, the concept of workspaces may be confusing to new users, so this top-level workspace includes a brief description.</para>
+  <para>The workspace page also presents information that is highly likely to be relevant to all of the users of the zone (organization-wide information). The titles of the discussions in this example tell users whether they can participate or only read entries.</para>
+  <para>In addition, information applicable to only a subgroup has its own workspace ("Engineering Workspace," "Sales and Marketing Workspace," and "Executive Managers Team"). This kind of organization reduces the size and the display time of the zone-workspace page. In addition, you can set up each workspace so that only members of relevant teams or departments can view it and participate. Users who do not have the right to participate in a workspace do not see the workspace link on the zone-workspace page. </para>
+  <para>Consider the following picture of the top folder of a discussion forum:</para>
+  <informalfigure pgwide="0">
+   <mediaobject>
+    <imageobject role="fo"><imagedata fileref="discussionforum_a.png" width="100%" format="PNG"/></imageobject>
+    <imageobject role="html"><imagedata fileref="discussionforum_a.png" width="100%" format="png"/></imageobject>
+   </mediaobject>
+  </informalfigure>
+  <para>This folder contains clear instructions and subfolders that are meaningful at a glance, and uses the first few topics to orient users.</para>
+  <para>These workspace and discussion pages do a good job of providing enough meaningful information with which users can get started in the zone. The information does not confuse or overwhelm users. Also, since the manager did not "fill up" the zone, users can play an active role in future structuring and providing content.</para>
+  <para>On another level, communicating with your users means talking to them about how they do their work. For example, perhaps the Engineering, Marketing, and Sales departments are so active that each could use their own workspace. However, the Human Resources and Maintenance Departments might not plan on using SiteScape software extensively. Create workspaces only for those departments whose work currently calls for a workspace. </para>
+  <para>As another example, the Marketing Department may have monthly meetings that require an agenda and the taking of minutes. So creating a "Meeting agendas and minutes" discussion folder may work for the Marketing Department, but it may not work for Engineering and Sales, if they do not hold such meetings.</para>
+  <para>Here are some guidelines for communicating with your users:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> Understand both their business (the content of their work) and how they do their work (the process).</para>
+   </listitem>
+   <listitem>
+    <para>Consider brainstorming with users about how SiteScape software can best meet their needs.</para>
+    <formalpara id="ba0h4bj">
+     <title>Example:</title>
+     <para>The legal department needs individuals to sign off on documents. You can create a workflow process that obtains electronic "sign-offs."</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <para>Consider holding user training for Forum or WebWorkZone to increase interest and communication.</para>
+   </listitem>
+   <listitem>
+    <para> Obtain commitments to use the SiteScape product from formal and informal leaders in your organization.</para>
+    <formalpara id="ba0h4bk">
+     <title>Example:</title>
+     <para>You can delegate management privileges for workspaces or individual discussion forums. In this way, other leaders play a role and feel invested in the success of SiteScape software in your organization</para>
+    </formalpara>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9yz65l">
+  <title>Organizing Information</title>
+  <para>Here are some points to consider when organizing information presented in your zone:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Determine if you have large subsets of active users.</para>
+    <formalpara id="ba0h80x">
+     <title>Example:</title>
+     <para>If the top workspace is for all employees in the organization, and if the Engineering department is large and active in the zone, create a separate workspace for Engineering. The users who work within that department are then able to access a workspace with engineering-specific content, in addition to the company-wide workspace.</para>
+    </formalpara>
+    <para>You may even allow users to create their own workspaces for small groups of people to complete time-limited tasks (these are called team workspaces). But be careful not to initially overpopulate your zone with workspaces. </para>
+   </listitem>
+   <listitem>
+    <para>Create a few focused discussions.</para>
+    <formalpara id="ba0h80y">
+     <title>Example:</title>
+     <para>You might create a "read-only" discussion that contains policies and procedures, or a discussion for the development of a particular project.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <para>When discussions lose their focus or become too big, move information to folders, or use the import/export feature to move information across forums or workspaces.</para>
+    <para>If you are structuring a zone for a large, enterprise-level organization, please read Chapter 4, which provides examples of structures that you can use to name workspaces, delegate management tasks, restrict user access, and more.</para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9yz65m">
+  <title>Facilitating User Log-ins</title>
+  <para>If user log-ins are easy, SiteScape software makes a good first impression on the user. There are several options that can help you set up a log-in process that is smooth, quick, and problem-free. </para>
+  <para>Not all of these options are supported in both Forum and WebWorkZone. The list below explains which product supports which feature.</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Both products: E-mail invitations</para>
+    <para>Take advantage of the user invitation wizard. Users receive an e-mail message from you that includes a link to the zone. When they register, users can set a password and quickly begin active work within the zone. They can also bookmark the log-in page to return to it easily in the future. They need only remember their log-in name and password.</para>
+   </listitem>
+   <listitem>
+    <para>Forum only: NT usernames and passwords</para>
+    <para>If you choose to set up NT authentication, you can assign users the same username that they use for NT domain log-ins. Users can then log in to Forum using a username and password that is familiar to them (they do not have to memorize another username and password).</para>
+   </listitem>
+   <listitem>
+    <para>Forum only: Automated log-ins</para>
+    <para>If Forum is running on an NT server and your organization uses Internet Explorer, you can set up automated log-ins. Users must provide initial NT login information, and future log-ins happen automatically. In this way, if users are logged in to their NT domain, they can begin collaborating in Forum immediately.</para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9yz65n">
+  <title>Balancing Pre-population with Organic Growth</title>
+  <para>As mentioned earlier, you need to provide some structure and information so that people feel comfortable getting started and participating. However, you need to allow your users to participate in further structuring (for example, by creating new folders, discussion forums, and workspaces). This results in a structure that most closely matches the way your users do their work.</para>
+ </sect1>
+ <sect1 id="b9yz65o">
+  <title>Prompting User Participation</title>
+  <para>New users may need encouragement to begin using SiteScape software. If users see that the software is related to many different areas of their work, they will be more motivated to use it. The following are ways in which you can draw people into using the software:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> Create a populated corporate calendar in your zone workspace.</para>
+   </listitem>
+   <listitem>
+    <para>Place your Human Resources policies and procedures in a discussion forum.</para>
+   </listitem>
+   <listitem>
+    <para>Put documents to be reviewed into the zone.</para>
+   </listitem>
+   <listitem>
+    <para> Require people to use the software to enter information (such as an agenda) before they attend a meeting.</para>
+   </listitem>
+   <listitem>
+    <para>Upload a document that must be co-authored.</para>
+   </listitem>
+   <listitem>
+    <para>Place all announcements from management in Forum.</para>
+   </listitem>
+   <listitem>
+    <para> Place training announcements in SiteScape software.</para>
+   </listitem>
+   <listitem>
+    <para>Create a workflow process so that workers must access SiteScape software to sign up for training. </para>
+   </listitem>
+  </itemizedlist>
+  <para>The workflow process can require an electronic sign-off from an employee's manager before he or she can attend training.</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Place training modules and follow-up discussions in Forum.</para>
+   </listitem>
+   <listitem>
+    <para> Create a discussion, and use the Send Mail feature to invite people to participate. </para>
+   </listitem>
+   <listitem>
+    <para>Set up zone-wide e-mail notifications, so that users automatically receive e-mail notifications about new activity.</para>
+   </listitem>
+   <listitem>
+    <para>Reduce the information in e-mail and use it primarily as a "pointer."</para>
+    <formalpara id="ba0h9pn">
+     <title>Example:</title>
+     <para>"Let's meet tomorrow. See Forum for the agenda."</para>
+    </formalpara>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9yz65p">
+  <title>Creating Political Incentives</title>
+  <para>Not all of the roadblocks mentioned previously can be solved through management of SiteScape software. Most organizations that successfully implement SiteScape software either have or obtain political support and commitments for online collaboration.</para>
+  <para>Here are some ideas to consider regarding political solutions to collaboration roadblocks:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> Obtain agreement from management that some information will be found only in Forum.</para>
+   </listitem>
+   <listitem>
+    <para>Get managers (and formal and informal team leaders) to use the SiteScape product, especially for management announcements, speeches, and other writing.</para>
+   </listitem>
+   <listitem>
+    <para>Discuss with managers potential rewards for people who effectively use the software to produce quality work.</para>
+    <formalpara id="ba0he81">
+     <title>Example:</title>
+     <para>Zone management can be considered a valid part of someone's job plan. That person's performance could be measured by successful implementation of Forum.</para>
+    </formalpara>
+    <formalpara id="ba0he82">
+     <title>Example:</title>
+     <para>Reward the person who encourages movement toward online teamwork. Also, reward the individuals who eventually implement online teamwork.</para>
+    </formalpara>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="b9yz65q">
+  <title>Providing Tips for Your Users</title>
+  <para>Many users do not like to read a significant amount of information before using new software. Therefore, a concise "tips" sheet can be very helpful. SiteScape includes a generic Quick Tips document as part of the Help system (you can access it by viewing the Online Help system and clicking on Getting Started Manuals in the left frame of the browser window). There is also a Microsoft Word source file that managers may want to edit to include organization-specific contact information (the file is available at http://help.sitescape.com).</para>
+  <para>However, in addition to these files, it can be useful to create a tips sheet that is specific to your organization. Because the SiteScape product is highly customizable, and because navigation tips require knowledge of how you configured and populated your zone, only someone in your organization can write this document.</para>
+  <para>A tips sheet typically contains between 5 and 15 usage tips. You can post the tips sheet in a discussion forum topic, attach the sheet to a forum entry, distribute it in hardcopy, distribute it in another machine-readable format, or use any combination of these methods.</para>
+  <para>A tips sheet can contain any of the following types of information:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Advice about avoiding common mistakes.</para>
+    <formalpara id="ba0he83">
+     <title>Example:</title>
+     <para>Tell users to click on title of a URL entry to read a description of the web page, and to click on the URL icon to go to the web page itself.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <para> Information that facilitates the use of features.</para>
+    <formalpara id="ba0he84">
+     <title>Example:</title>
+     <para>Provide tips on search syntax.</para>
+    </formalpara>
+    <formalpara id="ba0he85">
+     <title>Example:</title>
+     <para>Provide tips on using the List unseen feature.</para>
+    </formalpara>
+    <formalpara id="ba0he86">
+     <title>Example:</title>
+     <para>Remind users to make the title of a discussion-forum entry as clear as possible, since other users make decisions to read it based on its title.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <para>Information that helps the users assist the organization.</para>
+    <formalpara id="ba0he87">
+     <title>Example:</title>
+     <para>Remind users to keep their user profiles up-to-date so that other users may contact them easily.</para>
+    </formalpara>
+    <formalpara id="ba0he88">
+     <title>Example:</title>
+     <para>Instruct users on how to use any customized features that you may have implemented (such as a new command or workflow process).</para>
+    </formalpara>
+    <formalpara id="ba0he89">
+     <title>Example:</title>
+     <para>Explain which optional features are required or strongly recommended by your organization.</para>
+    </formalpara>
+    <formalpara id="ba0he8a">
+     <title>Example:</title>
+     <para>Give users general encouragement to use the software, and reminders of any organizational incentives you have put in place for using Forum or WebWorkZone.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <para>Examples of how to make using Forum and WebWorkZone more fun.</para>
+    <formalpara id="ba0he8b">
+     <title>Example:</title>
+     <para>Remind users to add a picture to their user profiles.</para>
+    </formalpara>
+   </listitem>
+  </itemizedlist>
+  <para>The Help system contains information about getting started, and is a good place to start when you are writing your tips list. Try to come up with "the ten (or so) most important things" that a person should know about your organization's implementation of Forum. To help your users, try to keep your list short and the wording brief.</para>
+ </sect1>
+ <sect1 id="b9yz65r">
+  <title>Fostering Online Teamwork</title>
+  <para>Forum ZX creates an environment that your organization's teams can use to communicate and share data. Using instant messaging, instant or scheduled meetings, chat rooms and conference calls, teams can communicate and interact with one another quickly and effectively.</para>
+  <para>Displaying presence information for users allows teammates to obtain online status quickly, as well as to communicate with each other with the click of a button. </para>
+  <para>With the integration of Forum and Zon, here are some ways that you can promote team efficiency:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Schedule and then holding meetings online</para>
+   </listitem>
+   <listitem>
+    <para>Store meeting information, documents and whiteboard sessions in a forum</para>
+   </listitem>
+   <listitem>
+    <para>Communicate with teammates in real time using instant messages</para>
+   </listitem>
+  </itemizedlist>
+  <para>By providing teams with the ability to communicate in real time, you enhance the ability of your teams. One people conduct online meetings, or communicate with others using Forum ZX, they are more likely to continue using the Forum regularly.</para>
+ </sect1>
+</chapter>
+
+<chapter id="ba0hejl" lang="en" xml:base="04_planningworkspacehierarchies.xml">
+ <title>Planning Workspace Hierarchies</title>
+ <para>One of the most powerful features of SiteScape software is the freedom it gives you to populate and customize your zone in whatever way best suits your organization's needs. SiteScape software is designed not to impose either an organizational or a procedural structure on you or your users.</para>
+ <para>In one respect, there is tremendous freedom and power in this design. In another respect, a sparsely populated single zone does not serve the needs of a very large enterprise organization. This chapter provides information for the zone manager who must create a workspace hierarchy, delegate management, and use SiteScape software to create a user community and other infrastructure for an enterprise organization. </para>
+ <para>Finally, remember that a robust and effective structure that matches the needs of your organization can develop only over time and with the active assistance of your users; one of the structures presented in the following sections is the product of one company making three years of modifications before finally arriving at a structure that met their needs. Was it worth their effort? As a consequence of developing this structure, the organization estimates that the use of SiteScape's software saves them approximately $200 million each year.</para>
+ <para>This chapter includes the following sections:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para><xref linkend="ba0hf9z" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="ba0hgce" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+ </itemizedlist>
+ <sect1 id="ba0hf9z">
+  <title>Structuring by Job Function</title>
+  <para>The enterprise organization that developed this structure wanted information to flow between people who were all performing in a broad category of "job function." The idea is that people performing work on similar types of services and products need to collaborate and share most often.</para>
+  <para>In addition to structuring the workspace hierarchies so that people collaborate effectively within job function, this organization developed an effective way to delegate the management of workspaces. This structure requires significant effort toward the beginning of the process, but it saves time and effort later: it assists in the smooth transition of workspace managers, and it facilitates various levels of user access to newly created forums.</para>
+  <para>The subsections that follow provide you with a step list for implementing this type of structure using SiteScape software. Read all of the subsections before you begin to create your hierarchy, since there are many interrelated issues to consider throughout the process. For more information on the management tasks described in this section, see the online Manager Help system.</para>
+  <bridgehead id="ba0hh1x">Step 1: Make a List of Job Functions</bridgehead>
+  <para> Create the shortest list possible of the major types of work done by your organization. This list may be equivalent to your organization's departments, or it may not. The most important aspects of this list are that membership in those groups is considered to be integral to the successful delivery of a service or product line, and that your users strongly consider themselves to be members of the groups on your list.</para>
+  <para>So, for example, although your workers may report within an "Engineering" hierarchy, they may consider the resulting product line to be their more vital bond. For example, the organizational chart may read as follows:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Engineering</para>
+   </listitem>
+   <listitem>
+    <para>Manufacturing</para>
+   </listitem>
+   <listitem>
+    <para>Marketing</para>
+   </listitem>
+   <listitem>
+    <para>Sales</para>
+   </listitem>
+  </itemizedlist>
+  <para>However, these workers may collaborate most often within the following groups according to the product they deliver or market:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Compact Cars</para>
+   </listitem>
+   <listitem>
+    <para>Mid-Size Cars</para>
+   </listitem>
+   <listitem>
+    <para>Luxury Cars</para>
+   </listitem>
+   <listitem>
+    <para>Sport Utility Vehicles (SUVs)</para>
+   </listitem>
+   <listitem>
+    <para>Minivans</para>
+   </listitem>
+   <listitem>
+    <para>Sports Cars</para>
+   </listitem>
+  </itemizedlist>
+  <para>As another example, your organization may have already created departments that align with services or product lines, such as consulting, web hosting, and security.</para>
+  <para>When your list is complete, this is the list of workspaces that you will create. Each workspace will contain the forums (discussions, calendars, chat rooms) needed for people working in that particular job area. When you develop a list of workspaces, try to accomplish the following goals:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Keep the list of your organization's job functions as short as possible.</para>
+   </listitem>
+   <listitem>
+    <para> Keep the hierarchy as flat as possible.</para>
+    <para>We recommend that you keep your hierarchy to two levels:</para>
+    <formalpara id="ba0hmjp">
+     <title>Example:</title>
+     <para>(Function) </para>
+    </formalpara>
+    <para>Your Organization (zone workspace)</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Contractor Bidding</para>
+     </listitem>
+     <listitem>
+      <para>Design Approval</para>
+     </listitem>
+     <listitem>
+      <para>Materials</para>
+     </listitem>
+    </itemizedlist>
+    <formalpara id="ba0hmjq">
+     <title>Example:</title>
+     <para>(Divisions) </para>
+    </formalpara>
+    <para>Your Organization (zone workspace)</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Engineering</para>
+     </listitem>
+     <listitem>
+      <para>Manufacturing</para>
+     </listitem>
+     <listitem>
+      <para>Marketing</para>
+     </listitem>
+     <listitem>
+      <para>Executive Management</para>
+     </listitem>
+    </itemizedlist>
+    <para>It is possible to organize to three levels of hierarchy:</para>
+    <formalpara id="ba0hkp8">
+     <title>Example:</title>
+     <para/>
+    </formalpara>
+    <para>Your Organization (zone workspace)</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Engineering</para>
+      <itemizedlist mark="bullet" spacing="normal">
+       <listitem>
+        <para>Engineering-Product Management</para>
+       </listitem>
+       <listitem>
+        <para>Engineering-Field Testing</para>
+       </listitem>
+       <listitem>
+        <para>Engineering-Software</para>
+       </listitem>
+       <listitem>
+        <para>Engineering-Networking</para>
+       </listitem>
+      </itemizedlist>
+     </listitem>
+     <listitem>
+      <para>Marketing</para>
+      <itemizedlist mark="bullet" spacing="normal">
+       <listitem>
+        <para>Marketing-Print Ads</para>
+       </listitem>
+       <listitem>
+        <para>Marketing-TV</para>
+       </listitem>
+       <listitem>
+        <para>And so on…</para>
+       </listitem>
+      </itemizedlist>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+   <listitem>
+    <para>Again, do not create the third level of hierarchy simply because it exists in your organizational chart. Create it if that subgroup is well bonded and highly likely to share a large volume of information that is different from the other subgroups. If the group is likely to share a small amount of information that is unique to its division, consider creating a discussion forum (or a folder within a discussion forum) instead of a workspace. </para>
+   </listitem>
+   <listitem>
+    <para>Do not create an excessively large number of (one or two hundred) peer workspaces, or the software will take a very long time to load pages. To improve performance, divide your large list into subcategories, and create a workspace for each subcategory.</para>
+   </listitem>
+   <listitem>
+    <para>It is possible to create more than three levels of hierarchy. SiteScape does not recommend that you do this under typical circumstances.</para>
+   </listitem>
+   <listitem>
+    <para>Do not organize by geography.</para>
+   </listitem>
+   <listitem>
+    <para>Some of SiteScape's enterprise-level customers initially attempted this organization, and it failed them. They learned that information needs to flow according to the type of work being done, regardless of where the workers are located.</para>
+   </listitem>
+   <listitem>
+    <para> It is possible to create a hierarchy driven by job function while still considering geography, as follows:</para>
+    <formalpara id="ba0hu6j">
+     <title>Example:</title>
+     <para/>
+    </formalpara>
+    <para>Your Organization (zone workspace) </para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Consulting</para>
+     </listitem>
+     <listitem>
+      <para>Web Hosting</para>
+     </listitem>
+     <listitem>
+      <para>Security</para>
+     </listitem>
+     <listitem>
+      <para>Regions</para>
+      <para>In this way, you can separate information useful to people doing a certain type of work regardless of geography from information that is specific to a geography (contained in the "Regions" workspace, which may contain discussion forums for the various geographical regions that focus on office-specific or region-specific issues only).</para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+  </itemizedlist>
+  <bridgehead id="ba0huct">Step 2: Log in as the Zone Manager</bridgehead>
+  <para>All of the management tasks described in the sections that follow require that you be logged in as the zone manager.</para>
+  <bridgehead id="ba0hukr">Step 3: Create Manager Accounts for Each Workspace</bridgehead>
+  <para>An efficient way to delegate the management of individual workspaces is for you to create one user account for the manager of each workspace. For example, for the "contractor bidding" workspace, you first create the "contract-bid-manager" user account. Later, you can give the password of this account to the person you want to manage this workspace. (Should this person ever leave in the future, all you have to do is change the password and the account is ready for the next workspace manager.)</para>
+  <para>Be sure to create usernames that are easy to look up and to recognize. SiteScape recommends that you include the name of the workspace (or a recognizable part of it), then add a string that indicates that the person is a workspace manager. Consider the following examples:</para>
+
+<screen>
+contract-bid-manager, design-approve-manager, materials-manager
+</screen>
+
+
+<screen>
+engineering-manager, manufacturing-manager, marketing-manager, exec-manager
+</screen>
+
+  <bridgehead id="ba0hvo0">Step 4: Create Forums in the Zone Workspace</bridgehead>
+  <para>Create discussion forums, calendars, and chat rooms in the zone workspace, which can be accessed by your entire organization. As mentioned previously, examples of such forums include a corporate calendar, a read-only discussion forum for your company's policies and procedures, an open discussion for company issues, a discussion forum that uses a workflow process to register users for corporate training, and more.</para>
+  <bridgehead id="ba0hvun">Step 5: Create a Workspace</bridgehead>
+  <para>When you create a workspace using the zone's management tools menu, specify as its owner the management username that you created in Step 3. For example, while logged in as a zone manager, create the "Contract Bidding" workspace, and specify the username contract-bid-manager as the owner of the workspace.</para>
+  <bridgehead id="ba0hw6o">Step 6: Create User Groups to Control Access</bridgehead>
+  <para>Create groups according to the types of access that you want to grant to users, and assign ownership of the groups to the username you created in Step 3. SiteScape recommends that you design access levels that are standard for all workspaces in your zone. A reasonable design includes groups of users who can perform the following roles:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Visitors (or Observers)</para>
+    <para>These users may read entries, but they cannot add new entries or modify existing ones.</para>
+   </listitem>
+   <listitem>
+    <para>Participants</para>
+    <para>These users may read, create entries, and modify their own entries (but not the entries of others).</para>
+   </listitem>
+   <listitem>
+    <para>Moderators (or Editors)</para>
+    <para>These users may perform all of the "write" tasks, and may also edit or delete other people's entries.</para>
+   </listitem>
+   <listitem>
+    <para>Managers</para>
+    <para>These users may perform all of the "modify/delete" tasks, and may also perform management tasks within the forum (such as changing the title of a discussion forum, or customizing it). These people are sometimes called "administrators." </para>
+   </listitem>
+  </itemizedlist>
+  <para>Use a naming convention for these groups so that their names are easily located and understood. SiteScape recommends that you include all or part of the workspace name first (so that all groups appear in the same place in alphabetical order), and then add a string that indicates the rights this group has.</para>
+  <para> For example, for the "Contract Bidding" workspace, you can define these groups:</para>
+
+<screen>
+contract-bid-visitors
+</screen>
+
+
+<screen>
+contract-bid-participants
+</screen>
+
+
+<screen>
+contract-bid-moderators
+</screen>
+
+
+<screen>
+contract-bid-managers
+</screen>
+
+  <para>As you create these groups, assign ownership to the contract-bid-manager username, so that the workspace manager can add or remove usernames in the future.</para>
+  <para>To continue the example, for the "Design Approval" workspace, you can define these groups:</para>
+
+<screen>
+design-approve-visitors
+</screen>
+
+
+<screen>
+design-approve-participants
+</screen>
+
+
+<screen>
+design-approve-moderators
+</screen>
+
+
+<screen>
+design-approve-managers
+</screen>
+
+  <para>As you create these groups, assign ownership to the design-approve-manager username, so that the workspace manager can add or remove usernames in the future.</para>
+  <para>Another advantage to using this design is that, once you set up your groups for each workspace, it is very easy to give one user varying access to different workspaces. For example, a user may be a participant in the "bidding" workspace, but only a visitor in the "materials" workspace. You accomplish this by adding this person's username to the appropriate groups.</para>
+  <bridgehead id="ba0hyic">Step 7: Add Forums to the Workspace</bridgehead>
+  <para>Create a few discussion forums, chat rooms, and calendars in the workspace so that the users can get started effectively. Remember not to overpopulate the workspace or a particular discussion forum. Allow the users, over time, to tell you which additional forums would be most useful to them.</para>
+  <bridgehead id="ba0hysi">Step 8: Use Access Control to Grant Access to the Groups</bridgehead>
+  <para>Use the access-control tools to allow only the groups for a particular workspace to use its forums. For example, in the "Contract Bidding" workspace, you specify the groups you defined in Step 6. So, make sure that the contract-bid-visitors group has the right to view a discussion forum in that workspace, that the contract-bid-participants group has the right to "participate" (adding entries, modifying them, and more), and that the contract-bid-managers group has the right to manage the forum.</para>
+  <para>If you are using role-based access control in a workspace, assign the contract-bid-visitors group to the Visitors role, the contract-bid-participants group to the Participants role, and so on. (For more information about role-based access control, see the Getting Started Guide for Forum Managers or the online Manager Help system.)</para>
+  <para>We recommend that you make sure that the Administrators group has the right to manage the forum as well. Then, in case of an emergency, the zone managers have the right to manage any forum within the zone.</para>
+  <para>Members of the contract-bid-managers group can perform many of the same tasks as the person logged in as the workspace manager (because the workspace manager is the "owner" of the forum). You can think of members of the managers group as the "assistants" of the workspace manager.</para>
+  <bridgehead id="ba0hz2u">Step 9: Add Users to Groups</bridgehead>
+  <para>Either you or the workspace manager must add users to the groups according to the rights you want those users to have. For example, you may want Joe User to be a participant in the "contract bidding" workspace, so you add his username to the contract-bid-participants group. Then, Joe automatically has all of the rights (in that workspace only) that are assigned to members of that group.</para>
+  <para>You can perform this step, or you can have your workspace managers fill in their own groups' memberships.</para>
+  <bridgehead id="ba0hzbq">Step 10: Repeat Steps 5 through 9 for Each Workspace</bridgehead>
+  <para>For each workspace, repeat the steps of creating the workspace and assigning ownership, creating groups and assigning ownership, assigning rights to groups within each forum, and assigning users to groups.</para>
+  <para>If you want a child workspace to have the same group assignments as its parent workspace, you can use role-based access control and turn on the inheritance feature. See the Manager Help for more information.</para>
+  <bridgehead id="ba0hzce">Summary</bridgehead>
+  <para>This structure requires significant effort toward the beginning of the process, but it saves time and effort later. This structure also eliminates the need to enter every discussion forum, or calendar individually to grant or deny access to a person. You manage access by manipulating group membership.</para>
+  <para>The use of a single username to manage a workspace has the following advantages:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>When you assign ownership of a workspace to a user, this user automatically has the right to manage all of the forums in the space, and the right to create new forums.</para>
+   </listitem>
+   <listitem>
+    <para>If a workspace manager leaves the company, you can change the password of the management account, and give the new password to the next workspace manager. People may leave, but the management account stays constant.</para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="ba0hgce">
+  <title>Structuring Using a Single Point of Entry</title>
+  <para>The enterprise organization that developed this structure is an international company that wanted to get people interacting who would not normally talk to each other (because of either geography or job-title boundaries). This design emphasizes a single place in which users in a large area of job function (this organization calls these job functions "communities of practice") can obtain help on questions and problems, and it involves the systematic archival of "problems solved" into subject-matter areas for easy look-up later.</para>
+  <para>The enterprise organization developed this structure after three years of using SiteScape's products. This structure serves approximately 7,000 users in three primary user communities. The organization estimates that their users spend approximately half to two hours a week using SiteScape's products.</para>
+  <para>This section presents very high-level steps that you need to follow to implement this structure. However, each step involves performing many discrete management tasks. Also, this section does not provide information on how to delegate management of zones, workspaces, and forums (discussions and calendars). For information on delegating management, see the previous section ("Structured by Job Function").</para>
+  <para>Please read all of the subsections before you begin to create your hierarchy, since there are many interrelated issues to consider throughout the process. For more information on the management tasks described in this section, see the Manager Help system.</para>
+  <bridgehead id="ba0i2zb">Step 1: List Several Primary Job Functions</bridgehead>
+  <para>List two to four primary service or product areas that are central to your organization's mission statement, possibly responsible for most of the revenue generated by your organization. (For example, the organization using this structure has thousands of users in each job function.)</para>
+  <formalpara id="ba0i6gi">
+   <title>Example:</title>
+   <para/>
+  </formalpara>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Hubs</para>
+   </listitem>
+   <listitem>
+    <para>Routers</para>
+   </listitem>
+   <listitem>
+    <para>Networking Software</para>
+   </listitem>
+  </itemizedlist>
+  <para>If the members of these organizations are distinct (for example, very few members of Hubs are also members of Routers or Networking Software), then you will create separate zones for each area. If the members overlap, you will create one zone, and then create a workspace for each area within that zone.</para>
+  <para>If you are developing a hierarchy for a smaller organization, use only one zone. You will use the zone workspace as the only primary workspace.</para>
+  <bridgehead id="ba0i3zl">Step 2: List Secondary Job Functions</bridgehead>
+  <para>List up to a dozen secondary service areas that are vital to the organization but are not specific to the organization's mission statement.</para>
+  <formalpara id="ba0i6gj">
+   <title>Example:</title>
+   <para/>
+  </formalpara>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para>Finance</para>
+   </listitem>
+   <listitem>
+    <para>Human Resources</para>
+   </listitem>
+   <listitem>
+    <para>Marketing</para>
+   </listitem>
+   <listitem>
+    <para>Sales</para>
+   </listitem>
+   <listitem>
+    <para>Testing</para>
+   </listitem>
+   <listitem>
+    <para>Competitive Analysis</para>
+   </listitem>
+  </itemizedlist>
+  <para>If you are developing a hierarchy for a large organization, you will create a zone for each of these areas. </para>
+  <para>If you are developing a hierarchy for a small organization, you will create workspaces for these areas within a single zone.</para>
+  <bridgehead id="ba0i4vm">Step 3: Create Workspaces for Primary and Secondary Job Functions</bridgehead>
+  <para>Create workspaces for each of the job-function areas, as described in the previous sections.</para>
+  <bridgehead id="ba0i6gk">Step 4: Create a "Queries" Discussion Forum in Each Primary Workspace</bridgehead>
+  <para>Create one discussion forum, entitled "Queries," in each of the primary workspaces. (For small organizations, you would have a single "Queries" discussion forum in your zone workspace.) In general, you want users in each primary job-function area to have one clear place to go to enter questions and requests for help.</para>
+  <bridgehead id="ba0i6gl">Step 5: Define a Workflow Process that Notifies "Experts"</bridgehead>
+  <para>Forum's workflow feature, in combination with new commands, allows you to specify the e-mail addresses of people who will receive e-mail as soon as an entry is posted in the "Queries" discussion forum. In this way, you can specify that when someone creates an entry in "Queries," the software sends e-mail to a designated set of "experts" who are likely to have part or all of the answer. Other non-expert users can answer a question as well. However, notifying a set of experts through e-mail increases the likelihood of the question being addressed in a timely fashion.</para>
+  <bridgehead id="ba0i6gm">Step 6: Create Archival Discussion Forums by Subject Matter</bridgehead>
+  <para>Within each primary job-function zone, create workspaces for relevant subject matter. These workspaces will contain discussion forums that contain resolved entries from the "Queries" discussion forum. These archives, located one level down within the workspace hierarchy, act as libraries, knowledge repositories, and databases of "best practices," all in one.</para>
+  <bridgehead id="ba0i6gn">Step 7: Managers of Primary Workspaces Archive "Old" Queries</bridgehead>
+  <para>Thirty days after a query has been resolved, the manager moves the entry to an archival discussion forum in one of the archival workspaces. This serves two purposes:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> It keeps the "Queries" discussion forum at a manageable size so as not to be intimidating to users.</para>
+   </listitem>
+   <listitem>
+    <para> It organizes old data by category for more efficient future look-up by users.</para>
+   </listitem>
+  </itemizedlist>
+  <bridgehead id="ba0i67v">Step 8: Managers of Secondary Workspaces Monitor Primary Ones</bridgehead>
+  <para>The managers of the secondary workspaces monitor the "Queries" discussion forums in the primary workspaces, and they "cross post" (copy) relevant items into discussion forums in their workspaces. In this way, members of secondary functions can read relevant information without having to monitor information about the entire subject matter.</para>
+  <bridgehead id="ba0i6go">Summary</bridgehead>
+  <para>As mentioned at the beginning of this section, the purpose of this design is "cross-fertilization." For example, let's say that a Hub project in Seattle has a problem and posts an entry in the Hubs "Queries" discussion forum. Then, a Hub engineer in Cairo who had the same problem while developing a product last year can share the solution. This saves time and money, and it increases the collective knowledge of the organization. A member of the organization that developed this structure attests that "It was like having 30 years of experience by your side."</para>
+  <para>As another example, a Routers team in Madrid may post a configuration proposal in the "Queries" discussion forum and ask for review comments. A team in Toronto can post a configuration they developed-at great pain and cost-a year earlier. The Spanish team is then able to reuse the knowledge, avoid costly mistakes, and develop a configuration in a fraction of the time it would have taken if they had developed it alone. Members of the organization that developed this structure stated that one sharing of a design proposal saved their company $1 million.</para>
+  <para>Clearly, this section does not provide all of the implementation details of such a structure. You still need to determine how to delegate management and how to create subject-matter repositories. However, this section should give you some ideas about how to get started in developing a "single point of entry" structure for your workspace hierarchy.</para>
+ </sect1>
+</chapter>
+
+<chapter id="ba0i6ix" lang="en" xml:base="05_nextsteps.xml">
+ <title>Next Steps</title>
+ <para>To implement some of the suggestions in this manual, consult the following topics in the Help system:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para>Get Started with Management</para>
+  </listitem>
+  <listitem>
+   <para>Use Custom Commands and Workflow</para>
+  </listitem>
+  <listitem>
+   <para>Create Additional Workspaces</para>
+  </listitem>
+  <listitem>
+   <para>Delegate Management </para>
+  </listitem>
+  <listitem>
+   <para>Understand Management Roles</para>
+  </listitem>
+ </itemizedlist>
+ <para>After you populate your zone with some information (but not too much) to help users get started, talk to your users, and let the growth and development of your zone become a collaborative effort. The only way for the structure of Forum to mirror the ways in which people in your organization work is to involve them in the process.</para>
+ <para>The Help system contains the following information that you may find useful in the future:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para>Zone Management</para>
+  </listitem>
+  <listitem>
+   <para>Management of Individual Forums (including Discussion Management)</para>
+  </listitem>
+  <listitem>
+   <para>Architecture, System Tuning, and Troubleshooting Information</para>
+  </listitem>
+  <listitem>
+   <para>Understand Customizations (templates)</para>
+  </listitem>
+  <listitem>
+   <para>Architecture, System Tuning, and Troubleshooting Information (Forum only)</para>
+  </listitem>
+ </itemizedlist>
+ <para>The appendix that follows was written by Gail Work and discusses general issues about attempting to implement any collaboration software. This excellent article offers more issues to think about as you continue the task of working with your users to set up your zone.</para>
+</chapter>
+
+<appendix id="ba0i8v3" xml:base="A1_organizationalcollaboration.xml">
+ <title>A People Approach for Organizational Collaboration</title>
+ <para>“A People Approach for Organizational Collaboration”</para>
+ <para>
+  <guimenu>By Gail Work</guimenu>
+ </para>
+ <para>© 2000 Work Systems, a division of On Time On Budget, Inc. All Rights Reserved.</para>
+ <para/>
+ <para>Often when employees see new collaborative technology being introduced, concerns about what they will have to do differently and how it will be used can cause an unnecessary, negative distraction in the workplace. There may be fears about how difficult it will be to learn, whether functionality will be there when they need it, and if management will use it to monitor their work. If these issues are not discussed and agreed upon directly in the beginning, the organization may find fewer people willing to use the discussion forums or share information.</para>
+ <para>Changing technology is a stress for people unless it is designed to accommodate their work habits. With the constant requirements to adapt to a changing business environment, the tools that will cause less stress are those that are flexible, easy to use and provide clear benefits.</para>
+ <para>Before introducing collaborative groupware it pays to communicate clearly and consistently what the purpose of the technology is and to get agreements on how to best use collaborative discussion forums and work flow tools. </para>
+ <para>A common pitfall is to assume that technology will solve a problem without the consent or involvement of the human systems. Changing people's work habits to be more collaborative is a new idea in most organizations that requires their participation during all stages of introduction, piloting, roll out and leveraging business applications. </para>
+ <para>Imagine the cost to a business when employees' time is taken up with not only training, but also complaining about a new technology. The "whining factor" is very costly. For example, formal communications about the new tools could represent only 15% of the energy invested in the informal conversations in the cultural networks in the hallways if people are not involved to understand the purpose. This resistance can lead to failure to use a new technology or to a decline of productivity.</para>
+ <para>Building learning points into virtual communications will enhance continual improvement and the development of new skills. Taking the time to learn from mistakes, without judging the participants, will create flexibility in the organizational thinking. Agility can be increased if people embrace open communications, collaborative knowledge sharing and the appropriate use of technology for these ends.</para>
+ <para>The solution for introducing collaborative groupware lies in understanding that to leverage the tools for competitive advantage takes a comprehensive, coordinated introduction in the beginning. The first phase of introducing the tool, discussing the idea of increased collaboration, and finding high impact applications within the business can reduce resistance. If the company wants to increase collaboration, then the individual/team reward and recognition system may need adjustment. If collaboration is part of the strategy, then the alignment of these people practices and technology needs to be integrated into the fabric of how business is being done.</para>
+ <para>Once the organization or team is using groupware effectively, acknowledgment of early users, early postings and documented learning and progress will all lead to an increase in interest among users. Early, high profile successes with groupware can fuel "champions" who will clearly see the potential and want to lead users toward that high potential. </para>
+ <bridgehead id="ba0id8i">This positive approach can build attention from the "grassroots" of the organization, rather than taking a "top-down" approach, which may be viewed as heavy handed in some corporate cultures. The knowledge economy is demanding managers leverage the intelligence of all organizational members; this is best done by creating an environment for intelligent choices.</bridgehead>
+ <bridgehead id="ba0ibis">The best of all possible worlds is when:</bridgehead>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para> Senior management is solidly behind the use of collaborative tools and growing collaboration within the culture;</para>
+  </listitem>
+  <listitem>
+   <para> Collaborators in the trenches are permitted to try out technology and make their own decisions on how to use it. </para>
+  </listitem>
+ </itemizedlist>
+ <para>Management has the opportunity to "Walk the Talk" and demonstrate their commitment to online communications by taking the following steps:</para>
+ <orderedlist spacing="normal">
+  <listitem>
+   <para>Make public statements to let employees know that the purpose of the discussion forums is to open up communications, innovate, align parts of the organization, manage documents virtually and support people's work.</para>
+  </listitem>
+  <listitem>
+   <para>Be active online by asking questions, responding to topics and requests, reading postings and acknowledging the contributions being made and being available online, especially during the introductory period. </para>
+  </listitem>
+  <listitem>
+   <para>Work with next-level managers to let them know that this is a business priority, not a sideshow. </para>
+  </listitem>
+  <listitem>
+   <para> Communicate the business benefits of collaboration to individuals, teams and the company.</para>
+  </listitem>
+  <listitem>
+   <para> Listen to people's feedback and let them participate in the decision-making process for how discussion forums will be used.</para>
+  </listitem>
+  <listitem>
+   <para>Don't require people to use the tools, but rather to positively reinforce those who are "early adopters."</para>
+  </listitem>
+  <listitem>
+   <para> Provide support for training, FAQ's, consulting to leadership and teams in best applications to achieve business objectives.</para>
+  </listitem>
+ </orderedlist>
+ <para>A company-wide initiative to grow collaboration can come from many places in the organization. Often teams will request tools or the IT department will want to provide new technology capability. The decision to try groupware out can start anywhere in the organization, as the tools are flexible and relatively inexpensive. However, to achieve sustainable use of collaborative tools that impacts the way people communicate and how business is done requires senior-level support and active champions.</para>
+ <bridgehead id="ba0iddh">Summary</bridgehead>
+ <para>As the pace of change requires organizations to move rapidly, access intelligence wherever it is located, and make quality decisions at lower levels - technology offers the potential to achieve these goals if the human systems are aligned. By investing in good communications practices and developing virtual skills, this solid foundation can build collaboration as a strategic core (virtual) competency.</para>
+ <para>Key success factors in growing a collaborative culture leveraging technology are:</para>
+ <orderedlist spacing="normal">
+  <listitem>
+   <para>Clear, consistent management support for collaboration;</para>
+  </listitem>
+  <listitem>
+   <para>Work force choice in applications of collaborative technology;</para>
+  </listitem>
+  <listitem>
+   <para>Support and training for teams and leadership;</para>
+  </listitem>
+  <listitem>
+   <para>Early, documented successes;</para>
+  </listitem>
+  <listitem>
+   <para>Alignment of rewards and recognition system to support collaborative efforts;</para>
+  </listitem>
+  <listitem>
+   <para> Learning organization approach that looks for internal "noteworthy practices," learns from mistakes, highlights ongoing experiments and innovation, and customized applications of the technology and collaborative people practices.</para>
+  </listitem>
+  <listitem>
+   <para>Continual improvement approach that includes "real time learning" with a solid framework for how to collaborate.</para>
+  </listitem>
+ </orderedlist>
+ <para>Organizations of the future will look back on this period of time and see the trend toward increased partnerships, knowledge creation, joint ventures and acquisitions as, in part, a strategy for gaining collective intelligence. As the knowledge owner provides the experience, expertise and wisdom to make intelligent, collaborative decisions, the organization gains in fast market response.</para>
+ <para/>
+ <bridgehead id="ba0ieh7">For more information, contact:</bridgehead>
+ <para>Gail Work, President, Work Systems, a division of On Time On Budget, Inc.</para>
+ <para>g_work@earthlink.net (650) 948-1707 USA Pacific Time Zone</para>
+ <para>snail mail: 22400 Skyline Blvd. Box 18 La Honda, CA 94020</para>
+ <para>Work Systems offers customized consulting to organizations and project teams to significantly improve the quality and accessibility of virtual meetings and virtual communications. By providing virtual team solutions to every level of the organization - individual, team and system wide - this approach may be integrated into the company's knowledge management, learning strategy and strategic direction.</para>
+</appendix>
+
+<appendix id="ba0iel4" xml:base="A2_references.xml">
+ <title>References</title>
+ <para>Deal, Terrence E. &amp; Kennedy, Allan A. 1982. Corporate Cultures: The Rites and Rituals of Corporate Life. Reading: Addison-Wesley Publishing.</para>
+ <para>Fisher, Kimball &amp; Fisher, Mareen Duncan 1998. The Distributed Mind: Achieving High Performance Through the Collective Intelligence of Knowledge Work Teams. New York: American Management Association.</para>
+ <para>Grenier, Raymond &amp; Metes, George 1995. Going Virtual: Moving Your Organization Into the 21st Century. New Jersey: Prentice Hall.</para>
+ <para>Hamel, Gary &amp; Prahalad, C. K. 1994. Competing for the Future. Boston: Harvard Business School Press.</para>
+ <para>Kotter, John P. 1996. Leading Change. Boston: Harvard Business School Press.</para>
+ <para>Nonaka, Ikujiro, Takeuchi, Hirotaka 1995. The Knowledge-Creating Company. New York: Oxford University Press.</para>
+ <para>Powell, Water W. Spring 1998. "Learning From Collaboration: Knowledge and Networks in the Biotechnology and Pharmaceutical Industries." California Management Review, Vol. 40, No. 3. Pp 228 - 240.</para>
+ <para>Storck, John &amp; Hill, Patricia A. Winter 2000. "Knowledge Diffusion through 'Strategic Communities'".</para>
+</appendix>
+</book>

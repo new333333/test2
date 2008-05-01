@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class table="SS_SharedEntity" name="com.sitescape.team.domain.SharedEntity">
+    <id unsaved-value="null" name="id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+	 <many-to-one class="com.sitescape.team.domain.User" name="referer" />
+    <property name="zoneId" access="field"/>
+<!--form an order index, date first -->
+	<property  name="sharedDate" index="access_shared"/>
+     <property name="accessId" index="access_shared"/>
+	 <property name="accessType" index="access_shared"/>
+<!--end index -->
+      <any name="entity" id-type="java.lang.Long" meta-type="string">
+        <meta-value class="com.sitescape.team.domain.FolderEntry" value="folderEntry"/>
+        <meta-value class="com.sitescape.team.domain.User" value="user"/>
+        <meta-value class="com.sitescape.team.domain.Group" value="group"/>
+        <meta-value class="com.sitescape.team.domain.Folder" value="folder"/>
+        <meta-value class="com.sitescape.team.domain.Workspace" value="workspace"/>
+        <meta-value class="com.sitescape.team.domain.ProfileBinder" value="profileBinder"/>
+        <meta-value class="com.sitescape.team.domain.TemplateBinder" value="template"/>
+        <column name="entityType"  length="16"/>
+        <column name="entityId"/>
+      </any>
+
+  </class>
+</hibernate-mapping>

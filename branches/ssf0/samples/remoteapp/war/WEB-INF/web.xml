@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!DOCTYPE web-app PUBLIC
+	"-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
+	"http://java.sun.com/dtd/web-app_2_3.dtd">
+
+<web-app>
+
+	<display-name>Sample Remote Application</display-name>
+
+	<description>Sample Remote Application</description>
+	
+	<servlet>
+		<servlet-name>nameSearch</servlet-name>
+		<servlet-class>com.sitescape.team.samples.remoteapp.web.NameSearchServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>nameSearch</servlet-name>
+		<url-pattern>/namesearch/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>taskList</servlet-name>
+		<servlet-class>com.sitescape.team.samples.remoteapp.web.TaskListServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>taskList</servlet-name>
+		<url-pattern>/tasklist/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet>
+		<servlet-name>addEntry</servlet-name>
+		<servlet-class>com.sitescape.team.samples.remoteapp.web.AddEntryServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>addEntry</servlet-name>
+		<url-pattern>/addentry/*</url-pattern>
+	</servlet-mapping>
+
+</web-app>

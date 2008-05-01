@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9uc683" pid="b9uc683" name="Chapter" level="0" number="3"> <text>Conferencing Communities</text> </target>
+
+ <target id="b9uc7x4" pid="b9uc7x4" name="Sect1" level="1" number="3.1"> <text>Managing Communities</text> </target>
+
+ <target id="b9uc80m" pid="b9uc80m" name="Sect1" level="1" number="3.2"> <text>Adding Communities</text> </target>
+
+ <target id="b9uc8se" pid="b9uc80m" name="Sect2" level="2" number="3.2.1"> <text>To Add a Community:</text> </target>
+
+ <target id="b9uccjd" pid="b9uc80m" name="Procedure" level="3" number="1"> <text>From the Manage Communities tab, click Add to display the Add Community form. </text> </target>
+
+ <target id="b9uccje" pid="b9uc80m" name="Step" level="4" number="1"> <text>From the Manage Communities tab, click Add to display the Add Community form. </text> </target>
+
+ <target id="b9uccox" pid="b9uc80m" name="Step" level="4" number="2"> <text>In the Community Name field, type a community name.</text> </target>
+
+ <target id="b9uccp0" pid="b9uc80m" name="Step" level="4" number="3"> <text>In the Account Number field (Optional), type an account number.</text> </target>
+
+ <target id="b9uccp1" pid="b9uc80m" name="Step" level="4" number="4"> <text>In the Contact Name field, type the name of the individual who is the primary contact for this community.</text> </target>
+
+ <target id="b9uccp3" pid="b9uc80m" name="Step" level="4" number="5"> <text>In the Contact Email field, type the e-mail address of the primary contact.</text> </target>
+
+ <target id="b9uccp5" pid="b9uc80m" name="Step" level="4" number="6"> <text>In the Contact Phone field, type the phone number for the primary contact.</text> </target>
+
+ <target id="b9uccp7" pid="b9uc80m" name="Step" level="4" number="7"> <text>In the User Name field, type the name of the community administrator for the community (the user who creates the other users in the community via the Conferencing Client console). Enter the full name of the community administrator (for example, Bob Smith).</text> </target>
+
+ <target id="b9uccp8" pid="b9uc80m" name="Step" level="4" number="8"> <text>In the User Password field, type a password for the community administrator.</text> </target>
+
+ <target id="b9uccpa" pid="b9uc80m" name="Step" level="4" number="9"> <text>In the User Screenname field, type a screen name for the community administrator. This is the screen name that other Conferencing users see for the community administrator when they access their Conferencing clients.</text> </target>
+
+ <target id="b9uccpc" pid="b9uc80m" name="Step" level="4" number="10"> <text>Select the User is Admin option to indicate that the user is a community administrator. Do not select this option if the first user in this community should not have administrative access.</text> </target>
+
+ <target id="b9uccpe" pid="b9uc80m" name="Step" level="4" number="11"> <text>Select the phone number of the voice bridge for this community from the Bridge Phone drop-down list.</text> </target>
+
+ <target id="b9uccpg" pid="b9uc80m" name="Step" level="4" number="12"> <text>In the System URL field, type the assigned system URL for community meeting invitations.</text> </target>
+
+ <target id="b9uccpp" pid="b9uc80m" name="Step" level="4" number="13"> <text>Once you have entered the new community data, click Add to create the community.</text> </target>
+
+ <target id="b9uc80n" pid="b9uc80n" name="Sect1" level="1" number="3.3"> <text>Viewing Communities</text> </target>
+
+ <target id="b9uc915" pid="b9uc80n" name="Sect2" level="2" number="3.3.1"> <text>To Show All Communities</text> </target>
+
+ <target id="b9uc9pd" pid="b9uc80n" name="Sect2" level="2" number="3.3.2"> <text>To Find a Community by Name</text> </target>
+
+ <target id="bbj1qo3" pid="b9uc80n" name="FormalPara" level="3"> <text>Operations</text> </target>
+
+ <target id="bbj1u03" pid="b9uc80n" name="FormalPara" level="3"> <text>Community ID</text> </target>
+
+ <target id="bbj1u04" pid="b9uc80n" name="FormalPara" level="3"> <text>Community Name</text> </target>
+
+ <target id="bbj1u05" pid="b9uc80n" name="FormalPara" level="3"> <text>Account Number</text> </target>
+
+ <target id="bbj1u06" pid="b9uc80n" name="FormalPara" level="3"> <text>Contact Name</text> </target>
+
+ <target id="bbj1u07" pid="b9uc80n" name="FormalPara" level="3"> <text>Contact Email</text> </target>
+
+ <target id="bbj1u08" pid="b9uc80n" name="FormalPara" level="3"> <text>Contact Phone</text> </target>
+
+ <target id="bbj1u09" pid="b9uc80n" name="FormalPara" level="3"> <text>User Name</text> </target>
+
+ <target id="bbj1u0a" pid="b9uc80n" name="FormalPara" level="3"> <text>User Password</text> </target>
+
+ <target id="bbj1u0b" pid="b9uc80n" name="FormalPara" level="3"> <text>Bridge Phone</text> </target>
+
+ <target id="bbj1u0c" pid="b9uc80n" name="FormalPara" level="3"> <text>System URL</text> </target>
+
+ <target id="bbj1u0d" pid="b9uc80n" name="FormalPara" level="3"> <text>Account Type</text> </target>
+
+ <target id="bbj1u0e" pid="b9uc80n" name="FormalPara" level="3"> <text>Account Status</text> </target>
+
+ <target id="b9uc80o" pid="b9uc80o" name="Sect1" level="1" number="3.4"> <text>Removing Communities</text> </target>
+
+ <target id="b9uc80p" pid="b9uc80p" name="Sect1" level="1" number="3.5"> <text>Updating Communities</text> </target>
+
+</targets>

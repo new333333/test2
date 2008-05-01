@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="bbfelt9" pid="bbfelt9" name="Chapter" level="0" number="5"> <text>Advanced Workflow</text> </target>
+
+ <target id="b9xe7dc" pid="bbfelt9" name="BridgeHead" level="1"> <text>What's in this Chapter?</text> </target>
+
+ <target id="b9xeakc" pid="b9xeakc" name="Sect1" level="1" number="5.1"> <text>Adding a Question to the Workflow</text> </target>
+
+ <target name="InformalTable" level="2"> <text>Condition </text> </target>
+
+ <target id="b9xeb1t" pid="b9xeakc" name="row" level="3"> <text>Condition </text> </target>
+
+ <target id="b9xeb1u" pid="b9xeakc" name="row" level="3"> <text>The employee enters a PTO Request.</text> </target>
+
+ <target id="b9xec15" pid="b9xeakc" name="row" level="3"> <text>The manager indicates receipt.</text> </target>
+
+ <target id="b9xec16" pid="b9xeakc" name="row" level="3"> <text>The manager approves the request.</text> </target>
+
+ <target id="b9xec17" pid="b9xeakc" name="row" level="3"> <text>The manager denies the request.</text> </target>
+
+ <target id="b9xec18" pid="b9xeakc" name="row" level="3"> <text>HR has entered the approved vacation</text> </target>
+
+ <target id="b9xecuh" pid="b9xeakc" name="BridgeHead" level="2"> <text>To add a Workflow Question and Responses to the Review State:</text> </target>
+
+ <target id="b9xecwj" pid="b9xeakc" name="Procedure" level="2" number="1"> <text>From the ICEcore Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
+
+ <target id="bbh109a" pid="b9xeakc" name="Step" level="3" number="1"> <text>From the ICEcore Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
+
+ <target id="bbh10ei" pid="b9xeakc" name="Step" level="3" number="2"> <text>Click Workflow designer.</text> </target>
+
+ <target id="bbh0zrw" pid="b9xeakc" name="Step" level="3" number="3"> <text>Expand Workflow processes.</text> </target>
+
+ <target id="bbh103l" pid="b9xeakc" name="Step" level="3" number="4"> <text>Click PTO Request.</text> </target>
+
+ <target id="bbgy9wd" pid="b9xeakc" name="Step" level="3" number="5"> <text>Expand Workflow process and click State - Review.</text> </target>
+
+ <target id="bbgyatb" pid="b9xeakc" name="Step" level="3" number="6"> <text>In the options dialog on the right, click Add.</text> </target>
+
+ <target id="bbgybbb" pid="b9xeakc" name="Step" level="3" number="7"> <text>Click Workflow question.</text> </target>
+
+ <target id="bbgyc3v" pid="b9xeakc" name="Step" level="3" number="8"> <text>Type in the Data name (approve_request) and the Question text (Do you approve of this request?) and click OK.</text> </target>
+
+ <target id="bbgyfor" pid="b9xeakc" name="Step" level="3" number="9"> <text>Click Workflow question.</text> </target>
+
+ <target id="bbgyfyy" pid="b9xeakc" name="Step" level="3" number="10"> <text>Click Add.</text> </target>
+
+ <target id="bbgygkg" pid="b9xeakc" name="Step" level="3" number="11"> <text>Click Workflow response.</text> </target>
+
+ <target id="bbgyi3x" pid="b9xeakc" name="Step" level="3" number="12"> <text>Type in the Data name (approve_request_yes) and the Response text (Yes) and click OK.</text> </target>
+
+ <target id="bbgyj8s" pid="b9xeakc" name="Step" level="3" number="13"> <text>Repeat steps 9-12 to add a "No" response to this Workflow question.</text> </target>
+
+ <target id="b9xe8xd" pid="b9xe8xd" name="Sect1" level="1" number="5.2"> <text>Adding Transitions on Response</text> </target>
+
+ <target id="b9xego1" pid="b9xe8xd" name="Sect2" level="2" number="5.2.1"> <text>Add the Response Transitions</text> </target>
+
+ <target id="b9xegwi" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>Expand State - Review.</text> </target>
+
+ <target id="bbgytu6" pid="b9xe8xd" name="Step" level="4" number="1"> <text>Expand State - Review.</text> </target>
+
+ <target id="bbh0ulw" pid="b9xe8xd" name="Step" level="4" number="2"> <text>Click Add.</text> </target>
+
+ <target id="bbgznke" pid="b9xe8xd" name="Step" level="4" number="3"> <text>Click Transition on response.</text> </target>
+
+ <target id="bbgznkn" pid="b9xe8xd" name="Step" level="4" number="4"> <text>In the __transition_on_question field, type in the Data name for your Workflow question (approve_request).</text> </target>
+
+ <target id="bbgzser" pid="b9xe8xd" name="Step" level="4" number="5"> <text>In the Transition on response field, type in the Data name for your Workflow response (approve_request_yes).</text> </target>
+
+ <target id="bbgzt9j" pid="b9xe8xd" name="Step" level="4" number="6"> <text>In the To State drop-down list, select the state to which you are transitioning (Approve).</text> </target>
+
+ <target id="bbgznkr" pid="b9xe8xd" name="Step" level="4" number="7"> <text>Click OK.</text> </target>
+
+ <target id="bbgzt4p" pid="b9xe8xd" name="Step" level="4" number="8"> <text>Repeat this procedure to add a Transition on response for the "No" Workflow response (approve_request_no) that transitions to the Deny state.</text> </target>
+
+ <target id="b9xeakf" pid="b9xe8xd" name="Sect2" level="2" number="5.2.2"> <text>Removing Older Transitions</text> </target>
+
+ <target id="b9xfcya" pid="b9xe8xd" name="BridgeHead" level="3"> <text>To Remove Manual Transitions:</text> </target>
+
+ <target id="b9xfd3i" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>Under State - Review &#62; Transitions, click the first Manual transition.</text> </target>
+
+ <target id="b9xfd3j" pid="b9xe8xd" name="Step" level="4" number="1"> <text>Under State - Review &#62; Transitions, click the first Manual transition.</text> </target>
+
+ <target id="bbgzxi3" pid="b9xe8xd" name="Step" level="4" number="2"> <text>In the options dialog on the right, click Delete.</text> </target>
+
+ <target id="bbgzxi5" pid="b9xe8xd" name="Step" level="4" number="3"> <text>In the confirmation dialog that appears, click OK to delete the Manual transition.</text> </target>
+
+ <target id="bbgzxi7" pid="b9xe8xd" name="Step" level="4" number="4"> <text>Repeat this procedure to delete the remaining Manual transition for the Review state. </text> </target>
+
+</targets>

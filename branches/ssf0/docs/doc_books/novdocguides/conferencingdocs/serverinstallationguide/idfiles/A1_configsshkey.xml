@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9yf724" pid="b9yf724" name="Appendix" level="0" number="A"> <text>Configuring ssh(1) private/public Key Authentication</text> </target>
+
+ <target id="b9yf7na" pid="b9yf724" name="BridgeHead" level="1"> <text>Follow these steps to configure private/public key authentication:</text> </target>
+
+ <target id="b9yf7xa" pid="b9yf7xa" name="Sect1" level="1" number="A.1"> <text>Generating a Private/Public Key Pair</text> </target>
+
+ <target id="b9yf8ud" pid="b9yf8ud" name="Sect1" level="1" number="A.2"> <text>Configuring the ssh Key Agent</text> </target>
+
+ <target id="b9yf9ub" pid="b9yf9ub" name="Sect1" level="1" number="A.3"> <text>Adding the Public Key to the Root User's Set of Authorized Keys</text> </target>
+
+</targets>

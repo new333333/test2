@@ -1,0 +1,85 @@
+addressing 1.0 (WS-Addressing implementation; required by WSS4J)
+Ant 1.6.2
+Ant Contrib 0.6
+Antlr 2.7.6 (needed by Hibernate)
+Axis 1.4 (removed log4j.properties)
+backport-concurrent.jar 2.1 Concurrent(Backport)
+bcprov-jdk15.jar 1.32 (BouncyCastle library; required by WSS4J)
+bsh 2.0b2
+Commons Beanutils 1.6.1
+Commons Codec 1.3 (required by WSS4J)
+Commons Collections 3.1
+Commons Discovery 0.2
+Commons DBCP 1.2.2
+Commons Fileupload 1.0
+Commons HttpClient 3.0.1
+Commons Lang 2.0
+Commons Logging 1.0.3
+Commons Transaction 1.1.1pre1
+Concurrent Library
+cglib (not sure 2.1.3 didn't work which is what Hibernate 3.1.3shipped, used the version liferay supplied)
+DbUnit 2.1
+dom4j 1.5.2
+EasyMock 1.2 (Java 1.3)
+Ehcache 1.3.0 (needed by Hibernate)
+ezmorph 1.0.1
+Hibernate 3.2.5.ga
+iCal4j 1.0-beta2
+Jackrabbit API 1.3.1
+Jackrabbit JCR Commons 1.3.1
+Jackrabbit Core 1.3.1
+Jakarta Taglibs Standard 1.1
+Jaxen 1.1-beta-7
+JAXRPC 1.1
+JBoss App Server 4.2.1.GA jbosssx.jar
+JBoss Common 1.2.0.GA
+JBoss Portal 2.6.1.GA portal-identity-lib.jar
+JCR 1.0
+JDOM 1.0
+Joda-Time 1.4
+Json-lib 1.1 for jdk15
+JSTL 1.0.5
+JSTL Implementation (from Apache) 1.0.6
+JTA 1.0.1b
+JTDS 0.9.1
+JUnit 3.8.1
+Liferay portal-client.jar 4.3.0
+Liferay portal-impl.jar 4.3.0
+Liferay portal-kernel.jar 4.3.0
+Liferay portal-service.jar 4.3.0
+Liferay util-java.jar 4.3.0
+Log4j 1.2.8
+Lucene 1.9.1+indexupdater
+md5crypt.jar
+mysql-connector-java-5.0.4-bin.jar
+opensaml 1.0.1 (SAML implementation; used by WSS4J)
+oro 2.0.8 (needed by velocity)
+Portals Bridges 1.0
+Portlet 1.0
+Quartz 1.4.5
+SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
+Servlet 2.3.1/JSP 1.2.1
+Simple Logging Facade for Java (SLF4J) log4j12 1.0
+Slide jaas 2.2pre1
+Slide Kernel 2.2pre1
+Slide WCK 1.0
+Slide WebDAV client library 2.1
+Spring 1.2.9
+Spring mock 1.2.9 (comes with Spring)
+Spring Portlet spring-portlet.jar
+Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
+Trove 1.0.2
+Velocity 1.5
+WSDL4J 1.5.1
+WSS4J 1.5.1
+Xalan 2.7.0 (XPath and XSLT implementation; used by WSS4J and others)
+Xerces 2.7.1
+xmlrpc 2.0.1
+xmlsec 1.3.0 (required by WSS4j)
+java_uno.jar				(begin OpenOffice 2.0 Jars)
+java_uno_accessbridge.jar
+juh.jar
+jurt.jar
+jut.jar
+ridl.jar
+unoil.jar					(end OpenOffice 2.0 Jars)

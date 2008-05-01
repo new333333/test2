@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+  <class dynamic-update="true" lazy="false" table="SS_Events" name="com.sitescape.team.domain.Event">
+    <id unsaved-value="null" name="id" node="@id">
+      <column name="id" sql-type="char(32)"/>
+      <generator class="uuid.hex"/>
+    </id>
+    <version unsaved-value="undefined" name="lockVersion" column="lockVersion" type="long"/>
+    <property name="zoneId" access="field"/>
+   <component name="owner" class="com.sitescape.team.domain.AnyOwner">
+      <many-to-one name="folderEntry" index="ownerFolderEntry_Event"/>
+      <many-to-one name="principal" index="ownerPrincipal_Event"/>
+      <many-to-one name="binder" index="ownerBinder_Event"/>
+      <any name="entity" id-type="java.lang.Long" meta-type="string" index="entityOwner_Event" >
+        <meta-value class="com.sitescape.team.domain.FolderEntry" value="folderEntry"/>
+        <meta-value class="com.sitescape.team.domain.User" value="user"/>
+        <meta-value class="com.sitescape.team.domain.Group" value="group"/>
+        <meta-value class="com.sitescape.team.domain.Folder" value="folder"/>
+        <meta-value class="com.sitescape.team.domain.Workspace" value="workspace"/>
+        <meta-value class="com.sitescape.team.domain.ProfileBinder" value="profileBinder"/>
+        <meta-value class="com.sitescape.team.domain.TemplateBinder" value="template"/>
+        <column name="ownerType" length="16"/>
+        <column name="ownerId"/>
+      </any>
+      <property name="ownerType" update="false" insert="false"/>
+      <property name="ownerId" update="false" insert="false"/>
+      <property name="owningBinderKey" length="255"/>
+      <property name="owningBinderId" index="owningBinder_Event"/>
+    </component>
+    <property name="name" length="64"/>
+    <property name="HDtStart">
+      <column name="dtStart" not-null="true"/>
+    </property>
+    <property name="HDtEnd">
+      <column name="dtEnd"/>
+    </property>
+    <property name="frequency"/>
+    <property name="interval">
+      <column name="repeatInterval"/>
+    </property>
+    <property name="HUntil">
+      <column name="until"/>
+    </property>
+    <property name="HCount">
+      <column name="repeatCount"/>
+    </property>
+    <property name="weekStart"/>
+    <property name="timeZoneSensitive"/>
+    <property name="days" length="100"/>
+    <property name="monthDay" length="100"/>
+    <property name="yearDay" length="100"/>
+    <property name="weekNo" length="100"/>
+    <property name="months" length="100"/>
+    <property name="minutes" length="100"/>
+    <property name="hours" length="100"/>
+    <property name="HDuration">
+      <column name="duration" length="32" not-null="true"/>
+    </property>
+    <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
+      <property name="date" column="creation_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">
+        <column name="creation_principal"/>
+      </many-to-one>
+    </component>
+    <component name="modification" class="com.sitescape.team.domain.HistoryStamp">
+      <property name="date" column="modification_date" type="timestamp"/>
+      <many-to-one class="com.sitescape.team.domain.UserPrincipal" embed-xml="false" node="Principal" name="principal">
+        <column name="modification_principal"/>
+      </many-to-one>
+    </component>
+	<property name="timeZone" access="field" length="16"/>
+  </class>
+</hibernate-mapping>

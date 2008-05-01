@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="bauwh8v" pid="bauwh8v" name="Chapter" level="0" number="4"> <text>Administration Policies</text> </target>
+
+ <target id="bawfsp8" pid="bauwh8v" name="BridgeHead" level="1"> <text>To Manage Policies:</text> </target>
+
+ <target id="bawfnzu" pid="bauwh8v" name="Procedure" level="1" number="1"> <text>Select Contacts &#62; Manage Contacts and Buddies... to open the Manage Contacts and Users window.</text> </target>
+
+ <target id="bawfnzv" pid="bauwh8v" name="Step" level="2" number="1"> <text>Select Contacts &#62; Manage Contacts and Buddies... to open the Manage Contacts and Users window.</text> </target>
+
+ <target id="bawfo0h" pid="bauwh8v" name="Step" level="2" number="2"> <text>Select Admin &#62; Manage Policies... to open the Policy Manager window.</text> </target>
+
+ <target id="bawfo0j" pid="bauwh8v" name="Step" level="2" number="3"> <text>An administrator can edit, copy, delete, and create policies:</text> </target>
+
+ <target id="bawfo00" pid="bauwh8v" name="BridgeHead" level="1"> <text>To Change a User's Policy:</text> </target>
+
+ <target id="bawfpq1" pid="bauwh8v" name="Procedure" level="1" number="1"> <text>An administrator must edit a user's contact information from the Manage Contacts window.</text> </target>
+
+ <target id="bawfpq2" pid="bauwh8v" name="Step" level="2" number="1"> <text>An administrator must edit a user's contact information from the Manage Contacts window.</text> </target>
+
+ <target id="bawfpqb" pid="bauwh8v" name="Step" level="2" number="2"> <text>Select the policy you want to apply to this user from the Policy drop-down list, and click OK.</text> </target>
+
+ <target id="bawfpqd" pid="bauwh8v" name="Step" level="2" number="3"> <text>The new policy for the user is in effect the next time that user signs on.</text> </target>
+
+ <target id="bawfo01" pid="bauwh8v" name="BridgeHead" level="1"> <text>Policy Settings:</text> </target>
+
+</targets>

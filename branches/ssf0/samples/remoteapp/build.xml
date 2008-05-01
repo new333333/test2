@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+
+<project name="remoteapp" basedir=".">
+	<property name="project.dir" value="${basedir}/../.." />
+
+	<import file="${project.dir}/build-common.xml"/>
+
+	<import file="${project.dir}/deploy-support.xml" />
+		
+	<property name="jar.file" value="remoteapp.jar" />
+	<property name="war.name" value="remoteapp" />
+	<property name="war.file" value="${war.name}.war" />
+	
+	<target name="war" depends="jar">
+		<copy file="${jar.file}" todir="war/WEB-INF/lib"/>
+		<!-- Copy Teaming WS client library -->
+		<copy file="${project.dir}/ws-client/ssf-wsclient.jar" todir="war/WEB-INF/lib"/>
+		<!-- Copy libraries needed by the Teaming WS client library -->
+		<copy todir="war/WEB-INF/lib">
+			<fileset dir="${project.dir}/lib"
+				includes="${libraries.wsclient}" />
+		</copy>
+		<!-- Copy additional libraries needed by the remote application sample -->
+		<copy file="${project.dir}/util/ssf-util.jar" todir="war/WEB-INF/lib"/>
+		<copy todir="war/WEB-INF/lib">
+			<fileset dir="${project.dir}/lib">
+				<include name="addressing.jar" />
+				<include name="dom4j.jar" />
+				<include name="jaxen.jar" />
+				<include name="commons-httpclient.jar" />
+			</fileset>
+		</copy>
+		<war
+			basedir="war"
+			destfile="${war.file}"
+			webxml="war/WEB-INF/web.xml"
+		/>
+	</target>
+
+	<target name="deploy-jar" depends="jar">
+		<antcall target="deploy-jar">
+			<param name="deploy-support.jar.file" value="${jar.file}" />
+		</antcall>
+	</target>
+
+    <target name="deploy" depends="war">
+        <antcall target="deploy-war">
+        	<param name="deploy-support.war.name" value="${war.name}" />
+        </antcall>
+	</target>
+	
+</project>

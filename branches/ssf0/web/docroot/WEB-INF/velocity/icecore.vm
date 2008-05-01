@@ -1,0 +1,74 @@
+#*
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
+ * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
+ * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
+ * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+ * either express or implied. See the CPAL for the specific language governing rights and limitations
+ * under the CPAL.
+ * 
+ * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
+ * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * 
+ * 
+ * Attribution Information
+ * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
+ * Attribution URL: [www.icecore.com]
+ * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
+ * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+ * 
+ * 
+ * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
+ * are trademarks of SiteScape, Inc.
+ *#
+#macro (ss_entryContent)
+  font-size:12px;font-weight:normal;font-family:Arial;margin:0px;padding:2px;padding-left:22px;background-color:inherit;
+#end
+#macro (ss_entryTitle)
+  font-weight:bold;font-size:14px;font-family:Arial,Helvetica,sans-serif;margin-bottom:4px;margin-top:4px;
+#end
+#macro (ss_entryDescription)
+  padding-left:24px;padding-right:14px;padding-top:4px;padding-bottom:4px;background-color:inherit;font-size:12px;
+  color: #333333;
+#end
+#macro (ss_entrySignature)
+  font-size:10px;padding-left:5px;color:#666666;
+#end 
+#macro (ss_labelLeft)
+  font-weight:bold;font-size:12px;display:inline;padding-right:2px;
+#end
+#macro (ss_labelRight)
+  font-weight:bold;font-size:12px;display:inline;padding-left:2px;
+#end
+#macro (ss_labelAbove)
+   font-weight:bold;font-size:12px;padding-top:2px;padding-bottom:2px;display:block;
+#end
+#macro (ss_workflow)
+  border:1px #666666 solid;padding:2px;
+#end
+#macro (ss_fineprint)
+  font-size:10px !important; 
+#end
+#macro (ss_underline) 
+   text-decoration:underline;
+#end
+#macro (ss_light)
+  color: #999999;   
+#end
+#macro (ss_legend)
+  font-family:Arial;font-weight:bold;font-size:12px;color:#333333;
+#end
+#macro (ss_fieldset)
+  margin-top:6px;margin-bottom:4px;border:1px solid #CCCCCC;
+#end
+#macro (ss_ul)
+margin-left:0em;padding-left:0em;margin-top:0px;margin-bottom:2px;
+#end
+#macro (ss_li)
+list-style-type:none;margin-left:0px;margin-bottom:0px;padding-left:0px;
+#end

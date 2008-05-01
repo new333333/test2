@@ -1,0 +1,528 @@
+﻿<?xml version="1.0"?>
+<!DOCTYPE chapter PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "   ICEcore Quick Start Guide "
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 9
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 3
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        1887    chapter       ICEcore Quick Start Guide 
+
+
+ GRAPHICS REFERENCED IN BOOK
+
+       Count       Filename
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           2       tagsicon.png
+           2       workspacetreeiconminus.png
+           2       toolbar_favorites.png
+           2       search.png
+           6       myworkspace_igloo.png
+           2       workspacetreeicon.png
+           2       presenceicons.png
+           2       toolbar_favorites_big_.png
+           2       backbutton.png
+           2       helpicon-orange.png
+           2       helpicon.png
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           0       xref
+           0       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+           1       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+
+========================================================================-->
+
+<chapter role="quickstart" conformance="none,doc,no,,56" id="quickstart" revision="05/01/07" lang="en" xml:base="icecorequickstart.xml">
+ <title>
+<productname>ICEcore</productname> 快速入門指南
+ </title>
+<para>Teaming + Conferencing</para>
+ <para>1.0</para>
+<para>2007 年 7 月</para>
+ <sect1 id="b20g4u4">
+  <title>
+<productname>ICEcore</productname> <superscript/>
+  </title>
+<para>Novell Teaming + Conferencing 使用 <productname>ICEcore</productname> 技術執行。除非另行說明，本指南中的術語「<productname>ICEcore</productname>」適用於所有版本的 <productname>ICEcore</productname>。若要瞭解更多有關 <productname>ICEcore</productname> 功能的資訊，請參閱 <productname>ICEcore</productname> 使用者指南和線上說明。
+  </para>
+  <sect2 id="b9ygnf7">
+<title>瀏覽「歡迎使用」Portlet</title>
+<para>第一次登入 <productname>ICEcore</productname> 時，會出現連結到 <productname>ICEcore</productname> 手冊和開始使用網頁的<guimenu>歡迎使用</guimenu> portlet。
+   </para>
+  </sect2>
+  <sect2 id="b9ygpwl">
+<title>使用 <productname>ICEcore</productname> 導覽找到位置
+   </title>
+<para><guimenu>導覽</guimenu>是一組工具，您可以透過其到達 <productname>ICEcore</productname> 中的任何位置。以下是出現在許多 <productname>ICEcore</productname> 頁面的<guimenu>導覽</guimenu>工具：
+   </para>
+   <formalpara id="b9yh7oz">
+<title>我的工作區 ─ </title>
+<para>按一下<guimenu>我的工作區</guimenu>圖示 <inlinemediaobject><imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject></inlinemediaobject> 開啟您個人的工作區，其中包含您的<guimenu>設定檔</guimenu>、您的資料夾、您的<guimenu>留言簿</guimenu>及其他配件。
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8ci">
+<title>我的最愛 ─ </title>
+<para>按一下<guimenu>我的最愛</guimenu>圖示 <inlinemediaobject><imageobject role="fo"><imagedata fileref="toolbar_favorites_big_.png" width="12.44pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="toolbar_favorites_big_.png" width="12.44pt" format="png"/></imageobject></inlinemediaobject> 開啟<guimenu>我的最愛</guimenu>功能表，據此，您可以存取至您最喜愛的位置的連結以及編輯您的最愛清單。若要新增您最喜愛的位置，請瀏覽至您要新增的位置，按一下<guimenu>我的最愛</guimenu>圖示，然後選擇<guimenu>新增此位置</guimenu>。
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8jx">
+<title>快速搜尋 ─ </title>
+<para>在<guimenu>快速搜尋</guimenu>方塊中輸入任何類型的搜尋辭彙，然後按一下 <inlinemediaobject><imageobject role="fo"><imagedata fileref="search.png" width="14.40pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="search.png" width="14.40pt" format="png"/></imageobject></inlinemediaobject> 以顯示<guimenu>快速搜尋</guimenu>資料夾以及搜尋結果。若要選擇更多的搜尋選項，請按一下<guimenu>進階</guimenu>。
+    </para>
+   </formalpara>
+   <formalpara id="b9yh8t6">
+<title>尋找人員、尋找位置、尋找標籤 ─ </title>
+<para>使用該等方塊搜尋使用者的個人工作區、工作區和資料夾或帶有標籤的項目。（請參閱下方的「術語」）</para>
+   </formalpara>
+   <formalpara id="b9yh90l">
+<title>工作區樹狀結構 ─ </title>
+<para>按一下工作區樹狀結構圖示左側的加號 <inlinemediaobject><imageobject role="fo"><imagedata fileref="workspacetreeicon.png" width="15.71pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="workspacetreeicon.png" width="15.71pt" format="png"/></imageobject></inlinemediaobject> 展開樹狀結構。該樹狀結構有三個主要結構分支：<guimenu>全域工作區</guimenu>、<guimenu>個人</guimenu><guimenu>工作區</guimenu>和<guimenu>團隊工作區</guimenu>。展開該等類別中的一個，然後「向下展開」直至到達所需工作區。若要縮回一個結構分支，請按該結構分支左側的減號： <inlinemediaobject><imageobject role="fo"><imagedata fileref="workspacetreeiconminus.png" width="15.71pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="workspacetreeiconminus.png" width="15.71pt" format="png"/></imageobject></inlinemediaobject>
+    </para>
+   </formalpara>
+   <formalpara id="b9yh9cf">
+<title>說明 ─ </title>
+<para>若要閱讀有關頁面特定部份的資訊，請按一下<guimenu>說明</guimenu>圖示 <inlinemediaobject><imageobject role="fo"><imagedata fileref="helpicon.png" width="8.00pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="helpicon.png" width="8.00pt" format="png"/></imageobject></inlinemediaobject> 以進入<guimenu>說明</guimenu>模式，然後按一下顯示的新資訊圖示中的一個 <inlinemediaobject><imageobject role="fo"><imagedata fileref="helpicon-orange.png" width="8.00pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="helpicon-orange.png" width="8.00pt" format="png"/></imageobject></inlinemediaobject>。若要結束<guimenu>說明</guimenu>模式，請按一下除另一<guimenu>資訊</guimenu>圖示或面板之外的任何地方。
+    </para>
+   </formalpara>
+  </sect2>
+  <sect2 id="b9ygxtu">
+<title>設定您的夥伴清單</title>
+<para>您的<guimenu>夥伴清單</guimenu>可幫助您與需要不時聯絡的人員保持聯絡。立即新增人員至您的夥伴清單以便輕鬆與其通訊。
+   </para>
+   <procedure id="b9ygyei">
+    <step id="b9ygyej" performance="required">
+<para>按一下<guimenu>新增夥伴</guimenu>。
+     </para>
+    </step>
+    <step id="b9ygyf2" performance="required">
+<para>首先在<guimenu>使用者</guimenu>或<guimenu>群組</guimenu>方塊中輸入名稱。一個下拉式清單會顯示符合的名稱。選擇一個名稱，然後按一下<guimenu>套用</guimenu>新增名稱到您的清單。
+     </para>
+    </step>
+    <step id="b9ygyf4" performance="required">
+<para>可新增任意數量的名稱，在每次新增後按一下<guimenu>套用</guimenu>。
+     </para>
+    </step>
+    <step id="b9ygyf6" performance="required">
+<para>若要移除名稱，請按一下該名稱後面的 <guimenu> X </guimenu>圖示；然後按一下<guimenu>套用</guimenu>。
+     </para>
+    </step>
+    <step id="b9ygyfe" performance="required">
+<para>完成後，按一下<guimenu>關閉</guimenu>。新名稱會顯示在夥伴清單中。
+     </para>
+    </step>
+   </procedure>
+   <sect3 id="b9yh0or">
+<title>使用您的夥伴清單的提示：</title>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+<para>夥伴名稱左側的圖示表示其狀態資訊，即該人員的線上狀態：</para>
+      <para>
+<inlinemediaobject><imageobject role="fo"><imagedata fileref="presenceicons.png" width="50.40pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="presenceicons.png" width="50.40pt" format="png"/></imageobject></inlinemediaobject> <guimenu>線上 離開 離線 未知</guimenu>
+      </para>
+     </listitem>
+     <listitem>
+<para>若要與夥伴通訊，請按一下他或她的狀態圖示，然後從顯示的功能表中選擇一個選項。</para>
+     </listitem>
+     <listitem>
+<para>若要更新狀態資訊，請按一下<guimenu>重新整理</guimenu>。
+      </para>
+     </listitem>
+     <listitem>
+<para>若要檢視夥伴的聯絡資訊或瀏覽至他或她的工作區，請按一下該夥伴的名稱。</para>
+     </listitem>
+    </itemizedlist>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yh3r4">
+<title>新增資訊和照片至您的個人工作區</title>
+   <procedure id="b9yh3y4">
+    <step id="b9yh3y5" performance="required">
+<para>在導覽中，按一下 <inlinemediaobject><imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject></inlinemediaobject> <guimenu>我的工作區</guimenu>進入您的個人工作區。
+     </para>
+    </step>
+    <step id="b9yh44k" performance="required">
+<para>在您工作區的功能表列上，按一下<guimenu>修改設定檔</guimenu>。
+     </para>
+    </step>
+    <step id="b9yh44n" performance="required">
+<para>在<guimenu>修改設定檔</guimenu>視窗中，填寫任何遺漏資訊。此資訊可被其他人看見，亦可被 <productname>ICEcore</productname> 和 Zon 用於透過電話、電子郵件或 IM 聯絡您。
+     </para>
+    </step>
+    <step id="b9yh44r" performance="required">
+<para>新增圖片。按一下<guimenu>瀏覽… </guimenu>找到您電腦上的圖形檔案；然後按一下<guimenu>確定</guimenu>。該圖片會顯示在您設定檔的<guimenu>照片</guimenu>方塊中。
+     </para>
+    </step>
+    <step id="b9yh44v" performance="required">
+<para>按一下 <inlinemediaobject><imageobject role="fo"><imagedata fileref="backbutton.png" width="8.29pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="backbutton.png" width="8.29pt" format="png"/></imageobject></inlinemediaobject> 返回初始頁。
+     </para>
+    </step>
+   </procedure>
+   <sect3 id="b9yh4la">
+<title>新增照片至您的設定檔的提示：</title>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+<para>您可以新增任意數量的影像，但一次只能新增一個。</para>
+     </listitem>
+     <listitem>
+<para>您所有影像的縮圖會顯示在您聯絡資訊的下方。在您將滑鼠移至一個縮圖上時，該影像會顯示在照片方塊中。若要以其他影像取代<guimenu>照片</guimenu>方塊中的原有影像，請按一下該影像縮圖。
+      </para>
+     </listitem>
+     <listitem>
+<para>若要透過網際網路新增圖片，請先將圖片儲存到您的電腦上。</para>
+     </listitem>
+     <listitem>
+<para>若要從您的個人工作區移除影像，請按一下<guimenu>修改設定檔</guimenu>。按一下要刪除的影像的核取方塊選擇要刪除的影像。然後按一下<guimenu>確定</guimenu>。
+      </para>
+     </listitem>
+    </itemizedlist>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yh9yk">
+<title>若要新增您的第一個部落格項目，請：</title>
+   <procedure id="b9yha2w">
+    <step id="b9yha2x" performance="required">
+<para>按一下 <inlinemediaobject><imageobject role="fo"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="myworkspace_igloo.png" width="11.35pt" format="png"/></imageobject></inlinemediaobject> <guimenu>我的工作區</guimenu>以顯示您的個人工作區。
+     </para>
+<para>您的工作區中已經有一個名為「<guimenu>部落格</guimenu>」的預設部落格。
+     </para>
+    </step>
+    <step id="b9yha4m" performance="required">
+<para>展開您的工作區最上方的個人工作區樹狀結構。</para>
+    </step>
+    <step id="barbs6a" performance="required">
+<para>在<guimenu>部落格</guimenu>上按一下。
+     </para>
+    </step>
+    <step id="b9yhak2" performance="required">
+<para>在部落格行事曆上方的功能表列上，選擇<guimenu>新建</guimenu> &gt; <guimenu>部落格項目</guimenu>功能表項目。
+     </para>
+    </step>
+    <step id="b9yhank" performance="required">
+<para>在顯示的<guimenu>部落格項目</guimenu>表單中，在<guimenu>標題</guimenu>方塊中輸入您的部落格項目的標題。
+     </para>
+    </step>
+    <step id="b9yhann" performance="required">
+<para>在<guimenu>描述</guimenu>方塊中，輸入您的部落格項目的內容（使用編輯器中的格式工具為您的輸入選定格式）。
+     </para>
+    </step>
+    <step id="ban5k3d" performance="required">
+<para>在<guimenu>附件</guimenu>下，您可以選擇您電腦上的檔案，將其附加到此部落格項目上。 
+     </para>
+    </step>
+    <step id="b9yhanq" performance="required">
+<para>按一下<guimenu>確定</guimenu>新增該項目到您的部落格。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="barc23u">
+<title>若要對其他人的部落格項目發佈意見，請：</title>
+   <procedure id="b9yhb5c">
+    <step id="b9yhb5d" performance="required">
+<para>瀏覽至您要發佈意見的部落格。</para>
+    </step>
+    <step id="barc49f" performance="required">
+<para>按一下您要發佈意見的部落格下方的<guimenu>新增意見</guimenu>。
+     </para>
+    </step>
+    <step id="b9yhb8l" performance="required">
+<para> 在顯示的表單中，在<guimenu>標題</guimenu>方塊中輸入您的部落格意見的標題。
+     </para>
+    </step>
+    <step id="b9yhb8o" performance="required">
+<para>在<guimenu>描述</guimenu>方塊中輸入您的意見。
+     </para>
+    </step>
+    <step id="b9yhb8r" performance="required">
+<para>按一下<guimenu>確定</guimenu>。您的意見會顯示在部落格項目的下方。
+     </para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="b9yhbh7">
+<title>使用「團隊」</title>
+   <para>
+<productname>ICEcore</productname> 專為團隊工作而設。建立團隊工作區；然後新增資料夾至該工作區。團隊設定後，您可以輕鬆與您的團隊成員通訊。
+   </para>
+   <sect3 id="b9yhc1x">
+<title>若要建立團隊工作區，請：</title>
+    <procedure id="b9yhc47">
+     <step id="b9yhc48" performance="required">
+<para> 在 <guimenu>Navigator</guimenu> 中，按一下工作區樹狀結構的<guimenu>團隊工作區</guimenu>連結。
+      </para>
+     </step>
+     <step id="b9yhcrt" performance="required">
+<para> 在<guimenu>團隊工作區</guimenu>標籤下，按一下<guimenu>新增團隊工作區</guimenu>。
+      </para>
+     </step>
+     <step id="b9yhcrw" performance="required">
+<para> 在<guimenu>工作區標題</guimenu>欄位中，輸入新工作區的名稱。
+      </para>
+     </step>
+     <step id="b9yhd8a" performance="required">
+<para>在<guimenu>團隊成員</guimenu>下，選擇您要新增為此工作區團隊成員的任何<guimenu>使用者</guimenu>和<guimenu>群組</guimenu>。在每個欄位中輸入一個或兩個字元，然後從顯示的下拉式功能表中選擇您要新增的使用者或群組。
+      </para>
+     </step>
+     <step id="ban5was" performance="required">
+<para>在<guimenu>工作區資料夾</guimenu>下，選擇您要新增至此工作區的資料夾類型。
+      </para>
+     </step>
+     <step id="ban5xsb" performance="required">
+<para>若要傳送電子郵件至您的隊員，請選擇<guimenu>通知團隊已建立此工作區</guimenu>選項，然後輸入要傳送的訊息。
+      </para>
+     </step>
+     <step id="b9yhcs0" performance="required">
+<para>按一下<guimenu>確定</guimenu>。新工作區會新增為子工作區。
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="b9yhd12">
+<title>若要新增成員至團隊工作區，請：</title>
+    <procedure id="b9yhd13">
+     <step id="b9yhd14" performance="required">
+<para>瀏覽至團隊工作區。</para>
+     </step>
+     <step id="barc7bf" performance="required">
+<para>按一下<guimenu>新增或刪除團隊成員</guimenu>。
+      </para>
+     </step>
+     <step id="ban6gcy" performance="required">
+<para>在<guimenu>新增或刪除團隊成員</guimenu>視窗中，按一下<guimenu>使用者</guimenu>或<guimenu>群組</guimenu>欄位，先輸入使用者或群組名稱，然後從顯示的下拉式清單中選擇名稱。
+      </para>
+     </step>
+     <step id="barc9md" performance="required">
+<para>對每個您要新增的使用者或群組重複上述步驟。</para>
+     </step>
+     <step id="barc9ek" performance="required">
+<para>按一下<guimenu>確定</guimenu>。
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="b9yhd15">
+<title>若要檢視團隊成員，請：</title>
+    <procedure id="b9yhd16">
+     <step id="b9yhd17" performance="required">
+<para>選擇與該團隊相關的工作區或資料夾。</para>
+     </step>
+     <step id="b9yhdtq" performance="required">
+<para>在功能表列上，按一下<guimenu>團隊</guimenu>。
+      </para>
+     </step>
+     <step id="b9yhdts" performance="required">
+<para> 選擇<guimenu>顯示團隊成員</guimenu>。
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhe5q">
+<title>使用「我的最愛」</title>
+<para>使用<guimenu>我的最愛</guimenu>進入您時常造訪的位置。
+   </para>
+   <sect3 id="b9yheeb">
+<title>若要新增位置至「我的最愛」，請：</title>
+    <procedure id="b9yhf14">
+     <step id="b9yhf15" performance="required">
+<para>瀏覽至您要新增的工作區或資料夾。</para>
+     </step>
+     <step id="b9yhf4f" performance="required">
+<para>按一下 <inlinemediaobject><imageobject role="fo"><imagedata fileref="toolbar_favorites.png" width="8.51pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="toolbar_favorites.png" width="8.51pt" format="png"/></imageobject></inlinemediaobject> 開啟<guimenu>我的最愛</guimenu>面板。
+      </para>
+     </step>
+     <step id="b9yhf4i" performance="required">
+<para>選擇<guimenu>新增此位置</guimenu>。該工作區或資料夾會新增至<guimenu>我的最愛</guimenu>清單的最下方。
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhfng">
+<title>利用標籤</title>
+<para>標籤是找到、評估和擷取資訊的強大工具。使用者指定關鍵字（稱為標籤）至工作區、資料夾和項目。標籤被指定為社群（共用）或個人（獨佔）。然後，您可以在搜尋中使用標籤。搜尋引擎還使用標籤按相關度排列搜尋結果。</para>
+<para>按一下<guimenu>標籤</guimenu>圖示 <inlinemediaobject><imageobject role="fo"><imagedata fileref="tagsicon.png" width="24.87pt" format="PNG"/></imageobject> <imageobject role="html"><imagedata fileref="tagsicon.png" width="24.87pt" format="png"/></imageobject></inlinemediaobject> 以新增<guimenu>個人</guimenu>和<guimenu>社群</guimenu>標籤至項目。
+   </para>
+<para>若要瞭解更多有關標籤的資訊，請參閱 <productname>ICEcore</productname> 使用者指南。
+   </para>
+  </sect2>
+  <sect2 id="ban6z9s">
+<title>進階搜尋</title>
+<para>使用「進階搜尋」尋找要查找的特定資訊，而無需瀏覽多個工作區和資料夾。</para>
+   <sect3 id="ban748r">
+<title>若要執行「進階搜尋」，請：</title>
+    <procedure id="ban729o">
+     <step id="ban729p" performance="required">
+<para>在「搜尋」部份中，按一下<guimenu>進階</guimenu>。<guimenu>進階搜尋</guimenu>視窗會顯示。
+      </para>
+     </step>
+     <step id="ban75mv" performance="required">
+<para>在<guimenu>文字</guimenu>欄位中，輸入與您要搜尋的項目相關的文字。
+      </para>
+     </step>
+     <step id="ban76s5" performance="required">
+<para>若您知道是誰在 <productname>ICEcore</productname> 中建立（新增）的該項目，請在<guimenu>作者</guimenu>欄位中輸入其名稱。
+      </para>
+     </step>
+     <step id="ban78ko" performance="required">
+<para>若您知道該資訊已有標籤，請在<guimenu>標籤</guimenu>欄位中輸入相關標籤。
+      </para>
+     </step>
+     <step id="ban790r" performance="required">
+<para>在<guimenu>位置</guimenu>下，選擇您要使用的選項：
+      </para>
+      <itemizedlist mark="bullet" spacing="normal">
+       <listitem>
+<para>使用工作區樹狀結構選項以選擇要搜尋的特定區域：</para>
+        <orderedlist spacing="normal">
+         <listitem>
+<para>按一下<emphasis>工作區</emphasis>旁邊的 + 箭頭。
+          </para>
+         </listitem>
+         <listitem>
+<para>選擇您要搜尋的區域（需要的話可以在任何區域向下進一步展開）。</para>
+         </listitem>
+        </orderedlist>
+       </listitem>
+       <listitem>
+<para>使用<guimenu>搜尋所有子位置</guimenu>選項以搜尋所有資料夾和工作區
+        </para>
+       </listitem>
+      </itemizedlist>
+     </step>
+     <step id="ban7dim" performance="required">
+<para>在<guimenu>排列結果</guimenu>旁邊，使用下拉式清單以選擇您要擷取的搜尋結果的項目數目和每個項目的字數。 
+      </para>
+     </step>
+     <step id="ban7eau" performance="required">
+<para>按一下<guimenu>搜尋</guimenu>。
+      </para>
+<para>搜尋結果會顯示在<guimenu>進階搜尋</guimenu>區域下方的清單中。在 <productname>ICEcore</productname> 的左側會顯示與您的搜尋相關的排名最高的位置、人員和標籤的資訊。
+      </para>
+     </step>
+    </procedure>
+   </sect3>
+   <sect3 id="ban7gsc">
+<title>若要使用其他進階搜尋選項，請：</title>
+    <procedure id="ban7hhh">
+     <step id="ban7hhi" performance="required">
+<para>在「搜尋」部份中，按一下<guimenu>進階</guimenu>。<guimenu>進階搜尋</guimenu>標籤會顯示。
+      </para>
+     </step>
+     <step id="ban7ho8" performance="required">
+<para>在<guimenu>進階搜尋</guimenu>區域的右上角，按一下<guimenu>更多選項</guimenu>。
+      </para>
+     </step>
+     <step id="ban7i1a" performance="required">
+<para>以下選項為可用選項：</para>
+      <itemizedlist mark="bullet" spacing="normal">
+       <listitem>
+        <para>
+<guimenu>作者</guimenu> ─ 此選項可用於輸入一個或多個作者名稱。
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+<guimenu>標籤</guimenu> ─ 此選項可用於輸入一個或多個標籤名稱。
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+<guimenu>工作流程</guimenu> ─ 此選項可用於輸入一個或多個工作流程名稱。
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+<guimenu>項目屬性</guimenu> ─ 此選項可用於輸入一個或多個項目類型。
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+<guimenu>最後一次活動 (單位：天)</guimenu> ─ 此選項可用於將搜尋限制在一定期間（某些天）內有活動的項目中。
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+<guimenu>建立日期</guimenu> ─ 此選項可用於將搜尋限制於在一個或多個日期區間內建立的項目。
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+<guimenu>修改日期</guimenu> ─ 此選項可用於將搜尋限制於在一個或多個日期區間內修改的項目。
+        </para>
+       </listitem>
+       <listitem>
+        <para>
+<guimenu>項目類型</guimenu> ─ 此選項可用於將搜尋限制在一個或多個項目類型中。
+        </para>
+       </listitem>
+      </itemizedlist>
+      <note>
+<para>輸入新字元，大部份欄位會生成下拉式選項清單。按一下「更多條件」輸入其他搜尋條件作為選項。</para>
+      </note>
+     </step>
+    </procedure>
+   </sect3>
+  </sect2>
+  <sect2 id="b9yhg5l">
+<title>術語</title>
+   <formalpara id="b9yhgfo">
+<title>夥伴清單 ─ </title>
+<para>您時常聯絡的人員清單。</para>
+   </formalpara>
+   <formalpara id="b9yhhqt">
+<title>項目 ─ </title>
+<para>包含在資料夾中的項目。</para>
+   </formalpara>
+   <formalpara id="b9yhhqu">
+<title>資料夾 ─ </title>
+<para>包含項目和其他資料夾的容器。每個資料夾均屬於一種類型，如<guimenu>部落格</guimenu>、<guimenu>wiki</guimenu> 或<guimenu>行事曆</guimenu>。
+    </para>
+   </formalpara>
+   <formalpara id="b9yhhqv">
+<title>線上狀態 ─ </title>
+<para>連接至社群服務的狀態以及通訊可用性。狀態資訊由狀態圖示表示。</para>
+   </formalpara>
+   <formalpara id="b9yiiuq">
+<title>工作區 ─ </title>
+<para>包含資料夾和其他工作區的容器。</para>
+   </formalpara>
+  </sect2>
+ </sect1>
+ <sect1 role="legalinfo" id="b20g58r">
+<title>法律聲明</title>
+<para>Copyright &copy; 2007 Novell, Inc. 保留所有權利。未經出版商明確書面同意，不得對本出版物的任何部份進行複製、拍攝、儲存於擷取系統或傳輸。有關 Novell 商標，請參閱<ulink url="http://www.novell.com/company/legal/trademarks/tmlist.html">Novell 商標和服務標誌清單</ulink>。所有協力廠商的商標均為其各自所有者的財產。商標符號（&reg;、TM 等）表示是 Novell 商標；星號 (*) 表示是協力廠商的商標。
+  </para>
+ </sect1>
+</chapter>

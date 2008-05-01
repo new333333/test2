@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+
+	<!-- Handler mapping implementation that maps from URLs to request handler beans -->
+	<bean id="defaultHandlerMapping" class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="interceptors">
+			<list>
+				<!-- With RSS requests, authentication is handled by a servlet
+				     filter which also sets up RequestContext for the authenticated
+				     user. Therefore, there's no need to specify an interceptor
+				     for initializing request context here. Of course, the same
+				     functionality could have been implemented as easily with
+				     an interceptor. No real difference. -->
+				<!-- Enable Open-Session-In-View pattern for Hibernate ORM. -->
+				<ref bean="openSessionInViewInterceptor"/>
+				<!-- This must come after open-session-in-view -->
+				<ref bean="resolveRequestContextInterceptor"/>
+			</list>
+		</property>
+		<property name="urlMap">
+			<map>
+				<entry key="/basic.ics"><ref local="getController"/></entry>				
+			</map>
+		</property>
+	</bean>
+
+	<!-- We reuse the same open-session-in-view interceptor used for regular 
+	     servlet requests (which execute within the context of normal portal
+	     user session), even if RSS requests are not run within such context.
+	     If the implementation diverges further, we may need to define a
+	     separate interceptor. -->
+	<bean id="openSessionInViewInterceptor" class="com.sitescape.team.web.servlet.handler.OpenSessionInViewInterceptor">
+		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
+		<!--<property name="singleSession"><value>false</value></property>-->
+	</bean>
+
+	<bean id="resolveRequestContextInterceptor" class="com.sitescape.team.web.servlet.handler.ResolveRequestContextInterceptor"/>
+
+	<!-- Controllers -->
+	<bean id="getController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.ical.GetController">
+		<property name="icalModule"><ref bean="icalModule"/></property>
+		<property name="mailModule"><ref bean="mailModule"/></property>
+	</bean>
+
+</beans>
