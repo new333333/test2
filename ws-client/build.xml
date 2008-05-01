@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+
+<project name="ws-client" basedir="." default="jar">
+	<import file="../build-common.xml"/>
+
+	<property name="generated.dir" value="${basedir}/generated" />
+	<property name="jar.file" value="ssf-wsclient.jar"/>
+	<property name="client.url" value="http://localhost:8080/ssr/ws" />
+	
+	<target name="clean">
+		<delete dir="${classes.dir}" />
+		<delete dir="${generated.dir}" />
+		<delete file="${jar.file}" />
+	</target>
+	
+	<target name="compileGenerated">
+		<mkdir dir="${classes.dir}" />
+		<javac
+			classpathref="project.classpath"
+			compiler="${javac.compiler}"
+			debug="${javac.debug}"
+			deprecation="${javac.deprecation}"
+			destdir="${classes.dir}"
+			fork="${javac.fork}"
+			memoryMaximumSize="${javac.memoryMaximumSize}"
+			nowarn="${javac.nowarn}">
+			<src path="${generated.dir}" />
+		</javac>
+	</target>
+	
+	<target name="compileCombined">
+		<antcall target="compileGenerated"/>
+		<antcall target="compile"/>
+	</target>
+	
+	<target name="jar" depends="compileCombined">
+		<delete file="${jar.file}"/>
+		<jar
+			jarfile="${jar.file}"
+		>
+			<fileset dir="${classes.dir}" />
+			<fileset dir="${generated.dir}" />
+			<fileset dir="${source.dir}" />
+		</jar>
+	</target>
+
+	<target name="wsdl2java" depends="clean" description="Generate client service bindings from WSDL">
+		<mkdir dir="${generated.dir}" />
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/LicenseService?wsdl" >
+			<mapping
+				namespace="urn:license.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.license" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/MigrationService?wsdl" >
+			<mapping
+				namespace="urn:migration.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.migration" />
+			<mapping
+				namespace="http://model.migration.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.migration.model" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/DefinitionService?wsdl" >
+			<mapping
+				namespace="urn:definition.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.definition" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/FolderService?wsdl" >
+			<mapping
+				namespace="urn:folder.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.folder" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/ProfileService?wsdl" >
+			<mapping
+				namespace="urn:profile.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.profile" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/TemplateService?wsdl" >
+			<mapping
+				namespace="urn:template.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.template" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/IcalService?wsdl" >
+			<mapping
+				namespace="urn:ical.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.ical" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/SearchService?wsdl" >
+			<mapping
+				namespace="urn:search.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.search" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/LdapService?wsdl" >
+			<mapping
+				namespace="urn:ldap.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.ldap" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/ZoneService?wsdl" >
+			<mapping
+				namespace="urn:zone.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.zone" />
+		</axis-wsdl2java>
+		<axis-wsdl2java
+			output="${generated.dir}"
+			verbose="true"
+			url="${client.url}/WorkspaceService?wsdl" >
+			<mapping
+				namespace="urn:workspace.service.ws.remoting.team.sitescape.com"
+				package="com.sitescape.team.client.ws.workspace" />
+		</axis-wsdl2java>
+	</target>
+	
+	<target name="build">
+		<antcall target="wsdl2java"/>
+		<antcall target="jar"/>
+	</target>
+</project>

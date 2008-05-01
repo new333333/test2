@@ -1,7 +1,0 @@
-"product","Novell Teaming","no description"
-"productshort","Teaming","no description"
-"zon","Conferencing","no description"
-"thrdmrk","*","no description"
-"mdash","-","no description"
-"ycc_runlevel","System Services (Runlevel)","no description"
-"euro","&#x20AC;","no description"

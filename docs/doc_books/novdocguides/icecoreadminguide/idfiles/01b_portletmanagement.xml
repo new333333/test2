@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="bcmms81" pid="bcmms81" name="Chapter" level="0" number="1"> <text>Portlet Management</text> </target>
+
+</targets>
