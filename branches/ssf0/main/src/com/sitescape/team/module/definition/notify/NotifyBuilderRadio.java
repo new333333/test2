@@ -42,7 +42,7 @@ import com.sitescape.team.web.util.DefinitionHelper;
 public class NotifyBuilderRadio extends AbstractNotifyBuilder {
 
     public String getDefaultTemplate() {
-    	return "radio.vtl";
+    	return "radio.vm";
     }
 	   protected void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attribute) {
 		   Map selectboxSelections = DefinitionHelper.findRadioSelectionsAsMap(attribute.getName(), visitor.getItem().getDocument());

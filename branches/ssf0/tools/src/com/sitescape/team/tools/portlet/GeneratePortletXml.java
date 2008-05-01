@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.tools.portlet;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
@@ -41,7 +42,7 @@ import org.dom4j.io.XMLWriter;
 
 public class GeneratePortletXml {
 	public static void main(String[] args) {
-		if ((args.length == 0) || (args.length > 1)) {
+		if ((args.length == 0) || (args.length > 1) || args[0] == null) {
 			System.out.println("usage: java GeneratePortletXml <WEB-INF pathname>");
 			return;
 		}
@@ -53,9 +54,8 @@ public class GeneratePortletXml {
 		}
 	}
 	private static void doMain(String pathname) throws Exception {
-		
-		String inFile = pathname + "\\portlet.xml.tmpl";
-		String outFile = pathname + "\\portlet.xml";
+		File inFile = new File(pathname, "portlet.xml.tmpl");
+		File outFile = new File(pathname, "portlet.xml");
 		
 		Document document = null;
         SAXReader reader = new SAXReader();
@@ -65,13 +65,11 @@ public class GeneratePortletXml {
         	document = reader.read(fIn);
  
         } catch (Exception ex) {
-        	System.out.println("Cannot read XML template file " + inFile + ": error is: " + ex.getLocalizedMessage());
+        	System.out.println("Cannot read XML template file " + inFile.getAbsolutePath() + ": error is: " + ex.getLocalizedMessage());
         	throw ex;
         } finally {
         	if (fIn != null) {
-        		try {
-        			fIn.close(); 
-        		} catch (Exception ex) {}
+        		fIn.close();
         	}
         }
 		FileOutputStream fOut = null;
@@ -95,7 +93,7 @@ public class GeneratePortletXml {
             xOut.write(strRoot);
     		xOut.flush();
 	    } catch (Exception ex) {
-	    	System.out.println("Can't write XML file " + outFile + ":error is: " + ex.getLocalizedMessage());
+	    	System.out.println("Can't write XML file " + outFile.getAbsolutePath() + ":error is: " + ex.getLocalizedMessage());
 	    	throw(ex);
 	    } finally {
 	    	if (xOut != null) xOut.close();
@@ -104,6 +102,7 @@ public class GeneratePortletXml {
 	}
 				
 	private static void generateTags(Element node, String []localeCodes, String []localeCodes2, String pathname)  throws Exception {
+		@SuppressWarnings("unchecked")
 		List <Element> elements = node.elements("portlet");
 		
 		for(int i = 0; i < elements.size(); i++) {

@@ -41,7 +41,7 @@ import com.sitescape.team.web.util.DefinitionHelper;
 */
 public class NotifyBuilderSelect extends AbstractNotifyBuilder {
     public String getDefaultTemplate() {
-    	return "selectbox.vtl";
+    	return "selectbox.vm";
     }
 	   
     public void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {

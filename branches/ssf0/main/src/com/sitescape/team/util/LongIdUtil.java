@@ -27,6 +27,7 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.util;
+import java.util.Collections;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Collection;
@@ -48,6 +49,9 @@ public class LongIdUtil {
 	}
 	
 	public static Set<Long> getIdsAsLongSet(String ids) {
+		if(ids == null) {
+			return new HashSet<Long>(0);
+		}
 		if (ids.contains(",")) return getIdsAsLongSet(ids, COMMA_SEPARATOR);
 		return getIdsAsLongSet(ids, SPACE_SEPARATOR);
 	}

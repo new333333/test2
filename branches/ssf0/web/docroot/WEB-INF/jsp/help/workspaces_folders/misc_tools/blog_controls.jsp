@@ -33,7 +33,7 @@
 <div class="ss_help_style">
 
 <div class="ss_help_title">
-<span class="ss_titlebold"><ssf:nlt tag="helpSpot.blogControls" /></span>
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.moreBlogTools" /></span>
 </div>
 
 <p><ssf:nlt tag="help.moreBlogTools.intro" /></p>

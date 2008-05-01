@@ -98,6 +98,13 @@
 		<ant dir="${project.dir}/ssfs" target="deploy" inheritAll="false" />
 		<!-- ssr component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssr" target="deploy" inheritAll="false" />
+		<antcall target="deploy-db-drivers" />
+	</target>
+	
+	<target name="deploy-db-drivers">		
+		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/common/lib" />
+		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${app.server.server.dir}/common/lib" />
+		<copy file="${project.dir}/lib/ojdbc14.jar" todir="${app.server.server.dir}/common/lib" />
 	</target>
 
 	<target name="deploy-liferay-tomcat" depends="clean, init-liferay, clean-app-server">
@@ -126,7 +133,6 @@
 
 				<!-- Optional Arguments -->
 
-				<!--<jvmarg value="-Ddeployer.jboss.prefix=1" />-->
 				<jvmarg value="-Ddeployer.tomcat.lib.dir=${app.server.dir}/common/lib/ext" />
 
 				<!-- Dependent Libraries -->
@@ -134,7 +140,6 @@
 				<arg value="${deploy.liferay.taglib.jar}" />
 				<arg value="${deploy.liferay.util.jar}" />
 				<arg value="${deploy.liferay.bridges.jar}" />
-				<!--<arg value="${app.server.deploy.dir}/liferay-portal.ear/lib/util-jsf.jar" />-->
 		</java>
 				
 		<!--<delete dir="temp" />
@@ -170,9 +175,6 @@
 
 				<!-- Optional Arguments -->
 
-				<!-- As of Liferay 4.1.2, the following argument has no effect -->
-				<!--<jvmarg value="-Ddeployer.jboss.prefix=1" />-->
-
 				<!-- Dependent Libraries -->
 
 				<arg value="${deploy.liferay.taglib.jar}" />
@@ -189,10 +191,6 @@
 		<copy todir="${app.server.dir}" overwrite="true">
 			<fileset dir="resources/${liferay.version.jboss.tomcat}/jboss-tomcat" />
 		</copy>
-				
-		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
-		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${app.server.server.dir}/lib" />
-		<copy file="${project.dir}/lib/ojdbc14.jar" todir="${app.server.server.dir}/lib" />
 
 		<!-- 1. JBoss 4.0.2+ classloader does not work properly if the application 
 		     comes with its own log4j archive. (You get the following error -

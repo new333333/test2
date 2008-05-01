@@ -113,10 +113,6 @@
 	</bean>
 -->
 	<bean id="zoneInterceptor" class="com.sitescape.team.dao.interceptor.ZoneInterceptor"/>
-
-	<bean id="hibernateConfiguration" class="com.sitescape.team.util.HibernateConfigurationFactory">
-		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
-	</bean>
 	
 	<!-- To utilize Hibernate's statistics service, hibernate.generate_statistics
 	     property must be set to true in the hibernate.cfg.xml file. -->
@@ -637,7 +633,9 @@
 		<props>
 			<prop key="input.encoding">UTF-8</prop>
 			<prop key="output.encoding">UTF-8</prop>
-	    	<prop key="file.resource.loader.modificationCheckInterval">2</prop>
+		<!-- Change it to a positive number (eg. 1) to enable automatic reloading, which
+		     should not be used in a production environment. -->
+	    	<prop key="file.resource.loader.modificationCheckInterval">-1</prop>
 		</props>
 		</property>
 	</bean>

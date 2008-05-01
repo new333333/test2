@@ -61,6 +61,7 @@ import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.team.module.definition.notify.NotifyVisitor;
@@ -513,6 +514,8 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			//	Get a list of all of the items in the definition
 			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
 			if (entryItem == null) return;
+	    	Element entryType = entryItem.getParent(); //should be entryType
+	    	params.put("ssFamily",DefinitionUtils.getPropertyValue(entryType, "family"));
 			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, params, true);
 		}
 	}
@@ -522,7 +525,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
            	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null);
 			ctx.put("ssDocument", document);
 			ctx.put("ssVisitor", visitor);
-			velocityEngine.mergeTemplate("digestTOC.vtl", ctx, writer);
+			velocityEngine.mergeTemplate("digestTOC.vm", ctx, writer);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template", ex);
 		}
@@ -533,7 +536,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		    VelocityContext ctx = new VelocityContext();
            	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null);
 			ctx.put("ssVisitor", visitor);
-			velocityEngine.mergeTemplate("folder.vtl", ctx, writer);
+			velocityEngine.mergeTemplate("folder.vm", ctx, writer);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template", ex);
 		}
@@ -562,7 +565,10 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			//	Get a list of all of the items in the definition
 			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
 			if (entryItem == null) return;
-			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, null, true);
+			Map params = new HashMap();
+	    	Element entryType = entryItem.getParent(); //should be entryType
+	    	params.put("ssFamily",DefinitionUtils.getPropertyValue(entryType, "family"));
+			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, params, true);
 		}
 	}
 	protected class AclChecker {

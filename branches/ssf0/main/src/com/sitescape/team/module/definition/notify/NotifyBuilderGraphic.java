@@ -38,7 +38,7 @@ import com.sitescape.team.domain.CustomAttribute;
 public class NotifyBuilderGraphic extends AbstractNotifyBuilder {
 
     public String getDefaultTemplate() {
-    	return "file.vtl";
+    	return "file.vm";
     }
     public void build(NotifyVisitor visitor, String template, VelocityContext ctx, CustomAttribute attr) {
     	if (visitor.getNotifyDef().isAttachmentsIncluded()) {
