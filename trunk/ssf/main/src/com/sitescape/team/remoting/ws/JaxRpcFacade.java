@@ -87,7 +87,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.definition#getDefinitionConfigAsXML}.
 	 */
 	public String getDefinitionConfigAsXML() {
-		return ((DefinitionServiceInternal) this.definitionService).definition_getDefinitionConfigAsXML(null);
+		return this.definitionService.definition_getDefinitionConfigAsXML(null);
 	}
 	
 	/**
