@@ -34,6 +34,7 @@ import java.rmi.RemoteException;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +52,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
+import com.sitescape.util.servlet.StringServletResponse;
 
 public class NameSearchServlet extends HttpServlet {
 
@@ -85,7 +87,7 @@ public class NameSearchServlet extends HttpServlet {
 			String title = getUserTitle(stub, accessToken, Long.valueOf(userId));
 			
 			// Search Google for the title.
-			String result = googleForName(title);
+			String result = googleForName(req, resp, title);
 			
 			// Just to demonstrate how to upload file to the Teaming through web services. 
 			// Irrelevant to this sample, so commented out.
@@ -116,7 +118,7 @@ public class NameSearchServlet extends HttpServlet {
 		return userTitle;
 	}
 	
-	private String googleForName(String userTitle) throws IOException, ServletException {
+	private String googleForName(HttpServletRequest req, HttpServletResponse resp, String userTitle) throws IOException, ServletException {
 		String searchStr = userTitle.replace(" ", "+");
 		String searchUrl = GOOGLE_SEARCH_TEMPLATE.replace("@@@", searchStr);
 		
@@ -133,11 +135,24 @@ public class NameSearchServlet extends HttpServlet {
 					if(idx2 >= 0) {
 						String value = body.substring(idx+7, idx2);
 						StringBuilder sb = new StringBuilder();
+						
+						/*
+						// Option 1 - Generate the html markup right here.
 						sb.append("<strong>Hey, pay attention everyone!</strong><br>");
 						sb.append("<pre>");
 						sb.append("About " + value + " matches for " + userTitle + " on Google");
 						sb.append("</pre>");
 						result = sb.toString();
+						*/
+						
+						// Option 2 - Use JSP template to generate the html markup
+						String jsp = "/WEB-INF/jsp/namesearch/view.jsp";	
+						RequestDispatcher rd = req.getRequestDispatcher(jsp);	
+						StringServletResponse resp2 = new StringServletResponse(resp);	
+						req.setAttribute("count", value);
+						req.setAttribute("title", userTitle);
+						rd.include(req, resp2);	
+						result = resp2.getString();
 					}
 				}
 				return result;
