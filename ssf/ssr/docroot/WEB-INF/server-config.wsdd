@@ -41,6 +41,6 @@
 		<parameter name="wsdlPortType" value="TeamingServiceSoap"/>
 		<parameter name="typeMappingVersion" value="1.2"/>
 		<parameter name="allowedMethods" value="*"/>
-		<beanMapping qname="ns:Entry" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Entry"/>
+		<!--<beanMapping qname="ns:Entry" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Entry"/>-->
 	</service>
 </deployment>
