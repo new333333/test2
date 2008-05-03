@@ -33,6 +33,7 @@ import java.util.Calendar;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 
+import com.sitescape.team.remoting.ws.model.FolderEntryModel;
 import com.sitescape.team.remoting.ws.service.binder.BinderService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
@@ -134,6 +135,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 	public String definition_getDefinitionAsXML(String accessToken, String definitionId) {
 		return getDefinitionService().definition_getDefinitionAsXML(accessToken, definitionId);
+	}
+	public String definition_getDefinitionConfigAsXML(String accessToken) {
+		return getDefinitionService().definition_getDefinitionConfigAsXML(accessToken);
 	}
 	public String definition_getDefinitionListAsXML(String accessToken) {
 		return getDefinitionService().definition_getDefinitionListAsXML(accessToken);
