@@ -28,25 +28,31 @@
  */
 package com.sitescape.team.module.definition.ws;
 
+import java.util.List;
+
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.remoting.ws.model.Field;
 
 /**
  * 
  * @author Jong Kim
  */
 public class ElementBuilderDescription extends AbstractElementBuilder {
-	protected boolean build(Element element, Object obj) {
-		if (obj instanceof Description) {
-			Description desc = (Description) obj;
-			element.setText(desc.getText());
-			element.addAttribute("format", String.valueOf(desc.getFormat()));
-		} else if (obj != null) {
-			element.setText(obj.toString());
-			element.addAttribute("format", String
-					.valueOf(Description.FORMAT_NONE));
+	protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, String dataElemType, String dataElemName) {
+		if(element != null) {
+			if (obj instanceof Description) {
+				Description desc = (Description) obj;
+				element.setText(desc.getText());
+				element.addAttribute("format", String.valueOf(desc.getFormat()));
+			} else if (obj != null) {
+				element.setText(obj.toString());
+				element.addAttribute("format", String
+						.valueOf(Description.FORMAT_NONE));
+			}
 		}
+		// Skip fields processing for description, since it is treated as a static field.
 		return true;
 	}
 

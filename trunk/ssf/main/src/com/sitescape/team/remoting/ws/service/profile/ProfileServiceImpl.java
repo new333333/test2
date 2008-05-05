@@ -79,7 +79,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		Element entryElem = addPrincipalToDocument(doc, entry);
 		
 		// Handle custom fields driven by corresponding definition. 
-		addCustomElements(entryElem, entry);
+		addCustomElements(entryElem, null, entry);
 		
 		String xml = doc.getRootElement().asXML();
 		

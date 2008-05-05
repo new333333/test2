@@ -33,7 +33,7 @@ import java.util.Calendar;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 
-import com.sitescape.team.remoting.ws.model.FolderEntryModel;
+import com.sitescape.team.remoting.ws.model.FolderEntry;
 import com.sitescape.team.remoting.ws.service.binder.BinderService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
@@ -256,4 +256,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void zone_modifyZoneUnderPortal(String accessToken, String zoneName, String virtualHost, String mailDomain) {
 		getZoneService().zone_modifyZoneUnderPortal(accessToken, zoneName, virtualHost, mailDomain);
 	}
+
+
+	public FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+		return getFolderService().folder_getFolderEntry(accessToken, binderId, entryId, includeAttachments);
+	}
+
 }

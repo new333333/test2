@@ -28,23 +28,5 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.Set;
-
-import org.dom4j.Element;
-
-import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.FileAttachment;
-
-public class ElementBuilderGraphic extends AbstractElementBuilder {
-	protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
-		Set<FileAttachment> files = attribute.getValueSet();
-		for (FileAttachment att:files) {
-			if (att != null && att.getFileItem() != null) {
-				Element value = element.addElement("value");
-				value.setText(att.getFileItem().getName());
-			}
-		}
-		return true;
-	}
+public class ElementBuilderGraphic extends ElementBuilderFileOrGraphic {
 }

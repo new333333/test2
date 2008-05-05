@@ -95,7 +95,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		addEntryAttributes(entryElem, entry);
 
 		// Handle custom fields driven by corresponding definition. 
-		addCustomElements(entryElem, entry);
+		addCustomElements(entryElem, null, entry);
 		
 		String xml = doc.getRootElement().asXML();
 		
@@ -233,6 +233,22 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId) {
 		getFolderModule().synchronize(binderId, null);
+	}
+
+	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+		Long bId = new Long(binderId);
+		Long eId = new Long(entryId);
+
+		// Retrieve the raw entry.
+		FolderEntry entry = 
+			getFolderModule().getEntry(bId, eId);
+
+		com.sitescape.team.remoting.ws.model.FolderEntry entryModel = 
+			new com.sitescape.team.remoting.ws.model.FolderEntry(); 
+
+		fillFolderEntryModel(entryModel, entry);
+		
+		return entryModel;
 	}
 	
 }
