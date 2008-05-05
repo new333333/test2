@@ -32,23 +32,34 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.remoting.ws.model.BooleanField;
+
 /**
  *
  * @author Jong Kim
  */
 public class ElementBuilderCheck extends AbstractElementBuilder {
-	protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
+	protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity, String dataElemType, String dataElemName, CustomAttribute attribute) {
 		Object val = attribute.getValue();
 		if(val instanceof Boolean) {
-			element.setText(val.toString());
+			if(element != null)
+				element.setText(val.toString());
+			if(entityModel != null)
+				entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, ((Boolean) val).booleanValue()));
 		} else {
-			element.setText(Boolean.FALSE.toString());
+			if(element != null)
+				element.setText(Boolean.FALSE.toString());
+			if(entityModel != null)
+				entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, false));
 		}
 		return true;
 	}
 	//no value found
-	protected boolean build(Element element, DefinableEntity entity, String dataElemName) {
-		element.setText(Boolean.FALSE.toString());
+	protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity, String dataElemType, String dataElemName) {
+		if(element != null)
+			element.setText(Boolean.FALSE.toString());
+		if(entityModel != null)
+			entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, false));
 		return true;
 	}
 }

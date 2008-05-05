@@ -28,24 +28,11 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.Map;
-
-import org.dom4j.Element;
-
-import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.Principal;
-import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.util.ResolveIds;
-
 /**
  *
  * @author Jong Kim
  */
-public class ElementBuilderUserlist extends AbstractElementBuilder {
+public class ElementBuilderUserlist extends ElementBuilderCommaSeparatedLong {
 
 /*	   protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
 		   Collection<Principal> users = ResolveIds.getPrincipals(attribute);

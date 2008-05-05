@@ -27,10 +27,14 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.module.definition.ws;
+import java.util.List;
+
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.remoting.ws.model.Field;
+import com.sitescape.team.remoting.ws.model.StringField;
 import com.sitescape.team.util.InvokeUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ObjectPropertyNotFoundException;
@@ -41,39 +45,45 @@ import com.sitescape.team.util.ObjectPropertyNotFoundException;
 public abstract class AbstractElementBuilder implements ElementBuilder {
     
 	protected BuilderContext context = null;
-    public boolean buildElement(Element element, DefinableEntity entity, String dataElemName, BuilderContext context) {
+    public boolean buildElement(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity, String dataElemType, String dataElemName, BuilderContext context) {
     	this.context = context;
-    	element.addAttribute("name", dataElemName);
-    	element.addAttribute("type", element.attributeValue("name"));
+    	if(element != null) {
+	    	element.addAttribute("name", dataElemName);
+	    	element.addAttribute("type", dataElemType);
+    	}
         CustomAttribute attribute = entity.getCustomAttribute(dataElemName);
 		try {
 			if (attribute != null) 
-    			return build(element, entity, attribute);
+    			return build(element, entityModel, entity, dataElemType, dataElemName, attribute);
 			else 
-    			return build(element, entity, dataElemName);
+    			return build(element, entityModel, entity, dataElemType, dataElemName);
 		} catch (Exception e) {
 			element.setText(NLT.get("ws.error.attribute"));
 			return true;
     	}
     }
-	protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
-	   	return build(element, attribute.getValue(), entity);
+	protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity, String dataElemType, String dataElemName, CustomAttribute attribute) {
+	   	return build(element, entityModel, attribute.getValue(), entity, dataElemType, dataElemName);
 	}   
-    protected boolean build(Element element, DefinableEntity entity, String dataElemName) {
+    protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity, String dataElemType, String dataElemName) {
 	   	try {
-	   		return build(element, InvokeUtil.invokeGetter(entity, dataElemName), entity);
+	   		return build(element, entityModel, InvokeUtil.invokeGetter(entity, dataElemName), entity, dataElemType, dataElemName);
 		} catch (ObjectPropertyNotFoundException ex) {
 	   		return false;
 	   	}
     }
     
-    protected boolean build(Element element, Object obj, DefinableEntity entity) {
-    	return build(element, obj);
+    protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, DefinableEntity entity, String dataElemType, String dataElemName) {
+    	return build(element, entityModel, obj, dataElemType, dataElemName);
     }
     
-    protected boolean build(Element element, Object obj) {
+    protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, String dataElemType, String dataElemName) {
 	   	if (obj != null) {
-	   		element.setText(obj.toString());
+	   		String value = obj.toString();
+	   		if(element != null)
+	   			element.setText(value);
+	   		if(entityModel != null && !dataElemName.equals("title"))
+	   			entityModel.addStringField(new StringField(dataElemName, dataElemType, value));
 	   	}
 	   	return true;
     }

@@ -28,20 +28,9 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import org.dom4j.Element;
-
-import com.sitescape.team.domain.CustomAttribute;
-
 /**
 *
 * @author Joe DeStefano
 */
 public class ElementBuilderText extends AbstractElementBuilder {
-
-	   protected boolean build(Element element, Object obj) {
-	    	if (obj != null) {
-	    		element.setText(obj.toString());
-	    	}
-	    	return true;
-	    }
 }
