@@ -487,7 +487,12 @@ ss_statusCurrent = "${ssUser.status}";
 
           <li><a title="<ssf:nlt tag="navigation.myTeams"/>"
 			  href="javascript:;" 
+<ssf:ifnotaccessible>
 			  onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+			  onClick="ssMyTeams${renderResponse.namespace}.showAccessible()"
+</ssf:ifaccessible>
               ><ssf:nlt tag="navigation.myTeams"/> <img border="0" 
               src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
 		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
@@ -496,8 +501,24 @@ ss_statusCurrent = "${ssUser.status}";
 			      	
 			    </div>
 			  </ssHelpSpot>
-			  <div id="ss_navbar_myteams${renderResponse.namespace}"
-			      style="visibility:hidden;margin:20px 0px 0px -130px;padding:0px;"></div>
+<ssf:ifnotaccessible>
+  <div id="ss_navbar_myteams${renderResponse.namespace}"
+      style="visibility:hidden;margin:20px 0px 0px -130px;padding:0px;">
+  </div>
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+  <div id="ss_navbar_myteams${renderResponse.namespace}"
+      style="position:relative;display:none;visibility:hidden;z-index:500;
+             margin:20px 0px 0px -130px;padding:0px;">
+	<iframe src="<html:rootPath/>js/forum/null.html" style="background-color:#ffffff;"
+	  id="ss_myTeamsIframe${renderResponse.namespace}">xxx</iframe>
+	<div style="background-color:#ffffff;">
+	  <a href="javascript: ;" onClick="ssMyTeams${renderResponse.namespace}.hideAccessible();return false;">
+	    <span><ssf:nlt tag="button.close"/></span>
+	  </a>
+	</div>
+  </div>
+</ssf:ifaccessible>
 
           </li>
 <ssf:ifnotaccessible>
