@@ -15,7 +15,7 @@
     <property name="internalId" length="32"/>
     <property name="visibility"/>
     <property name="zoneId" not-null="true"/>
-    <property name="encoding" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
+    <property name="encoding" length="2000000" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
     <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
       <many-to-one class="com.sitescape.team.domain.Principal" name="principal">
