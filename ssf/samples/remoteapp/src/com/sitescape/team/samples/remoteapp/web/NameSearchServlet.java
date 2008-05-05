@@ -52,6 +52,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
+import com.sitescape.team.client.ws.WebServiceClientUtil;
 import com.sitescape.util.servlet.StringServletResponse;
 
 public class NameSearchServlet extends HttpServlet {
@@ -171,10 +172,9 @@ public class NameSearchServlet extends HttpServlet {
 	
 	private void uploadFile(TeamingServiceSoapBindingStub stub, String accessToken) throws Exception {
 		// Do not use this method for general purpose, since it uses hard-coded 
-		// binder ID and enry ID, etc. Useful only for one shot testing.
-		DataHandler dhSource = new DataHandler(new FileDataSource(new File("C:/junk/junk1/chinese-application.doc")));
-		stub.addAttachment(dhSource);
-		stub._setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
+		// binder ID and enry ID, etc. Useful only for one-off testing.
+		File file = new File("C:/junk/junk1/chinese-application.doc");
+		WebServiceClientUtil.attachFile(stub, file);
 		stub.folder_uploadFolderFile(accessToken, 33, 9, "upload", "chinese-application.doc");
 	}
 }
