@@ -85,7 +85,7 @@ public abstract class WSClientBase {
 		// If using WS-Security, the engine must be configured with the
 		// WS-Security Axis handler (eg. WSS4J). Typically the configuration
 		// information is stored in a config file and read in at runtime.
-		// See client-config.wsdd file for sample config file. 
+		// See client-config-wss.wsdd file for sample config file. 
 		// Alternatively, the configuration information can be put together
 		// inside a program at runtime. This method uses the second approach
 		// for the purpose of demonstration.
@@ -111,7 +111,7 @@ public abstract class WSClientBase {
 			return WebServiceClientUtil.getMinimumEngineConfigurationWSSecurity();
 			
 		    // Alternatively you can use a configuration file.
-			//return  new org.apache.axis.configuration.FileProvider("client-config.wsdd");
+			//return  new org.apache.axis.configuration.FileProvider("client-config-wss.wsdd");
 		}
 		else {
 			// If you have custom configuration you can either hard-code it here
