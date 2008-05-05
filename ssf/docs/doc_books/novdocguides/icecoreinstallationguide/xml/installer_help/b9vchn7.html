@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Monday, May 05, 2008 19:00" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2006" />
+
+<style type="text/css">
+  @import url(ui/styles.css);
+</style>
+
+<title>Database Planning</title>
+<script type="text/javascript">
+  var prev_link = "b9vchn6.html";
+  var next_link = "b9vchn8.html";
+  var parentfile = "../b9vcafr.html";
+  var parenttoc = "../toc_b9vcafr.html";
+  if(parent.location != location) { parent.loadMenu(); }
+</script>
+<script type="text/javascript" src="ui/jsglobal.js"></script>
+</head>
+
+<body>
+<script type="text/javascript" src="ui/topnav.js"></script>
+
+<div class="sect1"  id="b9vchn7">
+
+<h1 class="title"> Database Planning</h1>
+
+<p class="para">Novell Teaming and Liferay* use separate dedicated databases within your database server. A set of SQL configuration scripts are used to initialize the databases (creating the necessary tables, etc.).</p>
+<p class="para">Novell Teaming’s default database for Linux and Windows is MySQL. Novell Teaming also supports SQL Server on Windows, and Oracle on Linux and Windows.</p>
+<p class="para">Novell Teaming’s database requirements are relatively modest. The bulk of the data uploaded to Novell Teaming is stored in a file repository (see <a href="b9vchn8.html">File System Planning</a>). The database is primarily used for storing metadata and descriptive text.</p>
+<p class="para">Because the amount of data stored in the database is highly sensitive to the usage patterns of Novell Teaming (which are highly variable) there is no reliable formula for determining disk space usage, but the following can be used as a guideline:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> numberAttachments x averageAttachmentSize = totalAttachmentSpace</p></li>
+<li class="listitem">
+<p class="listitem">totalAttachmentSpace * .04 = sqlDataSpace</p></li>
+<li class="listitem">
+<p class="listitem"> sqlDataSpace x 5 = sqlStorageSpace</p></li></ul></div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The installer generates your database scripts for you, but if your DBA wants to create the databases by hand, the necessary scripts are provided in the kit. See <a href="b9vchn7.html#bf0m3jb">Non-Local Database Setup</a>.</p></div>
+
+<p class="para">See the following subsections:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+            <a href="b9vchn7.html#bf0m2pc">MySQL</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="b9vchn7.html#bf0m37q">Microsoft SQL Server</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="b9vchn7.html#bf0m3cs">Oracle Database</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="b9vchn7.html#bf0m3jb">Non-Local Database Setup</a>
+          </p></li></ul></div>
+
+<div class="sect2"  id="bf0m2pc">
+
+<h2 class="title"> MySQL</h2>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> MySQL 5.0.37 (or higher) Server and Client for Linux or MySQL 5.0.26 (or higher) Server and Client for Windows are required with <span class="literal">innodb support</span> enabled.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>MySQL 5.1 is not yet supported. You can get the MySQL Community Server at: <a href="http://www.mysql.com/" class="ulink">http://www.mysql.com/</a>.</p></div>
+</li>
+<li class="listitem">
+<p class="listitem">Specify <span class="filename">root</span> for the administrator password when you run the installer.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The installer generates your database scripts for you, but if your DBA wants to create the databases by hand, the necessary scripts are provided in the kit. See <a href="b9vchn7.html#bf0m3jb">Non-Local Database Setup</a>.</p></div>
+</li>
+<li class="listitem">
+<p class="listitem"> Set the default character set to UTF-8 by selecting <span class="guimenu">Best support for Multilingualism</span> in the Windows Configuration window, or edit the<span class="literal"></span><span class="literal">my.cnf </span>configuration file to the following:</p><pre class="screen">
+[mysqld]
+</pre><pre class="screen">
+character_set_server = utf8
+</pre><pre class="screen">
+[client]
+</pre><pre class="screen">
+default_character_set = utf8
+</pre>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>This file is usually located in<span class="literal"> /etc/my.cnf </span>for Linux and in<span class="literal"> c:\my.cnf </span>for Windows. See the MySQL documentation for details.</p></div>
+</li></ul></div>
+
+</div>
+
+<div class="sect2"  id="bf0m37q">
+
+<h2 class="title"> Microsoft SQL Server </h2>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"> You can use SQL Server 2000 or SQL Server 2005</p></li>
+<li class="listitem">
+<p class="listitem">Make sure to select SQL Server and Windows for authentication (the default is Windows only)</p></li>
+<li class="listitem">
+<p class="listitem">Set the administrator password to<span class="literal"> sa </span>when you run the installer.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>The installer generates your database scripts for you, but if your DBA wants to create the databases by hand, the necessary scripts are provided in the kit. See <a href="b9vchn7.html#bf0m3jb">Non-Local Database Setup</a>.</p></div>
+</li></ul></div>
+
+</div>
+
+<div class="sect2"  id="bf0m3cs">
+
+<h2 class="title"> Oracle Database</h2>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Supported versions: Oracle 9, Oracle 10.</p>
+<p class="listitem">Oracle’s default database name is<span class="literal"> orcl</span>. We use this name in our examples. If you have chosen a different name, replace<span class="literal"> orcl </span>with your database name.</p></li>
+<li class="listitem">
+<p class="listitem">Novell Teaming is enabled for Unicode and requires you to set up the Oracle Database Character Set to support Unicode character encodings. Novell Teaming requires either the UTF8 or AL32UTF8 character set for proper operation. Oracle recommends the use of AL32UTF8, because it has increased support for certain Asian languages. Consult your Oracle documentation for the choice that makes sense for your database.</p></li>
+<li class="listitem">
+<p class="listitem">To check your database character set, execute the following command with SQL*Plus:</p><pre class="screen">
+select value from SYS.NLS_DATABASE_PARAMETERS where PARAMETER = 'NLS_CHARACTERSET';
+</pre></li>
+<li class="listitem">
+<p class="listitem">Before you install the Novell Teaming application software, run the two Oracle database scripts. These are provided in the kit:</p><pre class="screen">
+\database\oracle\create-database-oracle.sql
+</pre><pre class="screen">
+\database\oracle\create-oracle.sql
+</pre>
+<div class="orderedlist">
+<ol class="orderedlist">
+              
+<li class="listitem">
+<p class="listitem">These two scripts need to be accessible to the SQL*Plus utility and your database, so copy them to a location on your system path.</p></li>
+              
+<li class="listitem">
+<p class="listitem">Edit the supplied database scripts to set the passwords for the users (these are defined in the top few lines of each script).</p>
+<p class="listitem">For example, in<span class="literal"> create-database-oracle.sql</span>, you see:</p><pre class="screen">
+drop user sitescape cascade;
+</pre><pre class="screen">
+create user sitescape identified by sitescape;
+</pre><pre class="screen">
+grant connect, resource to sitescape;
+</pre><pre class="screen">
+connect sitescape/sitescape; 
+</pre>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"><span class="literal">user sitescape</span> indicates that<span class="literal"> sitescape </span>is the name of the database created. Do not change this.</p></li>
+<li class="listitem">
+<p class="listitem"><span class="literal">identified by sitescape </span>declares that<span class="literal"> sitescape </span>is the password for this database. Change this to the password you intend to use, such as <span class="literal">identified by <span class="replaceable">yourpassword</span></span> and change the <span class="literal">connect sitescape/sitescape</span> to <span class="literal">connect sitescape/<span class="replaceable">yourpassword</span></span>.</p></li></ul></div>
+</li>
+              
+<li class="listitem">
+<p class="listitem">Use the SQL*Plus utility with the SYSTEM account to run the scripts:</p><pre class="screen">
+sqlplus SYSTEM/systemPassword @create-oracle.sql
+</pre><pre class="screen">
+sqlplus SYSTEM/systemPassword @create-database-oracle.sql 
+</pre><pre class="screen">
+sqlplus&gt; quit
+</pre></li>
+            </ol></div>
+</li></ul></div>
+
+</div>
+
+<div class="sect2"  id="bf0m3jb">
+
+<h2 class="title"> Non-Local Database Setup</h2>
+
+<p class="para">When installing the Novell Teaming software for the first time, one of the steps involves creating two databases: one for the portal and one for the Novell Teaming application. If your DBA wants to create the databases by hand, the necessary scripts are provided in the kit. This is required for Oracle. For more information, see <a href="b9vchn7.html#bf0m3cs">Oracle Database</a>.</p>
+<p class="para">The database scripts are in a <span class="literal">database</span> directory next to the installer:</p><pre class="screen">
+
+\database\mysql\create-database-mysql.sql
+\database\mysql\create-mysql.sql
+
+\database\sqlserver\create-database-sqlserver.sql
+\database\sqlserver\create-sqlserver.sql
+\database\oracle\create-database-oracle.sql\database\oracle\create-oracle.sql
+</pre>
+<p class="para">When you run the installer, select the <span class="guimenu">My DBA has already created the databases</span> option in the <span class="guimenu">Database selection</span> window.</p>
+</div>
+
+</div>
+
+<p class="trademark">A trademark symbol (<sup><small>&reg;</small></sup>, <sup><small>TM</small></sup>, etc.) denotes a Novell trademark. An asterisk (*) denotes a third-party trademark. For more information, see <a href="legal.html">Legal Notices</a>.</p>
+
+<script type="text/javascript" src="ui/bottomnav.js"></script>
+</body>
+</html>
