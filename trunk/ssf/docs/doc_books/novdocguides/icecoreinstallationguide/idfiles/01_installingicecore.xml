@@ -14,19 +14,15 @@
 
  <target id="bbevhpb" pid="b9vchn6" name="Step" level="3" number="2"> <text>Set the JAVA_HOME environment variable on your computer to the correct JDK path and name on your system.</text> </target>
 
- <target id="b9ptl7r" pid="b9vchn6" name="Step" level="3" number="3"> <text>Install and Configure the Database Server. See "Database Planning" on page 10.</text> </target>
+ <target id="b9ptl7r" pid="b9vchn6" name="Step" level="3" number="3"> <text>Install and Configure the Database Server. See "Database Planning" on page 11.</text> </target>
 
- <target id="b9ptld7" pid="b9vchn6" name="Step" level="3" number="4"> <text>Download the appropriate Novell Teaming kit.</text> </target>
+ <target id="b9ptld7" pid="b9vchn6" name="Step" level="3" number="4"> <text>Download the appropriate Novell Teaming kit and unzip it.</text> </target>
 
- <target id="b9ptlge" pid="b9vchn6" name="Step" level="3" number="5"> <text>Edit the installer.xml file. See "Editing the Installer (.xml) File" on page 17.</text> </target>
+ <target id="bbijs99" pid="b9vchn6" name="Step" level="3" number="5"> <text>If you want to run the indexing service in Novell Teaming on a different machine from Novell Teaming, install the Lucene Index Server on the other machine. See "Installing a Standalone Lucene Index Server" on page 29.</text> </target>
 
- <target id="bdiloou" pid="b9vchn6" name="Step" level="3" number="6"> <text>Edit the Environment section of the installer.xml file to include the location of the JDK (along with other system environment information). See "Editing the Installer (.xml) File" on page 17.</text> </target>
+ <target id="b9ptlgi" pid="b9vchn6" name="Step" level="3" number="6"> <text>Run the installer from where you unzipped the Novell Teaming kit. See "Running the Installer" on page 23.</text> </target>
 
- <target id="bbijs99" pid="b9vchn6" name="Step" level="3" number="7"> <text>If you want to run the indexing service in Novell Teaming on a different machine from Novell Teaming, install the Lucene Index Server on the other machine. See "Installing a Standalone Lucene Index Server" on page 26.</text> </target>
-
- <target id="b9ptlgi" pid="b9vchn6" name="Step" level="3" number="8"> <text>Run the installer (on Linux, do a chmod +x installer-liferay.linux to make the installer executable). See "Running the Installer" on page 17.</text> </target>
-
- <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="9"> <text>Start and stop Novell Teaming. See "Starting and Stopping Novell Teaming" on page 19.</text> </target>
+ <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="7"> <text>Start and stop Novell Teaming. See "Starting and Stopping Novell Teaming" on page 31.</text> </target>
 
  <target id="b9vchn7" pid="b9vchn7" name="Sect1" level="1" number="1.3"> <text>Database Planning</text> </target>
 
@@ -56,13 +52,13 @@
 
  <target id="bbpnnvh" pid="bbn8hra" name="Sect2" level="2" number="1.5.3"> <text>Integrating with iChain</text> </target>
 
- <target id="bbn8j9e" pid="bbn8hra" name="Procedure" level="3" number="1"> <text>Assure that the iChain proxy's host name and port number match the Novell Teaming/Liferay port number. </text> </target>
+ <target id="bbn8j9e" pid="bbn8hra" name="Procedure" level="3" number="1"> <text>Assure that the iChain proxy's host name and port number match the Novell Teaming/Liferay port number. If you have configured Novell Teaming to run on port 8080, the iChain proxy should also use port 8080. If the port numbers differ, you must set the Listen Port setting in the Network information window when you run the installer.</text> </target>
 
- <target id="bbn8j9f" pid="bbn8hra" name="Step" level="4" number="1"> <text>Assure that the iChain proxy's host name and port number match the Novell Teaming/Liferay port number. </text> </target>
+ <target id="bbn8j9f" pid="bbn8hra" name="Step" level="4" number="1"> <text>Assure that the iChain proxy's host name and port number match the Novell Teaming/Liferay port number. If you have configured Novell Teaming to run on port 8080, the iChain proxy should also use port 8080. If the port numbers differ, you must set the Listen Port setting in the Network information window when you run the installer.</text> </target>
 
- <target id="bbn8jfu" pid="bbn8hra" name="Step" level="4" number="2"> <text>Edit the SSO section in the installer.xml file and set the SSO enable="true", set the Logoff URL to the log-off URL provided by the iChain proxy server, and set the IP address of the iChain proxy server.</text> </target>
+ <target id="bbn8jfu" pid="bbn8hra" name="Step" level="4" number="2"> <text>In iChain configuration window of the installer, select the Enable iChain option, set the Logoff URL setting to the log-off URL provided by the iChain proxy server, and set the iChain Proxy setting to the IP address of the iChain proxy server.</text> </target>
 
- <target id="bbn8jfw" pid="bbn8hra" name="Step" level="4" number="3"> <text>Install the software or, if you have already installed Novell Teaming, stop the running server and use the installer's Apply Settings only option.</text> </target>
+ <target id="bf44f08" pid="bbn8hra" name="Step" level="4" number="3"> <text>Finish running the installer's New Installation or Reconfiguration. See "Running the Installer" on page 23.</text> </target>
 
  <target id="bbn8jfy" pid="bbn8hra" name="Step" level="4" number="4"> <text>After enabling the iChain SSO, log into Liferay by using a direct login URL: http://localhost:8080/c/portal/login and log in as admin. </text> </target>
 
@@ -74,81 +70,7 @@
 
  <target id="bf0mw5e" pid="bbn8hra" name="Step" level="4" number="8"> <text>To enable iChain integration-related debug log messages, modify Liferay's portal-log4j-ext.xml to add the following category:</text> </target>
 
- <target id="b9vchn9" pid="b9vchn9" name="Sect1" level="1" number="1.6"> <text>Editing the Installer (.xml) File</text> </target>
-
- <target id="banqre5" pid="b9vchn9" name="Procedure" level="2" number="1"> <text>Change the Host name in the Network section. Change the port number to 80 and the securePort to 443 if this is a dedicated server.</text> </target>
-
- <target id="banqre6" pid="b9vchn9" name="Step" level="3" number="1"> <text>Change the Host name in the Network section. Change the port number to 80 and the securePort to 443 if this is a dedicated server.</text> </target>
-
- <target id="banqre7" pid="b9vchn9" name="Step" level="3" number="2"> <text>Consider changing the JavaVirtualMachine setting in the Memory section if you have a large installation.</text> </target>
-
- <target id="banqre8" pid="b9vchn9" name="Step" level="3" number="3"> <text>Use the default file system configuration. This stores the files in /home/icecoredata.</text> </target>
-
- <target id="banqre9" pid="b9vchn9" name="Step" level="3" number="4"> <text>Use the default MySQL database configuration, with the default MySQL passwords.</text> </target>
-
- <target id="banqrea" pid="b9vchn9" name="Step" level="3" number="5"> <text>Use the default Lucene configuration, unless you are installing a standalone Lucene Index Server. See "Installing a Standalone Lucene Index Server" on page 26.</text> </target>
-
- <target id="banqreb" pid="b9vchn9" name="Step" level="3" number="6"> <text>Modify the Email section to include your SMTP and POP/IMAP servers.</text> </target>
-
- <target id="banqrec" pid="b9vchn9" name="Step" level="3" number="7"> <text>If you are using Conferencing, change the settings in the Presence configuration.</text> </target>
-
- <target id="b9vchna" pid="b9vchna" name="Sect1" level="1" number="1.7"> <text>Running the Installer</text> </target>
-
- <target id="bbikzkn" pid="b9vchna" name="Procedure" level="2" number="1"> <text>Run the installer (on Linux, do a chmod +x installer-liferay.linux to make the installer executable).</text> </target>
-
- <target id="bbil5vv" pid="b9vchna" name="Step" level="3" number="1"> <text>Run the installer (on Linux, do a chmod +x installer-liferay.linux to make the installer executable).</text> </target>
-
- <target id="bbikzko" pid="b9vchna" name="Step" level="3" number="2"> <text>Answer Yes to the license agreement:</text> </target>
-
- <target id="bbil0y7" pid="b9vchna" name="Step" level="3" number="3"> <text>Enter the type of install you are performing:</text> </target>
-
- <target id="bbn4gx6" pid="b9vchna" name="FormalPara" level="4" number="1."> <text>FULL INSTALL:</text> </target>
-
- <target id="bbn4gwb" pid="b9vchna" name="FormalPara" level="4" number="2."> <text>UPDATE</text> </target>
-
- <target id="bbn4gv4" pid="b9vchna" name="FormalPara" level="4" number="3."> <text>Lucene Server</text> </target>
-
- <target id="bbn4gu1" pid="b9vchna" name="FormalPara" level="4" number="4."> <text>Apply Settings</text> </target>
-
- <target id="bbn4gdd" pid="b9vchna" name="FormalPara" level="4" number="5."> <text>Create Initial Database Scripts</text> </target>
-
- <target id="bbil1ux" pid="b9vchna" name="Step" level="3" number="4"> <text>Review the installation messages and enter Y to continue the install or enter N to cancel:</text> </target>
-
- <target id="bbil3me" pid="b9vchna" name="Step" level="3" number="5"> <text>The install process asks you if want to create the Novell Teaming databases at this time; enter 1 to create the databases or enter 2 to skip this step:</text> </target>
-
- <target id="b9vchnb" pid="b9vchnb" name="Sect1" level="1" number="1.8"> <text>Starting and Stopping Novell Teaming</text> </target>
-
- <target id="bf0n18k" pid="b9vchnb" name="Sect2" level="2" number="1.8.1"> <text>Starting Novell Teaming/Liferay</text> </target>
-
- <target id="bf0n3pf" pid="b9vchnb" name="Sect2" level="2" number="1.8.2"> <text>Setting up Novell Teaming to Start on System Startup</text> </target>
-
- <target id="bant5c0" pid="b9vchnb" name="Procedure" level="3" number="1"> <text>Enter C:\yourinstall\liferay-portal-tomcat-5.5-jdk5-4.3.0\bin\service.bat install icecore</text> </target>
-
- <target id="bant5c1" pid="b9vchnb" name="Step" level="4" number="1"> <text>Enter C:\yourinstall\liferay-portal-tomcat-5.5-jdk5-4.3.0\bin\service.bat install icecore</text> </target>
-
- <target id="bant6f3" pid="b9vchnb" name="Step" level="4" number="2"> <text>Use the Services Control Panel to configure the service to your needs.</text> </target>
-
- <target name="SubSteps" level="5"> <text>Select Control Panel &#62; Administration Tools &#62; Services.</text> </target>
-
- <target id="bbo72yz" pid="b9vchnb" name="Step" level="6" number="2a"> <text>Select Control Panel &#62; Administration Tools &#62; Services.</text> </target>
-
- <target id="bbo73bh" pid="b9vchnb" name="Step" level="6" number="2b"> <text>Right-click the ApacheTomcat icecore service and select Properties.</text> </target>
-
- <target id="bbo73vc" pid="b9vchnb" name="Step" level="6" number="2c"> <text>Change the Startup Type to Automatic and click OK.</text> </target>
-
- <target id="bbptbit" pid="b9vchnb" name="Step" level="6" number="2d"> <text>Set your firewall to allow port 8080.</text> </target>
-
- <target id="bant6o3" pid="b9vchnb" name="Procedure" level="3" number="1"> <text>Enter cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore   /etc/init.d</text> </target>
-
- <target id="bant6vx" pid="b9vchnb" name="Step" level="4" number="1"> <text>Enter cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore   /etc/init.d</text> </target>
-
- <target id="bant6wo" pid="b9vchnb" name="Step" level="4" number="2"> <text>Enter chkconfig --add icecore </text> </target>
-
- <target id="bf0n4j3" pid="b9vchnb" name="Sect2" level="2" number="1.8.3"> <text>Log Files and Monitoring</text> </target>
-
- <target id="bf0n5ay" pid="b9vchnb" name="Sect2" level="2" number="1.8.4"> <text>Stopping Novell Teaming</text> </target>
-
- <target id="b9vchnf" pid="b9vchnf" name="Sect1" level="1" number="1.9"> <text>Memory Guidelines</text> </target>
+ <target id="b9vchnf" pid="b9vchnf" name="Sect1" level="1" number="1.6"> <text>Memory Guidelines</text> </target>
 
  <target id="bf0n98b" pid="b9vchnf" name="FormalPara" level="2" number="1."> <text>Number of sessions (users logged in):</text> </target>
 
@@ -158,7 +80,7 @@
 
  <target id="bf0n9my" pid="b9vchnf" name="FormalPara" level="2" number="4."> <text>Lucene index cache:</text> </target>
 
- <target id="bbn5klr" pid="bbn5klr" name="Sect1" level="1" number="1.10"> <text>Security Guidelines</text> </target>
+ <target id="bbn5klr" pid="bbn5klr" name="Sect1" level="1" number="1.7"> <text>Security Guidelines</text> </target>
 
  <target id="bbxfle4" pid="bbn5klr" name="FormalPara" level="2" number="w"> <text>Liferay Session Timeout:</text> </target>
 
@@ -186,89 +108,7 @@
 
  <target id="bbqosan" pid="bbn5klr" name="FormalPara" level="2" number="w"> <text>Password Storage in the Server File System:</text> </target>
 
- <target id="b9vchng" pid="b9vchng" name="Sect1" level="1" number="1.11"> <text>Document Support</text> </target>
-
- <target id="bf0njeb" pid="b9vchng" name="Sect2" level="2" number="1.11.1"> <text>Uploaded Files</text> </target>
-
- <target id="bf0njid" pid="b9vchng" name="Sect2" level="2" number="1.11.2"> <text>Editing Support</text> </target>
-
- <target id="bf0nqzj" pid="b9vchng" name="Figure" level="3" number="Figure 1-1"> <text>Document and File Support</text> </target>
-
- <target id="bbijvt7" pid="bbijvt7" name="Sect1" level="1" number="1.12"> <text>Installing a Standalone Lucene Index Server</text> </target>
-
- <target id="bbijx0b" pid="bbijvt7" name="Sect2" level="2" number="1.12.1"> <text>Installing Lucene for a New Novell Teaming Application</text> </target>
-
- <target id="bbijw1t" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>On the standalone machine, edit the Installer.xml file (see "The sample-installer.xml File" on page 61):</text> </target>
-
- <target id="bbijw1u" pid="bbijvt7" name="Step" level="4" number="1"> <text>On the standalone machine, edit the Installer.xml file (see "The sample-installer.xml File" on page 61):</text> </target>
-
- <target name="SubSteps" level="5"> <text>In the Lucene section, set luceneLocation="server"</text> </target>
-
- <target id="bbik1we" pid="bbijvt7" name="Step" level="6" number="1a"> <text>In the Lucene section, set luceneLocation="server"</text> </target>
-
- <target id="bbik1wm" pid="bbijvt7" name="Step" level="6" number="1b"> <text>If necessary, edit the default rmi port: lucene.rmi.port="1199"</text> </target>
-
- <target id="bbik1r2" pid="bbijvt7" name="Step" level="4" number="2"> <text>Run the installer on the standalone machine and choose the option for Novell Teaming Enterprise Lucene Server (see "Running the Installer" on page 17).</text> </target>
-
- <target id="bbiks4e" pid="bbijvt7" name="Step" level="4" number="3"> <text>At the end of the installation, start the server:</text> </target>
-
- <target name="SubSteps" level="5"> <text>Change directories to lucene-server-installation-dir</text> </target>
-
- <target id="bbikt0x" pid="bbijvt7" name="Step" level="6" number="3a"> <text>Change directories to lucene-server-installation-dir</text> </target>
-
- <target id="bbiktkq" pid="bbijvt7" name="Step" level="6" number="3b"> <text>Run the rmiregistry-startup script in the bin directory</text> </target>
-
- <target id="bbiktxj" pid="bbijvt7" name="Step" level="6" number="3c"> <text>Run the indexserver-startup script in the bin directory</text> </target>
-
- <target id="bbo58ws" pid="bbijvt7" name="Step" level="4" number="4"> <text>On the Novell Teaming server, edit the Installer.xml file:</text> </target>
-
- <target name="SubSteps" level="5"> <text>In the Lucene section, set luceneLocation="server" </text> </target>
-
- <target id="bbo59kx" pid="bbijvt7" name="Step" level="6" number="4a"> <text>In the Lucene section, set luceneLocation="server" </text> </target>
-
- <target id="bbo59l9" pid="bbijvt7" name="Step" level="6" number="4b"> <text>Set lucene.index.hostname to the hostname of the machine on which you installed the Lucene Index Server in Step 1 through Step 3.</text> </target>
-
- <target id="bbikukj" pid="bbijvt7" name="Step" level="4" number="5"> <text>Run the normal installation of Novell Teaming (see Section 1.7, "Running the Installer," on page 17).</text> </target>
-
- <target id="bbijxwe" pid="bbijvt7" name="Sect2" level="2" number="1.12.2"> <text>Installing Lucene for an Existing Novell Teaming Application</text> </target>
-
- <target id="bbikxce" pid="bbijvt7" name="Procedure" level="3" number="1"> <text>On the standalone machine, edit the Installer.xml file (see "The sample-installer.xml File" on page 61):</text> </target>
-
- <target id="bbikxcf" pid="bbijvt7" name="Step" level="4" number="1"> <text>On the standalone machine, edit the Installer.xml file (see "The sample-installer.xml File" on page 61):</text> </target>
-
- <target name="SubSteps" level="5"> <text>In the Lucene section, set luceneLocation="server"</text> </target>
-
- <target id="bbikxcg" pid="bbijvt7" name="Step" level="6" number="1a"> <text>In the Lucene section, set luceneLocation="server"</text> </target>
-
- <target id="bbikxch" pid="bbijvt7" name="Step" level="6" number="1b"> <text>If necessary, edit the default rmi port: lucene.rmi.port="1099"</text> </target>
-
- <target id="bbikvyy" pid="bbijvt7" name="Step" level="4" number="2"> <text>Run the installer on the standalone machine and choose the option for Novell Teaming Enterprise Lucene Server (see "Running the Installer" on page 17).</text> </target>
-
- <target id="bbo5ce8" pid="bbijvt7" name="Step" level="4" number="3"> <text>Shut down Novell Teaming on the Novell Teaming server (see "Starting and Stopping Novell Teaming" on page 19).</text> </target>
-
- <target id="bbo5co3" pid="bbijvt7" name="Step" level="4" number="4"> <text>On the standalone machine, check the lucene-server.properties file and find the setting for index.root.dir (you can edit this setting to change the location of the root directory).</text> </target>
-
- <target id="bbo5ixl" pid="bbijvt7" name="Step" level="4" number="5"> <text>Create a "liferay.com" subdirectory in the  &#60;index.root.dir&#62;  directory.</text> </target>
-
- <target id="bbo5jtu" pid="bbijvt7" name="Step" level="4" number="6"> <text>On the Novell Teaming server, look at the ssf.properties file and find the data.root.dir setting. </text> </target>
-
- <target id="bbo5kd5" pid="bbijvt7" name="Step" level="4" number="7"> <text>Copy all the files from the &#60;data.root.dir&#62;/lucene/liferay.com directory on the Novell Teaming server to the &#60;index.root.dir&#62;/liferay.com directory you just created on the standalone machine.</text> </target>
-
- <target id="bbn3gww" pid="bbijvt7" name="Step" level="4" number="8"> <text>For UNIX systems, make sure permissions are set so that the Novell Teaming user has full access to these files and the liferay.com directory.</text> </target>
-
- <target id="bbikvyz" pid="bbijvt7" name="Step" level="4" number="9"> <text>Start the server at the end of the installation (if it is not already started):</text> </target>
-
- <target name="SubSteps" level="5"> <text>Change directories to lucene-server-installation-dir</text> </target>
-
- <target id="bbikvz0" pid="bbijvt7" name="Step" level="6" number="9a"> <text>Change directories to lucene-server-installation-dir</text> </target>
-
- <target id="bbikvz1" pid="bbijvt7" name="Step" level="6" number="9b"> <text>Run the rmiregistry-startup script in the bin directory</text> </target>
-
- <target id="bbikvz2" pid="bbijvt7" name="Step" level="6" number="9c"> <text>Run the indexserver-startup script in the bin directory</text> </target>
-
- <target id="bbikwk1" pid="bbijvt7" name="Step" level="4" number="10"> <text>Restart Novell Teaming (see "Starting and Stopping Novell Teaming" on page 19).</text> </target>
-
- <target id="bbnqb4c" pid="bbnqb4c" name="Sect1" level="1" number="1.13"> <text>Load-Balancing and Clustering Novell Teaming</text> </target>
+ <target id="bbnqb4c" pid="bbnqb4c" name="Sect1" level="1" number="1.8"> <text>Load-Balancing and Clustering Novell Teaming</text> </target>
 
  <target id="bbnqei6" pid="bbnqb4c" name="Procedure" level="2" number="1"> <text>Set up a shared file storage that is accessible to all nodes.</text> </target>
 
@@ -300,7 +140,133 @@
 
  <target id="bbo3q8y" pid="bbnqb4c" name="Step" level="3" number="8"> <text>Start the Lucene Index Server, and then start the application cluster nodes.</text> </target>
 
- <target id="bcghun2" pid="bcghun2" name="Sect1" level="1" number="1.14"> <text>Novell Teaming Backup and Restore Procedures</text> </target>
+ <target id="installer" pid="installer" name="Sect1" level="1" number="1.9"> <text>Running the Installer</text> </target>
+
+ <target id="bbikzkn" pid="installer" name="Procedure" level="2" number="1"> <text>Run the installer (on Linux, do a chmod +x installer-liferay.linux to make the installer executable).</text> </target>
+
+ <target id="bbil5vv" pid="installer" name="Step" level="3" number="1"> <text>Run the installer (on Linux, do a chmod +x installer-liferay.linux to make the installer executable).</text> </target>
+
+ <target id="bbikzko" pid="installer" name="Step" level="3" number="2"> <text>In the Welcome window, select the procedure you want to perform, then click Next:</text> </target>
+
+ <target id="bf46m4m" pid="installer" name="Step" level="3" number="3"> <text>Read the license agreement, select the I accept the license agreement option to indicate your acceptance of this agreement, then click Next.</text> </target>
+
+ <target id="bf46nqt" pid="installer" name="Step" level="3" number="4"> <text>In the Choose installation type window, select the type of installation you want to perform, then click Next:</text> </target>
+
+ <target id="bf46ssi" pid="installer" name="Step" level="3" number="5"> <text>In the Install location window, use the associated Browse buttons to change the default location for the installation or file system:</text> </target>
+
+ <target id="bf46w1x" pid="installer" name="Step" level="3" number="6"> <text>If you need to change the locations of any of the file system components, select advanced from the File system setup type drop-down list to activate the Browse buttons for these components, make the necessary changes, then click Next.</text> </target>
+
+ <target id="bf46xc3" pid="installer" name="Step" level="3" number="7"> <text>In the Liferay data location window, click Browse if you need to change the default Root location for this data, then click Next.</text> </target>
+
+ <target id="bf47075" pid="installer" name="Step" level="3" number="8"> <text>In the Network information window, specify the network values for how you want Novell Teaming to appear on the network. See "Network Planning" on page 14.</text> </target>
+
+ <target id="bf471tj" pid="installer" name="Step" level="3" number="9"> <text>In the Database selection window, configure your databases and select whether or not to create the databases during install. The database server you select must already be installed.</text> </target>
+
+ <target name="SubSteps" level="4"> <text>Select the database from the Database type drop-down list.</text> </target>
+
+ <target id="bf478nz" pid="installer" name="Step" level="5" number="9a"> <text>Select the database from the Database type drop-down list.</text> </target>
+
+ <target id="bf4794l" pid="installer" name="Step" level="5" number="9b"> <text>Enter your Username, Password, and JDBC URL for the icecore and Liferay databases, then click Next.</text> </target>
+
+ <target id="bf47d3p" pid="installer" name="Step" level="3" number="10"> <text>In the Java JDK location window, click Browse to select the Java Home directory location (if not detected automatically), type in the JVM heap size value if you require more than the default 1 G (use a small "g" with no spaces), then click Next.</text> </target>
+
+ <target id="bf47nqf" pid="installer" name="Step" level="3" number="11"> <text>In the Lucene configuration window, edit the fields to configure the Lucene index.  </text> </target>
+
+ <target id="bf47ugd" pid="installer" name="Step" level="3" number="12"> <text>In the RSS configuration window, edit the fields to configure the Novell Teaming RSS feeds, or deselect the Enable RSS option to disable RSS feeds, then click Next.</text> </target>
+
+ <target id="bf47ynk" pid="installer" name="FormalPara" level="4"> <text>RSS feed URLs:</text> </target>
+
+ <target id="bf47x7h" pid="installer" name="Step" level="3" number="13"> <text>In the Outbound email configuration window, edit the fields to configure your outbound e-mail settings. Outbound configuration requires the basic information for generating SMTP mail messages: server, port, and optional authentication information. </text> </target>
+
+ <target id="bf47zxs" pid="installer" name="Step" level="3" number="14"> <text>In the Inbound email configuration window, edit the following fields to configure your inbound e-mail settings, then click Next. </text> </target>
+
+ <target id="bf48geg" pid="installer" name="Step" level="3" number="15"> <text>In the Presence configuration window, select the Enable presence option to link your Novell Teaming and Conferencing servers together. You need to obtain the values for the following fields from an installed and configured Conferencing server. If you do not know these values now, you can run the installer's Reconfigure option to add this information later. Click Next to continue.</text> </target>
+
+ <target id="bf48jzg" pid="installer" name="Step" level="3" number="16"> <text>In the iChain configuration window, select Enable iChain to use the iChain Single Sign-on Support (SSO), set the Logoff URL to the address used to trigger an iChain logoff, set the IP address of the iChain Proxy server, then click Next. </text> </target>
+
+ <target id="bf48mn3" pid="installer" name="Step" level="3" number="17"> <text>Mirrored folders are local/shared directories that are exposed within Novell Teaming. You must configure the directories here before they are available in Novell Teaming. For security reasons the set of people who can map Novell Teaming folders to these shared directories should be limited.</text> </target>
+
+ <target id="bf48siq" pid="installer" name="Step" level="3" number="18"> <text>In the Ready to install window, click Next to begin the installation or use the Back button to review the current configuration of the installer. </text> </target>
+
+ <target id="bbijvt7" pid="bbijvt7" name="Sect1" level="1" number="1.10"> <text>Installing a Standalone Lucene Index Server</text> </target>
+
+ <target id="bbijw1t" pid="bbijvt7" name="Procedure" level="2" number="1"> <text>Copy the Lucene installer to the system on which you want to install the standalone Lucene Index Server.</text> </target>
+
+ <target id="bbiks4e" pid="bbijvt7" name="Step" level="3" number="1"> <text>Copy the Lucene installer to the system on which you want to install the standalone Lucene Index Server.</text> </target>
+
+ <target id="bf493be" pid="bbijvt7" name="Step" level="3" number="2"> <text>Run the Lucene installer.</text> </target>
+
+ <target id="bf49evs" pid="bbijvt7" name="Step" level="3" number="3"> <text>In the Welcome window, select the procedure you want to perform, then click Next:</text> </target>
+
+ <target id="bf49evt" pid="bbijvt7" name="Step" level="3" number="4"> <text>Read the license agreement, select the I accept the license agreement option to indicate your acceptance of this agreement, then click Next.</text> </target>
+
+ <target id="bf49evu" pid="bbijvt7" name="Step" level="3" number="5"> <text>In the Install location window, click Browse if you need to change the default Install location for the luceneserver, then click Next.</text> </target>
+
+ <target id="bf49evv" pid="bbijvt7" name="Step" level="3" number="6"> <text>In the Lucene configuration window, edit the fields to configure the Lucene index.  </text> </target>
+
+ <target id="bf49evw" pid="bbijvt7" name="Step" level="3" number="7"> <text>In the Ready to install window, click Next to begin the installation or use the Back button to review the current configuration of the installer. </text> </target>
+
+ <target id="bbikxce" pid="bbijvt7" name="Procedure" level="2" number="1"> <text>Shut down Novell Teaming on the Novell Teaming server (see "Starting and Stopping Novell Teaming" on page 31).</text> </target>
+
+ <target id="bbo5ce8" pid="bbijvt7" name="Step" level="3" number="1"> <text>Shut down Novell Teaming on the Novell Teaming server (see "Starting and Stopping Novell Teaming" on page 31).</text> </target>
+
+ <target id="bf49eib" pid="bbijvt7" name="Step" level="3" number="2"> <text>Run the Lucene installer (see above procedure).</text> </target>
+
+ <target id="bbo5co3" pid="bbijvt7" name="Step" level="3" number="3"> <text>On the standalone server, check the lucene-server.properties file and find the setting for index.root.dir (you can edit this setting to change the location of the root directory).</text> </target>
+
+ <target id="bbo5ixl" pid="bbijvt7" name="Step" level="3" number="4"> <text>Create a liferay.com subdirectory in the index.root.dir directory.</text> </target>
+
+ <target id="bbo5jtu" pid="bbijvt7" name="Step" level="3" number="5"> <text>On the Novell Teaming server, look at the ssf.properties file and find the data.root.dir setting. </text> </target>
+
+ <target id="bbo5kd5" pid="bbijvt7" name="Step" level="3" number="6"> <text>Copy all the files from the data.root.dir/lucene/liferay.com directory on the Novell Teaming server to the index.root.dir/liferay.com directory you just created on the standalone machine.</text> </target>
+
+ <target id="bbn3gww" pid="bbijvt7" name="Step" level="3" number="7"> <text>For UNIX systems, make sure permissions are set so that the Novell Teaming user has full access to these files and the liferay.com directory.</text> </target>
+
+ <target id="bbikvyz" pid="bbijvt7" name="Step" level="3" number="8"> <text>Start the server at the end of the installation (if it is not already started):</text> </target>
+
+ <target name="SubSteps" level="4"> <text>Change directories to lucene-server-installation-dir</text> </target>
+
+ <target id="bbikvz0" pid="bbijvt7" name="Step" level="5" number="8a"> <text>Change directories to lucene-server-installation-dir</text> </target>
+
+ <target id="bbikvz1" pid="bbijvt7" name="Step" level="5" number="8b"> <text>Run the rmiregistry-startup script in the bin directory</text> </target>
+
+ <target id="bbikvz2" pid="bbijvt7" name="Step" level="5" number="8c"> <text>Run the indexserver-startup script in the bin directory</text> </target>
+
+ <target id="bbikwk1" pid="bbijvt7" name="Step" level="3" number="9"> <text>Restart Novell Teaming (see "Starting and Stopping Novell Teaming" on page 31).</text> </target>
+
+ <target id="b9vchnb" pid="b9vchnb" name="Sect1" level="1" number="1.11"> <text>Starting and Stopping Novell Teaming</text> </target>
+
+ <target id="bf0n18k" pid="b9vchnb" name="Sect2" level="2" number="1.11.1"> <text>Starting Novell Teaming/Liferay</text> </target>
+
+ <target id="bf0n3pf" pid="b9vchnb" name="Sect2" level="2" number="1.11.2"> <text>Setting up Novell Teaming to Start on System Startup</text> </target>
+
+ <target id="bant5c0" pid="b9vchnb" name="Procedure" level="3" number="1"> <text>Enter C:\yourinstall\liferay-portal-tomcat-5.5-jdk5-4.3.0\bin\service.bat install icecore</text> </target>
+
+ <target id="bant5c1" pid="b9vchnb" name="Step" level="4" number="1"> <text>Enter C:\yourinstall\liferay-portal-tomcat-5.5-jdk5-4.3.0\bin\service.bat install icecore</text> </target>
+
+ <target id="bant6f3" pid="b9vchnb" name="Step" level="4" number="2"> <text>Use the Services Control Panel to configure the service to your needs.</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Select Control Panel &#62; Administration Tools &#62; Services.</text> </target>
+
+ <target id="bbo72yz" pid="b9vchnb" name="Step" level="6" number="2a"> <text>Select Control Panel &#62; Administration Tools &#62; Services.</text> </target>
+
+ <target id="bbo73bh" pid="b9vchnb" name="Step" level="6" number="2b"> <text>Right-click the ApacheTomcat icecore service and select Properties.</text> </target>
+
+ <target id="bbo73vc" pid="b9vchnb" name="Step" level="6" number="2c"> <text>Change the Startup Type to Automatic and click OK.</text> </target>
+
+ <target id="bbptbit" pid="b9vchnb" name="Step" level="6" number="2d"> <text>Set your firewall to allow port 8080.</text> </target>
+
+ <target id="bant6o3" pid="b9vchnb" name="Procedure" level="3" number="1"> <text>Enter cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore   /etc/init.d</text> </target>
+
+ <target id="bant6vx" pid="b9vchnb" name="Step" level="4" number="1"> <text>Enter cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore   /etc/init.d</text> </target>
+
+ <target id="bant6wo" pid="b9vchnb" name="Step" level="4" number="2"> <text>Enter chkconfig --add icecore </text> </target>
+
+ <target id="bf0n4j3" pid="b9vchnb" name="Sect2" level="2" number="1.11.3"> <text>Log Files and Monitoring</text> </target>
+
+ <target id="bf0n5ay" pid="b9vchnb" name="Sect2" level="2" number="1.11.4"> <text>Stopping Novell Teaming</text> </target>
+
+ <target id="bcghun2" pid="bcghun2" name="Sect1" level="1" number="1.12"> <text>Novell Teaming Backup and Restore Procedures</text> </target>
 
  <target id="bcgi04o" pid="bcghun2" name="BridgeHead" level="2"> <text>Method 1:</text> </target>
 

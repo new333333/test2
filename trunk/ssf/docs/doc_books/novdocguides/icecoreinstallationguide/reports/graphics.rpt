@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `4/29/2008 12:11:09 PM'>
+   <String `5/5/2008 6:56:04 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2062,246 +2062,6 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `addgrouppopup_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `addteambutton_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `addusersgroup_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `admingrouproles_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `adminteamtitle_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `click_authentication_enterpriseadminsettings_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `click_configure-ldap_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `click_ldap_enterprseadmin_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `click_manage-configure_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `click_settings_enterpriseadmin_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickaccesscontrol_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickaccesscontroladmin.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickaddagroupadmin_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickaddanewgroup_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickaddateamws_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickaddgroup.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickaddgroupaccessrightstable_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickadmindropdown.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickconfigureroles_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickdiscussion_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickicecoreportlets_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickmanagegroups_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clicksavechangeswsaccessrights.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickteamcreatorgroup.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickteamws_a.png'>
-   <Char Tab> 
-   <String `2'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickvisitor_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `configure_defaults_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `emailfields_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `emailsettings_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `filesupporttable.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
    <String `icecorediagram_a.png'>
    <Char Tab> 
    <String `1'>
@@ -2310,7 +2070,23 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `icomingmail_a.png'>
+   <String `installer_01_a.png'>
+   <Char Tab> 
+   <String `2'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `installer_02_a.png'>
+   <Char Tab> 
+   <String `2'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `installer_03_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2318,7 +2094,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `ldap_ecryption_dropdownlist_a.png'>
+   <String `installer_04_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2326,7 +2102,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `ldap_export-settings_a.png'>
+   <String `installer_05_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2334,7 +2110,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `ldap_groups-settings_a.png'>
+   <String `installer_06_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2342,7 +2118,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `ldap_searchfilter_a.png'>
+   <String `installer_07_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2350,7 +2126,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `ldap_url_a.png'>
+   <String `installer_08_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2358,7 +2134,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `ldap_users_a.png'>
+   <String `installer_09_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2366,7 +2142,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `lifrayldapattributes.png'>
+   <String `installer_10_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2374,7 +2150,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `notificationchedule_a.png'>
+   <String `installer_11_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2382,7 +2158,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `selectemailsettings_a.png'>
+   <String `installer_12_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2390,7 +2166,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `selectteammembers.png'>
+   <String `installer_13_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2398,7 +2174,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `selectworkspacefolders_a.png'>
+   <String `installer_14_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2406,7 +2182,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `sendemailnot_a.png'>
+   <String `installer_15_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2414,7 +2190,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `switchworkspacecreatorright_a.png'>
+   <String `installer_16_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2422,7 +2198,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `visitorroleoptions_a.png'>
+   <String `installer_17_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2430,7 +2206,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `winconfigureroles_a.png'>
+   <String `luc-installer_01_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2438,7 +2214,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `xml_luceneserver_a.png'>
+   <String `luc-installer_02_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2452,1210 +2228,25 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `No unreferenced graphics in the /graphics directory are referenced by the book.'>
+   <String `Unused Graphics in Book Directory'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `filesupporttable.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `xml_luceneserver_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `List of All Graphic References'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `addgrouppopup_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1099169'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `addgrouppopup_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 20%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Add a Group dialog\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `addteambutton_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1130520'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `addteambutton_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 80%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration Team workspace\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `addusersgroup_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1099769'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `addusersgroup_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 58%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Edit group\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `admingrouproles_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1103174'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `admingrouproles_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Group settings\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `adminteamtitle_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1102237'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `adminteamtitle_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 80%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Workspace Title\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `click_authentication_enterpriseadminsettings_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1146047'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `click_authentication_enterpriseadminsettings_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Enterprise admin settings\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `click_configure-ldap_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1147391'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `click_configure-ldap_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 35%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Icecore administration\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `click_ldap_enterprseadmin_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1146108'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `click_ldap_enterprseadmin_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Enterprise admin authentication\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `click_manage-configure_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1130147'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `click_manage-configure_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 80%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Manage menu\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `click_settings_enterpriseadmin_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1145631'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `click_settings_enterpriseadmin_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Enterprise admin portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickaccesscontrol_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1097978'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickaccesscontrol_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 52%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Manage menu\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickaccesscontroladmin.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1102880'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickaccesscontroladmin.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 63%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Manage menu\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickaddagroupadmin_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1102944'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickaddagroupadmin_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 77%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Add a group\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickaddanewgroup_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1098709'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickaddanewgroup_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 42%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Manage groups\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickaddateamws_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1102012'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickaddateamws_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 41%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Team workspaces\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickaddgroup.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1098803'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickaddgroup.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 76%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Add a new group form\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickaddgroupaccessrightstable_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1099088'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickaddgroupaccessrightstable_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Configure Access Control page\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickadmindropdown.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1103022'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickadmindropdown.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 19%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Add a group drop-down list\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickconfigureroles_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1093684'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickconfigureroles_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 47%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickdiscussion_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1107012'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickdiscussion_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 35%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Discussion folder\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickicecoreportlets_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1045513'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickicecoreportlets_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 31%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Add content\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickmanagegroups_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1106115'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickmanagegroups_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clicksavechangeswsaccessrights.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1099434'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clicksavechangeswsaccessrights.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 17%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Save changes button\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickteamcreatorgroup.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1099713'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickteamcreatorgroup.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 66%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Select group\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickteamws_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1097905'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickteamws_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 30%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: workspace tree\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1101952'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickteamws_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 31%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Workspace tree\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `clickvisitor_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1093974'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickvisitor_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 37%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Currently defined roles\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `configure_defaults_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1130244'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `configure_defaults_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 76%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Configure defaults\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `emailfields_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1654604'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `emailfields_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 64%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `emailsettings_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1654421'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `emailsettings_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 18%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `filesupporttable.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2501692'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `filesupporttable.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 01_installingicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 91%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Title: Document and File Support'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Document and File Support\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3700,7 +2291,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `icomingmail_a.png'>
+   <String `installer_01_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3713,27 +2304,66 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1655714'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2568879'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `icomingmail_a.png'>
+   <String `installer_01_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in 02_configuringicecore.fm'>
+   <String ` in 01_installingicecore.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 40%, Indent: Current Indent'>
+   <String `Width: 41%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Installer Welcome window options\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2581355'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_01_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 41%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Installer Welcome window options\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `ldap_ecryption_dropdownlist_a.png'>
+   <String `installer_02_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3746,33 +2376,66 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1338524'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2569500'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `ldap_ecryption_dropdownlist_a.png'>
+   <String `installer_02_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in 02_configuringicecore.fm'>
+   <String ` in 01_installingicecore.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 61%, Indent: Current Indent'>
+   <String `Width: 36%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: Encryption Algorithm drop-down list\q'>
+   <String `Description: \qDescription: Installer License agreement window options\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2581467'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_02_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 36%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Installer License agreement window options\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `ldap_export-settings_a.png'>
+   <String `installer_03_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3785,33 +2448,33 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1146509'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2569838'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `ldap_export-settings_a.png'>
+   <String `installer_03_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
    > # end of Font
-   <String ` in 02_configuringicecore.fm'>
+   <String ` in 01_installingicecore.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 90%, Indent: Current Indent'>
+   <String `Width: 85%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: Ldap export settings\q'>
+   <String `Description: \qDescription: Installer installation type options\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `ldap_groups-settings_a.png'>
+   <String `installer_04_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3824,517 +2487,10 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1148278'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2570112'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `ldap_groups-settings_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 56%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Title: LDAP Group Settiong'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: LDAP group settings\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `ldap_searchfilter_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1146278'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `ldap_searchfilter_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 90%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Ldap search filter\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `ldap_url_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1147457'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `ldap_url_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 99%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Title: LDAP URL Settings'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: LDAP URL\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `ldap_users_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1147861'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `ldap_users_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 96%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Title: LDAP Users Settings'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: LDAP users settings\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `lifrayldapattributes.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1615225'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `lifrayldapattributes.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 90%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `notificationchedule_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1654768'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `notificationchedule_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 48%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `selectemailsettings_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1107066'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `selectemailsettings_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 19%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Manage menu\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `selectteammembers.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1102434'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `selectteammembers.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 71%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Team members\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `selectworkspacefolders_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1102514'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `selectworkspacefolders_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Workspace Folders\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `sendemailnot_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1654825'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `sendemailnot_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 76%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `switchworkspacecreatorright_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1099364'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `switchworkspacecreatorright_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Access Rights table\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `visitorroleoptions_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1095051'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `visitorroleoptions_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 57%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Visitor roles\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `winconfigureroles_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\02_configuringicecore.fm|1093782'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `winconfigureroles_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 88%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Configure Roles page\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `xml_luceneserver_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1159377'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `xml_luceneserver_a.png'>
+   <String `installer_04_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
@@ -4351,7 +2507,580 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: Lucene section in installer.xml file\q'>
+   <String `Description: \qDescription: Install location window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_05_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2570812'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_05_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 83%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Install location window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_06_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2571121'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_06_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 84%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Liferay data location window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_07_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2571421'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_07_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 54%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Network information window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_08_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2571657'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_08_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 62%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Database setup\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_09_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2572798'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_09_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 84%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription:  Java JDK location window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_10_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2573189'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_10_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 50%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Lucene configuration window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_11_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2573456'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_11_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 52%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Lucene configuration window server selection\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_12_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2573744'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_12_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 43%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: RSS configuration window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_13_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2574157'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_13_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 42%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Outbound email configuration window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_14_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2574751'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_14_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 45%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Inbound email configuration window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_15_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2576967'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_15_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 71%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Presence configuration window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_16_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2577275'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_16_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 67%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: iChain configuration window\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `installer_17_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2578233'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `installer_17_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 81%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Configure mirrored folders\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `luc-installer_01_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2582763'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `luc-installer_01_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 76%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `luc-installer_02_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2583121'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `luc-installer_02_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 01_installingicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 47%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
 > # end of TextFlow
