@@ -3942,6 +3942,7 @@ function ssTeams(namespace) {
 		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)))
 		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
 	    dojo.html.show(fObj);
+		dojo.html.setDisplay(fObj, "block");
 	    dojo.html.setVisibility(fObj, "visible");
 	    dojo.html.setOpacity(fObj,0);
 	    dojo.lfx.html.fadeIn(fObj, 100).play();
@@ -3954,6 +3955,19 @@ function ssTeams(namespace) {
 	}
 	this.hide = function() {
 		ss_hideDivFadeOut('ss_myteams_pane'+namespace, 20);
+	}
+	this.showAccessible = function() {
+		var dObj = self.document.getElementById("ss_navbar_myteams" + namespace);
+		var fObj = self.document.getElementById("ss_myTeamsIframe" + namespace);
+		dObj.style.display = "block";
+	    dojo.html.setVisibility(dObj, "visible");
+	    dObj.style.zIndex = parseInt(ssMenuZ);
+	    fObj.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace});
+	}
+	this.hideAccessible = function() {
+		var dObj = self.document.getElementById("ss_navbar_myteams" + namespace);
+		dojo.html.setDisplay(dObj, "none");
+	    dojo.html.setVisibility(dObj, "hidden");
 	}
 }
 
