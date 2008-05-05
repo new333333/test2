@@ -1,0 +1,145 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Monday, May 05, 2008 18:36" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2006" />
+
+<style type="text/css">
+  @import url(ui/styles.css);
+</style>
+
+<title>Installing a Standalone Lucene Index Server</title>
+<script type="text/javascript">
+  var prev_link = "installer.html";
+  var next_link = "b9vchnb.html";
+  var parentfile = "../b9vcafr.html";
+  var parenttoc = "../toc_b9vcafr.html";
+  if(parent.location != location) { parent.loadMenu(); }
+</script>
+<script type="text/javascript" src="ui/jsglobal.js"></script>
+</head>
+
+<body>
+<script type="text/javascript" src="ui/topnav.js"></script>
+
+<div class="sect1"  id="bbijvt7">
+
+<h1 class="title"> Installing a Standalone Lucene Index Server</h1>
+
+<p class="para">This section covers how to install the Lucene Index Server as a standalone server.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>You need to install JDK (Sun JDK 1.5.0_011 or higher) before installing the Lucene Index Server. Linux systems need to have a minimum open file limit of 4096.</p></div>
+
+<p class="para">To install a Standalone Lucene Index Server for a new Novell Teaming application:</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbiks4e">
+<p class="para">Copy the Lucene installer to the system on which you want to install the standalone Lucene Index Server.</p>
+<p class="para">The Lucene installers are in the Novell Teaming kit you unzipped:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">lucene-installer.exe</p></li>
+<li class="listitem">
+<p class="listitem">lucene-installer.linux</p></li></ul></div>
+</li>
+<li class="step" id="bf493be">
+<p class="para">Run the Lucene installer.</p></li>
+<li class="step" id="bf49evs">
+<p class="para">In the <span class="guimenu">Welcome</span> window, select the procedure you want to perform, then click <span class="guimenu">Next</span>:</p>
+<div class="informalfigure">
+                <img src="images/installer_01_a.png" alt="Installer Welcome window options" />
+              </div>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+                <span class="guimenu">New installation</span>
+              </p>
+<p class="listitem">Use this option to perform an initial installation of the Standalone Lucene Index Server.</p></li>
+<li class="listitem">
+<p class="listitem">
+                <span class="guimenu">Upgrade</span>
+              </p>
+<p class="listitem">Use this option to perform an upgrade of an existing Standalone Lucene Index Server.</p></li>
+<li class="listitem">
+<p class="listitem">
+                <span class="guimenu">Reconfigure</span>
+              </p>
+<p class="listitem">Use this option to reconfigure an existing Standalone Lucene Index Server.</p></li></ul></div>
+</li>
+<li class="step" id="bf49evt">
+<p class="para">Read the license agreement, select the<span class="guimenu"> I accept the license agreement </span>option to indicate your acceptance of this agreement, then click <span class="guimenu">Next</span>.</p>
+<div class="informalfigure">
+                <img src="images/installer_02_a.png" alt="Installer License agreement window options" />
+              </div>
+</li>
+<li class="step" id="bf49evu">
+<p class="para">In the <span class="guimenu">Install location</span> window, click <span class="guimenu">Browse</span> if you need to change the default <span class="guimenu">Install location</span> for the <span class="literal">luceneserver</span>, then click <span class="guimenu">Next</span>.</p>
+<div class="informalfigure">
+                <img src="images/luc-installer_01_a.png" alt="" />
+              </div>
+</li>
+<li class="step" id="bf49evv">
+<p class="para">In the <span class="guimenu">Lucene configuration</span> window, edit the fields to configure the Lucene index. </p>
+<div class="informalfigure">
+                <img src="images/luc-installer_02_a.png" alt="" />
+              </div>
+
+<p class="para">Type in the <span class="guimenu">Host</span>, and edit <span class="guimenu">RMI Port</span> value if the default port cannot be used. Click <span class="guimenu">Next</span> to continue.</p>
+<p class="para">You can run the Lucene as a server from the same system as Novell Teaming or from a remote system. You need to install the Standalone Lucene Index Server before running Novell Teaming. See <a href="bbijvt7.html">Installing a Standalone Lucene Index Server</a>.</p></li>
+<li class="step" id="bf49evw">
+<p class="para">In the <span class="guimenu">Ready to install </span>window, click <span class="guimenu">Next</span> to begin the installation or use the <span class="guimenu">Back</span> button to review the current configuration of the installer. </p></li></ol>
+</div>
+
+<p class="para">To install a Standalone Lucene Index Server for an Existing Novell Teaming Application:</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbo5ce8">
+<p class="para">Shut down Novell Teaming on the Novell Teaming server (see <a href="b9vchnb.html">Starting and Stopping Novell Teaming</a>).</p></li>
+<li class="step" id="bf49eib">
+<p class="para">Run the Lucene installer (see above procedure).</p></li>
+<li class="step" id="bbo5co3">
+<p class="para">On the standalone server, check the<span class="literal"> lucene-server.properties </span>file and find the setting for<span class="literal"> index.root.dir </span>(you can edit this setting to change the location of the root directory).</p></li>
+<li class="step" id="bbo5ixl">
+<p class="para">Create a <span class="literal">liferay.com</span> subdirectory in the<span class="literal"> index.root.dir </span>directory.</p></li>
+<li class="step" id="bbo5jtu">
+<p class="para">On the Novell Teaming server, look at the<span class="literal"> ssf.properties </span>file and find the<span class="literal"> data.root.dir </span>setting. </p></li>
+<li class="step" id="bbo5kd5">
+<p class="para">Copy all the files from the<span class="literal"> <span class="replaceable">data.root.dir</span>/lucene/liferay.com </span>directory on the Novell Teaming server to the<span class="literal"> <span class="replaceable">index.root.dir</span>/liferay.com </span>directory you just created on the standalone machine.</p>
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>If you are using FTP, make sure to copy in binary mode.</p></div>
+</li>
+<li class="step" id="bbn3gww">
+<p class="para">For UNIX systems, make sure permissions are set so that the Novell Teaming user has full access to these files and the<span class="literal"> liferay.com </span>directory.</p></li>
+<li class="step" id="bbikvyz">
+<p class="para">Start the server at the end of the installation (if it is not already started):</p>
+<div class="substeps">
+<ol class="steps">
+<li class="step" id="bbikvz0">
+<p class="para">Change directories to <span class="literal">lucene-server-installation-dir</span></p></li>
+<li class="step" id="bbikvz1">
+<p class="para">Run the <span class="literal">rmiregistry-startup</span> script in the <span class="literal">bin</span> directory</p></li>
+<li class="step" id="bbikvz2">
+<p class="para">Run the <span class="literal">indexserver-startup</span> script in the<span class="literal"> bin </span>directory</p></li></ol>
+</div>
+</li>
+<li class="step" id="bbikwk1">
+<p class="para">Restart Novell Teaming (see <a href="b9vchnb.html">Starting and Stopping Novell Teaming</a>).</p></li></ol>
+</div>
+
+</div>
+
+<p class="trademark">A trademark symbol (<sup><small>&reg;</small></sup>, <sup><small>TM</small></sup>, etc.) denotes a Novell trademark. An asterisk (*) denotes a third-party trademark. For more information, see <a href="legal.html">Legal Notices</a>.</p>
+
+<script type="text/javascript" src="ui/bottomnav.js"></script>
+</body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Monday, May 05, 2008 18:36" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2006" />
+
+<style type="text/css">
+  @import url(ui/styles.css);
+</style>
+
+<title>Network Planning</title>
+<script type="text/javascript">
+  var prev_link = "b9vchn8.html";
+  var next_link = "b9vchnf.html";
+  var parentfile = "../b9vcafr.html";
+  var parenttoc = "../toc_b9vcafr.html";
+  if(parent.location != location) { parent.loadMenu(); }
+</script>
+<script type="text/javascript" src="ui/jsglobal.js"></script>
+</head>
+
+<body>
+<script type="text/javascript" src="ui/topnav.js"></script>
+
+<div class="sect1"  id="bbn8hra">
+
+<h1 class="title"> Network Planning</h1>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">
+            <a href="bbn8hra.html#bf0mllj">Planning Firewalls, Ports, and Session Timeouts</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="bbn8hra.html#bbpnq0t">Port 80/443 configuration on Linux</a>
+          </p></li>
+<li class="listitem">
+<p class="listitem">
+            <a href="bbn8hra.html#bbpnnvh">Integrating with iChain</a>
+          </p></li></ul></div>
+
+<div class="sect2"  id="bf0mllj">
+
+<h2 class="title"> Planning Firewalls, Ports, and Session Timeouts</h2>
+
+<p class="para">Novell Teaming is a complete Java/J2EE Web application and includes a Web server (Tomcat). Because the Web server listens on ports and processes network connections, you should consider the following as part of the installation process:</p>
+<div class="formalpara" id="bbpth5e">
+          <p class="title"><em class="title">Firewall Setup:</em>
+          The default installation uses port 8080/8443 for the Web server. Some local firewalls (such as the Windows Security Center’s firewall) might restrict traffic to port 8080/8443 and thus require proper configuration for access by other systems.</p>
+        </div>
+
+<p class="para">If you can access Novell Teaming on the local server, but cannot access it from another system, examine your firewall settings.</p>
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>When utilizing an Oracle database, you may need to reconfigure Novell Teaming to run on port 8081.</p></div>
+
+<div class="formalpara" id="bbpthno">
+          <p class="title"><em class="title">Port Conflicts:</em>
+          The Tomcat software uses a number of TCP/IP ports for both Web traffic and management messages. If you have other Web servers (Apache, IIS, or Tomcat) or other software installed that uses the same port numbers, your Novell Teaming software does not function properly.</p>
+        </div>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>Novell Open Enterprise Server 2 (OES 2) systems have another Tomcat application running by default.</p></div>
+
+<p class="para">The<span class="literal"> netstat -anp tcp </span>command on Windows and the<span class="literal"> netstat -tan </span>command on Linux can help find which ports are currently being used. For more information on network ports, consult your operating system networking guide.</p>
+<p class="para">When you are in this situation, make sure that in addition to the http/https ports (8080/8443) you also assign free port numbers to the <span class="guimenu">AJP Port</span> and <span class="guimenu">Shutdown Port</span> settings in the <span class="guimenu">Network information</span> window when you run the installer.</p>
+<div class="formalpara" id="bbxf650">
+          <p class="title"><em class="title">Port Mapping:</em>
+          For instances where the port number on which Tomcat listens for connections is different than what the end user sees in his or her browser, change the <span class="guimenu">Listen Port</span> and <span class="guimenu">Secure listen Port</span> settings to the local server ports and set the <span class="guimenu">Port</span> and <span class="guimenu">Secure Port </span>settings to the port numbers that the browsers are using in the <span class="guimenu">Network information</span> window when you run the installer. See <a href="bbn8hra.html#bbpnq0t">Port 80/443 configuration on Linux</a> and <a href="bbn8hra.html#bbpnnvh">Integrating with iChain</a> for details.</p>
+        </div>
+
+<p class="para">The host, port, and securePort settings are used to generate URLs within the product and so must match what the user’s browser sees. Unless they are overridden by the <span class="guimenu">Listen Port</span> and <span class="guimenu">Secure listen Port</span> settings, the <span class="guimenu">Port</span> and <span class="guimenu">Secure Port</span> settings are used as the server’s listen ports.</p>
+<div class="formalpara" id="bbxfb1i">
+          <p class="title"><em class="title">Liferay Session Timeout:</em>
+          You can configure Novell Teaming to log out of a session after a certain number of minutes. The default is 2 hours (240 minutes). You can change this by altering the <span class="guimenu">Liferay session timeout </span>setting in the <span class="guimenu">Network information</span> window when you run the installer.</p>
+        </div>
+
+</div>
+
+<div class="sect2"  id="bbpnq0t">
+
+<h2 class="title"> Port 80/443 configuration on Linux</h2>
+
+<p class="para">The default installation of Novell Teaming uses the Tomcat Web server. Although the Tomcat server is part of the Apache project, it is not the same thing as the Apache Web server. Tomcat is written in Java and can not perform some of the special privilege behaviors that Apache can.</p>
+<p class="para">In particular, Linux does not allow non-root processes from allocating TCP/IP ports less than 1024. For this reason, the default configuration for Tomcat (and Novell Teaming) uses ports 8080 for http and 8443 for https (SSL). Unfortunately, this requires specifying the port number in the browser's URL for Novell Teaming (such as http://icecore.mycompany.com:8080).</p>
+<div class="warning">
+<p class="para"><em class="title">WARNING:</em>Although running Tomcat as<span class="literal"> root </span>solves this problem, it creates many (far worse) problems. Do not run Tomcat as<span class="literal"> root</span>.</p></div>
+
+<p class="para">If you want Novell Teaming to be available on the default http/https ports, use an operating system feature called “kernel space port forwarding.” With this, the<span class="literal"> iptables </span>command is used to map requests from port 80 to port 8080 (or whatever port you specify). For example:</p><pre class="screen">
+iptables -t nat -A OUTPUT     -d localhost    -p tcp --dport 80 -j REDIRECT --to-ports 8080
+</pre><pre class="screen">
+iptables -t nat -A OUTPUT     -d yourHostname -p tcp --dport 80 -j REDIRECT --to-ports 8080
+</pre><pre class="screen">
+iptables -t nat -A PREROUTING -d yourHostname -p tcp --dport 80 -j REDIRECT --to-ports 8080
+</pre><pre class="screen">
+iptables -t nat -A OUTPUT     -d localhost    -p tcp --dport 443 -j REDIRECT --to-ports 8443
+</pre><pre class="screen">
+iptables -t nat -A OUTPUT     -d yourHostname -p tcp --dport 443 -j REDIRECT --to-ports 8443
+</pre><pre class="screen">
+iptables -t nat -A PREROUTING -d yourHostname -p tcp --dport 443 -j REDIRECT --to-ports 8443
+</pre>
+<p class="para">These changes only affect the running system. You need to add them to your startup sequence. See the<span class="literal"> *iptables* </span>and<span class="literal"> *iptables_save* </span>man pages for more information about setting up port forwarding.</p>
+<p class="para">When you use this type of configuration, you must specify the ports the Tomcat server listens to and the ports that the browsers see in the <span class="guimenu">Network information</span> window when you run the installer. </p>
+<p class="para">For example:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"><span class="guimenu">Port</span> = 80 </p></li>
+<li class="listitem">
+<p class="listitem"><span class="guimenu">Listen Port</span> = 8080</p></li>
+<li class="listitem">
+<p class="listitem"><span class="guimenu">Secure Port</span> = 443 </p></li>
+<li class="listitem">
+<p class="listitem"><span class="guimenu">Secure listen Port</span> = 8443</p></li></ul></div>
+
+</div>
+
+<div class="sect2"  id="bbpnnvh">
+
+<h2 class="title"> Integrating with iChain</h2>
+
+<div class="note">
+<p class="para"><em class="title">NOTE:</em>This feature is only available in the Enterprise version.</p></div>
+
+<p class="para">Liferay/Novell Teaming contains support for single sign-on (SSO) based on iChain®. When Novell Teaming is running in this mode, the iChain server performs user authentication tasks and passes a token representing the authenticated user’s login name to Liferay/Novell Teaming in each request to indicate who made the request. </p>
+<p class="para">You must configure Liferay/Novell Teaming with the same LDAP that iChain is using so that it can obtain and copy the user information into the portal. However, this configuration differs from the regular portal/LDAP integration in that no password checking is performed against LDAP when logging into the portal (because credential checking is only performed by the iChain server). This technique is safe only if all access to the portal is routed through the iChain proxy. </p>
+<p class="para">The SSO configuration sets up a valve that only permits access from the local server and the iChain proxy server. For more information about Tomcat’s valve configuration, see <a href="http://tomcat.apache.org/tomcat-5.5-doc/config/valve.html" class="ulink">tomcat.apache.org</a>.</p>
+<p class="para">To set up an iChain proxy:</p>
+<div class="procedure">
+<ol class="steps">
+<li class="step" id="bbn8j9f">
+<p class="para">Assure that the iChain proxy’s host name and port number match the Novell Teaming/Liferay port number. If you have configured Novell Teaming to run on port 8080, the iChain proxy should also use port 8080. If the port numbers differ, you must set the <span class="guimenu">Listen Port</span> setting in the <span class="guimenu">Network information</span> window when you run the installer.</p>
+<p class="para">For example, if iChain is set to provide access on the default ports (80/443) while Tomcat is listening on ports 8080/8443, use the following setting values in the <span class="guimenu">Network information</span> window when you run the installer:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"><span class="guimenu">Host </span>= your.server.host.name</p></li>
+<li class="listitem">
+<p class="listitem"><span class="guimenu">Port</span> = 80 </p></li>
+<li class="listitem">
+<p class="listitem"><span class="guimenu">Listen Port</span> = 8080</p></li>
+<li class="listitem">
+<p class="listitem"><span class="guimenu">Secure Port</span> = 443 </p></li>
+<li class="listitem">
+<p class="listitem"><span class="guimenu">Secure listen Port</span> = 8443</p></li></ul></div>
+
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>If the iChain proxy and Novell Teaming host names/ports are not set up identically, you might experience page layout issues and other Novell Teaming features might not function properly.</p></div>
+</li>
+<li class="step" id="bbn8jfu">
+<p class="para">In <span class="guimenu">iChain configuration</span> window of the installer, select the <span class="guimenu">Enable iChain</span> option, set the <span class="guimenu">Logoff URL</span> setting to the log-off URL provided by the iChain proxy server, and set the <span class="guimenu">iChain Proxy</span> setting to the IP address of the iChain proxy server.</p></li>
+<li class="step" id="bf44f08">
+<p class="para">Finish running the installer’s New Installation or Reconfiguration. See <a href="installer.html">Running the Installer</a>.</p></li>
+<li class="step" id="bbn8jfy">
+<p class="para">After enabling the iChain SSO, log into Liferay by using a direct login URL: <span class="literal"> http://localhost:8080/c/portal/login </span>and log in as <span class="literal">admin</span>. </p>
+<p class="para">Because the SSO configuration removes the <span class="guimenu">Sign In</span> link, you must type the URL manually.</p></li>
+<li class="step" id="bbn8jg1">
+<p class="para">If you have not already done so, use Liferay’s<span class="guimenu"> Admin </span>portlet to enable LDAP-based authentication.</p>
+<p class="para">This setup is necessary because Liferay has to copy user data from the LDAP into the portal database upon user login.</p></li>
+<li class="step" id="bbn8jg5">
+<p class="para">To prevent users from logging into the portal directly through the portal’s login form, remove or rename the following file from Novell Teaming’s<span class="literal"> liferay-portal-tomcat </span>directory:</p><pre class="screen">
+webapps/ROOT/html/portal/login.jsp
+</pre>
+<p class="para">You might also need to remove:</p><pre class="screen">
+work/Catalina/localhost/_/org/apache/jsp/html/portal/login_jsp.*
+</pre></li>
+<li class="step" id="bbn8nqy">
+<p class="para">Liferay/Novell Teaming is now ready to be put behind the proxy. Consult your iChain documentation on how to do this.</p></li>
+<li class="step" id="bf0mw5e">
+<p class="para">To enable iChain integration-related debug log messages, modify Liferay’s<span class="literal"> portal-log4j-ext.xml </span>to add the following category:</p><pre class="screen">
+ &lt;category name="com.sitescape.team.liferay.security.auth"&gt;
+</pre><pre class="screen">
+  &lt;priority value="DEBUG" /&gt; 
+</pre><pre class="screen">
+ &lt;/category&gt;
+</pre>
+<p class="para">Use this only for testing or troubleshooting purposes. It is not recommended to have debug logging enabled on a production system.</p></li></ol>
+</div>
+
+</div>
+
+</div>
+
+<p class="trademark">A trademark symbol (<sup><small>&reg;</small></sup>, <sup><small>TM</small></sup>, etc.) denotes a Novell trademark. An asterisk (*) denotes a third-party trademark. For more information, see <a href="legal.html">Legal Notices</a>.</p>
+
+<script type="text/javascript" src="ui/bottomnav.js"></script>
+</body>
+</html>
