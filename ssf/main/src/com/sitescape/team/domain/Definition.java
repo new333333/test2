@@ -70,6 +70,7 @@ public class Definition extends PersistentTimestampObject  {
 	public static final int PROFILE_APPLICATION_GROUP_VIEW=14;
 	
 	public static final String VIEW_STYLE_DEFAULT="folder"; 
+	public static final String VIEW_STYLE_ACCESSIBLE="table"; 
 	public static final String VIEW_STYLE_TABLE="table"; 
 	public static final String VIEW_STYLE_WIKI="wiki"; 
 	public static final String VIEW_STYLE_CALENDAR="event"; 

@@ -267,13 +267,11 @@ public class ListFolderHelper {
 			//determine page starts/ counts
 			initPageCounts(bs, request, userProperties, tab, options);
 	
-			String viewType = "";
+			Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
 			Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-			if (configElement != null) {
-				viewType = DefinitionUtils.getPropertyValue(configElement, "type");
-				if (viewType == null) viewType = "";
-			}
-	
+			String viewType = DefinitionUtils.getViewType(configDocument);
+			if (viewType == null) viewType = "";
+
 			/** Vertical mode has been removed
 			//If the Folder View is anything other than Table and if the Folder Action happens to be  
 			//vertical (view at the bottom), then we need to display the entry in the iframe view
@@ -859,11 +857,10 @@ public class ListFolderHelper {
 	public static void getShowTemplate(AllModulesInjected bs, RenderRequest req, 
 			RenderResponse response, Binder folder, Map<String,Object>model) throws PortletRequestBindingException {
 
-		String viewType = "";
-		Element configElement = (Element)model.get(WebKeys.CONFIG_ELEMENT);
-		if (configElement != null) {
-			viewType = DefinitionUtils.getPropertyValue(configElement, "type");
-		}
+		Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+		String viewType = DefinitionUtils.getViewType(configDocument);
+		if (viewType == null) viewType = "";
+
 		//	The "Display styles" menu
 		Toolbar entryToolbar = new Toolbar();
 //FolderEntries need folders as parents, not templates

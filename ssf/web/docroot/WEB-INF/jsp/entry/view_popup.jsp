@@ -30,11 +30,12 @@
 %>
 <% //view a folder forum with folder on the left and the entry on the right in an iframe %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<%@ page import="com.sitescape.team.module.definition.DefinitionUtils" %>
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <%
 //Get the folder type of this definition (folder, file, or event)
-String folderViewStyle = "folder";
-Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("properties/property[@name='type']");
-if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
+String folderViewStyle = DefinitionUtils.getViewType(ssConfigDefinition);
+if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "folder";
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>

@@ -28,11 +28,18 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // The main forum view - for viewing folder listings and for viewing entries %>
+<% // The main accessible view - for viewing folder listings and for viewing entries %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
+<c:set var="showFolderPage" value="true"/>
+<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+  <ssf:ifnotadapter>
+    <c:set var="showFolderPage" value="false"/>
+  </ssf:ifnotadapter>
+</c:if>
 <ssf:ifadapter>
 <body class="ss_style_body">
+<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
 <c:if test="${!empty ssReloadUrl}">
 <script type="text/javascript">
@@ -42,6 +49,10 @@
 
 </c:if>
 <c:if test="${empty ssReloadUrl}">
+<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+  <%@ include file="/WEB-INF/jsp/entry/view_workarea_common.jsp" %>
+</c:if>
+<c:if test="${showFolderPage}">
 <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
 <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
@@ -51,23 +62,22 @@
 
   <c:if test="<%= !reloadCaller %>">
     <c:if test="<%= !isViewEntry %>">
-
-<div id="ss_showentryhighwatermark" style="position:absolute; visibility:visible;">
-<img border="0" <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif">
-</div>
-<div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
-<%@ include file="/WEB-INF/jsp/entry/view_accessible.jsp" %>
-</div>
-     </c:if>
+ <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
+ <%@ include file="/WEB-INF/jsp/entry/view_accessible.jsp" %>
+ </div>
+    </c:if>
   </c:if>
   <c:if test="<%= reloadCaller %>">
-<script type="text/javascript">
+ <script type="text/javascript">
 	//Open the current url in the opener window
 	ss_reloadOpener('<c:out value="${ssReloadUrl}" escapeXml="false"/>')
-</script>
+ </script>
   </c:if>
 </c:if>
+</c:if>
 <ssf:ifadapter>
+
+</div>
 </body>
 </html>
 </ssf:ifadapter>

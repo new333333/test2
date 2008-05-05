@@ -33,7 +33,7 @@
 <script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_user.js"></script>
 
   <c:set var="count" value="0"/>
-  <div id="<c:out value="${ss_divId}"/>" style="padding:2px;margin:2px;">
+  <div id="${ss_divId}" style="padding:2px;margin:2px;">
 	<c:if test="${!empty ssEntries}">
       <table cellspacing="0" cellpadding="0">
       <tbody>
@@ -43,13 +43,13 @@
       
 		<c:forEach var="entry" items="${ssEntries}">  
 		  <c:set var="count" value="${count + 1}"/>
-		  <li id="<c:out value="ss_findUser_id_<c:choose><%--
+		  <li id="ss_findUser_id_<c:choose><%--
 		          --%><c:when test="${ssFindType == 'personalTags' || ssFindType == 'communityTags' || ssFindType == 'tags' }"><%--
-		      		--%><c:out value="${entry.ssTag}"/><%--
+		      		--%>${entry.ssTag}<%--
 		      	  --%></c:when><%--
   		          --%><c:otherwise><%--
-  		          	--%><c:out value="${entry._docId}"/><%--
-  		          --%></c:otherwise></c:choose>"/>"><a 
+  		          	--%>${entry._docId}<%--
+  		          --%></c:otherwise></c:choose>"><a 
 		    onClick="<c:choose><%--
 		    			--%><c:when test="${ssFindType == 'personalTags' || ssFindType == 'communityTags' }"><%--
 		    				--%>parent.ss_putValueInto('ss_findUser_searchText_${ss_namespace}', '${entry.ssTag}');return false;<%--
@@ -66,13 +66,13 @@
 		    </c:if>
 		    ><span style="white-space:nowrap;"><c:choose><%--
 		          --%><c:when test="${!empty entry.ssTag}"><%--
-		      		--%><c:out value="${entry.ssTag}"/><%--
+		      		--%>${entry.ssTag}<%--
 		      	  --%></c:when><%--
 		          --%><c:when test="${!empty entry._extendedTitle}"><%--
-		      		--%><c:out value="${entry._extendedTitle}"/><%--
+		      		--%>${entry._extendedTitle}<%--
 		      	  --%></c:when><%--		      	  
   		          --%><c:otherwise><%--
-  		          	--%><c:out value="${entry.title}"/><%--
+  		          	--%>${entry.title}<%--
   		          --%></c:otherwise></c:choose></span></a></li>
 		</c:forEach>
       </ul>

@@ -35,11 +35,13 @@
 	//int sliderDivHeight = 18;
 	int sliderDivHeight = 7;
 	String sliderDivOffset = "-20";
-
-	//Get the folder type of this definition (folder, file, or event)
-	String folderViewStyle = "folder";
-	Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("properties/property[@name='type']");
-	if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
+%>
+<%@ page import="com.sitescape.team.module.definition.DefinitionUtils" %>
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
+<%
+//Get the folder type of this definition (folder, file, or event)
+String folderViewStyle = DefinitionUtils.getViewType(ssConfigDefinition);
+if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "folder";
 %>
 
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
