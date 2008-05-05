@@ -27,47 +27,29 @@
  * are trademarks of SiteScape, Inc.
  *#
 #parse ("icecore.vm")
-<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
- <tr>
+<div style="#ss_entryContent()">
 #if ($property_caption)
-<td><span style="#ss_entryContent() #ss_entrySignature()">${property_caption}</span></td>
+${property_caption}&nbsp;&nbsp;
 #end
-  <td valign="top" style="padding-left:10px;">
-	<div style="#ss_entryContent() #ss_entrySignature()">
+
 #if ($ssVisitor.Entity.Creation.Principal)
 	  <a href="$ssVisitor.getPermaLink(${ssVisitor.Entity.Creation.Principal.ParentBinder.Id}, ${ssVisitor.Entity.Creation.Principal.Id}, 'workspace')">
-	  ${ssVisitor.Entity.Creation.Principal.Title}</a>
+	  ${ssVisitor.Entity.Creation.Principal.Title}</a>&nbsp;
 #end		
 #if ($ssVisitor.Entity.PostedBy)
-    ($ssVisitor.getNLT("entry.postedBy")&nbsp;${ssVisitor.Entity.PostedBy})
+    ($ssVisitor.getNLT("entry.postedBy")&nbsp;${ssVisitor.Entity.PostedBy})&nbsp;
 #end 
-	</div>
-	 </td>
-  <td valign="top" style="padding-left:15px;">
-	<div style="#ss_entryContent() #ss_entrySignature()">
     $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
-</div>
-  </td>
- </tr>
-</table>
+
 
 #if ($ssVisitor.Entity.Modification.Principal && 
   $ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
-<table style="padding-left: 30px;" cellspacing="0" cellpadding="0">
- <tr>
-  <td valign="top" style="padding-left:30px;">
-	<div style="#ss_entryContent() #ss_entrySignature()">
-	  <span style="padding-right:8px;">$ssVisitor.getNLT("entry.modifiedBy")</span>
+  <br/>
+	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ssVisitor.getNLT("entry.modifiedBy")&nbsp;
 	  <a href="$ssVisitor.getPermaLink(${ssVisitor.Entity.Modification.Principal.ParentBinder.Id}, ${ssVisitor.Entity.Modification.Principal.Id}, 'workspace')">
-	  ${ssVisitor.Entity.Modification.Principal.Title}</a>
-	</div>
-  </td>
-  <td valign="top" style="padding-left:15px;">
-	<div style="#ss_entryContent() #ss_entrySignature()">
-    $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})
-</div>
-  </td>
- </tr>
-</table>
+	  ${ssVisitor.Entity.Modification.Principal.Title}</a>&nbsp;
+   $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})
+
 #end
+</div>
 

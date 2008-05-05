@@ -29,9 +29,11 @@
 #parse ("icecore.vm")
 <div style="#ss_entryContent()">
  <span style="#ss_labelLeft()">$property_caption</span>
+#if ($ssTitles.size() > 0)
 <ul style="#ss_ul()">
 	#foreach ($selection in $ssTitles)
 		<li style="#ss_li()">${selection}</li>
 	#end
 	</ul>
+#end
 </div>
