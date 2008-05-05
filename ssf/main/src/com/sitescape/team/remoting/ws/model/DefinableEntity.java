@@ -28,6 +28,10 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class DefinableEntity {
 	
 	private long id;
@@ -39,11 +43,13 @@ public class DefinableEntity {
 	private Timestamp creation;
 	private Timestamp modification;
 	private AttachmentsField attachmentsField;
-	private BooleanField[] booleanFields;
-	private DateField[] dateFields;
-	private LongArrayField[] longArrayFields;
-	private StringArrayField[] stringArrayFields;
-	private StringField[] stringFields;
+	// Using Lists as internal representation to make it a bit easier to build them.
+	// But the public getter/setter must use array representation.
+	private List<BooleanField> booleanFieldList = new ArrayList<BooleanField>();
+	private List<DateField> dateFieldList = new ArrayList<DateField>();
+	private List<LongArrayField> longArrayFieldList = new ArrayList<LongArrayField>();
+	private List<StringArrayField> stringArrayFieldList = new ArrayList<StringArrayField>();
+	private List<StringField> stringFieldList = new ArrayList<StringField>();
 
 	public long getBinderId() {
 		return binderId;
@@ -118,57 +124,92 @@ public class DefinableEntity {
 	}
 
 	public BooleanField[] getBooleanFields() {
-		return booleanFields;
+		BooleanField[] array = new BooleanField[booleanFieldList.size()];
+		booleanFieldList.toArray(array);
+		return array;
 	}
 
 	public void setBooleanFields(BooleanField[] booleanFields) {
-		this.booleanFields = booleanFields;
+		if(booleanFields != null)
+			this.booleanFieldList = Arrays.asList(booleanFields); 
+		else
+			this.booleanFieldList = new ArrayList<BooleanField>();
 	}
 
+	// Convenience method. Not part of the API. 
 	public void addBooleanField(BooleanField booleanField) {
-		//$$$$
+		this.booleanFieldList.add(booleanField);
 	}
+	
 	public DateField[] getDateFields() {
-		return dateFields;
+		DateField[] array = new DateField[dateFieldList.size()];
+		dateFieldList.toArray(array);
+		return array;
 	}
 
 	public void setDateFields(DateField[] dateFields) {
-		this.dateFields = dateFields;
+		if(dateFields != null)
+			this.dateFieldList = Arrays.asList(dateFields); 
+		else
+			this.dateFieldList = new ArrayList<DateField>();
 	}
+	
+	// Convenience method. Not part of the API. 
 	public void addDateField(DateField dateField) {
-		// $$$$$
+		this.dateFieldList.add(dateField);
 	}
 
 	public LongArrayField[] getLongArrayFields() {
-		return longArrayFields;
+		LongArrayField[] array = new LongArrayField[longArrayFieldList.size()];
+		longArrayFieldList.toArray(array);
+		return array;
 	}
 
 	public void setLongArrayFields(LongArrayField[] longArrayFields) {
-		this.longArrayFields = longArrayFields;
+		if(longArrayFields != null)
+			this.longArrayFieldList = Arrays.asList(longArrayFields); 
+		else
+			this.longArrayFieldList = new ArrayList<LongArrayField>();
 	}
+	
+	// Convenience method. Not part of the API. 
 	public void addLongArrayField(LongArrayField longArrayField) {
-		// $$$$$
+		this.longArrayFieldList.add(longArrayField);
 	}
 
 	public StringArrayField[] getStringArrayFields() {
-		return stringArrayFields;
+		StringArrayField[] array = new StringArrayField[stringArrayFieldList.size()];
+		stringArrayFieldList.toArray(array);
+		return array;
 	}
 
 	public void setStringArrayFields(StringArrayField[] stringArrayFields) {
-		this.stringArrayFields = stringArrayFields;
+		if(stringArrayFields != null)
+			this.stringArrayFieldList = Arrays.asList(stringArrayFields); 
+		else
+			this.stringArrayFieldList = new ArrayList<StringArrayField>();
 	}
+	
+	// Convenience method. Not part of the API. 
 	public void addStringArrayField(StringArrayField stringArrayField) {
-		// $$$$$
+		this.stringArrayFieldList.add(stringArrayField);
 	}
 
 	public StringField[] getStringFields() {
-		return stringFields;
+		StringField[] array = new StringField[stringFieldList.size()];
+		stringFieldList.toArray(array);
+		return array;
 	}
 
 	public void setStringFields(StringField[] stringFields) {
-		this.stringFields = stringFields;
+		if(stringFields != null)
+			this.stringFieldList = Arrays.asList(stringFields); 
+		else
+			this.stringFieldList = new ArrayList<StringField>();
 	}
+	
+	// Convenience method. Not part of the API. 
 	public void addStringField(StringField stringField) {
-		// $$$$$
+		this.stringFieldList.add(stringField);
 	}
 }
