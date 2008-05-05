@@ -916,7 +916,10 @@ text/calendar											  ics
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.definition.DefinitionService</value>
+			<list>
+				<value>com.sitescape.team.remoting.ws.service.definition.DefinitionService</value>
+				<value>com.sitescape.team.remoting.ws.service.definition.DefinitionServiceInternal</value>
+			</list>
 		</property>
 	</bean>
 	
