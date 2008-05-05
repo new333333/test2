@@ -68,7 +68,7 @@ public class Notify {
 		 * compareTo doesn't work on a Date that is not a Timestamp
 		 */
 		this.startTs = new Timestamp(startDate.getTime());
-		this.dateTimeFormat=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,  DateFormat.MEDIUM, locale);
+		this.dateTimeFormat=DateFormat.getDateTimeInstance(DateFormat.MEDIUM,  DateFormat.FULL, locale);
 		if (timezone == null) timezone = TimeZoneHelper.getDefault();
 		this.timezone = timezone;
 		this.dateTimeFormat.setTimeZone(timezone);
