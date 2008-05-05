@@ -70,7 +70,8 @@
     	<column name="parentBinder" index="owningFolder_fEntry" />
     </many-to-one>
     <component name="description">
-      <property name="HDescription" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
+<!-- use length to force medium blog in mysql -->
+      <property name="HDescription" length="2000000" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
     <property name="title" length="255" access="field"/>
