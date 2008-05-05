@@ -2,11 +2,11 @@
 
 <targets>
 
- <target id="bbmqmww" pid="bbmqmww" name="Chapter" level="0" number="4"> <text>The Profile Designer</text> </target>
+ <target id="bbmqmww" pid="bbmqmww" name="Chapter" level="0" number="6"> <text>The Profile Designer</text> </target>
 
- <target id="bbmqu0h" pid="bbmqmww" name="Procedure" level="1" number="1"> <text>From the Teaming Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
+ <target id="bbmqu0h" pid="bbmqmww" name="Procedure" level="1" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
 
- <target id="bbn46tl" pid="bbmqmww" name="Step" level="2" number="1"> <text>From the Teaming Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
+ <target id="bbn46tl" pid="bbmqmww" name="Step" level="2" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
 
  <target id="bbmqu0i" pid="bbmqmww" name="Step" level="2" number="2"> <text>Click Profile designer.</text> </target>
 
@@ -14,7 +14,7 @@
 
  <target id="bbmr192" pid="bbmqmww" name="Step" level="2" number="4"> <text>To edit the layout of the business card, expand Business card.</text> </target>
 
- <target id="bbmr7gz" pid="bbmqmww" name="Step" level="2" number="5"> <text>Add the user's first name below their picture:</text> </target>
+ <target id="bbmr7gz" pid="bbmqmww" name="Step" level="2" number="5"> <text>Add the user's first name below the picture:</text> </target>
 
  <target name="SubSteps" level="3"> <text>Click Business card.</text> </target>
 
@@ -38,6 +38,6 @@
 
  <target id="bbn3zav" pid="bbmqmww" name="Step" level="4" number="6d"> <text>Click OK.</text> </target>
 
- <target id="bbn42cu" pid="bbmqmww" name="Step" level="2" number="7"> <text>Go to a user's workspace and view the changes (in this example the Organization element has been given a value for the user).</text> </target>
+ <target id="bbn42cu" pid="bbmqmww" name="Step" level="2" number="7"> <text>Go to a user's workspace and view the changes. In this example, the Organization element has been given a value for the user.</text> </target>
 
 </targets>

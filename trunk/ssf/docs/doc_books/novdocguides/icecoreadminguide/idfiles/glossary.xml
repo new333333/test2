@@ -32,13 +32,13 @@
 
  <target id="basb1xw" pid="b9rtisc" name="GlossEntry" level="1"> <text>community tag</text> </target>
 
- <target id="basbkja" pid="b9rtisc" name="GlossEntry" level="1"> <text>configuration (a)</text> </target>
+ <target id="basbkja" pid="b9rtisc" name="GlossEntry" level="1"> <text>configuration</text> </target>
 
  <target id="basbp07" pid="b9rtisc" name="GlossEntry" level="1"> <text>default view</text> </target>
 
- <target id="basbq2d" pid="b9rtisc" name="GlossEntry" level="1"> <text>definition (a)</text> </target>
+ <target id="basbq2d" pid="b9rtisc" name="GlossEntry" level="1"> <text>definition</text> </target>
 
- <target id="basbtgj" pid="b9rtisc" name="GlossEntry" level="1"> <text>designer (a)</text> </target>
+ <target id="basbtgj" pid="b9rtisc" name="GlossEntry" level="1"> <text>designer</text> </target>
 
  <target id="basbtzu" pid="b9rtisc" name="GlossEntry" level="1"> <text>discussion</text> </target>
 
@@ -56,7 +56,7 @@
 
  <target id="b9rtise" pid="b9rtisc" name="GlossEntry" level="1"> <text>folder</text> </target>
 
- <target id="basbqw8" pid="b9rtisc" name="GlossEntry" level="1"> <text>form (a)</text> </target>
+ <target id="basbqw8" pid="b9rtisc" name="GlossEntry" level="1"> <text>form</text> </target>
 
  <target id="basbwud" pid="b9rtisc" name="GlossEntry" level="1"> <text>global workspace</text> </target>
 
@@ -64,11 +64,11 @@
 
  <target id="basbzdf" pid="b9rtisc" name="GlossEntry" level="1"> <text>help mode</text> </target>
 
- <target id="basc25e" pid="b9rtisc" name="GlossEntry" level="1"> <text>inherit (a)</text> </target>
+ <target id="basc25e" pid="b9rtisc" name="GlossEntry" level="1"> <text>inherit</text> </target>
 
  <target id="basc4i1" pid="b9rtisc" name="GlossEntry" level="1"> <text>instant message (IM)</text> </target>
 
- <target id="basc024" pid="b9rtisc" name="GlossEntry" level="1"> <text>Liferay (a)</text> </target>
+ <target id="basc024" pid="b9rtisc" name="GlossEntry" level="1"> <text>Liferay</text> </target>
 
  <target id="basc3mt" pid="b9rtisc" name="GlossEntry" level="1"> <text>meeting</text> </target>
 
@@ -78,9 +78,9 @@
 
  <target id="basbfw4" pid="b9rtisc" name="GlossEntry" level="1"> <text>owner</text> </target>
 
- <target id="basc7vf" pid="b9rtisc" name="GlossEntry" level="1"> <text>parallel workflow process (a)</text> </target>
+ <target id="basc7vf" pid="b9rtisc" name="GlossEntry" level="1"> <text>parallel workflow process</text> </target>
 
- <target id="basc2qo" pid="b9rtisc" name="GlossEntry" level="1"> <text>parent (a)</text> </target>
+ <target id="basc2qo" pid="b9rtisc" name="GlossEntry" level="1"> <text>parent</text> </target>
 
  <target id="basc8uy" pid="b9rtisc" name="GlossEntry" level="1"> <text>participant</text> </target>
 
@@ -116,7 +116,7 @@
 
  <target id="basbx96" pid="b9rtisc" name="GlossEntry" level="1"> <text>team workspace</text> </target>
 
- <target id="basbs53" pid="b9rtisc" name="GlossEntry" level="1"> <text>template (a)</text> </target>
+ <target id="basbs53" pid="b9rtisc" name="GlossEntry" level="1"> <text>template</text> </target>
 
  <target id="bbgjrf8" pid="b9rtisc" name="GlossEntry" level="1"> <text>type to find</text> </target>
 
