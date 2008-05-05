@@ -390,10 +390,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * @return
 	 */
 	public List loadObjects(final String query, final Map values) {
-		//hibernate doesn't like an in clause with no values
-		// but a null map is allowed for callers that want to pass in an explicity query
-		// so if values is not null and empty return.
-		if (values != null && values.isEmpty()) return Collections.EMPTY_LIST; 
 		return (List)getHibernateTemplate().execute(
 		        new HibernateCallback() {
 		            public Object doInHibernate(Session session) throws HibernateException {
