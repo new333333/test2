@@ -453,6 +453,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <script type="text/javascript">
 ss_statusCurrent = "${ssUser.status}";
 </script>
+<ssf:ifnotaccessible>
 <span class="ss_statusprint"><ssf:nlt tag="relevance.userStatus"/></span>
 <input type="text" size="50" style="font-size:8; background-color:#cccccc;" value="${ssUser.status}"
   onFocus="ss_setStatusBackground(this, 'focus');"
@@ -462,6 +463,19 @@ ss_statusCurrent = "${ssUser.status}";
   onMouseover="ss_setStatusBackground(this, 'mouseOver');"
   onMouseout="ss_setStatusBackgroundCheck(this);"
   />
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+<div style="white-space:nowrap">
+<span class="ss_statusprint"><ssf:nlt tag="relevance.userStatus"/></span>
+<input type="text" id="ss_statusBoxText${renderResponse.namespace}"
+  size="50" 
+  style="font-size:8; background-color:#cccccc;" 
+  value="${ssUser.status}"
+  /><input type="submit" style="font-size:8;"
+  onClick="ss_updateStatusNowAccessible('ss_statusBoxText${renderResponse.namespace}');return false;" 
+  value="<ssf:nlt tag="button.ok"/>"
+  /></div>
+</ssf:ifaccessible>
 </li>
 
 </div><!-- end of status line area -->
@@ -486,6 +500,7 @@ ss_statusCurrent = "${ssUser.status}";
 			      style="visibility:hidden;margin:20px 0px 0px -130px;padding:0px;"></div>
 
           </li>
+<ssf:ifnotaccessible>
           <li><a title="<ssf:nlt tag="navigation.favorites"/>"
 	  			href="javascript: ;" 
 	  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
@@ -498,6 +513,7 @@ ss_statusCurrent = "${ssUser.status}";
 		      style="visibility:hidden;margin:20px 0px 0px -150px;padding:0px;"
 		      ></div>
           </li>
+</ssf:ifnotaccessible>
         
                  
         </ul>
