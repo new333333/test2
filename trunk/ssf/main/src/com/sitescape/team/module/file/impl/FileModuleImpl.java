@@ -113,6 +113,7 @@ import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.util.KeyValuePair;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 import com.sitescape.team.InternalException;
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.ObjectKeys;
@@ -906,19 +907,19 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		
 		Element rootElement = qTree.getRootElement();
-		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+		Element boolElement = rootElement.element(Constants.AND_ELEMENT);
 		//boolElement.addElement(QueryBuilder.USERACL_ELEMENT);
 		
 		// look for the specific binder id
-		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
-    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(binder.getId().toString());
 
     	// look only for attachments
-    	field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	field = boolElement.addElement(Constants.FIELD_ELEMENT);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
 
     	QueryBuilder qb = new QueryBuilder(true);

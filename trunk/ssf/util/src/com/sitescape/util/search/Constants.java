@@ -1,4 +1,4 @@
-package com.sitescape.team.search;
+package com.sitescape.util.search;
 
 public class Constants {
 

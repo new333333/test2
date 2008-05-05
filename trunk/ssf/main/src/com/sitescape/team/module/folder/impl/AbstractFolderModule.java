@@ -108,6 +108,7 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 /**
  *
  * @author Jong Kim
@@ -551,34 +552,34 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	Hits results = null;
        	// Build the query
     	org.dom4j.Document qTree = DocumentHelper.createDocument();
-    	Element rootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-    	Element andElement = rootElement.addElement(QueryBuilder.AND_ELEMENT);
+    	Element rootElement = qTree.addElement(Constants.QUERY_ELEMENT);
+    	Element andElement = rootElement.addElement(Constants.AND_ELEMENT);
     	Element field,child;
     	//choose 1 of the folders
-    	Element orElement = andElement.addElement(QueryBuilder.OR_ELEMENT);
+    	Element orElement = andElement.addElement(Constants.OR_ELEMENT);
     	Iterator itFolders = folders.iterator();
     	while (itFolders.hasNext()) {
     		Folder folder = (Folder) itFolders.next();
-        	field = orElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
-        	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+        	field = orElement.addElement(Constants.FIELD_ELEMENT);
+        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+        	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText(folder.getId().toString());
     	}
     	//choose only entries/ not replies
-    	field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-    	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    	field = andElement.addElement(Constants.FIELD_ELEMENT);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
 
 		//choose a range of dates
-    	Element rangeElement = andElement.addElement(QueryBuilder.RANGE_ELEMENT);
-    	rangeElement.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, IndexUtils.LASTACTIVITY_DAY_FIELD);
-    	rangeElement.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
-    	Element startRange = rangeElement.addElement(QueryBuilder.RANGE_START);
+    	Element rangeElement = andElement.addElement(Constants.RANGE_ELEMENT);
+    	rangeElement.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, IndexUtils.LASTACTIVITY_DAY_FIELD);
+    	rangeElement.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, Constants.INCLUSIVE_TRUE);
+    	Element startRange = rangeElement.addElement(Constants.RANGE_START);
     	Date now = new Date();
     	Date startDate = new Date(now.getTime() - ObjectKeys.SEEN_MAP_TIMEOUT);
     	startRange.addText(EntityIndexUtils.formatDayString(startDate));
-    	Element finishRange = rangeElement.addElement(QueryBuilder.RANGE_FINISH);
+    	Element finishRange = rangeElement.addElement(Constants.RANGE_FINISH);
     	finishRange.addText(EntityIndexUtils.formatDayString(now));
 
      	

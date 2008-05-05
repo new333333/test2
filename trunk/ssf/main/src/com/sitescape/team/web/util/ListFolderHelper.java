@@ -87,7 +87,6 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
@@ -99,6 +98,7 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 public class ListFolderHelper {
 
 	public static final String[] monthNames = { 
@@ -939,20 +939,20 @@ public class ListFolderHelper {
     	//Look only for binderId=binder and doctype = entry (not attachement)
     	if (folder != null) {
 			Document searchFilter2 = DocumentHelper.createDocument();
-    		Element rootElement = searchFilter2.addElement(QueryBuilder.AND_ELEMENT);
-    		Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
-        	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    		Element rootElement = searchFilter2.addElement(Constants.AND_ELEMENT);
+    		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
+        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+        	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
         	child.setText(folder.getId().toString());
         	
         	//Look only for docType=entry and entryType=entry
-        	field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-        	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-        	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+        	field = rootElement.addElement(Constants.FIELD_ELEMENT);
+        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+        	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
         	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
-           	field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-           	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-           	child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+           	field = rootElement.addElement(Constants.FIELD_ELEMENT);
+           	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+           	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
            	child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
         	options2.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
     	}
