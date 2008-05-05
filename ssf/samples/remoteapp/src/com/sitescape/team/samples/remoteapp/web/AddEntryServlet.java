@@ -57,7 +57,7 @@ import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.util.search.Constants;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -108,14 +108,14 @@ public class AddEntryServlet extends HttpServlet {
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		Document query = DocumentHelper.createDocument();
-		Element rootElement = query.addElement(QueryBuilder.AND_ELEMENT);
-		Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.FAMILY_FIELD);
-		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		Element rootElement = query.addElement(Constants.AND_ELEMENT);
+		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.FAMILY_FIELD);
+		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(EntityIndexUtils.FAMILY_FIELD_TASK);
-		field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		field = rootElement.addElement(Constants.FIELD_ELEMENT);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
 		String searchResultsAsXML = stub.search_search(accessToken, query.asXML(), 0, 10);
 		

@@ -8,8 +8,8 @@ import static com.sitescape.team.module.shared.EntityIndexUtils.FAMILY_FIELD_TAS
 import static com.sitescape.team.module.shared.EntityIndexUtils.MODIFICATION_DATE_FIELD;
 import static com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ENTRY;
 import static com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_FIELD;
-import static com.sitescape.team.search.Restrictions.eq;
-import static com.sitescape.team.search.Restrictions.in;
+import static com.sitescape.util.search.Restrictions.eq;
+import static com.sitescape.util.search.Restrictions.in;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +21,8 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
+import com.sitescape.util.search.Criteria;
+import com.sitescape.util.search.Order;
 
 public class SearchUtils {
 

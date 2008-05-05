@@ -1,7 +1,8 @@
-package com.sitescape.team.search;
+package com.sitescape.util.search;
 
 import org.dom4j.Branch;
 import org.dom4j.Element;
+
 
 public class Order
 {
@@ -26,9 +27,9 @@ public class Order
 	
 	public Element toQuery(Branch root)
 	{
-		Element child = root.addElement(QueryBuilder.FIELD_NAME_ATTRIBUTE);
+		Element child = root.addElement(Constants.FIELD_NAME_ATTRIBUTE);
 		if(ascending) {
-			child.addAttribute(QueryBuilder.ASCENDING_ATTRIBUTE, QueryBuilder.ASCENDING_TRUE);
+			child.addAttribute(Constants.ASCENDING_ATTRIBUTE, Constants.ASCENDING_TRUE);
 		}
 		child.setText(fieldName);
 		return child;

@@ -445,12 +445,12 @@ public class RssModuleImpl extends CommonDependencyInjection implements
 	private Query buildRssQuery() {
 		SearchObject so = new SearchObject();
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+		Element qTreeRootElement = qTree.addElement(com.sitescape.util.search.Constants.QUERY_ELEMENT);
 		Element qTreeAndElement = qTreeRootElement
-				.addElement(QueryBuilder.AND_ELEMENT);
-		Element field = qTreeAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, ALL_FIELD);
-		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+				.addElement(com.sitescape.util.search.Constants.AND_ELEMENT);
+		Element field = qTreeAndElement.addElement(com.sitescape.util.search.Constants.FIELD_ELEMENT);
+		field.addAttribute(com.sitescape.util.search.Constants.FIELD_NAME_ATTRIBUTE, ALL_FIELD);
+		Element child = field.addElement(com.sitescape.util.search.Constants.FIELD_TERMS_ELEMENT);
 		child.setText("all");
 		QueryBuilder qb = new QueryBuilder(true);
 		so = qb.buildQuery(qTree);

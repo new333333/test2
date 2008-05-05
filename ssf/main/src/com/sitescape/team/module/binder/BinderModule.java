@@ -45,10 +45,10 @@ import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.InputDataAccessor;
-import com.sitescape.team.search.Criteria;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.tree.DomTreeBuilder;
+import com.sitescape.util.search.Criteria;
 
 /**
  * @author Janet McCann

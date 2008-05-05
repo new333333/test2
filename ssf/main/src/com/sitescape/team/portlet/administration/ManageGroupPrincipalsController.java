@@ -58,13 +58,13 @@ import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 public abstract class ManageGroupPrincipalsController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
@@ -135,10 +135,10 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
 		//Exclude allUsers from the search 
 		Document searchFilter = DocumentHelper.createDocument();
-		Element rootElement = searchFilter.addElement(QueryBuilder.NOT_ELEMENT);
-		Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,ProfileIndexUtils.GROUPNAME_FIELD);
-    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		Element rootElement = searchFilter.addElement(Constants.NOT_ELEMENT);
+		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,ProfileIndexUtils.GROUPNAME_FIELD);
+    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(allIndividualsGroupName());
     	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
 

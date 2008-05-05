@@ -95,7 +95,6 @@ import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.SearchUtils;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.Criteria;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
@@ -108,6 +107,8 @@ import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
+import com.sitescape.util.search.Criteria;
 /**
  * @author Janet McCann
  *
@@ -773,7 +774,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		if (!user.isSuper()) {		
 			// Top of query doc 
 			Document qTree = DocumentHelper.createDocument();				
-			qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+			qTree.addElement(Constants.QUERY_ELEMENT);
 	    	//Create the query
 	    	QueryBuilder qb = new QueryBuilder(true);
 			so = qb.buildQuery(qTree);
@@ -913,13 +914,13 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		org.dom4j.Document qTree = SearchUtils.getInitalSearchDocument(null, null);
 		
 		Element rootElement = qTree.getRootElement();
-		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+		Element boolElement = rootElement.element(Constants.AND_ELEMENT);
 		
 		// look for binders only
-		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-		field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
-    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
+    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
        	child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
 
     	// look for user
@@ -928,19 +929,19 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        	Set<Long> ids = getProfileDao().getPrincipalIds(prin);
        	if (ids.isEmpty()) return Collections.EMPTY_LIST;
        	if (ids.size() > 1) {
-       		Element orField2 = boolElement.addElement(QueryBuilder.OR_ELEMENT);
+       		Element orField2 = boolElement.addElement(Constants.OR_ELEMENT);
        		for (Long id:ids) {
-       			field = orField2.addElement(QueryBuilder.FIELD_ELEMENT);
-       			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.TEAM_MEMBERS_FIELD);
-       			field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
-       			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+       			field = orField2.addElement(Constants.FIELD_ELEMENT);
+       			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.TEAM_MEMBERS_FIELD);
+       			field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
+       			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
        			child.setText(id.toString());
        		}
        	} else {
-  			field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-   			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.TEAM_MEMBERS_FIELD);
-   			field.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
-   			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+  			field = boolElement.addElement(Constants.FIELD_ELEMENT);
+   			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.TEAM_MEMBERS_FIELD);
+   			field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
+   			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
    			child.setText(userId.toString());
        		
        	}
@@ -1228,17 +1229,17 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	}
     	
     	Document queryTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = queryTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		Element qTreeAndElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+		Element qTreeRootElement = queryTree.addElement(Constants.QUERY_ELEMENT);
+		Element qTreeAndElement = qTreeRootElement.addElement(Constants.AND_ELEMENT);
 		
-		Element field = qTreeAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
-		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		Element field = qTreeAndElement.addElement(Constants.FIELD_ELEMENT);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(top.getId().toString());
    	
-		field = qTreeAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		field = qTreeAndElement.addElement(Constants.FIELD_ELEMENT);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
       	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder(true);
@@ -1260,28 +1261,28 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
  
     	//Before doing the search, create another query in case the buckets are exhausted
     	Document queryTreeFinal = DocumentHelper.createDocument();
-		qTreeRootElement = queryTreeFinal.addElement(QueryBuilder.QUERY_ELEMENT);
-		qTreeAndElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+		qTreeRootElement = queryTreeFinal.addElement(Constants.QUERY_ELEMENT);
+		qTreeAndElement = qTreeRootElement.addElement(Constants.AND_ELEMENT);
 		
-		field = qTreeAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
-		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		field = qTreeAndElement.addElement(Constants.FIELD_ELEMENT);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(top.getId().toString());
    	
-		field = qTreeAndElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		field = qTreeAndElement.addElement(Constants.FIELD_ELEMENT);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
 
 		QueryBuilder qbFinal = new QueryBuilder(true);
     	SearchObject singleBucketSO = qbFinal.buildQuery(queryTreeFinal);
 		
-   		Element range = qTreeAndElement.addElement(QueryBuilder.RANGE_ELEMENT);
-   		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.NORM_TITLE);
-   		range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
-		Element start = range.addElement(QueryBuilder.RANGE_START);
+   		Element range = qTreeAndElement.addElement(Constants.RANGE_ELEMENT);
+   		range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.NORM_TITLE);
+   		range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, Constants.INCLUSIVE_TRUE);
+		Element start = range.addElement(Constants.RANGE_START);
 		start.setText(tuple1);
-		Element end = range.addElement(QueryBuilder.RANGE_FINISH);
+		Element end = range.addElement(Constants.RANGE_FINISH);
 		end.setText(tuple2);
 
 		//Create the Lucene query

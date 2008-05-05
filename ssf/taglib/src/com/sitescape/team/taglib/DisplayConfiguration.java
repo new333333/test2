@@ -49,7 +49,6 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
@@ -58,6 +57,7 @@ import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -259,9 +259,9 @@ public class DisplayConfiguration extends TagSupport {
 									options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
 
 									Document searchFilter = DocumentHelper.createDocument();
-									Element field = searchFilter.addElement(QueryBuilder.FIELD_ELEMENT);
-							    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-							    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+									Element field = searchFilter.addElement(Constants.FIELD_ELEMENT);
+							    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+							    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 							    	child.setText(EntityIndexUtils.ENTRY_TYPE_APPLICATION);
 							    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
 							    	

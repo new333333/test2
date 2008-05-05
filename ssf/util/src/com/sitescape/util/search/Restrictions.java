@@ -1,10 +1,11 @@
-package com.sitescape.team.search;
+package com.sitescape.util.search;
 
 import java.util.Arrays;
 import java.util.Collection;
 
 import org.dom4j.Branch;
 import org.dom4j.Element;
+
 
 public class Restrictions
 {
@@ -55,9 +56,9 @@ public class Restrictions
 		
 		protected Element toQuery(Branch parent, String value)
 		{
-			Element root = parent.addElement(QueryBuilder.FIELD_ELEMENT);
-			root.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, fieldName);
-        	Element child = root.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			Element root = parent.addElement(Constants.FIELD_ELEMENT);
+			root.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, fieldName);
+        	Element child = root.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText(value);
     		
 			return root;
@@ -80,7 +81,7 @@ public class Restrictions
 		{
 			Element element = super.toQuery(parent, value);
 			if(exact) {
-				element.addAttribute(QueryBuilder.EXACT_PHRASE_ATTRIBUTE, "true");
+				element.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
 			}
 			return element;
 		}
@@ -98,7 +99,7 @@ public class Restrictions
 		
 		public Element toQuery(Branch parent)
 		{
-			Element root = parent.addElement(QueryBuilder.OR_ELEMENT);
+			Element root = parent.addElement(Constants.OR_ELEMENT);
 			for(String value : values)
 			{
 				super.toQuery(root, value);
@@ -123,12 +124,12 @@ public class Restrictions
 
 		public Element toQuery(Branch parent)
 		{
-			Element root = parent.addElement(QueryBuilder.RANGE_ELEMENT);
-			root.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, fieldName);
-			root.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, QueryBuilder.INCLUSIVE_TRUE);
-			Element child = root.addElement(QueryBuilder.RANGE_START);
+			Element root = parent.addElement(Constants.RANGE_ELEMENT);
+			root.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, fieldName);
+			root.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, Constants.INCLUSIVE_TRUE);
+			Element child = root.addElement(Constants.RANGE_START);
 			child.setText(lo);
-			child = root.addElement(QueryBuilder.RANGE_FINISH);
+			child = root.addElement(Constants.RANGE_FINISH);
 			child.setText(hi);
 
 			return root;

@@ -1,4 +1,4 @@
-package com.sitescape.team.search;
+package com.sitescape.util.search;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,6 +6,8 @@ import java.util.List;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+
+import com.sitescape.util.search.Junction.Conjunction;
 
 public class Criteria
 {
@@ -33,10 +35,10 @@ public class Criteria
 	public Document toQuery()
 	{
 		Document doc = DocumentHelper.createDocument();
-		Element rootElement = doc.addElement(QueryBuilder.QUERY_ELEMENT);
+		Element rootElement = doc.addElement(Constants.QUERY_ELEMENT);
 		root.toQuery(rootElement);
 		if(orders.size() > 0) {
-			Element sortBy = rootElement.addElement(QueryBuilder.SORTBY_ELEMENT);
+			Element sortBy = rootElement.addElement(Constants.SORTBY_ELEMENT);
 			for(Order o : orders) {
 				o.toQuery(sortBy);
 			}

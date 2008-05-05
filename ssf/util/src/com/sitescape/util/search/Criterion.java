@@ -1,4 +1,4 @@
-package com.sitescape.team.search;
+package com.sitescape.util.search;
 
 import org.dom4j.Branch;
 import org.dom4j.Element;

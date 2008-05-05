@@ -1,4 +1,4 @@
-package com.sitescape.team.search;
+package com.sitescape.util.search;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.dom4j.Branch;
 import org.dom4j.Document;
 import org.dom4j.Element;
+
 
 abstract public class Junction implements Criterion
 {
@@ -43,7 +44,7 @@ abstract public class Junction implements Criterion
 		
 		public String getOp()
 		{
-			return QueryBuilder.OR_ELEMENT;
+			return Constants.OR_ELEMENT;
 		}
 	}
 
@@ -56,7 +57,7 @@ abstract public class Junction implements Criterion
 
 		public String getOp()
 		{
-			return QueryBuilder.AND_ELEMENT;
+			return Constants.AND_ELEMENT;
 		}
 	}
 }

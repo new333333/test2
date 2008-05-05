@@ -67,15 +67,16 @@ import static com.sitescape.team.search.BasicIndexUtils.*;
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.Criteria;
-import com.sitescape.team.search.Order;
 import com.sitescape.team.search.SearchUtils;
 
-import static com.sitescape.team.search.Restrictions.*;
+import static com.sitescape.util.search.Restrictions.*;
+
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.util.search.Criteria;
+import com.sitescape.util.search.Order;
 
 public class RelevanceDashboardHelper {
 	
