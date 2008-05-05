@@ -136,9 +136,6 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public String definition_getDefinitionAsXML(String accessToken, String definitionId) {
 		return getDefinitionService().definition_getDefinitionAsXML(accessToken, definitionId);
 	}
-	public String definition_getDefinitionConfigAsXML(String accessToken) {
-		return getDefinitionService().definition_getDefinitionConfigAsXML(accessToken);
-	}
 	public String definition_getDefinitionListAsXML(String accessToken) {
 		return getDefinitionService().definition_getDefinitionListAsXML(accessToken);
 	}
