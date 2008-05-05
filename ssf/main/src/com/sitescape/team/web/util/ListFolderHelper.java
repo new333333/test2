@@ -1092,8 +1092,10 @@ public class ListFolderHelper {
 			if (folders.get(placeId) != null) {
 				continue;
 			}
-			Folder folder = bs.getFolderModule().getFolder(placeId);
-			folders.put(placeId.toString(), folder);
+			try {
+				Folder folder = bs.getFolderModule().getFolder(placeId);
+				folders.put(placeId.toString(), folder);
+			} catch (Exception ex) {continue;}
 		}
 		
 		if (!folders.isEmpty()) {
