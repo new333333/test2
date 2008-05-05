@@ -53,9 +53,6 @@
   <c:if test="<%= !reloadCaller %>">
     <c:if test="<%= !isViewEntry %>">
 
-<div id="ss_showentryhighwatermark" style="position:absolute; visibility:visible;">
-<img border="0" <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif">
-</div>
 <div id="ss_portlet_content" class="ss_style ss_portlet ss_content_outer" style="margin:0px; padding:0px;">
 <%@ include file="/WEB-INF/jsp/entry/view_search_results_vertical.jsp" %>
 </div>

@@ -31,16 +31,20 @@
 <% //view a folder forum in accessible mode %>
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
 
+<%@ page import="com.sitescape.team.module.definition.DefinitionUtils" %>
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <%
 //Get the folder type of this definition (folder, file, or event)
-String folderViewStyle = "folder";
-Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("properties/property[@name='type']");
-if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
+String folderViewStyle = DefinitionUtils.getViewType(ssConfigDefinition);
+if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "folder";
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
   style="display:block; margin:2px;">
+<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+</c:if>
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
@@ -48,12 +52,13 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
     <tr>
     <td valign="top" class="ss_view_sidebar">
 
+<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-
+</c:if>
 	<% // Folder Sidebar %>
 
     <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
@@ -75,8 +80,9 @@ if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValu
 	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color">
 			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-		
+</c:if>		
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
 					  configJspStyle="${ssConfigJspStyle}" />
