@@ -40,7 +40,7 @@
 
 </ul>
 #else
-<table style="padding-left:30px;" cellpadding="0" cellspacing="0">
+<table style="padding-left:30px;" cellpadding="0" cellspacing="0" border="0">
 <tbody>
 #foreach ($selection in $ssVisitor.Entity.FileAttachments)
      <tr><td colspan="4"><hr style="border-top:1px solid #CCCCCC;border-bottom:none;height:0px;" noshade="noshade" /></td></tr>
