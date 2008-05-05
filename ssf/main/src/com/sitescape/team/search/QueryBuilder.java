@@ -116,7 +116,7 @@ public class QueryBuilder {
 		if(useAcls) {
 			this.userPrincipals = getProfileDao().getPrincipalIds(RequestContextHolder.getRequestContext().getUser());
 			Application app = RequestContextHolder.getRequestContext().getApplication();
-			if(app != null) {
+			if(app != null && !app.isTrusted()) {
 				this.applicationPrincipals = getProfileDao().getPrincipalIds(app);
 			} else {
 				this.applicationPrincipals = null;

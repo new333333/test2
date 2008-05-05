@@ -116,6 +116,7 @@
 	    </subclass>
 	    <subclass name="com.sitescape.team.domain.Application" node="Application" discriminator-value="application" dynamic-update="true">
 	      <property name="postUrl" length="256"/>
+		  <property name="trusted" access="field"/>
 	    </subclass>
   	</subclass>
   </class>
