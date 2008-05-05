@@ -154,7 +154,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 		Application application = null;
 		if(RequestContextHolder.getRequestContext() != null)
 			application = RequestContextHolder.getRequestContext().getApplication();
-		if (user.isSuper() && application == null) return true;
+		if (user.isSuper() && (application == null || application.isTrusted())) return true;
 		if (!workAreaOperation.equals(WorkAreaOperation.READ_ENTRIES) && !getLicenseManager().validLicense())return false;
 		if (workArea.isFunctionMembershipInherited()) {
 			WorkArea parentWorkArea = workArea.getParentWorkArea();
@@ -166,7 +166,7 @@ public class AccessControlManagerImpl implements AccessControlManager {
 				return testOperation(user, workAreaStart, parentWorkArea, workAreaOperation);
 		} else {
 			Set membersToLookup = null;
-			if(application != null) {
+			if(application != null && !application.isTrusted()) {
 				membersToLookup = getProfileDao().getPrincipalIds(application);
 				if(!getWorkAreaFunctionMembershipManager()
 						.checkWorkAreaFunctionMembership(user.getZoneId(),

@@ -90,10 +90,12 @@ public class ManageApplicationsController extends  SAbstractController {
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
 			String postUrl = PortletRequestUtils.getStringParameter(request, "postUrl", "");
+			String trusted = PortletRequestUtils.getStringParameter(request, "trusted", "");
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			updates.put(ObjectKeys.FIELD_APPLICATION_POST_URL, postUrl);
+			updates.put(ObjectKeys.FIELD_APPLICATION_TRUSTED, Boolean.parseBoolean(trusted));
 			getProfileModule().modifyEntry(binderId, applicationId, new MapInputData(updates));
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, applicationId.toString());
 

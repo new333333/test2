@@ -33,6 +33,7 @@ import com.sitescape.util.Validator;
 public class Application extends ApplicationPrincipal implements IndividualPrincipal {
 
     private String postUrl;
+    private Boolean trusted;
     
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.application;
@@ -58,5 +59,15 @@ public class Application extends ApplicationPrincipal implements IndividualPrinc
     	return true; // any situation where this shouldn't be the case?
     }
 
+	public boolean isTrusted() {
+		if(trusted != null)
+			return trusted.booleanValue();
+		else
+			return false;
+	}
+
+	public void setTrusted(boolean trusted) {
+		this.trusted = Boolean.valueOf(trusted);
+	}
 
 }
