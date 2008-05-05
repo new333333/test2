@@ -83,6 +83,9 @@ public class NameSearchServlet extends HttpServlet {
 			locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);
 			TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 
+			// To see if access check is working properly
+			//stub.search_getWorkspaceTreeAsXML(accessToken, 1, 1, "");
+			
 			// Get the title of the user by making a web services call.
 			String title = getUserTitle(stub, accessToken, Long.valueOf(userId));
 			
