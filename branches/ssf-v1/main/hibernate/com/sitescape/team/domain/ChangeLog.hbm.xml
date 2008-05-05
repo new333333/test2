@@ -14,7 +14,7 @@
     <property name="operationDate" type="timestamp"/>
     <property name="operation" length="32"/>
     <property name="version"/>
-    <property name="xmlString" type="org.springframework.orm.hibernate3.support.ClobStringType"/>   
+    <property name="xmlString" length="2000000" type="org.springframework.orm.hibernate3.support.ClobStringType"/>   
 	<property name="entityId"/>
    	<property name="entityType" length="16"/>
     <property name="owningBinderId"/>

@@ -6,7 +6,7 @@
     <id name="principalId">
       <generator class="assigned"/>
     </id>
-    <property name="seenMap" not-null="true" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
+    <property name="seenMap" not-null="true" length="2000000" type="org.springframework.orm.hibernate3.support.BlobSerializableType"/>
     <property name="lastPrune"/>
   </class>
 </hibernate-mapping>
