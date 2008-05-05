@@ -740,6 +740,11 @@ function ss_updateStatusSoon(obj, evt) {
 		ss_setStatusBackground(obj, 'focus');
     }
 }
+function ss_updateStatusNowAccessible(id) {
+	//This is the id of the text box
+	var obj = document.getElementById(id);
+	ss_updateStatusNow(obj);
+}
 function ss_updateStatusNow(obj) {
 	ss_statusObj = obj;
 	if (ss_statusTimer != null) {
