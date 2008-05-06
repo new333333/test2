@@ -42,18 +42,20 @@ import com.sitescape.team.client.ws.model.FolderEntry;
  * @author jong
  *
  */
-public class GetFolderEntry {
+public class WSClientWithStubs {
 
 	private static final String TEAMING_SERVICE_ADDRESS_WSS 	= "http://localhost:8080/ssf/ws/TeamingService";
-	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8079/ssr/secure/ws/TeamingService";
+	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingService";
 	
 	private static final String USERNAME = "admin";
 	private static final String PASSWORD = "test";
 	
 	public static void main(String[] args) throws Exception {
-		getFolderEntryWSSecurity(85, 47, true);
+		//getFolderEntryWSSecurity(85, 47, true);
 		
-		//getFolderEntryBasicAuth(85, 47, true);
+		getFolderEntryBasicAuth(85, 47, false);
+		
+		//getFolderEntriesBasicAuth(85);
 	}
 	
 	public static void getFolderEntryWSSecurity(long binderId, long entryId, boolean includeAttachments) throws Exception {
@@ -90,6 +92,25 @@ public class GetFolderEntry {
 		System.out.println("(Basic) Entry title: " + entry.getTitle());
 		
 		System.out.println("(Basic) Number of attachments downloaded = " + WebServiceClientUtil.extractFiles(stub, null));
+	}
+
+	public static void getFolderEntriesBasicAuth(long binderId) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		/*
+		FolderEntryCollection result = stub.folder_getFolderEntries(null, binderId);
+		FolderEntryBrief[] entries = result.getEntries();
+				
+		System.out.println("(Basic) Number of entries = " + entries.length);
+		for(int i = 0; i < entries.length; i++) {
+			System.out.println("(" + (i+1) + ") id=" + entries[i].getId() + ", title=" + entries[i].getTitle()); 
+		}*/
 	}
 
 }
