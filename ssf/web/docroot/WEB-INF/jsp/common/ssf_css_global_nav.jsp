@@ -46,7 +46,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 #ss_statusArea{
 	float:left;
-	width:27%;
 	min-width:300px;
 	margin-left:5px;
 	vertical-align:top;
@@ -185,7 +184,7 @@ a.ss_buttonSTButton:active span {
 	letter-spacing: 0px;
 	}
 #ss_top_nav_view ul{
-	margin:0px 0 0 0px;
+	margin:4px 0 0 0px;
 	list-style:none;
 	width:100%;
 	}
@@ -526,6 +525,7 @@ span.ss_global_toolbar_label_text, span.ss_global_toolbar_label_text_quickSearch
 	color:#333333;
 	background-color: transparent;
 	white-space: normal;
+	font-family: Arial, sans serif;
 	}
 span.ss_global_toolbar_label_text_quickSearch {
 	font-size: ${ss_style_font_fineprint};
