@@ -787,7 +787,7 @@ function ss_setStatusBackground(obj, op) {
 	}
 }
 function ss_flashStatus() {
-	ss_statusObj.style.backgroundColor = "lime";
+	ss_statusObj.style.backgroundColor = "#00ADEF";
 	setTimeout("ss_setStatusBackground(ss_statusObj, 'blur');", 300);
 }
 function ss_setStatusBackgroundCheck(obj) {
