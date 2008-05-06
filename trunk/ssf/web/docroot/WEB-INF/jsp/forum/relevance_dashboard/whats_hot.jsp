@@ -54,7 +54,7 @@
 <img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
 </c:if>
 </div>
-<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.newTrackedSite"/></em></div>
+<div id="ss_hints"><em><ssf:nlt tag="relevance.hint.hotItems"/></em></div>
   <c:forEach var="entry" items="${ss_whatsHot}">
     <jsp:useBean id="entry" type="com.sitescape.team.domain.Entry" />
     <li>
