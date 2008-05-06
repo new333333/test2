@@ -30,23 +30,42 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 
-public class StringField extends Field implements Serializable {
+public class PrincipalCollection implements Serializable {
 
-	private String value;
-
-	public StringField() {
-	}
-	public StringField(String name, String type, String value) {
-		super(name, type);
-		setValue(value);
+	private int first;
+	private int total;
+	private PrincipalBrief[] entries;
+	
+	public PrincipalCollection() {}
+	
+	public PrincipalCollection(int first, int total, PrincipalBrief[] entries) {
+		setFirst(first);
+		setTotal(total);
+		setEntries(entries);
 	}
 	
-	public String getValue() {
-		return value;
+	public int getFirst() {
+		return first;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setFirst(int first) {
+		this.first = first;
 	}
-	
+
+	public int getTotal() {
+		return total;
+	}
+
+	public void setTotal(int total) {
+		this.total = total;
+	}
+
+	public PrincipalBrief[] getEntries() {
+		return entries;
+	}
+
+	public void setEntries(PrincipalBrief[] entries) {
+		this.entries = entries;
+	}
+
 }

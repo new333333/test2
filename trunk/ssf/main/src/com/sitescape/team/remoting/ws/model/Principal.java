@@ -30,23 +30,43 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 
-public class StringField extends Field implements Serializable {
+public class Principal extends Entry implements Serializable {
 
-	private String value;
-
-	public StringField() {
-	}
-	public StringField(String name, String type, String value) {
-		super(name, type);
-		setValue(value);
-	}
+	private String emailAddress;
+	private String type;
+	private boolean disabled;
+	private boolean reserved;
+	private String name;
 	
-	public String getValue() {
-		return value;
+	public boolean isDisabled() {
+		return disabled;
 	}
-
-	public void setValue(String value) {
-		this.value = value;
+	public void setDisabled(boolean disabled) {
+		this.disabled = disabled;
+	}
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public boolean isReserved() {
+		return reserved;
+	}
+	public void setReserved(boolean reserved) {
+		this.reserved = reserved;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 	
 }

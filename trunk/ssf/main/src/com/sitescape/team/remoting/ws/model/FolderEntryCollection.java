@@ -30,23 +30,22 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 
-public class StringField extends Field implements Serializable {
+public class FolderEntryCollection implements Serializable {
 
-	private String value;
+	private FolderEntryBrief[] entries;
 
-	public StringField() {
-	}
-	public StringField(String name, String type, String value) {
-		super(name, type);
-		setValue(value);
+	public FolderEntryCollection() {}
+	
+	public FolderEntryCollection(FolderEntryBrief[] entries) {
+		setEntries(entries);
 	}
 	
-	public String getValue() {
-		return value;
+	public FolderEntryBrief[] getEntries() {
+		return entries;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public void setEntries(FolderEntryBrief[] entries) {
+		this.entries = entries;
 	}
-	
+
 }

@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.profile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,8 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.PrincipalBrief;
+import com.sitescape.team.remoting.ws.model.PrincipalCollection;
 import com.sitescape.team.remoting.ws.util.DomInputData;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
@@ -79,7 +82,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		Element entryElem = addPrincipalToDocument(doc, entry);
 		
 		// Handle custom fields driven by corresponding definition. 
-		addCustomElements(entryElem, null, entry);
+		addCustomElements(entryElem, entry);
 		
 		String xml = doc.getRootElement().asXML();
 		
@@ -144,6 +147,41 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 	public long profile_addUserWorkspace(String accessToken, long userId) {
 		User user = (User)getProfileModule().getEntry(getProfileModule().getProfileBinder().getId(), userId);
 		return getProfileModule().addUserWorkspace(user, null).getId();
+	}
+	
+	public PrincipalCollection profile_getAllPrincipals(String accessToken, int firstRecord, int maxRecords) {
+    	Map options = new HashMap();
+    	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
+    	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxRecords));
+		Map results = getProfileModule().getPrincipals(getProfileModule().getProfileBinder().getId(), options);
+		List users = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+		
+		List<PrincipalBrief> principals = new ArrayList<PrincipalBrief>();
+		for(Object searchEntry : users) {
+			Map user = (Map) searchEntry;
+			principals.add(toPrincipalBrief(user));
+		}
+		
+		PrincipalBrief[] array = new PrincipalBrief[principals.size()];
+		return new PrincipalCollection(firstRecord, 
+				((Integer)results.get(ObjectKeys.SEARCH_COUNT_TOTAL)).intValue(), 
+				principals.toArray(array));
+	}
+	
+	public com.sitescape.team.remoting.ws.model.Principal profile_getPrincipal(String accessToken, long binderId, long principalId) {
+		Long bId = new Long(binderId);
+		Long pId = new Long(principalId);
+		
+		// Retrieve the raw entry.
+		Principal entry = 
+			getProfileModule().getEntry(bId, pId);
+
+		com.sitescape.team.remoting.ws.model.Principal principalModel = 
+			new com.sitescape.team.remoting.ws.model.Principal();
+		
+		fillPrincipalModel(principalModel, entry);
+		
+		return principalModel;
 	}
 
 }

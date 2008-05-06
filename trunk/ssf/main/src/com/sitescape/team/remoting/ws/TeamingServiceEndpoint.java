@@ -34,6 +34,11 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 
 import com.sitescape.team.remoting.ws.model.FolderEntry;
+import com.sitescape.team.remoting.ws.model.FolderEntryBrief;
+import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
+import com.sitescape.team.remoting.ws.model.Principal;
+import com.sitescape.team.remoting.ws.model.PrincipalBrief;
+import com.sitescape.team.remoting.ws.model.PrincipalCollection;
 import com.sitescape.team.remoting.ws.service.binder.BinderService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
@@ -257,6 +262,18 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 
 	public FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
 		return getFolderService().folder_getFolderEntry(accessToken, binderId, entryId, includeAttachments);
+	}
+
+	public FolderEntryCollection folder_getFolderEntries(String accessToken, long binderId) {
+		return getFolderService().folder_getFolderEntries(accessToken, binderId);
+	}
+
+	public PrincipalCollection profile_getAllPrincipals(String accessToken, int firstRecord, int maxRecords) {
+		return getProfileService().profile_getAllPrincipals(accessToken, firstRecord, maxRecords);
+	}
+
+	public Principal profile_getPrincipal(String accessToken, long binderId, long principalId) {
+		return getProfileService().profile_getPrincipal(accessToken, binderId, principalId);
 	}
 
 }

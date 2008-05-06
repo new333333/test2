@@ -30,23 +30,64 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 
-public class StringField extends Field implements Serializable {
+public class FolderEntryBrief implements Serializable {
 
-	private String value;
-
-	public StringField() {
-	}
-	public StringField(String name, String type, String value) {
-		super(name, type);
-		setValue(value);
-	}
+	private Long id;
+	private Long binderId;
+	private String definitionId;
+	private String title;
+	private String docNumber;
+	private int docLevel;
+	private String href;
+	private AverageRating averageRating;
 	
-	public String getValue() {
-		return value;
+	public AverageRating getAverageRating() {
+		return averageRating;
 	}
-
-	public void setValue(String value) {
-		this.value = value;
+	public void setAverageRating(AverageRating averageRating) {
+		this.averageRating = averageRating;
+	}
+	public Long getBinderId() {
+		return binderId;
+	}
+	public void setBinderId(Long binderId) {
+		this.binderId = binderId;
+	}
+	public String getDefinitionId() {
+		return definitionId;
+	}
+	public void setDefinitionId(String definitionId) {
+		this.definitionId = definitionId;
+	}
+	public int getDocLevel() {
+		return docLevel;
+	}
+	public void setDocLevel(int docLevel) {
+		this.docLevel = docLevel;
+	}
+	public String getHref() {
+		return href;
+	}
+	public void setHref(String href) {
+		this.href = href;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getDocNumber() {
+		return docNumber;
+	}
+	public void setDocNumber(String docNumber) {
+		this.docNumber = docNumber;
 	}
 	
 }

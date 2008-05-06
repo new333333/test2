@@ -29,6 +29,7 @@
 package com.sitescape.team.remoting.ws.service.folder;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,12 +47,13 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.EmptyInputData;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.FolderEntryBrief;
+import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
 import com.sitescape.team.remoting.ws.util.DomInputData;
 import com.sitescape.team.util.DatedMultipartFile;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
-import com.sitescape.util.Validator;
 
 public class FolderServiceImpl extends BaseService implements FolderService {
 
@@ -95,7 +97,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		addEntryAttributes(entryElem, entry);
 
 		// Handle custom fields driven by corresponding definition. 
-		addCustomElements(entryElem, null, entry);
+		addCustomElements(entryElem, entry);
 		
 		String xml = doc.getRootElement().asXML();
 		
@@ -249,6 +251,27 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		fillFolderEntryModel(entryModel, entry);
 		
 		return entryModel;
+	}
+
+	public FolderEntryCollection folder_getFolderEntries(String accessToken, long binderId) {
+		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
+
+		List<FolderEntryBrief> entries = new ArrayList<FolderEntryBrief>();
+
+		if (binder instanceof Folder) {
+			Map options = new HashMap();
+			Map folderEntries = getFolderModule().getFullEntries(binder.getId(), options);
+			List entrylist = (List)folderEntries.get(ObjectKeys.FULL_ENTRIES);
+			Iterator entryIterator = entrylist.listIterator();
+			while (entryIterator.hasNext()) {
+				FolderEntry entry  = (FolderEntry) entryIterator.next();
+				FolderEntryBrief entryBrief = new FolderEntryBrief();
+				entries.add(toFolderEntryBrief(entry));
+			}
+		}
+		
+		FolderEntryBrief[] array = new FolderEntryBrief[entries.size()];
+		return new FolderEntryCollection(entries.toArray(array));
 	}
 	
 }
