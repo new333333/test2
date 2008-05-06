@@ -44,7 +44,8 @@
 		</jar>
 	</target>
 
-	<target name="wsdl2java" depends="clean" description="Generate client service bindings from WSDL">
+	<target name="wsdl2java" description="Generate client service bindings from WSDL">
+		<delete dir="${generated.dir}" />
 		<mkdir dir="${generated.dir}" />
 		<axis-wsdl2java
 			output="${generated.dir}"
@@ -59,7 +60,7 @@
 		</axis-wsdl2java>
 	</target>
 	
-	<target name="build">
+	<target name="build" depends="clean" >
 		<antcall target="wsdl2java"/>
 		<antcall target="jar"/>
 	</target>
