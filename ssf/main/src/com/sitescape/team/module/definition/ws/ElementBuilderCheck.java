@@ -45,12 +45,12 @@ public class ElementBuilderCheck extends AbstractElementBuilder {
 			if(element != null)
 				element.setText(val.toString());
 			if(entityModel != null)
-				entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, ((Boolean) val).booleanValue()));
+				entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, (Boolean) val));
 		} else {
 			if(element != null)
 				element.setText(Boolean.FALSE.toString());
 			if(entityModel != null)
-				entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, false));
+				entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, Boolean.FALSE));
 		}
 		return true;
 	}
@@ -59,7 +59,7 @@ public class ElementBuilderCheck extends AbstractElementBuilder {
 		if(element != null)
 			element.setText(Boolean.FALSE.toString());
 		if(entityModel != null)
-			entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, false));
+			entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, Boolean.FALSE));
 		return true;
 	}
 }

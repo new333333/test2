@@ -29,6 +29,8 @@
 package com.sitescape.team.remoting.ws.service.folder;
 
 import com.sitescape.team.remoting.ws.model.FolderEntry;
+import com.sitescape.team.remoting.ws.model.FolderEntryBrief;
+import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
 
 
 public interface FolderService {
@@ -51,4 +53,6 @@ public interface FolderService {
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId);
 	
 	public FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments);
+
+	public FolderEntryCollection folder_getFolderEntries(String accessToken, long binderId);
 }

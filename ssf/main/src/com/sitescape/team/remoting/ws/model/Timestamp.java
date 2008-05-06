@@ -28,9 +28,10 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 
-public class Timestamp {
+public class Timestamp implements Serializable {
 
 	private String principal;
 	private Calendar date;

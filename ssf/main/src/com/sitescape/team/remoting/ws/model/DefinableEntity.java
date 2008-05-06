@@ -28,14 +28,15 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class DefinableEntity {
+public class DefinableEntity implements Serializable {
 	
-	private long id;
-	private long binderId;
+	private Long id;
+	private Long binderId;
 	private String definitionId;
 	private String title;
 	private Description description;
@@ -51,11 +52,11 @@ public class DefinableEntity {
 	private List<StringArrayField> stringArrayFieldList = new ArrayList<StringArrayField>();
 	private List<StringField> stringFieldList = new ArrayList<StringField>();
 
-	public long getBinderId() {
+	public Long getBinderId() {
 		return binderId;
 	}
 
-	public void setBinderId(long binderId) {
+	public void setBinderId(Long binderId) {
 		this.binderId = binderId;
 	}
 
@@ -67,11 +68,11 @@ public class DefinableEntity {
 		this.definitionId = definitionId;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -125,8 +126,7 @@ public class DefinableEntity {
 
 	public BooleanField[] getBooleanFields() {
 		BooleanField[] array = new BooleanField[booleanFieldList.size()];
-		booleanFieldList.toArray(array);
-		return array;
+		return booleanFieldList.toArray(array);
 	}
 
 	public void setBooleanFields(BooleanField[] booleanFields) {
@@ -143,8 +143,7 @@ public class DefinableEntity {
 	
 	public DateField[] getDateFields() {
 		DateField[] array = new DateField[dateFieldList.size()];
-		dateFieldList.toArray(array);
-		return array;
+		return dateFieldList.toArray(array);
 	}
 
 	public void setDateFields(DateField[] dateFields) {
@@ -161,8 +160,7 @@ public class DefinableEntity {
 
 	public LongArrayField[] getLongArrayFields() {
 		LongArrayField[] array = new LongArrayField[longArrayFieldList.size()];
-		longArrayFieldList.toArray(array);
-		return array;
+		return longArrayFieldList.toArray(array);
 	}
 
 	public void setLongArrayFields(LongArrayField[] longArrayFields) {
@@ -179,8 +177,7 @@ public class DefinableEntity {
 
 	public StringArrayField[] getStringArrayFields() {
 		StringArrayField[] array = new StringArrayField[stringArrayFieldList.size()];
-		stringArrayFieldList.toArray(array);
-		return array;
+		return stringArrayFieldList.toArray(array);
 	}
 
 	public void setStringArrayFields(StringArrayField[] stringArrayFields) {
@@ -197,8 +194,7 @@ public class DefinableEntity {
 
 	public StringField[] getStringFields() {
 		StringField[] array = new StringField[stringFieldList.size()];
-		stringFieldList.toArray(array);
-		return array;
+		return stringFieldList.toArray(array);
 	}
 
 	public void setStringFields(StringField[] stringFields) {

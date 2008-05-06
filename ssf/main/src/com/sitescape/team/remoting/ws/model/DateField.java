@@ -28,10 +28,11 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
+import java.io.Serializable;
 import java.util.Calendar;
 import java.util.Date;
 
-public class DateField extends Field {
+public class DateField extends Field implements Serializable {
 
 	private Calendar value;
 	

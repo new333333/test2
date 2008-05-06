@@ -30,23 +30,63 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 
-public class StringField extends Field implements Serializable {
-
-	private String value;
-
-	public StringField() {
-	}
-	public StringField(String name, String type, String value) {
-		super(name, type);
-		setValue(value);
-	}
+public class PrincipalBrief implements Serializable {
+	private Long id;
+	private Long binderId;
+	private String definitionId;
+	private String title;
+	private String emailAddress;
+	private String type;
+	private boolean reserved;
+	private String name;
 	
-	public String getValue() {
-		return value;
+	public Long getBinderId() {
+		return binderId;
+	}
+	public void setBinderId(Long binderId) {
+		this.binderId = binderId;
+	}
+	public String getDefinitionId() {
+		return definitionId;
+	}
+	public void setDefinitionId(String definitionId) {
+		this.definitionId = definitionId;
+	}
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	public void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
+	}
+	public Long getId() {
+		return id;
+	}
+	public void setId(Long id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public boolean isReserved() {
+		return reserved;
+	}
+	public void setReserved(boolean reserved) {
+		this.reserved = reserved;
+	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
 	}
 
-	public void setValue(String value) {
-		this.value = value;
-	}
-	
 }
