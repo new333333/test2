@@ -82,6 +82,7 @@ public class RelevanceDashboardHelper {
 	
 	public static void setupRelevanceDashboardBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Long binderId, String type, Map model) {
+		model.put("ssRDCurrentTab", type);
 		User user = RequestContextHolder.getRequestContext().getUser();
 		//No dashboard for the guest account
 		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) return;
