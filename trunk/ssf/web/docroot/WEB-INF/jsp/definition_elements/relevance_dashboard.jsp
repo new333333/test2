@@ -33,24 +33,32 @@
 <ssf:ifLoggedIn>
 <script type="text/javascript">
 <ssf:ifnotaccessible>
-  var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" portletName="ss_forum" 
+  var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url 
+  		adapter="true" portletName="ss_forum" 
 		action="__ajax_relevance" actionUrl="false"><ssf:param 
 		name="operation" value="get_relevance_dashboard" /><ssf:param 
 		name="type" value="ss_typePlaceHolder" /><ssf:param 
+		name="page" value="0" /><ssf:param 
 		name="binderId" value="ss_binderIdPlaceHolder" /><ssf:param 
 		name="namespace" value="${renderResponse.namespace}" /><ssf:param 
 		name="rn" value="ss_rnPlaceHolder" /></ssf:url>";
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
   <c:if test="${ssBinder.entityType == 'workspace'}">
-    var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url action="view_ws_listing" ><ssf:param 
+    var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url 
+        action="view_ws_listing" ><ssf:param 
       	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
-		name="type" value="ss_typePlaceHolder" /></ssf:url>";
+		name="type" value="ss_typePlaceHolder" /><ssf:param 
+		name="type2" value="ss_type2PlaceHolder" /><ssf:param 
+		name="page" value="ss_pagePlaceHolder" /></ssf:url>";
   </c:if>
   <c:if test="${ssBinder.entityType == 'folder'}">
-    var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url action="view_folder_listing" ><ssf:param 
+    var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url 
+    	action="view_folder_listing" ><ssf:param 
       	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
-		name="type" value="ss_typePlaceHolder" /></ssf:url>";
+		name="type" value="ss_typePlaceHolder" /><ssf:param 
+		name="type2" value="ss_type2PlaceHolder" /><ssf:param 
+		name="page" value="ss_pagePlaceHolder" /></ssf:url>";
   </c:if>
 </ssf:ifaccessible>
 </script>
@@ -117,6 +125,7 @@ var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElemen
 <% //Changeable tab canvas; this gets replaced when a tab is clicked %>
 
 <div id="relevanceCanvas_${renderResponse.namespace}" style="margin:4px 10px 10px 10px;">
+<c:set var="ss_relevanceDashboardNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:if test="${empty ssRelevanceDashboardConfigElement}">
   <c:if test="${ssRDCurrentTab == 'whats_new'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
