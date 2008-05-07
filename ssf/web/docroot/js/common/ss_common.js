@@ -839,14 +839,17 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 	if (currentTab != null) {
 		currentTab.parentNode.className = "";
 	}
-	eval("ss_relevanceTabCurrent_"+namespace+" = obj;");
-	obj.parentNode.className = "ss_tabsCCurrent";
+	if (obj != null) {
+		eval("ss_relevanceTabCurrent_"+namespace+" = obj;");
+		obj.parentNode.className = "ss_tabsCCurrent";
+	}
 	
 	//Switch to the new tab
 	var url = "";
 	eval("url = ss_relevanceAjaxUrl"+namespace);
 	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
 	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ss_pagePlaceHolder", "0");
 	url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
 	if (ss_userDisplayStyle == "accessible") {
 		//If in accessible mode, just jump to the url directly
@@ -862,14 +865,27 @@ function ss_showRelevanceTab(s, namespace) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-function ss_showDashboardPage(binderId, op, currentPage, direction, divId) {
-	ss_setupStatusMessageDiv();
+function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId, namespace) {
 	if (currentPage == "") currentPage = "0";
 	var page = parseInt(currentPage);
 	if (direction == 'next') page = page + 1;
 	if (direction == 'previous') page = page - 1;
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"get_dashboard_page", operation2:op, pageNumber:page, direction:direction}, "__ajax_relevance");
-	ss_fetch_url(url, ss_showDashboardPageDiv, divId)
+	
+	if (ss_userDisplayStyle == "accessible") {
+		//In accessible mode, redraw the whole page
+		var url = "";
+		eval("url = ss_relevanceAjaxUrl"+namespace);
+		url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
+		url = ss_replaceSubStr(url, "ss_type2PlaceHolder", op);
+		url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
+		url = ss_replaceSubStr(url, "ss_pagePlaceHolder", page);
+		url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
+		self.location.href = url;
+	} else {
+		ss_setupStatusMessageDiv();
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"get_dashboard_page", operation2:op, pageNumber:page, direction:direction}, "__ajax_relevance");
+		ss_fetch_url(url, ss_showDashboardPageDiv, divId+namespace)
+	}
 }
 function ss_showDashboardPageDiv(s, divId) {
 	var divObj = self.document.getElementById(divId);

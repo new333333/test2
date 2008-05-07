@@ -163,6 +163,7 @@ public class WebKeys {
 	public static final String URL_TREE_SELECT_ID = "tree_select_id";
 	public static final String URL_TREE_MULTI_SELECT = "ss_tree_select";
 	public static final String URL_TYPE = "type";
+	public static final String URL_TYPE2 = "type2";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
@@ -861,6 +862,7 @@ public class WebKeys {
     public static final String TEAM_MEMBER="ssTeamMember";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TYPE="ss_type";
+    public static final String TYPE2="ss_type2";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";

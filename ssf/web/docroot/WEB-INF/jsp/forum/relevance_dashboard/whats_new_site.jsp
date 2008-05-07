@@ -35,7 +35,7 @@
 <div align="right">
 <c:if test="${ss_trackedSitePage > '0'}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', 'newSite', '${ss_trackedSitePage}', 'previous', 'ss_dashboardWhatsNewSite${renderResponse.namespace}');return false;">
+  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newSite', '${ss_trackedSitePage}', 'previous', 'ss_dashboardWhatsNewSite', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
   title="<ssf:nlt tag="general.previousPage"/>"/>
 </a>
@@ -45,7 +45,7 @@
 </c:if>
 <c:if test="${!empty ss_whatsNew}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', 'newSite', '${ss_trackedSitePage}', 'next', 'ss_dashboardWhatsNewSite${renderResponse.namespace}');return false;">
+  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'newSite', '${ss_trackedSitePage}', 'next', 'ss_dashboardWhatsNewSite', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
   title="<ssf:nlt tag="general.nextPage"/>"/>
 </a>
