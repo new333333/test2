@@ -848,7 +848,12 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
 	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
-	ss_fetch_url(url, ss_showRelevanceTab, namespace)
+	if (ss_userDisplayStyle == "accessible") {
+		//If in accessible mode, just jump to the url directly
+		self.location.href = url;
+	} else {
+		ss_fetch_url(url, ss_showRelevanceTab, namespace)
+	}
 }
 function ss_showRelevanceTab(s, namespace) {
 	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);

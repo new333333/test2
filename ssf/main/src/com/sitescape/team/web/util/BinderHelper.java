@@ -270,8 +270,10 @@ public class BinderHelper {
 	    		model.put(WebKeys.NAMESPACE, namespace);
 	        }
 	        Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			//Get the dashboard initial tab if one was passed in
+			String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, ObjectKeys.RELEVANCE_DASHBOARD_PROFILE);
 	        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
-	        		binderId, ObjectKeys.RELEVANCE_DASHBOARD_PROFILE, model);
+	        		binderId, type, model);
 	    	return new ModelAndView(WebKeys.VIEW_RELEVANCE_DASHBOARD, model); 		
 		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_BLOG_SUMMARY);		
