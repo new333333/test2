@@ -125,12 +125,8 @@ public class RelevanceDashboardHelper {
 			setupSharedItemsBeans(bs, userWorkspace, model);
 			setupActivitiesBean(bs, userWorkspace, model);
 			setupVisitorsBeans(bs, userWorkspace, model);
-			
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_VIEWED_ENTRIES.equals(type)) {
 			setupViewedEntriesBean(bs, userWorkspace, model);
 			setupDocumentsBeans(bs, userWorkspace, model);
-			
-		} else if (ObjectKeys.RELEVANCE_DASHBOARD_HIDDEN.equals(type)) {
 		}
 	}
 	
