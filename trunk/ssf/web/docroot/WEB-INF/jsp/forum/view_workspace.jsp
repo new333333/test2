@@ -32,6 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <c:set var="showWorkspacePage" value="true"/>
 <c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
   <ssf:ifnotadapter>
