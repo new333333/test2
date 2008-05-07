@@ -92,6 +92,16 @@ public class RelevanceDashboardHelper {
 		Binder userWorkspace = bs.getBinderModule().getBinder(binderId);
 		model.put(WebKeys.BINDER, userWorkspace);
 		
+		if (!model.containsKey(WebKeys.CONFIG_ELEMENT)) 
+			DefinitionHelper.getDefinitions(userWorkspace, model);
+		//Get the start of the view definition
+		Element viewElement = (Element) model.get(WebKeys.CONFIG_ELEMENT);
+		Element relevanceElement = (Element) viewElement.selectSingleNode("//item[@name='relevanceDashboard']");
+		//See if there is anything to display inside the relevance dashboard definition
+		if (!relevanceElement.selectNodes("item").isEmpty()) {
+			model.put(WebKeys.CONFIG_ELEMENT_RELEVANCE_DASHBOARD, relevanceElement);
+		}
+
 		if (ObjectKeys.RELEVANCE_DASHBOARD_PROFILE.equals(type)) {
 			if (!setupProfileBeans(bs, request, response, userWorkspace, model)) {
 				//The profile isn't being shown in the dashboard, so get the what's new beans instead
@@ -161,13 +171,7 @@ public class RelevanceDashboardHelper {
 
 	protected static boolean setupProfileBeans(AllModulesInjected bs, RenderRequest request, 
 			RenderResponse response, Binder binder, Map model) {
-		DefinitionHelper.getDefinitions(binder, model);
-		//Get the start of the view definition
-		Element viewElement = (Element) model.get(WebKeys.CONFIG_ELEMENT);
-		Element relevanceElement = (Element) viewElement.selectSingleNode("//item[@name='relevanceDashboard']");
-		//See if there is anything to display inside the relevance dashboard definition
-		if (!relevanceElement.selectNodes("item").isEmpty()) {
-			model.put(WebKeys.CONFIG_ELEMENT_RELEVANCE_DASHBOARD, relevanceElement);
+		if (model.containsKey(WebKeys.CONFIG_ELEMENT_RELEVANCE_DASHBOARD)) {
 			try {
 				if (!model.containsKey(WebKeys.WORKSPACE_BEANS_SETUP)) {
 					model.put(WebKeys.WORKSPACE_BEANS_SETUP, true);
