@@ -7,7 +7,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 
-public class XmlPortletApplicationContext extends org.springframework.web.portlet.context.support.XmlPortletApplicationContext {
+public class XmlPortletApplicationContext extends org.springframework.web.portlet.context.XmlPortletApplicationContext {
 
 	private static final Log logger = LogFactory.getLog(XmlPortletApplicationContext.class);
 	

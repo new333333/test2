@@ -43,5 +43,7 @@ public interface ElementBuilder {
 	public static interface BuilderContext extends AllModulesInjected {
 		void handleAttachment(FileAttachment att, String webUrl);
 	}
-    public boolean buildElement(Element element, DefinableEntity entity, String dataElemName, BuilderContext moduleSource);
+    
+    public boolean buildElement(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity, String dataElemType, String dataElemName, BuilderContext context);
+
 }

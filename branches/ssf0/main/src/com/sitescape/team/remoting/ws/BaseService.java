@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws;
 
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.List;
 import java.util.Map;
 
 import org.dom4j.Branch;
@@ -37,10 +39,14 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
+import com.sitescape.team.domain.AverageRating;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Description;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HKey;
+import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -49,6 +55,8 @@ import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.team.remoting.ws.model.Field;
+import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
@@ -160,7 +168,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		return entryElem;
 	}
 
-	protected void addCustomElements(final Element entryElem, final com.sitescape.team.domain.Entry entry) {
+	protected void addCustomElements(final Element entryElem, final com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, final com.sitescape.team.domain.DefinableEntity entry) {
 		final ElementBuilder.BuilderContext context = this;
 		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
 			public void visit(Element entryElement, Element flagElement, Map args)
@@ -169,7 +177,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
                 	String fieldBuilder = flagElement.attributeValue("elementBuilder");
 					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
 					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
-                	ElementBuilderUtil.buildElement(entryElem, entry, nameValue, fieldBuilder, context);
+                	ElementBuilderUtil.buildElement(entryElem, entityModel, entry, entryElement.attributeValue("name"), nameValue, fieldBuilder, context);
                 }
 			}
 			public String getFlagElementName() { return "webService"; }
@@ -179,4 +187,67 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		
 	}
 	
+	protected void fillFolderEntryModel(com.sitescape.team.remoting.ws.model.FolderEntry entryModel, FolderEntry entry) {
+		fillEntryModel(entryModel, entry);
+		entryModel.setDocNumber(entry.getDocNumber());
+		entryModel.setDocLevel(entry.getDocLevel());
+		entryModel.setHref(WebUrlUtil.getEntryViewURL(entry));	
+	}
+	
+	protected void fillEntryModel(com.sitescape.team.remoting.ws.model.Entry entryModel, Entry entry) {
+		fillDefinableEntityModel(entryModel, entry);
+	}
+	
+	protected void fillDefinableEntityModel(com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity) {
+		// Handle static fields first
+		fillDefinableEntityModelStatic(entityModel, entity);
+		
+		// Handle definable fields
+		fillDefinableEntityModelDefinable(entityModel, entity);
+	}
+	
+	protected void fillDefinableEntityModelStatic(com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity) {
+		entityModel.setId(entity.getId());
+		
+		entityModel.setBinderId(entity.getParentBinder().getId());
+		
+		if(entity.getEntryDef() != null)
+			entityModel.setDefinitionId(entity.getEntryDef().getId());
+		
+		entityModel.setTitle(entity.getTitle());
+		
+		Description desc = entity.getDescription();
+		if(desc != null) {
+			entityModel.setDescription(toDescriptionModel(desc));
+		}
+		
+		if(entity.getCreation() != null) {
+			entityModel.setCreation(toTimestampModel(entity.getCreation()));
+		}
+		if(entity.getModification() != null) {
+			entityModel.setModification(toTimestampModel(entity.getModification()));
+		}
+		
+		if(entity.getAverageRating() != null) {
+			entityModel.setAverageRating(toAverageRatingModel(entity.getAverageRating()));
+		}
+	}
+	
+	protected com.sitescape.team.remoting.ws.model.Timestamp toTimestampModel(HistoryStamp hs) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(hs.getDate());
+		return new Timestamp(hs.getPrincipal().getName(), cal);
+	}
+	
+	protected void fillDefinableEntityModelDefinable(com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity) {
+		addCustomElements(null, entityModel, entity);
+	}
+	
+	protected com.sitescape.team.remoting.ws.model.AverageRating toAverageRatingModel(AverageRating ar) {
+		return new com.sitescape.team.remoting.ws.model.AverageRating(ar.getAverage(), ar.getCount());
+	}
+
+	protected com.sitescape.team.remoting.ws.model.Description toDescriptionModel(Description desc) {
+		return new com.sitescape.team.remoting.ws.model.Description(desc.getText(), desc.getFormat());
+	}
 }

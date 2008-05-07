@@ -70,6 +70,7 @@ public class Definition extends PersistentTimestampObject  {
 	public static final int PROFILE_APPLICATION_GROUP_VIEW=14;
 	
 	public static final String VIEW_STYLE_DEFAULT="folder"; 
+	public static final String VIEW_STYLE_ACCESSIBLE="table"; 
 	public static final String VIEW_STYLE_TABLE="table"; 
 	public static final String VIEW_STYLE_WIKI="wiki"; 
 	public static final String VIEW_STYLE_CALENDAR="event"; 
@@ -95,6 +96,10 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String JSP_STYLE_DEFAULT="default"; //used only in definition_config file
 
 	protected static final Log logger = LogFactory.getLog(Definition.class);
+
+	public Definition() {
+		
+	}    
 
 
     /**

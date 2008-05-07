@@ -726,6 +726,8 @@ function ss_moveDivToTopOfBody(divId) {
 
 //Functions to save the user status
 function ss_updateStatusSoon(obj, evt) {
+	if ((typeof evt.which == "undefined" || !evt.which) && typeof event == "undefined") return;
+	
 	ss_statusObj = obj;
 	if (ss_statusTimer != null) {
 		clearTimeout(ss_statusTimer)

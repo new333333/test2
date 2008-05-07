@@ -32,16 +32,16 @@ import java.io.PrintWriter;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.springframework.web.portlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.util.WebHelper;
 
-public class LoginCheckInterceptor implements HandlerInterceptor {
+public class LoginCheckInterceptor extends HandlerInterceptorAdapter implements
+		HandlerInterceptor {
 
 	public boolean preHandle(PortletRequest request, PortletResponse response, Object handler) throws Exception {
 		if(WebHelper.isUnauthenticatedRequest(request)) {
@@ -68,12 +68,6 @@ public class LoginCheckInterceptor implements HandlerInterceptor {
 		else {
 			return true;
 		}
-	}
-
-	public void postHandle(RenderRequest request, RenderResponse response, Object handler, ModelAndView modelAndView) throws Exception {
-	}
-
-	public void afterCompletion(PortletRequest request, PortletResponse response, Object handler, Exception ex) throws Exception {
 	}
 
 }

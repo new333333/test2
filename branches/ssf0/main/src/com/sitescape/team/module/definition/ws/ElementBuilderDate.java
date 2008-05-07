@@ -33,18 +33,28 @@ import java.util.Date;
 
 import org.dom4j.Element;
 
+import com.sitescape.team.remoting.ws.model.DateField;
+import com.sitescape.team.remoting.ws.model.StringField;
+
 /**
  *
  * @author Jong Kim
  */
 public class ElementBuilderDate extends AbstractElementBuilder {
-	   protected boolean build(Element element, Object obj) {
+	   protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, String dataElemType, String dataElemName) {
 	    	if (obj instanceof Date) {
 	    		Date date = (Date)obj;
-	            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-	    		element.setText(sdf.format(date));
+	            if(element != null) {
+	            	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+	            	element.setText(sdf.format(date));
+	            }
+	            if(entityModel != null)
+	            	entityModel.addDateField(new DateField(dataElemName, dataElemType, date));
 	    	} else if (obj != null) {
-	    		element.setText(obj.toString());
+	    		if(element != null)
+	    			element.setText(obj.toString());
+	    		if(entityModel != null)
+	    			entityModel.addStringField(new StringField(dataElemName, dataElemType, obj.toString()));
 	    	}
 	    	return true;
 	    }

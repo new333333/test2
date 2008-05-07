@@ -2,11 +2,11 @@
 
 <targets>
 
- <target id="bbfelt9" pid="bbfelt9" name="Chapter" level="0" number="5"> <text>Advanced Workflow</text> </target>
+ <target id="bbfelt9" pid="bbfelt9" name="Chapter" level="0" number="6"> <text>Advanced Workflow</text> </target>
 
  <target id="b9xe7dc" pid="bbfelt9" name="BridgeHead" level="1"> <text>What's in this Chapter?</text> </target>
 
- <target id="b9xeakc" pid="b9xeakc" name="Sect1" level="1" number="5.1"> <text>Adding a Question to the Workflow</text> </target>
+ <target id="b9xeakc" pid="b9xeakc" name="Sect1" level="1" number="6.1"> <text>Adding a Question to the Workflow</text> </target>
 
  <target name="InformalTable" level="2"> <text>Condition </text> </target>
 
@@ -24,9 +24,9 @@
 
  <target id="b9xecuh" pid="b9xeakc" name="BridgeHead" level="2"> <text>To add a Workflow Question and Responses to the Review State:</text> </target>
 
- <target id="b9xecwj" pid="b9xeakc" name="Procedure" level="2" number="1"> <text>From the ICEcore Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
+ <target id="b9xecwj" pid="b9xeakc" name="Procedure" level="2" number="1"> <text>From the Teaming Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
 
- <target id="bbh109a" pid="b9xeakc" name="Step" level="3" number="1"> <text>From the ICEcore Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
+ <target id="bbh109a" pid="b9xeakc" name="Step" level="3" number="1"> <text>From the Teaming Administration portlet, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers.</text> </target>
 
  <target id="bbh10ei" pid="b9xeakc" name="Step" level="3" number="2"> <text>Click Workflow designer.</text> </target>
 
@@ -52,9 +52,9 @@
 
  <target id="bbgyj8s" pid="b9xeakc" name="Step" level="3" number="13"> <text>Repeat steps 9-12 to add a "No" response to this Workflow question.</text> </target>
 
- <target id="b9xe8xd" pid="b9xe8xd" name="Sect1" level="1" number="5.2"> <text>Adding Transitions on Response</text> </target>
+ <target id="b9xe8xd" pid="b9xe8xd" name="Sect1" level="1" number="6.2"> <text>Adding Transitions on Response</text> </target>
 
- <target id="b9xego1" pid="b9xe8xd" name="Sect2" level="2" number="5.2.1"> <text>Add the Response Transitions</text> </target>
+ <target id="b9xego1" pid="b9xe8xd" name="Sect2" level="2" number="6.2.1"> <text>Add the Response Transitions</text> </target>
 
  <target id="b9xegwi" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>Expand State - Review.</text> </target>
 
@@ -74,7 +74,7 @@
 
  <target id="bbgzt4p" pid="b9xe8xd" name="Step" level="4" number="8"> <text>Repeat this procedure to add a Transition on response for the "No" Workflow response (approve_request_no) that transitions to the Deny state.</text> </target>
 
- <target id="b9xeakf" pid="b9xe8xd" name="Sect2" level="2" number="5.2.2"> <text>Removing Older Transitions</text> </target>
+ <target id="b9xeakf" pid="b9xe8xd" name="Sect2" level="2" number="6.2.2"> <text>Removing Older Transitions</text> </target>
 
  <target id="b9xfcya" pid="b9xe8xd" name="BridgeHead" level="3"> <text>To Remove Manual Transitions:</text> </target>
 

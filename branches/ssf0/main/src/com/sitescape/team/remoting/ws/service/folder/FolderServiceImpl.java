@@ -56,7 +56,7 @@ import com.sitescape.util.Validator;
 public class FolderServiceImpl extends BaseService implements FolderService {
 
 	
-	public String getFolderEntriesAsXML(String accessToken, long binderId) {
+	public String folder_getFolderEntriesAsXML(String accessToken, long binderId) {
 		com.sitescape.team.domain.Binder binder = getBinderModule().getBinder(new Long(binderId));
 
 		Document doc = DocumentHelper.createDocument();
@@ -79,7 +79,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		return doc.getRootElement().asXML();
 	}
 
-	public String getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+	public String folder_getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);
 		
@@ -95,7 +95,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		addEntryAttributes(entryElem, entry);
 
 		// Handle custom fields driven by corresponding definition. 
-		addCustomElements(entryElem, entry);
+		addCustomElements(entryElem, null, entry);
 		
 		String xml = doc.getRootElement().asXML();
 		
@@ -117,7 +117,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		return new HashMap();
 	}
 	
-	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
+	public long folder_addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, attachedFileName, null);
 	}
 	protected long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName, Map options) {
@@ -145,7 +145,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}
 	}
 	
-	public void modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML) {
+	public void folder_modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
@@ -159,7 +159,7 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}			
 	}
 
-	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
+	public long folder_addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		return addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, attachedFileName, null);
 	}
 	
@@ -177,18 +177,18 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}
 	}
 
-	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
+	public void folder_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
 		addEntryWorkflow(accessToken, binderId, entryId, definitionId, null);
 	}
 	protected void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, Map options) {
 		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, options);
 
 	}
-	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
+	public void folder_uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName) {
 		throw new UnsupportedOperationException();
 	}
 
-	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
+	public void folder_uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
 		uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, 
 				stagedFileRelativePath, null, null, null);
 	}
@@ -231,8 +231,24 @@ public class FolderServiceImpl extends BaseService implements FolderService {
 		}
 	}
 
-	public void synchronizeMirroredFolder(String accessToken, long binderId) {
+	public void folder_synchronizeMirroredFolder(String accessToken, long binderId) {
 		getFolderModule().synchronize(binderId, null);
+	}
+	
+	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+		Long bId = new Long(binderId);
+		Long eId = new Long(entryId);
+
+		// Retrieve the raw entry.
+		FolderEntry entry = 
+			getFolderModule().getEntry(bId, eId);
+
+		com.sitescape.team.remoting.ws.model.FolderEntry entryModel = 
+			new com.sitescape.team.remoting.ws.model.FolderEntry(); 
+
+		fillFolderEntryModel(entryModel, entry);
+		
+		return entryModel;
 	}
 	
 }

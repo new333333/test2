@@ -28,31 +28,43 @@
  */
 package com.sitescape.team.modelprocessor;
 
-import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
-import com.sitescape.team.modelprocessor.ProcessorManager;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.xml.sax.EntityResolver;
+
+import com.sitescape.team.support.AbstractTestBase;
+import com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles;
 
 /**
  * This integration unit test uses the Spring container.
  * 
  * @author Jong Kim
  */
-public class ProcessorManagerTests extends AbstractDependencyInjectionSpringContextTests {
+public class ProcessorManagerTests extends AbstractTestBase {
 
-	protected ProcessorManager procMgr;
-	
-	protected String[] getConfigLocations() {
-		return new String[] {"/com/sitescape/team/modelprocessor/applicationContext-processor.xml"};
-	}
-	
-	public void setProcessorManager(ProcessorManager procMgr) {
-		this.procMgr = procMgr;
-	}
+	@Autowired(required=true)
+	protected ProcessorManager processorManager;
+	@Autowired(required = true)
+	protected EntityResolver entityResolver;
+	@Autowired(required = true)
+	protected ApplicationContext applicationContext;
 
-	public void testGetProcessorForClass() {
+	@Test
+	@Ignore("Need to rethink this whole test case, remove dependencies")
+	public void testGetProcessorForClass() throws Exception {
 		TestModel testModel = new TestModel();
+		DefaultMergeableXmlClassPathConfigFiles config = new DefaultMergeableXmlClassPathConfigFiles();
+		config.setEntityResolver(entityResolver);
+		config.setConfigFiles(new String [] {"com/sitescape/team/modelprocessor/processor-mapping.xml"});
+		config.afterPropertiesSet();
+		processorManager.setConfig(config);
 		
-		TestProcessor1 processor1 = (TestProcessor1) procMgr.getProcessor(testModel, TestProcessor1.PROCESSOR_KEY);
+		TestProcessor1 processor1 = (TestProcessor1) processorManager.getProcessor(testModel, TestProcessor1.PROCESSOR_KEY);
 		assertNotNull(processor1);
 		assertEquals(processor1.getClass(), MyTestProcessor1.class);
 		
@@ -61,17 +73,17 @@ public class ProcessorManagerTests extends AbstractDependencyInjectionSpringCont
 		
 		assertEquals(processor1, internalBean);
 		
-		TestProcessor2 processor2 = (TestProcessor2) procMgr.getProcessor(testModel, TestProcessor2.PROCESSOR_KEY);
+		TestProcessor2 processor2 = (TestProcessor2) processorManager.getProcessor(testModel, TestProcessor2.PROCESSOR_KEY);
 		assertNotNull(processor2);
 		assertEquals(processor2.getClass(), MyTestProcessor2.class);
 		assertEquals(processor2.getGreeting(), "Hello");
 		
-		TestProcessor3 processor3 = (TestProcessor3) procMgr.getProcessor(testModel, TestProcessor3.PROCESSOR_KEY);
+		TestProcessor3 processor3 = (TestProcessor3) processorManager.getProcessor(testModel, TestProcessor3.PROCESSOR_KEY);
 		assertNotNull(processor3);
 		assertEquals(processor3.getClass(), MyTestProcessor3.class);
 	}
 	
-	public class TestModel {}
+	public class TestModel {/* empty */}
 	
 	public interface TestProcessor1 {
 	    public static final String PROCESSOR_KEY = "processorKey_testProcessor1";
@@ -84,7 +96,7 @@ public class ProcessorManagerTests extends AbstractDependencyInjectionSpringCont
 	    public static final String PROCESSOR_KEY = "processorKey_testProcessor3";
 	}
 
-	public static class MyTestProcessor1 implements TestProcessor1 {}
+	public static class MyTestProcessor1 implements TestProcessor1 {/* empty */}
 	public static class MyTestProcessor2 implements TestProcessor2 {
 		
 		private String greeting;
@@ -95,5 +107,5 @@ public class ProcessorManagerTests extends AbstractDependencyInjectionSpringCont
 			this.greeting = greeting;
 		}
 	}
-	public static class MyTestProcessor3 implements TestProcessor3 {}
+	public static class MyTestProcessor3 implements TestProcessor3 {/* empty */}
 }

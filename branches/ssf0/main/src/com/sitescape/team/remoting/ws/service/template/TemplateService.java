@@ -30,6 +30,6 @@ package com.sitescape.team.remoting.ws.service.template;
 
 public interface TemplateService {
 
-	public long addBinder(String accessToken, long parentBinderId, long binderConfigId, String title);
-	public String getTemplateListAsXML(String accessToken);
+	public long template_addBinder(String accessToken, long parentBinderId, long binderConfigId, String title);
+	public String template_getTemplateListAsXML(String accessToken);
 }

@@ -2,8 +2,6 @@
 
 <targets>
 
- <target id="bbevpqp" pid="bbevpqp" name="Appendix" level="0" number="A"> <text>The sample-installer.xml File</text> </target>
-
- <target id="banqred" pid="bbevpqp" name="BridgeHead" level="1"> <text>The sample-installer.xml file is shown below:</text> </target>
+ <target id="bbevpqp" pid="bbevpqp" name="Appendix" level="0" number="A"> <text>A Sample installer.xml File</text> </target>
 
 </targets>

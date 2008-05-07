@@ -36,10 +36,6 @@
 			basedir="${classes.dir}"
 			jarfile="${jar.file}"
 		>
-			<!-- No longer necessary
-			<manifest>
-				<attribute name="Class-Path" value="${classpath.manifest.ss} ${classpath.manifest.3rd}" />
-			</manifest>-->
 		</jar>
 		<antcall target="jar-manifest">
 			<param name="jar-manifest.jar.file" value="${jar.file}"/>

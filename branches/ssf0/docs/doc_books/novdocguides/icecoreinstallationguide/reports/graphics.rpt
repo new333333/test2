@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `1/16/2008 11:21:12 AM'>
+   <String `4/29/2008 12:11:09 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2452,109 +2452,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `Unused Graphics in Book Directory'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickaddcontent_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickcloseaddgroup.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickicecoreadminadd_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `enter_installtype_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `features-markup-page-name-a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `icecoreadminportlet_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `install_db_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `ldap_password_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `managebyrights_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `managebyrols_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `managementnavlinks_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `managemenus_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `righthandcorner_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `select_managemodify_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `signin_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `teammembers_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `wsemailsettings_a.png'>
+   <String `No unreferenced graphics in the /graphics directory are referenced by the book.'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3731,7 +3629,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|1068485'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreinstallationguide\\01_installingicecore.fm|2501692'>
     <MCurrPage `1'>
    > # end of Marker
    <String `filesupporttable.png'>
@@ -3745,7 +3643,19 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
+   <String `Width: 91%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Document and File Support'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Document and File Support\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3934,7 +3844,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: Ldap group settings\q'>
+   <String `Title: LDAP Group Settiong'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: LDAP group settings\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4012,7 +3928,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: Ldap url\q'>
+   <String `Title: LDAP URL Settings'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: LDAP URL\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4051,7 +3973,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Description: \qDescription: Ldap users settings\q'>
+   <String `Title: LDAP Users Settings'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: LDAP users settings\q'>
   > # end of ParaLine
  > # end of Para
  <Para 

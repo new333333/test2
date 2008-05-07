@@ -28,9 +28,24 @@
  */
 package com.sitescape.team.support;
 
-import org.springframework.test.AbstractTransactionalDataSourceSpringContextTests;
+
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.classextension.EasyMock.createMock;
+import static org.easymock.classextension.EasyMock.replay;
+import static org.junit.Assert.assertEquals;
+
+import javax.naming.NamingException;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.mock.jndi.SimpleNamingContextBuilder;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.impl.CoreDaoImpl;
 import com.sitescape.team.dao.impl.ProfileDaoImpl;
 import com.sitescape.team.domain.Group;
@@ -40,40 +55,57 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 
 
-public abstract class AbstractTestBase extends AbstractTransactionalDataSourceSpringContextTests {
-	protected CoreDaoImpl cdi;
-	protected ProfileDaoImpl pdi;
-	protected static String adminGroup = "administrators";
-	protected static String adminUser = "administrator";
 
-	
-	/*
-	 * This method is provided to set the CoreDaoImpl instance being tested
-	 * by the Dependency Injection, which is done automatically by the
-	 * superclass.
-	 */
-	public void setCoreDaoImpl(CoreDaoImpl cdi) {
-		this.cdi = cdi;
+@ContextConfiguration(	locations= {	"/com/sitescape/team/applicationContext.xml", 
+														"/com/sitescape/team/additionalContext.xml" })
+public abstract class AbstractTestBase extends AbstractTransactionalJUnit4SpringContextTests {
+	protected static final String adminGroup = "administrators";
+	protected static final String adminUser = "administrator";
+	protected static final SimpleNamingContextBuilder contextBuilder;
+	private static final String DRIVER = "com.mysql.jdbc.Driver";
+	private static final String URL = "jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;characterEncoding=UTF-8";
+	private static final String USERNAME = "sitescape";
+	private static final String PASSWORD = "sitescape";
+	private static final DriverManagerDataSource DATA_SOURCE = new DriverManagerDataSource(
+			DRIVER, URL, USERNAME, PASSWORD);
+
+	static {
+		contextBuilder = new SimpleNamingContextBuilder();
+		contextBuilder.bind("java:comp/env/jdbc/SiteScapePool", DATA_SOURCE);
+		try {
+			contextBuilder.activate();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (NamingException e) {
+			e.printStackTrace();
+		}
 	}
 	
-	public void setProfileDaoImpl(ProfileDaoImpl pdi) {
-		this.pdi = pdi;
-	}
+	@Autowired(required = true)
+	protected CoreDaoImpl coreDao;
+	@Autowired(required = true)
+	protected ProfileDaoImpl profileDao;
 
 	protected Workspace createZone(String name) {
 		Workspace top;
+		Long topId = new Long(-1);
+		RequestContext mrc = fakeRequestContext();
+		expect(mrc.getZoneId()).andReturn(topId);
+		RequestContextHolder.setRequestContext(mrc);
+		expectLastCall().times(3);
+		replay(mrc);
 		try { 
-			top = cdi.findTopWorkspace(name);
+			top = coreDao.findTopWorkspace(name);
 		} catch (NoWorkspaceByTheNameException nw) {
 			top = new Workspace();
 			top.setName(name);
 			//temporary until have read id
-			top.setZoneId(new Long(-1));
+			top.setZoneId(topId);
 			top.setTitle("administration.initial.workspace.title");
 			top.setPathName("/"+top.getTitle());
 			top.setInternalId(ObjectKeys.TOP_WORKSPACE_INTERNALID);
 			//generate id for top and profiles
-			cdi.save(top);
+			coreDao.save(top);
 			top.setupRoot();
 			top.setZoneId(top.getId());
 			
@@ -86,8 +118,8 @@ public abstract class AbstractTestBase extends AbstractTransactionalDataSourceSp
 			top.addBinder(profiles);
 			
 			//generate id for profiles
-			cdi.save(profiles);
-			cdi.updateFileName(top, profiles, null, profiles.getTitle());
+			coreDao.save(profiles);
+			coreDao.updateFileName(top, profiles, null, profiles.getTitle());
 
 			Workspace global = new Workspace();
 			
@@ -99,8 +131,8 @@ public abstract class AbstractTestBase extends AbstractTransactionalDataSourceSp
 			top.addBinder(global);
 			
 			//generate id globa
-			cdi.save(global);
-			cdi.updateFileName(top, global, null, global.getTitle());
+			coreDao.save(global);
+			coreDao.updateFileName(top, global, null, global.getTitle());
 
 			Workspace team = new Workspace();
 			team.setName("_teams");
@@ -111,31 +143,36 @@ public abstract class AbstractTestBase extends AbstractTransactionalDataSourceSp
 			top.addBinder(team);
 			
 			//generate id for top and profiles
-			cdi.save(team);
-			cdi.updateFileName(top, team, null, team.getTitle());
+			coreDao.save(team);
+			coreDao.updateFileName(top, team, null, team.getTitle());
 			
 			Group group = new Group();
 			group.setName(adminGroup);
 			group.setForeignName(adminGroup);
 			group.setZoneId(top.getId());
 			group.setParentBinder(profiles);
-			cdi.save(group);
+			coreDao.save(group);
 			
 			User user = new User();
 			user.setName(adminUser);
 			user.setForeignName(adminUser);
 			user.setZoneId(top.getId());
 			user.setParentBinder(profiles);
-			cdi.save(user);
+			coreDao.save(user);
 			group.addMember(user);
-			cdi.flush();
+			coreDao.flush();
 			
-			top = cdi.findTopWorkspace(name);
+			top = coreDao.findTopWorkspace(name);
 			assertEquals(top.getName(), name);
 		}
 		return top;
 		
 	}
-
+	
+	protected RequestContext fakeRequestContext() {
+		 RequestContext mRequestContext = createMock(RequestContext.class);
+		 RequestContextHolder.setRequestContext(mRequestContext);
+		 return mRequestContext;
+	}
 
 }

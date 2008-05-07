@@ -30,10 +30,10 @@ package com.sitescape.team.remoting.ws.service.license;
 
 public interface LicenseService {
 
-	public void updateLicense(String accessToken);
+	public void license_updateLicense(String accessToken);
 
-	public long getRegisteredUsers(String accessToken);
+	public long license_getRegisteredUsers(String accessToken);
 	
-	public long getExternalUsers(String accessToken);
+	public long license_getExternalUsers(String accessToken);
 
 }

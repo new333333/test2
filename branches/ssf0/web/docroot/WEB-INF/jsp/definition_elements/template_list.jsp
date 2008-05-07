@@ -30,13 +30,13 @@
 %>
 <% // Folder listing - select the style that the folder should be displayed in %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
+<%@ page import="com.sitescape.team.module.definition.DefinitionUtils" %>
+<jsp:useBean id="ssConfigDefinition" type="org.dom4j.Document" scope="request" />
 <%
 
 //Get the folder type of this definition (folder, file, or event)
-String folderViewStyle = "folder";
-Element folderViewTypeEle = (Element)ssConfigElement.selectSingleNode("properties/property[@name='type']");
-if (folderViewTypeEle != null) folderViewStyle = folderViewTypeEle.attributeValue("value", "folder");
+String folderViewStyle = DefinitionUtils.getViewType(ssConfigDefinition);
+if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "folder";
 %>
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <script type="text/javascript" src="<html:rootPath/>js/forum/ss_folder.js"></script>

@@ -32,7 +32,7 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.springframework.web.portlet.ViewRendererServlet;
+import org.springframework.web.servlet.ViewRendererServlet;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
@@ -61,9 +61,9 @@ public class DispatcherPortlet extends org.springframework.web.portlet.Dispatche
 		// These attributes are required by the ViewRendererServlet
 		request.setAttribute(ViewRendererServlet.VIEW_ATTRIBUTE, view);
 		request.setAttribute(ViewRendererServlet.MODEL_ATTRIBUTE, mv.getModel());
-		request.setAttribute(ViewRendererServlet.DISPATCHER_PORTLET_APPLICATION_CONTEXT_ATTRIBUTE, getPortletApplicationContext());
+		request.setAttribute(ViewRendererServlet.WEB_APPLICATION_CONTEXT_ATTRIBUTE, getPortletApplicationContext());
 		
 		// include the content of the view in the render response
-		getPortletContext().getRequestDispatcher(getViewRendererServlet()).include(request, response);
+		getPortletContext().getRequestDispatcher(getPortletContextAttributeName()).include(request, response);
 	}
 }

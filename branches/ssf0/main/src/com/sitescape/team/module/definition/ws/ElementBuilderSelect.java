@@ -28,34 +28,47 @@
  */
 package com.sitescape.team.module.definition.ws;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
-import java.util.Map;
 
 import org.dom4j.Element;
 
-import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.team.remoting.ws.model.StringArrayField;
 
 /**
  *
  * @author Jong Kim
  */
 public class ElementBuilderSelect extends AbstractElementBuilder {
-	   protected boolean build(Element element, Object obj) {
+	   protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, String dataElemType, String dataElemName) {
+			List<String> values = null;
+			if(entityModel != null)
+				values = new ArrayList<String>(); 
 	    	if (obj instanceof Set) {
 	    		Set set = (Set)obj;
 	    		for (Iterator iter=set.iterator();iter.hasNext();) {
-		    		Element value = element.addElement("value");		    		
 		    		obj = iter.next();
-		    		value.setText(obj.toString());
+		    		if(element != null) {
+			    		Element value = element.addElement("value");		    		
+			    		value.setText(obj.toString());
+		    		}
+		    		if(values != null)
+		    			values.add(obj.toString());
 	    		}
 	    	} else if (obj != null) {
-		    	Element value = element.addElement("value");
-	    		value.setText(obj.toString());
+	    		if(element != null) {
+			    	Element value = element.addElement("value");
+		    		value.setText(obj.toString());
+	    		}
+	    		if(values != null)
+	    			values.add(obj.toString());
 	    	} else {
 	    		element.addElement("value");
 	    	}
+			if(values != null)
+				entityModel.addStringArrayField(new StringArrayField(dataElemName, dataElemType, values.toArray(new String[]{})));
 	    	return true;
 	    }
 

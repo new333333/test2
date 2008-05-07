@@ -34,12 +34,10 @@ import java.util.Map;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.portlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.team.InternalException;
 import com.sitescape.team.context.request.RequestContext;
@@ -53,7 +51,8 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 
-public class UserSynchInterceptor implements HandlerInterceptor,InitializingBean {
+public class UserSynchInterceptor extends HandlerInterceptorAdapter implements
+		HandlerInterceptor, InitializingBean {
 
 	private ProfileDao profileDao;
 	private ProfileModule profileModule;
@@ -88,16 +87,6 @@ public class UserSynchInterceptor implements HandlerInterceptor,InitializingBean
 		synchUser(request, requestContext);
 		
 		return true;
-	}
-
-	public void postHandle(
-			RenderRequest request, RenderResponse response, Object handler, ModelAndView modelAndView)
-			throws Exception {
-	}
-
-	public void afterCompletion(
-			PortletRequest request, PortletResponse response, Object handler, Exception ex)
-			throws Exception {
 	}
 
 	private void synchUser(PortletRequest request, RequestContext reqCxt) {

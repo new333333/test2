@@ -6,6 +6,11 @@
 		
 	<property name="jar.file" value="ssf-util.jar" />
 	
+	<!-- This overrides the imported definition -->
+	<path id="project.classpath">
+		<fileset dir="../lib" includes="*.jar" />
+	</path>
+
 	<target name="deploy" depends="jar">
 		<antcall target="deploy-jar">
 			<param name="deploy-support.jar.file" value="${jar.file}" />

@@ -44,7 +44,7 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 
 
 
-	public long addFolderEntry(String accessToken, long binderId, String definitionId,
+	public long migration_addFolderEntry(String accessToken, long binderId, String definitionId,
 			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		HashMap options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
@@ -53,7 +53,7 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 		return addFolderEntry(accessToken, binderId, definitionId, inputDataAsXML, null, options);
 	}
 
-	public long addReply(String accessToken, long binderId, long parentId, String definitionId,
+	public long migration_addReply(String accessToken, long binderId, long parentId, String definitionId,
 			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
@@ -62,13 +62,13 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 		return addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, null, options);
 	}
 
-	public void uploadFolderFile(String accessToken, long binderId, long entryId,
+	public void migration_uploadFolderFile(String accessToken, long binderId, long entryId,
 			String fileUploadDataItemName, String fileName,
 			String modifier, Calendar modificationDate) {
 		throw new UnsupportedOperationException();
 	}
 	
-	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
+	public void migration_uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate){
 			
 		Map options = new HashMap();
@@ -78,14 +78,14 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 		uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, 
 				stagedFileRelativePath, modifier, modificationDate, options);
 	}
-	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate) {
+	public void migration_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
 		options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, startState);
 		getTimestamps(options, null, null, modifier, modificationDate);
 		addEntryWorkflow(accessToken, binderId, entryId, definitionId, options);
 	}
-	public long addBinder(String accessToken, long parentId, String definitionId,
+	public long migration_addBinder(String accessToken, long parentId, String definitionId,
 			String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		

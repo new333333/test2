@@ -30,11 +30,9 @@ package com.sitescape.team.web.portlet.handler;
 
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.RenderResponse;
 
 import org.springframework.web.portlet.HandlerInterceptor;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.team.context.request.PortletSessionContext;
 import com.sitescape.team.context.request.RequestContext;
@@ -42,7 +40,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.web.util.WebHelper;
 
-public class InitRequestContextInterceptor implements HandlerInterceptor {
+public class InitRequestContextInterceptor extends HandlerInterceptorAdapter implements HandlerInterceptor {
 	
 	private boolean resolve = false;
 	
@@ -74,9 +72,6 @@ public class InitRequestContextInterceptor implements HandlerInterceptor {
 			rc.resolve();
     	
 	    return true;
-	}
-
-	public void postHandle(RenderRequest request, RenderResponse response, Object handler, ModelAndView modelAndView) throws Exception {
 	}
 
 	public void afterCompletion(PortletRequest request, PortletResponse response, Object handler, Exception ex) throws Exception {
