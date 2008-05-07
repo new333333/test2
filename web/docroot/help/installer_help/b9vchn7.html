@@ -142,10 +142,10 @@ select value from SYS.NLS_DATABASE_PARAMETERS where PARAMETER = 'NLS_CHARACTERSE
 </pre>
 <div class="orderedlist">
 <ol class="orderedlist">
-              
+
 <li class="listitem">
 <p class="listitem">These two scripts need to be accessible to the SQL*Plus utility and your database, so copy them to a location on your system path.</p></li>
-              
+
 <li class="listitem">
 <p class="listitem">Edit the supplied database scripts to set the passwords for the users (these are defined in the top few lines of each script).</p>
 <p class="listitem">For example, in<span class="literal"> create-database-oracle.sql</span>, you see:</p><pre class="screen">
@@ -155,7 +155,7 @@ create user sitescape identified by sitescape;
 </pre><pre class="screen">
 grant connect, resource to sitescape;
 </pre><pre class="screen">
-connect sitescape/sitescape; 
+connect sitescape/sitescape;
 </pre>
 <div class="itemizedlist">
 <ul class="listbullet">
@@ -164,12 +164,12 @@ connect sitescape/sitescape;
 <li class="listitem">
 <p class="listitem"><span class="literal">identified by sitescape </span>declares that<span class="literal"> sitescape </span>is the password for this database. Change this to the password you intend to use, such as <span class="literal">identified by <span class="replaceable">yourpassword</span></span> and change the <span class="literal">connect sitescape/sitescape</span> to <span class="literal">connect sitescape/<span class="replaceable">yourpassword</span></span>.</p></li></ul></div>
 </li>
-              
+
 <li class="listitem">
 <p class="listitem">Use the SQL*Plus utility with the SYSTEM account to run the scripts:</p><pre class="screen">
 sqlplus SYSTEM/systemPassword @create-oracle.sql
 </pre><pre class="screen">
-sqlplus SYSTEM/systemPassword @create-database-oracle.sql 
+sqlplus SYSTEM/systemPassword @create-database-oracle.sql
 </pre><pre class="screen">
 sqlplus&gt; quit
 </pre></li>
@@ -189,8 +189,10 @@ sqlplus&gt; quit
 \database\mysql\create-mysql.sql
 
 \database\sqlserver\create-database-sqlserver.sql
-\database\sqlserver\create-sqlserver.sql
-\database\oracle\create-database-oracle.sql\database\oracle\create-oracle.sql
+\database\sqlserver\create-sql-server.sql
+
+\database\oracle\create-database-oracle.sql
+\database\oracle\create-oracle.sql
 </pre>
 <p class="para">When you run the installer, select the <span class="guimenu">My DBA has already created the databases</span> option in the <span class="guimenu">Database selection</span> window.</p>
 </div>
