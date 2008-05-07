@@ -109,12 +109,6 @@
 		onClick="ss_selectRelevanceTab(this, 'activities', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.activities"/></span></a></li>
 	
-	<li <c:if test="${ssRDCurrentTab == 'viewed_entries'}">class="ss_tabsCCurrent"</c:if>
-	><a 
-	  <c:if test="${ssRDCurrentTab == 'viewed_entries'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
-	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'viewed_entries', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.viewedEntries"/></span></a></li>
   </ul>
 </div>
 <div class="ss_clear_float"></div>
@@ -130,14 +124,12 @@ var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElemen
   <c:if test="${ssRDCurrentTab == 'whats_new'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
-  <c:if test="${ssRDCurrentTab == 'viewed_entries'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/viewed_entries_tab.jsp" /></c:if>
 </c:if>
 <c:if test="${!empty ssRelevanceDashboardConfigElement}">
   <c:if test="${ssRDCurrentTab == 'profile'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'whats_new'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
   <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
-  <c:if test="${ssRDCurrentTab == 'viewed_entries'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/viewed_entries_tab.jsp" /></c:if>
 </c:if>
 </div>
 </div>

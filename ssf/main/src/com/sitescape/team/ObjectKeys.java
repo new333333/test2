@@ -186,10 +186,8 @@ public interface ObjectKeys {
     public static final String RELEVANCE_DASHBOARD_ACTIVITIES = "activities";
     public static final String RELEVANCE_DASHBOARD_PROFILE = "profile";
     public static final String RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS = "tasks_and_calendars";
-    public static final String RELEVANCE_DASHBOARD_VIEWED_ENTRIES = "viewed_entries";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW = "whats_new";
     public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
-    public static final String RELEVANCE_DASHBOARD_HIDDEN = "hiddenDashboard";
     public static final String RELEVANCE_TRACKED_BINDERS = "trackedBinders";
     public static final String RELEVANCE_TRACKED_CALENDARS = "trackedCalendars";
     public static final String RELEVANCE_TRACKED_PEOPLE = "trackedPeople";
