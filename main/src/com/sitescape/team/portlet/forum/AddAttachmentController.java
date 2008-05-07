@@ -41,7 +41,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Definition;

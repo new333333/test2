@@ -34,6 +34,7 @@ import java.rmi.RemoteException;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -49,17 +50,16 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import com.sitescape.team.client.ws.folder.FolderServiceSoapBindingStub;
-import com.sitescape.team.client.ws.folder.FolderServiceSoapServiceLocator;
-import com.sitescape.team.client.ws.profile.ProfileServiceSoapBindingStub;
-import com.sitescape.team.client.ws.profile.ProfileServiceSoapServiceLocator;
+import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
+import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
+import com.sitescape.util.servlet.StringServletResponse;
 
 public class NameSearchServlet extends HttpServlet {
 
 	private static final String GOOGLE_SEARCH_TEMPLATE = "http://www.google.com/search?hl=en&q=@@@&btnG=Google+Search";
 	
-	private static final String PROFILE_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/ProfileService";
-	private static final String FOLDER_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/FolderService";
+	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingService";
+	
 	private static final Long PROFILE_BINDER_ID = Long.valueOf(2);
 	
 	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
@@ -71,18 +71,29 @@ public class NameSearchServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
 	throws ServletException, IOException {
 		try {
+			// Get the paramaters passed in.
 			String action = req.getParameter(PARAMETER_NAME_ACTION);
 			String version = req.getParameter(PARAMETER_NAME_VERSION);
 			String applicationId = req.getParameter(PARAMETER_NAME_APPLICATION_ID);
 			String userId = req.getParameter(PARAMETER_NAME_USER_ID);
 			String accessToken = req.getParameter(PARAMETER_NAME_ACCESS_TOKEN);
 			
-			String title = getUserTitle(accessToken, Long.valueOf(userId));
+			// Get ready for web services calls to the Teaming.
+			TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+			locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);
+			TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+
+			// Get the title of the user by making a web services call.
+			String title = getUserTitle(stub, accessToken, Long.valueOf(userId));
 			
-			String result = googleForName(title);
+			// Search Google for the title.
+			String result = googleForName(req, resp, title);
 			
-			//uploadFile(accessToken);
+			// Just to demonstrate how to upload file to the Teaming through web services. 
+			// Irrelevant to this sample, so commented out.
+			//uploadFile(stub, accessToken);
 			
+			// Write the response.
 			resp.getWriter().print(result);
 		}
 		catch(ServletException e) {
@@ -96,11 +107,8 @@ public class NameSearchServlet extends HttpServlet {
 		}
 	}
 
-	private String getUserTitle(String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
-		ProfileServiceSoapServiceLocator locator = new ProfileServiceSoapServiceLocator();
-		locator.setProfileServiceEndpointAddress(PROFILE_SERVICE_ADDRESS);
-		ProfileServiceSoapBindingStub stub = (ProfileServiceSoapBindingStub) locator.getProfileService();
-		String principalAsXML = stub.getPrincipalAsXML(accessToken, PROFILE_BINDER_ID, userId);
+	private String getUserTitle(TeamingServiceSoapBindingStub stub, String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
+		String principalAsXML = stub.profile_getPrincipalAsXML(accessToken, PROFILE_BINDER_ID, userId);
 		
 		Document doc = DocumentHelper.parseText(principalAsXML);
 		Element rootElem = doc.getRootElement();
@@ -110,7 +118,7 @@ public class NameSearchServlet extends HttpServlet {
 		return userTitle;
 	}
 	
-	private String googleForName(String userTitle) throws IOException, ServletException {
+	private String googleForName(HttpServletRequest req, HttpServletResponse resp, String userTitle) throws IOException, ServletException {
 		String searchStr = userTitle.replace(" ", "+");
 		String searchUrl = GOOGLE_SEARCH_TEMPLATE.replace("@@@", searchStr);
 		
@@ -127,11 +135,24 @@ public class NameSearchServlet extends HttpServlet {
 					if(idx2 >= 0) {
 						String value = body.substring(idx+7, idx2);
 						StringBuilder sb = new StringBuilder();
+						
+						/*
+						// Option 1 - Generate the html markup right here.
 						sb.append("<strong>Hey, pay attention everyone!</strong><br>");
 						sb.append("<pre>");
 						sb.append("About " + value + " matches for " + userTitle + " on Google");
 						sb.append("</pre>");
 						result = sb.toString();
+						*/
+						
+						// Option 2 - Use JSP template to generate the html markup
+						String jsp = "/WEB-INF/jsp/namesearch/view.jsp";	
+						RequestDispatcher rd = req.getRequestDispatcher(jsp);	
+						StringServletResponse resp2 = new StringServletResponse(resp);	
+						req.setAttribute("count", value);
+						req.setAttribute("title", userTitle);
+						rd.include(req, resp2);	
+						result = resp2.getString();
 					}
 				}
 				return result;
@@ -145,15 +166,12 @@ public class NameSearchServlet extends HttpServlet {
 		}
 	}
 	
-	private void uploadFile(String accessToken) throws Exception {
+	private void uploadFile(TeamingServiceSoapBindingStub stub, String accessToken) throws Exception {
 		// Do not use this method for general purpose, since it uses hard-coded 
 		// binder ID and enry ID, etc. Useful only for one shot testing.
-		FolderServiceSoapServiceLocator locator = new FolderServiceSoapServiceLocator();
-		locator.setFolderServiceEndpointAddress(FOLDER_SERVICE_ADDRESS);
-		FolderServiceSoapBindingStub stub = (FolderServiceSoapBindingStub) locator.getFolderService();
 		DataHandler dhSource = new DataHandler(new FileDataSource(new File("C:/junk/junk1/chinese-application.doc")));
 		stub.addAttachment(dhSource);
 		stub._setProperty(Call.ATTACHMENT_ENCAPSULATION_FORMAT, Call.ATTACHMENT_ENCAPSULATION_FORMAT_DIME);
-		stub.uploadFolderFile(accessToken, 33, 9, "upload", "chinese-application.doc");
+		stub.folder_uploadFolderFile(accessToken, 33, 9, "upload", "chinese-application.doc");
 	}
 }

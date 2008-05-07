@@ -33,18 +33,20 @@ import org.apache.commons.logging.LogFactory;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.Element;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.util.MergeableXmlClassPathConfigFiles;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SimpleProfiler;
-import com.sitescape.team.util.SpringContextUtil;
 
 /**
  *
  * @author Jong Kim
  */
-public class ProcessorManager {
+public class ProcessorManager implements ApplicationContextAware {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
@@ -53,12 +55,13 @@ public class ProcessorManager {
     private static final String SPRING_BEAN_TYPE_NONE_STR		= "none";
     private static final String SPRING_BEAN_TYPE_DEFAULT_STR	= SPRING_BEAN_TYPE_NONE_STR;
         
-    private static final int SPRING_BEAN_TYPE_EXTERNAL 	= 1;
+    private static final int SPRING_BEAN_TYPE_EXTERNAL = 1;
     private static final int SPRING_BEAN_TYPE_INTERNAL 	= 2;
     private static final int SPRING_BEAN_TYPE_NONE 		= 3;
     private static final int SPRING_BEAN_TYPE_DEFAULT 	= SPRING_BEAN_TYPE_NONE;
     
     private Document document;
+    private ApplicationContext applicationContext;
     
     // TODO We might want to cache the processors (or their class names) 
     // so that we don't have to rebuild them over and over again...
@@ -128,7 +131,7 @@ public class ProcessorManager {
         
         if(springBeanType == SPRING_BEAN_TYPE_INTERNAL) {
             String springBeanName = getSpringBeanName(processorClassName);
-            processor = SpringContextUtil.getBean(springBeanName);
+            processor = applicationContext.getBean(springBeanName);
             if(processor == null)
                 throw new ConfigurationException("Spring bean of name '" + 
                         springBeanName + "' not found for processor class '" + 
@@ -136,7 +139,7 @@ public class ProcessorManager {
         }
         else {
 	        // Load processor class
-	        Class processorClass;
+	        Class<?> processorClass;
 	        try {
 	            processorClass = ReflectHelper.classForName(processorClassName);
 	        } catch (ClassNotFoundException e) {
@@ -162,7 +165,9 @@ public class ProcessorManager {
 	            // This is an externally instantiated bean whose dependencies 
 	            // are defined in the Spring bean context. Inject dependencies 
 	            // into the processor instance.
-	            SpringContextUtil.applyDependencies(processor, getSpringBeanName(processorClassName));
+				applicationContext.getAutowireCapableBeanFactory()
+						.applyBeanPropertyValues(processor,
+								getSpringBeanName(processorClassName));
 	        }
         }
 
@@ -184,7 +189,7 @@ public class ProcessorManager {
             return processorElem.attributeValue("processor-class");
         }
         else {
-            Class superClass = ReflectHelper.classForName(modelClassName).getSuperclass();
+            Class<?> superClass = ReflectHelper.classForName(modelClassName).getSuperclass();
             if(superClass != null)            
                 return getProcessorClassNameRecursively(superClass.getName(), processorKey);
             else
@@ -238,4 +243,10 @@ public class ProcessorManager {
         
         return beanName;
     }
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext)
+			throws BeansException {
+		this.applicationContext = applicationContext;		
+	}
 }

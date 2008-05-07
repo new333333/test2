@@ -28,23 +28,27 @@
  */
 package com.sitescape.team.remoting.ws.service.folder;
 
+import com.sitescape.team.remoting.ws.model.FolderEntry;
+
 
 public interface FolderService {
 
-	public String getFolderEntriesAsXML(String accessToken, long binderId);
+	public String folder_getFolderEntriesAsXML(String accessToken, long binderId);
 	
-	public String getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments);
+	public String folder_getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments);
 	
-	public long addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
+	public long folder_addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
 	
-	public void modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML);
+	public void folder_modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML);
 	
-	public long addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName);
+	public long folder_addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName);
 
-	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId);
-	public void uploadFolderFile(String accessToken, long binderId, long entryId, 
+	public void folder_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId);
+	public void folder_uploadFolderFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
-	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
+	public void folder_uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName, String stagedFileRelativePath);
-	public void synchronizeMirroredFolder(String accessToken, long binderId);
+	public void folder_synchronizeMirroredFolder(String accessToken, long binderId);
+	
+	public FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments);
 }

@@ -37,7 +37,7 @@ public class MigrationServiceImpl extends com.sitescape.team.remoting.ws.service
 	AttachmentUtilities attachmentUtilities = new AttachmentUtilities(this);
 	
 	@Override
-	public void uploadFolderFile(String accessToken, long binderId, long entryId,
+	public void migration_uploadFolderFile(String accessToken, long binderId, long entryId,
 			String fileUploadDataItemName, String fileName,
 			String modifier, Calendar modificationDate) {
 		Map options = new HashMap();

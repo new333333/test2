@@ -38,7 +38,7 @@
 
 <p><ssf:nlt tag="help.viewBooks.content.intro"/></p>
 
-<p><span class="header"><ssf:nlt tag="help.viewBooks.content.header.users"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></span></p>
+<p class="ss_help_body_header"><ssf:nlt tag="help.viewBooks.content.header.users"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <ul>
 <li><a target="ss_new" href="<html:rootPath/>help/${ssUser.locale}/pdfs/ICEcore Quick Start Guide.pdf">
@@ -55,7 +55,7 @@
 
 </ul>
 
-<p><span class="header"><ssf:nlt tag="help.viewBooks.content.header.administrators"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></span></p>
+<p class="ss_help_body_header"><ssf:nlt tag="help.viewBooks.content.header.administrators"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
 <ul>
 <li><a target="ss_new" href="<html:rootPath/>help/ref/pdfs/ICEcore Administration Guide.pdf">
@@ -77,6 +77,8 @@
 </li>
 
 </ul>
+
+<p><ssf:nlt tag="help.viewBooks.content.webDocs"/></p>
 
 </div>
 

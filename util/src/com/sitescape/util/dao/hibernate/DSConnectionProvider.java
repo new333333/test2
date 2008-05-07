@@ -70,6 +70,7 @@ public class DSConnectionProvider implements ConnectionProvider {
 	}
 
 	public void close() {
+		return;
 	}
 	public boolean supportsAggressiveRelease() {
 		return false;

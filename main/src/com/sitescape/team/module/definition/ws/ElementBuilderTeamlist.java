@@ -28,20 +28,11 @@
  */
 package com.sitescape.team.module.definition.ws;
 
-import java.util.Iterator;
-import java.util.Map;
-
-import org.dom4j.Element;
-
-import com.sitescape.team.domain.CustomAttribute;
-import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.util.ResolveIds;
-
 /**
  *
  * @author Jong Kim
  */
-public class ElementBuilderTeamlist extends AbstractElementBuilder {
+public class ElementBuilderTeamlist extends ElementBuilderCommaSeparatedLong {
 
 /*	protected boolean build(Element element, DefinableEntity entity, CustomAttribute attribute) {
 		Map binders = ResolveIds.getBinderTitlesAndIcons(attribute);

@@ -51,7 +51,9 @@ import com.sitescape.team.web.util.DebugHelper;
  */
 public class PortletAdapterServlet extends DispatcherServlet {
 	
-    public void service(HttpServletRequest req, HttpServletResponse res)
+    private static final long serialVersionUID = 5478259311404677806L;
+
+	public void service(HttpServletRequest req, HttpServletResponse res)
 			throws IOException, ServletException {
 
     	ServletContext ctx = getServletContext();

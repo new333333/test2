@@ -64,7 +64,7 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 
 	protected final Log logger = LogFactory.getLog(getClass());
 
-	public String search(String accessToken, String query, int offset, int maxResults)
+	public String search_search(String accessToken, String query, int offset, int maxResults)
 	{
 		query = StringCheckUtil.check(query);
 		
@@ -112,7 +112,7 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 		return doc.getRootElement().asXML();
 	}
 
-	public String getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page) {
+	public String search_getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page) {
 		com.sitescape.team.domain.Binder binder = null;
 		
 		if(binderId == -1) {
@@ -142,7 +142,7 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 	}
 	
 	
-	public String getTeamsAsXML(String accessToken)
+	public String search_getTeamsAsXML(String accessToken)
 	{
 		User user = RequestContextHolder.getRequestContext().getUser();
 		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
@@ -157,7 +157,7 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 		return doc.getRootElement().asXML();
 	}
 	
-	public String getHotContent(String accessToken, String limitType, Long binderId)
+	public String search_getHotContent(String accessToken, String limitType, Long binderId)
 	{
 		Document doc = DocumentHelper.createDocument();
 		Element entries = doc.addElement("entries");

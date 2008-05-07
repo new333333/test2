@@ -139,6 +139,8 @@
 			excludes="WEB-INF/web.xml,WEB-INF/*.web.xml,WEB-INF/*.tmpl,WEB-INF/*.jboss-web.xml,WEB-INF/xslt/*.tmpl"
 			webxml="${web.dir}/WEB-INF/${generic.web.xml}"
 		>
+			<classes dir="${ssf.dir}/src" />
+			<classes dir="${ssf.resources.dir}" />
 		</war>
 	
 		<antcall target="add-image-themes"/>
@@ -178,30 +180,12 @@
 	    </tstamp>
 	
 		<delete dir="temp"/>
-	
-		<copy
-			preservelastmodified="true"
-			file="${web.dir}/WEB-INF/classes/config/ssf.properties"
-			tofile="temp/WEB-INF/classes/config/ssf.properties"/>
-	
-		<replace file="temp/WEB-INF/classes/config/ssf.properties">
-			<replacefilter
-				token="release.build.date="
-				value="release.build.date=${build.timestamp}"/>
-		</replace>
-
-		<war
-			basedir="temp"
-			destfile="${war.file}"
-			update="true"/>
 
 	</target>
 	
 	<target name="deploy-light">
 		<copy todir="${app.server.ssf.dir}" overwrite="true">
-			<fileset dir="${web.dir}"
-				includes="WEB-INF/context/applicationContext.xml,WEB-INF/context/additionalContext.xml"
-			/>
+			<fileset dir="${ssf.resources.dir}/com/sitescape/team" include="applicationContext.xml,additionalContext.xml" />
 		</copy>
 		<copy todir="${app.server.ssf.dir}">
 			<fileset dir="${web.dir}"
@@ -227,42 +211,6 @@
 			</elseif>
 		</if>
 	</target>
-	
-	<!-- We are not using this target that defines a task for JspC compiler
-		 (as opposed to executing the underlying class directly). For whatever 
-		 reason, this runs twice as slow as the other comparable approach. -->
-	<!--
-	<target name="jspc" depends="init">
-		<property name="jsp.artifacts.dir" value="${basedir}/${jspclasses.dir}/${app.server.type}" />
-		
-		<delete dir="${jsp.artifacts.dir}" />
-
-		<path id="jspc.classpath">        
-			<pathelement location="${env.JAVA_HOME}/jre/lib/rt.jar" />
-			<pathelement location="${env.JAVA_HOME}/lib/tools.jar" />
-			<pathelement location="${app.server.dir}/common/lib/commons-el.jar" />
-			<pathelement location="${app.server.dir}/common/lib/jasper-compiler.jar" />
-			<pathelement location="${app.server.dir}/common/lib/jasper-runtime.jar" />
-	        <fileset dir="${app.server.dir}/common/lib">
-	            <include name="**/*.jar"/>
-	        </fileset>
-	        <fileset dir="${app.server.dir}/common/endorsed">
-	            <include name="**/*.jar"/>
-	        </fileset>        
-	    </path>
-		
-		<taskdef classname="org.apache.jasper.JspC" name="jasper2" > 
-			<classpath refid="jspc.classpath"/>
-		</taskdef> 
-
-		<jasper2 
-			validateXml="false" 
-		    uriroot="${app.server.ssf.dir}"
-		    outputDir="${jsp.artifacts.dir}"
-			verbose="9"
-		/> 	
-	</target>
-	-->
 	
 	<target name="precompile-jsp-init-tomcat">
 		<path id="jspc.classpath">        
@@ -381,12 +329,12 @@
 	</target>
 	
 	<target name="make-portlet.xml">
-				<java 	classname="com.sitescape.team.tools.portlet.GeneratePortletXml"
+				<java classname="com.sitescape.team.tools.portlet.GeneratePortletXml"
 						newenvironment="true"
 						failonerror="true"
 				>
 					<classpath refid="project.classpath" />
-					<arg value="web/${web.dir}/WEB-INF" />
+					<arg value="${web.dir}/WEB-INF" />
 				</java>	 
 			</target>
 	

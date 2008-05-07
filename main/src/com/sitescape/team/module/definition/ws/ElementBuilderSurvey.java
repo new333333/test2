@@ -31,12 +31,20 @@ package com.sitescape.team.module.definition.ws;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.remoting.ws.model.StringField;
+
 public class ElementBuilderSurvey extends AbstractElementBuilder {
-	   protected boolean build(Element element, Object val) {
+	   protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object val, String dataElemType, String dataElemName) {
 		   if(val instanceof Document) {
-			   element.add((Document)val);
+			   if(element != null)
+				   element.add((Document)val);
+			   if(entityModel != null)
+				   entityModel.addStringField(new StringField(dataElemName, dataElemType, ((Document)val).getRootElement().asXML()));
 		   } else if (val != null) {
-	    		element.setText(val.toString());
+			   if(element != null)
+				   element.setText(val.toString());
+			   if(entityModel != null)
+				   entityModel.addStringField(new StringField(dataElemName, dataElemType, val.toString()));
 		   }
 		   return true;
 	    }

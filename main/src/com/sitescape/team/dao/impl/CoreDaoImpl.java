@@ -32,7 +32,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -41,7 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
+import java.util.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -391,7 +390,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		return loadObjects(objs, filter, zoneId, true);
 	}
 	/**
-	 * Return a list containing an object array, where each object in a row representing the value of the requested attribute
+	 * Return a lsit containing an object array, where each object in a row representing the value of the requested attribute
 	 * This is used to return a subset of object.  In this case, we have a list of ids to
 	 * add to the query.  We have to use named params to do this.
 	 * @param objs

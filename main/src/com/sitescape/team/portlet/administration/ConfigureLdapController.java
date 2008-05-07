@@ -36,7 +36,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import javax.naming.NamingException;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.module.ldap.LdapConfig;
 import com.sitescape.team.web.WebKeys;

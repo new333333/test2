@@ -1,11 +1,11 @@
 package com.sitescape.team.remoting.ws.service.binder;
 
 public interface BinderService {
-	public long addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML);
+	public long binder_addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML);
 	
-	public String getTeamMembersAsXML(String accessToken, long binderId);
+	public String binder_getTeamMembersAsXML(String accessToken, long binderId);
 	
-	public void setTeamMembers(String accessToken, long binderId, String[] memberNames);
+	public void binder_setTeamMembers(String accessToken, long binderId, String[] memberNames);
 	/**
 	 * 
 	 * @param accessToken
@@ -13,7 +13,7 @@ public interface BinderService {
 	 * @param definitionIds
 	 * @param workflowAssociations <Pairs of entryDefinitionId,workflowDefinitionId
 	 */
-	public void setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations);
+	public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations);
 	/**
 	 * Set function membership for a binder.  Can mix and match memberName and/or members
 	 * <workAreaFunctionMemberships>
@@ -28,8 +28,8 @@ public interface BinderService {
 	 * @param binderId
 	 * @param inputDataAsXml
 	 */
-	public void setFunctionMembership(String accessToken, long binderId, String inputDataAsXml);
-	public void setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit);
-	public void setOwner(String accessToken, long binderId, long userId);
-	public void indexBinder(String accessToken, long binderId);
+	public void binder_setFunctionMembership(String accessToken, long binderId, String inputDataAsXml);
+	public void binder_setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit);
+	public void binder_setOwner(String accessToken, long binderId, long userId);
+	public void binder_indexBinder(String accessToken, long binderId);
 }

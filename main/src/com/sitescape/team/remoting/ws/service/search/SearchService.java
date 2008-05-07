@@ -30,14 +30,14 @@ package com.sitescape.team.remoting.ws.service.search;
 
 public interface SearchService {
 
-	public String search(String accessToken, String query, int offset, int maxResults);
+	public String search_search(String accessToken, String query, int offset, int maxResults);
 
-	public String getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page);
+	public String search_getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page);
 	
-	public String getTeamsAsXML(String accessToken);
+	public String search_getTeamsAsXML(String accessToken);
 	
 	/*
 	 * howTo can be one of "view", "modify", or "download"
 	 */
-	public String getHotContent(String accessToken, String limitType, Long binderId);
+	public String search_getHotContent(String accessToken, String limitType, Long binderId);
 }

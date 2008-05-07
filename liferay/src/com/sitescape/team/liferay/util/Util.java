@@ -35,8 +35,8 @@ import com.liferay.portal.model.User;
 
 public class Util {
 
-	public static Map getUpdatesMap(User user) {
-		Map updates = new HashMap();
+	public static Map<String, Object> getUpdatesMap(User user) {
+		Map<String, Object> updates = new HashMap<String, Object>();
 		if(user.getFirstName() != null)
 			updates.put("firstName", user.getFirstName());
 		if(user.getMiddleName() != null)

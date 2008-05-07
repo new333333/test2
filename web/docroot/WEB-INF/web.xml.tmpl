@@ -19,7 +19,7 @@
 	
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
-		<param-value>/WEB-INF/context/applicationContext.xml /WEB-INF/context/additionalContext.xml optional:/WEB-INF/context/applicationContext-ext.xml</param-value>
+		<param-value>/WEB-INF/classes/com/sitescape/team/applicationContext.xml /WEB-INF/classes/com/sitescape/team/additionalContext.xml optional:/WEB-INF/context/applicationContext-ext.xml</param-value>
 	</context-param>
 
 	<context-param>
@@ -110,7 +110,7 @@
 
 	<servlet>
 		<servlet-name>viewRendererServlet</servlet-name>
-		<servlet-class>org.springframework.web.portlet.ViewRendererServlet</servlet-class>
+		<servlet-class>org.springframework.web.servlet.ViewRendererServlet</servlet-class>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
 	

@@ -28,24 +28,37 @@
  */
 package com.sitescape.team.module.definition.ws;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.module.definition.DefinitionUtils;
-
+import com.sitescape.team.remoting.ws.model.AttachmentsField;
+import com.sitescape.team.remoting.ws.model.AttachmentsField.Attachment;
 
 public class ElementBuilderAttachments extends AbstractElementBuilder {
-	protected boolean build(Element element, DefinableEntity entity, String dataElemName) {
+	protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity, String dataElemType, String dataElemName) {
+		List<Attachment> attachments = null;
+		if(entityModel != null)
+			attachments = new ArrayList<Attachment>();
 		for (FileAttachment att:entity.getFileAttachments()) {
 			if (att != null && att.getFileItem() != null) {
-				Element value = element.addElement("file");
-				value.setText(att.getFileItem().getName());
 				String webUrl = DefinitionUtils.getViewURL(entity, att); 
-				value.addAttribute("href", webUrl);
+				if(element != null) {
+					Element value = element.addElement("file");
+					value.setText(att.getFileItem().getName());
+					value.addAttribute("href", webUrl);
+				}
+				if(attachments != null)
+					attachments.add(new Attachment(att.getFileItem().getName(), webUrl));
 				context.handleAttachment(att, webUrl);
 			}
 		}
+		if(attachments != null)
+			entityModel.setAttachmentsField(new AttachmentsField(dataElemName, dataElemType, attachments.toArray(new Attachment[]{})));
 		return true;
 	}
 }

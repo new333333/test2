@@ -26,7 +26,7 @@ import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class BinderServiceImpl extends BaseService implements BinderService {
-	public long addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML)
+	public long binder_addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML)
 	{
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
@@ -38,7 +38,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 			throw new RemotingException(e);
 		}
 	}
-	public void setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
+	public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations) {
 		HashMap wfs = new HashMap();
 		for (int i=0; i<workflowAssociations.length; i++) {
 			String [] vals = workflowAssociations[i].split(",");
@@ -46,7 +46,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		}
 		getBinderModule().setDefinitions(binderId, Arrays.asList(definitionIds), wfs);
 	}
-	public String getTeamMembersAsXML(String accessToken, long binderId)
+	public String binder_getTeamMembersAsXML(String accessToken, long binderId)
 	{
 		Binder binder = getBinderModule().getBinder(new Long(binderId));
 		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, true);
@@ -59,7 +59,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		
 		return doc.getRootElement().asXML();
 	}
-	public void setTeamMembers(String accessToken, long binderId, String []memberNames) {
+	public void binder_setTeamMembers(String accessToken, long binderId, String []memberNames) {
 		Collection<Principal> principals = getProfileModule().getPrincipalsByName(Arrays.asList(memberNames));
 		Set<Long>ids = new HashSet();
 		for (Principal p:principals) {
@@ -68,7 +68,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		
 		getBinderModule().setTeamMembers(binderId, ids);
 	}
-	public void setFunctionMembership(String accessToken, long binderId, String inputDataAsXml) {
+	public void binder_setFunctionMembership(String accessToken, long binderId, String inputDataAsXml) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		List<Function> functions = getAdminModule().getFunctions();
 		Document doc = getDocument(inputDataAsXml);
@@ -102,15 +102,15 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, false); 
 		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
-	public void setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit) {
+	public void binder_setFunctionMembershipInherited(String accessToken, long binderId, boolean inherit) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, inherit); 		
 	}
-	public void setOwner(String accessToken, long binderId, long userId) {
+	public void binder_setOwner(String accessToken, long binderId, long userId) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		getAdminModule().setWorkAreaOwner(binder, userId, false); 		
 	}
-	public void indexBinder(String accessToken, long binderId) {
+	public void binder_indexBinder(String accessToken, long binderId) {
 		getBinderModule().indexBinder(binderId, true);
 	}
 }

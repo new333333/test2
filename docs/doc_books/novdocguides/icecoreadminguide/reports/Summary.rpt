@@ -2042,7 +2042,7 @@
    <String `Update Report for icecoreadminguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `10/4/2007 11:35:21 AM'>
+   <String `4/29/2008 2:36:15 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2078,10 +2078,10 @@
   > # end of ParaLine
  > # end of Para
  <Para 
-  <PgfTag `blue'>
+  <PgfTag `red'>
   <ParaLine 
    <Font 
-    <FTag `blue'>
+    <FTag `red'>
     <FLocked No>
    > # end of Font
    <Marker 
@@ -2090,7 +2090,7 @@
     <MText `message Novdoc summary|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\reports\\crossref.rpt|0'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `No cross-reference errors - click for report'>
+   <String `Cross-reference errors found - click for report'>
    <Font 
     <FTag `'>
     <FLocked No>

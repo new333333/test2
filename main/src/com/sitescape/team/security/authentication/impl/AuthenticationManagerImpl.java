@@ -222,7 +222,11 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 	}
 		
 	private void validateZone(String zoneName) throws ZoneException {
-		if(!zoneName.equals(RequestContextHolder.getRequestContext().getZoneName()))
-			throw new ZoneException("Authentication is permitted only against the context zone"); 
+		if (RequestContextHolder.getRequestContext() == null
+				|| !zoneName.equals(RequestContextHolder.getRequestContext()
+						.getZoneName())) {
+			throw new ZoneException(
+					"Authentication is permitted only against the context zone");
+		}
 	}
 }

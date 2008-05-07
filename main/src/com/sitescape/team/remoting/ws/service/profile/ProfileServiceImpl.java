@@ -47,7 +47,7 @@ import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class ProfileServiceImpl extends BaseService implements ProfileService {
 
-	public String getAllPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
+	public String profile_getAllPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
 		Document doc = DocumentHelper.createDocument();
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
@@ -66,7 +66,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		
 		return xml;
 	}
-	public String getPrincipalAsXML(String accessToken, long binderId, long principalId) {
+	public String profile_getPrincipalAsXML(String accessToken, long binderId, long principalId) {
 		Long bId = new Long(binderId);
 		Long pId = new Long(principalId);
 		
@@ -79,14 +79,14 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		Element entryElem = addPrincipalToDocument(doc, entry);
 		
 		// Handle custom fields driven by corresponding definition. 
-		addCustomElements(entryElem, entry);
+		addCustomElements(entryElem, null, entry);
 		
 		String xml = doc.getRootElement().asXML();
 		
 		return xml;
 	}
 	
-	public long addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
+	public long profile_addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -100,7 +100,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 
 	}
 	
-	public long addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
+	public long profile_addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -114,11 +114,11 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 
 	}
 	
-	public void addUserToGroup(String accessToken, long userId, String username, long groupId) {
+	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId) {
 		getProfileModule().addUserToGroup(Long.valueOf(userId), username, Long.valueOf(groupId));
 	}
 	
-	public void modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML) {
+	public void profile_modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML) {
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -132,7 +132,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 
 	}
 	
-	public void deletePrincipal(String accessToken, long binderId, long principalId) {
+	public void profile_deletePrincipal(String accessToken, long binderId, long principalId) {
 		try {
 			getProfileModule().deleteEntry(new Long(binderId), new Long(principalId), null);
 		}
@@ -141,7 +141,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		}
 
 	}
-	public long addUserWorkspace(String accessToken, long userId) {
+	public long profile_addUserWorkspace(String accessToken, long userId) {
 		User user = (User)getProfileModule().getEntry(getProfileModule().getProfileBinder().getId(), userId);
 		return getProfileModule().addUserWorkspace(user, null).getId();
 	}

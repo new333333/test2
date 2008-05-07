@@ -64,7 +64,7 @@
 			<bean class="com.sitescape.team.util.PropertiesClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
-						<value>config/ssf.properties</value>
+						<value>ssf.properties</value>
 					</list>		
 				</property>
 			</bean>

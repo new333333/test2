@@ -41,10 +41,13 @@ import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.team.ConfigurationException;
+import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebUrlUtil;
@@ -95,7 +98,19 @@ public class DefinitionUtils {
 		if (root == null) return null;
 		Element viewItem = (Element)root.selectSingleNode("//item[@name='forumView' or @name='profileView' or @name='workspaceView' or @name='userWorkspaceView']");
 		if (viewItem == null) return null;
-		return DefinitionUtils.getPropertyValue(viewItem, "type");
+		
+		String viewType = DefinitionUtils.getPropertyValue(viewItem, "type");
+		
+		//Check if accessible mode
+        User user = RequestContextHolder.getRequestContext().getUser();
+		String strUserDisplayStyle = user.getDisplayStyle();
+		if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
+		
+		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
+			//In accessible mode, always force the view type to accessible mode
+			viewType = Definition.VIEW_STYLE_ACCESSIBLE;
+		}
+		return viewType;
    }
    public static Element getItemByPropertyName(Element item, String itemType, String nameValue) {
 		//Find the item in the definition

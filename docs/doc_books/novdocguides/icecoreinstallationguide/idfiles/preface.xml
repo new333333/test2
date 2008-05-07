@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="preface" pid="preface" name="Preface" level="0"> <text>About This Guide</text> </target>
+
+ <target id="audience" pid="preface" name="BridgeHead" level="1"> <text>Audience</text> </target>
+
+ <target id="bdgyzut" pid="preface" name="BridgeHead" level="1"> <text>Software and Documentation Version</text> </target>
+
+ <target id="usercomments" pid="preface" name="BridgeHead" level="1"> <text>Feedback</text> </target>
+
+ <target id="ban8e22" pid="preface" name="BridgeHead" level="1"> <text>Additional Documentation</text> </target>
+
+ <target id="bdggczj" pid="preface" name="BridgeHead" level="1"> <text>Change History</text> </target>
+
+ <target name="InformalTable" level="1"> <text>Manual revision</text> </target>
+
+ <target id="bcnmsed" pid="preface" name="row" level="2"> <text>Manual revision</text> </target>
+
+ <target id="bcnmsee" pid="preface" name="row" level="2"> <text>First Version</text> </target>
+
+ <target id="docupdates" pid="preface" name="BridgeHead" level="1"> <text>Documentation Updates</text> </target>
+
+ <target id="b9yxnfv" pid="preface" name="BridgeHead" level="1"> <text>Conventions</text> </target>
+
+</targets>

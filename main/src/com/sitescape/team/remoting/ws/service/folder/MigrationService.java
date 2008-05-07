@@ -32,22 +32,22 @@ import java.util.Calendar;
 
 public interface MigrationService {
 
-	public long addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML,
+	public long migration_addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML,
 			String creator, Calendar creationDate, String modifier, Calendar modificationDate);
 	
-	public long addFolderEntry(String accessToken, long binderId, String definitionId,
+	public long migration_addFolderEntry(String accessToken, long binderId, String definitionId,
 							   String inputDataAsXML, 
 							   String creator, Calendar creationDate, String modifier, Calendar modificationDate);
 		
-	public long addReply(String accessToken, long binderId, long parentId, String definitionId,
+	public long migration_addReply(String accessToken, long binderId, long parentId, String definitionId,
 					     String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate);
 
-	public void uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName,
+	public void migration_uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName,
 								 String fileName, String modifier, Calendar modificationDate);
 	
-	public void uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
+	public void migration_uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate);
-	public void addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate);
+	public void migration_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate);
 
 	public static class Timestamps implements java.io.Serializable
 	{

@@ -35,7 +35,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.liferay.portal.struts.ActionException;
-
 import com.liferay.portal.util.PortalUtil;
 import com.sitescape.team.liferay.util.Util;
 import com.sitescape.team.portalmodule.security.AuthenticationManager;
@@ -50,13 +49,10 @@ public class LoginPostAction extends AbstractAction {
 	public void run(HttpServletRequest req, HttpServletResponse res)
 			throws ActionException {
 
-		// Print debug information
-		//testRequestEnv("Liferay.LoginPostAction", req);
-
 		// Make sure that the portal created a session for the user. 
 		
-		HttpSession ses = req.getSession(false);
-		if (ses == null)
+		HttpSession session = req.getSession(false);
+		if (session == null)
 			throw new ActionException("Session is not found");
 		
 		try {
@@ -73,47 +69,18 @@ public class LoginPostAction extends AbstractAction {
 				password = ""; // I'm not sure if we should allow this...
 			
 			//sync user attributes
-			Map updates = Util.getUpdatesMap(user);
+			Map<String, Object> updates = Util.getUpdatesMap(user);
 
 			// First, authenticate the user against SSF user database.
 			AuthenticationManager.authenticate(company.getWebId(), user.getScreenName(), password, updates);
 			
 			// If you're still here, the authentication was successful. 
 			// Create a SSF session for the user. 
-			SessionManager.setupSession(req, ses.getId(), company.getWebId(), user.getScreenName());
+			
+			// Redirect user to the sitescape servlet instead of Liferay portal
+			SessionManager.setupSession(req, session.getId(), company.getWebId(), user.getScreenName());
 		} catch (Exception e) {
 			throw new ActionException(e);
 		}
 	}
-/*	Would prefer to do this in a controller, but I cannot get hold of the timezone in a portable way	
- * com.liferay.portal.model.User user = UserLocalServiceUtil.getUserById(companyId, userId);
-		PortletSession ses = request.getPortletSession();
-
-		if (ses != null) {
-			Boolean sync = (Boolean)ses.getAttribute(WebKeys.PORTLET_USER_SYNC, PortletSession.APPLICATION_SCOPE);
-			if ((sync == null) || sync.equals(Boolean.FALSE)) {
-				//sync user attributes
-				Map updates = new HashMap();
-				Map userAttrs = (Map)request.getAttribute(javax.portlet.PortletRequest.USER_INFO);
-				String val = null;
-				if (userAttrs.containsKey("user.name.given")) {
-					val = (String)userAttrs.get("user.name.given");
-					if (!val.equals(user.getFirstName())) updates.put("firstName", val);
-				}
-				if (userAttrs.containsKey("user.name.family")) {
-					val = (String)userAttrs.get("user.name.family");
-					if (!val.equals(user.getLastName())) updates.put("lastName", val);
-				}
-				if (userAttrs.containsKey("user.business-info.online.email")) {
-					val = (String)userAttrs.get("user.business-info.online.email");
-					if (!val.equals(user.getEmailAddress())) updates.put("emailAddress", val);
-				}
-				val = request.getLocale().getLanguage();
-				if (!val.equals(user.getLanguageId())) updates.put("languageId", val);
-				val = request.getLocale().getCountry();
-				if (!val.equals(user.getCountry())) updates.put("country", val);
-				if (!updates.isEmpty()) getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), new MapInputData(updates));
-				ses.setAttribute(WebKeys.PORTLET_USER_SYNC, Boolean.TRUE, PortletSession.APPLICATION_SCOPE);				
-			}
-	*/		
 }
