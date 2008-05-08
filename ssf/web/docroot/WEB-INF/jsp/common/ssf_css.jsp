@@ -83,7 +83,7 @@ html { filter: expression(document.execCommand("BackgroundImageCache", false, tr
 
 body.ss_style_body {
 	margin: 0px 0px 0px 0px;
-	background-color: #526394;
+	background-color: #FFFFFF; 	    /* this is the blue we want to use later:  background-color: #526394; */
 }
 
 .ss_style {
