@@ -280,7 +280,8 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 				  </a>
 				 </ssf:ifaccessible>
 				 <ssf:ifnotaccessible>
-				  <a href="${ss_accessibleUrl}">
+				  <a href="${ss_accessibleUrl}"
+				  onClick='if (!confirm("<ssf:nlt tag="accessible.confirm"/>"))return false;'>
 				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>
 				  </a>
 				 </ssf:ifnotaccessible>

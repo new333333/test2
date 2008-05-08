@@ -1276,6 +1276,7 @@
 				<option name="" caption="__family_unspecified" />
 				<option name="workspace" caption="__family_workspace" />
 				<option name="team" caption="__family_team" />
+				<option name="discussion" caption="__family_discussion" />
 				<option name="project" caption="__family_project" />
 				<help>ihelp.other.definition_family</help>
 			</property>
@@ -1342,6 +1343,7 @@
 				<option name="workspace" caption="__workspace" />
 				<option name="team_root" caption="__team_root_workspace" />
 				<option name="team" caption="__team_workspace" />
+				<option name="discussion" caption="__discussion_workspace" />
 				<option name="project" caption="__project_management" />
 			</property>
 		</properties>

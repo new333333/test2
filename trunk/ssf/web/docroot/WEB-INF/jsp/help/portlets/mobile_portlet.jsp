@@ -28,32 +28,16 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //View a workspace %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<div class="ss_style">
+<div class="ss_help_style">
 
-<div class="ss_style ss_portlet">
-
-<c:if test="${propertyValues_type[0] == 'team_root' && !empty ssAddTeamWorkspaceUrl}">
-<div>
-<a class="ss_linkButton" href="${ssAddTeamWorkspaceUrl}"><ssf:nlt tag="team.addTeam"/></a>
-<br/>
-<br/>
+<div class="ss_help_title">
+<span class="ss_titlebold"><ssf:nlt tag="helpSpot.mobilePortlet"/></span>
 </div>
-</c:if>
 
-<c:if test="${propertyValues_type[0] == 'discussion'}">
-  <%@ include file="/WEB-INF/jsp/definition_elements/discussion/discussion_workspace_view.jsp" %>
-</c:if>
+<p>???</p>
 
-<c:if test="${propertyValues_type[0] != 'discussion'}">
-	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-	  configElement="${item}" 
-	  configJspStyle="${ssConfigJspStyle}"
-	  entry="${ssDefinitionEntry}" />
-</c:if>
- 
-<c:if test="${!empty propertyValues_type && !empty propertyValues_type[0] && propertyValues_type[0] == 'project'}">
-	<%@ include file="/WEB-INF/jsp/definition_elements/workspace_statistics.jsp" %>
-</c:if>
-  
+</div>
+
 </div>
