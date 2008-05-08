@@ -56,8 +56,8 @@ public class WSClient extends WSClientBase
 				wsClient.fetchAndPrintXML("TeamingService", "search_getWorkspaceTreeAsXML", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
 			} else if(args[0].equals("printPrincipal")) {
 				wsClient.fetchAndPrintXML("TeamingService", "profile_getPrincipalAsXML", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
-			} else if(args[0].equals("printAllPrincipals")) {
-				wsClient.fetchAndPrintXML("TeamingService", "profile_getAllPrincipalsAsXML", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
+			} else if(args[0].equals("printPrincipals")) {
+				wsClient.fetchAndPrintXML("TeamingService", "profile_getPrincipalsAsXML", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("printFolderEntries")) {
 				wsClient.fetchAndPrintXML("TeamingService", "folder_getFolderEntriesAsXML", new Object[] {null, Long.parseLong(args[1])});
 			} else if(args[0].equals("addFolder")) {
@@ -131,9 +131,9 @@ public class WSClient extends WSClientBase
 				}
 				wsClient.fetchAndPrintXML("TeamingService", "search_getHotContent", new Object[] {null, args[1], binderId});
 			} else if(args[0].equals("listDefinitions")) {
-				wsClient.fetchAndPrintXML("TeamingService", "definition_getDefinitionListAsXML", new Object[] {null});
+				wsClient.fetchAndPrintXML("TeamingService", "definition_getDefinitionsAsXML", new Object[] {null});
 			} else if(args[0].equals("listTemplates")) {
-				wsClient.fetchAndPrintXML("TeamingService", "template_getTemplateListAsXML", new Object[] {null});
+				wsClient.fetchAndPrintXML("TeamingService", "template_getTemplatesAsXML", new Object[] {null});
 			} else if(args[0].equals("setTeamMembers")) {
 				String names[] = args[2].split(",");
 				wsClient.justDoIt("TeamingService", "binder_setTeamMembers", new Object[] {null, Long.parseLong(args[1]), names});
@@ -260,7 +260,7 @@ public class WSClient extends WSClientBase
 		System.out.println("Usage:");
 		System.out.println("printWorkspaceTree <workspace id> <depth> [<page>]");
 		System.out.println("printPrincipal <binder id> <principal id>");
-		System.out.println("printAllPrincipals <first> <max>");
+		System.out.println("printPrincipals <first> <max>");
 		System.out.println("printFolderEntries <folder id>");
 		System.out.println("addFolder <parent binder id> <binder config id> <title>");
 		System.out.println("printTeamMembers <binder id>");

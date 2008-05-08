@@ -29,7 +29,6 @@
 package com.sitescape.team.remoting.ws.service.folder;
 
 import com.sitescape.team.remoting.ws.model.FolderEntry;
-import com.sitescape.team.remoting.ws.model.FolderEntryBrief;
 import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
 
 
@@ -37,8 +36,12 @@ public interface FolderService {
 
 	public String folder_getFolderEntriesAsXML(String accessToken, long binderId);
 	
+	public FolderEntryCollection folder_getFolderEntries(String accessToken, long binderId);
+
 	public String folder_getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments);
 	
+	public FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments);
+
 	public long folder_addFolderEntry(String accessToken, long binderId, String definitionId, String inputDataAsXML, String attachedFileName);
 	
 	public void folder_modifyFolderEntry(String accessToken, long binderId, long entryId, String inputDataAsXML);
@@ -52,7 +55,4 @@ public interface FolderService {
 			String fileUploadDataItemName, String fileName, String stagedFileRelativePath);
 	public void folder_synchronizeMirroredFolder(String accessToken, long binderId);
 	
-	public FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments);
-
-	public FolderEntryCollection folder_getFolderEntries(String accessToken, long binderId);
 }

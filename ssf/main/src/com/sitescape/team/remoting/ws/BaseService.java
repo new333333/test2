@@ -320,4 +320,20 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 
 		return principalBrief;
 	}
+	
+	protected PrincipalBrief toPrincipalBrief(Principal principal) {
+		PrincipalBrief principalBrief = new PrincipalBrief();
+		principalBrief.setId(principal.getId());
+		principalBrief.setBinderId(principal.getParentBinder().getId());
+		principalBrief.setDefinitionId(principal.getEntryDef().getId());
+		principalBrief.setTitle(principal.getTitle());
+		principalBrief.setEmailAddress(principal.getEmailAddress());
+		principalBrief.setType(principal.getEntityType().toString());
+		principalBrief.setDisabled(Boolean.valueOf(principal.isDeleted()));
+		principalBrief.setReserved(principal.isReserved());
+		principalBrief.setName(principal.getName());
+		
+		return principalBrief;
+
+	}
 }

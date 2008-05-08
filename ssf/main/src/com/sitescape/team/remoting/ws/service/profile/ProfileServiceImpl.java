@@ -50,7 +50,7 @@ import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
 public class ProfileServiceImpl extends BaseService implements ProfileService {
 
-	public String profile_getAllPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
+	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
 		Document doc = DocumentHelper.createDocument();
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
@@ -149,7 +149,7 @@ public class ProfileServiceImpl extends BaseService implements ProfileService {
 		return getProfileModule().addUserWorkspace(user, null).getId();
 	}
 	
-	public PrincipalCollection profile_getAllPrincipals(String accessToken, int firstRecord, int maxRecords) {
+	public PrincipalCollection profile_getPrincipals(String accessToken, int firstRecord, int maxRecords) {
     	Map options = new HashMap();
     	options.put(ObjectKeys.SEARCH_OFFSET, new Integer(firstRecord));
     	options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(maxRecords));

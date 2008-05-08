@@ -37,6 +37,9 @@ public class PrincipalBrief implements Serializable {
 	private String title;
 	private String emailAddress;
 	private String type;
+	// This information may not be present depending on whether the source is 
+	// the principal object or search index. So use Boolean instead of boolean.
+	private Boolean disabled;
 	private boolean reserved;
 	private String name;
 	
@@ -69,6 +72,12 @@ public class PrincipalBrief implements Serializable {
 	}
 	public void setName(String name) {
 		this.name = name;
+	}
+	public Boolean getDisabled() {
+		return disabled;
+	}
+	public void setDisabled(Boolean disabled) {
+		this.disabled = disabled;
 	}
 	public boolean isReserved() {
 		return reserved;
