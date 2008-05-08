@@ -128,7 +128,7 @@ public class WSClientWithStubs {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
-		PrincipalCollection result = stub.profile_getAllPrincipals(null, first, max);
+		PrincipalCollection result = stub.profile_getPrincipals(null, first, max);
 		PrincipalBrief[] entries = result.getEntries();
 				
 		System.out.println("First = " + result.getFirst());
