@@ -160,7 +160,7 @@ public class TreeTag extends TagSupport {
 				sb.append("<script type=\"text/javascript\">\n");
 				sb.append("ssTree_defineBasicIcons('"+contextPath+"/images');\n");
 				sb.append("var ss_treeAjaxUrl_" + this.treeName + " = '" + aUrl + "';\n");
-				sb.append("var ss_treeNotLoggedInMsg = '" + NLT.get("general.notLoggedIn") + "';\n");
+				sb.append("var ss_treeNotLoggedInMsg = '" + NLT.get("general.notLoggedIn").replaceAll("'", "\\\\'") + "';\n");
 				sb.append("var ss_treeShowIdRoutine_"+this.treeName+" = '" + this.showIdRoutine + "';\n");
 				//used to match up treehelper on ajax callbacks
 				String treeKey="";
@@ -179,7 +179,7 @@ public class TreeTag extends TagSupport {
 				String displayStyle = user.getDisplayStyle();
 				if (displayStyle == null) displayStyle = "";
 				sb.append("var ss_treeDisplayStyle = '" + displayStyle + "';\n");
-				sb.append("var ss_treeButtonClose = '" + NLT.get("button.close") + "';\n");
+				sb.append("var ss_treeButtonClose = '" + NLT.get("button.close").replaceAll("'", "\\\\'") + "';\n");
 				sb.append("</script>\n\n\n");
 				sb.append("<div id=\"ss_hiddenTreeDiv"+treeName+"\" style=\"visibility:hidden;\"></div>\n");
 			}
