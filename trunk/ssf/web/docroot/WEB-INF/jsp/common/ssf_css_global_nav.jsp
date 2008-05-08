@@ -206,7 +206,7 @@ a.ss_buttonSTButton:active span {
 	background-position: 0px 0px;
 	background-repeat:no-repeat;
   	white-space: nowrap;	
-	color: #008EDF!important;
+	color: #00ADEF!important;
 	}	
 
 	/* LOGO DIVS */	

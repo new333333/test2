@@ -36,16 +36,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 /* CSS Document - container for navigation and search */
 	
-	/*WRAPPER*/
-#ss_top_nav_wrapper{
-	width: 100%;
-	background-color:#D8D8D8;
-	display: table;
-	border-color:#CCCCCC;
-	border: 1px;
-	color: #CCCCCC;
-	}
-	
 	/* COLUMN CONTAINER */
 #ss_dashboard_content {
 	position:relative; /* This fixes the IE7 overflow hidden bug */
@@ -223,7 +213,12 @@ div.ss_canvas {
 	border-bottom:dashed 1px #777777;
 	margin-bottom:5px;
 	
-	}		
+	}
+#ss_col3_para {			/* to use for 3rd column displays */
+	padding-top:5px;
+	margin:5px;
+
+	}			
 	/*TRACKED ITEMS*/
 #ss_trackedItems{
 	margin: 1% 0 2% 0;
@@ -562,7 +557,7 @@ div.ss_canvas {
 .ss_link_1, .ss_link_1 span { 
 	text-decoration: none;
 	font-weight: normal;
-	color: #00AEEF!important;
+	color: #00ADEF!important;
 	}
 	/* PLACES LINKS*/	
 .ss_link_2, .ss_link_2 span	{
