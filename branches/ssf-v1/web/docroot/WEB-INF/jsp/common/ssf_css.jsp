@@ -975,7 +975,7 @@ DIV.ss_help_style .new_term {
     font-style: italic;
 }
 
-DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header {
+DIV.ss_help_style .strong-emphasis, .def_list_term, .subtitle, .header, .note_header {
     font-weight: bold;
 }
 
