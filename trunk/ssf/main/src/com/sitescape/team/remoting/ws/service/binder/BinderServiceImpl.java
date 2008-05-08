@@ -1,5 +1,6 @@
 package com.sitescape.team.remoting.ws.service.binder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -20,6 +21,8 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.PrincipalBrief;
+import com.sitescape.team.remoting.ws.model.TeamMemberCollection;
 import com.sitescape.team.remoting.ws.util.DomInputData;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.util.LongIdUtil;
@@ -112,5 +115,19 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 	}
 	public void binder_indexBinder(String accessToken, long binderId) {
 		getBinderModule().indexBinder(binderId, true);
+	}
+	
+	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId) {
+		Binder binder = getBinderModule().getBinder(new Long(binderId));
+		SortedSet<Principal> principals = getBinderModule().getTeamMembers(binder, true);
+		
+		List<PrincipalBrief> principalList = new ArrayList<PrincipalBrief>();
+		for(Principal p : principals) {
+			principalList.add(toPrincipalBrief(p));
+		}
+		
+		PrincipalBrief[] array = new PrincipalBrief[principalList.size()];
+		return new TeamMemberCollection(binder.isTeamMembershipInherited(),
+				principalList.toArray(array));
 	}
 }

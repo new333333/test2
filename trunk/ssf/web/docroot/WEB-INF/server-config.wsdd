@@ -65,6 +65,8 @@
 		<beanMapping qname="ns:BooleanField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.BooleanField"/>
 		<beanMapping qname="ns:DateField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.DateField"/>
 		<beanMapping qname="ns:DefinableEntity" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.DefinableEntity"/>
+		<beanMapping qname="ns:DefinitionBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.DefinitionBrief"/>
+		<beanMapping qname="ns:DefinitionCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.DefinitionCollection"/>
 		<beanMapping qname="ns:Description" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Description"/>
 		<beanMapping qname="ns:Entry" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Entry"/>
 		<beanMapping qname="ns:Field" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Field"/>
@@ -77,6 +79,11 @@
 		<beanMapping qname="ns:PrincipalCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.PrincipalCollection"/>
 		<beanMapping qname="ns:StringArrayField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.StringArrayField"/>
 		<beanMapping qname="ns:StringField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.StringField"/>
+		<beanMapping qname="ns:TeamBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamBrief"/>
+		<beanMapping qname="ns:TeamCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamCollection"/>
+		<beanMapping qname="ns:TeamMemberCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamMemberCollection"/>
+		<beanMapping qname="ns:TemplateBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TemplateBrief"/>
+		<beanMapping qname="ns:TemplateCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TemplateCollection"/>
 		<beanMapping qname="ns:Timestamp" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Timestamp"/>
 	</service>
 </deployment>

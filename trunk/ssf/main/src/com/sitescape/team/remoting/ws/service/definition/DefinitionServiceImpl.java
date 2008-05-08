@@ -27,6 +27,7 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.remoting.ws.service.definition;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.dom4j.Document;
@@ -36,6 +37,8 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.DefinitionBrief;
+import com.sitescape.team.remoting.ws.model.DefinitionCollection;
 
 public class DefinitionServiceImpl extends BaseService implements DefinitionService, DefinitionServiceInternal {
 
@@ -46,7 +49,7 @@ public class DefinitionServiceImpl extends BaseService implements DefinitionServ
 	public String definition_getDefinitionConfigAsXML(String accessToken) {
 		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
 	}
-	public String definition_getDefinitionListAsXML(String accessToken) {
+	public String definition_getDefinitionsAsXML(String accessToken) {
 		List<Definition> defs = getDefinitionModule().getDefinitions();
 		Document doc = DocumentHelper.createDocument();
 		doc.addElement("definitions");
@@ -61,6 +64,19 @@ public class DefinitionServiceImpl extends BaseService implements DefinitionServ
 			
 		}
 		return root.asXML();
+	}
+
+	public DefinitionCollection definition_getDefinitions(String accessToken) {
+		List<Definition> defs = getDefinitionModule().getDefinitions();
+
+		List<DefinitionBrief> list = new ArrayList<DefinitionBrief>();
+		
+		for (Definition def:defs) {
+			list.add(new DefinitionBrief(def.getId(), def.getInternalId(), def.getType(), def.getName(), def.getTitle()));			
+		}
+
+		DefinitionBrief[] array = new DefinitionBrief[list.size()];
+		return new DefinitionCollection(list.toArray(array));
 	}
 
 }

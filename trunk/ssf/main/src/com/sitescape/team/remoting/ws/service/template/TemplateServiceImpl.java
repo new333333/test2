@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.remoting.ws.service.template;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.dom4j.Document;
@@ -40,6 +41,8 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.TemplateBrief;
+import com.sitescape.team.remoting.ws.model.TemplateCollection;
 
 public class TemplateServiceImpl extends BaseService implements TemplateService {
 
@@ -51,7 +54,7 @@ public class TemplateServiceImpl extends BaseService implements TemplateService 
 			throw new RemotingException(e);
 		}
 	}
-	public String template_getTemplateListAsXML(String accessToken) {
+	public String template_getTemplatesAsXML(String accessToken) {
 		List<TemplateBinder> defs = getTemplateModule().getTemplates();
 		Document doc = DocumentHelper.createDocument();
 		doc.addElement("templates");
@@ -66,6 +69,18 @@ public class TemplateServiceImpl extends BaseService implements TemplateService 
 			
 		}
 		return root.asXML();
+	}
+	
+	public TemplateCollection template_getTemplates(String accessToken) {
+		List<TemplateBinder> defs = getTemplateModule().getTemplates();
+
+		List<TemplateBrief> list = new ArrayList<TemplateBrief>();
+		for (TemplateBinder def:defs) {
+			list.add(new TemplateBrief(def.getId(), def.getInternalId(), def.getDefinitionType(), def.getName(), def.getTemplateTitle()));	
+		}
+
+		TemplateBrief[] array = new TemplateBrief[list.size()];
+		return new TemplateCollection(list.toArray(array));
 	}
 
 }

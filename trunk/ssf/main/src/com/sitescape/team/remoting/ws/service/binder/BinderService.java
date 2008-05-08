@@ -1,9 +1,13 @@
 package com.sitescape.team.remoting.ws.service.binder;
 
+import com.sitescape.team.remoting.ws.model.TeamMemberCollection;
+
 public interface BinderService {
 	public long binder_addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML);
 	
 	public String binder_getTeamMembersAsXML(String accessToken, long binderId);
+	
+	public TeamMemberCollection binder_getTeamMembers(String accessToken, long binderId);
 	
 	public void binder_setTeamMembers(String accessToken, long binderId, String[] memberNames);
 	/**

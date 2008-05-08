@@ -29,12 +29,12 @@
 package com.sitescape.team.remoting.ws.service.search;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -45,9 +45,7 @@ import org.dom4j.Element;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
@@ -55,6 +53,8 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.TeamBrief;
+import com.sitescape.team.remoting.ws.model.TeamCollection;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.tree.WebSvcTreeHelper;
@@ -209,5 +209,20 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 		}
 
 		return doc.getRootElement().asXML();
+	}
+
+	public TeamCollection search_getTeams(String accessToken) {
+		User user = RequestContextHolder.getRequestContext().getUser();
+		List<Map> myTeams = getBinderModule().getTeamMemberships(user.getId());
+		
+		List<TeamBrief> teamList = new ArrayList<TeamBrief>();
+		for(Map binder : myTeams) {
+			String binderIdStr = (String) binder.get(EntityIndexUtils.DOCID_FIELD);
+			Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
+			teamList.add(new TeamBrief(binderId, (String) binder.get(EntityIndexUtils.TITLE_FIELD)));
+		}
+	
+		TeamBrief[] array = new TeamBrief[teamList.size()];
+		return new TeamCollection(user.getId(), user.getName(), teamList.toArray(array));
 	}
 }
