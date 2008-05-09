@@ -364,7 +364,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         }
         Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         
-        if(options.containsKey(ObjectKeys.INPUT_OPTION_SUBSCRIBE)) {
+        if(options != null && options.containsKey(ObjectKeys.INPUT_OPTION_SUBSCRIBE)) {
         	addSubscriptionForUser(entry, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION,
         						   entry.getCreation().getPrincipal().getId());
         }
