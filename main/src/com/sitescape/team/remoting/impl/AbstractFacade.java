@@ -245,11 +245,12 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	
 	public long migrateFolderEntry(long binderId, String definitionId,
 			String inputDataAsXML, 
-			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
+			String creator, Calendar creationDate, String modifier, Calendar modificationDate,
+			boolean subscribe) {
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
     	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
-		getTimestamps(options, creator, creationDate, modifier, modificationDate);
+		getMigrationOptions(options, creator, creationDate, modifier, modificationDate, subscribe);
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
@@ -299,7 +300,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
 		options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, startState);
-		getTimestamps(options, null, null, modifier, modificationDate);
+		getMigrationOptions(options, null, null, modifier, modificationDate, false);
 		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, options);
 	}
 	public Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
@@ -400,7 +401,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
     	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
-		getTimestamps(options, creator, creationDate, modifier, modificationDate);
+		getMigrationOptions(options, creator, creationDate, modifier, modificationDate, false);
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -670,7 +671,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		try {
 			Map options = new HashMap();
 			//let binder be indexed, so it can be found
-			getTimestamps(options, creator, creationDate, modifier, modificationDate);
+			getMigrationOptions(options, creator, creationDate, modifier, modificationDate, false);
 			Document doc = getDocument(inputDataAsXML);
 			Definition def = getDefinitionModule().getDefinition(definitionId);
 			Binder binder = getBinderModule().getBinder(parentId);
@@ -736,13 +737,14 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 	public void indexFolder(long folderId) {
 		getBinderModule().indexBinder(folderId, true);
 	}
-	protected void getTimestamps(Map options, String creator, Calendar creationDate,
-			  String modifier, Calendar modificationDate)
+	protected void getMigrationOptions(Map options, String creator, Calendar creationDate,
+			  String modifier, Calendar modificationDate, boolean subscribe)
 	{
 		if (creator != null) options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, creator);
 		if (creationDate != null) options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, creationDate);
 		if (modifier != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, modifier);
 		if (modificationDate != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modificationDate);
+		if (subscribe) options.put(ObjectKeys.INPUT_OPTION_SUBSCRIBE, Boolean.TRUE);
 	}
 
 }

@@ -162,8 +162,8 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	}
 	
 	public long migrateFolderEntry(long binderId, String definitionId,  String inputDataAsXML,  
-							   String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		return this.facade.migrateFolderEntry(binderId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+							   String creator, Calendar creationDate, String modifier, Calendar modificationDate, boolean subscribe) {
+		return this.facade.migrateFolderEntry(binderId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate, subscribe);
 	}
 		
 	public long migrateReply(long binderId, long parentId, String definitionId,

@@ -191,7 +191,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 			case addFolder:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_FOLDERS);
 				break;
-			case changeEntryTimestamps:
+			case performMigrationTasks:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.SITE_ADMINISTRATION);
 				break;
 			default:
@@ -231,7 +231,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 			case report:
 				getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.GENERATE_REPORTS);
 				break;
-			case changeEntryTimestamps:
+			case performMigrationTasks:
 				getAccessControlManager().checkOperation(entry.getParentBinder(), WorkAreaOperation.SITE_ADMINISTRATION);
 				break;
 			default:
@@ -326,7 +326,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
 		checkAccess(parentFolder, FolderOperation.addFolder);
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
 				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
-			checkAccess(parentFolder, FolderOperation.changeEntryTimestamps);
+			checkAccess(parentFolder, FolderOperation.performMigrationTasks);
 		Definition def = null;
 		if (Validator.isNotNull(definitionId)) { 
 			def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
@@ -349,8 +349,9 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         Folder folder = loadFolder(folderId);
         checkAccess(folder, FolderOperation.addEntry);
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
-				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
-			checkAccess(folder, FolderOperation.changeEntryTimestamps);
+				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE) ||
+				options.containsKey(ObjectKeys.INPUT_OPTION_SUBSCRIBE)))
+			checkAccess(folder, FolderOperation.performMigrationTasks);
         
         FolderCoreProcessor processor = loadProcessor(folder);
        
@@ -363,6 +364,10 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         }
         Entry entry = processor.addEntry(folder, def, FolderEntry.class, inputData, fileItems, options);
         
+        if(options.containsKey(ObjectKeys.INPUT_OPTION_SUBSCRIBE)) {
+        	addSubscriptionForUser(entry, Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION,
+        						   entry.getCreation().getPrincipal().getId());
+        }
         return entry.getId();
     }
     //no transaction    	
@@ -377,7 +382,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         Folder folder = loadFolder(folderId);
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
 				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
-			checkAccess(folder, FolderOperation.changeEntryTimestamps);
+			checkAccess(folder, FolderOperation.performMigrationTasks);
         Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
         FolderCoreProcessor processor = loadProcessor(folder);
         //load parent entry
@@ -425,7 +430,7 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
         Folder folder = loadFolder(folderId);
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
 				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
-			checkAccess(folder, FolderOperation.changeEntryTimestamps);
+			checkAccess(folder, FolderOperation.performMigrationTasks);
         FolderCoreProcessor processor=loadProcessor(folder);
         FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
         checkAccess(entry, FolderOperation.modifyEntry);
@@ -734,15 +739,19 @@ implements FolderModule, AbstractFolderModuleMBean, InitializingBean {
     	//getEntry check read access
 		FolderEntry entry = getEntry(folderId, entryId);
 		User user = RequestContextHolder.getRequestContext().getUser();
-		Subscription s = getProfileDao().loadSubscription(user.getId(), entry.getEntityIdentifier());
+		addSubscriptionForUser(entry, style, user.getId());
+    }
+
+    public void addSubscriptionForUser(Entry entry, int style, Long userId) {
+		Subscription s = getProfileDao().loadSubscription(userId, entry.getEntityIdentifier());
 		//digest doesn't make sense here - only individual messages are sent 
 		if (s == null) {
-			s = new Subscription(user.getId(), entry.getEntityIdentifier());
+			s = new Subscription(userId, entry.getEntityIdentifier());
 			s.setStyle(style);
 			getCoreDao().save(s);
 		} else 	s.setStyle(style);
-  	
     }
+
     public Subscription getSubscription(FolderEntry entry) {
     	//have entry so assume read access
 		User user = RequestContextHolder.getRequestContext().getUser();
