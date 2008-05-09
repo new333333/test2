@@ -30,10 +30,7 @@ package com.sitescape.team.dao.impl;
 
 import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.reset;
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -41,19 +38,15 @@ import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.Test;
 
 import com.sitescape.team.context.request.RequestContext;
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Event;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FileItem;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
@@ -318,47 +311,7 @@ public class ProfileDaoImplTests extends AbstractTestBase {
 		}
 		
 	}
-
-	private User createBaseUser(Workspace top, String name) {
-		RequestContext mRequestContext = fakeRequestContext();
-		reset(mRequestContext);
-		expect(mRequestContext.getZoneId()).andReturn(top.getId());
-		expectLastCall().times(7);
-		replay(mRequestContext);
-		
-		User user = new User();
-		user.setZoneId(top.getZoneId());
-		user.setName(name);
-		user.setForeignName(name);
-		user.setParentBinder(profileDao.getProfileBinder(top.getZoneId()));
-		//add some attributes
-		user.addCustomAttribute("aString", "I am a string");
-		String vals[] = new String[] {"red", "white", "blue"};
-		user.addCustomAttribute("aList", vals);
-		FileAttachment att = new FileAttachment("aFile");
-		FileItem fi = new FileItem();
-		fi.setName("dummy.txt");
-		att.setFileItem(fi);
-		coreDao.save(att);
-		assertNotNull(att.getId());
-		user.addCustomAttribute("aFile", att);
-		coreDao.save(user);
-		assertNotNull(user.getId());
-		//add user to a group
-		Group group = (Group)profileDao.loadGroups(new FilterControls("name", adminGroup), top.getZoneId()).get(0);
-		group.addMember(user);
-		try {
-			user = profileDao.findUserByName(name, top.getName());			
-		} catch (NoUserByTheNameException e) {
-			fail("New user test not found");
-		}
-		assertNotNull(user.getCustomAttribute("aString"));
-		assertNotNull(user.getCustomAttribute("aFile"));
-		Set sVal = (Set)user.getCustomAttribute("aList").getValue();
-		assertArrayEquals(sVal.toArray(vals), vals);
-		return user;
-		
-	}
+	
 	private List<Principal> fillProfile(Workspace top) {
 		
 		List<Principal> entries = new ArrayList<Principal>();

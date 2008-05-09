@@ -48,6 +48,7 @@
 			memoryMaximumSize="${javac.memoryMaximumSize}"
 			nowarn="${javac.nowarn}"
 			srcdir="${source.dir}"
+			excludes="**/test/**"
 		/>
 	</target>
 
