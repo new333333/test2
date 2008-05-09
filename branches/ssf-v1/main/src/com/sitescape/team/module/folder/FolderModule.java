@@ -76,7 +76,7 @@ public interface FolderModule {
 	   reserveEntry,
 	   overrideReserveEntry,
 	   synchronize,
-	   changeEntryTimestamps
+	   performMigrationTasks
    }
 
 	   /**

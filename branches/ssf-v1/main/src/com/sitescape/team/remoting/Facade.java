@@ -165,7 +165,8 @@ public interface Facade {
 			String creator, Calendar creationDate, String modifier, Calendar modificationDate);
 	
 	public long migrateFolderEntry(long binderId, String definitionId, String inputDataAsXML, 
-							   String creator, Calendar creationDate, String modifier, Calendar modificationDate);
+							   String creator, Calendar creationDate, String modifier, Calendar modificationDate,
+							   boolean subscribe);
 		
 	public long migrateReply(long binderId, long parentId, String definitionId,
 					     String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate);
