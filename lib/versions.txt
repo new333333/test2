@@ -13,7 +13,7 @@ Commons Discovery 0.2
 Commons DBCP 1.2.2
 Commons Fileupload 1.2.1
 Commons HttpClient 3.0.1
-Commons Lang 2.0
+Commons Lang 2.4
 Commons Logging 1.1.1
 Commons Transaction 1.1.1pre1
 Concurrent Library

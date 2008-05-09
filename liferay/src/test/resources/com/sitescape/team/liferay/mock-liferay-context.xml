@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+	<description>
+		Definitions for any mock beans necessary for testing
+	</description>
+	
+	<bean id="com.liferay.portal.service.UserServiceFactory" class="com.liferay.portal.service.UserServiceFactory">
+		<property name="service" ref="userService" />
+	</bean>
+
+	<bean id="userService" class="com.sitescape.team.liferay.MockUserService" />
+	
+	<bean id="com.liferay.portal.service.RoleServiceFactory" class="com.liferay.portal.service.RoleServiceFactory">
+		<property name="service" ref="roleService" />
+	</bean>
+	
+	<bean id="roleService" class="com.sitescape.team.liferay.MockRoleService" />
+	
+	<bean id="beanLocator" class="com.sitescape.team.liferay.SpringBeanLocatorAdapter" />
+	
+</beans>

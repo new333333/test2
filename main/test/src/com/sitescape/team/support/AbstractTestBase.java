@@ -33,9 +33,12 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.reset;
 import static org.junit.Assert.assertEquals;
 
+import javax.annotation.Resource;
 import javax.naming.NamingException;
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -48,6 +51,9 @@ import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.impl.CoreDaoImpl;
 import com.sitescape.team.dao.impl.ProfileDaoImpl;
+import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FileItem;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.ProfileBinder;
@@ -55,23 +61,27 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 
 
-
+// XXX Not desirable to load mock-liferay-context.xml at this level but ugly singletons require it (for now)
 @ContextConfiguration(	locations= {	"/com/sitescape/team/applicationContext.xml", 
-														"/com/sitescape/team/additionalContext.xml" })
+														"/com/sitescape/team/additionalContext.xml","/com/sitescape/team/liferay/mock-liferay-context.xml" })
 public abstract class AbstractTestBase extends AbstractTransactionalJUnit4SpringContextTests {
 	protected static final String adminGroup = "administrators";
-	protected static final String adminUser = "administrator";
+	protected static final String adminUser = "admin";
 	protected static final SimpleNamingContextBuilder contextBuilder;
 	private static final String DRIVER = "com.mysql.jdbc.Driver";
-	private static final String URL = "jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;characterEncoding=UTF-8";
+	private static final String SSF_URL = "jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;characterEncoding=UTF-8";
+	private static final String LIFERAY_URL = "jdbc:mysql://localhost:3306/lportal?useUnicode=true&amp;characterEncoding=UTF-8";
 	private static final String USERNAME = "sitescape";
 	private static final String PASSWORD = "sitescape";
-	private static final DriverManagerDataSource DATA_SOURCE = new DriverManagerDataSource(
-			DRIVER, URL, USERNAME, PASSWORD);
+	private static final DriverManagerDataSource SSF_DATA_SOURCE = new DriverManagerDataSource(
+			DRIVER, SSF_URL, USERNAME, PASSWORD);
+	private static final DriverManagerDataSource LIFERAY_DATA_SOURCE = new DriverManagerDataSource(
+			DRIVER, LIFERAY_URL, USERNAME, PASSWORD);
 
 	static {
 		contextBuilder = new SimpleNamingContextBuilder();
-		contextBuilder.bind("java:comp/env/jdbc/SiteScapePool", DATA_SOURCE);
+		contextBuilder.bind("java:comp/env/jdbc/SiteScapePool", SSF_DATA_SOURCE);
+		contextBuilder.bind("java:comp/env/jdbc/LiferayPool", LIFERAY_DATA_SOURCE);
 		try {
 			contextBuilder.activate();
 		} catch (IllegalStateException e) {
@@ -85,6 +95,15 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 	protected CoreDaoImpl coreDao;
 	@Autowired(required = true)
 	protected ProfileDaoImpl profileDao;
+
+	/* (non-Javadoc)
+	 * @see org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests#setDataSource(javax.sql.DataSource)
+	 */
+	@Override
+	@Resource(name = "dataSource")
+	public void setDataSource(DataSource dataSource) {
+		super.setDataSource(dataSource);
+	}
 
 	protected Workspace createZone(String name) {
 		Workspace top;
@@ -166,6 +185,37 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 			assertEquals(top.getName(), name);
 		}
 		return top;
+		
+	}
+
+	protected User createBaseUser(Workspace top, String name) {
+		RequestContext mRequestContext = fakeRequestContext();
+		reset(mRequestContext);
+		expect(mRequestContext.getZoneId()).andReturn(top.getId());
+		expectLastCall().times(7);
+		replay(mRequestContext);
+		
+		User user = new User();
+		user.setZoneId(top.getZoneId());
+		user.setName(name);
+		user.setForeignName(name);
+		user.setParentBinder(profileDao.getProfileBinder(top.getZoneId()));
+		//add some attributes
+		user.addCustomAttribute("aString", "I am a string");
+		String vals[] = new String[] {"red", "white", "blue"};
+		user.addCustomAttribute("aList", vals);
+		FileAttachment att = new FileAttachment("aFile");
+		FileItem fi = new FileItem();
+		fi.setName("dummy.txt");
+		att.setFileItem(fi);
+		coreDao.save(att);
+		user.addCustomAttribute("aFile", att);
+		coreDao.save(user);
+		//add user to a group
+		Group group = (Group)profileDao.loadGroups(new FilterControls("name", adminGroup), top.getZoneId()).get(0);
+		group.addMember(user);
+		user = profileDao.findUserByName(name, top.getName());
+		return user;
 		
 	}
 	
