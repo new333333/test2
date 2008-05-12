@@ -64,6 +64,7 @@ import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -250,7 +251,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
     	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
-		getMigrationOptions(options, creator, creationDate, modifier, modificationDate, subscribe);
+		getMigrationOptions(options, creator, creationDate, modifier, modificationDate);
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
 		Document doc = getDocument(inputDataAsXML);
@@ -260,8 +261,13 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		}
 		SimpleProfiler.setProfiler(profiler);
 		try {
-			return  getFolderModule().addEntry(new Long(binderId), definitionId, 
+			Long entryId = getFolderModule().addEntry(new Long(binderId), definitionId, 
 				new DomInputData(doc, getIcalModule()), null , options).longValue();
+			if(subscribe) {
+				getFolderModule().addSubscription(new Long(binderId), entryId,
+						Subscription.MESSAGE_STYLE_NO_ATTACHMENTS_EMAIL_NOTIFICATION, creator);
+			}
+			return entryId;
 		}
 		catch(WriteFilesException e) {
 			throw new RemotingException(e);
@@ -300,7 +306,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
 		options.put(ObjectKeys.INPUT_OPTION_FORCE_WORKFLOW_STATE, startState);
-		getMigrationOptions(options, null, null, modifier, modificationDate, false);
+		getMigrationOptions(options, null, null, modifier, modificationDate);
 		getFolderModule().addEntryWorkflow(binderId, entryId, definitionId, options);
 	}
 	public Map getFileAttachments(String fileUploadDataItemName, String[] fileNames)
@@ -401,7 +407,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		Map options = new HashMap();
 		options.put(ObjectKeys.INPUT_OPTION_NO_INDEX, Boolean.TRUE);
     	options.put(ObjectKeys.INPUT_OPTION_NO_WORKFLOW, Boolean.TRUE);
-		getMigrationOptions(options, creator, creationDate, modifier, modificationDate, false);
+		getMigrationOptions(options, creator, creationDate, modifier, modificationDate);
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 
 		Document doc = getDocument(inputDataAsXML);
@@ -671,7 +677,7 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		try {
 			Map options = new HashMap();
 			//let binder be indexed, so it can be found
-			getMigrationOptions(options, creator, creationDate, modifier, modificationDate, false);
+			getMigrationOptions(options, creator, creationDate, modifier, modificationDate);
 			Document doc = getDocument(inputDataAsXML);
 			Definition def = getDefinitionModule().getDefinition(definitionId);
 			Binder binder = getBinderModule().getBinder(parentId);
@@ -738,13 +744,12 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		getBinderModule().indexBinder(folderId, true);
 	}
 	protected void getMigrationOptions(Map options, String creator, Calendar creationDate,
-			  String modifier, Calendar modificationDate, boolean subscribe)
+			  String modifier, Calendar modificationDate)
 	{
 		if (creator != null) options.put(ObjectKeys.INPUT_OPTION_CREATION_NAME, creator);
 		if (creationDate != null) options.put(ObjectKeys.INPUT_OPTION_CREATION_DATE, creationDate);
 		if (modifier != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_NAME, modifier);
 		if (modificationDate != null) options.put(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE, modificationDate);
-		if (subscribe) options.put(ObjectKeys.INPUT_OPTION_SUBSCRIBE, Boolean.TRUE);
 	}
 
 }
