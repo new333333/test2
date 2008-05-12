@@ -105,7 +105,7 @@ public class WSClient
 				c2.setTime(df.parse((String)args[7]));
 				
 				fetchAndPrintIdentifier("migrateFolderEntry", new Object[] {Long.parseLong(args[1]), args[2], s, args[4], c1,
-						args[6], c2});
+						args[6], c2, Boolean.TRUE});
 			} else if(args[0].equals("migrateReply")) {
 				String s = FacadeClientHelper.readText(args[4]);
 				System.out.println("XML: " + s);

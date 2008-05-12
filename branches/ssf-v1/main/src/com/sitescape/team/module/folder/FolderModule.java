@@ -103,7 +103,8 @@ public interface FolderModule {
        		Map fileItems) throws AccessControlException, WriteFilesException;
      public Long addFolder(Long folderId, String definitionId, InputDataAccessor inputData,
        		Map fileItems, Map options) throws AccessControlException, WriteFilesException;
-    public void addSubscription(Long folderId, Long entryId, int style); 
+     public void addSubscription(Long folderId, Long entryId, int style); 
+     public void addSubscription(Long folderId, Long entryId, int style, String username); 
 	public void addVote(Long folderId, Long entryId, InputDataAccessor inputData) throws AccessControlException;
 
     /**

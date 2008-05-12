@@ -144,7 +144,6 @@ public interface ObjectKeys {
     public static final String INPUT_OPTION_CREATION_DATE="com.sitescape.team.options.entity.creation.timestamp";
     public static final String INPUT_OPTION_MODIFICATION_NAME="com.sitescape.team.options.entity.modification.name";
     public static final String INPUT_OPTION_MODIFICATION_DATE="com.sitescape.team.options.entity.modification.timestamp";
-    public static final String INPUT_OPTION_SUBSCRIBE="com.sitescape.team.options.subscribe";
     public static final String INPUT_OPTION_FORCE_WORKFLOW_STATE="com.sitescape.team.options.entity.workflow.state";
     public static final String INPUT_OPTION_NO_MODIFICATION_DATE="com.sitescape.team.options.no_modificationdate_processing";
  
