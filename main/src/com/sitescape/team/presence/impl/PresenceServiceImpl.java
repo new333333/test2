@@ -87,7 +87,7 @@ public class PresenceServiceImpl implements PresenceService, PresenceServiceImpl
 	}
 	protected String fixName(String name) {
 		if (name == null) return null;
-		return name.replaceAll(" ", "+");
+		return name.replaceAll(" ", "+").toLowerCase();
 	}
 
 	public void destroy() throws Exception {
