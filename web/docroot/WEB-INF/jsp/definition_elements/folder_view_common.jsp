@@ -566,6 +566,7 @@ var ss_saveSubscriptionUrl = "<portlet:actionURL windowState="maximized"><portle
          <c:if test="${!empty eleName2 && !empty entry1[eleName2]}">
 	       <c:if test="${eleType2 == 'selectbox' || 
 	                     eleType2 == 'radio' || 
+	                     eleType2 == 'text' || 
 	                     eleType2 == 'checkbox'}">
 	         <%
 	         	String eleValues = com.sitescape.team.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
