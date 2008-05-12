@@ -730,14 +730,14 @@ public class WorkspaceTreeHelper {
      * @author Janet McCann
      *
      */
-    protected static class Counter {
+     public static class Counter {
     	private long count=0;
     	protected Counter() {	
     	}
     	protected void increment() {
     		++count;
     	}
-    	protected Long getCount() {
+    	public Long getCount() {
     		return count;
     	}    	
     }
