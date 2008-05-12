@@ -155,6 +155,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public long folder_addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName) {
 		return getFolderService().folder_addReply(accessToken, binderId, parentId, definitionId, inputDataAsXML, attachedFileName);
 	}
+	public void folder_modifyWorkflowState(String accessToken, long binderId, long entryId, long stateId, String toState) {
+		getFolderService().folder_modifyWorkflowState(accessToken, binderId, entryId, stateId, toState);
+	}
 	public String folder_getFolderEntriesAsXML(String accessToken, long binderId) {
 		return getFolderService().folder_getFolderEntriesAsXML(accessToken, binderId);
 	}
