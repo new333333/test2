@@ -623,6 +623,7 @@ public class DefaultFolderEmailFormatter extends CommonDependencyInjection imple
 		
 		for (int i=0; i<msgs.length; ++i) {
 			try {
+				if (msgs[i].isSet(Flags.Flag.DELETED)) continue;  //groupwise doesn't purge rightaway
 				from = (InternetAddress)msgs[i].getFrom()[0];
 				title = msgs[i].getSubject();
 				if (title == null) title="";
