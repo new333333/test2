@@ -33,11 +33,10 @@ ${property_caption}&nbsp;&nbsp;
 #end
 
 #if ($ssVisitor.Entity.Creation.Principal)
-	  <a href="$ssVisitor.getPermaLink(${ssVisitor.Entity.Creation.Principal.ParentBinder.Id}, ${ssVisitor.Entity.Creation.Principal.Id}, 'workspace')">
-	  ${ssVisitor.Entity.Creation.Principal.Title}</a>&nbsp;
+#ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
 #end		
 #if ($ssVisitor.Entity.PostedBy)
-    ($ssVisitor.getNLT("entry.postedBy")&nbsp;${ssVisitor.Entity.PostedBy})&nbsp;
+    ($ssVisitor.getNLT("entry.postedBy")&nbsp;$esc.html(${ssVisitor.Entity.PostedBy}))&nbsp;
 #end 
     $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
 
@@ -46,10 +45,8 @@ ${property_caption}&nbsp;&nbsp;
   $ssVisitor.Entity.Modification.Date.Time gt $ssVisitor.Entity.Creation.Date.Time)
   <br/>
 	 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$ssVisitor.getNLT("entry.modifiedBy")&nbsp;
-	  <a href="$ssVisitor.getPermaLink(${ssVisitor.Entity.Modification.Principal.ParentBinder.Id}, ${ssVisitor.Entity.Modification.Principal.Id}, 'workspace')">
-	  ${ssVisitor.Entity.Modification.Principal.Title}</a>&nbsp;
+#ss_getUserLink($ssVisitor.Entity.Modification.Principal)&nbsp;
    $ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Modification.Date})
-
 #end
 </div>
 

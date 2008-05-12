@@ -28,14 +28,11 @@
  *#
 #parse ("icecore.vm")
 <div style="#ss_entryContent()">
-<div style="#ss_entrySignature()">
-  ${property_caption}&nbsp;
+<span style="#ss_labelLeft()">${property_caption}</span>
 #if ($ssVisitor.Entity.Creation.Principal)
-	  <a href="$ssVisitor.getPermaLink(${ssVisitor.Entity.Creation.Principal.ParentBinder.Id}, ${ssVisitor.Entity.Creation.Principal.Id}, 'workspace')">
-	  ${ssVisitor.Entity.Creation.Principal.Title}</a>
+#ss_getUserLink($ssVisitor.Entity.Creation.Principal)&nbsp;
 #end		
 #if ($ssVisitor.Entity.PostedBy)
-    ($ssVisitor.getNLT("entry.postedBy")&nbsp;${ssVisitor.Entity.PostedBy})
+    ($ssVisitor.getNLT("entry.postedBy")&nbsp;$esc.html(${ssVisitor.Entity.PostedBy}))
 #end
-</div>
 </div>

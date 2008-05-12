@@ -38,7 +38,7 @@
  	$ssVisitor.getNLT("notify.changedMany")
  #end
  <a href="${ssVisitor.getPermaLink($ssVisitor.Entity.id, $ssVisitor.Entity.id, 'folder')}">
- ${ssVisitor.Entity.Title}</a><br/><br/>
+ $esc.html(${ssVisitor.Entity.Title})</a><br/><br/>
  <a name="toc"/>
  ${ssVisitor.getNLT("notify.TOC")}:<br/><br/></span>
  #foreach ($folder in ${ssDocument.selectNodes("//folder")})
@@ -48,7 +48,7 @@
  		#if (${entry.attributeValue("docLevel")} != '1')
  			&nbsp;&nbsp;&nbsp;&nbsp;
  		#end
- 		&nbsp;&nbsp;&nbsp;&nbsp;<a href="#$entry.attributeValue("name")">${entry.attributeValue("docNumber")}&nbsp;${entry.attributeValue("title")}
+ 		&nbsp;&nbsp;&nbsp;&nbsp;<a href="#$entry.attributeValue("name")">${entry.attributeValue("docNumber")}&nbsp;$esc.html(${entry.attributeValue("title")})
  		#if (${entry.attributeValue("hasChanges")} == 'true')
  			($ssVisitor.getNLT(${entry.attributeValue("notifyType")}))
  		#end

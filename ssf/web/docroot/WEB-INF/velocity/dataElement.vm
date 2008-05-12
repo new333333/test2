@@ -30,9 +30,9 @@
 <div style="#ss_entryContent()">
  <span style="#ss_labelLeft()">$property_caption</span>&nbsp;
 #if ($ssObject)
-	 $ssObject
+	 $esc.html($ssObject)
 #elseif (${ssVisitor.Entity.getCustomAttribute($property_name)})
-${ssVisitor.Entity.CustomAttributes.get($property_name).Value}
+$esc.html(${ssVisitor.Entity.CustomAttributes.get($property_name).Value})
 #end
 </div>
 <br/>

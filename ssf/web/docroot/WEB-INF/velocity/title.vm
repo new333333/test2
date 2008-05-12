@@ -38,7 +38,7 @@
 
 <a style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.Id, $ssVisitor.Entity.Id, "folderEntry")">
 #if ($ssVisitor.Entity.Title)
-	$ssVisitor.Entity.Title
+	$esc.html($ssVisitor.Entity.Title)
 #else
 <span style="#ss_light()">--$ssVisitor.getNLT("entry.noTitle")--</span>
 #end

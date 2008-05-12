@@ -39,13 +39,13 @@
 
 <a name="$ssVisitor.Entity.Id" style="text-decoration:underline;" href="$ssVisitor.getPermaLink($ssVisitor.Entity.ParentBinder.Id, $ssVisitor.Entity.Id, "folderEntry")">
 #if ($ssVisitor.Entity.Title)
-	 <span style="#ss_entryTitle()">$ssVisitor.Entity.Title</span>
+	 <span style="#ss_entryTitle()">$esc.html($ssVisitor.Entity.Title)</span>
 #else
 <span style="#ss_light()">--$ssVisitor.getNLT("entry.noTitle")--</span>
 #end
 </a>
 #if (${ssElement.attributeValue("hasChanges")} == 'true')
-	(${ssVisitor.getNLT(${ssElement.attributeValue("notifyType")})} , ${ssElement.attributeValue("notifyBy")})
+	(${ssVisitor.getNLT(${ssElement.attributeValue("notifyType")})} , $esc.html(${ssElement.attributeValue("notifyBy")}))
 #end
 
 #if ($ssVisitor.Entity.ParentBinder.Posting.EmailAddress)
@@ -70,7 +70,7 @@ line-height: 200%; text-decoration:
 </tr>
 </table>
 <br/>
-<span style="#ss_labelLeft()">${ssVisitor.getNLT("notify.fromLabel")}</span>&nbsp;${ssElement.attributeValue('notifyFrom')}<br/>
+<span style="#ss_labelLeft()">${ssVisitor.getNLT("notify.fromLabel")}</span>&nbsp;$esc.html(${ssElement.attributeValue('notifyFrom')})<br/>
 <span style="#ss_labelLeft()">${ssVisitor.getNLT("notify.date")}</span>&nbsp;${ssElement.attributeValue('notifyDate')}<br/>
 
 </div>
