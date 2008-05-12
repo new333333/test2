@@ -67,16 +67,6 @@
       </data>
       <property name="name">gallery</property>
     </component>
-    <component name="binder_5">
-      <property name="displayStyle">border</property>
-      <property name="title">__definition_default_folder_task</property>
-      <data>
-        <property name="resultsCount"><![CDATA[5]]></property>
-        <property name="chooseViewType"><![CDATA[task]]></property>
-        <property name="summaryWordCount"><![CDATA[20]]></property>
-      </data>
-      <property name="name">task</property>
-    </component>
     <component name="binder_6">
       <property name="displayStyle">border</property>
       <property name="title">__definition_default_folder_blog</property>
