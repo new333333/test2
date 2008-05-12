@@ -249,7 +249,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 	protected String fixName(String name) {
 		if (name == null) return null;
-		return name.replaceAll(" ", "+");
+		return name.replaceAll(" ", "+").toLowerCase();
 	}
 	public void destroy() throws Exception {
 		// Close the socket connection that you established in
@@ -266,7 +266,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		getSessionId();
 
 		Vector result = (Vector)findUserByScreenName(screenname);
-		
+		if (result == null) return null;
 		// the result is buried 4 deep (vectors within vectors)
 		try {
 		userId = (String) ((Vector) ((Vector) ((Vector)result).get(0))
@@ -307,7 +307,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		Object result = findUserByScreenName(screenname);
 		// System.out.println("Object is " + result);
 		// the result is buried 4 deep (vectors within vectors)
-	
+		if (result == null) return false;
 		String screenName = (String) ((Vector) ((Vector) ((Vector) (result))
 				.get(0)).get(0)).get(0);
 	
