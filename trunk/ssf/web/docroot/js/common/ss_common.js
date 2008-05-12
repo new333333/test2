@@ -882,6 +882,7 @@ function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId,
 		url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
 		self.location.href = url;
 	} else {
+		alert('xxx')
 		ss_setupStatusMessageDiv();
 		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"get_dashboard_page", operation2:op, pageNumber:page, direction:direction}, "__ajax_relevance");
 		ss_fetch_url(url, ss_showDashboardPageDiv, divId+namespace)

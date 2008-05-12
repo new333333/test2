@@ -31,5 +31,10 @@
 <% // Discussion Workspace binder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-
-The discussions folder list goes here!
+<c:forEach var="binder" items="${ss_binders}">
+  <span>(${ss_binderUnseenCounts[binder._docId]})</span> <a 
+  <c:if test="${binder._entityType == 'workspace'}">href="<ssf:url action="view_ws_listing" binderId="${binder._docId}"/>"</c:if>
+  <c:if test="${binder._entityType == 'folder'}">href="<ssf:url action="view_folder_listing" binderId="${binder._docId}"/>"</c:if>
+  ><span>${binder.title}</span></a>
+  <br/>
+</c:forEach>
