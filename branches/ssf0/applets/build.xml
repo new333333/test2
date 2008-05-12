@@ -9,21 +9,17 @@
 	</target>
 
 	<target name="compile">
-<!--
 		<ant dir="workflow-viewer" target="compile" />
 		<ant dir="droptarget" target="compile" />  
 		<ant dir="fileedit" target="compile" />   
 		<ant dir="fileopen" target="compile" />
--->
 	</target>
 
 	<target name="jar">
-<!--
 		<ant dir="workflow-viewer" target="jar" />
 		<ant dir="droptarget" target="jar" />  
 		<ant dir="fileedit" target="jar" />     
 		<ant dir="fileopen" target="jar" /> 
--->
 	</target>
 
 	<target name="java2html">
@@ -41,12 +37,10 @@
 	</target>
 
 	<target name="deploy">
-<!--
 		<ant dir="workflow-viewer" target="deploy" />
 		<ant dir="droptarget" target="deploy" />  
 		<ant dir="fileedit" target="deploy" />   
 		<ant dir="fileopen" target="deploy" /> 
--->
 	</target>
 
 </project>
