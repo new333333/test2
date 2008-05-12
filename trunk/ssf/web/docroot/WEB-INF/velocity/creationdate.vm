@@ -28,6 +28,5 @@
  *#
 #parse ("icecore.vm")
 <div style="#ss_entryContent()">
-<div style="#ss_entrySignature()">
- ${property_caption}&nbsp;$ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
-</div></div>
+<span style="#ss_labelLeft()">${property_caption}</span>$ssVisitor.NotifyDef.DateTimeFormat.format(${ssVisitor.Entity.Creation.Date})
+</div>

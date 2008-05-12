@@ -57,7 +57,7 @@
 		<td style="font-size:10px;white-space:nowrap;padding-left:5px;color:#666666">
 			$ssVisitor.NotifyDef.DateFormat.format($selection.Modification.Date)</td>
 		<td style="font-size:10px;white-space:nowrap;padding-left:5px;color:#666666">${selection.FileItem.LengthKB}KB</td>
-		<td style="font-size:10px;white-space:nowrap;padding-left:5px;color:#666666">${selection.Modification.Principal.Title}</td>
+		<td style="font-size:10px;white-space:nowrap;padding-left:5px;color:#666666">$esc.html(${selection.Modification.Principal.Title})</td>
 	</tr>
 #end
 <tr><td colspan="4"><hr style="border-top:1px solid #CCCCCC;border-bottom:none;height:0px;" noshade="noshade" /></td></tr>

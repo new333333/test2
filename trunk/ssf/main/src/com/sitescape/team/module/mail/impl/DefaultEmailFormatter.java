@@ -103,11 +103,6 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
     public void setDefinitionBuilderConfig(DefinitionConfigurationBuilder definitionBuilderConfig) {
         this.definitionBuilderConfig = definitionBuilderConfig;
     }
-    private VelocityEngine velocityEngine;
-   public void setVelocityEngine(VelocityEngine velocityEngine) {
-        this.velocityEngine = velocityEngine;
-    }
-
  
    /**
 	 * Determine which users have access to the entry.
@@ -521,11 +516,11 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	}
 	protected void doTOC(Folder folder, Document document, Notify notifyDef, StringWriter writer) {
 		try {
-		    VelocityContext ctx = new VelocityContext();
+		    VelocityContext ctx = NotifyBuilderUtil.getVelocityContext();
            	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null);
 			ctx.put("ssDocument", document);
 			ctx.put("ssVisitor", visitor);
-			velocityEngine.mergeTemplate("digestTOC.vm", ctx, writer);
+			NotifyBuilderUtil.getVelocityEngine().mergeTemplate("digestTOC.vm", ctx, writer);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template", ex);
 		}
@@ -533,10 +528,10 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	}
 	protected void doFolderDigest(Folder folder, StringWriter writer, Notify notifyDef) {
 		try {
-		    VelocityContext ctx = new VelocityContext();
+		    VelocityContext ctx = NotifyBuilderUtil.getVelocityContext();
            	NotifyVisitor visitor = new NotifyVisitor(folder, notifyDef, null, writer, null);
 			ctx.put("ssVisitor", visitor);
-			velocityEngine.mergeTemplate("folder.vm", ctx, writer);
+			NotifyBuilderUtil.getVelocityEngine().mergeTemplate("folder.vm", ctx, writer);
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template", ex);
 		}

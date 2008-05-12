@@ -68,3 +68,11 @@ margin-left:0em;padding-left:0em;margin-top:0px;margin-bottom:2px;
 #macro (ss_li)
 list-style-type:none;margin-left:0px;margin-bottom:0px;padding-left:0px;
 #end
+#macro (ss_getUserLink $user)
+#if ($user.WorkspaceId)
+	  <a href="$ssVisitor.getPermaLink(${user.ParentBinder.Id}, ${user.Id}, 'workspace')">
+	  $esc.html(${user.Title})</a>
+#else
+	  $esc.html(${user.Title})
+#end
+#end
