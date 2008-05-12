@@ -98,20 +98,12 @@ public class PresenceManagerImpl implements PresenceManager, PresenceManagerImpl
 	}
 
 	public int getPresenceInfo(User user) {
-		if (!enabled) 
-			return -99;
-		if (user == null) return -1;
-		String zonName = user.getZonName();
-		if (presenceMap.containsKey(zonName)) {
-			return ((Integer)presenceMap.get(zonName)).intValue();
-		} else {
-			return -1;
-		}
+		return getPresenceInfo(user.getZonName());
 	}
-	
 	public int getPresenceInfo(String zonName) {
 		if (!enabled) 
 			return -99;
+		zonName = User.getNormalizedConferencingName(zonName);
 		if (presenceMap.containsKey(zonName)) {
 			return ((Integer)presenceMap.get(zonName)).intValue();
 		} else {
