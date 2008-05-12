@@ -30,6 +30,7 @@ package com.sitescape.team.remoting.ws.service.folder;
 
 import com.sitescape.team.remoting.ws.model.FolderEntry;
 import com.sitescape.team.remoting.ws.model.FolderEntryCollection;
+import com.sitescape.team.security.AccessControlException;
 
 
 public interface FolderService {
@@ -49,6 +50,7 @@ public interface FolderService {
 	public long folder_addReply(String accessToken, long binderId, long parentId, String definitionId, String inputDataAsXML, String attachedFileName);
 
 	public void folder_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId);
+	public void folder_modifyWorkflowState(String accessToken, long binderId, long entryId, long stateId, String toState);
 	public void folder_uploadFolderFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName);
 	public void folder_uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
