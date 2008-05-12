@@ -84,6 +84,7 @@
                      element.value.type == 'radio' || 
                      element.value.type == 'checkbox' || 
        				 element.value.type == 'date'  || 
+       				 element.value.type == 'text'  || 
        				 element.value.type == 'user_list' || 
        				 element.value.type == 'userListSelectbox'}">
 		<c:set var="checked" value=""/>

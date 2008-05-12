@@ -1356,5 +1356,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
         return null;
     }
 
-    
+    //Build a sorted list of children binders and their recent entries
+    public SortedSet buildWorkspaceBinderMap(Long id) {
+    	SortedSet binderMap = new TreeSet();
+    	return binderMap;
+    }
 }

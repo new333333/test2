@@ -135,4 +135,14 @@ public class SearchUtils {
 		return crit;
 	}
 	
+	public static Criteria newEntriesDescendants(List binderIds)
+	{
+		Criteria crit = new Criteria();
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, EntityIndexUtils.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
+			.add(in(ENTRY_ANCESTRY, binderIds));
+		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
+		return crit;
+	}
+	
 }

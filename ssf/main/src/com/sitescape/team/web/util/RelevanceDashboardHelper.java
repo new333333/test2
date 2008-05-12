@@ -191,7 +191,10 @@ public class RelevanceDashboardHelper {
 		//Prepare for a standard dashboard search operation
 		Map options = new HashMap();
 		String page = "0";
-		if (ObjectKeys.RELEVANCE_PAGE_TASKS.equals(model.get(WebKeys.TYPE2))) 
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
+		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
+				ObjectKeys.RELEVANCE_PAGE_TASKS.equals(model.get(WebKeys.TYPE2))) 
 			page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
@@ -248,7 +251,10 @@ public class RelevanceDashboardHelper {
 		//Get the documents bean for the documents th the user just authored or modified
 		Map options = new HashMap();
 		String page = "0";
-		if (ObjectKeys.RELEVANCE_PAGE_DOCS.equals(model.get(WebKeys.TYPE2))) 
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
+		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
+				ObjectKeys.RELEVANCE_PAGE_DOCS.equals(model.get(WebKeys.TYPE2))) 
 			page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
@@ -290,7 +296,10 @@ public class RelevanceDashboardHelper {
 		//Get the documents bean for the documents th the user just authored or modified
 		Map options = new HashMap();
 		String page = "0";
-		if (ObjectKeys.RELEVANCE_PAGE_NEW_TRACKED.equals(model.get(WebKeys.TYPE2))) 
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
+		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
+				ObjectKeys.RELEVANCE_PAGE_NEW_TRACKED.equals(model.get(WebKeys.TYPE2))) 
 			page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
@@ -407,7 +416,10 @@ public class RelevanceDashboardHelper {
 		//Get the new items I can see
 		Map options = new HashMap();
 		String page = "0";
-		if (ObjectKeys.RELEVANCE_PAGE_NEW_SITE.equals(model.get(WebKeys.TYPE2))) 
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
+		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
+				ObjectKeys.RELEVANCE_PAGE_NEW_SITE.equals(model.get(WebKeys.TYPE2))) 
 			page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
@@ -449,7 +461,10 @@ public class RelevanceDashboardHelper {
 		//Who has visited my page?
 		if (binder != null) {
 			String page = "0";
-			if (ObjectKeys.RELEVANCE_PAGE_VISITORS.equals(model.get(WebKeys.TYPE2))) 
+			User user = RequestContextHolder.getRequestContext().getUser();
+			String displayStyle = user.getDisplayStyle();
+			if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
+					ObjectKeys.RELEVANCE_PAGE_VISITORS.equals(model.get(WebKeys.TYPE2))) 
 				page = (String) model.get(WebKeys.PAGE_NUMBER);
 			if (page == null || page.equals("")) page = "0";
 			Integer pageNumber = Integer.valueOf(page);
@@ -471,7 +486,10 @@ public class RelevanceDashboardHelper {
 		//What entries have I visited?
 		if (binder != null) {
 			String page = "0";
-			if (ObjectKeys.RELEVANCE_PAGE_ENTRIES_VIEWED.equals(model.get(WebKeys.TYPE2))) 
+			User user = RequestContextHolder.getRequestContext().getUser();
+			String displayStyle = user.getDisplayStyle();
+			if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
+					ObjectKeys.RELEVANCE_PAGE_ENTRIES_VIEWED.equals(model.get(WebKeys.TYPE2))) 
 				page = (String) model.get(WebKeys.PAGE_NUMBER);
 			if (page == null || page.equals("")) page = "0";
 			Integer pageNumber = Integer.valueOf(page);
@@ -494,7 +512,10 @@ public class RelevanceDashboardHelper {
 		//What activities have been happening?
 		if (binder != null) {
 			String page = "0";
-			if (ObjectKeys.RELEVANCE_PAGE_ACTIVITIES.equals(model.get(WebKeys.TYPE2))) 
+			User user = RequestContextHolder.getRequestContext().getUser();
+			String displayStyle = user.getDisplayStyle();
+			if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
+					ObjectKeys.RELEVANCE_PAGE_ACTIVITIES.equals(model.get(WebKeys.TYPE2))) 
 				page = (String) model.get(WebKeys.PAGE_NUMBER);
 			if (page == null || page.equals("")) page = "0";
 			Integer pageNumber = Integer.valueOf(page);
@@ -509,8 +530,6 @@ public class RelevanceDashboardHelper {
 				if (relevanceMap != null) {
 					trackedPeople = (List) relevanceMap.get(ObjectKeys.RELEVANCE_TRACKED_PEOPLE);
 				}
-			} else {
-				SortedSet users = (SortedSet) model.get(WebKeys.RELEVANCE_TRACKED_PEOPLE);
 			}
 			Long[] userIds = new Long[trackedPeople.size()];
 			int count = 0;
@@ -562,7 +581,10 @@ public class RelevanceDashboardHelper {
 				binder.getDefinitionType() != null && 
 				Definition.USER_WORKSPACE_VIEW == binder.getDefinitionType().intValue()) {
 			String page = "0";
-			if (ObjectKeys.RELEVANCE_PAGE_SHARED.equals(model.get(WebKeys.TYPE2))) 
+			User user = RequestContextHolder.getRequestContext().getUser();
+			String displayStyle = user.getDisplayStyle();
+			if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
+					ObjectKeys.RELEVANCE_PAGE_SHARED.equals(model.get(WebKeys.TYPE2))) 
 				page = (String) model.get(WebKeys.PAGE_NUMBER);
 			if (page == null || page.equals("")) page = "0";
 			Integer pageNumber = Integer.valueOf(page);
@@ -613,7 +635,10 @@ public class RelevanceDashboardHelper {
 	
 	public static void setupWhatsHotBean(AllModulesInjected bs, Map model) {
 		String page = "0";
-		if (ObjectKeys.RELEVANCE_PAGE_HOT.equals(model.get(WebKeys.TYPE2))) 
+		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
+		if (!ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(displayStyle) || 
+				ObjectKeys.RELEVANCE_PAGE_HOT.equals(model.get(WebKeys.TYPE2))) 
 			page = (String) model.get(WebKeys.PAGE_NUMBER);
 		if (page == null || page.equals("")) page = "0";
 		Integer pageNumber = Integer.valueOf(page);
@@ -622,7 +647,6 @@ public class RelevanceDashboardHelper {
 		int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
 
 		List hotEntries = new ArrayList();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 		GregorianCalendar start = new GregorianCalendar();
 		//get users over last 2 weeks
 		start.add(java.util.Calendar.HOUR_OF_DAY, -24*14);
