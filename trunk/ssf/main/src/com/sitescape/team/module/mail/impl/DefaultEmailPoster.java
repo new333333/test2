@@ -13,13 +13,12 @@ import java.util.Map;
 import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Message;
+import javax.mail.MessageRemovedException;
 import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMultipart;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.util.FileCopyUtils;
 
 import com.sitescape.team.NotSupportedException;
@@ -71,6 +70,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		
 		for (int i=0; i<msgs.length; ++i) {
 			try {
+				if (msgs[i].isSet(Flags.Flag.DELETED)) continue;  //groupwise doesn't purge rightaway
 				String title = msgs[i].getSubject();
 				if (title == null) title = "";
 				from = (InternetAddress)msgs[i].getFrom()[0];
@@ -90,6 +90,8 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 					iCalendars.clear();
 					
 				}
+			} catch (MessageRemovedException rx) {
+				continue;
 			} catch (Exception ex) {
 				logger.error("Error posting the message from: " + from.toString() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
 				//if fails and from self, don't reply or we will get it back
