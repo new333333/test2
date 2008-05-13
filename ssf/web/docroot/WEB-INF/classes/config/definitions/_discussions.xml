@@ -28,11 +28,7 @@
     </item>
   </item>
   <item name="workspaceView" caption="__workspace_view" id="5" display="view">
-    <item name="descriptionView" caption="__description" category="commonEntryViewData" display="view" id="8">
-      <properties>
-        <property name="caption" value="__description"/>
-      </properties>
-    </item>
+    <item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceViewData" display="view" id="7"/>
     <item name="dashboardCanvas" caption="__dashboard_canvas" id="6">
       <properties>
         <property name="caption" value="__dashboard_canvas"/>
@@ -41,7 +37,6 @@
     <properties>
       <property name="type" value="discussion"/>
     </properties>
-    <item name="workspaceBinderList" caption="__workspace_binder_list" category="workspaceViewData" display="view" id="7"/>
   </item>
   <properties>
     <property name="caption" value="__template_discussions_workspace"/>

@@ -32,6 +32,13 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_discussionWorkspaceView" value="true" scope="request"/>
 
+<div width="100%" style="background-color:azure; padding:20px;">
+	<span class="ss_bold">${ssDefinitionEntry.title}</span>
+	<br/>
+	<span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
+       value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup></span>
+</div>
+<br/>
 <div class="ss_style ss_portlet">
 
 	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
