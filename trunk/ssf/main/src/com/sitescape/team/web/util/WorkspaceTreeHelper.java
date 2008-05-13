@@ -45,12 +45,15 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
@@ -69,6 +72,9 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchUtils;
+import com.sitescape.team.search.filter.SearchFilter;
+import com.sitescape.team.task.TaskHelper;
+import com.sitescape.team.task.TaskHelper.FilterType;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
@@ -310,14 +316,49 @@ public class WorkspaceTreeHelper {
 			RenderRequest req, RenderResponse response, Workspace ws, 
 			Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
 		
-		//Get the sorted list of child binders
+    	Map<String, Counter> unseenCounts = new HashMap();
+
+    	//Get the sorted list of child binders
 		Map options = new HashMap();
 		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 		options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
 		Map searchResults = bs.getBinderModule().getBinders(ws, options);
 		List<Map> binders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
-		model.put(WebKeys.BINDERS, binders);
+		model.put(WebKeys.BINDERS, binders); 
+		
+		//Now get the next level of binders below the workspaces in "binders"
+		List binderIdList = new ArrayList();
+		for (Map binder:binders) {
+			String binderIdString = (String) binder.get(EntityIndexUtils.DOCID_FIELD);
+			String binderEntityType = (String) binder.get(EntityIndexUtils.ENTITY_FIELD);
+			if (binderIdString != null && binderEntityType != null && 
+					binderEntityType.equals(EntityIdentifier.EntityType.workspace.name())) {
+				binderIdList.add(binderIdString);
+				unseenCounts.put(binderIdString, new WorkspaceTreeHelper.Counter());
+			}
+		}
+		if (!binderIdList.isEmpty()) {
+			//Now search for the next level of binders
+			options = new HashMap();
+			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+			options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+			Map searchResults2 = bs.getBinderModule().getBinders(ws, binderIdList, options);
+			List<Map> binders2 = (List)searchResults2.get(ObjectKeys.SEARCH_ENTRIES);
+			Map subBinders = new HashMap();
+			for (Map binder : binders2) {
+				String binderId = (String) binder.get(EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+				if (binderId != null) {
+					if (!subBinders.containsKey(binderId)) subBinders.put(binderId, new ArrayList());
+					List binderList = (List) subBinders.get(binderId);
+					binderList.add(binder);
+					unseenCounts.put((String) binder.get(EntityIndexUtils.DOCID_FIELD), 
+							new WorkspaceTreeHelper.Counter());
+				}
+			}
+			model.put(WebKeys.BINDERS_SUB_BINDERS, subBinders);
+		}
 
 		//Get the recent entries anywhere in this workspace
 		options = new HashMap();
@@ -329,7 +370,6 @@ public class WorkspaceTreeHelper {
 
 		//Get the count of unseen entries
 		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
-    	Map<String, Counter> unseenCounts = new HashMap();
     	for (Map entry:entries) {
     		SearchFieldResult entryAncestors = (SearchFieldResult) entry.get(EntityIndexUtils.ENTRY_ANCESTRY);
 			if (entryAncestors == null) continue;

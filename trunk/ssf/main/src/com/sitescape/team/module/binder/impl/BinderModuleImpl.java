@@ -247,6 +247,12 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		return processor.getBinders(binder, options);
 	}
 
+	public Map getBinders(Binder binder, List binderIds, Map options) {
+		//assume have access to binder cause have a reference
+		BinderProcessor processor = loadBinderProcessor(binder);
+		return processor.getBinders(binder, binderIds, options);
+	}
+
 	//no transaction by default
 	public Long addBinder(Long parentBinderId, String definitionId, InputDataAccessor inputData, 
 			Map fileItems, Map options) throws AccessControlException, WriteFilesException {

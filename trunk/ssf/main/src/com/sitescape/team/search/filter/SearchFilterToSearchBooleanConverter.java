@@ -84,7 +84,7 @@ public class SearchFilterToSearchBooleanConverter {
     		Element filterTerms = (Element) filterTermsIt.next();
     		convertFilterTerms(qTreeAndElement, filterTerms, lang, currentBinderId);
     	}
-    	
+    	//qTree.asXML()
     	return qTree;
 	}
 
