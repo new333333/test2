@@ -8,6 +8,7 @@
 	<definitionFile>config/definitions/_calendarEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_discussionEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_discussionReply.xml</definitionFile>		
+	<definitionFile>config/definitions/_discussions.xml</definitionFile>		
 	<definitionFile>config/definitions/_libraryEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_guestbookEntry.xml</definitionFile>		
 	<definitionFile>config/definitions/_milestoneEntry.xml</definitionFile>	
@@ -45,4 +46,5 @@
 	<templateFile>config/templates/_workspace_team.xml</templateFile>
 	<templateFile>config/templates/_workspace_user.xml</templateFile>
 	<templateFile>config/templates/_workspace_project_management.xml</templateFile>
+	<templateFile>config/templates/_workspace_discussions.xml</templateFile>
 </zoneConfiguration>
