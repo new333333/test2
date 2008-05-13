@@ -1200,11 +1200,35 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         return model;
    }
 
+    public Map getBinders(Binder binder, List binderIds, Map searchOptions) {
+        //search engine will only return binder you have access to
+         //validate entry count
+    	//do actual search index query 
+        Hits hits = getBinders_doSearch(binderIds, searchOptions);
+        //iterate through results
+        List childBinders = SearchUtils.getSearchEntries(hits);
+
+       	Map model = new HashMap();
+        model.put(ObjectKeys.SEARCH_ENTRIES, childBinders);
+        model.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
+        //Total number of results found
+        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
+        //Total number of results returned
+        model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
+        return model;
+   }
+
     protected int getBinders_maxEntries(int maxChildEntries) {
         return maxChildEntries;
     }
      
+    protected Hits getBinders_doSearch(List binderIds, Map searchOptions) {
+    	return getBinders_doSearch(null, binderIds, searchOptions);
+    }
     protected Hits getBinders_doSearch(Binder binder, Map searchOptions) {
+    	return getBinders_doSearch(binder, null, searchOptions);
+    }
+    protected Hits getBinders_doSearch(Binder binder, List binderIds, Map searchOptions) {
     	int maxResults = 0;
     	int searchOffset = 0;
     	if (searchOptions != null) {
@@ -1234,10 +1258,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	}
     	}
 
+       	if (binderIds != null) {
+       		searchFilter.addBinderParentIds(binderIds);
+       	}
        	
+       	if (binder != null) getBinders_getSearchDocument(binder, searchFilter);
        	
-       	
-       	getBinders_getSearchDocument(binder, searchFilter);
        	org.dom4j.Document queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), searchOptions);
       	
       	SearchUtils.getQueryFields(queryTree, searchOptions); 

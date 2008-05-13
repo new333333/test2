@@ -32,9 +32,50 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <c:forEach var="binder" items="${ss_binders}">
-  <span>(${ss_binderUnseenCounts[binder._docId].count})</span> <a 
-  <c:if test="${binder._entityType == 'workspace'}">href="<ssf:url action="view_ws_listing" binderId="${binder._docId}"/>"</c:if>
-  <c:if test="${binder._entityType == 'folder'}">href="<ssf:url action="view_folder_listing" binderId="${binder._docId}"/>"</c:if>
-  ><span>${binder.title}</span></a>
+  <c:if test="${binder._entityType == 'workspace'}">
+    <div style="padding-left:10px;">
+    <span style="padding-right:10px;">workspace</span>
+    <span>(${ss_binderUnseenCounts[binder._docId].count})</span> 
+    <a href="<ssf:url action="view_ws_listing" binderId="${binder._docId}"/>">
+      <span>${binder.title}</span>
+    </a>
+    <br/>
+    </div>
+    
+    <c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
+      <c:if test="${subBinder._entityType == 'workspace'}">
+        <div style="padding-left:25px;">
+        <span style="padding-right:10px;">workspace</span>
+        <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
+        <a href="<ssf:url action="view_ws_listing" binderId="${subBinder._docId}"/>">
+          <span>${subBinder.title}</span>
+        </a>
+        <br/>
+        </div>
+      </c:if>
+      <c:if test="${subBinder._entityType == 'folder'}">
+        <div style="padding-left:25px;">
+        <span style="padding-right:10px;">folder</span>
+        <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
+        <a href="<ssf:url action="view_folder_listing" binderId="${subBinder._docId}"/>">
+          <span>${subBinder.title}</span>
+        </a>
+        <br/>
+        </div>
+      </c:if>
+    </c:forEach>
+  </c:if>
+  
+  <c:if test="${binder._entityType == 'folder'}">
+    <div style="padding-left:10px;">
+    <span style="padding-right:10px;">folder</span>
+    <span>(${ss_binderUnseenCounts[binder._docId].count})</span> 
+    <a href="<ssf:url action="view_folder_listing" binderId="${binder._docId}"/>">
+      <span>${binder.title}</span>
+    </a>
+    <br/>
+    </div>
+  </c:if>
+  
   <br/>
 </c:forEach>
