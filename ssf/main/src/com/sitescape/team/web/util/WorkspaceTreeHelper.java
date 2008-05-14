@@ -30,6 +30,7 @@ package com.sitescape.team.web.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -44,6 +45,7 @@ import javax.portlet.PortletURL;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
@@ -341,7 +343,8 @@ public class WorkspaceTreeHelper {
 			String binderIdString = (String) binder.get(EntityIndexUtils.DOCID_FIELD);
 			String binderEntityType = (String) binder.get(EntityIndexUtils.ENTITY_FIELD);
 			if (binderIdString != null && binderEntityType != null && 
-					binderEntityType.equals(EntityIdentifier.EntityType.workspace.name())) {
+					(binderEntityType.equals(EntityIdentifier.EntityType.workspace.name()) ||
+					 binderEntityType.equals(EntityIdentifier.EntityType.profiles.name()))) {
 				binderIdList.add(binderIdString);
 				unseenCounts.put(binderIdString, new WorkspaceTreeHelper.Counter());
 			}
@@ -372,7 +375,15 @@ public class WorkspaceTreeHelper {
 		options = new HashMap();
 		List binderIds = new ArrayList();
 		binderIds.add(ws.getId().toString());
+	    
+		//get entries created within last 30 days
+		Date creationDate = new Date();
+		creationDate.setTime(creationDate.getTime() - ObjectKeys.SEEN_TIMEOUT_DAYS*24*60*60*1000);
+		String startDate = DateTools.dateToString(creationDate, DateTools.Resolution.SECOND);
+		String now = DateTools.dateToString(new Date(), DateTools.Resolution.SECOND);
 		Criteria crit = SearchUtils.newEntriesDescendants(binderIds);
+		crit.add(com.sitescape.util.search.Restrictions.between(
+				EntityIndexUtils.MODIFICATION_DATE_FIELD, startDate, now));
 		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
     	List<Map> entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
@@ -382,6 +393,9 @@ public class WorkspaceTreeHelper {
     		SearchFieldResult entryAncestors = (SearchFieldResult) entry.get(EntityIndexUtils.ENTRY_ANCESTRY);
 			if (entryAncestors == null) continue;
 			String entryIdString = (String) entry.get(EntityIndexUtils.DOCID_FIELD);
+			if (entryIdString == null || (seen.checkIfSeen(entry))) continue;
+			
+			//Count up the unseen counts for all ancestor binders
 			Iterator itAncestors = entryAncestors.getValueSet().iterator();
 			while (itAncestors.hasNext()) {
 				String binderIdString = (String)itAncestors.next();
@@ -391,9 +405,7 @@ public class WorkspaceTreeHelper {
 					cnt = new WorkspaceTreeHelper.Counter();
 					unseenCounts.put(binderIdString, cnt);
 				}
-				if (entryIdString != null && (!seen.checkAndSetSeen(entry, false))) {
-					cnt.increment();
-				}
+				cnt.increment();
 			}
     	}
     	model.put(WebKeys.BINDER_UNSEEN_COUNTS, unseenCounts);

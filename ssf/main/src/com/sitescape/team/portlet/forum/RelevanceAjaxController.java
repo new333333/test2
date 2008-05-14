@@ -257,7 +257,8 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.PAGE_NUMBER, page);
 		model.put(WebKeys.NAMESPACE, namespace);
 		model.put(WebKeys.USER_PRINCIPAL, user);
-		BinderHelper.setupWhatsNewBinderBeans(this, binder, model, page);
+		if (type.equals(WebKeys.URL_WHATS_NEW)) BinderHelper.setupWhatsNewBinderBeans(this, binder, model, page);
+		if (type.equals(WebKeys.URL_UNSEEN)) BinderHelper.setupUnseenBinderBeans(this, binder, model, page);
 		return new ModelAndView("forum/whats_new_page_ajax", model);
 	}
 	

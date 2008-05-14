@@ -166,6 +166,7 @@ public class WebKeys {
 	public static final String URL_TYPE2 = "type2";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
+	public static final String URL_UNSEEN = "unseen";
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
 	public static final String URL_WORKFLOW_TYPE = "workflowType";
 	public static final String URL_WHATS_NEW = "whatsNew";

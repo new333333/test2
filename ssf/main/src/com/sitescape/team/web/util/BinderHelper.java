@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -55,10 +56,12 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -81,6 +84,7 @@ import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -1728,6 +1732,84 @@ public class BinderHelper {
 	    	}
     	}
     	model.put(WebKeys.WHATS_NEW_BINDER_FOLDERS, places);
+	}
+	
+	public static void setupUnseenBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page) {		
+		//Get a list of unseen entries in this binder tree
+		Map options = new HashMap();
+		if (page == null || page.equals("")) page = "0";
+		Integer pageNumber = Integer.valueOf(page);
+		if (pageNumber < 0) pageNumber = 0;
+		model.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
+		int intEntriesPerPage = Integer.valueOf(SPropsUtil.getString("search.whatsNew.entriesPerPage"));
+		int pageStart = pageNumber * intEntriesPerPage;
+		
+		//Prepare for a standard search operation
+		String entriesPerPage = SPropsUtil.getString("search.unseen.maxEntries");
+		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
+		
+		Integer searchUserOffset = 0;
+		Integer searchLuceneOffset = 0;
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
+		
+		Integer maxHits = new Integer(entriesPerPage);
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+		
+		Integer summaryWords = new Integer(20);
+		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWords);
+		
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
+		if (searchUserOffset > 0) {
+			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+		}
+		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(0));
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		List<String> trackedPlaces = new ArrayList<String>();
+		trackedPlaces.add(binder.getId().toString());
+	    //get entries created within last 30 days
+		Date creationDate = new Date();
+		creationDate.setTime(creationDate.getTime() - ObjectKeys.SEEN_TIMEOUT_DAYS*24*60*60*1000);
+		String startDate = DateTools.dateToString(creationDate, DateTools.Resolution.SECOND);
+		String now = DateTools.dateToString(new Date(), DateTools.Resolution.SECOND);
+		Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, trackedPlaces);
+		crit.add(com.sitescape.util.search.Restrictions.between(
+				EntityIndexUtils.MODIFICATION_DATE_FIELD, startDate, now));
+		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+		List<Map> entries = (List<Map>) results.get(ObjectKeys.SEARCH_ENTRIES);
+		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
+		List<Map> unseenEntries = new ArrayList();
+		for (Map entry : entries) {
+			//Only show the unseen entries
+			if (!seen.checkIfSeen(entry)) unseenEntries.add(entry);
+			if (unseenEntries.size() >= pageStart + intEntriesPerPage) break;
+		}
+		if (unseenEntries.size() > pageStart && unseenEntries.size() >= pageStart + intEntriesPerPage) {
+			model.put(WebKeys.WHATS_NEW_BINDER, unseenEntries.subList(pageStart, pageStart + intEntriesPerPage));
+		} else if (unseenEntries.size() > pageStart) {
+			model.put(WebKeys.WHATS_NEW_BINDER, unseenEntries.subList(pageStart, unseenEntries.size()));
+		}
+
+		if (unseenEntries.size() > pageStart) {
+			Map places = new HashMap();
+	    	Iterator it = unseenEntries.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+				if (id != null) {
+					Long bId = new Long(id);
+					if (!places.containsKey(id)) {
+						Binder place = bs.getBinderModule().getBinder(bId);
+						places.put(id, place);
+					}
+				}
+	    	}
+	    	model.put(WebKeys.WHATS_NEW_BINDER_FOLDERS, places);
+		}
 	}
 	
 	public static void sendMailOnEntryCreate(AllModulesInjected bs, ActionRequest request, 
