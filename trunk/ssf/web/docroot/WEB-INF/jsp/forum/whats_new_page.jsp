@@ -36,10 +36,10 @@
 <c:if test="${ss_pageNumber > '0'}">
 <a href="<ssf:url 
 		action="view_ws_listing" binderId="${ssBinder.id}"><ssf:param
-		name="type" value="whatsNew"/><ssf:param
+		name="type" value="${ss_type}"/><ssf:param
 		name="page" value="${ss_pageNumber - 1}"/><ssf:param
 		name="namespace" value="${ss_namespace}"/></ssf:url>" 
-	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', 'whatsNew', '${ss_pageNumber}', 'previous', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
+	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', '${ss_type}', '${ss_pageNumber}', 'previous', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
 >
 <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
   title="<ssf:nlt tag="general.previousPage"/>"/>
@@ -51,10 +51,10 @@
 <c:if test="${!empty ss_whatsNewBinder}">
 <a href="<ssf:url 
 		action="view_ws_listing" binderId="${ssBinder.id}"><ssf:param
-		name="type" value="whatsNew"/><ssf:param
+		name="type" value="${ss_type}"/><ssf:param
 		name="page" value="${ss_pageNumber + 1}"/><ssf:param
 		name="namespace" value="${ss_namespace}"/></ssf:url>" 
-	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', 'whatsNew', '${ss_pageNumber}', 'next', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
+	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', '${ss_type}', '${ss_pageNumber}', 'next', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
 >
 <img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
   title="<ssf:nlt tag="general.nextPage"/>"/>

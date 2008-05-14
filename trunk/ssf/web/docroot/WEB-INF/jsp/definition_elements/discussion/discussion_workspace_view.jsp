@@ -40,6 +40,13 @@
 		name="namespace" value="${ss_namespace}"/></ssf:url>"
 	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', 'whatsNew', '0', '', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
 ><ssf:nlt tag="workspace.whatsNew"/></a>
+<a class="ss_linkButton" href="<ssf:url 
+		action="view_ws_listing" binderId="${ssBinder.id}"><ssf:param
+		name="type" value="unseen"/><ssf:param
+		name="page" value="0"/><ssf:param
+		name="namespace" value="${ss_namespace}"/></ssf:url>"
+	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', 'unseen', '0', '', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
+><ssf:nlt tag="workspace.listUnseen"/></a>
 <br/>
 <div id="ss_whatsNewDiv${ss_namespace}">
 <c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">

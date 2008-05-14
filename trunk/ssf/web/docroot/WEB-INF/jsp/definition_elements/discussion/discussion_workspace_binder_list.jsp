@@ -32,11 +32,23 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <c:forEach var="binder" items="${ss_binders}">
-  <c:if test="${binder._entityType == 'workspace'}">
+  <c:if test="${binder._entityType == 'workspace' || binder._entityType == 'profiles'}">
     <div style="padding-left:10px;">
-    <span style="padding-right:10px;">workspace</span>
+    <c:if test="${binder._entityType == 'workspace'}"><span style="padding-right:10px;">workspace</span></c:if>
+    <c:if test="${binder._entityType == 'profiles'}"><span style="padding-right:10px;">profiles</span></c:if>
     <span>(${ss_binderUnseenCounts[binder._docId].count})</span> 
-    <a href="<ssf:url action="view_ws_listing" binderId="${binder._docId}"/>">
+    <a 
+    <c:if test="${binder._entityType == 'workspace'}">
+      href="<ssf:url 
+        action="view_ws_listing"
+        binderId="${binder._docId}"/>"
+	</c:if>
+	<c:if test="${binder._entityType == 'profiles'}">
+      href="<ssf:url 
+        action="view_ws_listing"
+        binderId="${binder._docId}"/>"
+    </c:if>
+    >
       <span>${binder.title}</span>
     </a>
     <br/>
@@ -48,6 +60,16 @@
         <span style="padding-right:10px;">workspace</span>
         <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
         <a href="<ssf:url action="view_ws_listing" binderId="${subBinder._docId}"/>">
+          <span>${subBinder.title}</span>
+        </a>
+        <br/>
+        </div>
+      </c:if>
+      <c:if test="${subBinder._entityType == 'profiles'}">
+        <div style="padding-left:25px;">
+        <span style="padding-right:10px;">profiles</span>
+        <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
+        <a href="<ssf:url action="view_profiles_listing" binderId="${subBinder._docId}"/>">
           <span>${subBinder.title}</span>
         </a>
         <br/>
