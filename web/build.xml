@@ -185,7 +185,7 @@
 	
 	<target name="deploy-light">
 		<copy todir="${app.server.ssf.dir}" overwrite="true">
-			<fileset dir="${ssf.resources.dir}/com/sitescape/team" include="applicationContext.xml,additionalContext.xml" />
+			<fileset dir="${ssf.resources.dir}/com/sitescape/team" includes="applicationContext.xml,additionalContext.xml" />
 		</copy>
 		<copy todir="${app.server.ssf.dir}">
 			<fileset dir="${web.dir}"

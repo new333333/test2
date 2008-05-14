@@ -44,6 +44,7 @@ JSTL Implementation (from Apache) 1.0.6
 JTA 1.0.1b
 JTDS 0.9.1
 JUnit 4.4
+JSP API 2.1
 Liferay portal-client.jar 4.3.0
 Liferay portal-impl.jar 4.3.0
 Liferay portal-kernel.jar 4.3.0
@@ -59,7 +60,7 @@ Portals Bridges 1.0
 Portlet 1.0
 Quartz 1.6.0 (note: if schema changes between releases, update DB creation scripts in main/src/resources/com/sitescape/team/db)
 SAAJ 1.2 DO NOT UPGRADE (V1.2 used the ASL1.1, newer versions are from glassfish project which uses cppl and gpl2.0)
-Servlet 2.3.1/JSP 1.2.1
+Servlet 2.5
 Simple Logging Facade for Java (SLF4J) log4j12 1.0
 Slide jaas 2.2pre1
 Slide Kernel 2.2pre1

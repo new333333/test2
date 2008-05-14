@@ -1,3 +1,4 @@
+
 <%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
@@ -30,19 +31,30 @@
  
 %><%--
 
---%><c:if test="${!empty ss_portletInitialization}"><%--
-	--%><script type="text/javascript">
+--%>
+<c:if test="${!empty ss_portletInitialization}">
+	<%--
+	--%>
+	<script type="text/javascript">
 var url = '${ss_portletInitializationUrl}';
 if (url != '') self.location.href = url;
-</script><%--
---%></c:if><%--
+</script>
+	<%--
+--%>
+</c:if>
+<%--
 
---%><c:if test="${empty ss_portletInitialization}"><%--
+--%>
+<c:if test="${empty ss_portletInitialization}">
+	<%--
 	--%>
-	<c:if test="${empty ssf_support_files_loaded}"><%--
-		--%><c:set var="ssf_support_files_loaded" value="1" scope="request"/><%--
+	<c:if test="${empty ssf_support_files_loaded}">
+		<%--
 		--%>
-<script type="text/javascript">
+		<c:set var="ssf_support_files_loaded" value="1" scope="request" />
+		<%--
+		--%>
+		<script type="text/javascript">
 var ss_isAdapter="true";
 <c:if test="${empty ss_notAdapter}">
 <ssf:ifnotadapter>
@@ -116,10 +128,10 @@ var ss_baseRootPathUrl = '<html:rootPath/>';
 </script>
 		<%
 			boolean isIE = com.sitescape.util.BrowserSniffer.is_ie(request);
-			%><%--
+		%><%--
 
 		--%>
-<script type="text/javascript">
+		<script type="text/javascript">
 // Dojo configuration
 if (typeof djConfig == "undefined") {
 	djConfig = { 
@@ -130,8 +142,9 @@ if (typeof djConfig == "undefined") {
 	};
 }
 </script>
-<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
-<script type="text/javascript">
+		<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
+		<script type="text/javascript" src="/html/js/jquery/jquery.js"></script>
+		<script type="text/javascript">
 var ss_scripts_loaded = "no";
 var scripts = document.getElementsByTagName("script");
 for (var i = 0; i < scripts.length; i++) {
@@ -181,14 +194,12 @@ function ss_loadDojoFiles() {
 }
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_urlBase = self.location.protocol + "//" + self.location.host;
-	ss_rootPath = "<html:rootPath/>";
-	ss_imagesPath = "<html:imagesPath/>";
+	ss_rootPath = "<html:rootPath />";
+	ss_imagesPath = "<html:imagesPath />";
 	
 	ss_forumCssUrl = ss_urlBase + ss_rootPath + "css/forum.css";
 	ss_1pix = ss_imagesPath + "pics/1pix.gif";
-	ss_forumColorsCssUrl = "<ssf:url webPath="viewCss">
-	    <ssf:param name="theme" value="${ssUser.theme}"/>
-	    </ssf:url>";
+	ss_forumColorsCssUrl = '${pageContext.servletContext.contextPath}/s/viewCss?theme=${ssUser.theme}';
 
 	ss_AjaxBaseUrl = "<ssf:url adapter="true" portletName="ss_forum" actionUrl="true" />";
 
@@ -220,43 +231,38 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_loadJsFile(ss_rootPath, "js/common/ss_common.js");
 }
 </script>
-<script type="text/javascript">
+		<script type="text/javascript">
 if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 	ss_loadJsFile(ss_rootPath, "js/common/taconite-client.js");
 	ss_loadJsFile(ss_rootPath, "js/common/taconite-parser.js");
 	ss_loadJsFile(ss_rootPath, "js/common/ss_dashboard_drag_and_drop.js");
 }
 </script>
-<script type="text/javascript">
+		<script type="text/javascript">
 
 function ss_createStyleSheet(url, title, enabled) {
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
-		if (enabled == null || enabled == "") enabled = false;
-		var styles = "@import url('" + " " + url + " " + "');";
-		var newSS = document.createElement('link');
-		newSS.rel = 'stylesheet';
-		if (title != null && title != "") {
-			newSS.setAttribute("title", title);
-			newSS.disabled = true;
-			if (enabled == true) {
-				newSS.disabled = false;
-			}
-		}
-		newSS.href = 'data:text/css,' + escape(styles);
-		//newSS.href = url;
-		document.getElementsByTagName("head")[0].appendChild(newSS);
+		var link = jQuery(document.createElement('link'))
+			.attr({
+				rel:"stylesheet",
+				type: "text/css",
+				href: url})
+			.appendTo("head");
 	}
 }
 
 </script>
 
-<c:if test="${!empty ss_servlet && ss_servlet == 'true'}">
-<link href="<html:rootPath/>css/forum.css" rel="stylesheet" type="text/css" />
-<link href="<ssf:url  webPath="viewCss"> <ssf:param name="theme" value=""/>
-	    </ssf:url>" rel="stylesheet" type="text/css" />
-</c:if>
+		<c:if test="${!empty ss_servlet && ss_servlet == 'true'}">
+			<link href="<html:rootPath/>css/forum.css" rel="stylesheet"
+				type="text/css" />
+			<link
+				href="<ssf:url  webPath="viewCss"> <ssf:param name="theme" value=""/>
+	    </ssf:url>"
+				rel="stylesheet" type="text/css" />
+		</c:if>
 
-<script type="text/javascript">
+		<script type="text/javascript">
 <c:if test="${empty ss_servlet || ss_servlet != 'true'}">
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		if (document.createStyleSheet) {
@@ -284,10 +290,19 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 }
 </script>
 
-<ssf:ifLoggedIn><c:if test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
-  <a class="ss_skiplink" href="${ss_accessibleUrl}"><img border="0"
-    <ssf:alt tag="accessible.enableAccessibleMode"/> 
-    src="<html:imagesPath/>pics/1pix.gif" /></a><%--
-		--%></c:if></ssf:ifLoggedIn><%--
-	--%></c:if><%--
---%></c:if>
+		<ssf:ifLoggedIn>
+			<c:if
+				test="${empty ss_noEnableAccessibleLink && !empty ss_accessibleUrl && (empty ss_displayStyle || ss_displayStyle != 'accessible')}">
+				<a class="ss_skiplink" href="${ss_accessibleUrl}"><img
+					border="0" <ssf:alt tag="accessible.enableAccessibleMode"/>
+					src="<html:imagesPath/>pics/1pix.gif" /></a>
+				<%--
+		--%>
+			</c:if>
+		</ssf:ifLoggedIn>
+		<%--
+	--%>
+	</c:if>
+	<%--
+--%>
+</c:if>

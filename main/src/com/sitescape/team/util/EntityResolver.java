@@ -137,7 +137,6 @@ public class EntityResolver implements org.xml.sax.EntityResolver, BeanClassLoad
 	    return null;
 	}
 
-	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;		
 	}
