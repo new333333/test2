@@ -109,14 +109,15 @@ public class UrlTag extends BodyTagSupport implements ParamAncestorTag {
 			if (renderRequest == null || renderResponse == null) this.adapter = true;
 
 			
-			//See if a url was specified
-			String ctxPath = req.getContextPath();
+			// See if a url was specified
 			if (!Validator.isNull(url)) {
-				//Yes, a url was explicitly specified. Just add the portal context and return
-				String fullUrl = ctxPath + "/" + this.url;
+				// Yes, a url was explicitly specified. Just add the portal
+				// context and return
+				String fullUrl = req.getContextPath()
+						+ "/" + this.url;
 				pageContext.getOut().print(fullUrl);
 
-				return SKIP_BODY;				
+				return SKIP_BODY;
 			}
 
 			//There was no explicit url specified, so build the url
