@@ -6,8 +6,10 @@
 
  <target id="legalnotices" pid="bookinfo" name="LegalNotice" level="1"> <text>Legal Notices</text> </target>
 
- <target id="trademarks" pid="bookinfo" name="LegalNotice" level="1"> <text>Novell Trademarks</text> </target>
+ <target id="bf5pb28" pid="bookinfo" name="FormalPara" level="2"> <text>Online Documentation:</text> </target>
 
- <target id="thirdparty" pid="bookinfo" name="LegalNotice" level="1"> <text>Third-Party Materials</text> </target>
+ <target id="bf5pa9z" pid="bookinfo" name="FormalPara" level="2"> <text>Novell Trademarks:</text> </target>
+
+ <target id="bf5pahi" pid="bookinfo" name="FormalPara" level="2"> <text>Third-Party Materials:</text> </target>
 
 </targets>

@@ -399,6 +399,17 @@ public class SearchFilter {
 		filterTerm.addAttribute(SearchFilterKeys.FilterBinderId, binderId);	
 	}
 	
+	public void addBinderParentIds(Collection binderIds) {
+		checkCurrent();
+ 
+		Iterator it = binderIds.iterator();
+		while (it.hasNext()) {
+			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeBinderParent);
+			filterTerm.addAttribute(SearchFilterKeys.FilterBinderId, (String)it.next());
+		}
+	}
+	
 	public void addEntryId(String entryId) {
 		checkCurrent();
  

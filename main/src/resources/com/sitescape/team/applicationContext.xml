@@ -638,16 +638,16 @@
 		</props>
 		</property>
 	</bean>
-	<bean id="defaultEmailFormatter" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.DefaultEmailFormatter">
+	<bean id="defaultEmailFormatter" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.DefaultEmailFormatter" depends-on="notifyBuilderUtil">
 		<property name="definitionModule"><ref local="definitionModule"/></property>
 		<property name="mailModule"><ref local="mailModule"/></property>
 		<property name="icalModule"><ref local="icalModule"/></property>
-		<property name="velocityEngine"><ref local="velocityEmailEngine"/></property>
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
 	</bean>
 	<bean id="notifyBuilderUtil" class="com.sitescape.team.module.definition.notify.NotifyBuilderUtil">
 		<property name="velocityEngine"><ref local="velocityEmailEngine"/></property>
 		<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
+		<property name="toolboxConfig" value="/com/sitescape/team/config/toolbox.xml" />
 	</bean>
 	
 	<bean id="defaultEmailPoster" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.mail.impl.DefaultEmailPoster">
@@ -912,7 +912,10 @@ text/calendar											  ics
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
+			<list>
 			<value>com.sitescape.team.remoting.ws.service.definition.DefinitionService</value>
+				<value>com.sitescape.team.remoting.ws.service.definition.DefinitionServiceInternal</value>
+			</list>
 		</property>
 	</bean>
 	

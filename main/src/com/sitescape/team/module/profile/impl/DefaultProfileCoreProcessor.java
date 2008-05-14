@@ -378,6 +378,10 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
         	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_POST_URL) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_POST_URL)) {
     			entryData.put(ObjectKeys.FIELD_APPLICATION_POST_URL, inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_POST_URL));
         	}
+        	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_TRUSTED) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_TRUSTED)) {
+        		String trusted = inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_TRUSTED);
+    			entryData.put(ObjectKeys.FIELD_APPLICATION_TRUSTED, Boolean.valueOf(trusted));
+        	}
     	} else { // Group or ApplicationGroup 
         	if (inputData.exists(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS) && !entryData.containsKey(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS)) {
     			entryData.put(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS, inputData.getSingleObject(ObjectKeys.FIELD_GROUP_PRINCIPAL_MEMBERS));

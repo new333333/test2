@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class StringField extends Field {
+import java.io.Serializable;
+
+public class StringField extends Field implements Serializable {
 
 	private String value;
 

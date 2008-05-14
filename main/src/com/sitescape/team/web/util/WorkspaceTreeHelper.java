@@ -28,9 +28,11 @@
  */
 package com.sitescape.team.web.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -43,14 +45,18 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
 import org.dom4j.Document;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -59,9 +65,16 @@ import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
+import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
+import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.search.SearchUtils;
+import com.sitescape.team.search.filter.SearchFilter;
+import com.sitescape.team.task.TaskHelper;
+import com.sitescape.team.task.TaskHelper.FilterType;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
@@ -69,6 +82,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Criteria;
 
 public class WorkspaceTreeHelper {
 	public static ModelAndView setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
@@ -194,12 +208,15 @@ public class WorkspaceTreeHelper {
 						model.put(WebKeys.PROFILE_CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 						model.put(WebKeys.USER_WORKSPACE, true);
 
+						//Get the dashboard initial tab if one was passed in
+						String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, ObjectKeys.RELEVANCE_DASHBOARD_PROFILE);
+
 				        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
-				        		binder.getId(), ObjectKeys.RELEVANCE_DASHBOARD_PROFILE, model);
+				        		binder.getId(), type, model);
 					} catch (Exception ex) {} //user may have been deleted, but ws left around
 				}
 			}
-		
+
 			Map userProperties = bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 			model.put(WebKeys.USER_PROPERTIES, userProperties);
 			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
@@ -221,11 +238,26 @@ public class WorkspaceTreeHelper {
 				model.put(WebKeys.SHOW_TEAM_MEMBERS, true);
 				getTeamMembers(bs, formData, request, response, (Workspace)binder, model);
 			} else {
-				getShowWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model);
+				Document configDocument = (Document)model.get(WebKeys.CONFIG_DEFINITION);
+				String viewType = DefinitionUtils.getViewType(configDocument);
+				if (viewType == null) viewType = "";
+				if (viewType.equals(Definition.VIEW_STYLE_DISCUSSION_WORKSPACE)) {
+					getShowDiscussionWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model);					
+				} else {
+					getShowWorkspace(bs, formData, request, response, (Workspace)binder, searchFilter, model);
+				}
 			}
 			Map tagResults = TagUtil.uniqueTags(bs.getBinderModule().getTags(binder));
 			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
+			
+			String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
+			model.put(WebKeys.TYPE, type);
+			String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
+			model.put(WebKeys.PAGE_NUMBER, page);
+			if (type.equals(WebKeys.URL_WHATS_NEW)) 
+				BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, page);
+			
 		} catch(NoBinderByTheIdException e) {
 		}
 		
@@ -284,6 +316,96 @@ public class WorkspaceTreeHelper {
 		model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
 		
 		//Get the info for the "add a team" button
+		buildAddTeamButton(bs, req, response, ws, model);
+		buildWorkspaceToolbar(bs, req, response, model, ws, ws.getId().toString());
+	}
+	
+	protected static void getShowDiscussionWorkspace(AllModulesInjected bs, Map formData, 
+			RenderRequest req, RenderResponse response, Workspace ws, 
+			Document searchFilter, Map<String,Object>model) throws PortletRequestBindingException {
+		
+    	Map<String, Counter> unseenCounts = new HashMap();
+
+    	//Get the sorted list of child binders
+		Map options = new HashMap();
+		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+		options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+		Map searchResults = bs.getBinderModule().getBinders(ws, options);
+		List<Map> binders = (List)searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+		model.put(WebKeys.BINDERS, binders); 
+		
+		//Now get the next level of binders below the workspaces in "binders"
+		List binderIdList = new ArrayList();
+		for (Map binder:binders) {
+			String binderIdString = (String) binder.get(EntityIndexUtils.DOCID_FIELD);
+			String binderEntityType = (String) binder.get(EntityIndexUtils.ENTITY_FIELD);
+			if (binderIdString != null && binderEntityType != null && 
+					binderEntityType.equals(EntityIdentifier.EntityType.workspace.name())) {
+				binderIdList.add(binderIdString);
+				unseenCounts.put(binderIdString, new WorkspaceTreeHelper.Counter());
+			}
+		}
+		if (!binderIdList.isEmpty()) {
+			//Now search for the next level of binders
+			options = new HashMap();
+			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
+			options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+			Map searchResults2 = bs.getBinderModule().getBinders(ws, binderIdList, options);
+			List<Map> binders2 = (List)searchResults2.get(ObjectKeys.SEARCH_ENTRIES);
+			Map subBinders = new HashMap();
+			for (Map binder : binders2) {
+				String binderId = (String) binder.get(EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+				if (binderId != null) {
+					if (!subBinders.containsKey(binderId)) subBinders.put(binderId, new ArrayList());
+					List binderList = (List) subBinders.get(binderId);
+					binderList.add(binder);
+					unseenCounts.put((String) binder.get(EntityIndexUtils.DOCID_FIELD), 
+							new WorkspaceTreeHelper.Counter());
+				}
+			}
+			model.put(WebKeys.BINDERS_SUB_BINDERS, subBinders);
+		}
+
+		//Get the recent entries anywhere in this workspace
+		options = new HashMap();
+		List binderIds = new ArrayList();
+		binderIds.add(ws.getId().toString());
+		Criteria crit = SearchUtils.newEntriesDescendants(binderIds);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
+    	List<Map> entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+
+		//Get the count of unseen entries
+		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
+    	for (Map entry:entries) {
+    		SearchFieldResult entryAncestors = (SearchFieldResult) entry.get(EntityIndexUtils.ENTRY_ANCESTRY);
+			if (entryAncestors == null) continue;
+			String entryIdString = (String) entry.get(EntityIndexUtils.DOCID_FIELD);
+			Iterator itAncestors = entryAncestors.getValueSet().iterator();
+			while (itAncestors.hasNext()) {
+				String binderIdString = (String)itAncestors.next();
+				if (binderIdString.equals("")) continue;
+				Counter cnt = unseenCounts.get(binderIdString);
+				if (cnt == null) {
+					cnt = new WorkspaceTreeHelper.Counter();
+					unseenCounts.put(binderIdString, cnt);
+				}
+				if (entryIdString != null && (!seen.checkAndSetSeen(entry, false))) {
+					cnt.increment();
+				}
+			}
+    	}
+    	model.put(WebKeys.BINDER_UNSEEN_COUNTS, unseenCounts);
+		
+      	//Get the info for the "add a team" button
+		buildAddTeamButton(bs, req, response, ws, model);
+		buildWorkspaceToolbar(bs, req, response, model, ws, ws.getId().toString());
+	}
+	
+	protected static void buildAddTeamButton(AllModulesInjected bs, 
+			RenderRequest req, RenderResponse response, Workspace ws, Map<String,Object>model) {
+		//Get the info for the "add a team" button
 		if (!ws.isRoot() && bs.getBinderModule().testAccess(ws, BinderOperation.addWorkspace)) {
 			Long cfgType = null;
 			List result = bs.getTemplateModule().getTemplates(Definition.WORKSPACE_VIEW);
@@ -307,9 +429,7 @@ public class WorkspaceTreeHelper {
 				model.put(WebKeys.ADD_TEAM_WORKSPACE_URL, url);
 			}
 		}
-		buildWorkspaceToolbar(bs, req, response, model, ws, ws.getId().toString());
 	}
-	
 	protected static void getTeamMembers(AllModulesInjected bs, Map formData, 
 			RenderRequest req, RenderResponse response, Workspace ws, 
 			Map<String,Object>model) throws PortletRequestBindingException {
@@ -652,4 +772,22 @@ public class WorkspaceTreeHelper {
 		principals.toArray(as);
 		return as;
 	}
+
+    /**
+     * Helper classs to return folder unseen counts as an objects
+     * @author Janet McCann
+     *
+     */
+     public static class Counter {
+    	private long count=0;
+    	protected Counter() {	
+    	}
+    	protected void increment() {
+    		++count;
+    	}
+    	public Long getCount() {
+    		return count;
+    	}    	
+    }
+    
 }

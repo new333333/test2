@@ -98,6 +98,26 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 	}
 
 	public String folder_getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+		handleAttachments(includeAttachments);
+		
+		String xml = super.folder_getFolderEntryAsXML(accessToken, binderId, entryId, includeAttachments);
+
+		handleEvents(binderId, entryId);
+		
+		return xml;
+	}
+
+	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+		handleAttachments(includeAttachments);
+		
+		com.sitescape.team.remoting.ws.model.FolderEntry entryModel = super.folder_getFolderEntry(accessToken, binderId, entryId, includeAttachments);
+
+		handleEvents(binderId, entryId);
+		
+		return entryModel;
+	}
+
+	protected void handleAttachments(boolean includeAttachments) {
 		if(includeAttachments) {
 			attachmentHandler = new AttachmentHandler() {
 				public void handleAttachment(FileAttachment att, String webUrl)
@@ -120,10 +140,10 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 			};
 		} else {
 			attachmentHandler = new AttachmentHandler();
-		}
-
-		String xml = super.folder_getFolderEntryAsXML(accessToken, binderId, entryId, includeAttachments);
-
+		}	
+	}
+	
+	protected void handleEvents(long binderId, long entryId) {
 		Long bId = new Long(binderId);
 		Long eId = new Long(entryId);
 		FolderEntry entry = 
@@ -136,8 +156,5 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 			Message responseMessage = messageContext.getResponseMessage();
 			responseMessage.addAttachmentPart(new AttachmentPart(dh));
 		}
-
-		return xml;
 	}
-
 }

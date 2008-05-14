@@ -163,10 +163,12 @@ public class WebKeys {
 	public static final String URL_TREE_SELECT_ID = "tree_select_id";
 	public static final String URL_TREE_MULTI_SELECT = "ss_tree_select";
 	public static final String URL_TYPE = "type";
+	public static final String URL_TYPE2 = "type2";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
 	public static final String URL_WORKFLOW_TYPE = "workflowType";
+	public static final String URL_WHATS_NEW = "whatsNew";
 	public static final String URL_OBJECT_ID="objectId";
 	public static final String URL_YEAR_MONTH="yearMonth";
 	public static final String URL_ZONE_ID="zoneId";
@@ -471,7 +473,10 @@ public class WebKeys {
 	public static final String BINDER_DEFINITION_TYPE="ssBinderDefinitionType";
 	public static final String BINDER_ENTRIES="ssBinderEntries";
 	public static final String BINDER_DATA="ssBinderData";
+	public static final String BINDERS="ss_binders";
+	public static final String BINDERS_SUB_BINDERS="ss_bindersSubBinders";
 	public static final String BINDER_TITLE="binderTitle";
+	public static final String BINDER_UNSEEN_COUNTS="ss_binderUnseenCounts";
 	public static final String BINDER_WEBDAV_URL="ssWebDavURL";
 	public static final String BLOG_ENTRIES="ssBlogEntries"; 
 	public static final String BLOG_FOLDER_COMMUNITY_TAGS="ssBlogFolderCommunityTags"; 
@@ -861,6 +866,7 @@ public class WebKeys {
     public static final String TEAM_MEMBER="ssTeamMember";
     public static final String TEAM_MEMBERSHIP="ssTeamMembership";
     public static final String TYPE="ss_type";
+    public static final String TYPE2="ss_type2";
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";
@@ -894,6 +900,8 @@ public class WebKeys {
     public static final String WHATS_HOT_FOLDERS="ss_whatsHotFolders";
     public static final String WHATS_NEW="ss_whatsNew";
     public static final String WHATS_NEW_FOLDERS="ss_whatsNewFolders";
+    public static final String WHATS_NEW_BINDER="ss_whatsNewBinder";
+    public static final String WHATS_NEW_BINDER_FOLDERS="ss_whatsNewBinderFolders";
     public static final String WHATS_NEW_TRACKED_PEOPLE="ss_whatsNewTrackedPeople";
     public static final String WHATS_NEW_TRACKED_PEOPLE_FOLDERS="ss_whatsNewTrackedPeopleFolders";
     public static final String WHATS_NEW_TRACKED_PLACES="ss_whatsNewTrackedPlaces";

@@ -740,6 +740,11 @@ function ss_updateStatusSoon(obj, evt) {
 		ss_setStatusBackground(obj, 'focus');
     }
 }
+function ss_updateStatusNowAccessible(id) {
+	//This is the id of the text box
+	var obj = document.getElementById(id);
+	ss_updateStatusNow(obj);
+}
 function ss_updateStatusNow(obj) {
 	ss_statusObj = obj;
 	if (ss_statusTimer != null) {
@@ -782,7 +787,7 @@ function ss_setStatusBackground(obj, op) {
 	}
 }
 function ss_flashStatus() {
-	ss_statusObj.style.backgroundColor = "lime";
+	ss_statusObj.style.backgroundColor = "#00ADEF";
 	setTimeout("ss_setStatusBackground(ss_statusObj, 'blur');", 300);
 }
 function ss_setStatusBackgroundCheck(obj) {
@@ -834,16 +839,24 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 	if (currentTab != null) {
 		currentTab.parentNode.className = "";
 	}
-	eval("ss_relevanceTabCurrent_"+namespace+" = obj;");
-	obj.parentNode.className = "ss_tabsCCurrent";
+	if (obj != null) {
+		eval("ss_relevanceTabCurrent_"+namespace+" = obj;");
+		obj.parentNode.className = "ss_tabsCCurrent";
+	}
 	
 	//Switch to the new tab
 	var url = "";
 	eval("url = ss_relevanceAjaxUrl"+namespace);
 	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
 	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
+	url = ss_replaceSubStr(url, "ss_pagePlaceHolder", "0");
 	url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
-	ss_fetch_url(url, ss_showRelevanceTab, namespace)
+	if (ss_userDisplayStyle == "accessible") {
+		//If in accessible mode, just jump to the url directly
+		self.location.href = url;
+	} else {
+		ss_fetch_url(url, ss_showRelevanceTab, namespace)
+	}
 }
 function ss_showRelevanceTab(s, namespace) {
 	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);
@@ -852,14 +865,27 @@ function ss_showRelevanceTab(s, namespace) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
-function ss_showDashboardPage(binderId, op, currentPage, direction, divId) {
-	ss_setupStatusMessageDiv();
+function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId, namespace) {
 	if (currentPage == "") currentPage = "0";
 	var page = parseInt(currentPage);
 	if (direction == 'next') page = page + 1;
 	if (direction == 'previous') page = page - 1;
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"get_dashboard_page", operation2:op, pageNumber:page, direction:direction}, "__ajax_relevance");
-	ss_fetch_url(url, ss_showDashboardPageDiv, divId)
+	
+	if (ss_userDisplayStyle == "accessible") {
+		//In accessible mode, redraw the whole page
+		var url = "";
+		eval("url = ss_relevanceAjaxUrl"+namespace);
+		url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
+		url = ss_replaceSubStr(url, "ss_type2PlaceHolder", op);
+		url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
+		url = ss_replaceSubStr(url, "ss_pagePlaceHolder", page);
+		url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
+		self.location.href = url;
+	} else {
+		ss_setupStatusMessageDiv();
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"get_dashboard_page", operation2:op, pageNumber:page, direction:direction}, "__ajax_relevance");
+		ss_fetch_url(url, ss_showDashboardPageDiv, divId+namespace)
+	}
 }
 function ss_showDashboardPageDiv(s, divId) {
 	var divObj = self.document.getElementById(divId);
@@ -3937,6 +3963,7 @@ function ssTeams(namespace) {
 		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)))
 		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
 	    dojo.html.show(fObj);
+		dojo.html.setDisplay(fObj, "block");
 	    dojo.html.setVisibility(fObj, "visible");
 	    dojo.html.setOpacity(fObj,0);
 	    dojo.lfx.html.fadeIn(fObj, 100).play();
@@ -3949,6 +3976,19 @@ function ssTeams(namespace) {
 	}
 	this.hide = function() {
 		ss_hideDivFadeOut('ss_myteams_pane'+namespace, 20);
+	}
+	this.showAccessible = function() {
+		var dObj = self.document.getElementById("ss_navbar_myteams" + namespace);
+		var fObj = self.document.getElementById("ss_myTeamsIframe" + namespace);
+		dObj.style.display = "block";
+	    dojo.html.setVisibility(dObj, "visible");
+	    dObj.style.zIndex = parseInt(ssMenuZ);
+	    fObj.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"show_my_teams", namespace:namespace});
+	}
+	this.hideAccessible = function() {
+		var dObj = self.document.getElementById("ss_navbar_myteams" + namespace);
+		dojo.html.setDisplay(dObj, "none");
+	    dojo.html.setVisibility(dObj, "hidden");
 	}
 }
 

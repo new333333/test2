@@ -2042,7 +2042,7 @@
    <String `Cross-Reference Report for icecoreadminguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `4/29/2008 2:36:15 PM'>
+   <String `4/30/2008 2:16:53 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2066,7 +2066,7 @@
   <ParaLine 
    <String `XrefInt'>
    <Char Tab> 
-   <String `35'>
+   <String `93'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2078,7 +2078,7 @@
    <Char Tab> 
    <String `54'>
    <Char Tab> 
-   <String `1'>
+   <String `0'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2106,7 +2106,7 @@
   <ParaLine 
    <String `Ulink'>
    <Char Tab> 
-   <String `7'>
+   <String `9'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2116,9 +2116,9 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `96'>
+   <String `156'>
    <Char Tab> 
-   <String `1'>
+   <String `0'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2180,7 +2180,7 @@
    <Char Tab> 
    <String `1'>
    <Char Tab> 
-   <String `1'>
+   <String `0'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2200,45 +2200,53 @@
    <Char Tab> 
    <String `3'>
    <Char Tab> 
-   <String `1'>
+   <String `0'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `Broken XrefIntText(s) in preface.fm'>
+   <String `02_configuringicecore.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
-  <PgfTag `empty'>
+  <PgfTag `CenterTabBold'>
   <ParaLine 
-   <String `'>
+   <String `Element'>
+   <Char Tab> 
+   <String `Total'>
+   <Char Tab> 
+   <String `Invalid'>
   > # end of ParaLine
  > # end of Para
  <Para 
-  <PgfTag `red'>
+  <PgfTag `CenterTab'>
   <ParaLine 
-   <Font 
-    <FTag `red'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\preface.fm|1065280'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `Reference to \qSect1\q with id \qb9vchnc\q in file \q02_configuringicecore.fm\q'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
+   <String `XrefInt'>
+   <Char Tab> 
+   <String `41'>
+   <Char Tab> 
+   <String `0'>
   > # end of ParaLine
  > # end of Para
  <Para 
-  <PgfTag `Body'>
+  <PgfTag `CenterTab'>
   <ParaLine 
-   <String `Error: could not find targetId not found in other id files for this book'>
+   <String `Ulink'>
+   <Char Tab> 
+   <String `2'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Total'>
+   <Char Tab> 
+   <String `43'>
+   <Char Tab> 
+   <String `0'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2262,7 +2270,7 @@
   <ParaLine 
    <String `XrefInt'>
    <Char Tab> 
-   <String `18'>
+   <String `32'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2272,7 +2280,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `18'>
+   <String `32'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2281,6 +2289,42 @@
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `02_customentries.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Element'>
+   <Char Tab> 
+   <String `Total'>
+   <Char Tab> 
+   <String `Invalid'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `XrefInt'>
+   <Char Tab> 
+   <String `10'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Total'>
+   <Char Tab> 
+   <String `10'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `04_workflowadvanced.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2345,42 +2389,6 @@
    <String `Total'>
    <Char Tab> 
    <String `1'>
-   <Char Tab> 
-   <String `0'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `04_workflowadvanced.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `CenterTabBold'>
-  <ParaLine 
-   <String `Element'>
-   <Char Tab> 
-   <String `Total'>
-   <Char Tab> 
-   <String `Invalid'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `CenterTab'>
-  <ParaLine 
-   <String `XrefInt'>
-   <Char Tab> 
-   <String `7'>
-   <Char Tab> 
-   <String `0'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `CenterTabBold'>
-  <ParaLine 
-   <String `Total'>
-   <Char Tab> 
-   <String `7'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine

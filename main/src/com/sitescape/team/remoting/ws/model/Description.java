@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class Description {
+import java.io.Serializable;
+
+public class Description implements Serializable {
 
 	private String text;
 	private int format;

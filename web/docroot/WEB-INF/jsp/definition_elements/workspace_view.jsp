@@ -41,10 +41,16 @@
 </div>
 </c:if>
 
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}"
-  entry="${ssDefinitionEntry}" />
+<c:if test="${propertyValues_type[0] == 'discussion'}">
+  <%@ include file="/WEB-INF/jsp/definition_elements/discussion/discussion_workspace_view.jsp" %>
+</c:if>
+
+<c:if test="${propertyValues_type[0] != 'discussion'}">
+	<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
+	  configElement="${item}" 
+	  configJspStyle="${ssConfigJspStyle}"
+	  entry="${ssDefinitionEntry}" />
+</c:if>
  
 <c:if test="${!empty propertyValues_type && !empty propertyValues_type[0] && propertyValues_type[0] == 'project'}">
 	<%@ include file="/WEB-INF/jsp/definition_elements/workspace_statistics.jsp" %>

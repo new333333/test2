@@ -63,11 +63,11 @@ import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.util.search.Constants;
 
 public class SearchUtils {
 
@@ -170,7 +170,7 @@ public class SearchUtils {
   		if (options == null) return;
 		Element rootElement = queryTree.getRootElement();
    		//assume this document was setup in getInitalSearchDocument
-		Element boolElement = rootElement.element(QueryBuilder.AND_ELEMENT);
+		Element boolElement = rootElement.element(Constants.AND_ELEMENT);
     	//Add in any additional fields from the options map
     	if (options.containsKey(ObjectKeys.SEARCH_FILTER_AND)) {
     		org.dom4j.Document filter = (org.dom4j.Document) options.get(ObjectKeys.SEARCH_FILTER_AND);
@@ -180,92 +180,92 @@ public class SearchUtils {
 		
        	//See if there is a title field search request
    		if (options.containsKey(ObjectKeys.SEARCH_TITLE)) {
-   			Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-   			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.TITLE_FIELD);
-   			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+   			Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
+   			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.TITLE_FIELD);
+   			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
    			child.setText((String) options.get(ObjectKeys.SEARCH_TITLE));
     	}
 
     	//See if there is an end date
     	if (options.containsKey(ObjectKeys.SEARCH_END_DATE)) {
-    		Element range = boolElement.addElement(QueryBuilder.RANGE_ELEMENT);
-    		range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_DAY_FIELD);
-    		range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
-    		Element start = range.addElement(QueryBuilder.RANGE_START);
+    		Element range = boolElement.addElement(Constants.RANGE_ELEMENT);
+    		range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_DAY_FIELD);
+    		range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
+    		Element start = range.addElement(Constants.RANGE_START);
     		Calendar cal = Calendar.getInstance();
     		cal.set(1970, 0, 1);
     		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
     		formatter.setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
     		String s = formatter.format(cal.getTime());
     		start.addText((String) s);
-    		Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
+    		Element finish = range.addElement(Constants.RANGE_FINISH);
     		finish.addText((String) options.get(ObjectKeys.SEARCH_END_DATE));
     	}
 
     	//See if there is a year/month
     	if (options.containsKey(ObjectKeys.SEARCH_YEAR_MONTH)) {
-    		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
-    		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
+    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
+    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText((String) options.get(ObjectKeys.SEARCH_YEAR_MONTH));
     	}
     	//See if there is a tag
     	if (options.containsKey(ObjectKeys.SEARCH_COMMUNITY_TAG)) {
-    		Element field = boolElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.TAG_FIELD);
-    		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
+    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.TAG_FIELD);
+    		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText((String) options.get(ObjectKeys.SEARCH_COMMUNITY_TAG));
     	}
     	if (options.containsKey(ObjectKeys.SEARCH_PERSONAL_TAG)) {
-    		Element field = boolElement.addElement(QueryBuilder.PERSONALTAGS_ELEMENT);
-    		Element child = field.addElement(QueryBuilder.TAG_ELEMENT);
-    		child.addAttribute(QueryBuilder.TAG_NAME_ATTRIBUTE, (String)options.get(ObjectKeys.SEARCH_PERSONAL_TAG));
+    		Element field = boolElement.addElement(Constants.PERSONALTAGS_ELEMENT);
+    		Element child = field.addElement(Constants.TAG_ELEMENT);
+    		child.addAttribute(Constants.TAG_NAME_ATTRIBUTE, (String)options.get(ObjectKeys.SEARCH_PERSONAL_TAG));
     	}
 
     	//See if there are event days (modification is also an event)
     	if (options.containsKey(ObjectKeys.SEARCH_EVENT_DAYS)) {
-    		Element orEventOrLastActivityOrCreationBoolElement = boolElement.addElement(QueryBuilder.OR_ELEMENT);
+    		Element orEventOrLastActivityOrCreationBoolElement = boolElement.addElement(Constants.OR_ELEMENT);
     			
-    		Element orBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(QueryBuilder.OR_ELEMENT);
+    		Element orBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(Constants.OR_ELEMENT);
     		Iterator it = ((List)options.get(ObjectKeys.SEARCH_EVENT_DAYS)).iterator();
     		while (it.hasNext()) {
     			String[] eventDay = (String[])it.next();
-    			Element range = orBoolElement.addElement(QueryBuilder.RANGE_ELEMENT);
-    			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
-    			range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
-    			Element start = range.addElement(QueryBuilder.RANGE_START);
+    			Element range = orBoolElement.addElement(Constants.RANGE_ELEMENT);
+    			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
+    			range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
+    			Element start = range.addElement(Constants.RANGE_START);
     			start.addText(eventDay[0]);
-    			Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
+    			Element finish = range.addElement(Constants.RANGE_FINISH);
     			finish.addText(eventDay[1]);
     		}
         			        		
-    		Element orLastActivityDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(QueryBuilder.OR_ELEMENT);
-    		Element andStartAndEndLastActivityDate = orLastActivityDateBoolElement.addElement(QueryBuilder.AND_ELEMENT);
+    		Element orLastActivityDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(Constants.OR_ELEMENT);
+    		Element andStartAndEndLastActivityDate = orLastActivityDateBoolElement.addElement(Constants.AND_ELEMENT);
         			        		
     		//	See if there is a last activity start date
     		if (options.containsKey(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START) && 
     				options.containsKey(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END)) {
-    			Element range = andStartAndEndLastActivityDate.addElement(QueryBuilder.RANGE_ELEMENT);
-    			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, IndexUtils.LASTACTIVITY_FIELD);
-    			range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
-    			Element start = range.addElement(QueryBuilder.RANGE_START);
+    			Element range = andStartAndEndLastActivityDate.addElement(Constants.RANGE_ELEMENT);
+    			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, IndexUtils.LASTACTIVITY_FIELD);
+    			range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
+    			Element start = range.addElement(Constants.RANGE_START);
     			start.addText((String) options.get(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START));
-    			Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
+    			Element finish = range.addElement(Constants.RANGE_FINISH);
     			finish.addText((String) options.get(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END));
     		}
 
-    		Element orCreationDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(QueryBuilder.OR_ELEMENT);
-    		Element andStartAndEndCreationDate = orCreationDateBoolElement.addElement(QueryBuilder.AND_ELEMENT);
+    		Element orCreationDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(Constants.OR_ELEMENT);
+    		Element andStartAndEndCreationDate = orCreationDateBoolElement.addElement(Constants.AND_ELEMENT);
         			        		
     		//	See if there is a last activity start date
     		if (options.containsKey(ObjectKeys.SEARCH_CREATION_DATE_START) && 
     				options.containsKey(ObjectKeys.SEARCH_CREATION_DATE_END)) {
-    			Element range = andStartAndEndCreationDate.addElement(QueryBuilder.RANGE_ELEMENT);
-    			range.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_DATE_FIELD);
-    			range.addAttribute(QueryBuilder.INCLUSIVE_ATTRIBUTE, "true");
-    			Element start = range.addElement(QueryBuilder.RANGE_START);
+    			Element range = andStartAndEndCreationDate.addElement(Constants.RANGE_ELEMENT);
+    			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_DATE_FIELD);
+    			range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
+    			Element start = range.addElement(Constants.RANGE_START);
     			start.addText((String) options.get(ObjectKeys.SEARCH_CREATION_DATE_START));
-    			Element finish = range.addElement(QueryBuilder.RANGE_FINISH);
+    			Element finish = range.addElement(Constants.RANGE_FINISH);
     			finish.addText((String) options.get(ObjectKeys.SEARCH_CREATION_DATE_END));
     		}
     	

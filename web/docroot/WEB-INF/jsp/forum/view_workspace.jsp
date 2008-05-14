@@ -32,6 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <c:set var="showWorkspacePage" value="true"/>
 <c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
   <ssf:ifnotadapter>
@@ -175,7 +176,9 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 </c:if>
 <div class="ss_actions_bar1_pane" width="100%" style="height: 22px;">
 <table cellspacing="0" cellpadding="0" width="100%">
-<tr><td valign="middle">
+<tr>
+<ssf:ifnotaccessible>
+<td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
 ><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
@@ -184,11 +187,14 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
   style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
   class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.hide"/>]</span></a>
-</td><td valign="top">
+</td>
+</ssf:ifnotaccessible>
+<td valign="top">
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 </td></tr>
 </table>
 </div>
+<ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
     <tr>
@@ -224,6 +230,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 	</td>
 
 	<td valign="top" class="ss_view_info">
+</ssf:ifnotaccessible>
 		<div class="ss_tab_canvas">
 			<!-- Rounded box surrounding entire page (continuation of tabs metaphor) -->
 				<div class="ss_style_color">				
@@ -273,7 +280,8 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 				  </a>
 				 </ssf:ifaccessible>
 				 <ssf:ifnotaccessible>
-				  <a href="${ss_accessibleUrl}">
+				  <a href="${ss_accessibleUrl}"
+				  onClick='if (!confirm("<ssf:nlt tag="accessible.confirm"/>"))return false;'>
 				    <span class="ss_smallprint ss_light"><ssf:nlt tag="accessible.enableAccessibleMode"/></span>
 				  </a>
 				 </ssf:ifnotaccessible>
@@ -282,10 +290,12 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 			</c:if>
 
 		</div>
+<ssf:ifnotaccessible>
 	</td>
 	</tr>
 	</tbody>
 	</table>
+</ssf:ifnotaccessible>
   </div>
 <script type="text/javascript">
 ss_createOnLoadObj('ss_initShowFolderDiv${renderResponse.namespace}', ss_initShowFolderDiv('${renderResponse.namespace}'));

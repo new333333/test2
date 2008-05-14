@@ -69,7 +69,6 @@ import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portlet.binder.AdvancedSearchController;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
@@ -88,6 +87,7 @@ import com.sitescape.team.web.tree.WorkspaceConfigHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 
 public class DashboardHelper extends AbstractAllModulesInjected {
 	private static DashboardHelper instance; // A singleton instance
@@ -984,14 +984,14 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 				else {
 					//	Limit the search to entries only
 					Document searchFilter2 = DocumentHelper.createDocument();
-					Element rootElement = searchFilter2.addElement(QueryBuilder.AND_ELEMENT);
-					Element field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-					field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-					Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+					Element rootElement = searchFilter2.addElement(Constants.AND_ELEMENT);
+					Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
+					field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+					Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 					child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
-					field = rootElement.addElement(QueryBuilder.FIELD_ELEMENT);
-					field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-					child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+					field = rootElement.addElement(Constants.FIELD_ELEMENT);
+					field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+					child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 					child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
 					options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
 				}

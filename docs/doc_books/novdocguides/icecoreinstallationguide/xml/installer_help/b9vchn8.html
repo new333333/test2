@@ -1,0 +1,65 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Monday, May 05, 2008 19:00" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2006" />
+
+<style type="text/css">
+  @import url(ui/styles.css);
+</style>
+
+<title>File System Planning</title>
+<script type="text/javascript">
+  var prev_link = "b9vchn7.html";
+  var next_link = "bbn8hra.html";
+  var parentfile = "../b9vcafr.html";
+  var parenttoc = "../toc_b9vcafr.html";
+  if(parent.location != location) { parent.loadMenu(); }
+</script>
+<script type="text/javascript" src="ui/jsglobal.js"></script>
+</head>
+
+<body>
+<script type="text/javascript" src="ui/topnav.js"></script>
+
+<div class="sect1"  id="b9vchn8">
+
+<h1 class="title"> File System Planning</h1>
+
+<p class="para">Novell Teaming software and configuration files are stored in a tree shared with Liferay, Tomcat, etc. There are some temporary files also located here, but it is used mainly for locks and similar files.</p>
+<p class="para">Novell Teaming data is stored in the database (see <a href="b9vchn7.html">Database Planning</a>) and on the file system. The file system usage is divided up into several functional areas:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"><span class="filename"> filerepository</span>: This is where all attachment files are located, so it is a large consumer of disk space. The tree is roughly organized by site, binder (folder/workspace), and entry.</p></li>
+<li class="listitem">
+<p class="listitem"> <span class="filename">archiveStore</span>: Only activated in the Enterprise version of Novell Teaming. This is where previous file versions are stored to meet compliance and archival goals.</p></li>
+<li class="listitem">
+<p class="listitem"><span class="filename">cachefilestore</span>: This tree holds information derived from the attachments, such as thumbnails, scaled images, text, and HTML renderings. Depending on the nature of the attachments this tree consumes somewhat less space than the file repository (but it can, conceivably, store more).</p></li>
+<li class="listitem">
+<p class="listitem"><span class="filename">lucene</span>: This tree holds the search index for the data. It tends to be a fraction of the space consumed by the file repository, but it is also sensitive to the type of information stored.</p></li>
+<li class="listitem">
+<p class="listitem">Other trees: These are other trees that you cannot configure, which typically only consume a small amount of space.</p></li>
+<li class="listitem">
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem"><span class="filename">rss</span>: Caches of RSS feeds for folders</p></li>
+<li class="listitem">
+<p class="listitem"> <span class="filename">temp</span>: Temporary files</p></li></ul></div>
+</li></ul></div>
+
+</div>
+
+<p class="trademark">A trademark symbol (<sup><small>&reg;</small></sup>, <sup><small>TM</small></sup>, etc.) denotes a Novell trademark. An asterisk (*) denotes a third-party trademark. For more information, see <a href="legal.html">Legal Notices</a>.</p>
+
+<script type="text/javascript" src="ui/bottomnav.js"></script>
+</body>
+</html>

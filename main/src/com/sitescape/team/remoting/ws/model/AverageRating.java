@@ -28,27 +28,29 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class AverageRating {
-	private double averageRating;
-	private long ratingCount;
+import java.io.Serializable;
+
+public class AverageRating implements Serializable {
+	private Double averageRating;
+	private Long ratingCount;
 	
 	public AverageRating() {
 	}
-	public AverageRating(double averageRating, long ratingCount) {
+	public AverageRating(Double averageRating, Long ratingCount) {
 		setAverageRating(averageRating);
 		setRatingCount(ratingCount);
 	}
 	
-	public double getAverageRating() {
+	public Double getAverageRating() {
 		return averageRating;
 	}
-	public void setAverageRating(double averageRating) {
+	public void setAverageRating(Double averageRating) {
 		this.averageRating = averageRating;
 	}
-	public long getRatingCount() {
+	public Long getRatingCount() {
 		return ratingCount;
 	}
-	public void setRatingCount(long ratingCount) {
+	public void setRatingCount(Long ratingCount) {
 		this.ratingCount = ratingCount;
 	}
 	

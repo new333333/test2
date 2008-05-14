@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class Entry extends DefinableEntity {
+import java.io.Serializable;
+
+public class Entry extends DefinableEntity implements Serializable {
 
 }

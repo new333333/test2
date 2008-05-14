@@ -30,10 +30,10 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
-
-<c:forEach var="user" items="${ss_trackedPeople}">
 <div id="today">
-    <table cellpadding="0" cellspacing="0"><tbody><tr><td valign="top">
+<c:forEach var="user" items="${ss_trackedPeople}">
+
+    <div id="ss_col3_para" > 
     <ssf:showUser user="${user}" titleStyle="ss_link_1" />
     <c:if test="${ss_show_tracked_item_delete_button == 'true'}">
     <img style="padding:4px 0px 0px 2px;" align="texttop"
@@ -42,8 +42,9 @@
     </c:if>
     <c:if test="${!empty user.status}">
     <div id="ss_im_status"><em>${user.status}</em></div>
-    </td></tr>
+   
     </c:if>
-    </tbody></table>
-    </div><!-- end of today -->
+    </div><!-- end of para -->
+    
 </c:forEach>
+</div><!-- end of today -->

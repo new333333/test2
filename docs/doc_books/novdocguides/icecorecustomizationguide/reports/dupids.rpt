@@ -2042,7 +2042,7 @@
    <String `Dupicate Id Report for icecorecustomizationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `12/4/2007 4:53:43 PM'>
+   <String `5/1/2008 5:05:55 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2054,13 +2054,37 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `sitescape_front web services.fm has no duplicate id(s)'>
+   <String `novell front customization.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `sitescape_preface.fm has no duplicate id(s)'>
+   <String `novell preface customization.fm has no duplicate id(s)'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `architecture.fm has no duplicate id(s)'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `jsps.fm has no duplicate id(s)'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `dedicated apps.fm has no duplicate id(s)'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `portal customizations.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2072,7 +2096,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `reference pages NO part.fm has no duplicate id(s)'>
+   <String `reference pages part.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
 > # end of TextFlow

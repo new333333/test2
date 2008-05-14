@@ -62,10 +62,10 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 			
 		DateFormat dateFormat = null;
 		if (!event.isAllDayEvent()) {
-			dateFormat = visitor.getNotifyDef().getDateFormat();
+			dateFormat = visitor.getNotifyDef().getDateTimeFormat();
 		} else {
 			dateFormat = DateFormat.getDateInstance(DateFormat.LONG, visitor.getNotifyDef().getLocale());
-			dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			dateFormat.setTimeZone(visitor.getNotifyDef().getTimeZone());
 		}
 
 		ctx.put("ssEvent_startString", dateFormat.format(st.getTime()));

@@ -40,7 +40,7 @@
 <div id="ss_nextPage" align="right">
 <c:if test="${ss_myDocsPage > '0'}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', 'docs', '${ss_myDocsPage}', 'previous', 'ss_dashboardDocs${renderResponse.namespace}');return false;">
+  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'docs', '${ss_myDocsPage}', 'previous', 'ss_dashboardDocs', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
   title="<ssf:nlt tag="general.previousPage"/>"/>
 </a>
@@ -50,7 +50,7 @@
 </c:if>
 <c:if test="${!empty ss_myDocs}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', 'docs', '${ss_myDocsPage}', 'next', 'ss_dashboardDocs${renderResponse.namespace}');return false;">
+  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'docs', '${ss_myDocsPage}', 'next', 'ss_dashboardDocs', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
   title="<ssf:nlt tag="general.nextPage"/>"/>
 </a>

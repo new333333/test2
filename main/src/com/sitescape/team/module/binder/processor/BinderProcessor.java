@@ -29,6 +29,7 @@
 package com.sitescape.team.module.binder.processor;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.sitescape.team.domain.Binder;
@@ -55,6 +56,7 @@ public interface BinderProcessor {
     public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) throws AccessControlException;
   	//return search results
   	public Map getBinders(Binder binder, Map options);
+  	public Map getBinders(Binder binder, List binderIds, Map options);
     public void indexFunctionMembership(Binder binder, boolean cascade);
     public void indexTeamMembership(Binder binder, boolean cascade);
     public void indexOwner(Collection<Binder>binders, Long ownerId);
