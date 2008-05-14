@@ -163,13 +163,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
     
      
           <li>
-			  <ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
-			      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
-			  </ssHelpSpot>
-	          <a href="${ss_portalUrl}" 
-	            onClick="ss_workarea_showPortal${renderResponse.namespace}(this);return false;"
-	            title="<ssf:nlt tag="navigation.goToPortalView"/>"
-	          ><ssf:nlt tag="navigation.portalView"/></a></li>
+          	<a href="/c/portal/logout">
+          		<ssf:nlt tag="navigation.logout" />
+          	</a>
+          </li>
           <li>
           	  <a
 	 			  <c:if test="${ssBinder.entityType == 'folder'}">
