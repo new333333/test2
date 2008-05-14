@@ -168,6 +168,7 @@ public class WebKeys {
 	public static final String URL_VERSION_ID = "versionId";
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
 	public static final String URL_WORKFLOW_TYPE = "workflowType";
+	public static final String URL_WHATS_NEW = "whatsNew";
 	public static final String URL_OBJECT_ID="objectId";
 	public static final String URL_YEAR_MONTH="yearMonth";
 	public static final String URL_ZONE_ID="zoneId";
@@ -899,6 +900,8 @@ public class WebKeys {
     public static final String WHATS_HOT_FOLDERS="ss_whatsHotFolders";
     public static final String WHATS_NEW="ss_whatsNew";
     public static final String WHATS_NEW_FOLDERS="ss_whatsNewFolders";
+    public static final String WHATS_NEW_BINDER="ss_whatsNewBinder";
+    public static final String WHATS_NEW_BINDER_FOLDERS="ss_whatsNewBinderFolders";
     public static final String WHATS_NEW_TRACKED_PEOPLE="ss_whatsNewTrackedPeople";
     public static final String WHATS_NEW_TRACKED_PEOPLE_FOLDERS="ss_whatsNewTrackedPeopleFolders";
     public static final String WHATS_NEW_TRACKED_PLACES="ss_whatsNewTrackedPlaces";

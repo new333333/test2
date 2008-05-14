@@ -32,6 +32,94 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <c:set var="ss_discussionWorkspaceView" value="true" scope="request"/>
 
+<a class="ss_linkButton" href="<ssf:url 
+		action="view_ws_listing" binderId="${ssDefinitionEntry.id}"><ssf:param
+		name="type" value="whatsNew"/><ssf:param
+		name="page" value="0"/></ssf:url>"><ssf:nlt tag="workspace.whatsNew"/></a>
+<br/>
+<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+<div id="ss_para">
+<div align="right">
+<c:if test="${ss_pageNumber > '0'}">
+<a href="<ssf:url 
+		action="view_ws_listing" binderId="${ssDefinitionEntry.id}"><ssf:param
+		name="type" value="whatsNew"/><ssf:param
+		name="page" value="${ss_pageNumber - 1}"/></ssf:url>" >
+<img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
+  title="<ssf:nlt tag="general.previousPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_pageNumber || ss_pageNumber <= '0'}">
+<img src="<html:imagesPath/>pics/sym_arrow_left_g.gif"/>
+</c:if>
+<c:if test="${!empty ss_whatsNewBinder}">
+<a href="<ssf:url 
+		action="view_ws_listing" binderId="${ssDefinitionEntry.id}"><ssf:param
+		name="type" value="whatsNew"/><ssf:param
+		name="page" value="${ss_pageNumber + 1}"/></ssf:url>" >
+<img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
+  title="<ssf:nlt tag="general.nextPage"/>"/>
+</a>
+</c:if>
+<c:if test="${empty ss_whatsNewBinder}">
+<img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
+</c:if>
+</div>
+<div>
+  <c:forEach var="entry" items="${ss_whatsNewBinder}">
+    <jsp:useBean id="entry" type="java.util.Map" />
+    <li>
+		<c:set var="isDashboard" value="yes"/>
+		<ssf:titleLink hrefClass="ss_link_2"
+			entryId="${entry._docId}" binderId="${entry._binderId}" 
+			entityType="${entry._entityType}" 
+			namespace="${ss_namespace}" 
+			isDashboard="${isDashboard}" dashboardType="${ssDashboard.scope}">
+			<ssf:param name="url" useBody="true">
+				<ssf:url adapter="true" portletName="ss_forum" folderId="${entry._binderId}" 
+				  action="view_folder_entry" entryId="${entry._docId}" actionUrl="true" />
+			</ssf:param>
+			<c:out value="${entry.title}" escapeXml="false"/>
+		</ssf:titleLink>
+	 
+	  <br/>
+	  <span>
+		<ssf:showUser user="<%=(com.sitescape.team.domain.User)entry.get("_principal")%>" 
+		  titleStyle="ss_link_1" /> 
+	  </span>
+	  
+	  <span class="ss_link_4">
+	    <fmt:formatDate timeZone="${ssUser.timeZone.ID}"
+          value="${entry._modificationDate}" type="both" 
+	      timeStyle="short" dateStyle="medium" />
+	  </span>
+	   
+	  <span class="ss_link_2">
+		<c:set var="path" value=""/>
+		<c:if test="${!empty ss_whatsNewBinderFolders[entry._binderId]}">
+			<c:set var="path" value="${ss_whatsNewBinderFolders[entry._binderId]}"/>
+			<c:set var="title" value="${ss_whatsNewBinderFolders[entry._binderId].title} (${ss_whatsNewBinderFolders[entry._binderId].parentBinder.title})"/>
+		</c:if>
+		<c:set var="isDashboard" value="yes"/>
+		<c:if test="${!empty path}">
+    		<br/><a href="javascript: ;"
+				onClick="return ss_gotoPermalink('${entry._binderId}', '${entry._binderId}', 'folder', '${ss_namespace}', 'yes');"
+				title="${path}"
+				><span>${title}</span></a>
+		</c:if>
+	  </span>&nbsp;<img src="<html:rootPath/>images/icons/folder_cyan_sm.png" alt="folder" width="11" height="10" hspace="2" border="0" align="absmiddle" />
+	  <c:if test="${!empty entry._desc}">
+	    <br/>
+	    <span class="ss_summary"><ssf:textFormat 
+	      formatAction="limitedDescription" 
+	      textMaxWords="10">${entry._desc}</ssf:textFormat></span>
+	  </c:if>
+	
+    </li><br/>
+  </c:forEach>
+</div>
+</c:if>
+
 <div width="100%" style="background-color:azure; padding:20px;">
 	<span class="ss_bold">${ssDefinitionEntry.title}</span>
 	<br/>
