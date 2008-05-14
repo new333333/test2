@@ -107,8 +107,9 @@ public class DefinitionUtils {
 		if (strUserDisplayStyle == null) { strUserDisplayStyle = ""; }
 		
 		if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(strUserDisplayStyle)) {
-			//In accessible mode, always force the view type to accessible mode
-			viewType = Definition.VIEW_STYLE_ACCESSIBLE;
+			//In accessible mode, force the view type to accessible mode (but only for folders)
+			if (root.attributeValue("type").equals(String.valueOf(Definition.FOLDER_VIEW)))
+				viewType = Definition.VIEW_STYLE_ACCESSIBLE;
 		}
 		return viewType;
    }

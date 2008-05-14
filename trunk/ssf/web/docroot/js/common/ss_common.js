@@ -894,6 +894,29 @@ function ss_showDashboardPageDiv(s, divId) {
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
 
+function ss_showWhatsNewPage(obj, binderId, type, currentPage, direction, divId, namespace) {
+	if (currentPage == "") currentPage = "0";
+	var page = parseInt(currentPage);
+	if (direction == 'next') page = page + 1;
+	if (direction == 'previous') page = page - 1;
+	if (ss_userDisplayStyle == "accessible") {
+		//In accessible mode, redraw the whole page
+		var url = obj.href;
+		self.location.href = url;
+	} else {
+		ss_setupStatusMessageDiv();
+		ss_random++;
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"get_whats_new_page", type:type, page:page, namespace:namespace, rn:ss_random}, "__ajax_relevance");
+		ss_fetch_url(url, ss_showWhatsNewPageDiv, divId+namespace)
+	}
+}
+function ss_showWhatsNewPageDiv(s, divId) {
+	var divObj = self.document.getElementById(divId);
+	divObj.innerHTML = s;
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+
 //Function to create a named div in the body
 function ss_createDivInBody(divId, className) {
 	var divObj = document.getElementById(divId);
