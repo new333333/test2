@@ -85,5 +85,6 @@
 		<beanMapping qname="ns:TemplateBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TemplateBrief"/>
 		<beanMapping qname="ns:TemplateCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TemplateCollection"/>
 		<beanMapping qname="ns:Timestamp" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Timestamp"/>
+		<beanMapping qname="ns:Workflow" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Workflow"/>
 	</service>
 </deployment>

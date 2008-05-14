@@ -46,6 +46,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.ws.ElementBuilder;
@@ -56,6 +57,7 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.remoting.ws.model.FolderEntryBrief;
 import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.Timestamp;
+import com.sitescape.team.remoting.ws.model.Workflow;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
@@ -191,7 +193,18 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		// FolderEntry specific
 		entryModel.setDocNumber(entry.getDocNumber());
 		entryModel.setDocLevel(entry.getDocLevel());
-		entryModel.setHref(WebUrlUtil.getEntryViewURL(entry));	
+		entryModel.setHref(WebUrlUtil.getEntryViewURL(entry));
+		for (WorkflowState state:entry.getWorkflowStates()) {
+			Workflow wfModel = new Workflow();
+			wfModel.setTokenId(state.getTokenId());
+			wfModel.setDefinitionId(state.getDefinition().getId());
+			wfModel.setState(state.getState());
+			wfModel.setThreadName(state.getThreadName());
+			if (state.getWorkflowChange() != null) {
+				wfModel.setModification(toTimestampModel(state.getWorkflowChange()));
+			}
+			entryModel.addWorkflow(wfModel);
+		}
 	}
 	
 	protected void fillPrincipalModel(com.sitescape.team.remoting.ws.model.Principal principalModel, Principal entry) {
