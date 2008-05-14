@@ -57,6 +57,7 @@ import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractControllerRetry;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.RelevanceDashboardHelper;
 import com.sitescape.team.web.util.WebHelper;
@@ -105,7 +106,9 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		if (op.equals(WebKeys.OPERATION_GET_RELEVANCE_DASHBOARD)) {
 			return ajaxGetRelevanceDashboard(request, response);
 		} else if (op.equals(WebKeys.OPERATION_GET_RELEVANCE_DASHBOARD_PAGE)) {
-				return ajaxGetRelevanceDashboardPage(request, response);
+			return ajaxGetRelevanceDashboardPage(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_WHATS_NEW_PAGE)) {
+			return ajaxGetWhatsNewPage(request, response);
 		} else if (op.equals(WebKeys.OPERATION_SHARE_THIS_BINDER)) {
 			if (formData.containsKey("okBtn")) {
 				Map model = new HashMap();
@@ -238,6 +241,24 @@ public class RelevanceAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.USER_PRINCIPAL, user);
 		setupDashboardPageBeans(this, type, request, response, model);
 		return new ModelAndView("forum/relevance_dashboard/ajax_page", model);
+	}
+	
+	private ModelAndView ajaxGetWhatsNewPage(RenderRequest request, 
+			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
+        Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		Binder binder = getBinderModule().getBinder(binderId);
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+		String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
+		String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
+		Map model = new HashMap();
+		model.put(WebKeys.BINDER, binder);
+		model.put(WebKeys.TYPE, type);
+		model.put(WebKeys.PAGE_NUMBER, page);
+		model.put(WebKeys.NAMESPACE, namespace);
+		model.put(WebKeys.USER_PRINCIPAL, user);
+		BinderHelper.setupWhatsNewBinderBeans(this, binder, model, page);
+		return new ModelAndView("forum/whats_new_page_ajax", model);
 	}
 	
 	private ModelAndView ajaxShareThisBinder(AllModulesInjected bs, RenderRequest request, 
