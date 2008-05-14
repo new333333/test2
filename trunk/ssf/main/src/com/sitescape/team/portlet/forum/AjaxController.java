@@ -58,7 +58,7 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.dom4j.Document;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.CalendarViewRangeDates;

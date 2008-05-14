@@ -51,7 +51,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.Node;
 import org.dom4j.io.DocumentSource;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.license.LicenseException;
 import com.sitescape.team.util.NLT;

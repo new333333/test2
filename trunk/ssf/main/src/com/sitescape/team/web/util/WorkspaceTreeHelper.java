@@ -48,7 +48,7 @@ import org.dom4j.Document;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
