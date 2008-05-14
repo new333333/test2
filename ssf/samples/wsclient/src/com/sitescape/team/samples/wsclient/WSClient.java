@@ -81,8 +81,9 @@ public class WSClient extends WSClientBase
 				}
 				wsClient.fetchAndPrintIdentifier("TeamingService", "folder_addFolderEntry", new Object[] {null, Long.parseLong(args[1]), args[2], s, filename}, filename);
 			} else if(args[0].equals("addWorkflow")) {
-				String stateName = null;
 				wsClient.justDoIt("TeamingService", "folder_addEntryWorkflow", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), args[3]});
+			} else if(args[0].equals("modifyWorkflow")) {
+				wsClient.justDoIt("TeamingService", "folder_modifyWorkflowState", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2]), Long.parseLong(args[3]), args[4]});
 			} else if(args[0].equals("addReply")) {
 				String s = readText(args[4]);
 				System.out.println("XML: " + s);
@@ -275,6 +276,7 @@ public class WSClient extends WSClientBase
 		System.out.println("addEntry <folder id> <definition id> <entryDataXMLString> [<attachmentFileName>]");
 		System.out.println("addReply <folder id> <entry id> <definition id> <entryDataXMLString>");
 		System.out.println("addWorkflow <folder id> <entry id> <definition id>");
+		System.out.println("modifyWorkflow <folder id> <entry id> <state id> <toState");
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
 		System.out.println("uploadFile <folder id> <entry id> <fileDataFieldName> <filename>");
 		System.out.println("uploadFileStaged <folder id> <entry id> <fileDataFieldName> <fileName> <stagedFileRelativePath>");

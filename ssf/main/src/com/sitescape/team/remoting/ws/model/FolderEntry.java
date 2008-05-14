@@ -29,13 +29,15 @@
 package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
-
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 public class FolderEntry extends Entry implements Serializable {
 
 	private String docNumber;
 	private int docLevel;
 	private String href;
-	
+	private List<Workflow> workflows = new ArrayList();
 	public int getDocLevel() {
 		return docLevel;
 	}
@@ -58,6 +60,20 @@ public class FolderEntry extends Entry implements Serializable {
 
 	public void setHref(String href) {
 		this.href = href;
+	}
+	public Workflow[] getWorkflows() {
+		Workflow[] array = new Workflow[workflows.size()];
+		return workflows.toArray(array);		
+	}
+	public void setWorkflows(Workflow[] workflows) {
+		if (workflows != null)
+			this.workflows = Arrays.asList(workflows); 
+		else
+			this.workflows = new ArrayList<Workflow>();
+	}
+	// Convenience method. Not part of the API. 
+	public void addWorkflow(Workflow workflow) {
+		this.workflows.add(workflow);
 	}
 
 }
