@@ -250,6 +250,14 @@ public class WorkspaceTreeHelper {
 			Map tagResults = TagUtil.uniqueTags(bs.getBinderModule().getTags(binder));
 			model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 			model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
+			
+			String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, "");
+			model.put(WebKeys.TYPE, type);
+			String page = PortletRequestUtils.getStringParameter(request, WebKeys.URL_PAGE, "0");
+			model.put(WebKeys.PAGE_NUMBER, page);
+			if (type.equals(WebKeys.URL_WHATS_NEW)) 
+				BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, page);
+			
 		} catch(NoBinderByTheIdException e) {
 		}
 		
