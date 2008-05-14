@@ -254,6 +254,7 @@
 	<!-- Template for the Portlet Mode - Parameter Handler Mapping Beans -->
 	<bean id="portletModeParameterHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeParameterHandlerMapping" lazy-init="true" abstract="true">
         <property name="order"><value>10</value></property>
+		<property name="applyWebRequestInterceptorsToRenderPhaseOnly"><value>false</value></property>
 		<property name="interceptors">
 			<list>
 				<ref bean="portletParameterMappingInterceptor"/>
@@ -274,6 +275,7 @@
 	<!-- Template for the Portlet Mode Handler Mapping Beans -->
 	<bean id="portletModeHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeHandlerMapping" lazy-init="true" abstract="true">
         <property name="order"><value>20</value></property>
+		<property name="applyWebRequestInterceptorsToRenderPhaseOnly"><value>false</value></property>
 		<property name="interceptors">
 			<list>
 				<!-- Check user login -->
@@ -305,7 +307,7 @@
 	</bean>
 
 	<!-- Used for open-session-in-view pattern -->
-	<bean id="portletOpenSessionInViewInterceptor" class="com.sitescape.team.web.portlet.handler.OpenSessionInViewInterceptor">
+	<bean id="portletOpenSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 	</bean>
 	

@@ -48,7 +48,7 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
 import org.dom4j.Document;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.BinderComparator;

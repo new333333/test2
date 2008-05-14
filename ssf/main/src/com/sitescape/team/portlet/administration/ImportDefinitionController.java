@@ -46,7 +46,7 @@ import javax.portlet.RenderResponse;
 import org.dom4j.Document;
 import org.dom4j.io.SAXReader;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.portletadapter.MultipartFileSupport;

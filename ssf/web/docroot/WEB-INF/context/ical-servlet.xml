@@ -31,7 +31,7 @@
 	     user session), even if RSS requests are not run within such context.
 	     If the implementation diverges further, we may need to define a
 	     separate interceptor. -->
-	<bean id="openSessionInViewInterceptor" class="com.sitescape.team.web.servlet.handler.OpenSessionInViewInterceptor">
+	<bean id="openSessionInViewInterceptor" class="org.springframework.orm.hibernate3.support.OpenSessionInViewInterceptor">
 		<property name="sessionFactory"><ref bean="sessionFactory"/></property>
 		<!--<property name="singleSession"><value>false</value></property>-->
 	</bean>
