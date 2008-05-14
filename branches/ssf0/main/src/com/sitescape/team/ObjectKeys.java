@@ -48,6 +48,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_ZONE_ID_FOR_V1="1";
 	
 	// reserved internalIds for Definitions (not necessarily databaseId)
+	public static final String DEFAULT_DISCUSSIONS_WORKSPACE_DEF="402880e619c6250f0119c62794b9000c";
 	public static final String DEFAULT_FOLDER_DEF="402883b90cc53079010cc539bf260001";
 	public static final String DEFAULT_FOLDER_ENTRY_DEF="402883b90cc53079010cc539bf260002";
 	public static final String DEFAULT_WORKSPACE_DEF="402883b90cc53079010cc539bf260005";
@@ -81,6 +82,7 @@ public interface ObjectKeys {
 	public static final String DEFAULT_USER_WORKSPACE_CONFIG="402883b90d0de1f3010d0df5582b0004";
 	public static final String DEFAULT_TEAM_WORKSPACE_CONFIG="402883c1129b1f8101129b28bc620004";
 	public static final String DEFAULT_PROJECT_WORKSPACE_CONFIG="402883c1129b1f8101129b28bc620005";
+	public static final String DEFAULT_DISCUSSIONS_WORKSPACE_CONFIG="402880e619c6250f0119c62794b9000c";
 	
 	//reserved internalIds for binders
 	public static final String PROFILE_ROOT_INTERNALID="402883b90d0de1f3010d0df5582b0005";
@@ -159,6 +161,7 @@ public interface ObjectKeys {
     
     public static final int LISTING_MAX_PAGE_SIZE = 100;
     public static final int MAX_TAG_LENGTH = 60;
+    public static final int MAX_BINDER_ENTRIES_RESULTS = 2000;
     public static final long SEEN_MAP_TIMEOUT = (long)30*24*60*60*1000;  //older than 30 days return seen
     
     public static final String BINDER_PROPERTY_FOLDER_COLUMNS = "folderColumns";
@@ -186,10 +189,8 @@ public interface ObjectKeys {
     public static final String RELEVANCE_DASHBOARD_ACTIVITIES = "activities";
     public static final String RELEVANCE_DASHBOARD_PROFILE = "profile";
     public static final String RELEVANCE_DASHBOARD_TASKS_AND_CALENDARS = "tasks_and_calendars";
-    public static final String RELEVANCE_DASHBOARD_VIEWED_ENTRIES = "viewed_entries";
     public static final String RELEVANCE_DASHBOARD_WHATS_NEW = "whats_new";
     public static final String RELEVANCE_DASHBOARD_TRACKED_ITEMS = "trackedItems";
-    public static final String RELEVANCE_DASHBOARD_HIDDEN = "hiddenDashboard";
     public static final String RELEVANCE_TRACKED_BINDERS = "trackedBinders";
     public static final String RELEVANCE_TRACKED_CALENDARS = "trackedCalendars";
     public static final String RELEVANCE_TRACKED_PEOPLE = "trackedPeople";
@@ -319,6 +320,7 @@ public interface ObjectKeys {
     public static final String FIELD_FILE_ID="_fileID";
     
     public static final String FIELD_APPLICATION_POST_URL="postUrl";
+    public static final String FIELD_APPLICATION_TRUSTED="trusted";
     public static final String FIELD_BINDER_LIBRARY="library";
     public static final String FIELD_BINDER_NAME="name";
     public static final String FIELD_BINDER_UNIQUETITLES="uniqueTitles";

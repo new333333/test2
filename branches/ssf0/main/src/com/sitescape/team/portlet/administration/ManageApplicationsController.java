@@ -49,11 +49,11 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 public class ManageApplicationsController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
@@ -89,10 +89,12 @@ public class ManageApplicationsController extends  SAbstractController {
 			String title = PortletRequestUtils.getStringParameter(request, "title", "");
 			String description = PortletRequestUtils.getStringParameter(request, "description", "");
 			String postUrl = PortletRequestUtils.getStringParameter(request, "postUrl", "");
+			String trusted = PortletRequestUtils.getStringParameter(request, "trusted", "");
 			Map updates = new HashMap();
 			updates.put(ObjectKeys.FIELD_ENTITY_TITLE, title);
 			updates.put(ObjectKeys.FIELD_ENTITY_DESCRIPTION, description);
 			updates.put(ObjectKeys.FIELD_APPLICATION_POST_URL, postUrl);
+			updates.put(ObjectKeys.FIELD_APPLICATION_TRUSTED, trusted);
 			getProfileModule().modifyEntry(binderId, applicationId, new MapInputData(updates));
 			response.setRenderParameter(WebKeys.URL_ENTRY_ID, applicationId.toString());
 
@@ -122,9 +124,9 @@ public class ManageApplicationsController extends  SAbstractController {
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
 
 		Document searchFilter = DocumentHelper.createDocument();
-		Element field = searchFilter.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		Element field = searchFilter.addElement(Constants.FIELD_ELEMENT);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(EntityIndexUtils.ENTRY_TYPE_APPLICATION);
     	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
     	

@@ -32,6 +32,10 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 
+<c:if test="${ss_discussionWorkspaceView}">
+<%@ include file="/WEB-INF/jsp/definition_elements/discussion/discussion_workspace_binder_list.jsp" %>
+</c:if>
+<c:if test="${empty ss_discussionWorkspaceView}">
 <script type="text/javascript">
 function wsTree_showId(id, obj, action) {
 	//Build a url to go to
@@ -48,3 +52,4 @@ function wsTree_showId(id, obj, action) {
 
 <ssf:tree treeName="wsTree" treeDocument="${ssWsDomTree}" 
   topId="${ssDefinitionEntry.id}" highlightNode="${ssDefinitionEntry.id}" rootOpen="true" />
+</c:if>

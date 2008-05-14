@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class AttachmentsField extends Field {
+import java.io.Serializable;
+
+public class AttachmentsField extends Field implements Serializable {
 
 	private Attachment[] attachments;
 	

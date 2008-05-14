@@ -36,7 +36,7 @@
 <div id="ss_nextPage" align="right">
 <c:if test="${ss_sharedEntitiesPage > '0'}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', 'shared', '${ss_sharedEntitiesPage}', 'previous', 'ss_dashboardShared${renderResponse.namespace}');return false;">
+  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'previous', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
   title="<ssf:nlt tag="general.previousPage"/>"/>
 </a>
@@ -46,7 +46,7 @@
 </c:if>
 <c:if test="${!empty ss_sharedEntities}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', 'shared', '${ss_sharedEntitiesPage}', 'next', 'ss_dashboardShared${renderResponse.namespace}');return false;">
+  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'shared', '${ss_sharedEntitiesPage}', 'next', 'ss_dashboardShared', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
   title="<ssf:nlt tag="general.nextPage"/>"/>
 </a>

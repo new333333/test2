@@ -98,6 +98,7 @@ import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
+import com.sitescape.team.search.SearchUtils;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
@@ -120,6 +121,7 @@ import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.util.BrowserSniffer;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Criteria;
 public class BinderHelper {
 	public static final String RELEVANCE_DASHBOARD_PORTLET="ss_relevance_dashboard";
 	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
@@ -270,8 +272,10 @@ public class BinderHelper {
 	    		model.put(WebKeys.NAMESPACE, namespace);
 	        }
 	        Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			//Get the dashboard initial tab if one was passed in
+			String type = PortletRequestUtils.getStringParameter(request, WebKeys.URL_TYPE, ObjectKeys.RELEVANCE_DASHBOARD_PROFILE);
 	        RelevanceDashboardHelper.setupRelevanceDashboardBeans(bs, request, response, 
-	        		binderId, ObjectKeys.RELEVANCE_DASHBOARD_PROFILE, model);
+	        		binderId, type, model);
 	    	return new ModelAndView(WebKeys.VIEW_RELEVANCE_DASHBOARD, model); 		
 		} else if (BLOG_SUMMARY_PORTLET.equals(displayType)) {
 			return setupSummaryPortlets(bs, request, prefs, model, WebKeys.VIEW_BLOG_SUMMARY);		
@@ -1664,6 +1668,66 @@ public class BinderHelper {
 				}
 			}
 		}		
+	}
+	
+	public static void setupWhatsNewBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page) {		
+		//Get the documents bean for the documents th the user just authored or modified
+		Map options = new HashMap();
+		if (page == null || page.equals("")) page = "0";
+		Integer pageNumber = Integer.valueOf(page);
+		if (pageNumber < 0) pageNumber = 0;
+		model.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
+		int pageStart = pageNumber * Integer.valueOf(SPropsUtil.getString("relevance.entriesPerBox"));
+		
+		//Prepare for a standard search operation
+		String entriesPerPage = SPropsUtil.getString("search.records.listed");
+		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
+		
+		Integer searchUserOffset = 0;
+		Integer searchLuceneOffset = 0;
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
+		
+		Integer maxHits = new Integer(entriesPerPage);
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+		
+		Integer summaryWords = new Integer(20);
+		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWords);
+		
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
+		if (searchUserOffset > 0) {
+			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+		}
+		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(pageStart));
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		List<String> trackedPlaces = new ArrayList<String>();
+		trackedPlaces.add(binder.getId().toString());
+		Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, trackedPlaces);
+		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+
+		model.put(WebKeys.WHATS_NEW_BINDER, results.get(ObjectKeys.SEARCH_ENTRIES));
+
+		Map places = new HashMap();
+    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
+    	if (items != null) {
+	    	Iterator it = items.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+				if (id != null) {
+					Long bId = new Long(id);
+					if (!places.containsKey(id)) {
+						Binder place = bs.getBinderModule().getBinder(bId);
+						places.put(id, place);
+					}
+				}
+	    	}
+    	}
+    	model.put(WebKeys.WHATS_NEW_BINDER_FOLDERS, places);
 	}
 	
 	public static void sendMailOnEntryCreate(AllModulesInjected bs, ActionRequest request, 

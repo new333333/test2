@@ -1,14 +1,15 @@
 package com.sitescape.team.module.definition.notify;
 
 import java.io.Writer;
-import java.util.List;
 import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
-import java.util.Map;
+
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
@@ -92,4 +93,5 @@ public class NotifyVisitor {
 		adapterUrl.setParameter(WebKeys.URL_FILE_ID, fileId);
 		return adapterUrl.toString();
 	}
+
 }

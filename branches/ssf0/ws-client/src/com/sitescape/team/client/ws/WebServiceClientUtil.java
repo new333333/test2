@@ -43,6 +43,7 @@ import javax.activation.DataSource;
 import javax.activation.FileDataSource;
 import javax.xml.soap.SOAPException;
 
+import org.apache.axis.EngineConfiguration;
 import org.apache.axis.attachments.AttachmentPart;
 import org.apache.axis.client.Call;
 import org.apache.axis.client.Stub;
@@ -76,12 +77,12 @@ public class WebServiceClientUtil {
 	 */
 	public static void setUserCredentialWSSecurity(Stub stub, String username, String password, boolean passwordText) {
 		if(passwordText) {
-			stub._setProperty(UsernameToken.PASSWORD_TYPE, WSConstants.PASSWORD_TEXT);
+			stub._setProperty(UsernameToken.PASSWORD_TYPE, WSConstants.PW_TEXT);
 			stub._setProperty(WSHandlerConstants.PW_CALLBACK_REF,
 					new PasswordCallbackText(password));
 		}
 		else {
-			stub._setProperty(UsernameToken.PASSWORD_TYPE, WSConstants.PASSWORD_DIGEST);
+			stub._setProperty(UsernameToken.PASSWORD_TYPE, WSConstants.PW_DIGEST);
 			stub._setProperty(WSHandlerConstants.PW_CALLBACK_REF,
 					new PasswordCallbackDigest(password));
 		}
@@ -239,6 +240,29 @@ public class WebServiceClientUtil {
 		return count;
 	}
 
+	/**
+	 * Returns the minimum engine configuration needed for WS-Security authentication.
+	 * If you need additional or custom configuration, you can either store it in a
+	 * config file and load it at runtime or supply your own version of in-line
+	 * configuration.
+	 * @return
+	 */
+	public static EngineConfiguration getMinimumEngineConfigurationWSSecurity() {
+	    java.lang.StringBuilder sb = new java.lang.StringBuilder();
+	    sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
+	    sb.append("<deployment xmlns=\"http://xml.apache.org/axis/wsdd/\" xmlns:java=\"http://xml.apache.org/axis/wsdd/providers/java\">\r\n");
+	    sb.append("<transport name=\"http\" pivot=\"java:org.apache.axis.transport.http.CommonsHTTPSender\" />\r\n");
+	    sb.append("<globalConfiguration >\r\n");
+	    sb.append("<requestFlow >\r\n");
+	    sb.append("<handler type=\"java:org.apache.ws.axis.security.WSDoAllSender\" >\r\n");
+	    sb.append("<parameter name=\"action\" value=\"UsernameToken\"/>\r\n");
+	    sb.append("</handler>\r\n");
+	    sb.append("</requestFlow >\r\n");
+	    sb.append("</globalConfiguration >\r\n");
+	    sb.append("</deployment>\r\n");
+	    return new org.apache.axis.configuration.XMLStringProvider(sb.toString());
+	}
+	
 	private static void move(File source, File destination) throws IOException {
 		if(!source.exists())
 			throw new IOException("Could not find source file " + source.getAbsolutePath());

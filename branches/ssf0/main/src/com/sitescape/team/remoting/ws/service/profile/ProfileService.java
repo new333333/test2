@@ -28,11 +28,18 @@
  */
 package com.sitescape.team.remoting.ws.service.profile;
 
+import com.sitescape.team.remoting.ws.model.Principal;
+import com.sitescape.team.remoting.ws.model.PrincipalCollection;
+
 public interface ProfileService {
 
-	public String profile_getAllPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords);
+	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords);
 	
+	public PrincipalCollection profile_getPrincipals(String accessToken, int firstRecord, int maxRecords);
+
 	public String profile_getPrincipalAsXML(String accessToken, long binderId, long principalId);
+	
+	public Principal profile_getPrincipal(String accessToken, long binderId, long principalId);
 	
 	public long profile_addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML);
 	
@@ -43,5 +50,7 @@ public interface ProfileService {
 	public void profile_modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML);
 	
 	public void profile_deletePrincipal(String accessToken, long binderId, long principalId);
+	
 	public long profile_addUserWorkspace(String accessToken, long userId);
+	
 }

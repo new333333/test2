@@ -31,15 +31,15 @@ package com.sitescape.team.module.ic.impl;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.xmlrpc.*;
-import org.joda.time.DateTime;
+import org.apache.xmlrpc.XmlRpcClient;
+import org.apache.xmlrpc.XmlRpcException;
 import org.joda.time.YearMonthDay;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -255,34 +255,26 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	}
 	
 	private String findUserIdByScreenName(String screenname) throws ICException {
-		if (!isEnabled()) {
-			return null;
-		}
+		if (!isEnabled()) return null;
 		
-		String userId = null;
-		
-		getSessionId();
-
 		Vector result = (Vector)findUserByScreenName(screenname);
 		
 		// the result is buried 4 deep (vectors within vectors)
 		try {
-		userId = (String) ((Vector) ((Vector) ((Vector)result).get(0))
+			return (String) ((Vector) ((Vector) ((Vector)result).get(0))
 				.get(0)).get(1);
 		} catch (ArrayIndexOutOfBoundsException e) {
 			// leave userId null
 		}
-		return userId;
+		return null;
 	}
 
 	private Object findUserByScreenName(String screenname) throws ICException {
-		getSessionId();
-
 		// Build our parameter list.
 		Vector users = new Vector();
-		users.add(screenname);
+		users.add(User.getNormalizedConferencingName(screenname));
 		Vector params = new Vector();
-		params.addElement(sessionId);
+		params.addElement(getSessionId());
 		params.addElement("");
 		params.addElement(users);
 
@@ -301,10 +293,11 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 
 	public boolean getScreenNameExists(String screenname) throws ICException {
 		if (!isEnabled()) return false;
+		screenname = User.getNormalizedConferencingName(screenname);
 		Object result = findUserByScreenName(screenname);
 		// System.out.println("Object is " + result);
 		// the result is buried 4 deep (vectors within vectors)
-	
+		if (result == null) return false;
 		String screenName = (String) ((Vector) ((Vector) ((Vector) (result))
 				.get(0)).get(0)).get(0);
 	
@@ -314,9 +307,9 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 			return false;
 	}
 
-	private void getSessionId() throws ICException {
+	private String getSessionId() throws ICException {
 		if (sessionId.length() > 0) {
-			return;
+			return sessionId;
 		}
 
 		List result = null;
@@ -337,15 +330,12 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 			throw new ICException(e);
 		}
 		sessionId = (String) result.get(0);
+		return sessionId;
 	}
 
 	public void sendIm(String from, String recipient, String message) throws ICException {
 		if (!isEnabled()) return;
-		List result = null;
 
-		if (sessionId.length() <= 0) {
-			getSessionId();
-		}
 		if (from.length() == 0)
 			from = "aspen";
 		from = from + "@" + jabberDomain;
@@ -353,14 +343,14 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 
 		// Build our parameter list.
 		Vector params = new Vector();
-		params.addElement(sessionId);
-		params.addElement(from);
-		params.addElement(recipient);
+		params.addElement(getSessionId());
+		params.addElement(User.getNormalizedConferencingName(from));
+		params.addElement(User.getNormalizedConferencingName(recipient));
 		params.addElement(message);
 
 		// Call the server, and get our result.
 		try {
-			result = (List) server.execute(SEND_IM, params);
+			server.execute(SEND_IM, params);
 		} catch (XmlRpcException e) {
 			logger.error(e);
 		} catch (IOException e) {
@@ -372,8 +362,6 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		if (!isEnabled()) return null;
 		Object result = null;
 		
-		getSessionId();
-
 		String userId = findUserIdByScreenName(screenname);
 
 		if (userId == null) {
@@ -385,7 +373,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		for (int i = 0; i < zonFieldSet.length; i++)
 			fields.add(zonFieldSet[i]);
 		Vector params = new Vector();
-		params.addElement(sessionId);
+		params.addElement(getSessionId());
 		params.addElement(userId);
 		params.addElement(fields);
 		try {
@@ -405,9 +393,6 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	public int deleteUser(String screenname) throws ICException {
 		if (!isEnabled()) return 0;
 		Object result = null;
-
-		getSessionId();
-
 		String userId = findUserIdByScreenName(screenname);
 
 		if (userId == null) {
@@ -415,7 +400,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		}
 
 		Vector params = new Vector();
-		params.addElement(sessionId);
+		params.addElement(getSessionId());
 		params.addElement(userId);
 		try {
 			result = (List) server.execute(REMOVE_CONTACT, params);
@@ -443,12 +428,9 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 				return commId;
 		}
 
-		if (sessionId.length() <= 0) {
-			getSessionId();
-		}
 
 		Vector params = new Vector();
-		params.addElement(sessionId);
+		params.addElement(getSessionId());
 		params.addElement(new Integer(1));
 		params.addElement(new Integer(9999));
 		try {
@@ -485,18 +467,13 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		// {"","","","","","","","","","","","","","","","","","","","","","","","","","","","","0","0","1","",""};
 
 		if (!isEnabled()) return false;
-		Object result = null;
-
-		if (sessionId.length() <= 0) {
-			getSessionId();
-		}
 
 		if (adduserparams.get("Communityid") == null) {
 			adduserparams.put("Communityid", defaultCommunityId);
 		}
 
 		Vector params = new Vector();
-		params.addElement(sessionId);
+		params.addElement(getSessionId());
 		for (int i = 0; i < addUserParams.length; i++) {
 			if (adduserparams.get(addUserParams[i]) == null)
 				params.addElement(addUserParamDefaultValues[i]);
@@ -504,7 +481,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 				params.addElement(adduserparams.get(addUserParams[i]));
 		}
 		try {
-			result = (List) server.execute(ADD_USER, params);
+			server.execute(ADD_USER, params);
 		} catch (XmlRpcException e) {
 			logger.error(e);
 			return false;
@@ -517,19 +494,12 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 
 	public boolean modUser(HashMap moduserparams) throws ICException {
 		if (!isEnabled()) return false;
-
-		Object result = null;
-
-		if (sessionId.length() <= 0) {
-			getSessionId();
-		}
-
 		if (moduserparams.get("Communityid") == null) {
 			moduserparams.put("Communityid", defaultCommunityId);
 		}
 
 		Vector params = new Vector();
-		params.addElement(sessionId);
+		params.addElement(getSessionId());
 		for (int i = 0; i < modUserParams.length; i++) {
 			if (moduserparams.get(modUserParams[i]) == null)
 				params.addElement(modUserParamDefaultValues[i]);
@@ -537,7 +507,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 				params.addElement(moduserparams.get(modUserParams[i]));
 		}
 		try {
-			result = (List) server.execute(MOD_USER, params);
+			server.execute(MOD_USER, params);
 		} catch (XmlRpcException e) {
 			logger.error(e);
 			return false;
@@ -601,7 +571,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 	private Vector getMeetingParticipants(Set userIds) {
 		Vector participants = new Vector();
 
-		if (userIds == null) {
+		if (userIds == null || userIds.isEmpty()) {
 			return participants;
 		}
 
@@ -618,12 +588,12 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		while (userIt.hasNext()) {
 			User participant = (User) userIt.next();
 			Vector part = new Vector();
-			part.add(participant.getZonName());
+			part.add(User.getNormalizedConferencingName(participant.getZonName()));
 			part.add(participant.getTitle());
 			part.add(participant.getPhone());
 			part.add(participant.getEmailAddress());
 			part.add(0);
-			part.add(participant.getZonName());// TODO: is this right value?
+			part.add(User.getNormalizedConferencingName(participant.getZonName()));// TODO: is this right value?
 			part.add(participant.equals(user) ? 1 : 0);
 
 			participants.add(part);
@@ -642,7 +612,6 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		// "phone",
 		// "email", "imType", "imScreenName", "moderator" };
 
-		getSessionId();
 
 		/*
 		 * Each participants list element consists of: screenName displayName
@@ -650,7 +619,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		 * screenName moderator (int: 0=normal, 1=moderator)
 		 */
 		Vector params = new Vector();
-		params.addElement(sessionId);
+		params.addElement(getSessionId());
 
 		Vector participantArray = getMeetingParticipants(participantsLongIds);
 		params.addElement(participantArray);
@@ -775,7 +744,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		}
 		
 		Vector params = new Vector();
-		params.addElement(sessionId);
+		params.addElement(getSessionId());
 		params.addElement(userId);
 
 		List result = null;
@@ -856,7 +825,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		params.addElement(recordingURL);
 
 		try {
-			List result = (List) server.execute(REMOVE_RECORDINGS, params);
+			server.execute(REMOVE_RECORDINGS, params);
 			return true;
 		} catch (XmlRpcException e) {
 			throw new ICException(e);

@@ -41,6 +41,7 @@ import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
 import org.dom4j.Element;
 
+import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.InternalException;
 import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.domain.DefinableEntity;
@@ -48,21 +49,25 @@ import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.ReflectHelper;
-import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Validator;
+import org.apache.velocity.tools.view.XMLToolboxManager;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.beans.factory.InitializingBean;
 
 /**
  *
  * @author Jong Kim
  */
-public class NotifyBuilderUtil {
+public class NotifyBuilderUtil implements InitializingBean {
 	public static Log logger = LogFactory.getLog(NotifyBuilderUtil.class);
 	protected VelocityEngine velocityEngine;
 	protected  DefinitionConfigurationBuilder definitionConfigurationBuilder;
 	private static NotifyBuilderUtil instance;
+	protected ClassPathResource configFile;
+	protected Map toolbox;
 	public NotifyBuilderUtil() {
 		if(instance != null)
-			throw new SingletonViolationException(SZoneConfig.class);
+			throw new SingletonViolationException(NotifyBuilderUtil.class);
 		
 		instance = this;
 	}
@@ -79,7 +84,28 @@ public class NotifyBuilderUtil {
 	public static VelocityEngine getVelocityEngine() {
         return getInstance().velocityEngine;
 	}
+	public void setToolboxConfig(String configFile) {
+		this.configFile = new ClassPathResource(configFile);
+ 	}
+	public void afterPropertiesSet() {
+		XMLToolboxManager manager = new XMLToolboxManager();
+		try {
+			manager.load(configFile.getInputStream());
+			toolbox = manager.getToolbox(null);
+		} catch (Exception ex) {
+			logger.error("Error initializing toolbox: " + ex);
+			throw new ConfigurationException("Error initializing toolbox: ", ex);
+	    };
 
+	}
+	public static VelocityContext getVelocityContext(Map args) {
+		Map ctxArgs = new HashMap(getInstance().toolbox);
+		if (args != null) ctxArgs.putAll(args);
+		return new VelocityContext(ctxArgs);
+	}
+	public static VelocityContext getVelocityContext() {
+		return getVelocityContext(null);
+	}
 	private static NotifyBuilderUtil getInstance() {
 		return instance;
 	}
@@ -124,7 +150,7 @@ public class NotifyBuilderUtil {
         }
     }
     protected static void buildElement(DefinableEntity entity, NotifyVisitor visitor,	Element flagElement, Map oArgs) {
-	    VelocityContext ctx = new VelocityContext(oArgs);
+    	VelocityContext ctx = getVelocityContext(oArgs);
 		//Each item property that has a value is added as a "request attribute". 
 		//  The key name is "property_xxx" where xxx is the property name.
 		//At a minimum, make sure the name and caption variables are defined

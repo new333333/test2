@@ -32,13 +32,35 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <ssf:ifLoggedIn>
 <script type="text/javascript">
-var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" portletName="ss_forum" 
+<ssf:ifnotaccessible>
+  var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url 
+  		adapter="true" portletName="ss_forum" 
 		action="__ajax_relevance" actionUrl="false"><ssf:param 
 		name="operation" value="get_relevance_dashboard" /><ssf:param 
 		name="type" value="ss_typePlaceHolder" /><ssf:param 
+		name="page" value="0" /><ssf:param 
 		name="binderId" value="ss_binderIdPlaceHolder" /><ssf:param 
 		name="namespace" value="${renderResponse.namespace}" /><ssf:param 
 		name="rn" value="ss_rnPlaceHolder" /></ssf:url>";
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+  <c:if test="${ssBinder.entityType == 'workspace'}">
+    var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url 
+        action="view_ws_listing" ><ssf:param 
+      	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
+		name="type" value="ss_typePlaceHolder" /><ssf:param 
+		name="type2" value="ss_type2PlaceHolder" /><ssf:param 
+		name="page" value="ss_pagePlaceHolder" /></ssf:url>";
+  </c:if>
+  <c:if test="${ssBinder.entityType == 'folder'}">
+    var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url 
+    	action="view_folder_listing" ><ssf:param 
+      	name="binderId" value="ss_binderIdPlaceHolder"/><ssf:param 
+		name="type" value="ss_typePlaceHolder" /><ssf:param 
+		name="type2" value="ss_type2PlaceHolder" /><ssf:param 
+		name="page" value="ss_pagePlaceHolder" /></ssf:url>";
+  </c:if>
+</ssf:ifaccessible>
 </script>
 
 <% //Tabs %>
@@ -48,27 +70,45 @@ var ss_relevanceAjaxUrl${renderResponse.namespace} = "<ssf:url adapter="true" po
   <ul>
 	<!-- CSS Tabs -->
 <c:if test="${!empty ssRelevanceDashboardConfigElement}">
-	<li class="ss_tabsCCurrent"><a id="ss_relevanceInitialTab${renderResponse.namespace}" href="javascript: ;"
+  <c:if test="${empty ssRDCurrentTab}"><c:set var="ssRDCurrentTab" value="profile" scope="request"/></c:if>
+	<li <c:if test="${ssRDCurrentTab == 'profile'}">class="ss_tabsCCurrent"</c:if>
+	><a 
+	  <c:if test="${ssRDCurrentTab == 'profile'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
+	  href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'profile', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.profile"/></span></a></li>
-	<li><a href="javascript: ;"
+	
+	<li <c:if test="${ssRDCurrentTab == 'whats_new'}">class="ss_tabsCCurrent"</c:if>
+	><a 
+	  <c:if test="${ssRDCurrentTab == 'whats_new'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
+	  href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'whats_new', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
 </c:if>
 <c:if test="${empty ssRelevanceDashboardConfigElement}">
-	<li class="ss_tabsCCurrent"><a id="ss_relevanceInitialTab${renderResponse.namespace}" href="javascript: ;"
+  <c:if test="${empty ssRDCurrentTab}"><c:set var="ssRDCurrentTab" value="whats_new" scope="request"/></c:if>
+	<li <c:if test="${ssRDCurrentTab == 'whats_new'}">class="ss_tabsCCurrent"</c:if>
+	  class="ss_tabsCCurrent"><a 
+	  <c:if test="${ssRDCurrentTab == 'whats_new'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
+	  href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'whats_new', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
 </c:if>
-	<li><a href="javascript: ;"
+	
+	<li <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">class="ss_tabsCCurrent"</c:if>
+	><a 
+	  <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
+	  href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'tasks_and_calendars', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.tasksAndCalendars"/></span></a></li>
-	<li><a href="javascript: ;"
+	
+	<li <c:if test="${ssRDCurrentTab == 'activities'}">class="ss_tabsCCurrent"</c:if>
+	><a 
+	  <c:if test="${ssRDCurrentTab == 'activities'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
+	  href="javascript: ;"
 		onClick="ss_selectRelevanceTab(this, 'activities', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
 		><span><ssf:nlt tag="relevance.tab.activities"/></span></a></li>
-	<li><a href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'viewed_entries', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.viewedEntries"/></span></a></li>
+	
   </ul>
 </div>
 <div class="ss_clear_float"></div>
@@ -79,11 +119,17 @@ var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElemen
 <% //Changeable tab canvas; this gets replaced when a tab is clicked %>
 
 <div id="relevanceCanvas_${renderResponse.namespace}" style="margin:4px 10px 10px 10px;">
+<c:set var="ss_relevanceDashboardNamespace" value="${renderResponse.namespace}" scope="request"/>
 <c:if test="${empty ssRelevanceDashboardConfigElement}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" />
+  <c:if test="${ssRDCurrentTab == 'whats_new'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
 </c:if>
 <c:if test="${!empty ssRelevanceDashboardConfigElement}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" />
+  <c:if test="${ssRDCurrentTab == 'profile'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/profile.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'whats_new'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/whats_new_tab.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/tasks_and_calendars_tab.jsp" /></c:if>
+  <c:if test="${ssRDCurrentTab == 'activities'}"><jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" /></c:if>
 </c:if>
 </div>
 </div>

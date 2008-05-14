@@ -94,30 +94,6 @@
 
  <target id="bck356y" pid="bck356s2" name="VarListEntry" level="4"> <text>definitionId  </text> </target>
 
- <target name="InformalTable" level="5"> <text>Entry type</text> </target>
-
- <target id="bcuwwrb" pid="bck356s2" name="row" level="6"> <text>Entry type</text> </target>
-
- <target id="bcuwwrc" pid="bck356s2" name="row" level="6"> <text>Blog</text> </target>
-
- <target id="bcuwwrd" pid="bck356s2" name="row" level="6"> <text>Calendar</text> </target>
-
- <target id="bcuwwre" pid="bck356s2" name="row" level="6"> <text>Discussion </text> </target>
-
- <target id="bcuwwrf" pid="bck356s2" name="row" level="6"> <text>File folder</text> </target>
-
- <target id="bcuwwrg" pid="bck356s2" name="row" level="6"> <text>Guestbook</text> </target>
-
- <target id="bcuwwrh" pid="bck356s2" name="row" level="6"> <text>Milestone</text> </target>
-
- <target id="bcuwwri" pid="bck356s2" name="row" level="6"> <text>Photo album</text> </target>
-
- <target id="bcuwwrj" pid="bck356s2" name="row" level="6"> <text>Survey</text> </target>
-
- <target id="bcuwwrk" pid="bck356s2" name="row" level="6"> <text>Task</text> </target>
-
- <target id="bcuwwrl" pid="bck356s2" name="row" level="6"> <text>Wiki</text> </target>
-
  <target id="bck356z" pid="bck356s2" name="VarListEntry" level="4"> <text>inputDataAsXML  </text> </target>
 
  <target id="bcqa5ge" pid="bck356s2" name="VarListEntry" level="4"> <text>attachedFileName  </text> </target>
@@ -298,7 +274,7 @@
 
  <target id="bcmnz78" pid="bcmnz71" name="RefSect1" level="3"> <text>Example</text> </target>
 
- <target id="bcmnz79" pid="bcmnz71" name="VarListEntry" level="4"> <text>call.setOperationName(new QName("getWorkspaceTreeAsXML"));                                                                         Object result = call.invoke(new Object[] {new Long(1), new Integer(3)});  </text> </target>
+ <target id="bcmnz79" pid="bcmnz71" name="VarListEntry" level="4"> <text>call.setOperationName(new QName("getWorkspaceTreeAsXML"));                                                                         Object result = call.invoke(new Object[] {new Long(1), new Integer(3), null});  </text> </target>
 
  <target id="bcmnz7a" pid="bcmnz71" name="RefSect1" level="3"> <text>See Also</text> </target>
 

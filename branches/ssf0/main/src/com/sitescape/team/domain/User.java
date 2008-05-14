@@ -229,7 +229,11 @@ public class User extends UserPrincipal implements IndividualPrincipal {
         this.phone = phone;
     }
  
- 
+    public static String getNormalizedConferencingName(String zonName) {
+    	if (Validator.isNull(zonName)) return zonName;
+    	return zonName.replaceAll(" ", "+").toLowerCase();
+    }
+
     /**
      * @hibernate.property length="100"
      */

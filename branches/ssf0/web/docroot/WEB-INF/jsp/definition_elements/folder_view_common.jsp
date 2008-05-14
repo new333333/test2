@@ -537,7 +537,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 	  <ssf:slidingTableColumn>
          <span <%= seenStyle %>>
          <c:if test="${!empty eleName2 && !empty entry1[eleName2]}">
-	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox'}">
+	       <c:if test="${eleType2 == 'selectbox' || eleType2 == 'radio' || eleType2 == 'checkbox' || eleType2 == 'text'}">
 	         <%
 	         	String eleValues = com.sitescape.team.web.util.DefinitionHelper.getCaptionsFromValues(entryDef, eleName2, entry1.get(eleName2).toString());
 	         %>

@@ -71,7 +71,9 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/>
 	<textarea name="description" wrap="virtual" rows="4" cols="80"></textarea><br/><br/>
-		
+	
+	<input type="checkbox" name="trusted" value="true"> <span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span></input><br/><br/>
+	
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
 </form>
 </ssf:expandableArea>
@@ -116,6 +118,8 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/>
 	<textarea name="description" wrap="virtual" rows="4" cols="50">${ssApplication.description}</textarea><br/><br/>
+	
+	<input type="checkbox" name="trusted" value="true" <c:if test="${ssApplication.trusted}">checked</c:if>> <span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span></input><br/><br/>
 </ssf:expandableArea>
 
 <br/>

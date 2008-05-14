@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class FolderEntry extends Entry {
+import java.io.Serializable;
+
+public class FolderEntry extends Entry implements Serializable {
 
 	private String docNumber;
 	private int docLevel;

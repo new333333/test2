@@ -35,6 +35,7 @@ import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.remoting.ws.service.binder.BinderService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
+import com.sitescape.team.remoting.ws.service.definition.DefinitionServiceInternal;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
 import com.sitescape.team.remoting.ws.service.folder.MigrationService;
 import com.sitescape.team.remoting.ws.service.ical.IcalService;
@@ -86,7 +87,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.definition#getDefinitionConfigAsXML}.
 	 */
 	public String getDefinitionConfigAsXML() {
-		return this.definitionService.definition_getDefinitionConfigAsXML(null);
+		return ((DefinitionServiceInternal) this.definitionService).definition_getDefinitionConfigAsXML(null);
 	}
 	
 	/**
@@ -94,7 +95,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.definition#getDefinitionListAsXML}.
 	 */
 	public String getDefinitionListAsXML() {
-		return this.definitionService.definition_getDefinitionListAsXML(null);
+		return this.definitionService.definition_getDefinitionsAsXML(null);
 
 	}
 	/**
@@ -222,7 +223,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#getAllPrincipalsAsXML}.
 	 */
 	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords) {
-		return this.profileService.profile_getAllPrincipalsAsXML(null, firstRecord, maxRecords);
+		return this.profileService.profile_getPrincipalsAsXML(null, firstRecord, maxRecords);
 	}
 	/**
 	 * @deprecated As of ICEcore version 1.1,

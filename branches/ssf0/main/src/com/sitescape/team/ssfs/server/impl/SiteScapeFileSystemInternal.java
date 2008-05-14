@@ -66,7 +66,6 @@ import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.AlreadyExistsException;
 import com.sitescape.team.ssfs.CrossContextConstants;
@@ -79,6 +78,7 @@ import com.sitescape.team.ssfs.server.SiteScapeFileSystemException;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.DatedMultipartFile;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 
 public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 
@@ -397,9 +397,9 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			//get them all
 			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
 			Document searchFilter = DocumentHelper.createDocument();
-			Element field = searchFilter.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+			Element field = searchFilter.addElement(Constants.FIELD_ELEMENT);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 			child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
 			
 	    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);

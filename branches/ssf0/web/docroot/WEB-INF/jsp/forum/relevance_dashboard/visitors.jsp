@@ -34,7 +34,7 @@
 <div id="ss_nextPage" align="right">
 <c:if test="${ss_visitorsPage > '0'}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', 'visitors', '${ss_visitorsPage}', 'previous', 'ss_dashboardVisitors${renderResponse.namespace}');return false;">
+  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'visitors', '${ss_visitorsPage}', 'previous', 'ss_dashboardVisitors', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_left_.gif" 
   title="<ssf:nlt tag="general.previousPage"/>"/>
 </a>
@@ -44,7 +44,7 @@
 </c:if>
 <c:if test="${!empty ss_visitors}">
 <a href="javascript: ;" 
-  onClick="ss_showDashboardPage('${ssBinder.id}', 'visitors', '${ss_visitorsPage}', 'next', 'ss_dashboardVisitors${renderResponse.namespace}');return false;">
+  onClick="ss_showDashboardPage('${ssBinder.id}', '${ssRDCurrentTab}', 'visitors', '${ss_visitorsPage}', 'next', 'ss_dashboardVisitors', '${ss_relevanceDashboardNamespace}');return false;">
 <img src="<html:imagesPath/>pics/sym_arrow_right_.gif"
   title="<ssf:nlt tag="general.nextPage"/>"/>
 </a>
@@ -55,13 +55,11 @@
 </div>
 
   <c:forEach var="user" items="${ss_visitors}">
-  <table cellpadding="0" cellspacing="0"><tbody>
-    <tr><td valign="top">
+  <div id="ss_col3_para" >
 		    <span><ssf:showUser user="${user}" titleStyle="ss_link_1" /></span>
 		    <c:if test="${!empty user.status}">
 		      <div id="ss_im_status"><em>${user.status}</em></div>
 		    </c:if>
-    </td></tr>
-  </tbody></table>
+    </div><!-- end of para -->
   </c:forEach>
-</div>
+</div><!-- end of today -->

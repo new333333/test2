@@ -2042,7 +2042,7 @@
    <String `Graphic Report for serverinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `1/16/2008 11:37:02 AM'>
+   <String `4/30/2008 3:38:20 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2063,22 +2063,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `clustearchitecture_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `nms_01_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `nms_02_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2115,6 +2099,18 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `enable-ssl_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `nms_01_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `nms_02_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2159,79 +2155,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
+   <String `Width: 83%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Cluster architecture\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `nms_01_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_novell_nms_board_install.fm|1035931'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `nms_01_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in A6_novell_nms_board_install.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 90%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `nms_02_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\A6_novell_nms_board_install.fm|1036148'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `nms_02_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in A6_novell_nms_board_install.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2268,6 +2198,12 @@
   > # end of ParaLine
  > # end of Para
  <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: H.100 Bus Termination'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `nms_04_a.png'>
@@ -2297,7 +2233,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 97%, Indent: Current Indent'>
+   <String `Width: 83%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: CG 6565 DOP Switches'>
   > # end of ParaLine
  > # end of Para
 > # end of TextFlow

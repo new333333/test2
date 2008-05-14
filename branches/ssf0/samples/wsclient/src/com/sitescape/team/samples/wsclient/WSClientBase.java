@@ -85,7 +85,7 @@ public abstract class WSClientBase {
 		// If using WS-Security, the engine must be configured with the
 		// WS-Security Axis handler (eg. WSS4J). Typically the configuration
 		// information is stored in a config file and read in at runtime.
-		// See client-config.wsdd file for sample config file. 
+		// See client-config-wss.wsdd file for sample config file. 
 		// Alternatively, the configuration information can be put together
 		// inside a program at runtime. This method uses the second approach
 		// for the purpose of demonstration.
@@ -108,22 +108,10 @@ public abstract class WSClientBase {
 		// typeMapping information since the generated stubs automatically take 
 		// care of it. 
 		if(authWSS) {
-		    java.lang.StringBuffer sb = new java.lang.StringBuffer();
-		    sb.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n");
-		    sb.append("<deployment xmlns=\"http://xml.apache.org/axis/wsdd/\" xmlns:java=\"http://xml.apache.org/axis/wsdd/providers/java\">\r\n");
-		    sb.append("<transport name=\"http\" pivot=\"java:org.apache.axis.transport.http.CommonsHTTPSender\" />\r\n");
-		    sb.append("<globalConfiguration >\r\n");
-		    sb.append("<requestFlow >\r\n");
-		    sb.append("<handler type=\"java:org.apache.ws.axis.security.WSDoAllSender\" >\r\n");
-		    sb.append("<parameter name=\"action\" value=\"UsernameToken\"/>\r\n");
-		    sb.append("</handler>\r\n");
-		    sb.append("</requestFlow >\r\n");
-		    sb.append("</globalConfiguration >\r\n");
-		    sb.append("</deployment>\r\n");
-		    return new org.apache.axis.configuration.XMLStringProvider(sb.toString());
+			return WebServiceClientUtil.getMinimumEngineConfigurationWSSecurity();
 			
 		    // Alternatively you can use a configuration file.
-			//return  new org.apache.axis.configuration.FileProvider("client-config.wsdd");
+			//return  new org.apache.axis.configuration.FileProvider("client-config-wss.wsdd");
 		}
 		else {
 			// If you have custom configuration you can either hard-code it here

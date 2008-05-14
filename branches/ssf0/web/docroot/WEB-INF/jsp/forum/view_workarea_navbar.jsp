@@ -231,7 +231,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindUserButton${renderResponse.namespace}">
+	<div class="ss_global_toolbar_accessible">  
+	<label for="ss_navbarFindUserButton${renderResponse.namespace}"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findUser"/></span></label>
 		<div>
 			<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
 			  name="ss_findUserForm${renderResponse.namespace}" 
@@ -273,7 +274,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible"  id="ss_navbarFindPlacesButton${renderResponse.namespace}">
+	<div class="ss_global_toolbar_accessible">
+	  <label for="ss_navbarFindPlacesButton${renderResponse.namespace}"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findPlace"/></span></label>
 		<div>
 			<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
 			  name="ss_findPlacesForm${renderResponse.namespace}" 
@@ -316,7 +318,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	</div>
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible" id="ss_navbarFindTagsButton${renderResponse.namespace}">
+	<div class="ss_global_toolbar_accessible"> 
+	<label for="ss_navbarFindTagsButton${renderResponse.namespace}"><span class="ss_global_toolbar_label_text"><ssf:nlt tag="navigation.findTag"/></span></label>
 		<div>
 			<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
 			  name="ss_findTagsForm${renderResponse.namespace}" 
@@ -369,7 +372,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
 					<input name="searchText" style="width: 100px;" type="text" /> 
 					<a class="ss_searchButton" 
-					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
+					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
+					  <img 
+					  title="<ssf:nlt tag="alt.search"/>"
 					  <ssf:alt tag="alt.search"/> src="<html:rootPath/>images/pics/1pix.gif" /></a>
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
@@ -380,8 +385,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				  title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
 				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
 				  '<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
-				  name="newTab" value="1"/></ssf:url>');"><img 
-				  src="<html:imagesPath/>pics/menudown.gif" /></a>
+				  name="newTab" value="1"/></ssf:url>');">
+				  <img src="<html:imagesPath/>pics/menudown.gif" /></a>
 				<div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
 				
 			</form>
@@ -393,8 +398,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <ssf:ifaccessible>
 	<div class="ss_global_toolbar_accessible">
 		
-			<span class="ss_global_toolbar_label_text_quickSearch"><label for="ss_searchSearchText${renderResponse.namespace}"
-			  ><ssf:nlt tag="navigation.search"/></label></span>
+			<label for="ss_searchSearchText${renderResponse.namespace}"><span class="ss_global_toolbar_label_text_quickSearch"><ssf:nlt tag="navigation.search"/></span></label>
 			  <span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
 			  href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 			  	name="binderId" value="${ssBinder.id}"/><ssf:param 
@@ -421,8 +425,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		  			name="newTab" value="1"/></ssf:url>">
 					<input name="searchText" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
 					<a class="ss_searchButton" 
-					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" ><img 
-					  <ssf:alt tag="alt.search"/> src="<html:imagesPath/>pics/searchheadbkg.png" /></a>
+					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
+					  <img src="<html:imagesPath/>pics/1pix.gif" 
+					  title="<ssf:nlt tag="alt.search"/>"
+					  <ssf:alt tag="alt.search"/> /> 
+					  </a>
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
@@ -453,8 +460,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <script type="text/javascript">
 ss_statusCurrent = "${ssUser.status}";
 </script>
+<ssf:ifnotaccessible>
 <span class="ss_statusprint"><ssf:nlt tag="relevance.userStatus"/></span>
-<input type="text" size="50" style="font-size:8; background-color:#cccccc;" value="${ssUser.status}"
+<input type="text" size="50" style="font-size:9px; background-color:#cccccc;" value="${ssUser.status}"
   onFocus="ss_setStatusBackground(this, 'focus');"
   onKeyPress="ss_updateStatusSoon(this, event);"
   onChange="ss_updateStatusNow(this);"
@@ -462,6 +470,20 @@ ss_statusCurrent = "${ssUser.status}";
   onMouseover="ss_setStatusBackground(this, 'mouseOver');"
   onMouseout="ss_setStatusBackgroundCheck(this);"
   />
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+<div style="white-space:nowrap" >
+<label for="ss_statusBoxText${renderResponse.namespace}"><span class="ss_statusprint"><ssf:nlt tag="relevance.userStatus"/></span></label>
+<input type="text" id="ss_statusBoxText${renderResponse.namespace}"
+  size="50" 
+  style="font-size:9px; background-color:#cccccc;" 
+  value="${ssUser.status}"
+  />
+  <input type="submit" style="font-size:9px;"
+  onClick="ss_updateStatusNowAccessible('ss_statusBoxText${renderResponse.namespace}');return false;" 
+  value="<ssf:nlt tag="button.ok"/>"
+  /></div>
+</ssf:ifaccessible>
 </li>
 
 </div><!-- end of status line area -->
@@ -473,7 +495,12 @@ ss_statusCurrent = "${ssUser.status}";
 
           <li><a title="<ssf:nlt tag="navigation.myTeams"/>"
 			  href="javascript:;" 
+<ssf:ifnotaccessible>
 			  onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+			  onClick="ssMyTeams${renderResponse.namespace}.showAccessible()"
+</ssf:ifaccessible>
               ><ssf:nlt tag="navigation.myTeams"/> <img border="0" 
               src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
 		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
@@ -482,10 +509,27 @@ ss_statusCurrent = "${ssUser.status}";
 			      	
 			    </div>
 			  </ssHelpSpot>
-			  <div id="ss_navbar_myteams${renderResponse.namespace}"
-			      style="visibility:hidden;margin:20px 0px 0px -130px;padding:0px;"></div>
+<ssf:ifnotaccessible>
+  <div id="ss_navbar_myteams${renderResponse.namespace}"
+      style="visibility:hidden;margin:20px 0px 0px -130px;padding:0px;">
+  </div>
+</ssf:ifnotaccessible>
+<ssf:ifaccessible>
+  <div id="ss_navbar_myteams${renderResponse.namespace}"
+      style="position:relative;display:none;visibility:hidden;z-index:500;
+             margin:25px 0px 0px -130px;padding:0px;">
+	<iframe src="<html:rootPath/>js/forum/null.html" style="background-color:#ffffff;"
+	  id="ss_myTeamsIframe${renderResponse.namespace}">xxx</iframe>
+	<div style="background-color:#ffffff;">
+	  <a href="javascript: ;" onClick="ssMyTeams${renderResponse.namespace}.hideAccessible();return false;">
+	    <span><ssf:nlt tag="button.close"/></span>
+	  </a>
+	</div>
+  </div>
+</ssf:ifaccessible>
 
           </li>
+<ssf:ifnotaccessible>
           <li><a title="<ssf:nlt tag="navigation.favorites"/>"
 	  			href="javascript: ;" 
 	  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
@@ -498,6 +542,7 @@ ss_statusCurrent = "${ssUser.status}";
 		      style="visibility:hidden;margin:20px 0px 0px -150px;padding:0px;"
 		      ></div>
           </li>
+</ssf:ifnotaccessible>
         
                  
         </ul>

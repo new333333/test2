@@ -28,8 +28,13 @@
  */
 package com.sitescape.team.remoting.ws.service.template;
 
+import com.sitescape.team.remoting.ws.model.TemplateCollection;
+
 public interface TemplateService {
 
 	public long template_addBinder(String accessToken, long parentBinderId, long binderConfigId, String title);
-	public String template_getTemplateListAsXML(String accessToken);
+	
+	public String template_getTemplatesAsXML(String accessToken);
+	
+	public TemplateCollection template_getTemplates(String accessToken);
 }

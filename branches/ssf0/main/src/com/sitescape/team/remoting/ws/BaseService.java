@@ -28,9 +28,7 @@
  */
 package com.sitescape.team.remoting.ws;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Map;
 
 import org.dom4j.Branch;
@@ -55,7 +53,8 @@ import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
 import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.remoting.ws.model.Field;
+import com.sitescape.team.remoting.ws.model.FolderEntryBrief;
+import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.Timestamp;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.web.util.WebUrlUtil;
@@ -155,11 +154,10 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("emailAddress", (String) user.get(ProfileIndexUtils.EMAIL_FIELD));
 		entryElem.addAttribute("type", (String) user.get(EntityIndexUtils.ENTRY_TYPE_FIELD));
 		entryElem.addAttribute("reserved", Boolean.toString(user.get(ProfileIndexUtils.RESERVEDID_FIELD)!=null));
-		if (EntityIndexUtils.ENTRY_TYPE_USER.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
-			entryElem.addAttribute("name", (String)user.get(ProfileIndexUtils.LOGINNAME_FIELD));			
-		} else {
-			entryElem.addAttribute("name", (String)user.get(ProfileIndexUtils.GROUPNAME_FIELD));			
-		}
+		String name = getPrincipalName(user);
+		if(name != null)
+			entryElem.addAttribute("name", name);
+		
 /*
  * I don't know how to get this from the map
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
@@ -168,38 +166,55 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		return entryElem;
 	}
 
-	protected void addCustomElements(final Element entryElem, final com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, final com.sitescape.team.domain.DefinableEntity entry) {
-		final ElementBuilder.BuilderContext context = this;
-		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
-			public void visit(Element entryElement, Element flagElement, Map args)
-			{
-                if (flagElement.attributeValue("apply").equals("true")) {
-                	String fieldBuilder = flagElement.attributeValue("elementBuilder");
-					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
-					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
-                	ElementBuilderUtil.buildElement(entryElem, entityModel, entry, entryElement.attributeValue("name"), nameValue, fieldBuilder, context);
-                }
-			}
-			public String getFlagElementName() { return "webService"; }
-		};
-		
-		getDefinitionModule().walkDefinition(entry, visitor, null);
-		
+	String getPrincipalName(Map user) {
+		if (EntityIndexUtils.ENTRY_TYPE_USER.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
+			return (String)user.get(ProfileIndexUtils.LOGINNAME_FIELD);			
+		} else if (EntityIndexUtils.ENTRY_TYPE_GROUP.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
+			return (String)user.get(ProfileIndexUtils.GROUPNAME_FIELD);						
+		} else if (EntityIndexUtils.ENTRY_TYPE_APPLICATION.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
+			return (String)user.get(ProfileIndexUtils.APPLICATION_NAME_FIELD);						
+		} else if (EntityIndexUtils.ENTRY_TYPE_APPLICATION_GROUP.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
+			return (String)user.get(ProfileIndexUtils.GROUPNAME_FIELD);						
+		} else {
+			return null;
+		}
+	}
+	
+	protected void addCustomElements(final Element entryElem, final com.sitescape.team.domain.DefinableEntity entry) {
+		addCustomAttributes(entryElem, null, entry);
 	}
 	
 	protected void fillFolderEntryModel(com.sitescape.team.remoting.ws.model.FolderEntry entryModel, FolderEntry entry) {
+		// Entry common
 		fillEntryModel(entryModel, entry);
+		
+		// FolderEntry specific
 		entryModel.setDocNumber(entry.getDocNumber());
 		entryModel.setDocLevel(entry.getDocLevel());
 		entryModel.setHref(WebUrlUtil.getEntryViewURL(entry));	
 	}
 	
+	protected void fillPrincipalModel(com.sitescape.team.remoting.ws.model.Principal principalModel, Principal entry) {
+		// Entry common
+		fillEntryModel(principalModel, entry);
+
+		// Principal specific
+		principalModel.setEmailAddress(entry.getEmailAddress());
+		principalModel.setType(entry.getEntityType().toString());
+		principalModel.setDisabled(entry.isDeleted());
+		principalModel.setReserved(entry.isReserved());
+		principalModel.setName(entry.getName());
+	}
+	
 	protected void fillEntryModel(com.sitescape.team.remoting.ws.model.Entry entryModel, Entry entry) {
+		// DefinableEntity common
 		fillDefinableEntityModel(entryModel, entry);
+		
+		// Nothing specific to Entry
 	}
 	
 	protected void fillDefinableEntityModel(com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity) {
-		// Handle static fields first
+		// Handle static fields
 		fillDefinableEntityModelStatic(entityModel, entity);
 		
 		// Handle definable fields
@@ -239,15 +254,86 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		return new Timestamp(hs.getPrincipal().getName(), cal);
 	}
 	
-	protected void fillDefinableEntityModelDefinable(com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity) {
-		addCustomElements(null, entityModel, entity);
+	protected void fillDefinableEntityModelDefinable(final com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, final DefinableEntity entity) {
+		addCustomAttributes(null, entityModel, entity);
 	}
 	
+	protected void addCustomAttributes(final Element entryElem, final com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, final DefinableEntity entity) {
+		final ElementBuilder.BuilderContext context = this;
+		DefinitionModule.DefinitionVisitor visitor = new DefinitionModule.DefinitionVisitor() {
+			public void visit(Element entryElement, Element flagElement, Map args)
+			{
+                if (flagElement.attributeValue("apply").equals("true")) {
+                	String fieldBuilder = flagElement.attributeValue("elementBuilder");
+					String nameValue = DefinitionUtils.getPropertyValue(entryElement, "name");									
+					if (Validator.isNull(nameValue)) {nameValue = entryElement.attributeValue("name");}
+                	ElementBuilderUtil.buildElement(entryElem, entityModel, entity, entryElement.attributeValue("name"), nameValue, fieldBuilder, context);
+                }
+			}
+			public String getFlagElementName() { return "webService"; }
+		};
+		
+		getDefinitionModule().walkDefinition(entity, visitor, null);
+	}
+
 	protected com.sitescape.team.remoting.ws.model.AverageRating toAverageRatingModel(AverageRating ar) {
 		return new com.sitescape.team.remoting.ws.model.AverageRating(ar.getAverage(), ar.getCount());
 	}
 
 	protected com.sitescape.team.remoting.ws.model.Description toDescriptionModel(Description desc) {
 		return new com.sitescape.team.remoting.ws.model.Description(desc.getText(), desc.getFormat());
+	}
+	
+	protected FolderEntryBrief toFolderEntryBrief(FolderEntry entry) {
+		FolderEntryBrief entryBrief = new FolderEntryBrief();
+		entryBrief.setId(entry.getId());
+		entryBrief.setBinderId(entry.getParentBinder().getId());
+		if(entry.getEntryDef() != null)
+			entryBrief.setDefinitionId(entry.getEntryDef().getId());
+		entryBrief.setTitle(entry.getTitle());
+		entryBrief.setDocNumber(entry.getDocNumber());
+		entryBrief.setDocLevel(entry.getDocLevel());
+		entryBrief.setHref(WebUrlUtil.getEntryViewURL(entry));
+		if(entry.getAverageRating() != null) {
+			entryBrief.setAverageRating(toAverageRatingModel(entry.getAverageRating()));
+		}	
+		return entryBrief;
+	}	
+
+	protected PrincipalBrief toPrincipalBrief(Map principal) {
+		PrincipalBrief principalBrief = new PrincipalBrief();
+		principalBrief.setId(Long.valueOf((String) principal.get(EntityIndexUtils.DOCID_FIELD)));
+		principalBrief.setBinderId(Long.valueOf((String) principal.get(EntityIndexUtils.BINDER_ID_FIELD)));
+		principalBrief.setDefinitionId((String) principal.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD));
+		principalBrief.setTitle((String) principal.get(EntityIndexUtils.TITLE_FIELD));
+		principalBrief.setEmailAddress((String) principal.get(ProfileIndexUtils.EMAIL_FIELD));
+		principalBrief.setType((String) principal.get(EntityIndexUtils.ENTRY_TYPE_FIELD));
+		principalBrief.setReserved(principal.get(ProfileIndexUtils.RESERVEDID_FIELD)!=null);
+		String name = getPrincipalName(principal);
+		if(name != null)
+			principalBrief.setName(name);
+		
+/*
+ * I don't know how to get this from the map
+		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
+*/
+
+		return principalBrief;
+	}
+	
+	protected PrincipalBrief toPrincipalBrief(Principal principal) {
+		PrincipalBrief principalBrief = new PrincipalBrief();
+		principalBrief.setId(principal.getId());
+		principalBrief.setBinderId(principal.getParentBinder().getId());
+		principalBrief.setDefinitionId(principal.getEntryDef().getId());
+		principalBrief.setTitle(principal.getTitle());
+		principalBrief.setEmailAddress(principal.getEmailAddress());
+		principalBrief.setType(principal.getEntityType().toString());
+		principalBrief.setDisabled(Boolean.valueOf(principal.isDeleted()));
+		principalBrief.setReserved(principal.isReserved());
+		principalBrief.setName(principal.getName());
+		
+		return principalBrief;
+
 	}
 }

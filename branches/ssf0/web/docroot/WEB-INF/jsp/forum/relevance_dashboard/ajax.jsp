@@ -41,6 +41,3 @@
 <c:if test="${ss_type == 'activities'}">
   <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/activities_tab.jsp" />
 </c:if>
-<c:if test="${ss_type == 'viewed_entries'}">
-  <jsp:include page="/WEB-INF/jsp/forum/relevance_dashboard/viewed_entries_tab.jsp" />
-</c:if>

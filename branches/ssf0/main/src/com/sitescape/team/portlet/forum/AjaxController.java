@@ -236,6 +236,16 @@ public class AjaxController  extends SAbstractControllerRetry {
 				response.setContentType("text/json");
 				return new ModelAndView("common/json_ajax_return", model);
 			}
+			try {
+				User user = RequestContextHolder.getRequestContext().getUser();
+				String displayStyle = user.getDisplayStyle();
+				if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+					if (op.equals(WebKeys.OPERATION_WORKSPACE_TREE) && 
+							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+						return new ModelAndView("forum/fetch_url_return", model);
+					}
+				}
+			} catch(Exception e) {}
 			
 			response.setContentType("text/xml");			
 			if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
@@ -1008,8 +1018,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String view = "tag_jsps/tree/get_tree_div";
 		if (user.getDisplayStyle() != null && 
-				user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) && 
-				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			view = "tag_jsps/tree/get_tree_div_accessible";
 		} else {
 			response.setContentType("text/xml");

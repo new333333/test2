@@ -113,6 +113,7 @@ import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.util.StatusTicket;
 import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 
 /**
  *
@@ -1199,11 +1200,35 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         return model;
    }
 
+    public Map getBinders(Binder binder, List binderIds, Map searchOptions) {
+        //search engine will only return binder you have access to
+         //validate entry count
+    	//do actual search index query 
+        Hits hits = getBinders_doSearch(binderIds, searchOptions);
+        //iterate through results
+        List childBinders = SearchUtils.getSearchEntries(hits);
+
+       	Map model = new HashMap();
+        model.put(ObjectKeys.SEARCH_ENTRIES, childBinders);
+        model.put(ObjectKeys.SEARCH_COUNT_TOTAL, new Integer(hits.getTotalHits()));
+        //Total number of results found
+        model.put(ObjectKeys.TOTAL_SEARCH_COUNT, new Integer(hits.getTotalHits()));
+        //Total number of results returned
+        model.put(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED, new Integer(hits.length()));
+        return model;
+   }
+
     protected int getBinders_maxEntries(int maxChildEntries) {
         return maxChildEntries;
     }
      
+    protected Hits getBinders_doSearch(List binderIds, Map searchOptions) {
+    	return getBinders_doSearch(null, binderIds, searchOptions);
+    }
     protected Hits getBinders_doSearch(Binder binder, Map searchOptions) {
+    	return getBinders_doSearch(binder, null, searchOptions);
+    }
+    protected Hits getBinders_doSearch(Binder binder, List binderIds, Map searchOptions) {
     	int maxResults = 0;
     	int searchOffset = 0;
     	if (searchOptions != null) {
@@ -1233,10 +1258,12 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         	}
     	}
 
+       	if (binderIds != null) {
+       		searchFilter.addBinderParentIds(binderIds);
+       	}
        	
+       	if (binder != null) getBinders_getSearchDocument(binder, searchFilter);
        	
-       	
-       	getBinders_getSearchDocument(binder, searchFilter);
        	org.dom4j.Document queryTree = SearchUtils.getInitalSearchDocument(searchFilter.getFilter(), searchOptions);
       	
       	SearchUtils.getQueryFields(queryTree, searchOptions); 
@@ -1414,22 +1441,22 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      //this code assumes all doc_types have the field being updated
   	private org.dom4j.Document buildQueryforUpdate(Binder binder, Collection<Long> notBinders) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
+		Element qTreeRootElement = qTree.addElement(Constants.QUERY_ELEMENT);
 		//get the binder and all the entrys, replies, subBinders and their attachments
 		// or (__entryAncestry: and not __entryAncestry:{} )
-		Element ancestorElement = qTreeRootElement.addElement(QueryBuilder.AND_ELEMENT);
+		Element ancestorElement = qTreeRootElement.addElement(Constants.AND_ELEMENT);
 	 
-		Element ancestors = ancestorElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		ancestors.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
-		Element child = ancestors.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+		Element ancestors = ancestorElement.addElement(Constants.FIELD_ELEMENT);
+		ancestors.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
+		Element child = ancestors.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(binder.getId().toString());
 		if (!notBinders.isEmpty()) {	
-			Element notAncestors = ancestorElement.addElement(QueryBuilder.NOT_ELEMENT);
-			Element ancestorOrElement = notAncestors.addElement(QueryBuilder.OR_ELEMENT);
+			Element notAncestors = ancestorElement.addElement(Constants.NOT_ELEMENT);
+			Element ancestorOrElement = notAncestors.addElement(Constants.OR_ELEMENT);
 			for (Long id:notBinders) {
-				Element fieldI = ancestorOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-				fieldI.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_ANCESTRY);
-				Element childI = fieldI.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+				Element fieldI = ancestorOrElement.addElement(Constants.FIELD_ELEMENT);
+				fieldI.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_ANCESTRY);
+				Element childI = fieldI.addElement(Constants.FIELD_TERMS_ELEMENT);
 				childI.setText(id.toString());
 			}
 			
@@ -1458,13 +1485,13 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      //this code assumes all doc_types have the field being updated
     private org.dom4j.Document buildQueryforUpdate(Binder binder) {
  		org.dom4j.Document qTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
+		Element qTreeRootElement = qTree.addElement(Constants.QUERY_ELEMENT);
+		Element qTreeOrElement = qTreeRootElement.addElement(Constants.OR_ELEMENT);
     	// get all the entries, replies and their attachments using parentBinder
     	// _binderId 
-   		Element field = qTreeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
-		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+   		Element field = qTreeOrElement.addElement(Constants.FIELD_ELEMENT);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(binder.getId().toString());   	
  
 	   	// Get the binder and its attachments
@@ -1491,27 +1518,27 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      }
 	private org.dom4j.Document buildQueryforUpdate(Collection<Binder> binders) {
 		org.dom4j.Document qTree = DocumentHelper.createDocument();
-		Element qTreeRootElement = qTree.addElement(QueryBuilder.QUERY_ELEMENT);
-		Element qTreeOrElement = qTreeRootElement.addElement(QueryBuilder.OR_ELEMENT);
-    	Element qTreeAndElement = qTreeOrElement.addElement(QueryBuilder.AND_ELEMENT);
+		Element qTreeRootElement = qTree.addElement(Constants.QUERY_ELEMENT);
+		Element qTreeOrElement = qTreeRootElement.addElement(Constants.OR_ELEMENT);
+    	Element qTreeAndElement = qTreeOrElement.addElement(Constants.AND_ELEMENT);
  
-    	Element idsOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
+    	Element idsOrElement = qTreeAndElement.addElement((Constants.OR_ELEMENT));
     	List binderIds = new ArrayList();
     	//get all the entrys, replies and their attachments
     	// _binderId and doctypes:{entry, attachment}
     	for (Binder b:binders) {
-    		Element field = idsOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
-			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    		Element field = idsOrElement.addElement(Constants.FIELD_ELEMENT);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 			child.setText(b.getId().toString());
 			binderIds.add(b.getId());
     	}
     	
-    	Element typeOrElement = qTreeAndElement.addElement((QueryBuilder.OR_ELEMENT));
+    	Element typeOrElement = qTreeAndElement.addElement((Constants.OR_ELEMENT));
     	for (int i =0; i < docTypes.length; i++) {
-    		Element field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
-			Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    		Element field = typeOrElement.addElement(Constants.FIELD_ELEMENT);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 			child.setText(docTypes[i]);
     	}
     	// Get all the binder's themselves
@@ -1523,21 +1550,21 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	private void buildQueryForBinder(Element parent, Binder binder) {
     	// Get the binder and its attachments
      	// _docId= AND (_docType=binder OR _attType=binder)) 
-     	Element andElement = parent.addElement((QueryBuilder.AND_ELEMENT));
-     	Element field = andElement.addElement(QueryBuilder.FIELD_ELEMENT);
-    	field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
-    	Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+     	Element andElement = parent.addElement((Constants.AND_ELEMENT));
+     	Element field = andElement.addElement(Constants.FIELD_ELEMENT);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
+    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(binder.getId().toString());
      	   	 
-     	Element bOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
-     	field = bOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
- 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
- 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+     	Element bOrElement = andElement.addElement((Constants.OR_ELEMENT));
+     	field = bOrElement.addElement(Constants.FIELD_ELEMENT);
+ 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+ 		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
  		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
 		
-     	field = bOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
- 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
- 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+     	field = bOrElement.addElement(Constants.FIELD_ELEMENT);
+ 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
+ 		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
  		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
  		
      }
@@ -1545,24 +1572,24 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 	private void buildQueryForBinders(Element parent, Collection<Long> binderIds) {
     	// Get the binder and its attachments
      	// (_docType=binder OR _attType=binder) AND (_docId= OR _docId- OR  ... ) 
-     	Element andElement = parent.addElement((QueryBuilder.AND_ELEMENT));
+     	Element andElement = parent.addElement((Constants.AND_ELEMENT));
      	   	 
-     	Element typeOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
-     	Element field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
- 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
- 		Element child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+     	Element typeOrElement = andElement.addElement((Constants.OR_ELEMENT));
+     	Element field = typeOrElement.addElement(Constants.FIELD_ELEMENT);
+ 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+ 		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
  		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
 		
-     	field = typeOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
- 		field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
- 		child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+     	field = typeOrElement.addElement(Constants.FIELD_ELEMENT);
+ 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
+ 		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
  		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
  
- 		Element binderOrElement = andElement.addElement((QueryBuilder.OR_ELEMENT));
+ 		Element binderOrElement = andElement.addElement((Constants.OR_ELEMENT));
 	   	for (Long id:binderIds) {
-    		field = binderOrElement.addElement(QueryBuilder.FIELD_ELEMENT);
-			field.addAttribute(QueryBuilder.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
-			child = field.addElement(QueryBuilder.FIELD_TERMS_ELEMENT);
+    		field = binderOrElement.addElement(Constants.FIELD_ELEMENT);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
+			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 			child.setText(id.toString());
     	}
 

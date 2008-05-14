@@ -14,11 +14,11 @@
 
  <target id="bdggczj" pid="preface" name="BridgeHead" level="1"> <text>Change History</text> </target>
 
- <target name="InformalTable" level="1"> <text>Manual revision</text> </target>
+ <target name="InformalTable" level="1"> <text>Guide Revision</text> </target>
 
- <target id="bcnmsed" pid="preface" name="row" level="2"> <text>Manual revision</text> </target>
+ <target id="bcnmsed" pid="preface" name="row" level="2"> <text>Guide Revision</text> </target>
 
- <target id="bcnmsee" pid="preface" name="row" level="2"> <text>First Version</text> </target>
+ <target id="bcnmsee" pid="preface" name="row" level="2"> <text>0 (First Version)</text> </target>
 
  <target id="docupdates" pid="preface" name="BridgeHead" level="1"> <text>Documentation Updates</text> </target>
 

@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.remoting.ws.service.search;
 
+import com.sitescape.team.remoting.ws.model.TeamCollection;
+
 public interface SearchService {
 
 	public String search_search(String accessToken, String query, int offset, int maxResults);
@@ -35,6 +37,8 @@ public interface SearchService {
 	public String search_getWorkspaceTreeAsXML(String accessToken, long binderId, int levels, String page);
 	
 	public String search_getTeamsAsXML(String accessToken);
+	
+	public TeamCollection search_getTeams(String accessToken);
 	
 	/*
 	 * howTo can be one of "view", "modify", or "download"

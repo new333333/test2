@@ -47,37 +47,6 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 </c:if>
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-    <table cellpadding="0" cellspacing="0" border="0" width="100%">
-    <tbody>
-    <tr>
-    <td valign="top" class="ss_view_sidebar">
-
-<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-
-	<% // Tabs %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
-</c:if>
-	<% // Folder Sidebar %>
-
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
-
-
-    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
-        initOpen="true" sticky="true">
-		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
-		  treeDocument="${ssSidebarWsTree}" 
-		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_treeShowId"
-		  rootOpen="true"
-		  nowrap="true"/>
-		</c:if>
-	</ssf:sidebarPanel>
-
-	</td>
-	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color">
 			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 <c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
@@ -89,10 +58,6 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		</div>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
-	</td>
-	</tr>
-	</tbody>
-	</table>
 
 </div>
 <script type="text/javascript">

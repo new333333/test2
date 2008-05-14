@@ -399,7 +399,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	 * @return
 	 */
 	public List loadObjects(final String query, final Map values) {
-		if (values == null || values.isEmpty()) return Collections.EMPTY_LIST;
 		return (List)getHibernateTemplate().execute(
 		        new HibernateCallback() {
 		            public Object doInHibernate(Session session) throws HibernateException {
@@ -410,9 +409,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                  			Object val = me.getValue();
 	                  			if (val instanceof Collection) {
 	                  				if (((Collection)val).size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
+	                  				if (((Collection)val).size() == 0) throw new IllegalArgumentException("Collection to small");
 	                  				q.setParameterList((String)me.getKey(), (Collection)val);
 	                  			} else if (val instanceof Object[]) {
 	                  				if (((Object[])val).length > inClauseLimit) throw new IllegalArgumentException("Collection to large");
+	                  				if (((Object[])val).length == 0) throw new IllegalArgumentException("Collection to small");
 	                  				q.setParameterList((String)me.getKey(), (Object[])val);
 	                  			} else {
 	                  				q.setParameter((String)me.getKey(), val);
@@ -1346,9 +1347,11 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                  			Object val = me.getValue();
 	                  			if (val instanceof Collection) {
 	                  				if (((Collection)val).size() > inClauseLimit) throw new IllegalArgumentException("Collection to large");
+	                  				if (((Collection)val).size() == 0) throw new IllegalArgumentException("Collection to small");
 	                  				query.setParameterList((String)me.getKey(), (Collection)val);
 	                  			} else if (val instanceof Object[]) {
 	                  				if (((Object[])val).length > inClauseLimit) throw new IllegalArgumentException("Collection to large");
+	                  				if (((Object[])val).length == 0) throw new IllegalArgumentException("Collection to small");
 	                  				query.setParameterList((String)me.getKey(), (Object[])val);
 	                  			} else {
 	                  				query.setParameter((String)me.getKey(), val);

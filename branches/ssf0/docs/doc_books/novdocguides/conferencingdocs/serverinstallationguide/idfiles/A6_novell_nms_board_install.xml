@@ -12,9 +12,9 @@
 
  <target id="bcfz43s" pid="bcfyy50" name="Step" level="2" number="3"> <text>Remove the cover and set it aside.</text> </target>
 
- <target id="bcfz43v" pid="bcfyy50" name="Step" level="2" number="4"> <text> If you are installing more than one board, configure the two boards that are at the ends for H.100 bus termination. This is also a good time to configure the board(s) for PCI mode or PCI-X mode. This depends on the PCI slots in your chassis. Detailed instructions for both H.100 termination and PCI, PCI-X mode configurations are provided below.</text> </target>
+ <target id="bcfz43v" pid="bcfyy50" name="Step" level="2" number="4"> <text> If you are installing more than one board, configure the two boards that are at the ends for H.100 bus termination. This is also a good time to configure the board(s) for PCI mode or PCI-X mode. This depends on the PCI slots in your chassis. Detailed instructions for both H.100 termination and PCI, PCI-X mode configurations are provided.</text> </target>
 
- <target id="bcfz43x" pid="bcfyy50" name="Step" level="2" number="5"> <text>Arrange the CG board(s) in adjacent PCI bus slots. Make sure each board's PCI bus connector is seated securely in a slot. The picture below shows a CG board seated securely in a PCI slot.</text> </target>
+ <target id="bcfz43x" pid="bcfyy50" name="Step" level="2" number="5"> <text>Arrange the CG board(s) in adjacent PCI bus slots. Make sure each board's PCI bus connector is seated securely in a slot.</text> </target>
 
  <target id="bcfz43z" pid="bcfyy50" name="Step" level="2" number="6"> <text>Secure the end bracket on the board(s) to the chassis.</text> </target>
 
@@ -40,7 +40,11 @@
 
  <target id="bcfz7ez" pid="bcfz7ez" name="Sect1" level="1" number="F.1"> <text>Configuring H.100 Bus Termination</text> </target>
 
+ <target id="bf1j6dp" pid="bcfz7ez" name="Figure" level="2" number="Figure F-1"> <text>H.100 Bus Termination</text> </target>
+
  <target id="bcfz993" pid="bcfz993" name="Sect1" level="1" number="F.2"> <text>Configuring the DIP Switches</text> </target>
+
+ <target id="bf1j6dq" pid="bcfz993" name="Figure" level="2" number="Figure F-2"> <text>CG 6565 DOP Switches</text> </target>
 
  <target id="bcfz9s5" pid="bcfz993" name="Sect2" level="2" number="F.2.1"> <text>S3 DIP Switch</text> </target>
 
