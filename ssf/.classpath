@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="main/src"/>
+	<classpathentry kind="src" path="samples/wsclient/src"/>
 	<classpathentry kind="src" path="ws-client/src"/>
 	<classpathentry kind="src" path="slide-webdavclient/src"/>
 	<classpathentry kind="src" path="commons-httpclient-contrib/src"/>
@@ -40,7 +41,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jaxen.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/servlet.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-portlet.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/cglib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jtds.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/bsh.jar"/>
@@ -49,7 +49,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/jakarta-slide-webdavlib.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/mail.jar"/>
-	<classpathentry exported="true" kind="lib" path="lib/spring-mock.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-discovery.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/saaj.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/wsdl4j.jar"/>
@@ -95,5 +94,9 @@
 	<classpathentry exported="true" kind="lib" path="lib/portals-bridges.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/portal-client.jar"/>
 	<classpathentry exported="true" kind="lib" path="ws-client/ssf-wsclient.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/velocity-tools-view.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-test.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc-portlet.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/spring-webmvc.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
