@@ -2042,7 +2042,7 @@
    <String `Cross-Reference Report for operationsguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `10/23/2007 2:38:24 PM'>
+   <String `5/15/2008 12:12:40 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2066,7 +2066,7 @@
   <ParaLine 
    <String `XrefInt'>
    <Char Tab> 
-   <String `34'>
+   <String `46'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2116,7 +2116,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `40'>
+   <String `52'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2142,7 +2142,7 @@
   <ParaLine 
    <String `Ulink'>
    <Char Tab> 
-   <String `5'>
+   <String `4'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2152,7 +2152,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `5'>
+   <String `4'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2178,7 +2178,7 @@
   <ParaLine 
    <String `Ulink'>
    <Char Tab> 
-   <String `1'>
+   <String `2'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2188,7 +2188,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `1'>
+   <String `2'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2358,7 +2358,7 @@
   <ParaLine 
    <String `XrefInt'>
    <Char Tab> 
-   <String `5'>
+   <String `6'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2368,7 +2368,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `5'>
+   <String `6'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2377,6 +2377,42 @@
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `06_auditingsystemevents.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Element'>
+   <Char Tab> 
+   <String `Total'>
+   <Char Tab> 
+   <String `Invalid'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `XrefInt'>
+   <Char Tab> 
+   <String `11'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Total'>
+   <Char Tab> 
+   <String `11'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `07_zonadministration.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2412,7 +2448,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `07_zonadministration.fm'>
+   <String `A1_ldapuserauthentication.fm'>
   > # end of ParaLine
  > # end of Para
  <Para 

@@ -6,8 +6,6 @@
 
  <target id="b9ud0ut" pid="b9ud0ut" name="Sect1" level="1" number="4.1"> <text>Creating Policies</text> </target>
 
- <target id="b9ud4bg" pid="b9ud0ut" name="FormalPara" level="2"> <text>To create a new policy:</text> </target>
-
  <target id="b9ud46r" pid="b9ud0ut" name="Procedure" level="2" number="1"> <text>From the Conferencing client's Manage Contacts window, select the Admin &#62; Manage Policies menu item.</text> </target>
 
  <target id="b9ud46s" pid="b9ud0ut" name="Step" level="3" number="1"> <text>From the Conferencing client's Manage Contacts window, select the Admin &#62; Manage Policies menu item.</text> </target>
@@ -16,11 +14,11 @@
 
  <target id="b9ud5lk" pid="b9ud0ut" name="Step" level="3" number="3"> <text>In the Policy Manager dialog that appears, type a name for your new policy and click OK.</text> </target>
 
- <target id="b9ud5lm" pid="b9ud0ut" name="Step" level="3" number="4"> <text>In the Policy Manager window, click on the right column of the policy setting you wish to change.</text> </target>
+ <target id="b9ud5lm" pid="b9ud0ut" name="Step" level="3" number="4"> <text>In the Policy Manager window, click on the right column of the policy setting you want to change.</text> </target>
 
  <target id="b9ud5lp" pid="b9ud0ut" name="Step" level="3" number="5"> <text>After you adjust all of the policy settings, click OK.</text> </target>
 
- <target name="InformalTable" level="2"> <text>This Setting...</text> </target>
+ <target id="bf8zrux" pid="b9ud0ut" name="Table" level="2" number="Table 4-1"> <text>Policy Manager Settings</text> </target>
 
  <target id="b9udsw5" pid="b9ud0ut" name="row" level="3"> <text>This Setting...</text> </target>
 
@@ -58,13 +56,11 @@
 
  <target id="b9ud21k" pid="b9ud21k" name="Sect1" level="1" number="4.2"> <text>Creating a New User</text> </target>
 
- <target id="b9uekkg" pid="b9ud21k" name="FormalPara" level="2"> <text>To create a user account:</text> </target>
-
  <target id="b9uehwd" pid="b9ud21k" name="Procedure" level="2" number="1"> <text>From the Manage Contacts and Users window, select the Community Address Book.</text> </target>
 
  <target id="b9uei42" pid="b9ud21k" name="Step" level="3" number="1"> <text>From the Manage Contacts and Users window, select the Community Address Book.</text> </target>
 
- <target id="b9uei43" pid="b9ud21k" name="Step" level="3" number="2"> <text>Click New in the lower-left corner of the window, and select the New User menu item.</text> </target>
+ <target id="b9uei43" pid="b9ud21k" name="Step" level="3" number="2"> <text>Click New in the lower left corner of the window, and select the New User menu item.</text> </target>
 
  <target id="b9uei45" pid="b9ud21k" name="Step" level="3" number="3"> <text>In the New User window, click items in the right column of the table to provide values for the new user's contact information.</text> </target>
 

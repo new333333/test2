@@ -6,8 +6,12 @@
 
  <target id="b9ubokd" pid="b9ubokd" name="Sect1" level="1" number="2.1"> <text>Starting the Administration Console</text> </target>
 
+ <target id="bf8z2rj" pid="b9ubokd" name="Figure" level="2" number="Figure 2-1"> <text>Administration Console Login</text> </target>
+
  <target id="b9ubq8n" pid="b9ubq8n" name="Sect1" level="1" number="2.2"> <text>Using the Administration Console</text> </target>
 
  <target id="b9ubqij" pid="b9ubq8n" name="Sect2" level="2" number="2.2.1"> <text>Component Status Page</text> </target>
+
+ <target id="bf8z2rk" pid="b9ubq8n" name="Figure" level="3" number="Figure 2-2"> <text>Component Status Summary Page</text> </target>
 
 </targets>
