@@ -6,21 +6,21 @@
 
  <target id="b9ufnqq" pid="b9ufnqq" name="Sect1" level="1" number="6.1"> <text>Real-Time Event Logs</text> </target>
 
- <target id="b9ufr45" pid="b9ufnqq" name="Sect2" level="2" number="6.1.1"> <text>Determining Whether Real-time Events are Enabled</text> </target>
+ <target id="b9ufr45" pid="b9ufnqq" name="Sect2" level="2" number="6.1.1"> <text>Determining Whether Real-Time Events Are Enabled</text> </target>
 
  <target id="b9ufptn" pid="b9ufnqq" name="Sect2" level="2" number="6.1.2"> <text>Determining Hosts and Ports</text> </target>
 
- <target id="b9ufpue" pid="b9ufnqq" name="Sect2" level="2" number="6.1.3"> <text>Call Record Host(s) and Port</text> </target>
+ <target id="b9ufpue" pid="b9ufnqq" name="Sect2" level="2" number="6.1.3"> <text>Call Record Host and Port</text> </target>
 
- <target id="b9ufqh1" pid="b9ufnqq" name="Sect2" level="2" number="6.1.4"> <text>User record host(s) and port</text> </target>
+ <target id="b9ufqh1" pid="b9ufnqq" name="Sect2" level="2" number="6.1.4"> <text>User Record Host and Port</text> </target>
 
- <target id="b9ufquj" pid="b9ufnqq" name="Sect2" level="2" number="6.1.5"> <text>Reservation record host(s) and port</text> </target>
+ <target id="b9ufquj" pid="b9ufnqq" name="Sect2" level="2" number="6.1.5"> <text>Reservation Record Host and Port</text> </target>
 
- <target id="b9ufqv4" pid="b9ufnqq" name="Sect2" level="2" number="6.1.6"> <text>Connecting to real-time event logs</text> </target>
+ <target id="b9ufqv4" pid="b9ufnqq" name="Sect2" level="2" number="6.1.6"> <text>Connecting to Real-Time Event Logs</text> </target>
 
  <target id="b9ufomp" pid="b9ufomp" name="Sect1" level="1" number="6.2"> <text>User Record Format</text> </target>
 
- <target name="InformalTable" level="2"> <text>Record</text> </target>
+ <target id="bf906xp" pid="b9ufomp" name="Table" level="2" number="Table 6-1"> <text>User Record Fields</text> </target>
 
  <target id="b9ufrq0" pid="b9ufomp" name="row" level="3"> <text>Record</text> </target>
 
@@ -94,7 +94,7 @@
 
  <target id="b9ufomq" pid="b9ufomq" name="Sect1" level="1" number="6.3"> <text>Call Data Records</text> </target>
 
- <target name="InformalTable" level="2"> <text>Record</text> </target>
+ <target id="bf90b56" pid="b9ufomq" name="Table" level="2" number="Table 6-2"> <text>Database Service Output</text> </target>
 
  <target id="b9ug9al" pid="b9ufomq" name="row" level="3"> <text>Record</text> </target>
 
@@ -120,7 +120,7 @@
 
  <target id="b9ufomr" pid="b9ufomr" name="Sect1" level="1" number="6.4"> <text>Reservation Data Records </text> </target>
 
- <target name="InformalTable" level="2"> <text>Record</text> </target>
+ <target id="bf90b57" pid="b9ufomr" name="Table" level="2" number="Table 6-3"> <text>Reservation Data Record Values</text> </target>
 
  <target id="b9ug9av" pid="b9ufomr" name="row" level="3"> <text>Record</text> </target>
 
@@ -154,7 +154,7 @@
 
  <target id="b9ufoms" pid="b9ufoms" name="Sect1" level="1" number="6.5"> <text>Chat Audit Log Configuration</text> </target>
 
- <target name="InformalTable" level="2"> <text>Record</text> </target>
+ <target id="bf90b58" pid="b9ufoms" name="Table" level="2" number="Table 6-4"> <text>Chat Audit Log Fields</text> </target>
 
  <target id="b9ugf40" pid="b9ufoms" name="row" level="3"> <text>Record</text> </target>
 

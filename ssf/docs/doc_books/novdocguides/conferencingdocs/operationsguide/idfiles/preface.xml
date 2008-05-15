@@ -6,22 +6,22 @@
 
  <target id="audience" pid="preface" name="BridgeHead" level="1"> <text>Audience</text> </target>
 
- <target id="usercomments" pid="preface" name="BridgeHead" level="1"> <text>Feedback</text> </target>
+ <target id="bdgyzut" pid="preface" name="BridgeHead" level="1"> <text>Software and Documentation Version</text> </target>
 
- <target id="docupdates" pid="preface" name="BridgeHead" level="1"> <text>Documentation Updates</text> </target>
+ <target id="usercomments" pid="preface" name="BridgeHead" level="1"> <text>Feedback</text> </target>
 
  <target id="ban8e22" pid="preface" name="BridgeHead" level="1"> <text>Additional Documentation</text> </target>
 
- <target id="b9yxnfu" pid="preface" name="BridgeHead" level="1"> <text>Contents of this Manual</text> </target>
+ <target id="bdggczj" pid="preface" name="BridgeHead" level="1"> <text>Change History</text> </target>
 
- <target id="b9yxnfv" pid="preface" name="BridgeHead" level="1"> <text>Document Conventions</text> </target>
+ <target name="InformalTable" level="1"> <text>Guide Revision</text> </target>
 
- <target name="InformalTable" level="1"> <text>What you see</text> </target>
+ <target id="bcnmsed" pid="preface" name="row" level="2"> <text>Guide Revision</text> </target>
 
- <target id="b9yxhs9" pid="preface" name="row" level="2"> <text>What you see</text> </target>
+ <target id="bcnmsee" pid="preface" name="row" level="2"> <text>0 (First Version)</text> </target>
 
- <target id="b9yxhsa" pid="preface" name="row" level="2"> <text>Click the Add toolbar item.</text> </target>
+ <target id="docupdates" pid="preface" name="BridgeHead" level="1"> <text>Documentation Updates</text> </target>
 
- <target id="b9yxhsb" pid="preface" name="row" level="2"> <text>Type status, then press Enter.</text> </target>
+ <target id="b9yxnfv" pid="preface" name="BridgeHead" level="1"> <text>Conventions</text> </target>
 
 </targets>

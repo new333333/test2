@@ -8,15 +8,7 @@
 
  <target id="b9usk48" pid="b9urx1t" name="Sect2" level="2" number="7.1.1"> <text>Starting and Stopping the Cluster</text> </target>
 
- <target id="b9ust9y" pid="b9urx1t" name="Sect3" level="3"> <text>To Stop Conferencing Services:</text> </target>
-
- <target id="b9ust9z" pid="b9urx1t" name="Sect3" level="3"> <text>To Start Conferencing Services:</text> </target>
-
  <target id="b9usta0" pid="b9urx1t" name="Sect2" level="2" number="7.1.2"> <text>Starting and Stopping Individual Machines</text> </target>
-
- <target id="b9usta1" pid="b9urx1t" name="Sect3" level="3"> <text>To Stop Conferencing Services with control-services.sh:</text> </target>
-
- <target id="b9usta2" pid="b9urx1t" name="Sect3" level="3"> <text>To Start Conferencing Services with control-services.sh:</text> </target>
 
  <target id="b9urxkc" pid="b9urxkc" name="Sect1" level="1" number="7.2"> <text>Backing Up the Database</text> </target>
 
