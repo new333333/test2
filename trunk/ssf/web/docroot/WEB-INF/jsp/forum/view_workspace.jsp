@@ -253,6 +253,28 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 <c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 								<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 </c:if>								
+
+<a class="ss_linkButton" href="<ssf:url 
+		action="view_ws_listing" binderId="${ssBinder.id}"><ssf:param
+		name="type" value="whatsNew"/><ssf:param
+		name="page" value="0"/><ssf:param
+		name="namespace" value="${ss_namespace}"/></ssf:url>"
+	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', 'whatsNew', '0', '', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
+><ssf:nlt tag="workspace.whatsNew"/></a>
+<a class="ss_linkButton" href="<ssf:url 
+		action="view_ws_listing" binderId="${ssBinder.id}"><ssf:param
+		name="type" value="unseen"/><ssf:param
+		name="page" value="0"/><ssf:param
+		name="namespace" value="${ss_namespace}"/></ssf:url>"
+	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', 'unseen', '0', '', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
+><ssf:nlt tag="workspace.listUnseen"/></a>
+<br/>
+<div id="ss_whatsNewDiv${ss_namespace}">
+<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
+<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
+</c:if>
+</div>
+
 								<% // Show the workspace according to its definition %>
 								<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 								  processThisItem="true"

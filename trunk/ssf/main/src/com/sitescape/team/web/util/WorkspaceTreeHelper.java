@@ -259,6 +259,8 @@ public class WorkspaceTreeHelper {
 			model.put(WebKeys.PAGE_NUMBER, page);
 			if (type.equals(WebKeys.URL_WHATS_NEW)) 
 				BinderHelper.setupWhatsNewBinderBeans(bs, binder, model, page);
+			if (type.equals(WebKeys.URL_UNSEEN)) 
+				BinderHelper.setupUnseenBinderBeans(bs, binder, model, page);
 			
 		} catch(NoBinderByTheIdException e) {
 		}
