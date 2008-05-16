@@ -37,6 +37,10 @@ import com.sitescape.team.web.WebKeys;
 
 public class SimpleNameUtil {
 
+	private static final int SIMPLE_NAME_MAX_LENGTH = 128;
+	
+	private static final char[] ALLOWED_CHARS_FOR_URL = new char[] {'_', '-', '!', '.', '~', '\'', '(', ')', '*', '/' };
+	
 	/**
 	 * Resolve the simple name to a full adapter URL.
 	 * 
@@ -71,17 +75,18 @@ public class SimpleNameUtil {
 	 * @return
 	 */
 	public static boolean validateForURL(String simpleName) {
-		if(!simpleName.equals(simpleName.toLowerCase()))
+		if(simpleName.length() > SIMPLE_NAME_MAX_LENGTH)
 			return false;
 		
-		char[] allowed = new char[] {'_', '-', '!', '.', '~', '\'', '(', ')', '*', '/' };
+		if(!simpleName.equals(simpleName.toLowerCase()))
+			return false;
 		
 		char[] c = simpleName.toCharArray();
 		outer:
 		for(int i = 0; i < c.length; i++) {
 			if(!Character.isLetterOrDigit(c[i]) && !Character.isWhitespace(c[i])) {
-				for(int j = 0; j < allowed.length; j++) {
-					if(c[i] == allowed[j])
+				for(int j = 0; j < ALLOWED_CHARS_FOR_URL.length; j++) {
+					if(c[i] == ALLOWED_CHARS_FOR_URL[j])
 						continue outer;
 				}
 				return false;
