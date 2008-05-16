@@ -33,27 +33,6 @@
 <c:set var="ss_discussionWorkspaceView" value="true" scope="request"/>
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
 
-<a class="ss_linkButton" href="<ssf:url 
-		action="view_ws_listing" binderId="${ssBinder.id}"><ssf:param
-		name="type" value="whatsNew"/><ssf:param
-		name="page" value="0"/><ssf:param
-		name="namespace" value="${ss_namespace}"/></ssf:url>"
-	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', 'whatsNew', '0', '', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
-><ssf:nlt tag="workspace.whatsNew"/></a>
-<a class="ss_linkButton" href="<ssf:url 
-		action="view_ws_listing" binderId="${ssBinder.id}"><ssf:param
-		name="type" value="unseen"/><ssf:param
-		name="page" value="0"/><ssf:param
-		name="namespace" value="${ss_namespace}"/></ssf:url>"
-	onClick="ss_showWhatsNewPage(this, '${ssBinder.id}', 'unseen', '0', '', 'ss_whatsNewDiv', '${ss_namespace}');return false;"
-><ssf:nlt tag="workspace.listUnseen"/></a>
-<br/>
-<div id="ss_whatsNewDiv${ss_namespace}">
-<c:if test="${!empty ss_whatsNewBinder || ss_pageNumber > '0'}">
-<%@ include file="/WEB-INF/jsp/forum/whats_new_page.jsp" %>
-</c:if>
-</div>
-
 <div width="100%" style="background-color:azure; padding:20px;">
 	<span class="ss_bold">${ssDefinitionEntry.title}</span>
 	<br/>
