@@ -40,6 +40,7 @@ import org.dom4j.Document;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.User;
@@ -70,7 +71,8 @@ public interface BinderModule {
 		moveBinder,
 		report,
 		setProperty,	
-		changeEntryTimestamps
+		changeEntryTimestamps,
+		manageSimpleName,
 	}
     /**
      * Add a new <code>Folder</code> or <code>Workspace</code>.  Use definition type to determine which
@@ -403,5 +405,28 @@ public interface BinderModule {
 	 * @return
 	 */
 	public boolean testAccess(Binder binder, BinderOperation operation);
+
+	/**
+	 * Returns a list of <code>SimpleName</code> objects of given type for the 
+	 * binder sorted by the name. Returns an empty list if no match is found.
+	 *  
+	 * @param binderId
+	 * @return
+	 */
+	public List<SimpleName> getSimpleNames(Long binderId, String type);
+	
+	/**
+	 * Add a simple name for the binder.
+	 * 
+	 * @param simpleName
+	 */
+	public void addSimpleName(String name, String type, Long binderId, String binderType);
+	
+	/**
+	 * Delete the simple name.
+	 * 
+	 * @param simpleName
+	 */
+	public void deleteSimpleName(String name, String type);
 
 }

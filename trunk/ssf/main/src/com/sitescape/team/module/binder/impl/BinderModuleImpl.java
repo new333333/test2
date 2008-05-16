@@ -79,6 +79,7 @@ import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NotificationDef;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
@@ -176,6 +177,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				case changeEntryTimestamps:
 					getAccessControlManager().checkOperation(binder, WorkAreaOperation.SITE_ADMINISTRATION);
 					break;
+				case manageSimpleName:
+	 				 getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);
+	 				 break;			
 	  			default:
 	   				throw new NotSupportedException(operation.toString(), "checkAccess");
 
@@ -1367,4 +1371,22 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	SortedSet binderMap = new TreeSet();
     	return binderMap;
     }
+    
+	public void addSimpleName(String name, String type, Long binderId, String binderType) {
+		Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.manageSimpleName); 
+		SimpleName simpleName = new SimpleName(RequestContextHolder.getRequestContext().getZoneId(),
+				name.toLowerCase(), type, binderId, binderType);
+		getCoreDao().save(simpleName);
+	}
+	public void deleteSimpleName(String name, String type) {
+		SimpleName simpleName = getCoreDao().loadSimpleName(name.toLowerCase(), type, RequestContextHolder.getRequestContext().getZoneId());
+		Binder binder = loadBinder(simpleName.getBinderId());
+		checkAccess(binder, BinderOperation.manageSimpleName); 
+		getCoreDao().delete(simpleName);
+	}
+	public List<SimpleName> getSimpleNames(Long binderId, String type) {
+		return getCoreDao().loadSimpleNames(type, binderId, RequestContextHolder.getRequestContext().getZoneId());
+	}
+
 }
