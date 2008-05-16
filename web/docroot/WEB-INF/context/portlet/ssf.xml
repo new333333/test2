@@ -41,6 +41,9 @@
 	<bean id="meetingController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.MeetingController" />	
 	<bean id="teamController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.TeamController" />	
 	<bean id="sendEntryEmailController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.SendEntryMailController" />
+	<bean id="viewTermsController" class="org.springframework.web.portlet.mvc.ParameterizableViewController">
+		<property name="viewName" value="forum/CPAL_license" /> 
+	</bean>
 		
 	<bean id="importDefinitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportDefinitionController" />
 	<bean id="importProfilesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportProfilesController" />
@@ -94,6 +97,7 @@
 						<entry key="stop_workflow"><ref bean="folderModifyEntryController"/></entry>
 						<entry key="modify_profile_entry"><ref bean="profileModifyEntryController"/></entry>
 						<entry key="view_folder_entry"><ref bean="folderViewEntryController"/></entry>
+						<entry key="view_terms" value-ref="viewTermsController" />
 						<entry key="view_permalink"><ref bean="binderViewPermalinkController"/></entry>
 						<entry key="view_profile_entry"><ref bean="profileViewEntryController"/></entry>
 						<entry key="view_folder_listing"><ref bean="listFolderController"/></entry>
