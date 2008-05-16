@@ -74,7 +74,7 @@ public class SimpleNameUtil {
 		if(!simpleName.equals(simpleName.toLowerCase()))
 			return false;
 		
-		char[] allowed = new char[] {'_', '-', '!', '.', '~', '\'', '(', ')', '*' };
+		char[] allowed = new char[] {'_', '-', '!', '.', '~', '\'', '(', ')', '*', '/' };
 		
 		char[] c = simpleName.toCharArray();
 		outer:
