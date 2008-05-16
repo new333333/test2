@@ -64,11 +64,14 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 
 	--%><div align="center" class="ss_footer_toolbar"><%--
 		--%><ssHelpSpot helpId="workspaces_folders/misc_tools/footer_toolbar" offsetX="-13" offsetY="-15" <%--
-			--%> title="<ssf:nlt tag="helpSpot.bottomLinks"/>"></ssHelpSpot><%--
-
-		--%><c:set var="delimiter" value=""/><%--
-		
-		--%><c:forEach var="toolbarMenu" items="${ssFooterToolbar}"><%--
+			--%> title="<ssf:nlt tag="helpSpot.bottomLinks"/>"></ssHelpSpot>
+			
+			<div class="ss_bottomlinks">
+				<a href="/ssf/a/do?p_name=ss_forum&p_action=2&action=view_terms">Terms of Use</a>
+			</div>
+			<c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" />
+			
+			<c:forEach var="toolbarMenu" items="${ssFooterToolbar}"><%--
 		
 			--%><c:set var="popup" value="false"/><%--
 			--%><c:if test="${toolbarMenu.value.qualifiers.popup}"><%--
@@ -127,10 +130,8 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 									--%>><c:out value="${toolbarMenu.value.title}" /></a><%--
 							--%></c:if><%--
 	
-						--%></div><%--
-					
-						--%><c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" /><%--
-					--%></c:if><%--
+						--%></div>
+						</c:if><%--
 					
 				--%></c:when><%--
 				
@@ -168,7 +169,6 @@ Boolean webdavSupportedFooter = new Boolean(com.sitescape.team.web.util.BinderHe
 							--%></a><%--
 						--%></div><%--
 						--%><%--
-						--%><c:set var="delimiter" value="<span class=\"ss_bottomlinks\">&nbsp;|&nbsp;</span>" /><%--
 					--%></c:if><%--
 				--%></c:when><%--
 				
