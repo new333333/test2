@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping auto-import="false">
+    <class dynamic-update="true" table="SS_SimpleName" lazy="false" name="com.sitescape.team.domain.SimpleName">
+    	<cache usage="nonstrict-read-write"/>
+	    <composite-id>
+	      <key-property name="zoneId" access="field"/>
+	      <key-property name="name" length="128"/>
+	      <key-property name="type" length="16"/>
+	    </composite-id>
+    	<property name="binderId" index="binderId_simpleName"/>
+    	<property name="binderType" length="16"/>
+	</class>
+</hibernate-mapping>
