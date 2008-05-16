@@ -87,6 +87,7 @@ import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
@@ -96,6 +97,7 @@ import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.security.function.Function;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -310,6 +312,10 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   				.setLong("entityId", binder.getId())
 		   			   	.setParameter("entityType", binder.getEntityType().getValue())
 		   			   	.executeUpdate();
+		   			//delete simple names for this binder
+		   			session.createQuery("DELETE com.sitescape.team.domain.SimpleName where binderId=:binderId")
+		   				.setLong("binderId", binder.getId())
+		   				.executeUpdate();
 
 		   			if (entryClass != null) {
 		   				//finally delete the entries
@@ -1454,4 +1460,26 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
             );  
        return result;   	
     }
+
+	public SimpleName loadSimpleName(String name, String type, Long zoneId) {
+		return (SimpleName) getHibernateTemplate().get(SimpleName.class, new SimpleName(zoneId, name, type));
+	}
+
+	public List<SimpleName> loadSimpleNames(final String type, final Long binderId, final Long zoneId) {
+        return (List)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        List<SimpleName> results = session.createCriteria(SimpleName.class)
+                        	.add(Expression.eq("zoneId", zoneId))
+                        	.add(Expression.eq("type", type))
+                        	.add(Expression.eq("binderId", binderId))
+                        	.setCacheable(true)
+                        	.addOrder(Order.asc("name"))
+                        	.list();
+                    	return results;
+                    }
+                }
+            );
+
+	}
  }

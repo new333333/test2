@@ -36,6 +36,8 @@
 		<property name="hibernate.generate_statistics">false</property>
  		<property name="hibernate.hbm2ddl.auto">update</property>
 		<!-- Sitescape Mappings -->
+		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfoInteractive.hbm.xml"/>
+		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfoBackground.hbm.xml"/>
 		<mapping resource="com/sitescape/team/security/function/Function.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Attachment.hbm.xml"/>
@@ -57,6 +59,7 @@
 	    <mapping resource="com/sitescape/team/domain/Ratings.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/SeenMap.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/SharedEntity.hbm.xml"/>
+	    <mapping resource="com/sitescape/team/domain/SimpleName.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Subscription.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Tag.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/UserProperties.hbm.xml"/>
@@ -64,8 +67,6 @@
 	    <mapping resource="com/sitescape/team/domain/WorkflowResponse.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/WorkflowState.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/ZoneInfo.hbm.xml"/>
-		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfoInteractive.hbm.xml"/>
-		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfoBackground.hbm.xml"/>
 
  
 	</session-factory>

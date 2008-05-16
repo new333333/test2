@@ -598,6 +598,7 @@
 				<prop key="setNotification*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setPosting*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setTag*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addSimpleName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				
 			</props>
 		</property>
