@@ -46,7 +46,9 @@
 <portletadapter:defineObjects1/>
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
+<c:set var="ss_slidingTableRowCount" value="0" scope="request"/>
 
-<div style="margin:0px 0px 0px 2px;">
-<table width="100%" border="0" cellpadding="0" cellspacing="0" class="ss_style ss_borderTable">
-</div>
+<div style="margin:0px 0px 0px 0px;">
+<table width="100%" border="0" cellpadding="0" cellspacing="0" 
+  class="ss_style ss_borderTable ${ss_slidingTableStyle}">
+

@@ -41,14 +41,12 @@ if (isIECheck) strBrowserType = "ie";
 %>
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 
-<%
+<c:set var="slidingTableStyle" value="sliding"/>
+<c:if test="${empty ss_folderViewStyle || ss_folderViewStyle == 'folder'}">
+  <c:set var="slidingTableStyle" value="fixed"/>
+</c:if>
 
-String slidingTableStyle = "sliding";
-/** Vertical mode has been removed
-if (ObjectKeys.USER_DISPLAY_STYLE_VERTICAL.equals(ssUser.getDisplayStyle())) {
-	slidingTableStyle = "sliding_scrolled";
-}
-*/
+<%
 boolean useAdaptor = true;
 if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
 		!ObjectKeys.GUEST_USER_INTERNALID.equals(ssUser.getInternalId())) {
@@ -100,7 +98,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
  </table>
 </div>
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
-<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="<%= slidingTableStyle %>" 
+<ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}">
 
 <ssf:slidingTableRow headerRow="true">
@@ -374,7 +372,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 %>
 <c:set var="hasFile2" value="<%= hasFile %>"/>
 <c:set var="oneFile2" value="<%= oneFile %>"/>
-<ssf:slidingTableRow id="${folderLineId}">
+<ssf:slidingTableRow id="${folderLineId}" oddStyle="ss_table_tr_odd" evenStyle="ss_table_tr_even">
 
  <c:if test="${!empty ssFolderColumns['number']}">
   <ssf:slidingTableColumn>
@@ -384,24 +382,31 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
     binderId="${ssFolder.id}" 
     action="view_folder_entry" 
     entryId="${entry1._docId}" actionUrl="true" />" 
+<c:if test="${slidingTableStyle != 'fixed'}">
     onClick="ss_loadEntry(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+</c:if>
+<c:if test="${slidingTableStyle == 'fixed'}">
+    onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+</c:if>
     ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;&nbsp;&nbsp;
   </ssf:slidingTableColumn>
  </c:if>
   
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
-	<ssf:titleLink 
-		entryId="${entry1._docId}" binderId="${ssBinder.id}" 
-		entityType="${entry1._entityType}"  
-		namespace="${renderResponse.namespace}"
-		seenStyle="<%= seenStyle %>" seenStyleFine="<%= seenStyleFine %>">
-		<ssf:param name="url" useBody="true">
-			<ssf:url adapter="true" portletName="ss_forum" folderId="${ssFolder.id}" 
-			action="view_folder_entry" entryId="${entry1._docId}" actionUrl="true" />					
-		</ssf:param>
-	    	<c:out value="${entry1.title}"/>
-	</ssf:titleLink> 
+    <a href="<ssf:url     
+    adapter="<%= useAdaptor %>" 
+    portletName="ss_forum" 
+    binderId="${ssFolder.id}" 
+    action="view_folder_entry" 
+    entryId="${entry1._docId}" actionUrl="true" />" 
+<c:if test="${slidingTableStyle != 'fixed'}">
+    onClick="ss_loadEntry(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+</c:if>
+<c:if test="${slidingTableStyle == 'fixed'}">
+    onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+</c:if>
+    ><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
   </ssf:slidingTableColumn>
  </c:if>
   
@@ -476,7 +481,12 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
     binderId="${ssFolder.id}" 
     action="view_folder_entry" 
     entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
+<c:if test="${slidingTableStyle == 'fixed'}">
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+</c:if>
+<c:if test="${slidingTableStyle == 'fixed'}">
+    onClick="ss_loadEntryInPlace(this,'<c:out value="${entry1._docId}"/>', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+</c:if>
     ><span <%= seenStyle %>><c:out value="${entry1._workflowStateCaption}"/></span></a>
     </c:if>
   </ssf:slidingTableColumn>

@@ -51,6 +51,8 @@
 	String slidingTableRowId = (String) request.getAttribute("ss_slidingTableRowId");
 	List slidingTableRowColumns = (List) request.getAttribute("ss_slidingTableRowColumns");
 	Boolean slidingTableHeaderRow = (Boolean) request.getAttribute("ss_slidingTableHeaderRow");
+	String slidingTableRowOddStyle = (String) request.getAttribute("ss_slidingTableRowOddStyle");
+	String slidingTableRowEvenStyle = (String) request.getAttribute("ss_slidingTableRowEvenStyle");
 
 	String slidingTableRowIdText = "";
 	if (slidingTableRowId != null && !slidingTableRowId.equals("")) {
@@ -62,7 +64,11 @@
 <%
 	} else {
 %>
-<tr <%= slidingTableRowIdText %>>
+<tr <%= slidingTableRowIdText %>
+<c:if test="${ss_slidingTableRowCount%2 == '0'}">class="${ss_slidingTableRowOddStyle}" </c:if>
+<c:if test="${ss_slidingTableRowCount%2 == '1'}">class="${ss_slidingTableRowEvenStyle}" </c:if>
+<c:set var="ss_slidingTableRowCount" value="${ss_slidingTableRowCount + 1}" scope="request"/>
+>
 <%
 	}
 	
