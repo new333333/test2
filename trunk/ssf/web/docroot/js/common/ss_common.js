@@ -3607,6 +3607,71 @@ function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
 	ss_showForumEntry(obj.href, isDashboard);
 	return false;
 }
+var ss_loadEntryInPlaceLastRowObj = null;
+var ss_loadEntryInPlaceLastId = null;
+function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboard) {
+	if (ss_userDisplayStyle == "accessible") {
+		self.location.href = obj.href;
+		return false;
+	}
+	
+	trObj = ss_findOwningElement(obj, "tr")
+	tbodyObj = ss_findOwningElement(trObj, "tbody")
+	if (ss_loadEntryInPlaceLastRowObj != null) {
+		if (ss_loadEntryInPlaceLastId == binderId + ',' + id) {
+			tbodyObj.removeChild(ss_loadEntryInPlaceLastRowObj);
+			ss_loadEntryInPlaceLastRowObj = null;
+			ss_loadEntryInPlaceLastId = null;
+			return;
+		} else {
+			tbodyObj.removeChild(ss_loadEntryInPlaceLastRowObj);
+			ss_loadEntryInPlaceLastRowObj = null;
+			ss_loadEntryInPlaceLastId = null;
+		}
+	}
+	tbodyObj.insertBefore(trObj.cloneNode(true), trObj)
+	ss_loadEntryInPlaceLastId = binderId + ',' + id;
+	
+	//Count the number of "td" elements
+	var count = 0
+	var childObj = trObj.firstChild
+	while (childObj != null && childObj != trObj.lastChild) {
+		if (typeof childObj.tagName != 'undefined') {
+			if (childObj.tagName.toLowerCase() == 'td') count++;
+		}
+		childObj = childObj.nextSibling
+	}
+	ss_random++;
+	var iframeRow = document.createElement("tr");
+	var iframeCol = document.createElement("td");
+	iframeRow.appendChild(iframeCol);
+	iframeCol.setAttribute("colspan", count);
+	tbodyObj.replaceChild(iframeRow, trObj)
+	ss_loadEntryInPlaceLastRowObj = iframeRow;
+	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+ss_random+'" width="100%">' +
+    	'<iframe id="ss_entry_iframe'+id+ss_random+'" name="ss_entry_iframe'+id+ss_random+'"' +
+    	' src="'+obj.href+'"' +
+    	' style="width:100%; margin:0px; padding:0px;" frameBorder="0"' +
+    	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+ss_random+'\', \'ss_entry_iframe'+id+ss_random+'\')"' +
+    	'>xxx</iframe>' +
+    	'</div>';
+
+	ss_highlightLine(id, namespace);
+	return false;
+}
+
+var ss_entryInPlaceIframeOffset = 50;
+function ss_setIframeHeight(divId, iframeId) {
+	var targetDiv = document.getElementById(divId);
+	var iframeDiv = document.getElementById(iframeId);
+	if (window.frames[iframeId] != null) {
+		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
+		if (iframeHeight > 0) {
+			iframeDiv.style.height = iframeHeight + ss_entryInPlaceIframeOffset + "px"
+		}
+	}
+}
+
 function ss_showForumEntry(url, isDashboard) {	
 	if (ss_userDisplayStyle == "accessible") {
 		self.location.href = obj.href;
@@ -3623,6 +3688,7 @@ function ss_showForumEntry(url, isDashboard) {
 		return ss_showForumEntryInIframe(url);
 	}
 }
+
 function ss_showForumEntryInIframe_Overlay(url) {
 	if (self.parent && self != self.parent && typeof self.parent.ss_showForumEntryInIframe != "undefined") {
 		self.parent.ss_showForumEntryInIframe(url);
