@@ -63,6 +63,9 @@
 <c:if test="${empty ss_whatsNewBinder}">
 <img src="<html:imagesPath/>pics/sym_arrow_right_g.gif"/>
 </c:if>
+<a style="margin-left:15px;"
+  onClick="ss_hideDivNone('ss_whatsNewDiv${ss_namespace}'); return false;"><img 
+  <ssf:alt tag="alt.hide"/> border="0" src="<html:imagesPath/>icons/close_off.gif"/></a>
 </div>
 <div>
   <c:forEach var="entry" items="${ss_whatsNewBinder}">
