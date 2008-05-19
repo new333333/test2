@@ -510,7 +510,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		toolbar.addToolbarMenuItem("5_team", "", NLT.get("toolbar.teams.view"), url);
 			
 		// Sendmail
-		adapterUrl = new AdaptedPortletURL((PortletRequest)null, "ss_forum", true);
+		adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 		adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 		adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
