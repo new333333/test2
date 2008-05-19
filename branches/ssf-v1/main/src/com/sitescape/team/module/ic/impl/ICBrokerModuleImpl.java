@@ -678,8 +678,10 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 			}
 			throw new ICException((Integer) result.get(0));
 		} catch (XmlRpcException e) {
+			logger.error(e);
 			throw new ICException(e);
 		} catch (IOException e) {
+			logger.error(e);
 			throw new ICException(e);
 		}
 	}
@@ -720,8 +722,10 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 				throw new ICException((Integer) result.get(0));
 			}
 		} catch (XmlRpcException e) {
+			logger.error(e);
 			throw new ICException(e);
 		} catch (IOException e) {
+			logger.error(e);
 			throw new ICException(e);
 		}
 	
@@ -760,8 +764,10 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 				throw new ICException((Integer) result.get(0));
 			}
 		} catch (XmlRpcException e) {
+			logger.error(e);
 			throw new ICException(e);
 		} catch (IOException e) {
+			logger.error(e);
 			throw new ICException(e);
 		}
 	
@@ -793,8 +799,10 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 				throw new ICException((Integer) result.get(0));
 			}
 		} catch (XmlRpcException e) {
+			logger.error(e);
 			throw new ICException(e);
 		} catch (IOException e) {
+			logger.error(e);
 			throw new ICException(e);
 		}
 		
@@ -866,8 +874,10 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 			List result = (List) server.execute(REMOVE_RECORDINGS, params);
 			return true;
 		} catch (XmlRpcException e) {
+			logger.error(e);
 			throw new ICException(e);
 		} catch (IOException e) {
+			logger.error(e);
 			throw new ICException(e);
 		}
 	}
