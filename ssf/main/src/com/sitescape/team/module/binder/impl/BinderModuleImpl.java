@@ -91,11 +91,9 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.SearchUtils;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
@@ -329,7 +327,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				//	delete all sub-binders - walk the ancestry list
 				// 	and delete all the entries under each folderid.
 				for (Binder binder:checked) {
-					IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
+					IndexSynchronizationManager.deleteDocuments(new Term(Constants.ENTRY_ANCESTRY, binder.getId().toString()));
 				}
 			}
 		   	for (Binder binder:checked) {
@@ -764,7 +762,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 	    }
 
 	    entries = SearchUtils.getSearchEntries(hits);
-	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao(), EntityIndexUtils.CREATORID_FIELD);
+	    SearchUtils.extendPrincipalsInfo(entries, getProfileDao(), Constants.CREATORID_FIELD);
 
         Map retMap = new HashMap();
         retMap.put(ObjectKeys.SEARCH_ENTRIES,entries);
@@ -928,10 +926,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		
 		// look for binders only
 		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
 		field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
     	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-       	child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+       	child.setText(Constants.DOC_TYPE_BINDER);
 
     	// look for user
        	Principal prin = RequestContextHolder.getRequestContext().getUser();
@@ -942,14 +940,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
        		Element orField2 = boolElement.addElement(Constants.OR_ELEMENT);
        		for (Long id:ids) {
        			field = orField2.addElement(Constants.FIELD_ELEMENT);
-       			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.TEAM_MEMBERS_FIELD);
+       			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.TEAM_MEMBERS_FIELD);
        			field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
        			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
        			child.setText(id.toString());
        		}
        	} else {
   			field = boolElement.addElement(Constants.FIELD_ELEMENT);
-   			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.TEAM_MEMBERS_FIELD);
+   			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.TEAM_MEMBERS_FIELD);
    			field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
    			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
    			child.setText(userId.toString());
@@ -958,7 +956,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(qTree);
 	   	//Set the sort order
-	   	SortField[] fields = new SortField[] {new SortField(EntityIndexUtils.SORT_TITLE_FIELD, SortField.AUTO, false)};
+	   	SortField[] fields = new SortField[] {new SortField(Constants.SORT_TITLE_FIELD, SortField.AUTO, false)};
 	   	so.setSortBy(fields);
    	
     	if(logger.isDebugEnabled()) {
@@ -1141,9 +1139,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 				//get folders
 				for (int i=0; i<searchBinders.size(); ++i) {
 					Map search = (Map)searchBinders.get(i);
-					String entityType = (String)search.get(EntityIndexUtils.ENTITY_FIELD);
+					String entityType = (String)search.get(Constants.ENTITY_FIELD);
 					if (EntityType.folder.name().equals(entityType)) {
-						String sId = (String)search.get(EntityIndexUtils.DOCID_FIELD);
+						String sId = (String)search.get(Constants.DOCID_FIELD);
 						try {
 							Long id = Long.valueOf(sId);
 							Object obj = getCoreDao().load(Folder.class, id);
@@ -1164,9 +1162,9 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 			//get workspaces
 			for (int i=0; i<searchBinders.size(); ++i) {
 				Map search = (Map)searchBinders.get(i);
-				String entityType = (String)search.get(EntityIndexUtils.ENTITY_FIELD);
+				String entityType = (String)search.get(Constants.ENTITY_FIELD);
 				if (EntityType.workspace.name().equals(entityType)) {
-					String sId = (String)search.get(EntityIndexUtils.DOCID_FIELD);
+					String sId = (String)search.get(Constants.DOCID_FIELD);
 					try {
 						Long id = Long.valueOf(sId);
 						Object obj = getCoreDao().load(Workspace.class, id);
@@ -1243,14 +1241,14 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		Element qTreeAndElement = qTreeRootElement.addElement(Constants.AND_ELEMENT);
 		
 		Element field = qTreeAndElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDERS_PARENT_ID_FIELD);
 		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(top.getId().toString());
    	
 		field = qTreeAndElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
 		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+		child.setText(Constants.DOC_TYPE_BINDER);
       	//Create the Lucene query
     	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(queryTree);
@@ -1260,7 +1258,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	
     	//Set the sort order
    		SortField[] fields = new SortField[1];
-   		String sortBy = EntityIndexUtils.NORM_TITLE;   		
+   		String sortBy = Constants.NORM_TITLE;   		
     	
     	fields[0] = new SortField(sortBy,  SortField.AUTO, true);
     	so.setSortBy(fields);
@@ -1275,20 +1273,20 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
 		qTreeAndElement = qTreeRootElement.addElement(Constants.AND_ELEMENT);
 		
 		field = qTreeAndElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDERS_PARENT_ID_FIELD);
 		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(top.getId().toString());
    	
 		field = qTreeAndElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
 		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+		child.setText(Constants.DOC_TYPE_BINDER);
 
 		QueryBuilder qbFinal = new QueryBuilder(true);
     	SearchObject singleBucketSO = qbFinal.buildQuery(queryTreeFinal);
 		
    		Element range = qTreeAndElement.addElement(Constants.RANGE_ELEMENT);
-   		range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.NORM_TITLE);
+   		range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.NORM_TITLE);
    		range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, Constants.INCLUSIVE_TRUE);
 		Element start = range.addElement(Constants.RANGE_START);
 		start.setText(tuple1);
@@ -1303,7 +1301,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	
     	//Set the sort order
    		SortField[] fieldsFinal = new SortField[1];
-   		String sortByFinal = EntityIndexUtils.NORM_TITLE;   		
+   		String sortByFinal = Constants.NORM_TITLE;   		
     	
     	fieldsFinal[0] = new SortField(sortByFinal,  SortField.AUTO, true);
     	soFinal.setSortBy(fieldsFinal);

@@ -34,8 +34,8 @@ import java.util.Set;
 import org.apache.lucene.document.Field;
 
 import com.sitescape.team.domain.Description;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.util.search.Constants;
 
 /**
  *
@@ -58,7 +58,7 @@ public class FieldBuilderDescription extends AbstractFieldBuilder {
             
         //only real description field is stored as a field
         if ("description".equals(dataElemName)) {
-        	Field descField = new Field(EntityIndexUtils.DESC_FIELD, text, Field.Store.YES, Field.Index.TOKENIZED); 
+        	Field descField = new Field(Constants.DESC_FIELD, text, Field.Store.YES, Field.Index.TOKENIZED); 
          	if (fieldsOnly) {
          		return new Field[] {descField};
          	} else {

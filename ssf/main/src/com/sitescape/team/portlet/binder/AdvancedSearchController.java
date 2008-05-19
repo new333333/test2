@@ -67,7 +67,6 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilter;
@@ -85,6 +84,7 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.util.search.Constants;
 
 /**
  * @author Renata Nowicka
@@ -436,7 +436,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		if (WebHelper.isUserLoggedIn(request)) {
 				
 			Map options = new HashMap();
-			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 			
 			int startPageNo = 1;
@@ -517,7 +517,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		if (WebHelper.isUserLoggedIn(request)) {
 				
 			Map options = new HashMap();
-			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 			
 			int startPageNo = 1;
@@ -583,7 +583,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		if (WebHelper.isUserLoggedIn(request)) {
 				
 			Map options = new HashMap();
-			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 			
 			int startPageNo = 1;

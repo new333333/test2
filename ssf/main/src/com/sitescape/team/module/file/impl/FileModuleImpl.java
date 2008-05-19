@@ -89,14 +89,12 @@ import com.sitescape.team.module.file.LockIdMismatchException;
 import com.sitescape.team.module.file.LockedByAnotherUserException;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.ChangeLogUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.repository.RepositoryServiceException;
 import com.sitescape.team.repository.RepositorySession;
 import com.sitescape.team.repository.RepositorySessionFactory;
 import com.sitescape.team.repository.RepositorySessionFactoryUtil;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.repository.archive.ArchiveStore;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchObject;
@@ -912,15 +910,15 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
 		
 		// look for the specific binder id
 		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDER_ID_FIELD);
     	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(binder.getId().toString());
 
     	// look only for attachments
     	field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
     	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    	child.setText(BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+    	child.setText(Constants.DOC_TYPE_ATTACHMENT);
 
     	QueryBuilder qb = new QueryBuilder(true);
     	SearchObject so = qb.buildQuery(qTree);
@@ -950,10 +948,10 @@ public class FileModuleImpl extends CommonDependencyInjection implements FileMod
         Long entryId;
         for(int i = 0; i < count; i++) {
         	doc = hits.doc(i);
-        	fileName = doc.get(EntityIndexUtils.FILENAME_FIELD);
+        	fileName = doc.get(Constants.FILENAME_FIELD);
         	if(fileName != null) {
         		try {
-	        		entryId = Long.valueOf(doc.get(EntityIndexUtils.DOCID_FIELD));
+	        		entryId = Long.valueOf(doc.get(Constants.DOCID_FIELD));
 	        		result.put(fileName, entryId);
         		}
         		catch(Exception ignore) {}

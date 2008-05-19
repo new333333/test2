@@ -33,8 +33,8 @@ import java.util.Set;
 
 import org.apache.lucene.document.Field;
 
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
+import com.sitescape.util.search.Constants;
 
 /**
  *
@@ -50,8 +50,8 @@ public class FieldBuilderName extends AbstractFieldBuilder {
             return new Field[0];
          }
          else {
- 	         Field nameField = new Field(EntityIndexUtils.NAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED); 	            
-	         Field name1Field = new Field(EntityIndexUtils.NAME1_FIELD, val.substring(0, 1), Field.Store.YES,Field.Index.UN_TOKENIZED);
+ 	         Field nameField = new Field(Constants.NAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED); 	            
+	         Field name1Field = new Field(Constants.NAME1_FIELD, val.substring(0, 1), Field.Store.YES,Field.Index.UN_TOKENIZED);
 	         if (!fieldsOnly) {
 		         Field allTextField = BasicIndexUtils.allTextField(val);
 	        	 return new Field[] {allTextField, nameField, name1Field};

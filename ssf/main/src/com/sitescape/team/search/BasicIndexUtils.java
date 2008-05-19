@@ -41,6 +41,7 @@ import org.apache.lucene.document.Field;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.web.WebKeys;
+import static com.sitescape.util.search.Constants.*;
 /**
  *
  * @author Jong Kim
@@ -51,47 +52,6 @@ public class BasicIndexUtils {
     // Note: This defines only those fields that are common across all index
     // documents in the system. Additional fields that are not common must NOT
     // be defined in this class. 
-    
-    public static final String UID_FIELD = "_uid";
-    public static final String DOC_TYPE_FIELD = "_docType";
-    public static final String ATTACHMENT_TYPE_FIELD = "_attType";
-    public static final String THIS_CLASS_FIELD = "_class";
-    public static final String ALL_TEXT_FIELD = "_allText";
-    public static final String TEMP_FILE_CONTENTS_FIELD = "_fileContents";
-    // all doc_types must have a _folderAcl,_bOwnerAcl, and _teamAcl or the indexMembership code
-    // may try to update documents without acls and break lucene.  If this changes
-    //the query in abstract binder processor will need to include docType
-    public static final String ENTRY_ACL_FIELD = "_entryAcl";
-    public static final String FOLDER_ACL_FIELD = "_folderAcl";  
-    public static final String BINDER_OWNER_ACL_FIELD = "_bOwnerAcl";
-    public static final String TEAM_ACL_FIELD = "_teamAcl";  //team members used with folder and entry acl
-//    public static final String GROUP_VISIBILITY_FIELD = "_groupVis";
-    public static final String TAG_FIELD = "_tagField";
-    public static final String ACL_TAG_FIELD = "_aclTagField";
-    //TTF fields are used by type to find ajax searches only
-    public static final String TAG_FIELD_TTF = "_tagField_ttf";
-    public static final String ACL_TAG_FIELD_TTF = "_aclTagField_ttf";
-    
-    
-    // Defines field values
-    public static final String READ_ACL_ALL = "all";
-    public static final String READ_ACL_TEAM = "team";
-    public static final String READ_ACL_BINDER_OWNER = "own";
-    public static final String TAG = "TAG";
-    public static final String TAG_ACL_PRE = "ACL";
-    public static final String GROUP_ANY = "any";
-    public static final String EMPTY_ACL_FIELD="xx";
-    
-    // The following fields represent valid values for DOC_TYPE_FIELD.   
-    public final static String DOC_TYPE_BINDER 		= "binder";
-    public final static String DOC_TYPE_ENTRY 		= "entry";
-    public final static String DOC_TYPE_ATTACHMENT	= "attachment"; 
-    //The following fields represent valid values for ATTACHMENT_TYPE_FIELD
-    //Need to indicate what type of entity an attachment belongs to for updateDocs
-    //Binder attachments don't have anything unqiue to distinquish them from entry attachments,
-    //DocID is not unique
-    public final static String ATTACHMENT_TYPE_BINDER="binder";
-    public final static String ATTACHMENT_TYPE_ENTRY="entry";
     
     private static final String UID_DELIM = "_";
     //use to separate field ids and names
@@ -141,37 +101,37 @@ public class BasicIndexUtils {
      * @throws LuceneException if validation fails
      */
     public static void validateDocument(Document doc) throws LuceneException {
-	    Field uidField = doc.getField(BasicIndexUtils.UID_FIELD);
+	    Field uidField = doc.getField(UID_FIELD);
 	    if(uidField == null)
-	        throw new LuceneException("Document must contain a field with name " + BasicIndexUtils.UID_FIELD);	  
+	        throw new LuceneException("Document must contain a field with name " + UID_FIELD);	  
        
-	    Field docTypeField = doc.getField(BasicIndexUtils.DOC_TYPE_FIELD);
+	    Field docTypeField = doc.getField(DOC_TYPE_FIELD);
 	    if(docTypeField == null)
-	        throw new LuceneException("Document must contain a field with name " + BasicIndexUtils.DOC_TYPE_FIELD);	  
+	        throw new LuceneException("Document must contain a field with name " + DOC_TYPE_FIELD);	  
 	    
-	    Field classField = doc.getField(BasicIndexUtils.THIS_CLASS_FIELD);
+	    Field classField = doc.getField(THIS_CLASS_FIELD);
 	    if(classField == null)
-	        throw new LuceneException("Document must contain a field with name " + BasicIndexUtils.THIS_CLASS_FIELD);	  
+	        throw new LuceneException("Document must contain a field with name " + THIS_CLASS_FIELD);	  
     }
     
     public static String getUid(Document doc) {
-	    Field uidField = doc.getField(BasicIndexUtils.UID_FIELD);
+	    Field uidField = doc.getField(UID_FIELD);
 	    if(uidField == null)
-	        throw new LuceneException("Document must contain a field with name " + BasicIndexUtils.UID_FIELD);	  
+	        throw new LuceneException("Document must contain a field with name " + UID_FIELD);	  
 	    return uidField.stringValue();
     }
     
     public static String getDocType(Document doc) {
-	    Field docTypeField = doc.getField(BasicIndexUtils.DOC_TYPE_FIELD);
+	    Field docTypeField = doc.getField(DOC_TYPE_FIELD);
 	    if(docTypeField == null)
-	        throw new LuceneException("Document must contain a field with name " + BasicIndexUtils.DOC_TYPE_FIELD);	  
+	        throw new LuceneException("Document must contain a field with name " + DOC_TYPE_FIELD);	  
 	    return docTypeField.stringValue();
     }
     
     public static String getClassName(Document doc) {
-	    Field classField = doc.getField(BasicIndexUtils.THIS_CLASS_FIELD);
+	    Field classField = doc.getField(THIS_CLASS_FIELD);
 	    if(classField == null)
-	        throw new LuceneException("Document must contain a field with name " + BasicIndexUtils.THIS_CLASS_FIELD);	  
+	        throw new LuceneException("Document must contain a field with name " + THIS_CLASS_FIELD);	  
 	    return classField.stringValue();
     }
     
@@ -186,7 +146,7 @@ public class BasicIndexUtils {
    
     public static String buildAclTag(String tag, String aclId)
     {
-    	String aclTag = BasicIndexUtils.TAG_ACL_PRE + aclId + BasicIndexUtils.TAG + tag;
+    	String aclTag = TAG_ACL_PRE + aclId + TAG + tag;
     	return aclTag;
     }
     
