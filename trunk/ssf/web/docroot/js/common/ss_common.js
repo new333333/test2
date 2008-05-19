@@ -861,6 +861,8 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 function ss_showRelevanceTab(s, namespace) {
 	var canvasObj = self.document.getElementById("relevanceCanvas_" + namespace);
 	canvasObj.innerHTML = s;
+	canvasObj.style.display = 'block'
+	canvasObj.style.visibility = 'visible'
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }

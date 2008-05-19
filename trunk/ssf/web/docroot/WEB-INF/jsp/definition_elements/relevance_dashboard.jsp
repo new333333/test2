@@ -111,6 +111,12 @@
 	
   </ul>
 </div>
+  <div align="right" valign="top">
+    <a href="javascript: ;" 
+      onClick="ss_hideDivNone('relevanceCanvas_${renderResponse.namespace}');return false;"
+    ><span class="ss_fineprint">[<ssf:nlt tag="button.hide"/>]</span>
+    </a>
+  </div>
 <div class="ss_clear_float"></div>
 <script type="text/javascript">
 var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElementById('ss_relevanceInitialTab${renderResponse.namespace}');
