@@ -46,6 +46,7 @@ import com.sitescape.team.lucene.SsfIndexAnalyzer;
 import com.sitescape.team.lucene.SsfQueryAnalyzer;
 import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.util.search.Constants;
 
 public class SearchObject {
 
@@ -72,7 +73,7 @@ public class SearchObject {
 		BooleanQuery.setMaxClauseCount(SPropsUtil.getInt("lucene.max.booleans", DEFAULT_MAX_BOOLEAN_CLAUSES));
 		if (queryParser.get() == null) {
 			logger.debug("QueryParser instantiating new QP");
-			QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD,new SsfQueryAnalyzer());
+			QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD,new SsfQueryAnalyzer());
 			qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 			queryParser.set(qp);
 		}
@@ -120,7 +121,7 @@ public class SearchObject {
 		else if (lang.equalsIgnoreCase(LanguageTaster.CJK)) {
 			if (queryParserCJK.get() == null) {
 				logger.debug("QueryParser instantiating new CJK QP");
-				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD, getCJKAnalyzer());
+				QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD, getCJKAnalyzer());
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserCJK.set(qp);
 				return qp;
@@ -141,7 +142,7 @@ public class SearchObject {
 						logger.error("Could not initialize arabic analyzer class: " + e.toString());
 					}
 				}
-				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD, analyzer);
+				QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD, analyzer);
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserARABIC.set(qp);
 				return qp;
@@ -162,7 +163,7 @@ public class SearchObject {
 						logger.error("Could not initialize hebrew analyzer class: " + e.toString());
 					}
 				}
-				QueryParser qp = new QueryParser(BasicIndexUtils.ALL_TEXT_FIELD, analyzer);
+				QueryParser qp = new QueryParser(Constants.ALL_TEXT_FIELD, analyzer);
 				qp.setDefaultOperator(QueryParser.AND_OPERATOR);
 				queryParserHEBREW.set(qp);
 				return qp;
@@ -189,8 +190,8 @@ public class SearchObject {
 
 	private Analyzer getCJKAnalyzer() {
 		PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new ChineseAnalyzer());
-		retAnalyzer.addAnalyzer(BasicIndexUtils.ACL_TAG_FIELD, new NullAnalyzer());
-		retAnalyzer.addAnalyzer(BasicIndexUtils.TAG_FIELD, new NullAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.ACL_TAG_FIELD, new NullAnalyzer());
+		retAnalyzer.addAnalyzer(Constants.TAG_FIELD, new NullAnalyzer());
 		return retAnalyzer;
 	}
 }

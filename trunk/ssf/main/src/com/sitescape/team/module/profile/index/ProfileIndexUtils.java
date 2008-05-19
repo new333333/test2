@@ -39,30 +39,17 @@ import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
+
+import static com.sitescape.util.search.Constants.*;
 /**
  *
  * @author Janet MCcann
  */
-public class ProfileIndexUtils  {
-	   // Defines field names
-    public static final String LOGINNAME_FIELD = "_loginName";
-    public static final String GROUPNAME_FIELD = "_groupName";
-    public static final String FIRSTNAME_FIELD="_firstName";
-    public static final String MIDDLENAME_FIELD="_middleName";
-    public static final String LASTNAME_FIELD="_lastName";
-    public static final String EMAIL_FIELD="_email";
-    public static final String EMAIL_TXT_FIELD="_emailTxt";
-    public static final String EMAIL_MOBILE_FIELD="_emailMobile";
-    public static final String ORGANIZATION_FIELD="_org";
-    public static final String ZONNAME_FIELD="_zonName";
-    public static final String RESERVEDID_FIELD="_reservedId";    
-    public static final String WORKSPACE_ID_FIELD="_workspaceId";
-    public static final String APPLICATION_NAME_FIELD = "_applicationName";
-    
-    public static void addName(Document doc, User user, boolean fieldsOnly) {
+public class ProfileIndexUtils {
+	   public static void addName(Document doc, User user, boolean fieldsOnly) {
     	//Add the id of the creator (no, not that one...)
         Field docNumField = new Field(LOGINNAME_FIELD, user.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
         doc.add(docNumField);
@@ -77,7 +64,7 @@ public class ProfileIndexUtils  {
     		Field docNumField = new Field(ZONNAME_FIELD, user.getZonName(), Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);
     		if (!fieldsOnly) {
-    			Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, user.getZonName(), Field.Store.NO, Field.Index.TOKENIZED);
+    			Field allText = new Field(Constants.ALL_TEXT_FIELD, user.getZonName(), Field.Store.NO, Field.Index.TOKENIZED);
     			doc.add(allText);
     		}
     	}
@@ -94,7 +81,7 @@ public class ProfileIndexUtils  {
     		Field docNumField =  new Field(EMAIL_FIELD, mail, Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);
     		if (!fieldsOnly) {
-    			Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, mail, Field.Store.NO, Field.Index.TOKENIZED);
+    			Field allText = new Field(Constants.ALL_TEXT_FIELD, mail, Field.Store.NO, Field.Index.TOKENIZED);
                	doc.add(allText);
     		}
     	}
@@ -103,7 +90,7 @@ public class ProfileIndexUtils  {
     		Field docNumField =  new Field(EMAIL_TXT_FIELD, mail, Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);
     		if (!fieldsOnly) {
-    			Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, mail, Field.Store.NO, Field.Index.TOKENIZED);
+    			Field allText = new Field(Constants.ALL_TEXT_FIELD, mail, Field.Store.NO, Field.Index.TOKENIZED);
                	doc.add(allText);
     		}
     	}
@@ -112,7 +99,7 @@ public class ProfileIndexUtils  {
     		Field docNumField =  new Field(EMAIL_MOBILE_FIELD, mail, Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(docNumField);
     		if (!fieldsOnly) {
-    			Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, mail, Field.Store.NO, Field.Index.TOKENIZED);
+    			Field allText = new Field(Constants.ALL_TEXT_FIELD, mail, Field.Store.NO, Field.Index.TOKENIZED);
                	doc.add(allText);
     		}
     	}

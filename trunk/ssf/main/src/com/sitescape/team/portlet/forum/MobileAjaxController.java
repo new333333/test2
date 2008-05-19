@@ -64,7 +64,6 @@ import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
@@ -87,6 +86,7 @@ import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 import com.sitescape.team.util.LongIdUtil;
 /**
  * @author Peter Hurley
@@ -429,7 +429,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 				String view;
 				options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
 				options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
-				options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+				options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 				
 				//Build the search query

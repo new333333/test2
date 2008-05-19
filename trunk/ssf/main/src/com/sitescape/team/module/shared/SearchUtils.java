@@ -61,8 +61,6 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserPrincipal;
 import com.sitescape.team.lucene.Hits;
-import com.sitescape.team.module.folder.index.IndexUtils;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterToSearchBooleanConverter;
@@ -119,15 +117,15 @@ public class SearchUtils {
     	
     	if (fieldName == null) return false;
 	    	
-    	if (fieldName.equals(EntityIndexUtils.CREATION_DATE_FIELD)) return true;
+    	if (fieldName.equals(Constants.CREATION_DATE_FIELD)) return true;
 	    	
-	    if (fieldName.equals(EntityIndexUtils.MODIFICATION_DATE_FIELD)) return true;
+	    if (fieldName.equals(Constants.MODIFICATION_DATE_FIELD)) return true;
 
-    	if (fieldName.equals(IndexUtils.LASTACTIVITY_FIELD)) return true;    	
+    	if (fieldName.equals(Constants.LASTACTIVITY_FIELD)) return true;    	
 
-    	if (fieldName.endsWith(EntityIndexUtils.EVENT_FIELD_START_DATE)) return true;
+    	if (fieldName.endsWith(Constants.EVENT_FIELD_START_DATE)) return true;
 
-	    if (fieldName.endsWith(EntityIndexUtils.EVENT_FIELD_END_DATE)) return true;
+	    if (fieldName.endsWith(Constants.EVENT_FIELD_END_DATE)) return true;
 	    
 	    if (fieldName.equals("due_date")) return true;
 	    	
@@ -135,7 +133,7 @@ public class SearchUtils {
     }
   	public static SortField[] getSortFields(Map options) {
    		SortField[] fields = new SortField[1];
-   		String sortBy = EntityIndexUtils.MODIFICATION_DATE_FIELD;   		
+   		String sortBy = Constants.MODIFICATION_DATE_FIELD;   		
     	boolean descend = true;
     	if (options != null) {    		
     		if (options.containsKey(ObjectKeys.SEARCH_SORT_BY))
@@ -181,7 +179,7 @@ public class SearchUtils {
        	//See if there is a title field search request
    		if (options.containsKey(ObjectKeys.SEARCH_TITLE)) {
    			Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-   			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.TITLE_FIELD);
+   			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.TITLE_FIELD);
    			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
    			child.setText((String) options.get(ObjectKeys.SEARCH_TITLE));
     	}
@@ -189,7 +187,7 @@ public class SearchUtils {
     	//See if there is an end date
     	if (options.containsKey(ObjectKeys.SEARCH_END_DATE)) {
     		Element range = boolElement.addElement(Constants.RANGE_ELEMENT);
-    		range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_DAY_FIELD);
+    		range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.CREATION_DAY_FIELD);
     		range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
     		Element start = range.addElement(Constants.RANGE_START);
     		Calendar cal = Calendar.getInstance();
@@ -205,14 +203,14 @@ public class SearchUtils {
     	//See if there is a year/month
     	if (options.containsKey(ObjectKeys.SEARCH_YEAR_MONTH)) {
     		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
+    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.CREATION_YEAR_MONTH_FIELD);
     		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText((String) options.get(ObjectKeys.SEARCH_YEAR_MONTH));
     	}
     	//See if there is a tag
     	if (options.containsKey(ObjectKeys.SEARCH_COMMUNITY_TAG)) {
     		Element field = boolElement.addElement(Constants.FIELD_ELEMENT);
-    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.TAG_FIELD);
+    		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.TAG_FIELD);
     		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText((String) options.get(ObjectKeys.SEARCH_COMMUNITY_TAG));
     	}
@@ -231,7 +229,7 @@ public class SearchUtils {
     		while (it.hasNext()) {
     			String[] eventDay = (String[])it.next();
     			Element range = orBoolElement.addElement(Constants.RANGE_ELEMENT);
-    			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
+    			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.EVENT_DATES_FIELD);
     			range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
     			Element start = range.addElement(Constants.RANGE_START);
     			start.addText(eventDay[0]);
@@ -246,7 +244,7 @@ public class SearchUtils {
     		if (options.containsKey(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START) && 
     				options.containsKey(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END)) {
     			Element range = andStartAndEndLastActivityDate.addElement(Constants.RANGE_ELEMENT);
-    			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, IndexUtils.LASTACTIVITY_FIELD);
+    			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.LASTACTIVITY_FIELD);
     			range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
     			Element start = range.addElement(Constants.RANGE_START);
     			start.addText((String) options.get(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START));
@@ -261,7 +259,7 @@ public class SearchUtils {
     		if (options.containsKey(ObjectKeys.SEARCH_CREATION_DATE_START) && 
     				options.containsKey(ObjectKeys.SEARCH_CREATION_DATE_END)) {
     			Element range = andStartAndEndCreationDate.addElement(Constants.RANGE_ELEMENT);
-    			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATION_DATE_FIELD);
+    			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.CREATION_DATE_FIELD);
     			range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
     			Element start = range.addElement(Constants.RANGE_START);
     			start.addText((String) options.get(ObjectKeys.SEARCH_CREATION_DATE_START));
@@ -316,10 +314,10 @@ public class SearchUtils {
 		Iterator it = entries.iterator();
 		while (it.hasNext()) {
 			Map entry = (Map) it.next();
-			String uniqueId = entry.get(EntityIndexUtils.ENTITY_FIELD)+"_"+entry.get(EntityIndexUtils.DOCID_FIELD);
+			String uniqueId = entry.get(Constants.ENTITY_FIELD)+"_"+entry.get(Constants.DOCID_FIELD);
 			Map entryValues = (Map)entriesCombined.get(uniqueId);
 			if (entryValues == null) entryValues = new HashMap();
-			if (((String)entry.get(BasicIndexUtils.DOC_TYPE_FIELD)).equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ATTACHMENT)) {
+			if (((String)entry.get(Constants.DOC_TYPE_FIELD)).equalsIgnoreCase(Constants.DOC_TYPE_ATTACHMENT)) {
 				List attachments = (List) entryValues.get(ATTACHMENTS);
 				if (attachments == null) attachments = new ArrayList();
 				attachments.add(entry);

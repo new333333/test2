@@ -95,7 +95,6 @@ import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.profile.processor.ProfileCoreProcessor;
 import com.sitescape.team.module.shared.AccessUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.template.TemplateModule;
@@ -106,17 +105,18 @@ import com.sitescape.team.survey.Survey;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.team.web.util.EventHelper;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 
 public class ProfileModuleImpl extends CommonDependencyInjection implements ProfileModule {
 	private static final int DEFAULT_MAX_ENTRIES = ObjectKeys.LISTING_MAX_PAGE_SIZE;
-	private String[] userDocType = {EntityIndexUtils.ENTRY_TYPE_USER};
-	private String[] groupDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP};
-	private String[] applicationDocType = {EntityIndexUtils.ENTRY_TYPE_APPLICATION};
-	private String[] applicationGroupDocType = {EntityIndexUtils.ENTRY_TYPE_APPLICATION_GROUP};
-	private String[] individualPrincipalDocType = {EntityIndexUtils.ENTRY_TYPE_USER, EntityIndexUtils.ENTRY_TYPE_APPLICATION};
-	private String[] groupPrincipalDocType = {EntityIndexUtils.ENTRY_TYPE_GROUP, EntityIndexUtils.ENTRY_TYPE_APPLICATION_GROUP};
+	private String[] userDocType = {Constants.ENTRY_TYPE_USER};
+	private String[] groupDocType = {Constants.ENTRY_TYPE_GROUP};
+	private String[] applicationDocType = {Constants.ENTRY_TYPE_APPLICATION};
+	private String[] applicationGroupDocType = {Constants.ENTRY_TYPE_APPLICATION_GROUP};
+	private String[] individualPrincipalDocType = {Constants.ENTRY_TYPE_USER, Constants.ENTRY_TYPE_APPLICATION};
+	private String[] groupPrincipalDocType = {Constants.ENTRY_TYPE_GROUP, Constants.ENTRY_TYPE_APPLICATION_GROUP};
 	
-	private String[] allPrincipalDocType = {EntityIndexUtils.ENTRY_TYPE_USER, EntityIndexUtils.ENTRY_TYPE_GROUP, EntityIndexUtils.ENTRY_TYPE_APPLICATION, EntityIndexUtils.ENTRY_TYPE_APPLICATION_GROUP};
+	private String[] allPrincipalDocType = {Constants.ENTRY_TYPE_USER, Constants.ENTRY_TYPE_GROUP, Constants.ENTRY_TYPE_APPLICATION, Constants.ENTRY_TYPE_APPLICATION_GROUP};
 	private List<String> guestSavedProps = Arrays.asList(new String[]{ObjectKeys.USER_PROPERTY_PERMALINK_URL});
     protected DefinitionModule definitionModule;
 	protected DefinitionModule getDefinitionModule() {
@@ -1134,7 +1134,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		Set<Long>binderIds = new HashSet();
 		for(Map binder : myTeams) {
 			try {
-				binderIds.add(Long.valueOf((String)binder.get(EntityIndexUtils.DOCID_FIELD)));
+				binderIds.add(Long.valueOf((String)binder.get(Constants.DOCID_FIELD)));
 			} catch (Exception ignore) {};
 		}
 

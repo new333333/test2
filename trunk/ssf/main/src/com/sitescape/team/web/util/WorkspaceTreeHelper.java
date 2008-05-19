@@ -85,6 +85,7 @@ import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Criteria;
+import static com.sitescape.util.search.Constants.*;
 
 public class WorkspaceTreeHelper {
 	public static ModelAndView setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
@@ -332,7 +333,7 @@ public class WorkspaceTreeHelper {
 
     	//Get the sorted list of child binders
 		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_BY, TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 		options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
 		Map searchResults = bs.getBinderModule().getBinders(ws, options);
@@ -342,8 +343,8 @@ public class WorkspaceTreeHelper {
 		//Now get the next level of binders below the workspaces in "binders"
 		List binderIdList = new ArrayList();
 		for (Map binder:binders) {
-			String binderIdString = (String) binder.get(EntityIndexUtils.DOCID_FIELD);
-			String binderEntityType = (String) binder.get(EntityIndexUtils.ENTITY_FIELD);
+			String binderIdString = (String) binder.get(DOCID_FIELD);
+			String binderEntityType = (String) binder.get(ENTITY_FIELD);
 			if (binderIdString != null && binderEntityType != null && 
 					(binderEntityType.equals(EntityIdentifier.EntityType.workspace.name()) ||
 					 binderEntityType.equals(EntityIdentifier.EntityType.profiles.name()))) {
@@ -354,19 +355,19 @@ public class WorkspaceTreeHelper {
 		if (!binderIdList.isEmpty()) {
 			//Now search for the next level of binders
 			options = new HashMap();
-			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_BY, TITLE_FIELD);
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 			options.put(ObjectKeys.SEARCH_MAX_HITS, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
 			Map searchResults2 = bs.getBinderModule().getBinders(ws, binderIdList, options);
 			List<Map> binders2 = (List)searchResults2.get(ObjectKeys.SEARCH_ENTRIES);
 			Map subBinders = new HashMap();
 			for (Map binder : binders2) {
-				String binderId = (String) binder.get(EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+				String binderId = (String) binder.get(BINDERS_PARENT_ID_FIELD);
 				if (binderId != null) {
 					if (!subBinders.containsKey(binderId)) subBinders.put(binderId, new ArrayList());
 					List binderList = (List) subBinders.get(binderId);
 					binderList.add(binder);
-					unseenCounts.put((String) binder.get(EntityIndexUtils.DOCID_FIELD), 
+					unseenCounts.put((String) binder.get(DOCID_FIELD), 
 							new WorkspaceTreeHelper.Counter());
 				}
 			}
@@ -385,16 +386,16 @@ public class WorkspaceTreeHelper {
 		String now = DateTools.dateToString(new Date(), DateTools.Resolution.SECOND);
 		Criteria crit = SearchUtils.newEntriesDescendants(binderIds);
 		crit.add(com.sitescape.util.search.Restrictions.between(
-				EntityIndexUtils.MODIFICATION_DATE_FIELD, startDate, now));
+				MODIFICATION_DATE_FIELD, startDate, now));
 		Map results = bs.getBinderModule().executeSearchQuery(crit, 0, ObjectKeys.MAX_BINDER_ENTRIES_RESULTS);
     	List<Map> entries = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 
 		//Get the count of unseen entries
 		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
     	for (Map entry:entries) {
-    		SearchFieldResult entryAncestors = (SearchFieldResult) entry.get(EntityIndexUtils.ENTRY_ANCESTRY);
+    		SearchFieldResult entryAncestors = (SearchFieldResult) entry.get(ENTRY_ANCESTRY);
 			if (entryAncestors == null) continue;
-			String entryIdString = (String) entry.get(EntityIndexUtils.DOCID_FIELD);
+			String entryIdString = (String) entry.get(DOCID_FIELD);
 			if (entryIdString == null || (seen.checkIfSeen(entry))) continue;
 			
 			//Count up the unseen counts for all ancestor binders

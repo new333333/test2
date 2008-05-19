@@ -1,13 +1,6 @@
 package com.sitescape.team.search;
 
-import static com.sitescape.team.module.shared.EntityIndexUtils.CREATORID_FIELD;
-import static com.sitescape.team.module.shared.EntityIndexUtils.ENTRY_ANCESTRY;
-import static com.sitescape.team.module.shared.EntityIndexUtils.ENTRY_TYPE_FIELD;
-import static com.sitescape.team.module.shared.EntityIndexUtils.FAMILY_FIELD;
-import static com.sitescape.team.module.shared.EntityIndexUtils.FAMILY_FIELD_TASK;
-import static com.sitescape.team.module.shared.EntityIndexUtils.MODIFICATION_DATE_FIELD;
-import static com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ENTRY;
-import static com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_FIELD;
+import static com.sitescape.util.search.Constants.*;
 import static com.sitescape.util.search.Restrictions.eq;
 import static com.sitescape.util.search.Restrictions.in;
 
@@ -18,9 +11,9 @@ import java.util.Map;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.UserProperties;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
+import com.sitescape.util.search.Constants;
 import com.sitescape.util.search.Criteria;
 import com.sitescape.util.search.Order;
 
@@ -38,8 +31,8 @@ public class SearchUtils {
 	public static Criteria entriesForUser(Long userId)
 	{
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, EntityIndexUtils.ENTRY_TYPE_REPLY}))
-			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
 			.add(eq(CREATORID_FIELD,userId.toString()));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		return crit;
@@ -48,9 +41,9 @@ public class SearchUtils {
 	public static Criteria entriesForTrackedPlaces(AllModulesInjected bs, List userWorkspaces)
 	{
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, 
-				EntityIndexUtils.ENTRY_TYPE_REPLY}))
-			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_ENTRY, 
+				Constants.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
 			.add(in(ENTRY_ANCESTRY, userWorkspaces));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		return crit;
@@ -59,9 +52,9 @@ public class SearchUtils {
 	public static Criteria entriesForTrackedCalendars(AllModulesInjected bs, List userWorkspaces)
 	{
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, 
-				EntityIndexUtils.ENTRY_TYPE_REPLY}))
-			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_ENTRY, 
+				Constants.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
 			.add(in(ENTRY_ANCESTRY, userWorkspaces));
 		crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
 		return crit;
@@ -70,9 +63,9 @@ public class SearchUtils {
 	public static Criteria entriesForTrackedPeople(AllModulesInjected bs, Binder userWorkspace)
 	{
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, 
-				EntityIndexUtils.ENTRY_TYPE_REPLY}))
-			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_ENTRY, 
+				Constants.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
 			.add(in(CREATORID_FIELD, getTrackedPeopleIds(bs, userWorkspace)));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		return crit;
@@ -129,8 +122,8 @@ public class SearchUtils {
 	public static Criteria newEntries()
 	{
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, EntityIndexUtils.ENTRY_TYPE_REPLY}))
-			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}));
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_ENTRY, Constants.ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		return crit;
 	}
@@ -138,8 +131,8 @@ public class SearchUtils {
 	public static Criteria newEntriesDescendants(List binderIds)
 	{
 		Criteria crit = new Criteria();
-		crit.add(in(ENTRY_TYPE_FIELD,new String[] {EntityIndexUtils.ENTRY_TYPE_ENTRY, EntityIndexUtils.ENTRY_TYPE_REPLY}))
-			.add(in(DOC_TYPE_FIELD,new String[] {BasicIndexUtils.DOC_TYPE_ENTRY}))
+		crit.add(in(ENTRY_TYPE_FIELD,new String[] {ENTRY_TYPE_ENTRY, ENTRY_TYPE_REPLY}))
+			.add(in(DOC_TYPE_FIELD,new String[] {DOC_TYPE_ENTRY}))
 			.add(in(ENTRY_ANCESTRY, binderIds));
 		crit.addOrder(Order.desc(MODIFICATION_DATE_FIELD));
 		return crit;

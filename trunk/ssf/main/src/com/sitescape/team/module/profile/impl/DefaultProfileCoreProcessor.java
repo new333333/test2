@@ -78,7 +78,6 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.profile.processor.ProfileCoreProcessor;
 import com.sitescape.team.module.shared.ChangeLogUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
@@ -89,6 +88,7 @@ import com.sitescape.team.util.ReflectHelper;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 /**
  *
  * @author Jong Kim
@@ -691,7 +691,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 	}
 
     protected String getEntryPrincipalField() {
-    	return EntityIndexUtils.DOCID_FIELD;
+    	return Constants.DOCID_FIELD;
     }
 	public ChangeLog processChangeLog(DefinableEntity entry, String operation) {
 		if (entry instanceof Binder) return processChangeLog((Binder)entry, operation);

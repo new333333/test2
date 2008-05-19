@@ -66,8 +66,6 @@ import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.lucene.LuceneHelper;
 import com.sitescape.team.lucene.NullAnalyzer;
 import com.sitescape.team.lucene.SsfIndexAnalyzer;
-import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.LuceneException;
 import com.sitescape.team.search.LuceneSession;
 import com.sitescape.team.util.ReflectHelper;
@@ -75,6 +73,7 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 /**
  * This implementation provides access to local Lucene index.
  * 
@@ -108,10 +107,10 @@ public class LocalLuceneSession implements LuceneSession {
 		SimpleProfiler.startProfiler("LocalLuceneSession.addDocument");
 
 		IndexWriter indexWriter;
-		if (doc.getField(BasicIndexUtils.UID_FIELD) == null)
+		if (doc.getField(Constants.UID_FIELD) == null)
 			throw new LuceneException(
 					"Document must contain a UID with field name "
-							+ BasicIndexUtils.UID_FIELD);
+							+ Constants.UID_FIELD);
 		// block until updateDocs is completed
 		synchronized (getRWLockObject()) {
 			indexWriter = null;
@@ -177,10 +176,10 @@ public class LocalLuceneSession implements LuceneSession {
 			try {
 				for (Iterator iter = docs.iterator(); iter.hasNext();) {
 					Document doc = (Document) iter.next();
-					if (doc.getField(BasicIndexUtils.UID_FIELD) == null)
+					if (doc.getField(Constants.UID_FIELD) == null)
 						throw new LuceneException(
 								"Document must contain a UID with field name "
-										+ BasicIndexUtils.UID_FIELD);
+										+ Constants.UID_FIELD);
 					String tastingText = getTastingText(doc);
 					try {
 						SimpleProfiler.startProfiler("LocalLuceneSession.single_document");
@@ -220,7 +219,7 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	public void deleteDocument(String uid) {
-		deleteDocuments(new Term(BasicIndexUtils.UID_FIELD, uid));
+		deleteDocuments(new Term(Constants.UID_FIELD, uid));
 	}
 
 	public void deleteDocuments(Term term) {
@@ -468,24 +467,24 @@ public class LocalLuceneSession implements LuceneSession {
 							&& type
 									.equals(WebKeys.FIND_TYPE_PERSONAL_TAGS)) {
 						fields = new String[1];
-						fields[0] = BasicIndexUtils.ACL_TAG_FIELD_TTF;
+						fields[0] = Constants.ACL_TAG_FIELD_TTF;
 					} else if (type != null
 							&& type
 									.equals(WebKeys.FIND_TYPE_COMMUNITY_TAGS)) {
 						fields = new String[1];
-						fields[0] = BasicIndexUtils.TAG_FIELD_TTF;
+						fields[0] = Constants.TAG_FIELD_TTF;
 					} else {
 						fields = new String[2];
-						fields[0] = BasicIndexUtils.TAG_FIELD_TTF;
-						fields[1] = BasicIndexUtils.ACL_TAG_FIELD_TTF;
+						fields[0] = Constants.TAG_FIELD_TTF;
+						fields[1] = Constants.ACL_TAG_FIELD_TTF;
 					}
 					int preTagLength = 0;
 					for (int i = 0; i < fields.length; i++) {
-						if (fields[i].equalsIgnoreCase(BasicIndexUtils.ACL_TAG_FIELD_TTF)) {
-							String preTag = BasicIndexUtils.TAG_ACL_PRE
+						if (fields[i].equalsIgnoreCase(Constants.ACL_TAG_FIELD_TTF)) {
+							String preTag = Constants.TAG_ACL_PRE
 									+ RequestContextHolder.getRequestContext()
 											.getUserId().toString()
-									+ BasicIndexUtils.TAG;
+									+ Constants.TAG;
 							preTagLength = preTag.length();
 							tag = preTag + tag;
 						}
@@ -753,7 +752,7 @@ public class LocalLuceneSession implements LuceneSession {
 						}
 					});
 					LuceneHelper.closeSearcher(indexPath);
-					String field = EntityIndexUtils.NORM_TITLE;
+					String field = Constants.NORM_TITLE;
 						TermEnum enumerator = indexReader.terms(new Term(
 								field, start));
 
@@ -855,7 +854,7 @@ public class LocalLuceneSession implements LuceneSession {
 	}
 
 	private String getTastingText(Document doc) {
-		String text = doc.getField(BasicIndexUtils.ALL_TEXT_FIELD).stringValue();
+		String text = doc.getField(Constants.ALL_TEXT_FIELD).stringValue();
 		if (text.length()> 1024) 
 			return text.substring(0,1024);
 		else return text;
@@ -869,12 +868,12 @@ public class LocalLuceneSession implements LuceneSession {
 			return defaultAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.CJK)) {
 			PerFieldAnalyzerWrapper retAnalyzer = new PerFieldAnalyzerWrapper(new ChineseAnalyzer());
-			retAnalyzer.addAnalyzer(BasicIndexUtils.FOLDER_ACL_FIELD, new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(BasicIndexUtils.ENTRY_ACL_FIELD, new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(BasicIndexUtils.BINDER_OWNER_ACL_FIELD, new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(BasicIndexUtils.TEAM_ACL_FIELD, new SsfIndexAnalyzer());
-			retAnalyzer.addAnalyzer(BasicIndexUtils.ACL_TAG_FIELD, new NullAnalyzer());
-			retAnalyzer.addAnalyzer(BasicIndexUtils.TAG_FIELD, new NullAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.FOLDER_ACL_FIELD, new SsfIndexAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.ENTRY_ACL_FIELD, new SsfIndexAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.BINDER_OWNER_ACL_FIELD, new SsfIndexAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.TEAM_ACL_FIELD, new SsfIndexAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.ACL_TAG_FIELD, new NullAnalyzer());
+			retAnalyzer.addAnalyzer(Constants.TAG_FIELD, new NullAnalyzer());
 			return retAnalyzer;
 		} else if (language.equalsIgnoreCase(LanguageTaster.HEBREW)) {
 			// return new HEBREWAnalyzer;

@@ -61,11 +61,9 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import static com.sitescape.team.module.shared.EntityIndexUtils.*;
-import static com.sitescape.team.search.BasicIndexUtils.*;
+import static com.sitescape.util.search.Constants.*;
 
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.SearchUtils;
 
@@ -75,6 +73,7 @@ import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.util.search.Constants;
 import com.sitescape.util.search.Criteria;
 import com.sitescape.util.search.Order;
 
@@ -236,7 +235,7 @@ public class RelevanceDashboardHelper {
 	    			cacheEntryDef.put(entryDefId, bs.getDefinitionModule().getEntryDefinitionElements(entryDefId));
 	    		}
 	    		entry.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, cacheEntryDef.get(entryDefId));
-				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
 					Binder place = bs.getBinderModule().getBinder(bId);
@@ -281,7 +280,7 @@ public class RelevanceDashboardHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
-				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
 					Binder place = bs.getBinderModule().getBinder(bId);
@@ -327,7 +326,7 @@ public class RelevanceDashboardHelper {
 		    	Iterator it = items.iterator();
 		    	while (it.hasNext()) {
 		    		Map entry = (Map)it.next();
-					String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+					String id = (String)entry.get(Constants.BINDER_ID_FIELD);
 					if (id != null) {
 						Long bId = new Long(id);
 						if (!places.containsKey(id)) {
@@ -364,7 +363,7 @@ public class RelevanceDashboardHelper {
 		    	Iterator it = items.iterator();
 		    	while (it.hasNext()) {
 		    		Map entry = (Map)it.next();
-					String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+					String id = (String)entry.get(Constants.BINDER_ID_FIELD);
 					if (id != null) {
 						Long bId = new Long(id);
 						if (!places.containsKey(id)) {
@@ -399,7 +398,7 @@ public class RelevanceDashboardHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
-				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
 					if (!places.containsKey(id)) {
@@ -446,7 +445,7 @@ public class RelevanceDashboardHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
-				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
 					Binder place = bs.getBinderModule().getBinder(bId);

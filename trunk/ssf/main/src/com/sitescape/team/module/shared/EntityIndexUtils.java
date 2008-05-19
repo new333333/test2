@@ -73,6 +73,9 @@ import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.TagUtil;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
+import static com.sitescape.util.search.Constants.*;
+
 /**
  * Index the fields common to all Entry types.
  *
@@ -81,80 +84,6 @@ import com.sitescape.util.Validator;
 public class EntityIndexUtils {
     
     // Defines field names
-    
-    public final static String ENTRY_TYPE_FIELD = "_entryType";
-    public final static String ENTRY_TYPE_ENTRY = "entry";
-    public final static String ENTRY_TYPE_REPLY = "reply";
-    public final static String ENTRY_TYPE_USER = "user";
-    public final static String ENTRY_TYPE_GROUP = "group";
-    public final static String ENTRY_TYPE_APPLICATION = "application";
-    public final static String ENTRY_TYPE_APPLICATION_GROUP = "applicationGroup";
-    public static final String ENTITY_FIELD="_entityType"; //correspondes to EntityIdentifier.EntityType
-    public static final String DOCID_FIELD = "_docId"; //id field
-    
-    public final static String ENTRY_ANCESTRY = "_entryAncestry";
-    public static final String CREATION_DATE_FIELD = "_creationDate";
-    public static final String CREATION_DAY_FIELD = "_creationDay";
-    public static final String CREATION_YEAR_MONTH_FIELD = "_creationYearMonth";
-    public static final String CREATION_YEAR_FIELD = "_creationYear";
-    public static final String MODIFICATION_DATE_FIELD = "_modificationDate";
-    public static final String MODIFICATION_DAY_FIELD = "_modificationDay";
-    public static final String MODIFICATION_YEAR_MONTH_FIELD = "_modificationYearMonth";
-    public static final String MODIFICATION_YEAR_FIELD = "_modificationYear";
-    public static final String CREATORID_FIELD = "_creatorId";
-    public static final String CREATOR_NAME_FIELD = "_creatorName";
-    public static final String CREATOR_TITLE_FIELD = "_creatorTitle";
-    public static final String SORT_CREATOR_TITLE_FIELD = "_sortCreatorTitle";
-    public static final String MODIFICATIONID_FIELD = "_modificationId";
-    public static final String MODIFICATION_NAME_FIELD = "_modificationName";
-    public static final String MODIFICATION_TITLE_FIELD = "_modificationTitle";
-    public static final String COMMAND_DEFINITION_FIELD = "_commandDef";
-    public static final String TITLE_FIELD = "title";
-    public static final String SORT_TITLE_FIELD = "_sortTitle";
-    public static final String NORM_TITLE = "_normTitle";
-    public static final String NORM_TITLE_FIELD = "_normTitleField";
-    public static final String TITLE1_FIELD = "_title1";
-    public static final String EXTENDED_TITLE_FIELD = "_extendedTitle";
-    public static final String NAME_FIELD = "_name";
-    public static final String NAME1_FIELD = "_name1";
-    public static final String DESC_FIELD = "_desc";
-    public static final String EVENT_FIELD = "_event";
-    public static final String EVENT_FIELD_START_DATE = "StartDate";
-    public static final String EVENT_FIELD_TIME_ZONE_ID = "TimeZoneID";
-    public static final String EVENT_FIELD_TIME_ZONE_SENSITIVE = "TimeZoneSensitive";
-    public static final String EVENT_FIELD_END_DATE = "EndDate";    
-    public static final String EVENT_COUNT_FIELD = "_eventCount";
-    public static final String EVENT_DATES_FIELD = "_eventDates";
-    public static final String EVENT_RECURRENCE_DATES_FIELD = "RecurrenceDates";
-    public static final String EVENT_ID = "ID";
-    public static final String EVENT_DATES= "EventDates";
-    public static final String WORKFLOW_PROCESS_FIELD = "_workflowProcess";
-    public static final String WORKFLOW_STATE_FIELD = "_workflowState";
-    public static final String WORKFLOW_STATE_CAPTION_FIELD = "_workflowStateCaption";
-    public static final String BINDER_ID_FIELD = "_binderId"; // used on binder contents (not sub-binders)
-    public static final String BINDERS_PARENT_ID_FIELD = "_binderParentId";  //used only on binders
-    public static final String ENTRY_PARENT_ID_FIELD = "_entryParentId";
-    public static final String ENTRY_TOP_ENTRY_ID_FIELD = "_entryTopEntryId";
-    public static final String ENTRY_TOP_ENTRY_TITLE_FIELD = "_entryTopEntryTitle";
-    public static final String FILENAME_FIELD = "_fileName";
-    public static final String FILE_EXT_FIELD = "_fileExt";
-    public static final String FILE_TYPE_FIELD = "_fileType";
-    public static final String FILE_ID_FIELD = "_fileID";
-    public static final String FILE_SIZE_FIELD = "_fileSize";
-    public static final String FILE_TIME_FIELD = "_fileTime";
-    public static final String FILE_UNIQUE_FIELD="_fileNameUnique";
-    public static final String RATING_FIELD="_rating";
-    public static final String DEFINITION_TYPE_FIELD="_definitionType"; 
-    public static final String FAMILY_FIELD="_family"; 
-    public static final String FAMILY_FIELD_TASK="task"; 
-    public static final String FAMILY_FIELD_CALENDAR="calendar"; 
-    public static final String FAMILY_FIELD_FILE="file"; 
-    public static final String FAMILY_FIELD_MILESTONE="milestone"; 
-    public static final String FAMILY_FIELD_PHOTO="photo"; 
-    public static final String TEAM_MEMBERS_FIELD="_teamMembers";
- //   public static final String GROUP_SEE_COMMUNITY="groupCommunity";
- //   public static final String GROUP_SEE_ANY="groupAny";
-    
     
     // Defines field values
     public static final String DEFAULT_NOTITLE_TITLE = "---";
@@ -170,9 +99,9 @@ public class EntityIndexUtils {
             		Field allTextField = BasicIndexUtils.allTextField(title);
             		doc.add(allTextField);
             	}
-            	Field titleField = new Field(EntityIndexUtils.TITLE_FIELD, title, Field.Store.YES, Field.Index.TOKENIZED);
-    	        Field sortTitleField = new Field(EntityIndexUtils.SORT_TITLE_FIELD, title.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-    	        Field title1Field = new Field(EntityIndexUtils.TITLE1_FIELD, title.substring(0, 1), Field.Store.YES, Field.Index.UN_TOKENIZED);
+            	Field titleField = new Field(Constants.TITLE_FIELD, title, Field.Store.YES, Field.Index.TOKENIZED);
+    	        Field sortTitleField = new Field(Constants.SORT_TITLE_FIELD, title.toLowerCase(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+    	        Field title1Field = new Field(Constants.TITLE1_FIELD, title.substring(0, 1), Field.Store.YES, Field.Index.UN_TOKENIZED);
     	        doc.add(titleField);
     	        doc.add(sortTitleField);
                 doc.add(title1Field);
@@ -184,7 +113,7 @@ public class EntityIndexUtils {
                 		extendedTitle = title + " (" + entry.getParentBinder().getTitle() + ")";
                 	} 
                 	
-        	        Field extendedTitleField = new Field(EntityIndexUtils.EXTENDED_TITLE_FIELD, extendedTitle, Field.Store.YES, Field.Index.TOKENIZED);
+        	        Field extendedTitleField = new Field(Constants.EXTENDED_TITLE_FIELD, extendedTitle, Field.Store.YES, Field.Index.TOKENIZED);
         	        doc.add(extendedTitleField);
                 }
             }
@@ -201,12 +130,12 @@ public class EntityIndexUtils {
 			if (title.length() > 0) {
 				normTitle = title;
 				Field bucketTitleField = new Field(
-						EntityIndexUtils.NORM_TITLE, normTitle.toLowerCase(),
+						Constants.NORM_TITLE, normTitle.toLowerCase(),
 						Field.Store.YES, Field.Index.UN_TOKENIZED);
 				doc.add(bucketTitleField);
 				// now add it without lowercasing
 				bucketTitleField = new Field(
-						EntityIndexUtils.NORM_TITLE_FIELD, normTitle,
+						Constants.NORM_TITLE_FIELD, normTitle,
 						Field.Store.YES, Field.Index.UN_TOKENIZED);
 				doc.add(bucketTitleField);
 			}
@@ -235,33 +164,33 @@ public class EntityIndexUtils {
         // Add the entry type (entry or reply)
     	if (entry instanceof FolderEntry) {
 	        if (((FolderEntry)entry).isTop()) {
-	        	Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_ENTRY, Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        	Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_ENTRY, Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        	doc.add(entryTypeField);
 	        } else {
-	        	Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_REPLY, Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        	Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_REPLY, Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        	doc.add(entryTypeField);
 	        	
 	        	FolderEntry folderEntry = (FolderEntry)entry;
-	        	Field entryParentEntryId = new Field(EntityIndexUtils.ENTRY_PARENT_ID_FIELD, folderEntry.getParentEntry().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        	Field entryParentEntryId = new Field(Constants.ENTRY_PARENT_ID_FIELD, folderEntry.getParentEntry().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        	doc.add(entryParentEntryId);
-	        	Field entryTopEntryId = new Field(EntityIndexUtils.ENTRY_TOP_ENTRY_ID_FIELD, folderEntry.getTopEntry().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        	Field entryTopEntryId = new Field(Constants.ENTRY_TOP_ENTRY_ID_FIELD, folderEntry.getTopEntry().getId().toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        	doc.add(entryTopEntryId);
 	        	String topEntryTitle = folderEntry.getTopEntry().getTitle().toString();
 	        	if (topEntryTitle.trim().equals("")) topEntryTitle = EntityIndexUtils.DEFAULT_NOTITLE_TITLE;
-	        	Field entryTopEntryTitle = new Field(EntityIndexUtils.ENTRY_TOP_ENTRY_TITLE_FIELD, topEntryTitle, Field.Store.YES, Field.Index.UN_TOKENIZED);
+	        	Field entryTopEntryTitle = new Field(Constants.ENTRY_TOP_ENTRY_TITLE_FIELD, topEntryTitle, Field.Store.YES, Field.Index.UN_TOKENIZED);
 	        	doc.add(entryTopEntryTitle);
 	        }
     	} else if (entry instanceof User) {
-        	Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_USER, Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_USER, Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(entryTypeField);
     	} else if (entry instanceof Group) {
-    		Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_GROUP, Field.Store.YES, Field.Index.UN_TOKENIZED);
+    		Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_GROUP, Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(entryTypeField);
     	} else if (entry instanceof Application) {
-        	Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_APPLICATION, Field.Store.YES, Field.Index.UN_TOKENIZED);
+        	Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_APPLICATION, Field.Store.YES, Field.Index.UN_TOKENIZED);
         	doc.add(entryTypeField);
     	} else if (entry instanceof ApplicationGroup) {
-    		Field entryTypeField = new Field(EntityIndexUtils.ENTRY_TYPE_FIELD, EntityIndexUtils.ENTRY_TYPE_APPLICATION_GROUP, Field.Store.YES, Field.Index.UN_TOKENIZED);
+    		Field entryTypeField = new Field(Constants.ENTRY_TYPE_FIELD, Constants.ENTRY_TYPE_APPLICATION_GROUP, Field.Store.YES, Field.Index.UN_TOKENIZED);
     		doc.add(entryTypeField);
     	} 
    }
@@ -387,8 +316,8 @@ public class EntityIndexUtils {
 								
 				if (att.getValue() != null) {
 					doc.add(new Field(EVENT_FIELD + count, att.getName(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-					doc.add(new Field(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_ID, event.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-					doc.add(getEntryEventDaysField(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_DATES, new HashSet(allEventDays)));
+					doc.add(new Field(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_ID, event.getId(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+					doc.add(getEntryEventDaysField(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_DATES, new HashSet(allEventDays)));
 					count++;
 				}
 				doc.add(getRecurrenceDatesField(event, recurencesDates));
@@ -437,7 +366,7 @@ public class EntityIndexUtils {
 		if (sb.length() > 0)
 			sb.deleteCharAt(sb.length() - 1);
 
-		return new Field(event.getName() + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD, sb.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
+		return new Field(event.getName() + BasicIndexUtils.DELIMITER + Constants.EVENT_RECURRENCE_DATES_FIELD, sb.toString(), Field.Store.YES, Field.Index.UN_TOKENIZED);
 	}
         
     public static void addCommandDefinition(Document doc, DefinableEntity entry, boolean fieldsOnly) {
@@ -500,23 +429,23 @@ public class EntityIndexUtils {
     public static String getFolderAclString(Binder binder) {
 		Set binderIds = AccessUtils.getReadAccessIds(binder);
    		String ids = LongIdUtil.getIdsAsString(binderIds);
-       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), BasicIndexUtils.READ_ACL_TEAM);
-       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), BasicIndexUtils.READ_ACL_BINDER_OWNER);
-       	if (Validator.isNull(ids)) return BasicIndexUtils.EMPTY_ACL_FIELD;
+       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
+       	ids = ids.replaceFirst(ObjectKeys.OWNER_USER_ID.toString(), Constants.READ_ACL_BINDER_OWNER);
+       	if (Validator.isNull(ids)) return Constants.EMPTY_ACL_FIELD;
         return ids;
     }
     
     //Add acl fields for binder for storage in search engine
     private static void addBinderAcls(Document doc, Binder binder) {
 		//get real binder access
-		doc.add(new Field(BasicIndexUtils.FOLDER_ACL_FIELD, getFolderAclString(binder), Field.Store.NO, Field.Index.TOKENIZED));
+		doc.add(new Field(Constants.FOLDER_ACL_FIELD, getFolderAclString(binder), Field.Store.NO, Field.Index.TOKENIZED));
 		//get team members
-		doc.add(new Field(BasicIndexUtils.TEAM_ACL_FIELD, binder.getTeamMemberString(), Field.Store.NO, Field.Index.TOKENIZED));
+		doc.add(new Field(Constants.TEAM_ACL_FIELD, binder.getTeamMemberString(), Field.Store.NO, Field.Index.TOKENIZED));
 		//add binder owner
 		Long owner = binder.getOwnerId();
-		String ownerStr = BasicIndexUtils.EMPTY_ACL_FIELD;
+		String ownerStr = Constants.EMPTY_ACL_FIELD;
 		if (owner != null) ownerStr = owner.toString();
-		doc.add(new Field(BasicIndexUtils.BINDER_OWNER_ACL_FIELD, ownerStr, Field.Store.NO, Field.Index.TOKENIZED));    	
+		doc.add(new Field(Constants.BINDER_OWNER_ACL_FIELD, ownerStr, Field.Store.NO, Field.Index.TOKENIZED));    	
     }
     //Add acl fields for binder for storage in dom4j documents.
     //In this case replace owner with real owner in _folderAcl
@@ -525,24 +454,24 @@ public class EntityIndexUtils {
 		Set binderIds = AccessUtils.getReadAccessIds(binder);
       	if (binderIds.remove(ObjectKeys.OWNER_USER_ID)) binderIds.add(binder.getOwnerId());
       	String ids = LongIdUtil.getIdsAsString(binderIds);
-       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), BasicIndexUtils.READ_ACL_TEAM);
-    	Element acl = parent.addElement(BasicIndexUtils.FOLDER_ACL_FIELD);
+       	ids = ids.replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
+    	Element acl = parent.addElement(Constants.FOLDER_ACL_FIELD);
    		acl.setText(ids);
    		//add Team
-   		acl = parent.addElement(BasicIndexUtils.TEAM_ACL_FIELD);
+   		acl = parent.addElement(Constants.TEAM_ACL_FIELD);
    		acl.setText(binder.getTeamMemberString());
    }
     
     public static void addReadAccess(Document doc, Binder binder, boolean fieldsOnly) {
     	//set entryAcl to all
-		doc.add(new Field(BasicIndexUtils.ENTRY_ACL_FIELD, BasicIndexUtils.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
+		doc.add(new Field(Constants.ENTRY_ACL_FIELD, Constants.READ_ACL_ALL, Field.Store.NO, Field.Index.TOKENIZED));
 		//add binder acls
 		addBinderAcls(doc, binder);
     }
     public static void addReadAccess(org.dom4j.Element parent, Binder binder, boolean fieldsOnly) {
     	//set entryAcl to all
-   		Element  acl = parent.addElement(BasicIndexUtils.ENTRY_ACL_FIELD);
- 		acl.setText(BasicIndexUtils.READ_ACL_ALL);
+   		Element  acl = parent.addElement(Constants.ENTRY_ACL_FIELD);
+ 		acl.setText(Constants.READ_ACL_ALL);
 		//add binder access
    		addBinderAcls(parent, binder);
     }
@@ -558,16 +487,16 @@ public class EntityIndexUtils {
      	StringBuffer pIds = new StringBuffer(LongIdUtil.getIdsAsString(ids));
    		if (ids.isEmpty() || wEntry.isWorkAreaAccess(WfAcl.AccessType.read)) {
    			//add all => folder check
-   			pIds.append(BasicIndexUtils.READ_ACL_ALL);      			
+   			pIds.append(Constants.READ_ACL_ALL);      			
    		}
-   		return pIds.toString().replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), BasicIndexUtils.READ_ACL_TEAM);
+   		return pIds.toString().replaceFirst(ObjectKeys.TEAM_MEMBER_ID.toString(), Constants.READ_ACL_TEAM);
     }
     public static void addReadAccess(Document doc, Binder binder, DefinableEntity entry, boolean fieldsOnly) {
 		// Add ACL field. We only need to index ACLs for read access.
     	if (entry instanceof WorkflowSupport) {
     		WorkflowSupport wEntry = (WorkflowSupport)entry;
        		// Add the Entry_ACL field
-       		doc.add(new Field(BasicIndexUtils.ENTRY_ACL_FIELD, getWfEntryAccess(wEntry), Field.Store.NO, Field.Index.TOKENIZED));
+       		doc.add(new Field(Constants.ENTRY_ACL_FIELD, getWfEntryAccess(wEntry), Field.Store.NO, Field.Index.TOKENIZED));
        		//add binder access
     		addBinderAcls(doc, binder);
 
@@ -582,7 +511,7 @@ public class EntityIndexUtils {
    		if (entry instanceof WorkflowSupport) {
   	   		WorkflowSupport wEntry = (WorkflowSupport)entry;
        		// Add the Entry_ACL field
-   	   		Element acl = parent.addElement(BasicIndexUtils.ENTRY_ACL_FIELD);
+   	   		Element acl = parent.addElement(Constants.ENTRY_ACL_FIELD);
        		acl.setText(getWfEntryAccess(wEntry));
     		addBinderAcls(parent, binder);
 
@@ -601,7 +530,7 @@ public class EntityIndexUtils {
     	Map<String, SortedSet<Tag>> uniqueTags = TagUtil.uniqueTags(allTags);
     	SortedSet<Tag> pubTags = uniqueTags.get(ObjectKeys.COMMUNITY_ENTITY_TAGS);
     	SortedSet<Tag> privTags = uniqueTags.get(ObjectKeys.PERSONAL_ENTITY_TAGS);
-    	Field ttfTagField = new Field(BasicIndexUtils.TAG_FIELD_TTF, "", Field.Store.NO, Field.Index.UN_TOKENIZED);
+    	Field ttfTagField = new Field(Constants.TAG_FIELD_TTF, "", Field.Store.NO, Field.Index.UN_TOKENIZED);
     	// index all the public tags (allTags field and tag_acl field)
 		for (Tag thisTag: pubTags) {
 			tag = thisTag.getName();
@@ -611,13 +540,13 @@ public class EntityIndexUtils {
 			// this field for the type to find searches, but keep the original fields for 
 			// display.
 			tag = tag.toLowerCase() + ":" + tag; 
-			ttfTagField = new Field(BasicIndexUtils.TAG_FIELD_TTF, tag, Field.Store.NO, Field.Index.UN_TOKENIZED);
+			ttfTagField = new Field(Constants.TAG_FIELD_TTF, tag, Field.Store.NO, Field.Index.UN_TOKENIZED);
 			doc.add(ttfTagField);
-			aclTag = BasicIndexUtils.buildAclTag(thisTag.getName(), BasicIndexUtils.READ_ACL_ALL);
+			aclTag = BasicIndexUtils.buildAclTag(thisTag.getName(), Constants.READ_ACL_ALL);
 			aclTags += " " + aclTag;
-			lowerAclTag = BasicIndexUtils.buildAclTag(thisTag.getName().toLowerCase(), BasicIndexUtils.READ_ACL_ALL);
+			lowerAclTag = BasicIndexUtils.buildAclTag(thisTag.getName().toLowerCase(), Constants.READ_ACL_ALL);
 			aclTag = lowerAclTag + ":" + aclTag;
-			ttfTagField = new Field(BasicIndexUtils.ACL_TAG_FIELD_TTF, aclTag, Field.Store.YES, Field.Index.UN_TOKENIZED);
+			ttfTagField = new Field(Constants.ACL_TAG_FIELD_TTF, aclTag, Field.Store.YES, Field.Index.UN_TOKENIZED);
 			doc.add(ttfTagField);
 		}
 	
@@ -629,11 +558,11 @@ public class EntityIndexUtils {
 			// type to find fields.
 			lowerAclTag = BasicIndexUtils.buildAclTag(tag.toLowerCase(), thisTag.getOwnerIdentifier().getEntityId().toString());
 			aclTag = lowerAclTag + ":" + aclTag;
-			ttfTagField = new Field(BasicIndexUtils.ACL_TAG_FIELD_TTF, aclTag, Field.Store.YES, Field.Index.UN_TOKENIZED);
+			ttfTagField = new Field(Constants.ACL_TAG_FIELD_TTF, aclTag, Field.Store.YES, Field.Index.UN_TOKENIZED);
 			doc.add(ttfTagField);
 		}
     
-    	Field tagField = new Field(BasicIndexUtils.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.TOKENIZED);
+    	Field tagField = new Field(Constants.TAG_FIELD, indexableTags, Field.Store.YES, Field.Index.TOKENIZED);
     	doc.add(tagField);
     	
     	if (!fieldsOnly) {
@@ -641,7 +570,7 @@ public class EntityIndexUtils {
     		doc.add(tagField);
     	}
     	
-    	tagField = new Field(BasicIndexUtils.ACL_TAG_FIELD, aclTags, Field.Store.YES, Field.Index.TOKENIZED);
+    	tagField = new Field(Constants.ACL_TAG_FIELD, aclTags, Field.Store.YES, Field.Index.TOKENIZED);
     	doc.add(tagField);
     }
 	
@@ -713,17 +642,17 @@ public class EntityIndexUtils {
     // the file attachment, it's name, and it's creator/modifier
     public static Document addFileAttachmentAllText(Document doc) {
        	String text = "";
-       	doc.removeFields(BasicIndexUtils.ALL_TEXT_FIELD);
+       	doc.removeFields(Constants.ALL_TEXT_FIELD);
        	// just in case there wasn't any text from the converted file 
        	// i.e. the file didn't really exist
        	try {
-       		text = doc.getField(BasicIndexUtils.TEMP_FILE_CONTENTS_FIELD).stringValue();
+       		text = doc.getField(Constants.TEMP_FILE_CONTENTS_FIELD).stringValue();
        	} catch (Exception e) {}
-       	doc.removeFields(BasicIndexUtils.TEMP_FILE_CONTENTS_FIELD);
-       	text += " " + doc.getField(EntityIndexUtils.FILENAME_FIELD).stringValue();
-       	text += " " + doc.getField(EntityIndexUtils.MODIFICATION_NAME_FIELD).stringValue();
-       	text += " " + doc.getField(EntityIndexUtils.CREATOR_NAME_FIELD).stringValue();
-       	Field allText = new Field(BasicIndexUtils.ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.TOKENIZED);
+       	doc.removeFields(Constants.TEMP_FILE_CONTENTS_FIELD);
+       	text += " " + doc.getField(Constants.FILENAME_FIELD).stringValue();
+       	text += " " + doc.getField(Constants.MODIFICATION_NAME_FIELD).stringValue();
+       	text += " " + doc.getField(Constants.CREATOR_NAME_FIELD).stringValue();
+       	Field allText = new Field(Constants.ALL_TEXT_FIELD, text, Field.Store.NO, Field.Index.TOKENIZED);
        	doc.add(allText);
        	return doc;
     }

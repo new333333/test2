@@ -34,8 +34,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ArrayList;
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.module.folder.index.IndexUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
+import com.sitescape.util.search.Constants;
 
 /**
  * @hibernate.class table="SS_SeenMap" dynamic-update="true"
@@ -127,16 +126,16 @@ public class SeenMap extends ZonedObject {
 		return checkAndSetSeen(entry.getId(), entry.getLastActivity(), setIt);
 	}
 	public boolean checkAndSetSeen(Map entry, boolean setIt) {
-		if (EntityIndexUtils.ENTRY_TYPE_REPLY.equals(entry.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) return true;
-		Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
-		Date modDate = (Date)entry.get(IndexUtils.LASTACTIVITY_FIELD);		
+		if (Constants.ENTRY_TYPE_REPLY.equals(entry.get(Constants.ENTRY_TYPE_FIELD))) return true;
+		Long id = new Long((String)entry.get(Constants.DOCID_FIELD));
+		Date modDate = (Date)entry.get(Constants.LASTACTIVITY_FIELD);		
 		if (modDate == null) return true;
     	return checkAndSetSeen(id, modDate, setIt);
 	}	
     public boolean checkIfSeen(Map entry) {
-		if (EntityIndexUtils.ENTRY_TYPE_REPLY.equals(entry.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) return true;
-     	Long id = new Long((String)entry.get(EntityIndexUtils.DOCID_FIELD));
-		Date modDate = (Date)entry.get(IndexUtils.LASTACTIVITY_FIELD);		
+		if (Constants.ENTRY_TYPE_REPLY.equals(entry.get(Constants.ENTRY_TYPE_FIELD))) return true;
+     	Long id = new Long((String)entry.get(Constants.DOCID_FIELD));
+		Date modDate = (Date)entry.get(Constants.LASTACTIVITY_FIELD);		
     	if (modDate == null) return true;
     	return checkAndSetSeen(id, modDate, false);
     }   

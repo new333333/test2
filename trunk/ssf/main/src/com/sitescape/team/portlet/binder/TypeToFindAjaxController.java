@@ -21,8 +21,6 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.module.profile.index.ProfileIndexUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.NLT;
@@ -31,6 +29,7 @@ import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 /**
  * Controller to handle type to find and lookup for search widgets
  * @author Janet
@@ -89,11 +88,11 @@ public class TypeToFindAjaxController extends SAbstractController {
 			if (!idsToSkip[i].equals("")) userIdsToSkip.put(idsToSkip[i], Long.valueOf(idsToSkip[i]));
 		}
 		
-		String nameType = ProfileIndexUtils.LASTNAME_FIELD;
-		if (searchType.equals("firstName")) nameType = ProfileIndexUtils.FIRSTNAME_FIELD;
-		if (searchType.equals("loginName")) nameType = ProfileIndexUtils.LOGINNAME_FIELD;
-		if (searchType.equals("groupName")) nameType = ProfileIndexUtils.GROUPNAME_FIELD;
-		if (searchType.equals("title")) nameType = EntityIndexUtils.TITLE_FIELD;
+		String nameType = Constants.LASTNAME_FIELD;
+		if (searchType.equals("firstName")) nameType = Constants.FIRSTNAME_FIELD;
+		if (searchType.equals("loginName")) nameType = Constants.LOGINNAME_FIELD;
+		if (searchType.equals("groupName")) nameType = Constants.GROUPNAME_FIELD;
+		if (searchType.equals("title")) nameType = Constants.TITLE_FIELD;
 		    	     	
 		//Build the search query
 		Document searchFilter = DocumentHelper.createDocument();
@@ -150,7 +149,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		String viewAccessible = "forum/find_search_result_accessible";	
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.parseInt(maxEntries));
 		options.put(ObjectKeys.SEARCH_OFFSET, startingCount);
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(false));
 		
 		model.put(WebKeys.DIV_ID, listDivId);

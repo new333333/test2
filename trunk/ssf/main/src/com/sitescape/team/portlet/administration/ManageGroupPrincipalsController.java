@@ -54,8 +54,6 @@ import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.GroupPrincipal;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.module.file.WriteFilesException;
-import com.sitescape.team.module.profile.index.ProfileIndexUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.security.AccessControlException;
@@ -129,7 +127,7 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 		Binder binder = getProfileModule().getProfileBinder();
 		
 		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 		//get them all
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
@@ -137,7 +135,7 @@ public abstract class ManageGroupPrincipalsController extends  SAbstractControll
 		Document searchFilter = DocumentHelper.createDocument();
 		Element rootElement = searchFilter.addElement(Constants.NOT_ELEMENT);
 		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,ProfileIndexUtils.GROUPNAME_FIELD);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.GROUPNAME_FIELD);
     	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(allIndividualsGroupName());
     	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);

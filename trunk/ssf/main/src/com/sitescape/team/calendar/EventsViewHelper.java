@@ -55,13 +55,12 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
-import com.sitescape.team.module.folder.index.IndexUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.cal.DayAndPosition;
+import com.sitescape.util.search.Constants;
 
 public class EventsViewHelper {
 
@@ -181,23 +180,23 @@ public class EventsViewHelper {
 		Iterator entryIterator = entrylist.iterator();
 		while (entryIterator.hasNext()) {
 			Map entry = (HashMap) entryIterator.next();
-			int eventsCount = parseEventsCount((String) entry.get(EntityIndexUtils.EVENT_COUNT_FIELD));
+			int eventsCount = parseEventsCount((String) entry.get(Constants.EVENT_COUNT_FIELD));
 			
 			// Add the creation date as an event
-			Date creationDate = (Date) entry.get(EntityIndexUtils.CREATION_DATE_FIELD);
+			Date creationDate = (Date) entry.get(Constants.CREATION_DATE_FIELD);
 			if (creationDate != null && 
 					(viewRangeDates == null || viewRangeDates.dateInView(creationDate))) {
 				result.add(getEventBean(
 						createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, 
-								(String)entry.get(EntityIndexUtils.DOCID_FIELD)), entry, EVENT_TYPE_CREATION));
+								(String)entry.get(Constants.DOCID_FIELD)), entry, EVENT_TYPE_CREATION));
 			}
 
 			// Add the activity date as an event
-			Date lastActivityDate = (Date) entry.get(IndexUtils.LASTACTIVITY_FIELD);
+			Date lastActivityDate = (Date) entry.get(Constants.LASTACTIVITY_FIELD);
 			if (lastActivityDate != null && (viewRangeDates == null || viewRangeDates.dateInView(lastActivityDate))) {
 				result.add(getEventBean(
 						createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, 
-								(String)entry.get(EntityIndexUtils.DOCID_FIELD)), entry, EVENT_TYPE_ACTIVITY));
+								(String)entry.get(Constants.DOCID_FIELD)), entry, EVENT_TYPE_ACTIVITY));
 			}
 			
 			result.addAll(getEntryEvents(entry, eventsCount, viewRangeDates));
@@ -215,13 +214,13 @@ public class EventsViewHelper {
 		// Add the events
 		// look through the custom attrs of this entry for any of type EVENT
 		for (int j = 0; j < eventsCount; j++) {
-			String name = (String) entry.get(EntityIndexUtils.EVENT_FIELD + j);
+			String name = (String) entry.get(Constants.EVENT_FIELD + j);
 
-			String recurrenceDatesField = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_RECURRENCE_DATES_FIELD);
-			String eventId = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_ID);
-			String timeZoneID = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_FIELD_TIME_ZONE_ID);
+			String recurrenceDatesField = (String) entry.get(name + BasicIndexUtils.DELIMITER + Constants.EVENT_RECURRENCE_DATES_FIELD);
+			String eventId = (String) entry.get(name + BasicIndexUtils.DELIMITER + Constants.EVENT_ID);
+			String timeZoneID = (String) entry.get(name + BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_TIME_ZONE_ID);
 			boolean timeZoneSensitive = true;
-			String timeZoneSensitiveString = (String) entry.get(name + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_FIELD_TIME_ZONE_SENSITIVE);
+			String timeZoneSensitiveString = (String) entry.get(name + BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE);
 			if ("false".equals(timeZoneSensitiveString)) {
 				timeZoneSensitive = false;
 			}
@@ -297,7 +296,7 @@ public class EventsViewHelper {
 		eventBean.put("entry", entry);
 		eventBean.put("eventType", eventType);
 		eventBean.put("eventid", event.getId() + "_" + event.getDtStart().getTimeInMillis() +"_" + event.getDtEnd().getTimeInMillis());
-		eventBean.put("entry_tostring", entry.get(BasicIndexUtils.UID_FIELD).toString());
+		eventBean.put("entry_tostring", entry.get(Constants.UID_FIELD).toString());
 		eventBean.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2
 				.format(event.getDtStart().getTime()));
 		eventBean.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(event

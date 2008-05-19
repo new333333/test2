@@ -91,7 +91,6 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FileLockInfo;
 import com.sitescape.team.module.folder.FilesLockedByOtherUsersException;
 import com.sitescape.team.module.folder.FolderModule;
-import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.folder.processor.FolderCoreProcessor;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.AccessUtils;
@@ -116,7 +115,7 @@ import com.sitescape.util.search.Constants;
 public abstract class AbstractFolderModule extends CommonDependencyInjection 
 implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	protected String[] ratingAttrs = new String[]{"id.entityId", "id.entityType"};
-	protected String[] entryTypes = {EntityIndexUtils.ENTRY_TYPE_ENTRY};
+	protected String[] entryTypes = {Constants.ENTRY_TYPE_ENTRY};
     protected DefinitionModule definitionModule;
     protected FileModule fileModule;
     protected BinderModule binderModule;
@@ -438,7 +437,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         ArrayList ids = new ArrayList();
         for (int i=0; i<childEntries.size();) {
         	Map searchEntry = (Map)childEntries.get(i);
-        	String docId = (String)searchEntry.get(EntityIndexUtils.DOCID_FIELD);
+        	String docId = (String)searchEntry.get(Constants.DOCID_FIELD);
         	try {
         		Long id = Long.valueOf(docId);
         		ids.add(id);
@@ -454,7 +453,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         List fullEntries = new ArrayList(entries.size());
         for (int i=0; i<childEntries.size(); ++i) {
         	Map searchEntry = (Map)childEntries.get(i);
-        	String docId = (String)searchEntry.get(EntityIndexUtils.DOCID_FIELD);
+        	String docId = (String)searchEntry.get(Constants.DOCID_FIELD);
        		Long id = Long.valueOf(docId);
        		for (int j=0; j<entries.size(); ++j) {
        			FolderEntry fe = (FolderEntry)entries.get(j);
@@ -517,14 +516,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	        	Map<String, Counter> unseenCounts = new HashMap();
 		        Date modifyDate = new Date();
 		        for (int i = 0; i < hits.length(); i++) {
-					String folderIdString = hits.doc(i).getField(EntityIndexUtils.BINDER_ID_FIELD).stringValue();
-					String entryIdString = hits.doc(i).getField(EntityIndexUtils.DOCID_FIELD).stringValue();
+					String folderIdString = hits.doc(i).getField(Constants.BINDER_ID_FIELD).stringValue();
+					String entryIdString = hits.doc(i).getField(Constants.DOCID_FIELD).stringValue();
 					Long entryId = null;
 					if (entryIdString != null && !entryIdString.equals("")) {
 						entryId = new Long(entryIdString);
 					}
 					try {
-						modifyDate = DateTools.stringToDate(hits.doc(i).getField(IndexUtils.LASTACTIVITY_FIELD).stringValue());
+						modifyDate = DateTools.stringToDate(hits.doc(i).getField(Constants.LASTACTIVITY_FIELD).stringValue());
 					} catch (ParseException pe) {} // no need to do anything
 					Counter cnt = unseenCounts.get(folderIdString);
 					if (cnt == null) {
@@ -561,19 +560,19 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	while (itFolders.hasNext()) {
     		Folder folder = (Folder) itFolders.next();
         	field = orElement.addElement(Constants.FIELD_ELEMENT);
-        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDER_ID_FIELD);
         	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     		child.setText(folder.getId().toString());
     	}
     	//choose only entries/ not replies
     	field = andElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
     	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
+		child.setText(Constants.ENTRY_TYPE_ENTRY);
 
 		//choose a range of dates
     	Element rangeElement = andElement.addElement(Constants.RANGE_ELEMENT);
-    	rangeElement.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, IndexUtils.LASTACTIVITY_DAY_FIELD);
+    	rangeElement.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.LASTACTIVITY_DAY_FIELD);
     	rangeElement.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, Constants.INCLUSIVE_TRUE);
     	Element startRange = rangeElement.addElement(Constants.RANGE_START);
     	Date now = new Date();
