@@ -913,6 +913,8 @@ function ss_showWhatsNewPage(obj, binderId, type, currentPage, direction, divId,
 function ss_showWhatsNewPageDiv(s, divId) {
 	var divObj = self.document.getElementById(divId);
 	divObj.innerHTML = s;
+	divObj.style.display = 'block';
+	divObj.style.visibility = 'visible';
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
