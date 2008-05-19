@@ -688,8 +688,11 @@ public abstract class AbstractFacade extends AbstractAllModulesInjected implemen
 		   } else {
 			   if (binder instanceof Workspace)
 				   binderId =  getWorkspaceModule().addFolder(binder.getId(), def.getId(), inputData, null, options);
-			   else
+			   else {
 				   binderId = getFolderModule().addFolder(binder.getId(), def.getId(), inputData, null, options);
+				   //inherit by default
+				   getBinderModule().setDefinitions(binderId, Boolean.TRUE);
+			   }
 		   }
 			return binderId;
 		} catch(WriteFilesException e) {
