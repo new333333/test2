@@ -40,7 +40,9 @@ public class SimpleName extends ZonedObject implements Serializable {
 	private String type;
 	
 	private Long binderId;
-	private String binderType; // folder or workspace
+	// folder (= EntityIdentifier.EntityType.folder.name()), or 
+	// workspace (= EntityIdentifier.EntityType.workspace.name())
+	private String binderType; 
 	
 	public SimpleName() {}
 	
