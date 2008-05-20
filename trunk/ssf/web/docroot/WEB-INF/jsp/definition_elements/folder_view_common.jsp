@@ -406,7 +406,9 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 <c:if test="${slidingTableStyle == 'fixed'}">
     onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
-    ><span <%= seenStyle %>><c:out value="${entry1.title}"/></span></a>
+    ><span <%= seenStyle %>><c:if test="${empty entry1.title}" >
+--<ssf:nlt tag="entry.noTitle" />--
+</c:if><c:out value="${entry1.title}"/></span></a>
   </ssf:slidingTableColumn>
  </c:if>
   
