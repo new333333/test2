@@ -33,7 +33,6 @@ import java.io.Serializable;
 public class SimpleName extends ZonedObject implements Serializable {
 
 	public static final String TYPE_URL = "url";
-	public static final String TYPE_EMAIL = "email";
 	
 	// The following two fields plus the zone id make up the primary key.
 	private String name; // access="field"
