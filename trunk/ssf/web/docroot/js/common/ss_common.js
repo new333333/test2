@@ -3621,6 +3621,8 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	
 	trObj = ss_findOwningElement(obj, "tr")
 	tbodyObj = ss_findOwningElement(trObj, "tbody")
+	tableObj = ss_findOwningElement(trObj, "table")
+	tableDivObj = ss_findOwningElement(trObj, "div")
 	if (ss_loadEntryInPlaceLastRowObj != null) {
 		if (ss_loadEntryInPlaceLastId == binderId + ',' + id) {
 			tbodyObj.removeChild(ss_loadEntryInPlaceLastRowObj);
@@ -3639,26 +3641,30 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	//Count the number of "td" elements
 	var count = 0
 	var childObj = trObj.firstChild
-	while (childObj != null && childObj != trObj.lastChild) {
+	while (childObj != null) {
 		if (typeof childObj.tagName != 'undefined') {
-			if (childObj.tagName.toLowerCase() == 'td') count++;
+			if (childObj.tagName.toLowerCase() == 'td') {
+				count++;
+			}
 		}
+		if (childObj == trObj.lastChild) break;
 		childObj = childObj.nextSibling
 	}
-	ss_random++;
+	var random = ++ss_random;
 	var iframeRow = document.createElement("tr");
 	var iframeCol = document.createElement("td");
+	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
-	iframeCol.setAttribute("colspan", count);
-	tbodyObj.replaceChild(iframeRow, trObj)
-	ss_loadEntryInPlaceLastRowObj = iframeRow;
-	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+ss_random+'" width="100%">' +
-    	'<iframe id="ss_entry_iframe'+id+ss_random+'" name="ss_entry_iframe'+id+ss_random+'"' +
+	iframeCol.innerHTML = '<div style="width:'+(ss_getObjectWidth(tableDivObj)-4)+'px;">' +
+		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
     	' src="'+obj.href+'"' +
-    	' style="width:100%; margin:0px; padding:0px;" frameBorder="0"' +
-    	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+ss_random+'\', \'ss_entry_iframe'+id+ss_random+'\')"' +
+    	' style="width:'+(ss_getObjectWidth(tableDivObj)-8)+'px; margin:0px; padding:0px;" frameBorder="0"' +
+    	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\')"' +
     	'>xxx</iframe>' +
     	'</div>';
+	
+	tbodyObj.replaceChild(iframeRow, trObj)
+	ss_loadEntryInPlaceLastRowObj = iframeRow;
 
 	ss_highlightLine(id, namespace);
 	return false;
@@ -5569,6 +5575,16 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
         iframeObj.setAttribute("id", "ss_treeIframe");
         iframeObj.style.width = "400px"
         iframeObj.style.height = "250px"
+		dojo.event.connect(iframeObj, "onload", function(evt) {
+			var iframeDiv = document.getElementById('ss_treeIframe')
+			if (window.frames['ss_treeIframe'] != null) {
+				eval("var iframeHeight = parseInt(window.ss_treeIframe" + ".document.body.scrollHeight);")
+				if (iframeHeight > 0) {
+					iframeDiv.style.height = iframeHeight + 50 + "px"
+				}
+			}
+			return false;
+	    });		
 		iframeDivObj.appendChild(iframeObj);
 	    var closeDivObj = self.document.createElement("div");
 	    closeDivObj.style.border = "2px solid gray";
