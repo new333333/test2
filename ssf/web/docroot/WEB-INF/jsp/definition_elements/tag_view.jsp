@@ -156,7 +156,6 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
   </tbody></table>
 </td></tr>
 
-<ssf:ifaccessible>
 
 <tr><td>
   <table class="ss_tag_pane_color" colspan="2"><tbody><tr><td>
@@ -167,7 +166,6 @@ boolean isIEtag = BrowserSniffer.is_ie(request);
   </tbody></table>
 </td></tr>
 
-</ssf:ifaccessible>
 
 </tbody>
 </table>
