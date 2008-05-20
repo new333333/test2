@@ -1372,7 +1372,7 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     
 	public SimpleName getSimpleName(String name, String type) {
 		// Do we need access check here or not?
-		return getCoreDao().loadSimpleName(name, type, RequestContextHolder.getRequestContext().getZoneId());
+		return getCoreDao().loadSimpleName(name.toLowerCase(), type, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	public void addSimpleName(String name, String type, Long binderId, String binderType) {
 		Binder binder = loadBinder(binderId);
