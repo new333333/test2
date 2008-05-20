@@ -42,6 +42,14 @@
 
 <p><ssf:nlt tag="help.manageSubscriptionsMenu.rss"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
+<p class="ss_help_moreinfo"><ssf:nlt tag="help.globalStrings.moreinfo.leadInSentence"/>
+<a href="#skip_nav_titles" title="<ssf:nlt tag="helpTitleAlt.skipNavTitles" />"><img border="0" alt="" src="<html:imagesPath/>pics/1pix.gif" /></a>
+</p>
+
+<div class="ss_help_moreinfo">
+<p><a href="javascript: ss_helpSystem.showMoreInfoPanel('workspaces_folders/misc_tools/email_notifications_explained', 'ss_moreinfo_panel');"><ssf:nlt tag="ihelp.email.notify.understanding.topic"/></a><a id="skip_nav_titles"/></p>
+</div>
+
 </div>
 
 </div>
