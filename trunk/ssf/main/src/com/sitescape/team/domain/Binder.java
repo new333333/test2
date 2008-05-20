@@ -82,7 +82,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected int binderCount=0;
     protected HKey binderKey;
     protected int nextBinderNumber=1;
-
+    protected String branding; //initialized by hiberate access=field
     
     public Binder() {
     }
@@ -111,6 +111,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 mirrored = source.mirrored;
 		 resourceDriverName = source.resourceDriverName;
 		 resourcePath = source.resourcePath;
+		 branding = source.branding;
 		 //don't copy postingDef, notificationDef, internalId, binders, or pathName
  
      }
@@ -594,6 +595,14 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public boolean isMirroredAndReadOnly() {
 		return isMirrored() && getResourceDriver().isReadonly();
 	}
+    public String getBranding() {
+    	if (Validator.isNotNull(branding)) return branding;
+        if (parentBinder == null) return null;
+        return parentBinder.getBranding();
+    }
+    public void setBranding(String branding) {
+    	this.branding = branding; 
+    }
     //*****************WorkArea interface stuff***********/
     public Long getWorkAreaId() {
         return getId();
