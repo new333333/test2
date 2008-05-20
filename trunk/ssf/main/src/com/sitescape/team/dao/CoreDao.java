@@ -130,6 +130,7 @@ public interface CoreDao {
 	public List<Tag> loadPersonalTagsByOwner(EntityIdentifier ownerId);
     public List loadPostings(Long zoneId);
 	public PostingDef loadPosting(String aliasId, Long zoneId);
+	public PostingDef findPosting(String emailAddress, Long zoneId);
 	public Binder loadReservedBinder(String reservedId, Long zoneId);
 	public Definition loadReservedDefinition(String reservedId, Long zoneId);
 	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId);

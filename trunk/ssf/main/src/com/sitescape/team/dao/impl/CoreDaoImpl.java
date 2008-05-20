@@ -1024,6 +1024,17 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
   		return post;
 		
 	}
+	public PostingDef findPosting(final String emailAddress, Long zoneId) {
+		return (PostingDef)getHibernateTemplate().execute(
+		        new HibernateCallback() {
+		            public Object doInHibernate(Session session) throws HibernateException {
+	               		return session.createCriteria(PostingDef.class)
+	               						.add(Expression.eq("emailAddress", emailAddress))
+	               						.uniqueResult();
+		            }
+		        }
+		     );
+	}
 
 	//build collections manually as an optimization for indexing
 	//evict from session cache, so no longer available to everyone else

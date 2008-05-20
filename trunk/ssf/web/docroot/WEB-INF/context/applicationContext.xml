@@ -847,6 +847,13 @@ text/calendar											  ics
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 	</bean>	
 	
+	<bean id="smtpService" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.smtp.impl.SMTPManagerImpl"
+			depends-on="zoneConfig, springContextUtil">
+		<property name="enabled"><value>${smtp.service.enable}</value></property>
+		<property name="port"><value>${smtp.service.port}</value></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+	</bean>
+	
 	<!-- ============================== Web Services Components ============================ -->
 	
 	<bean id="loginInfoInterceptor" class="com.sitescape.team.remoting.ws.interceptor.LoginInfoInterceptor">
@@ -1051,6 +1058,9 @@ text/calendar											  ics
 	        </entry>
 	        <entry key="SiteScape:type=Module,name=folderModule">
 	          <ref bean="folderModuleTarget"/>
+	        </entry>
+	        <entry key="SiteScape:type=Server,name=smtpService">
+	          <ref local="smtpService"/>
 	        </entry>
 	      </map>
 	    </property>
