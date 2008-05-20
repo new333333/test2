@@ -5570,21 +5570,13 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
 	    iframeDivObj = self.document.createElement("div");
 	    iframeDivObjParent = iframeDivObj;
         iframeDivObj.setAttribute("id", "ss_treeIframeDiv");
+        iframeDivObj.setAttribute("name", "ss_treeIframeDiv");
 		iframeDivObj.className = "ss_treeIframeDiv";
         iframeObj = self.document.createElement("iframe");
         iframeObj.setAttribute("id", "ss_treeIframe");
+        iframeObj.setAttribute("name", "ss_treeIframe");
         iframeObj.style.width = "400px"
         iframeObj.style.height = "250px"
-		dojo.event.connect(iframeObj, "onload", function(evt) {
-			var iframeDiv = document.getElementById('ss_treeIframe')
-			if (window.frames['ss_treeIframe'] != null) {
-				eval("var iframeHeight = parseInt(window.ss_treeIframe" + ".document.body.scrollHeight);")
-				if (iframeHeight > 0) {
-					iframeDiv.style.height = iframeHeight + 50 + "px"
-				}
-			}
-			return false;
-	    });		
 		iframeDivObj.appendChild(iframeObj);
 	    var closeDivObj = self.document.createElement("div");
 	    closeDivObj.style.border = "2px solid gray";
@@ -5598,15 +5590,23 @@ function ss_treeToggleAccessible(treeName, id, parentId, bottom, type, page, ind
 	    aObj.appendChild(document.createTextNode(ss_treeButtonClose));
 	    closeDivObj.appendChild(aObj);
 		self.document.getElementsByTagName( "body" ).item(0).appendChild(iframeDivObj);
+		dojo.event.connect(iframeObj, "onload", function(evt) {
+			var iframeDiv = document.getElementById('ss_treeIframe');
+			if (window.frames['ss_treeIframe'] != null) {
+				eval("var iframeHeight = parseInt(window.ss_treeIframe" + ".document.body.scrollHeight);");
+				if (iframeHeight > 0) {
+					iframeDiv.style.height = iframeHeight + 50 + "px";
+				}
+			}
+			return false;
+	    });		
     }
     if (iframeDivObj == null) iframeDivObj = iframeDivObjParent;
     if (iframeObj == null) iframeObj = iframeObjParent;
-    if (self.parent == self) {
-    	var x = dojo.html.getAbsolutePosition(tempObj, true).x
-    	var y = dojo.html.getAbsolutePosition(tempObj, true).y
-	    ss_setObjectTop(iframeDivObj, y + "px");
-	    ss_setObjectLeft(iframeDivObj, x + "px");
-	}
+	var x = dojo.html.getAbsolutePosition(tempObj, true).x
+	var y = dojo.html.getAbsolutePosition(tempObj, true).y
+    ss_setObjectTop(iframeDivObj, y + "px");
+    ss_setObjectLeft(iframeDivObj, x + "px");
 	ss_showDiv("ss_treeIframeDiv");
 	var url = window["ss_treeAjaxUrl_" + treeName];
 	url = ss_replaceSubStrAll(url, "&amp;", "&");
