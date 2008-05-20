@@ -508,6 +508,7 @@
 			<option name="description" initial="true" />
 			<option name="folderIcon" initial="true" />
 			<option name="folderRemoteApp" />
+			<option name="folderBranding" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
 			<option name="file" />
@@ -536,7 +537,7 @@
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
 	</item>
 
-		<item name="folderRemoteApp" caption="__remoteApp" type="data" multipleAllowed="true" 
+	<item name="folderRemoteApp" caption="__remoteApp" type="data" multipleAllowed="true" 
 			category="folderData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__remoteApp"/>
@@ -544,6 +545,17 @@
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_form.jsp" />
+		</jsps>
+	</item>
+	
+	<item name="folderBranding" caption="__branding" type="data" multipleAllowed="false" 
+			category="folderData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__branding"/>
+			<property name="name" caption="__name" type="text" readonly="true" value="_branding"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/binder_branding_form.jsp" />
 		</jsps>
 	</item>
 	
@@ -1298,6 +1310,7 @@
 			<option name="title" initial="true" definitionType="8"/>
 			<option name="description" initial="true" />
 			<option name="workspaceRemoteApp" />
+			<option name="binderBranding" />
 			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
@@ -1333,6 +1346,17 @@
 		</jsps>
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderIcon" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
+	</item>
+	
+	<item name="workspaceBranding" caption="__branding" type="data" multipleAllowed="false" 
+			category="workspaceData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__branding"/>
+			<property name="name" caption="__name" type="text" readonly="true" value="_branding"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/binder_branding_form.jsp" />
+		</jsps>
 	</item>
 	
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
