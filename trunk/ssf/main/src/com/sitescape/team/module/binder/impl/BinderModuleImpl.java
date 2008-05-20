@@ -1370,6 +1370,10 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	return binderMap;
     }
     
+	public SimpleName getSimpleName(String name, String type) {
+		// Do we need access check here or not?
+		return getCoreDao().loadSimpleName(name, type, RequestContextHolder.getRequestContext().getZoneId());
+	}
 	public void addSimpleName(String name, String type, Long binderId, String binderType) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageSimpleName); 
