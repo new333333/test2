@@ -407,6 +407,16 @@ public interface BinderModule {
 	public boolean testAccess(Binder binder, BinderOperation operation);
 
 	/**
+	 * Returns <code>SimpleName</code> object matching the name and type.
+	 * Returns <code>null</code> if no match is found.
+	 * 
+	 * @param name
+	 * @param type
+	 * @return
+	 */
+	public SimpleName getSimpleName(String name, String type);
+	
+	/**
 	 * Returns a list of <code>SimpleName</code> objects of given type for the 
 	 * binder sorted by the name. Returns an empty list if no match is found.
 	 *  
