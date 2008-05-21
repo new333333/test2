@@ -508,7 +508,7 @@
 			<option name="description" initial="true" />
 			<option name="folderIcon" initial="true" />
 			<option name="folderRemoteApp" />
-			<option name="folderBranding" />
+			<option name="folderBranding" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
 			<option name="file" />
@@ -552,11 +552,12 @@
 			category="folderData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__branding"/>
-			<property name="name" caption="__name" type="text" readonly="true" value="_branding"/>
+			<property name="name" caption="__name" type="text" readonly="true" value="branding"/>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/binder_branding_form.jsp" />
 		</jsps>
+		<help>ihelp.designers.branding</help>
 	</item>
 	
 <!-- Folder view	-->
@@ -1310,7 +1311,7 @@
 			<option name="title" initial="true" definitionType="8"/>
 			<option name="description" initial="true" />
 			<option name="workspaceRemoteApp" />
-			<option name="binderBranding" />
+			<option name="binderBranding" initial="true" />
 			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
@@ -1352,11 +1353,12 @@
 			category="workspaceData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__branding"/>
-			<property name="name" caption="__name" type="text" readonly="true" value="_branding"/>
+			<property name="name" caption="__name" type="text" readonly="true" value="branding"/>
 		</properties>
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/binder_branding_form.jsp" />
 		</jsps>
+		<help>ihelp.designers.branding</help>
 	</item>
 	
 	<item name="workspaceView" caption="__workspace_view" canBeDeleted="false" 
