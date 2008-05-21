@@ -31,11 +31,35 @@
 <% // Discussion Workspace binder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<div id="ss_dashboard_content" class="ss_doublecolumn">
+<div id="ss_folder_inset">
+<div id="ss_column_L" class="ss_colleft">
+<div class="ss_col1">
+<div id="ss_topic">
+<c:set var="binderCounter" value="0"/>
 <c:forEach var="binder" items="${ss_binders}">
+  <c:set var="binderCounter" value="${binderCounter + 1}"/>
   <c:if test="${binder._entityType == 'workspace' || binder._entityType == 'profiles'}">
-    <div style="padding-left:10px;">
-    <c:if test="${binder._entityType == 'workspace'}"><span style="padding-right:10px;">workspace</span></c:if>
-    <c:if test="${binder._entityType == 'profiles'}"><span style="padding-right:10px;">profiles</span></c:if>
+    <c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
+      <c:set var="binderCounter" value="${binderCounter + 1}"/>
+    </c:forEach>
+  </c:if>
+  
+</c:forEach>
+
+<c:set var="binderCounter2" value="0"/>
+<c:set var="column2Seen" value="0"/>
+<c:forEach var="binder" items="${ss_binders}">
+  <c:if test="${binderCounter2 >= (binderCounter/2) && column2Seen == '0'}">
+    <c:set var="column2Seen" value="1"/>
+    </div><!-- end of topic -->
+    </div><!-- end of Column 1 -->
+		<!-- Start Right Column -->
+      	<div id="ss_column_R" class="ss_col2">
+  </c:if>
+
+  <c:if test="${binder._entityType == 'workspace'}">
+    <div id="ss_topic_title" class="ss_disc_th1">
     <span>(${ss_binderUnseenCounts[binder._docId].count})</span> 
     <a 
     <c:if test="${binder._entityType == 'workspace'}">
@@ -49,21 +73,30 @@
         binderId="${binder._docId}"/>"
     </c:if>
     >
-      <span>${binder.title}</span>
+      <span class="ss_title_th1">${binder.title}</span>
     </a>
     <br/>
-    </div>
-    
+    </div><!-- end of title -->
+    <div id="ss_topic_desc"><c:out value="${binder._desc}" escapeXml="false"/></div>
     <c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
-      <c:if test="${subBinder._entityType == 'workspace'}">
+      <c:if test="${subBinder._entityType == 'workspace' || subBinder._entityType == 'profiles'}">
+      <div id="ss_topic_title" class="ss_disc_th1">
         <div style="padding-left:25px;">
-        <span style="padding-right:10px;">workspace</span>
+        
         <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
-        <a href="<ssf:url action="view_ws_listing" binderId="${subBinder._docId}"/>">
-          <span>${subBinder.title}</span>
+        <a 
+          <c:if test="${subBinder._entityType == 'workspace'}">
+            href="<ssf:url action="view_ws_listing" binderId="${subBinder._docId}"/>"
+          </c:if>
+          <c:if test="${subBinder._entityType == 'profiles'}">
+            href="<ssf:url action="view_profiles_listing" binderId="${subBinder._docId}"/>"
+          </c:if>
+        ><span>${subBinder.title}</span>
         </a>
         <br/>
-        </div>
+        <div><c:out value="${subBinder._desc}" escapeXml="false"/></div>
+        </div><!-- end of left padding -->
+        </div><!-- end of title -->
       </c:if>
       <c:if test="${subBinder._entityType == 'profiles'}">
         <div style="padding-left:25px;">
@@ -76,28 +109,43 @@
         </div>
       </c:if>
       <c:if test="${subBinder._entityType == 'folder'}">
+      <div id="ss_topic_thread">
         <div style="padding-left:25px;">
-        <span style="padding-right:10px;">folder</span>
+       <img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" alt="folder"/> 
         <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
         <a href="<ssf:url action="view_folder_listing" binderId="${subBinder._docId}"/>">
           <span>${subBinder.title}</span>
         </a>
         <br/>
-        </div>
+        </div><!-- end of left padding -->
+        </div><!-- end of folder thread -->
       </c:if>
+      <c:set var="binderCounter2" value="${binderCounter2 + 1}"/>
     </c:forEach>
   </c:if>
   
   <c:if test="${binder._entityType == 'folder'}">
+  <div id="ss_topic_thread">
     <div style="padding-left:10px;">
-    <span style="padding-right:10px;">folder</span>
+      <img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" alt="folder"/>     
     <span>(${ss_binderUnseenCounts[binder._docId].count})</span> 
     <a href="<ssf:url action="view_folder_listing" binderId="${binder._docId}"/>">
       <span>${binder.title}</span>
     </a>
     <br/>
-    </div>
+    <div id="ss_topic_desc"><c:out value="${binder._desc}" escapeXml="false"/></div>
+    </div><!-- end of left padding -->
+    </div><!-- end of folder thread -->
   </c:if>
   
   <br/>
+  <c:set var="binderCounter2" value="${binderCounter2 + 1}"/>
+
 </c:forEach>
+
+</div><!-- end of ss_topic -->
+</div><!-- end of colright -->
+</div><!-- end of colleft -->
+</div><!-- end of folder inset -->
+</div><!-- end of double col -->
+</div><!-- end of center -->
