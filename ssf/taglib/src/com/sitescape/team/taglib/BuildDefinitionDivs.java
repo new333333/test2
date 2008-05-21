@@ -696,6 +696,9 @@ public class BuildDefinitionDivs extends TagSupport {
 					if (propertyConfig.attributeValue("readonly", "false").equalsIgnoreCase("true")) {
 						readonly = "readonly=\"true\"";
 					}
+					if(propertyId.equalsIgnoreCase("name")){
+						readonly = "";
+						}
 					List propertyValues = new ArrayList();
 					if (properties != null) {
 						//See if there are already values for this property in the actual definition file
