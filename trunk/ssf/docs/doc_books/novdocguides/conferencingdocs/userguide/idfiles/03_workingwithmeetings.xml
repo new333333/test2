@@ -288,6 +288,8 @@
 
  <target id="bbmo4vr" pid="bbkmnjs" name="FormalPara" level="3" number="w"> <text>Audio Properties:</text> </target>
 
+ <target id="bfcemhi" pid="bbkmnjs" name="FormalPara" level="3" number="w"> <text>Mute microphone:</text> </target>
+
  <target id="bawethy" pid="bawethy" name="Sect1" level="1" number="3.10"> <text>E-Mail and IM Invitations</text> </target>
 
  <target id="bawg8nv" pid="bawethy" name="BridgeHead" level="2"> <text>About the Meeting Invitation Link</text> </target>
