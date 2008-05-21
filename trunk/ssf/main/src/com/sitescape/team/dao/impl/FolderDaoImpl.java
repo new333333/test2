@@ -79,24 +79,30 @@ public class FolderDaoImpl extends HibernateDaoSupport implements FolderDao {
 	 	
 	/**
     * Load 1 FolderEntry 
-     * @param parentFolderId
+     * @param parentFolderId 
      * @param entryId
      * @param zoneId
      * @return
      * @throws DataAccessException
 	 */
-	public FolderEntry loadFolderEntry(final Long parentFolderId, final Long entryId, final Long zoneId) throws DataAccessException {
+	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException {
+	       return loadEntry(parentFolderId, entryId, zoneId);
+    }
+      
+	public FolderEntry loadFolderEntry(Long entryId, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException {
+       return loadEntry(null, entryId, zoneId);
+    }
+	protected FolderEntry loadEntry(Long parentFolderId, Long entryId, Long zoneId) throws DataAccessException {
 		FolderEntry entry = (FolderEntry)getCoreDao().load(FolderEntry.class, entryId);
 		if (entry == null) throw new NoFolderEntryByTheIdException(entryId);
-        if (!entry.getParentFolder().getZoneId().equals(zoneId)) {
+        if (!entry.getZoneId().equals(zoneId)) {
         	throw new NoFolderEntryByTheIdException(entryId);
         }
-        if (!parentFolderId.equals(entry.getParentFolder().getId())) {
+        if (parentFolderId != null && !parentFolderId.equals(entry.getParentFolder().getId())) {
         	throw new NoFolderEntryByTheIdException(entryId);        	
         }
         return entry;
      }
-      
      /**
      * Query for a collection of FolderEntries.  An iterator is returned.  The entries are 
      * not pre-loaded.

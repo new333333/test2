@@ -59,7 +59,6 @@ public interface EntryProcessor extends BinderProcessor {
     public void copyEntries(Binder source, Binder binder, Map options);
     public void deleteEntry(Binder binder, Entry entry, boolean deleteMirroredSource, Map options);
     public void deleteEntryWorkflow(Binder binder, Entry entry, Definition definition);
-    public Entry getEntry(Binder binder, Long entryId);
     public void modifyEntry(Binder binder, Entry entry, InputDataAccessor inputData, Map fileItems, 
     		Collection deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options)
     	throws WriteFilesException;

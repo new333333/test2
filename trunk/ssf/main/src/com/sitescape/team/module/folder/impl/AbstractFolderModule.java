@@ -60,7 +60,6 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.AverageRating;
-import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
@@ -265,12 +264,13 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 
 	}
 	protected FolderEntry loadEntry(Long folderId, Long entryId) {
-        Folder folder = loadFolder(folderId);
-        FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);		
+		//folderId may be null
+        FolderEntry entry = getFolderDao().loadFolderEntry(folderId, entryId, RequestContextHolder.getRequestContext().getZoneId());             
 		if (entry.isDeleted()) throw new NoFolderEntryByTheIdException(entryId);
 		return entry;
 	}
+	          
+	    
 	protected FolderCoreProcessor loadProcessor(Folder folder) {
         // This is nothing but a dispatcher to an appropriate processor. 
         // Shared logic, if exists, must be put into the corresponding method in 
@@ -333,14 +333,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 	public Long addReply(Long folderId, Long parentId, String definitionId, 
     		InputDataAccessor inputData, Map fileItems, Map options) throws AccessControlException, WriteFilesException {
     	arCount.incrementAndGet();
-    	
-        Folder folder = loadFolder(folderId);
+        //load parent entry
+        FolderEntry entry = loadEntry(folderId, parentId);    	
+        checkAccess(entry, FolderOperation.addReply);
+        Folder folder = entry.getParentFolder();
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
 				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
 			checkAccess(folder, FolderOperation.changeEntryTimestamps);
         FolderCoreProcessor processor = loadProcessor(folder);
-        //load parent entry
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, parentId);
 
         if(Validator.isNull(definitionId)) {
 			Definition parentDef = entry.getEntryDef();
@@ -352,21 +352,19 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
         }
 
         Definition def = getCoreDao().loadDefinition(definitionId, RequestContextHolder.getRequestContext().getZoneId());
-        checkAccess(entry, FolderOperation.addReply);
         FolderEntry reply = processor.addReply(entry, def, inputData, fileItems, options);
         return reply.getId();
     }
     //no transaction    
 	public void addVote(Long folderId, Long entryId, InputDataAccessor inputData, Map options) throws AccessControlException {
 	   	meCount.incrementAndGet();
-   	
-        Folder folder = loadFolder(folderId);
+        FolderEntry entry = loadEntry(folderId, entryId);   	
+        checkAccess(entry, FolderOperation.addReply);
+        Folder folder = entry.getParentFolder();
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
 				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
 			checkAccess(folder, FolderOperation.changeEntryTimestamps);
         FolderCoreProcessor processor = loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        checkAccess(entry, FolderOperation.addReply);
         User user = RequestContextHolder.getRequestContext().getUser();
         HistoryStamp reservation = entry.getReservation();
         if(reservation != null && !reservation.getPrincipal().equals(user))
@@ -386,14 +384,13 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     throws AccessControlException, WriteFilesException, ReservedByAnotherUserException {
         
     	meCount.incrementAndGet();
-
-        Folder folder = loadFolder(folderId);
+        FolderEntry entry = loadEntry(folderId, entryId);   	
+		checkAccess(entry, FolderOperation.modifyEntry);
+        Folder folder = entry.getParentFolder();
 		if (options != null && (options.containsKey(ObjectKeys.INPUT_OPTION_CREATION_DATE) || 
 				options.containsKey(ObjectKeys.INPUT_OPTION_MODIFICATION_DATE)))
 			checkAccess(folder, FolderOperation.changeEntryTimestamps);
 		FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        checkAccess(entry, FolderOperation.modifyEntry);
         User user = RequestContextHolder.getRequestContext().getUser();
         HistoryStamp reservation = entry.getReservation();
         if(reservation != null && !reservation.getPrincipal().equals(user))
@@ -607,25 +604,25 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     public Folder locateEntry(Long entryId) {
         FolderEntry entry = (FolderEntry)getCoreDao().load(FolderEntry.class, entryId);
         if (entry == null) return null;
-        Folder parent = entry.getParentFolder();
         try {
         	AccessUtils.readCheck(entry);
         } catch (AccessControlException ac) {
         	return null;
         }
-        return parent;
+        return entry.getParentFolder();
     }
-    public FolderEntry getEntry(Long parentFolderId, Long entryId) {
-        FolderEntry entry = loadEntry(parentFolderId, entryId);
+    // get entry and check access
+    public FolderEntry getEntry(Long folderId, Long entryId) {
+        FolderEntry entry = loadEntry(folderId, entryId);
         AccessUtils.readCheck(entry);
         return entry;
     }
-    public Map getEntryTree(Long parentFolderId, Long entryId) {
-        Folder folder = loadFolder(parentFolderId);
+    public Map getEntryTree(Long folderId, Long entryId) {
+    	//does read check
+        FolderEntry entry = getEntry(folderId, entryId);   	
+        Folder folder = entry.getParentFolder();
         FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-        AccessUtils.readCheck(entry);
-       return processor.getEntryTree(folder, entry);   	
+        return processor.getEntryTree(folder, entry);   	
     }
     public SortedSet<FolderEntry>getEntries(Collection<Long>ids) {
         User user = RequestContextHolder.getRequestContext().getUser();
@@ -645,41 +642,39 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	deleteEntry(parentFolderId, entryId, true, null);
     }
     //no transaction    
-    public void deleteEntry(Long parentFolderId, Long entryId, boolean deleteMirroredSource, Map options) {
+    public void deleteEntry(Long folderId, Long entryId, boolean deleteMirroredSource, Map options) {
     	deCount.incrementAndGet();
-
-        Folder folder = loadFolder(parentFolderId);
-        FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.deleteEntry);
+        Folder folder = entry.getParentFolder();
+        FolderCoreProcessor processor=loadProcessor(folder);
         processor.deleteEntry(folder, entry, deleteMirroredSource, options);
     }
     //inside write transaction    
     public void moveEntry(Long folderId, Long entryId, Long destinationId, Map options) {
-        Folder folder = loadFolder(folderId);
-        FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.moveEntry);
-        
-        
+        Folder folder = entry.getParentFolder();
+        FolderCoreProcessor processor=loadProcessor(folder);
+                
         Folder destination =  loadFolder(destinationId);
         checkAccess(destination, FolderOperation.addEntry);
         processor.moveEntry(folder, entry, destination, options);
     }
     //inside write transaction    
     public void copyEntry(Long folderId, Long entryId, Long destinationId, Map options) {
-        Folder folder = loadFolder(folderId);
-        FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+        FolderEntry entry = loadEntry(folderId, entryId);   	
         checkAccess(entry, FolderOperation.copyEntry);
-              
+        Folder folder = entry.getParentFolder();
+        FolderCoreProcessor processor=loadProcessor(folder);
+               
         Folder destination =  loadFolder(destinationId);
         checkAccess(destination, FolderOperation.addEntry);
         processor.copyEntry(folder, entry, destination, options);
     }
     //inside write transaction    
     public void addSubscription(Long folderId, Long entryId, Map<Integer,String[]> styles) {
-    	//getEntry check read access
+    	//getEntry does read check
 		FolderEntry entry = getEntry(folderId, entryId);
 		//only subscribe at top level
 		if (!entry.isTop()) entry = entry.getTopEntry();
@@ -702,7 +697,7 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     }
     //inside write transaction    
     public void deleteSubscription(Long folderId, Long entryId) {
-    	//should be able to delete you own
+    	//should be able to delete your own
 		FolderEntry entry = loadEntry(folderId, entryId);
 		if (!entry.isTop()) entry = entry.getTopEntry();
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -836,10 +831,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     	// functionality, I don't delegate its implementation to a
     	// processor (Am I wrong about this?)
     	
-        Folder folder = loadFolder(folderId);
-        FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
-
+        FolderEntry entry = loadEntry(folderId, entryId);   	
+        Folder folder = entry.getParentFolder();
+ 
         // For now, check against the same access right needed for modifying
         // entry. We might want to have a separate right for reserving entry...
     	checkAccess(entry, FolderOperation.reserveEntry);
@@ -900,26 +894,24 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     //inside write transaction    
    public void unreserveEntry(Long folderId, Long entryId)
 	throws AccessControlException, ReservedByAnotherUserException {
-        Folder folder = loadFolder(folderId);
-        FolderCoreProcessor processor=loadProcessor(folder);
-        FolderEntry entry = (FolderEntry)processor.getEntry(folder, entryId);
+	   FolderEntry entry = loadEntry(folderId, entryId);   	
+ 
+	   // I will skip checking the user's access right for this operation.
+	   // If the user previously reserved the entry successfully, it is
+	   // inconceivable that the user no longer has the right to unreserve
+	   // the entry (although it is possible in theory...). If the user
+	   // hasn't been able to reserve it previously, unreserve won' work
+	   // anyway. So either way, we can skip the access checking. 
+	   //checkModifyEntryAllowed(entry);
 
-        // I will skip checking the user's access right for this operation.
-        // If the user previously reserved the entry successfully, it is
-        // inconceivable that the user no longer has the right to unreserve
-        // the entry (although it is possible in theory...). If the user
-        // hasn't been able to reserve it previously, unreserve won' work
-        // anyway. So either way, we can skip the access checking. 
-    	//checkModifyEntryAllowed(entry);
-
-        User user = RequestContextHolder.getRequestContext().getUser();
+	   User user = RequestContextHolder.getRequestContext().getUser();
     	
-    	HistoryStamp reservation = entry.getReservation();
-    	if(reservation == null) { 
+	   HistoryStamp reservation = entry.getReservation();
+	   if(reservation == null) { 
     		// The entry is not currently reserved by anyone. 
     		// Nothing to do. 
-    	}
-    	else {
+	   }
+	   else {
     		boolean isUserBinderAdministrator = false;
     		try {
     			checkAccess(entry, FolderOperation.overrideReserveEntry);
@@ -936,13 +928,14 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
     			// The entry is currently reserved by another user. 
     			throw new ReservedByAnotherUserException(entry);
     		}
-    	}
-    }
-    //this is for webdav - where the file names are unqiue within a library folder
-    public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String title)
+	   }
+   }
+   //this is for webdav - where the file names are unqiue within a library folder
+   public FolderEntry getLibraryFolderEntryByFileName(Folder fileFolder, String title)
 	throws AccessControlException {
        	try {
     		Long id = getCoreDao().findFileNameEntryId(fileFolder, title);
+    		//getEntry does read check
     		return getEntry(fileFolder.getId(), id);
     	} catch (NoObjectByTheIdException no) {
     		return null;

@@ -53,6 +53,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
+import com.sitescape.team.NoObjectByTheNameException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.LongIdComparator;
 import com.sitescape.team.dao.CoreDao;
@@ -75,6 +76,7 @@ import com.sitescape.team.domain.NoApplicationByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheIdException;
 import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoPrincipalByTheIdException;
+import com.sitescape.team.domain.NoPrincipalByTheNameException;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.NotifyStatus;
@@ -430,6 +432,44 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                     }
                 }
              );		
+ 	}
+
+ 	public Principal findPrincipalByName(final String name, final Long zoneId) 
+ 		throws NoPrincipalByTheNameException {
+        return (Principal)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                 	   //only returns active users
+                    	Principal p= (Principal)session.getNamedQuery("find-Principal-Company")
+                             		.setString(ParameterNames.USER_NAME, name.toLowerCase())
+                             		.setLong(ParameterNames.ZONE_ID, zoneId)
+                             		.setCacheable(true)
+                             		.uniqueResult();
+                        //query ensures user is not deleted and not disabled
+                 	   if (p == null) {
+                            throw new NoPrincipalByTheNameException(name); 
+                 	   }
+                 	   return resolveProxy(session, p);
+                    }
+                }
+             );		
+ 	}
+ 	private Principal resolveProxy(Session session, Principal proxy) {
+        Principal p = null;
+        try {
+       		p = (Principal)session.get(User.class, proxy.getId());
+            if (p != null) return  p;
+       } catch (Exception ex) {};  // proxies will force an exception, didn't expect with session.get?
+       try {
+    	   p = (Principal)session.get(Application.class, proxy.getId());
+           if (p != null) return  p;
+       } catch (Exception ex) {};
+       try {
+    	   p = (Principal)session.get(Group.class, proxy.getId());
+           if (p != null) return  p;
+       } catch (Exception ex) {};
+       
+       return (Principal)session.get(ApplicationGroup.class, proxy.getId());
  	}
 
     public ProfileBinder getProfileBinder(Long zoneId) {
@@ -1004,37 +1044,8 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
                     	Principal principal = (Principal)session.get(Principal.class, prinId);
                         if (principal == null) {throw new NoPrincipalByTheIdException(prinId);}
                         //Get the real object, not a proxy to abstract class
-                        
-                        /* alternate implementation...
-                        if(principal.getEntityType() == EntityIdentifier.EntityType.user)
-                        	principal = (Principal)session.get(User.class, prinId);
-                        else if(principal.getEntityType() == EntityIdentifier.EntityType.group)
-                        	principal = (Principal)session.get(Group.class, prinId);
-                        else if(principal.getEntityType() == EntityIdentifier.EntityType.application)
-                        	principal = (Principal)session.get(Application.class, prinId);
-                        else if(principal.getEntityType() == EntityIdentifier.EntityType.applicationGroup)
-                        	principal = (Principal)session.get(ApplicationGroup.class, prinId);
-                        else
-                        	throw new NoPrincipalByTheIdException(prinId);
-                        */
-                        
-                        try {
-                        	principal = (Principal)session.get(User.class, prinId);
-                        } catch (Exception ex) {};  // group proxies will force an exception, didn't expect with session.get? 
-                        if (principal==null) {
-                        	try {
-                        		principal = (Principal)session.get(Group.class, prinId);
-                        	} catch (Exception ex) {};
-                        }
-                        if (principal==null) {
-                        	try {
-                        		principal = (Principal)session.get(Application.class, prinId);
-                        	} catch (Exception ex) {};
-                        }
-                        if (principal==null) {
-                        	principal = (Principal)session.get(ApplicationGroup.class, prinId);
-                        }
-                        //make sure from correct zone
+                        principal = resolveProxy(session, principal);
+                         //make sure from correct zone
                         if (!principal.getZoneId().equals(zoneId) ||
                         		(checkActive && !principal.isActive())) {throw new NoPrincipalByTheIdException(prinId);}
                         return principal;
