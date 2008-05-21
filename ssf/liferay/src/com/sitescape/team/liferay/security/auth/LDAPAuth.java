@@ -270,6 +270,14 @@ public class LDAPAuth implements Authenticator {
 			String screenName, long userId, String password)
 		throws Exception {
 
+		// If the system is configured to deletate authentication to SSO middleware,
+		// the mere fact that we're here already means that the user is authenticated.
+		// Skip the password checking here, since it will be either unsuccessful
+		// (when we don't have access to real password) or will be redundant (when
+		// we do have access to real password).
+		if("true".equalsIgnoreCase(PropsUtil.get("ss.sso.novell.enabled")))
+			return true;
+		
 		boolean authenticated = false;
 
 		// Check passwords by either doing a comparison between the passwords or
