@@ -400,16 +400,21 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <ssf:ifaccessible>
 	<div class="ss_global_toolbar_accessible">
 		
-			<label for="ss_searchSearchText${renderResponse.namespace}"><span class="ss_global_toolbar_label_text_quickSearch"><ssf:nlt tag="navigation.search"/></span></label>
-			  <span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
-			  href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+			<label for="ss_searchSearchText${renderResponse.namespace}">
+				<span class="ss_global_toolbar_label_text_quickSearch">
+				<ssf:nlt tag="navigation.search"/></span>
+			</label>
+			  <span class="ss_global_toolbar_quick_advanced">
+			    <a class="ss_advanced ss_fineprint" 
+			  	href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 			  	name="binderId" value="${ssBinder.id}"/><ssf:param 
 			  	name="tabTitle" value="SEARCH FORM"/><ssf:param 
 			  	name="newTab" value="0"/></ssf:url>"
-				><ssf:nlt tag="navigation.search.advanced"/></a></span>
-			  </div>
+				><ssf:nlt tag="navigation.search.advanced"/></a>
+			</span>
+	</div>
 	
-		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
+	<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
 		  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
                  <c:if test="<%= BrowserSniffer.is_ie(request) %>">
                    offsetX="159" 
@@ -431,12 +436,12 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					  <img src="<html:imagesPath/>pics/1pix.gif" 
 					  title="<ssf:nlt tag="alt.search"/>"
 					  <ssf:alt tag="alt.search"/> /> 
-					  </a>
+					</a>
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
 			</form>
-     	</div>
+     </div>
      	
 
 </ssf:ifaccessible>
@@ -475,16 +480,20 @@ ss_statusCurrent = "${ssUser.status}";
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
 <div style="white-space:nowrap" >
-<label for="ss_statusBoxText${renderResponse.namespace}"><span class="ss_statusprint"><ssf:nlt tag="relevance.userStatus"/></span></label>
-<input type="text" id="ss_statusBoxText${renderResponse.namespace}"
-  size="50" 
-  style="font-size:9px; background-color:#cccccc;" 
-  value="${ssUser.status}"
-  />
-  <input type="submit" style="font-size:9px;"
-  onClick="ss_updateStatusNowAccessible('ss_statusBoxText${renderResponse.namespace}');return false;" 
-  value="<ssf:nlt tag="button.ok"/>"
-  /></div>
+  	<label for="ss_statusBoxText${renderResponse.namespace}">
+  		<span class="ss_statusprint">
+  		<ssf:nlt tag="relevance.userStatus"/></span>
+  	</label>
+	<input type="text" id="ss_statusBoxText${renderResponse.namespace}"
+  		size="50" 
+  		style="font-size:9px; background-color:#cccccc;" 
+  		value="${ssUser.status}"
+  	/>
+  	<input type="submit" style="font-size:9px;"
+  		onClick="ss_updateStatusNowAccessible('ss_statusBoxText${renderResponse.namespace}');return false;" 
+  		value="<ssf:nlt tag="button.ok"/>"
+  	/>
+</div>
 </ssf:ifaccessible>
 </li>
 
