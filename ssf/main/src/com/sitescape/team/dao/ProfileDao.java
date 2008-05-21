@@ -50,6 +50,7 @@ import com.sitescape.team.domain.NoGroupByTheNameException;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
+import com.sitescape.team.domain.NoPrincipalByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Rating;
@@ -111,6 +112,8 @@ public interface ProfileDao {
  	public User findUserByName(String principalName, Long zoneId) 
 		throws NoUserByTheNameException;
 
+ 	public Principal findPrincipalByName(String name, Long zoneId) 
+ 		throws NoPrincipalByTheNameException;
  	public Set<Long> getAllGroupMembership(Long principalId, Long zoneId);
  	public List<Long> getMembership(Long groupId, Long zoneId);
 	public Set<Long> getPrincipalIds(Principal principal);

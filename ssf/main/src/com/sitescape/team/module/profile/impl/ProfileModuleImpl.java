@@ -219,7 +219,7 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 		}
 
 	}
-    private ProfileCoreProcessor loadProcessor(ProfileBinder binder) {
+    private ProfileCoreProcessor loadProcessor(Binder binder) {
         // This is nothing but a dispatcher to an appropriate processor. 
         // Shared logic, if exists, must be put into the corresponding method in 
         // com.sitescape.team.module.folder.AbstractfolderCoreProcessor class, not 
@@ -286,17 +286,13 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
 	//RO transaction
 	public Principal getEntry(Long binderId, Long principalId) {
-        ProfileBinder binder = loadBinder(binderId);
-        Principal p = (Principal)loadProcessor(binder).getEntry(binder, principalId);        
+        Principal p = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);              
     	checkReadAccess(p);			
         return p;
     }
     public Long getEntryWorkspaceId(Long binderId, Long principalId) {
-        Long workspaceId = null;
-        ProfileBinder binder = loadBinder(binderId);
-        Principal p = (Principal)loadProcessor(binder).getEntry(binder, principalId);
-        if (p != null) workspaceId = p.getWorkspaceId();
-        return workspaceId;
+        Principal p = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), false);              
+        return  p.getWorkspaceId();
     }
 
     //RW transaction
@@ -462,27 +458,27 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
    public void modifyEntry(Long binderId, Long entryId, InputDataAccessor inputData, 
 		   Map fileItems, Collection<String> deleteAttachments, Map<FileAttachment,String> fileRenamesTo, Map options) 
    		throws AccessControlException, WriteFilesException {
-        ProfileBinder binder = loadBinder(binderId);
-        ProfileCoreProcessor processor=loadProcessor(binder);
-        Principal entry = (Principal)processor.getEntry(binder, entryId);
-        //user can set their own display style and theme
-        int noCheckCount = 0;
-        if (inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) ++noCheckCount;
-        if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_THEME)) ++noCheckCount;
+	   Principal entry = getProfileDao().loadPrincipal(entryId, RequestContextHolder.getRequestContext().getZoneId(), false);              
+       Binder binder = entry.getParentBinder();
+       ProfileCoreProcessor processor=loadProcessor(binder);
+       //user can set their own display style and theme
+       int noCheckCount = 0;
+       if (inputData.exists(ObjectKeys.FIELD_USER_DISPLAYSTYLE)) ++noCheckCount;
+       if (inputData.exists(ObjectKeys.FIELD_PRINCIPAL_THEME)) ++noCheckCount;
    	        
-        if (!RequestContextHolder.getRequestContext().getUserId().equals(entryId) ||
-        		(inputData.getCount() > noCheckCount)) {
-        	checkAccess(entry, ProfileOperation.modifyEntry);
-        }
-       	List atts = new ArrayList();
-    	if (deleteAttachments != null) {
-    		for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
-    			String id = (String)iter.next();
-    			Attachment a = entry.getAttachment(id);
-    			if (a != null) atts.add(a);
-    		}
-    	}
-    	processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo, options);
+       if (!RequestContextHolder.getRequestContext().getUserId().equals(entryId) ||
+    		   (inputData.getCount() > noCheckCount)) {
+    	   checkAccess(entry, ProfileOperation.modifyEntry);
+       }
+       List atts = new ArrayList();
+       if (deleteAttachments != null) {
+    	   for (Iterator iter=deleteAttachments.iterator(); iter.hasNext();) {
+    		   String id = (String)iter.next();
+    		   Attachment a = entry.getAttachment(id);
+    		   if (a != null) atts.add(a);
+    	   }
+       }
+       processor.modifyEntry(binder, entry, inputData, fileItems, atts, fileRenamesTo, options);
       }
 
    //NO transaction
@@ -727,12 +723,12 @@ public class ProfileModuleImpl extends CommonDependencyInjection implements Prof
 
     //RW transaction
     public void deleteEntry(Long binderId, Long principalId, Map options) {
-        ProfileBinder binder = loadBinder(binderId);
-        ProfileCoreProcessor processor=loadProcessor(binder);
-        Principal entry = (Principal)processor.getEntry(binder, principalId);
+        Principal entry = getProfileDao().loadPrincipal(principalId, RequestContextHolder.getRequestContext().getZoneId(), true);
         checkAccess(entry, ProfileOperation.deleteEntry);
        	if (entry.isReserved()) 
     		throw new NotSupportedException("errorcode.principal.reserved", new Object[]{entry.getName()});       	
+        Binder binder = entry.getParentBinder();
+        ProfileCoreProcessor processor=loadProcessor(binder);
        	processor.deleteEntry(binder, entry, true, options); 
        	boolean delWs = Boolean.FALSE;
        	if (options != null) delWs = (Boolean)options.get(ObjectKeys.INPUT_OPTION_DELETE_USER_WORKSPACE);

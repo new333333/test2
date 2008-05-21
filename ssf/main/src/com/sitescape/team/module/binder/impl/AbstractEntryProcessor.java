@@ -1103,23 +1103,6 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
    		searchFilter.addEntryTypes(entryTypes);
     }
 
-    //***********************************************************************************************************
-    public Entry getEntry(Binder parentBinder, Long entryId) {
-    	//get the entry
-    	Entry entry = entry_load(parentBinder, entryId);
-        //Initialize users
-    	getProfileDao().loadUserPrincipals(getPrincipalIds(entry), RequestContextHolder.getRequestContext().getZoneId(), false);
-        return entry;
-    }
-          
-    
-    //***********************************************************************************************************
-    /*
-     * Load all principals assocated with an entry.  
-     * This is a performance optimization for display.
-     */
-    protected abstract Entry entry_load(Binder parentBinder, Long entryId);
-            
 
     public void indexEntry(Entry entry) {
     	indexEntry(entry.getParentBinder(), entry, null, null, false, null);
