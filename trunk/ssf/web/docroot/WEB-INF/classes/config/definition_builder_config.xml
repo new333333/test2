@@ -653,6 +653,7 @@
 		<options optionCaption="__standard_entry_options">
 			<option name="title" initial="true" />
 			<option name="description" initial="true" />
+			<option name="workspaceBranding" initial="true" />
 			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
@@ -1311,7 +1312,7 @@
 			<option name="title" initial="true" definitionType="8"/>
 			<option name="description" initial="true" />
 			<option name="workspaceRemoteApp" />
-			<option name="binderBranding" initial="true" />
+			<option name="workspaceBranding" initial="true" />
 			<option name="workspaceIcon" initial="true" />
 			<option name="htmlEditorTextarea" />
 			<option name="graphic" />
