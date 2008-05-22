@@ -40,8 +40,8 @@ import org.quartz.JobExecutionException;
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SimpleTrigger;
-import org.quartz.Trigger;
 
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.WorkflowSupport;
@@ -97,7 +97,7 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
        				return;
        			} 
        			//change time
-				trigger.setRepeatInterval(trigger.getRepeatInterval()*1000);
+				trigger.setRepeatInterval(status.getRetrySeconds()*1000);
 				context.getScheduler().rescheduleJob(context.getJobDetail().getName(), context.getJobDetail().getGroup(), trigger);
        		}
        	} catch (ClassNotFoundException e) {
@@ -140,7 +140,8 @@ public class DefaultWorkflowProcess extends SSStatefulJob implements WorkflowPro
 						Class.forName(this.getClass().getName()),false, false, false);
 			jobDetail.setDescription(WORKFLOW_PROCESS_DESCRIPTION);
 			JobDataMap data = new JobDataMap();
-			data.put("zoneId",wfState.getZoneId());
+			data.put(ZONEID,wfState.getZoneId());
+			data.put(USERID,RequestContextHolder.getRequestContext().getUserId());
 			data.put("entityId", wfState.getOwner().getEntity().getEntityIdentifier().getEntityId());
 			data.put("entityType", wfState.getOwner().getEntity().getEntityIdentifier().getEntityType());
 			data.put("stateId", wfState.getId());
