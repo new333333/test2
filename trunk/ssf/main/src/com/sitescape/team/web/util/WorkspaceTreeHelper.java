@@ -345,10 +345,11 @@ public class WorkspaceTreeHelper {
 		for (Map binder:binders) {
 			String binderIdString = (String) binder.get(DOCID_FIELD);
 			String binderEntityType = (String) binder.get(ENTITY_FIELD);
-			if (binderIdString != null && binderEntityType != null && 
-					(binderEntityType.equals(EntityIdentifier.EntityType.workspace.name()) ||
-					 binderEntityType.equals(EntityIdentifier.EntityType.profiles.name()))) {
-				binderIdList.add(binderIdString);
+			if (binderIdString != null) {
+				if (binderEntityType != null && (binderEntityType.equals(EntityIdentifier.EntityType.workspace.name()) ||
+						binderEntityType.equals(EntityIdentifier.EntityType.profiles.name()))) {
+					binderIdList.add(binderIdString);
+				}
 				unseenCounts.put(binderIdString, new WorkspaceTreeHelper.Counter());
 			}
 		}

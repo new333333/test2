@@ -832,6 +832,21 @@ function ss_trackedPeopleDelete(obj, id) {
 	trObj.parentNode.removeChild(trObj)
 }
 
+function ss_showHideRelevanceCanvas(namespace) {
+	var divObj = self.document.getElementById('relevanceCanvas_'+namespace)
+	var showBtn = self.document.getElementById('ss_relevanceShowButton'+namespace)
+	var hideBtn = self.document.getElementById('ss_relevanceHideButton'+namespace)
+	if (typeof divObj.style.display != 'undefined' && divObj.style.display == 'none') {
+		ss_showDiv('relevanceCanvas_'+namespace)
+		showBtn.style.display = 'none';
+		hideBtn.style.display = 'block';
+	} else {
+		ss_hideDivNone('relevanceCanvas_'+namespace)
+		showBtn.style.display = 'block';
+		hideBtn.style.display = 'none';
+	}
+}
+
 function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 	//Clear "current" tab
 	var currentTab = null;
@@ -863,6 +878,11 @@ function ss_showRelevanceTab(s, namespace) {
 	canvasObj.innerHTML = s;
 	canvasObj.style.display = 'block'
 	canvasObj.style.visibility = 'visible'
+	//Make sure the hide button is visible
+	var showBtn = self.document.getElementById('ss_relevanceShowButton'+namespace)
+	var hideBtn = self.document.getElementById('ss_relevanceHideButton'+namespace)
+	showBtn.style.display = 'none';
+	hideBtn.style.display = 'block';
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
 }
