@@ -33,7 +33,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 <c:set var="ss_urlWindowState" value="maximized"/>
-<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
   <c:set var="ss_urlWindowState" value=""/>
 </c:if>
 <!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script> -->
@@ -103,6 +103,11 @@ function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
 		eval("var resizeRoutineExists = typeof(self.parent."+resizeRoutineName+")");
 		if (resizeRoutineExists != "undefined") {
 			eval("self.parent."+resizeRoutineName+"()");
+		} else {
+			//See if there is a common routine to call in case the namespaces don't match
+			if (typeof self.parent.ss_setWorkareaIframeSize != "undefined") {
+				self.parent.ss_setWorkareaIframeSize();
+			}
 		}
 	}
 }

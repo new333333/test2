@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <c:set var="showFolderPage" value="true"/>
-<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
   <ssf:ifnotadapter>
     <c:set var="showFolderPage" value="false"/>
   </ssf:ifnotadapter>
@@ -49,7 +49,7 @@
 
 </c:if>
 <c:if test="${empty ssReloadUrl}">
-<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
   <%@ include file="/WEB-INF/jsp/entry/view_workarea_common.jsp" %>
 </c:if>
 <c:if test="${showFolderPage}">

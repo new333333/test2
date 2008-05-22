@@ -103,11 +103,15 @@ function ss_setWorkareaIframeSize${renderResponse.namespace}() {
 	var iframeDiv = document.getElementById('ss_workareaIframe${renderResponse.namespace}')
 	if (window.frames['ss_workareaIframe${renderResponse.namespace}'] != null) {
 		eval("var iframeHeight = parseInt(window.ss_workareaIframe${renderResponse.namespace}" + ".document.body.scrollHeight);")
-		if (iframeHeight > 0) {
+		if (iframeHeight > 100) {
 			iframeDiv.style.height = iframeHeight + ss_workareaIframeOffset + "px"
 		}
 	}
 }
+//If this is the first definition of ss_setWorkareaIframeSize, remember its name in case we need to find it later
+if (typeof ss_setWorkareaIframeSize == "undefined") 
+	var ss_setWorkareaIframeSize = ss_setWorkareaIframeSize${renderResponse.namespace};
+
 var ss_portal_view_normal_url${renderResponse.namespace} = "<ssf:url windowState="normal"/>";
 var ss_portal_view_maximized_url${renderResponse.namespace} = "<ssf:url windowState="maximized"/>";
 var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
