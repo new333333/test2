@@ -54,7 +54,7 @@ the license information.
 	Novell Teaming.
  2	After Novell Teaming is installed and running, copy 
 	all your license key files to the following directory:
-	../icecore/liferay-portal-tomcat-5.5-jdk5-4.3.0/webapps/
+	/opt/icecore/liferay-portal-tomcat-5.5-jdk5-4.3.0/webapps/
 	ssf/WEB-INF/license
  3	Log in to Novell Teaming as the Teaming Site Manager. 
  4	In the Teaming Administration portlet, click Manage License.
@@ -88,18 +88,28 @@ After installing Support Pack 3:
 On an upgrade, the installer now creates a backup directory called 
 icecore-backup in the install directory that contains copies of a 
 large number of configuration files. With additional upgrades, previous 
-icecore-backup folders are renamed with date and time appended: 
+icecore-backup folders are renamed with the date and time appended: 
 icecore-backup-20080516-1218
-The icecore-backup directory with no date appended is always the 
-most recent backup. The reason for creating the icecore-backup 
-directory is to preserve any manual changes customers may have 
-made to configuration files (such as Tomcat, or Liferay files).  
-The upgrade process has to copy in new versions of many files, 
-and there is no reliable way to automatically merge the Teaming 
-software changes with any changes the customer has made.  If the 
-customer has made changes, they can copy their from the backup 
-files in the icecore-backup directory into the new files that 
-Teaming installs as part of the upgrade.
+
+The icecore-backup directory with no date appended is always the most 
+recent backup. The reason for creating the icecore-backup directory 
+is to preserve any manual changes you might have made to configuration 
+files (such as the server.xml,  cluster config files, etc.). The 
+upgrade process needs to overwrite these files, because some Teaming 
+Service Packs ship with updated versions of the server.xml (or similar 
+files) to enable bug fixes, etc. Because there is no reliable way to 
+automatically merge the Teaming software changes with any manual 
+changes you have made, you need to manually re-apply the changes 
+once the upgrade is finished by copying your changes from the backup 
+files in the icecore-backup directory into the new files that Teaming 
+installs as part of the upgrade.
+
+If all of the custom changes (such as changing port number, adding 
+iChain proxy address, etc.) were previously made through the installer 
+(or installer.xml file) without subsequent manual tweaking of any 
+other configuration files, then the upgrade should preserve all 
+the settings as long as you answer the installer questions and provide 
+exactly the same configuration settings as before. 
 
 
 3  Teaming Known Issues for Support Pack 3
@@ -457,8 +467,8 @@ express written consent of the publisher.
 Novell, Inc. has intellectual property rights relating to 
 technology embodied in the product that is described in this 
 document. In particular, and without limitation, these 
-intellectual property rights may include one or more of the U.S. 
-patents listed on the Novell Legal Patents Web page 
+intellectual property rights may include one or more of the 
+U.S. patents listed on the Novell Legal Patents Web page 
 (http://www.novell.com/company/legal/patents/) and one or more 
 additional patents or pending patent applications in the U.S. 
 and in other countries.
