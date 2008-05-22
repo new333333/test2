@@ -80,13 +80,7 @@ function ${wsTreeName}_showId(forum, obj, action) {
 </c:if>
 <span class="ss_bold"><ssf:nlt tag="${ssBinder.title}" checkIfTag="true"/></span>
 <br/>
-<form class="ss_style ss_form" method="post" 
-action ="<ssf:url action="modify_binder" actionUrl="true" adapter="true" portletName="ss_forum"><ssf:param 
-		  name="action" value="modify_binder"/><ssf:param 
-		  name="operation" value="${ssOperation}"/><ssf:param 
-		  name="binderId" value="${ssBinder.id}"/><ssf:param  
-		  name="binderType" value="${ssBinder.entityType}"/><ssf:param 
-		  name="${renderResponse.namespace}_fm"/></ssf:url>"> 
+<form class="ss_style ss_form" method="post" > 
 		
 <br/>
 

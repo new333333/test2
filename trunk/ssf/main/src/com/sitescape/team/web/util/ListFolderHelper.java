@@ -1258,7 +1258,7 @@ public class ListFolderHelper {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
-			url = response.createRenderURL();
+			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
@@ -1272,7 +1272,7 @@ public class ListFolderHelper {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
-			url = response.createRenderURL();
+			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
