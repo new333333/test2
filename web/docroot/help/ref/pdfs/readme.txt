@@ -83,6 +83,24 @@ After installing Support Pack 3:
 	is not busy. The reindexing process might prevent users
 	from accessing workspaces and folders on the site.
 
+2.4 Upgrading Backup Directory
+
+On an upgrade, the installer now creates a backup directory called 
+icecore-backup in the install directory that contains copies of a 
+large number of configuration files. With additional upgrades, previous 
+icecore-backup folders are renamed with date and time appended: 
+icecore-backup-20080516-1218
+The icecore-backup directory with no date appended is always the 
+most recent backup. The reason for creating the icecore-backup 
+directory is to preserve any manual changes customers may have 
+made to configuration files (such as Tomcat, or Liferay files).  
+The upgrade process has to copy in new versions of many files, 
+and there is no reliable way to automatically merge the Teaming 
+software changes with any changes the customer has made.  If the 
+customer has made changes, they can copy their from the backup 
+files in the icecore-backup directory into the new files that 
+Teaming installs as part of the upgrade.
+
 
 3  Teaming Known Issues for Support Pack 3
 
@@ -150,8 +168,9 @@ Office 2007, and Vista, complete Step 1 through Step 3 in any order:
 		Properties.
 	3d	Click the Compatibility tab.
 	3e	Select Run this program in compatibility mode for, 
-		then select Windows XP (Service Pack 2) from 		the pull-down list.
-	3f	 Reboot the computer.
+		then select Windows XP (Service Pack 2) from 		
+		the pull-down list.
+	3f	Reboot the computer.
 
 	You should now be able to use Edit-in-Place for 
 	MS Office files.
@@ -386,7 +405,8 @@ Novell Teaming 1.0:
    - To access the Teaming guides from within Novell Teaming, 
      click the Getting Started link on the Teaming Home page.
    - Online product documentation: Novell Teaming 1.0 
-     Documentation Web site       (http://www.novell.com/documentation/team_plus_conf)
+     Documentation Web site       
+     (http://www.novell.com/documentation/team_plus_conf)
 
 
 6  Documentation Conventions
@@ -416,11 +436,14 @@ Further, Novell, Inc. reserves the right to make changes to
 any and all parts of Novell software, at any time, without 
 any obligation to notify any person or entity of such changes.
 Any products or technical information provided under this 
-Agreement may be subject to U.S. export controls and the trade laws of other countries. You agree to comply with all 
-export control regulations and to obtain any required licenses or classification to export, re-export, or import 
+Agreement may be subject to U.S. export controls and the trade 
+laws of other countries. You agree to comply with all 
+export control regulations and to obtain any required licenses 
+or classification to export, re-export, or import 
 deliverables. You agree not to export or re-export to 
 entities on the current U.S. export exclusion lists or to 
-any embargoed or terrorist countries as specified in the U.S. export laws. You agree to not use deliverables for 
+any embargoed or terrorist countries as specified in the U.S. 
+export laws. You agree to not use deliverables for 
 prohibited nuclear, missile, or chemical biological 
 weaponry end uses. Please refer to the Novell International 
 Trade Services Web page (http://www.novell.com/info/exports/) 
@@ -428,11 +451,14 @@ for more information on exporting Novell software.
 Novell assumes no responsibility for your failure to obtain 
 any necessary export approvals.
 Copyright © 2008 Novell, Inc. All rights reserved. 
-No part of this publication may be reproduced, photocopied, stored on a retrieval system, or transmitted without the 
+No part of this publication may be reproduced, photocopied, 
+stored on a retrieval system, or transmitted without the 
 express written consent of the publisher.
 Novell, Inc. has intellectual property rights relating to 
-technology embodied in the product that is described in this document. In particular, and without limitation, these 
-intellectual property rights may include one or more of the U.S. patents listed on the Novell Legal Patents Web page 
+technology embodied in the product that is described in this 
+document. In particular, and without limitation, these 
+intellectual property rights may include one or more of the U.S. 
+patents listed on the Novell Legal Patents Web page 
 (http://www.novell.com/company/legal/patents/) and one or more 
 additional patents or pending patent applications in the U.S. 
 and in other countries.
