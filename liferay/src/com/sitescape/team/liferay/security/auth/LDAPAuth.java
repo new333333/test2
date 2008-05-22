@@ -275,7 +275,7 @@ public class LDAPAuth implements Authenticator {
 		// Skip the password checking here, since it will be either unsuccessful
 		// (when we don't have access to real password) or will be redundant (when
 		// we do have access to real password).
-		if("true".equalsIgnoreCase(PropsUtil.get("ss.sso.novell.enabled")))
+		if("true".equalsIgnoreCase(PropsUtil.get("ss.sso.type1.enabled")))
 			return true;
 		
 		boolean authenticated = false;
