@@ -1,0 +1,142 @@
+/**
+ * Standard layout styles.
+ *
+ */
+
+/* Generic Rules */
+
+.invisible {
+ display:none;
+}
+
+.compact, .compact fieldset {
+ display:inline;
+}
+
+.clear {
+ clear:both;
+}
+
+.options li {
+ padding:0.25em;
+}
+
+/* Navigation */
+#nav .options li {
+ float:left;
+ margin-left:1em;
+}
+#nav .options li.first {
+ margin-left:0;
+}
+
+#nav ul, #nav li {
+ display:inline;
+}
+
+/* Inbox */
+#inbox {
+ padding:0.5em;
+}
+
+#inbox_search {
+ float:right;
+ padding-bottom:0.5em;
+}
+
+#inbox_new {
+ float:right;
+}
+
+#inbox_new a {
+ display:block;
+ padding:0 0.25em;
+}
+
+li.inbox_thread {
+ overflow:hidden;
+ white-space:nowrap;
+}
+.inbox_thread, .inbox_thread_view, .inbox_view_summary {
+ padding:0.25em;
+}
+li.inbox_thread .inbox_view {
+ overflow:auto;
+ white-space:normal;
+}
+.inbox_thread .inbox_participants, .inbox_thread .inbox_preview, .inbox_thread
+ .inbox_date {
+ float:left;
+ margin-left:1.49%;
+}
+.inbox_subject {
+ margin-left:0.25em;
+}
+#primary .inbox_participants {
+ margin-left:0;
+}
+.inbox_thread .inbox_participants, .inbox_thread .inbox_date {
+ width:24%;
+}
+.inbox_preview {
+ width:49%;
+}
+.inbox_thread .inbox_date {
+ display:block;
+ text-align:right;
+}
+
+.inbox_thread_view .inbox_subject {
+ text-align:center;
+}
+.inbox_thread_view .inbox_date  {
+ text-align:right;
+}
+.inbox_view .inbox_msg {
+ padding: 0 0.5em;
+}
+.inbox_view .inbox_msg p {
+ padding:1em;
+}
+/* YUI nested grid bugs */
+.inbox_thread_view .yui-gb .first {
+ width:32%;
+}
+.inbox_thread_view .yui-gb .yui-u {
+ float:left;
+}
+
+/* Controls */
+
+#ctrl_filters {
+ margin-bottom:0.25em;
+}
+
+#ctrl_filters ul, #ctrl_filters li, #ctrl_filters_add, #ctrl_filters_add fieldset {
+ display:inline;
+}
+#ctrl_filters li {
+ float:left;
+}
+
+#ctrl_contacts {
+ padding:0.5em;
+}
+#ctrl_contacts div {
+ display:inline;
+}
+
+#ctrl_contacts .ctrl_contact_info {
+ float:right;
+}
+
+.ctrl_contact_attrs, .ctrl_contact_attrs * {
+ display:inline;
+}
+.ctrl_contact_attrs dt {
+ display:none;
+}
+
+#ft {
+ text-align:center;
+}
