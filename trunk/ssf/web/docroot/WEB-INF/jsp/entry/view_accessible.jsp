@@ -42,14 +42,14 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
   style="display:block; margin:2px;">
-<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 	    <div class="ss_style_color">
 			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
-<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
+<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 </c:if>		
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

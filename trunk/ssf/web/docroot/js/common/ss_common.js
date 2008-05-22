@@ -3908,7 +3908,7 @@ function ssFavorites(namespace) {
 			t += '<li id ="ss_favorite_' + f.id + '">';
 			t += '<input type="checkbox" style="display: none;" />';
 			t += '<a href="javascript:;" ';
-			if (typeof ss_displayType != "undefined" && ss_displayType == "ss_workarea") {
+			if (1 == 1 || typeof ss_displayType != "undefined" && ss_displayType == "ss_workarea") {
 				t += 'onClick="ss_treeShowIdNoWS(';
 			} else {
 				t += 'onClick="ss_treeShowId(';
