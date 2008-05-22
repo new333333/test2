@@ -1383,7 +1383,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 				
 			} else throw se;
 		}
-		if (d != null || d.getZoneId().equals(zoneId)) return d;
+		if (d != null && d.getZoneId().equals(zoneId)) return d;
 		throw new NoObjectByTheIdException("errorcode.no.dashboard.by.the.id", id);
 	}
 	//At one point dom4j (1.5) objects where serialized,  don4j(1.6) does not recognize them
