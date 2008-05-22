@@ -4,13 +4,13 @@
 
  <target id="bbmqmww" pid="bbmqmww" name="Chapter" level="0" number="6"> <text>The Profile Designer</text> </target>
 
- <target id="bbmqu0h" pid="bbmqmww" name="Procedure" level="1" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
+ <target id="bf8uwsk" pid="bbmqmww" name="Procedure" level="1" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
 
- <target id="bbn46tl" pid="bbmqmww" name="Step" level="2" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
+ <target id="bf8uxam" pid="bbmqmww" name="Step" level="2" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
 
- <target id="bbmqu0i" pid="bbmqmww" name="Step" level="2" number="2"> <text>Click Profile designer.</text> </target>
+ <target id="bf8uwz9" pid="bbmqmww" name="Step" level="2" number="2"> <text>Click Profile designer.</text> </target>
 
- <target id="bbmr0d8" pid="bbmqmww" name="Step" level="2" number="3"> <text>Expand Profile view and click User.</text> </target>
+ <target id="bf8ux4v" pid="bbmqmww" name="Step" level="2" number="3"> <text>Expand Profile view and click User.</text> </target>
 
  <target id="bbmr192" pid="bbmqmww" name="Step" level="2" number="4"> <text>To edit the layout of the business card, expand Business card.</text> </target>
 

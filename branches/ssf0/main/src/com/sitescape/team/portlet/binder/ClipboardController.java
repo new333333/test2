@@ -1,6 +1,5 @@
 package com.sitescape.team.portlet.binder;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;

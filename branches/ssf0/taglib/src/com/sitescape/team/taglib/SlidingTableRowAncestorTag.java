@@ -33,6 +33,6 @@ import java.util.List;
  */
 public interface SlidingTableRowAncestorTag {
 
-	public void addRow(String id, List columns, Boolean headerRow);
+	public void addRow(String id, List columns, Boolean headerRow, String oddStyle, String evenStyle);
 
 }

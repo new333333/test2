@@ -39,8 +39,6 @@
 //  external_image_list_url: "/foxtrot/pics/mce_clipart.js", 
 
 
-	String formName = (String) request.getAttribute("formName");
-	String elementName = (String) request.getAttribute("property_name");
 	String caption = (String) request.getAttribute("property_caption");
 	String height = (String) request.getAttribute("property_height");
 	if (height == null || height.equals("")) {

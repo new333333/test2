@@ -2042,7 +2042,7 @@
    <String `Graphic Report for userguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `10/31/2007 4:03:36 PM'>
+   <String `5/16/2008 10:09:24 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2216,7 +2216,7 @@
   <ParaLine 
    <String `iconcontactlightpc.png'>
    <Char Tab> 
-   <String `3'>
+   <String `2'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2224,7 +2224,7 @@
   <ParaLine 
    <String `iconcontactrolodex.png'>
    <Char Tab> 
-   <String `1'>
+   <String `2'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3148,187 +3148,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `Unused Graphics in Book Directory'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0001.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0002.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0003.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0004.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0005.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0006.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0007.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0008.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0009.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0010.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0011.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0012.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0013.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0014.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0015.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0016.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0017.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0018.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0019.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0020.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0021.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0022.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clip0023.bmp'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `enable-ldap_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `enable-ssl_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `managecontacts_window.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `pidgin_selectzon_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `policymanager_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `preferences_contactdisplay_move2_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `window_meetingsetup_a.png'>
+   <String `No unreferenced graphics in the /graphics directory are referenced by the book.'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3406,7 +3226,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 58%, Indent: Current Indent'>
+   <String `Width: 45%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3445,7 +3265,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 67%, Indent: Current Indent'>
+   <String `Width: 51%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3509,7 +3329,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1112929'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1288635'>
     <MCurrPage `1'>
    > # end of Marker
    <String `advancedmeetingoptions_a.png'>
@@ -3523,7 +3343,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 88%, Indent: Current Indent'>
+   <String `Width: 88%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Advanced Options Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3647,7 +3473,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1116373'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1306064'>
     <MCurrPage `1'>
    > # end of Marker
    <String `chatto_a.png'>
@@ -3661,7 +3487,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 46%, Indent: Current Indent'>
+   <String `Width: 46%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Chat to Drop-down List'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3908,7 +3740,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1123423'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1207956'>
     <MCurrPage `1'>
    > # end of Marker
    <String `datasharepreferencetab_a.png'>
@@ -3922,7 +3754,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 61%, Indent: Current Indent'>
+   <String `Width: 61%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Data Share Preferences Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -3986,7 +3824,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1112669'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1287974'>
     <MCurrPage `1'>
    > # end of Marker
    <String `generaltab_a.png'>
@@ -4000,7 +3838,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
+   <String `Width: 95%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: General Meeting Options Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4025,7 +3869,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1115727'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1292050'>
     <MCurrPage `1'>
    > # end of Marker
    <String `helpmenu_a.png'>
@@ -4039,7 +3883,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 18%, Indent: Current Indent'>
+   <String `Width: 18%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Help Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4130,33 +3980,6 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1078485'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `iconcontactlightpc.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringzon.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: , Indent: Inline'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
     <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1078527'>
     <MCurrPage `1'>
    > # end of Marker
@@ -4205,6 +4028,33 @@
   <PgfTag `ReportHead'>
   <ParaLine 
    <String `iconcontactrolodex.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1078485'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `iconcontactrolodex.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringzon.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: , Indent: Inline'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4810,7 +4660,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 18.98pt, Indent: Inline'>
+   <String `Width: 17.40pt, Indent: Inline'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4843,7 +4693,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 18.98pt, Indent: Inline'>
+   <String `Width: 17.40pt, Indent: Inline'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4876,7 +4726,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 18.98pt, Indent: Inline'>
+   <String `Width: 17.40pt, Indent: Inline'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4909,7 +4759,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 18.98pt, Indent: Inline'>
+   <String `Width: 17.40pt, Indent: Inline'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -4975,7 +4825,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 18.98pt, Indent: Inline'>
+   <String `Width: 17.40pt, Indent: Inline'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5111,7 +4961,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1108263'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1208045'>
     <MCurrPage `1'>
    > # end of Marker
    <String `language_a.png'>
@@ -5125,7 +4975,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 28%, Indent: Current Indent'>
+   <String `Width: 28%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Language Preferences Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5150,7 +5006,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1110130'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1208099'>
     <MCurrPage `1'>
    > # end of Marker
    <String `mainwindow_a.png'>
@@ -5164,7 +5020,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 66%, Indent: Current Indent'>
+   <String `Width: 66%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Meeting Main Window'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5236,7 +5098,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 77%, Indent: Current Indent'>
+   <String `Width: 58%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5339,7 +5201,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1112731'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1288453'>
     <MCurrPage `1'>
    > # end of Marker
    <String `meetinginfotab_a.png'>
@@ -5353,7 +5215,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 95%, Indent: Current Indent'>
+   <String `Width: 95%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Meeting Info Options Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5378,7 +5246,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1113684'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1289739'>
     <MCurrPage `1'>
    > # end of Marker
    <String `meetinginfowindow_a.png'>
@@ -5392,7 +5260,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 45%, Indent: Current Indent'>
+   <String `Width: 45%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Meeting Information Window'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5417,7 +5291,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1115443'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1290722'>
     <MCurrPage `1'>
    > # end of Marker
    <String `meetingmenu_a.png'>
@@ -5431,7 +5305,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 23%, Indent: Current Indent'>
+   <String `Width: 23%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Meeting Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5456,7 +5336,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1114876'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1290688'>
     <MCurrPage `1'>
    > # end of Marker
    <String `meetingmenus_a.png'>
@@ -5470,7 +5350,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 47%, Indent: Current Indent'>
+   <String `Width: 55%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Meeting Window Menus'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5495,7 +5381,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1114823'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1290410'>
     <MCurrPage `1'>
    > # end of Marker
    <String `meetingparticipant_a.png'>
@@ -5509,7 +5395,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 68%, Indent: Current Indent'>
+   <String `Width: 68%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Meeting Participant'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5534,7 +5426,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\01_settingupzon.fm|1076409'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\01_settingupzon.fm|1166418'>
     <MCurrPage `1'>
    > # end of Marker
    <String `meetings_exit_a.png'>
@@ -5548,7 +5440,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 32%, Indent: Current Indent'>
+   <String `Width: 32%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Meetings Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5612,7 +5510,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1116449'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1306285'>
     <MCurrPage `1'>
    > # end of Marker
    <String `meetingsummary_a.png'>
@@ -5626,7 +5524,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 71%, Indent: Current Indent'>
+   <String `Width: 71%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Meeting Summary Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5723,7 +5627,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1115481'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1291195'>
     <MCurrPage `1'>
    > # end of Marker
    <String `myphonemenu_a.png'>
@@ -5737,7 +5641,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 15%, Indent: Current Indent'>
+   <String `Width: 15%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: My Phone Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5918,7 +5828,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1115551'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1291374'>
     <MCurrPage `1'>
    > # end of Marker
    <String `participantsmenu_a.png'>
@@ -5932,7 +5842,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 31%, Indent: Current Indent'>
+   <String `Width: 31%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Participants Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5957,7 +5873,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1114555'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1290287'>
     <MCurrPage `1'>
    > # end of Marker
    <String `pcphonepane_a.png'>
@@ -5971,7 +5887,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
+   <String `Width: 55%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: PC Phone Pane'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5990,7 +5912,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1123727'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1207979'>
     <MCurrPage `1'>
    > # end of Marker
    <String `pcphonepreferencetab_a.png'>
@@ -6004,7 +5926,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 67%, Indent: Current Indent'>
+   <String `Width: 67%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: PC Phone Preferences Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6068,7 +5996,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\01_settingupzon.fm|1079341'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\01_settingupzon.fm|1170350'>
     <MCurrPage `1'>
    > # end of Marker
    <String `pidgin_accountoptions_a.png'>
@@ -6082,7 +6010,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 65%, Indent: Current Indent'>
+   <String `Width: 65%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Accounts Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6263,7 +6197,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\04_administrationpolicies.fm|1040993'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\04_administrationpolicies.fm|1059566'>
     <MCurrPage `1'>
    > # end of Marker
    <String `policysettings_a.png'>
@@ -6277,7 +6211,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 53%, Indent: Current Indent'>
+   <String `Width: 53%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Policy Settings'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6341,7 +6281,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1103909'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1206781'>
     <MCurrPage `1'>
    > # end of Marker
    <String `preferences_contactdisplaytab_a.png'>
@@ -6355,7 +6295,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 91%, Indent: Current Indent'>
+   <String `Width: 91%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Contact Display Preferences Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6380,7 +6326,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1103717'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\02_configuringzon.fm|1206733'>
     <MCurrPage `1'>
    > # end of Marker
    <String `preferences_generaltab_a.png'>
@@ -6394,7 +6340,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 60%, Indent: Current Indent'>
+   <String `Width: 60%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: General Preferences Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6472,7 +6424,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 64%, Indent: Current Indent'>
+   <String `Width: 50%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6536,7 +6488,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1115787'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1292070'>
     <MCurrPage `1'>
    > # end of Marker
    <String `rightclickmenu_a.png'>
@@ -6550,7 +6502,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 38%, Indent: Current Indent'>
+   <String `Width: 34%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Participant Right-Click Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6692,7 +6650,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1116834'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1306819'>
     <MCurrPage `1'>
    > # end of Marker
    <String `sharemenu3_a.png'>
@@ -6706,7 +6664,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 22%, Indent: Current Indent'>
+   <String `Width: 22%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Sharing Menu &#62; Open Whiteboard'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6731,7 +6695,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1092793'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1306791'>
     <MCurrPage `1'>
    > # end of Marker
    <String `shareremotecontrol2_a.png'>
@@ -6745,7 +6709,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 27%, Indent: Current Indent'>
+   <String `Width: 27%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Conferencing Toolbar'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6803,7 +6773,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1093259'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1306841'>
     <MCurrPage `1'>
    > # end of Marker
    <String `shareremotecontrol_a.png'>
@@ -6817,7 +6787,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 27%, Indent: Current Indent'>
+   <String `Width: 27%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Conferencing Toolbar'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6842,7 +6818,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1116749'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1306570'>
     <MCurrPage `1'>
    > # end of Marker
    <String `sharingmenu2_a.png'>
@@ -6856,7 +6832,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 22%, Indent: Current Indent'>
+   <String `Width: 22%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Sharing Menu &#62; Share application'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6881,7 +6863,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1115676'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1291871'>
     <MCurrPage `1'>
    > # end of Marker
    <String `sharingmenu_a.png'>
@@ -6895,7 +6877,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 22%, Indent: Current Indent'>
+   <String `Width: 22%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Sharing Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6920,7 +6908,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\01_settingupzon.fm|1076355'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\01_settingupzon.fm|1166397'>
     <MCurrPage `1'>
    > # end of Marker
    <String `signoff_a.png'>
@@ -6934,7 +6922,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 21%, Indent: Current Indent'>
+   <String `Width: 21%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Options Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7037,7 +7031,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1116213'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1292253'>
     <MCurrPage `1'>
    > # end of Marker
    <String `startsubmeeting_a.png'>
@@ -7051,7 +7045,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 56%, Indent: Current Indent'>
+   <String `Width: 56%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Starting a Sub-Meeting Menu Item'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7076,7 +7076,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1115625'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1291700'>
     <MCurrPage `1'>
    > # end of Marker
    <String `sub-meetingsmenu_a.png'>
@@ -7090,7 +7090,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 38%, Indent: Current Indent'>
+   <String `Width: 38%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Sub-Meetings Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7129,7 +7135,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 67%, Indent: Current Indent'>
+   <String `Width: 66%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7193,7 +7199,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1113388'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1289712'>
     <MCurrPage `1'>
    > # end of Marker
    <String `viewmenuitem_a.png'>
@@ -7207,7 +7213,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 48%, Indent: Current Indent'>
+   <String `Width: 48%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Meeting Right-Click Menu'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8387,7 +8399,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1093307'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1306962'>
     <MCurrPage `1'>
    > # end of Marker
    <String `wbtoolbar.png'>
@@ -8401,7 +8413,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 74%, Indent: Current Indent'>
+   <String `Width: 74%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Toolbar Icons'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8426,7 +8444,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1094315'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1306981'>
     <MCurrPage `1'>
    > # end of Marker
    <String `wbtoolbar2.png'>
@@ -8440,7 +8458,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 74%, Indent: Current Indent'>
+   <String `Width: 74%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Toolbar Icons Document Options'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8465,7 +8489,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1095536'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1307008'>
     <MCurrPage `1'>
    > # end of Marker
    <String `wbtoolbar3.png'>
@@ -8479,7 +8503,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 74%, Indent: Current Indent'>
+   <String `Width: 74%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Toolbar Icons Page Options'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8504,7 +8534,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1097449'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1307091'>
     <MCurrPage `1'>
    > # end of Marker
    <String `wbtoolbar4.png'>
@@ -8518,7 +8548,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 74%, Indent: Current Indent'>
+   <String `Width: 74%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Toolbar Icons Editing Tools'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8543,7 +8579,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1101419'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\userguide\\03_workingwithmeetings.fm|1307328'>
     <MCurrPage `1'>
    > # end of Marker
    <String `wbtoolbar5.png'>
@@ -8557,7 +8593,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 74%, Indent: Current Indent'>
+   <String `Width: 74%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Toolbar Icons Graphic and Text Options'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8635,7 +8677,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 87%, Indent: Current Indent'>
+   <String `Width: 66%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 

@@ -54,7 +54,6 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.profile.ProfileModule;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.util.NLT;
@@ -62,6 +61,7 @@ import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
+import com.sitescape.util.search.Constants;
 
 public class SearchFilterToMapConverter {
 	
@@ -437,7 +437,7 @@ public class SearchFilterToMapConverter {
 	private Map createDateBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
-		if (EntityIndexUtils.CREATION_DATE_FIELD.equalsIgnoreCase(filterTerm.attributeValue(SearchFilterKeys.FilterElementName))) {
+		if (Constants.CREATION_DATE_FIELD.equalsIgnoreCase(filterTerm.attributeValue(SearchFilterKeys.FilterElementName))) {
 			block.put(SearchBlockType, SearchBlockTypeCreationDate);
 		} else {
 			block.put(SearchBlockType, SearchBlockTypeModificationDate);

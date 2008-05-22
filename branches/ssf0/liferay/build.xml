@@ -1,5 +1,4 @@
 <?xml version="1.0"?>
-
 <project name="liferay" basedir="." >
 	<!-- This setting will override the value in the properties file -->
 	<property name="portal.type" value="liferay"/>
@@ -127,6 +126,8 @@
 		<!-- ssr component is deployed into its own web app -->
 		<ant dir="${project.dir}/ssr" target="deploy" inheritAll="false" />
 		<antcall target="deploy-db-drivers" />
+		<!-- simnple-url component is deployed into its own web app -->
+		<ant dir="${project.dir}/simple-url" target="deploy" inheritAll="false" />
 	</target>
 	
 	<target name="deploy-db-drivers">		
@@ -219,6 +220,10 @@
 		<copy todir="${app.server.dir}" overwrite="true">
 			<fileset dir="resources/${liferay.version.jboss.tomcat}/jboss-tomcat" />
 		</copy>
+
+		<copy file="${project.dir}/lib/jtds.jar" todir="${app.server.server.dir}/lib" />
+		<copy file="${project.dir}/lib/mysql-connector.jar" todir="${app.server.server.dir}/lib" />
+		<copy file="${project.dir}/lib/ojdbc14.jar" todir="${app.server.server.dir}/lib" />
 
 		<!-- 1. JBoss 4.0.2+ classloader does not work properly if the application 
 		     comes with its own log4j archive. (You get the following error -

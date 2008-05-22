@@ -110,13 +110,13 @@ public class AddEntryServlet extends HttpServlet {
 		Document query = DocumentHelper.createDocument();
 		Element rootElement = query.addElement(Constants.AND_ELEMENT);
 		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.FAMILY_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.FAMILY_FIELD);
 		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(EntityIndexUtils.FAMILY_FIELD_TASK);
+		child.setText(Constants.FAMILY_FIELD_TASK);
 		field = rootElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
 		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
+		child.setText(Constants.ENTRY_TYPE_ENTRY);
 		String searchResultsAsXML = stub.search_search(accessToken, query.asXML(), 0, 10);
 		
 		Document doc = DocumentHelper.parseText(searchResultsAsXML);

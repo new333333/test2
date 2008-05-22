@@ -61,6 +61,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 	private String _parentId;
 	private String _folderId;
 	private String _height;
+	private String _style;
 	private String _type;
 	private String _jsp;
 	private String displayStyle;
@@ -84,6 +85,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 		if (_id == null || _id.equals("")) _id = "ss_sTable";
 		if (_parentId == null || _parentId.equals("")) _parentId = _id;
 		if (_height == null || _height.equals("0")) _height = this.defaultTableHeight;
+		if (_style == null) _style = "";
 
 		// Output the table
 		try {
@@ -96,10 +98,12 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				req.setAttribute("ss_slidingTableId", _id);
 				req.setAttribute("ss_slidingTableParentId", _parentId);
 				req.setAttribute("ss_slidingTableRows", _rows);
+				req.setAttribute("ss_slidingTableStyle", _style);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 				
-			} else if (_type == null || _type.equals("") || (displayStyle != null && 
+			} else if (_type == null || _type.equals("") || _type.equals("fixed") || 
+					(displayStyle != null && 
 					displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()))) {
 				String jspStart = "/WEB-INF/jsp/tag_jsps/sliding_table/table_start.jsp";
@@ -112,6 +116,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				StringServletResponse res = new StringServletResponse(httpRes);
 				req.setAttribute("ss_slidingTableId", _id);
 				req.setAttribute("ss_slidingTableParentId", _parentId);
+				req.setAttribute("ss_slidingTableStyle", _style);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 				
@@ -125,6 +130,8 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 					req = new DynamicServletRequest(httpReq);
 					res = new StringServletResponse(httpRes);
 					req.setAttribute("ss_slidingTableRowId", row.get("id"));
+					req.setAttribute("ss_slidingTableRowOddStyle", row.get("oddStyle"));
+					req.setAttribute("ss_slidingTableRowEvenStyle", row.get("evenStyle"));
 					req.setAttribute("ss_slidingTableHeaderRow", row.get("headerRow"));
 					req.setAttribute("ss_slidingTableRowColumns", row.get("columns"));
 					rd.include(req, res);
@@ -149,6 +156,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				req.setAttribute("ss_slidingTableParentId", _parentId);
 				req.setAttribute("ss_slidingTableRows", _rows);
 				req.setAttribute("ss_slidingTableFolderId", _folderId);
+				req.setAttribute("ss_slidingTableStyle", _style);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 				
@@ -164,6 +172,7 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				req.setAttribute("ss_slidingTableRows", _rows);
 				req.setAttribute("ss_slidingTableFolderId", _folderId);
 				req.setAttribute("ss_slidingTableScrollHeight", _height);
+				req.setAttribute("ss_slidingTableStyle", _style);
 				rd.include(req, res);
 				pageContext.getOut().print(res.getString());
 			}
@@ -178,14 +187,15 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 				_rows.clear();
 			}
 			_id = "";
-			_parentId = "";
+			_parentId = ""; 
 			_height = "";
+			_style = "";
 			_type = "";
 			_jsp = "";
 		}
 	}
 
-	public void addRow(String id, List columns, Boolean headerRow) {
+	public void addRow(String id, List columns, Boolean headerRow, String oddStyle, String evenStyle) {
 		if (_rows == null) {
 			_rows = new ArrayList();
 		}
@@ -194,6 +204,8 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 		Map row = new HashMap();
 		row.put("id", id);
 		row.put("headerRow", headerRow);
+		row.put("oddStyle", oddStyle);
+		row.put("evenStyle", evenStyle);
 		row.put("columns", columns);
 
 		_rows.add(row);
@@ -210,6 +222,9 @@ public class SlidingTableTag extends BodyTagSupport implements SlidingTableRowAn
 	}
 	public void setHeight(String height) {
 		_height = height;
+	}
+	public void setStyle(String style) {
+		_style = style;
 	}
 	public void setType(String type) {
 		_type = type;

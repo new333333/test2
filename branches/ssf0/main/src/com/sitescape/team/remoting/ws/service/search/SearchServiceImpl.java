@@ -51,7 +51,6 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.remoting.ws.BaseService;
 import com.sitescape.team.remoting.ws.model.TeamBrief;
 import com.sitescape.team.remoting.ws.model.TeamCollection;
@@ -59,6 +58,7 @@ import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 import com.sitescape.team.web.tree.WebSvcTreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
+import com.sitescape.util.search.Constants;
 
 public class SearchServiceImpl extends BaseService implements SearchService {
 
@@ -78,30 +78,30 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 		Iterator entryIterator = entrylist.listIterator();
 		while (entryIterator.hasNext()) {
 			Map result = (Map) entryIterator.next();
-			String docType = (String) result.get(BasicIndexUtils.DOC_TYPE_FIELD);
+			String docType = (String) result.get(Constants.DOC_TYPE_FIELD);
 			Element resultElem = null;
-			if(BasicIndexUtils.DOC_TYPE_ATTACHMENT.equals(docType)) {
+			if(Constants.DOC_TYPE_ATTACHMENT.equals(docType)) {
 				String attachmentType = "file";
 				resultElem = folderElement.addElement(attachmentType);
-			} else if(BasicIndexUtils.DOC_TYPE_BINDER.equals(docType)) {
-				String binderType = (String) result.get(EntityIndexUtils.ENTITY_FIELD);
+			} else if(Constants.DOC_TYPE_BINDER.equals(docType)) {
+				String binderType = (String) result.get(Constants.ENTITY_FIELD);
 				resultElem = folderElement.addElement(docType);
 				resultElem.addAttribute("type", binderType);
-				resultElem.addAttribute("id", (String) result.get(EntityIndexUtils.DOCID_FIELD));
-				resultElem.addAttribute("title", (String) result.get(EntityIndexUtils.TITLE_FIELD));
-			} else if(BasicIndexUtils.DOC_TYPE_ENTRY.equals(docType)) {
-				String entryType = (String) result.get(EntityIndexUtils.ENTRY_TYPE_FIELD);
+				resultElem.addAttribute("id", (String) result.get(Constants.DOCID_FIELD));
+				resultElem.addAttribute("title", (String) result.get(Constants.TITLE_FIELD));
+			} else if(Constants.DOC_TYPE_ENTRY.equals(docType)) {
+				String entryType = (String) result.get(Constants.ENTRY_TYPE_FIELD);
 				String elementName = null;
 				boolean isPrincipal = true;
-				if(EntityIndexUtils.ENTRY_TYPE_ENTRY.equalsIgnoreCase(entryType)) {
+				if(Constants.ENTRY_TYPE_ENTRY.equalsIgnoreCase(entryType)) {
 					elementName="entry";
 					isPrincipal = false;
-				} else if(EntityIndexUtils.ENTRY_TYPE_REPLY.equalsIgnoreCase(entryType)) {
+				} else if(Constants.ENTRY_TYPE_REPLY.equalsIgnoreCase(entryType)) {
 					elementName="entry";
 					isPrincipal = false;					
-				} else if(EntityIndexUtils.ENTRY_TYPE_USER.equalsIgnoreCase(entryType)) {
+				} else if(Constants.ENTRY_TYPE_USER.equalsIgnoreCase(entryType)) {
 					elementName="principal";
-				} else if(EntityIndexUtils.ENTRY_TYPE_GROUP.equalsIgnoreCase(entryType)) {
+				} else if(Constants.ENTRY_TYPE_GROUP.equalsIgnoreCase(entryType)) {
 					elementName="principal";
 				}
 				resultElem = folderElement.addElement(elementName);
@@ -151,8 +151,8 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 		teams.addAttribute("principalId", user.getId().toString());
 		for(Map binder : myTeams) {
 			Element team = teams.addElement("team");
-			team.addAttribute("title", (String) binder.get(EntityIndexUtils.TITLE_FIELD));
-			team.addAttribute("binderId", (String) binder.get(EntityIndexUtils.DOCID_FIELD));
+			team.addAttribute("title", (String) binder.get(Constants.TITLE_FIELD));
+			team.addAttribute("binderId", (String) binder.get(Constants.DOCID_FIELD));
 		}
 		return doc.getRootElement().asXML();
 	}
@@ -217,9 +217,9 @@ public class SearchServiceImpl extends BaseService implements SearchService {
 		
 		List<TeamBrief> teamList = new ArrayList<TeamBrief>();
 		for(Map binder : myTeams) {
-			String binderIdStr = (String) binder.get(EntityIndexUtils.DOCID_FIELD);
+			String binderIdStr = (String) binder.get(Constants.DOCID_FIELD);
 			Long binderId = (binderIdStr != null)? Long.valueOf(binderIdStr) : null;
-			teamList.add(new TeamBrief(binderId, (String) binder.get(EntityIndexUtils.TITLE_FIELD)));
+			teamList.add(new TeamBrief(binderId, (String) binder.get(Constants.TITLE_FIELD)));
 		}
 	
 		TeamBrief[] array = new TeamBrief[teamList.size()];

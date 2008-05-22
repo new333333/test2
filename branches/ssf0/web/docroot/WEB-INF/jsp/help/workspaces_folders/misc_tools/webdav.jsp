@@ -42,6 +42,8 @@
 
 <p><ssf:nlt tag="help.webDAV.login"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></p>
 
+<p><div class="note"><ssf:nlt tag="help.webDAV.login.note"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></div></p>
+
 </div>
 
 </div>

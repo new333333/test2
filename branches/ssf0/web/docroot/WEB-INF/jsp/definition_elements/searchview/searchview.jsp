@@ -44,7 +44,7 @@
 <div class="ss_clear"></div>
 </div>
 <%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
-<div class="ss_folder" id="ss_guestbook_folder_div">
+<div class="ss_folder">
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/searchview/searchview_folder_listing.jsp" %>
 </div>

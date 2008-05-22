@@ -121,7 +121,7 @@ import com.sitescape.util.search.Constants;
  */
 public abstract class AbstractBinderProcessor extends CommonDependencyInjection 
 	implements BinderProcessor {
-	private static  String[] docTypes = new String[] {BasicIndexUtils.DOC_TYPE_ENTRY,BasicIndexUtils.DOC_TYPE_ATTACHMENT};
+	private static  String[] docTypes = new String[] {Constants.DOC_TYPE_ENTRY,Constants.DOC_TYPE_ATTACHMENT};
     protected DefinitionModule definitionModule;
     protected static Map fieldsOnlyIndexArgs = new HashMap();
     static {
@@ -1060,7 +1060,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     //inside write transaction    
     protected void moveBinder_index(Binder binder, Map ctx) {
     	//delete tree first
-		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, binder.getId().toString()));
+		IndexSynchronizationManager.deleteDocuments(new Term(Constants.ENTRY_ANCESTRY, binder.getId().toString()));
 		getCoreDao().flush(); //get updates out for optimized indexTree
     	indexTree(binder, null);  //binder will be evicted on return
     }
@@ -1301,7 +1301,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	searchFilter.newCurrentFilterTermsBlock(true);
     	
 		searchFilter.addBinderParentId(binder.getId().toString());
-   		searchFilter.addDocumentType(BasicIndexUtils.DOC_TYPE_BINDER);
+   		searchFilter.addDocumentType(Constants.DOC_TYPE_BINDER);
     
     }    
     //***********************************************************************************************************
@@ -1319,7 +1319,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		List<Long>ids = pruneUpdateList(binder, notBinders);
     		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
-    			doFieldUpdate(binder, ids, BasicIndexUtils.FOLDER_ACL_FIELD, value);
+    			doFieldUpdate(binder, ids, Constants.FOLDER_ACL_FIELD, value);
     		} else {
     			//revert to walking the tree
     	    	List<Binder> binders = new ArrayList();
@@ -1333,7 +1333,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	    			candidates.addAll(c.getBinders());
     	    		}
     	    		if (binders.size() >= limit) {
-    	    			doFieldUpdate(binders, BasicIndexUtils.FOLDER_ACL_FIELD, value);
+    	    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value);
     	    			//evict used binders so don't fill session cache, but don't evict starting binder
     	    			if (binders.get(0).equals(binder)) binders.remove(0);
     	    			getCoreDao().evict(binders);					
@@ -1341,10 +1341,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	    		}
     	    	}
     	       	//finish list
-    			doFieldUpdate(binders, BasicIndexUtils.FOLDER_ACL_FIELD, value);    	    	
+    			doFieldUpdate(binders, Constants.FOLDER_ACL_FIELD, value);    	    	
     		}
     	} else {
-       		doFieldUpdate(binder, BasicIndexUtils.FOLDER_ACL_FIELD, value);
+       		doFieldUpdate(binder, Constants.FOLDER_ACL_FIELD, value);
        	    		
     	}
     	
@@ -1361,7 +1361,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        		List<Long>ids = pruneUpdateList(binder, notBinders);
        		int limit=SPropsUtil.getInt("lucene.max.booleans", 10000) - 10;  //account for others in search
     		if (ids.size() <= limit) {
-          		doFieldUpdate(binder, ids, BasicIndexUtils.TEAM_ACL_FIELD, value);
+          		doFieldUpdate(binder, ids, Constants.TEAM_ACL_FIELD, value);
        		} else {
        			List<Binder> binders = new ArrayList();
        			binders.add(binder);
@@ -1374,7 +1374,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         				candidates.addAll(c.getBinders());
            			} 
        	    		if (binders.size() >= limit) {
-       	    			doFieldUpdate(binders, BasicIndexUtils.TEAM_ACL_FIELD, value);
+       	    			doFieldUpdate(binders, Constants.TEAM_ACL_FIELD, value);
        	    			//evict used binders so don't fill session cache, but don't evict starting binder
        	    			if (binders.get(0).equals(binder)) binders.remove(0);
         				getCoreDao().evict(binders);					
@@ -1382,10 +1382,10 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         			}
         		}
         		//finish list
-        		doFieldUpdate(binders, BasicIndexUtils.TEAM_ACL_FIELD, value);
+        		doFieldUpdate(binders, Constants.TEAM_ACL_FIELD, value);
        		}
     	} else {
-    		doFieldUpdate(binder, BasicIndexUtils.TEAM_ACL_FIELD, value);    		
+    		doFieldUpdate(binder, Constants.TEAM_ACL_FIELD, value);    		
     	}
     	
    }
@@ -1416,9 +1416,9 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
    
      }
      public void indexOwner(Collection<Binder>binders, Long ownerId) {
-  		String value = BasicIndexUtils.EMPTY_ACL_FIELD;
+  		String value = Constants.EMPTY_ACL_FIELD;
  		if (ownerId != null) value = ownerId.toString();
- 		doFieldUpdate(binders, BasicIndexUtils.BINDER_OWNER_ACL_FIELD, value);    		
+ 		doFieldUpdate(binders, Constants.BINDER_OWNER_ACL_FIELD, value);    		
      }
      
      //this will update the binder, its attachments and entries, and subfolders and entries that inherit
@@ -1447,7 +1447,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 		Element ancestorElement = qTreeRootElement.addElement(Constants.AND_ELEMENT);
 	 
 		Element ancestors = ancestorElement.addElement(Constants.FIELD_ELEMENT);
-		ancestors.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
+		ancestors.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.ENTRY_ANCESTRY);
 		Element child = ancestors.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(binder.getId().toString());
 		if (!notBinders.isEmpty()) {	
@@ -1455,7 +1455,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			Element ancestorOrElement = notAncestors.addElement(Constants.OR_ELEMENT);
 			for (Long id:notBinders) {
 				Element fieldI = ancestorOrElement.addElement(Constants.FIELD_ELEMENT);
-				fieldI.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_ANCESTRY);
+				fieldI.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_ANCESTRY);
 				Element childI = fieldI.addElement(Constants.FIELD_TERMS_ELEMENT);
 				childI.setText(id.toString());
 			}
@@ -1490,7 +1490,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	// get all the entries, replies and their attachments using parentBinder
     	// _binderId 
    		Element field = qTreeOrElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDER_ID_FIELD);
 		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(binder.getId().toString());   	
  
@@ -1528,7 +1528,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	// _binderId and doctypes:{entry, attachment}
     	for (Binder b:binders) {
     		Element field = idsOrElement.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDER_ID_FIELD);
 			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 			child.setText(b.getId().toString());
 			binderIds.add(b.getId());
@@ -1537,7 +1537,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	Element typeOrElement = qTreeAndElement.addElement((Constants.OR_ELEMENT));
     	for (int i =0; i < docTypes.length; i++) {
     		Element field = typeOrElement.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
 			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 			child.setText(docTypes[i]);
     	}
@@ -1552,20 +1552,20 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      	// _docId= AND (_docType=binder OR _attType=binder)) 
      	Element andElement = parent.addElement((Constants.AND_ELEMENT));
      	Element field = andElement.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOCID_FIELD);
     	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(binder.getId().toString());
      	   	 
      	Element bOrElement = andElement.addElement((Constants.OR_ELEMENT));
      	field = bOrElement.addElement(Constants.FIELD_ELEMENT);
- 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+ 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
  		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
- 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+ 		child.setText(Constants.DOC_TYPE_BINDER);
 		
      	field = bOrElement.addElement(Constants.FIELD_ELEMENT);
- 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
+ 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ATTACHMENT_TYPE_FIELD);
  		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
- 		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
+ 		child.setText(Constants.ATTACHMENT_TYPE_BINDER);
  		
      }
   	     
@@ -1576,19 +1576,19 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      	   	 
      	Element typeOrElement = andElement.addElement((Constants.OR_ELEMENT));
      	Element field = typeOrElement.addElement(Constants.FIELD_ELEMENT);
- 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+ 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
  		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
- 		child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+ 		child.setText(Constants.DOC_TYPE_BINDER);
 		
      	field = typeOrElement.addElement(Constants.FIELD_ELEMENT);
- 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.ATTACHMENT_TYPE_FIELD);
+ 		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ATTACHMENT_TYPE_FIELD);
  		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
- 		child.setText(BasicIndexUtils.ATTACHMENT_TYPE_BINDER);
+ 		child.setText(Constants.ATTACHMENT_TYPE_BINDER);
  
  		Element binderOrElement = andElement.addElement((Constants.OR_ELEMENT));
 	   	for (Long id:binderIds) {
     		field = binderOrElement.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.DOCID_FIELD);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOCID_FIELD);
 			child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 			child.setText(id.toString());
     	}
@@ -1743,7 +1743,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
         EntityIndexUtils.addParentBinder(indexDoc, binder, fieldsOnly);
 
     	// Add search document type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_BINDER, fieldsOnly);
+        BasicIndexUtils.addDocType(indexDoc, Constants.DOC_TYPE_BINDER, fieldsOnly);
         //used to answer what teams am I a member of
        	if (!binder.isTeamMembershipInherited()) EntityIndexUtils.addTeamMembership(indexDoc, binder.getTeamMemberIds(), fieldsOnly);
 
@@ -1764,7 +1764,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
        	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
        	//do common part first.  Indexing a file will remove some of the items
        	fillInIndexDocWithCommonPartFromBinder(indexDoc, binder, true);
-        BasicIndexUtils.addAttachmentType(indexDoc, BasicIndexUtils.ATTACHMENT_TYPE_BINDER, true);
+        BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_BINDER, true);
 
   	  	buildIndexDocumentFromFile(indexDoc, binder, binder, fa, fui, tags);
        	return indexDoc;
@@ -1799,7 +1799,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
 			
     	
     	// Add document type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ATTACHMENT, true);
+        BasicIndexUtils.addDocType(indexDoc, Constants.DOC_TYPE_ATTACHMENT, true);
         
         // Add file info
         EntityIndexUtils.addFileAttachment(indexDoc, fa, true);
@@ -1925,7 +1925,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     }
     protected void removeFileFromIndex(FileAttachment fa) {
     	IndexSynchronizationManager.deleteDocuments(new Term(
-    			EntityIndexUtils.FILE_ID_FIELD, fa.getId()));  	
+    			Constants.FILE_ID_FIELD, fa.getId()));  	
     }
     protected boolean isMirroredAndNotTopLevel(Binder binder) {
     	// A mirrored binder's title represents a directory only if the binder
@@ -2062,7 +2062,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	return ids;
     }	     
 	protected String getEntryPrincipalField() {
-    	return EntityIndexUtils.CREATORID_FIELD;
+    	return Constants.CREATORID_FIELD;
     }
 	
 	protected void checkInputFileNames(List fileUploadItems, FilesErrors errors) {

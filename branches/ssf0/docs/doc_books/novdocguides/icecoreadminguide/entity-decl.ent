@@ -26,8 +26,8 @@
 
 <!-- please change product to anything that makes sense in your current release -->
 <!ENTITY company       "Novell">
-<!ENTITY product       "Novell Teaming">
-<!ENTITY productshort       "Teaming">
+<!ENTITY product       "ICEcore">
+<!ENTITY productshort       "ICEcore">
 <!ENTITY zon       "Conferencing">
 
 

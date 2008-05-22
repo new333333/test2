@@ -52,11 +52,9 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.module.profile.index.ProfileIndexUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.web.util.DateHelper;
+import com.sitescape.util.search.Constants;
 
 public class SearchFilter {
 	private static String [] sample = new String[0];
@@ -77,7 +75,7 @@ public class SearchFilter {
 	}	
 	protected static List binderType = new ArrayList(1);
 	static {
-		binderType.add(BasicIndexUtils.DOC_TYPE_BINDER);
+		binderType.add(Constants.DOC_TYPE_BINDER);
 	}
 	
 	public static class Creator {
@@ -280,15 +278,15 @@ public class SearchFilter {
 		
 	}
 	public void addTitleFilter(String searchTerm) {
-		addFieldFilter(EntityIndexUtils.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+		addFieldFilter(Constants.TITLE_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
 	public void addLoginNameFilter(String searchTerm) {
-		addFieldFilter(ProfileIndexUtils.LOGINNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+		addFieldFilter(Constants.LOGINNAME_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
 	public void addFamilyFilter(String searchTerm) {
-		addFieldFilter(EntityIndexUtils.FAMILY_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
+		addFieldFilter(Constants.FAMILY_FIELD, SearchFilterKeys.FilterTypeEntryDefinition, searchTerm);
 	}
 	
 	public void addAssignmentFilter(String searchTerm) {
@@ -554,13 +552,13 @@ public class SearchFilter {
 		if (searchText.length()>0) {
 			Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeElement);
-			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
+			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, Constants.EXTENDED_TITLE_FIELD);
 			Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 			filterTermValueEle.setText(searchText.replaceFirst("\\*", "").trim());
 			
 			filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeElement);
-			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.EXTENDED_TITLE_FIELD);
+			filterTerm.addAttribute(SearchFilterKeys.FilterElementName, Constants.EXTENDED_TITLE_FIELD);
 			filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 			filterTermValueEle.setText(searchText.trim());
 		}
@@ -645,7 +643,7 @@ public class SearchFilter {
 		} else {
 			filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeCreatorById);
 		}
-		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.CREATORID_FIELD);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, Constants.CREATORID_FIELD);
 		if (userTitle != null && !userTitle.equals("")) {
 			filterTerm.addAttribute(SearchFilterKeys.FilterCreatorTitle, userTitle);
 		}
@@ -730,7 +728,7 @@ public class SearchFilter {
 		checkCurrent();
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
-		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.CREATION_DAY_FIELD);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, Constants.CREATION_DAY_FIELD);
 		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
 	}
 	
@@ -738,7 +736,7 @@ public class SearchFilter {
 		checkCurrent();
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
-		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.MODIFICATION_DAY_FIELD);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, Constants.MODIFICATION_DAY_FIELD);
 		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
 	}
 	
@@ -759,7 +757,7 @@ public class SearchFilter {
 	}
 	
 	private void addCreationDateRange(Element parent, String startDate, String endDate) {
-		addDateRange(parent, EntityIndexUtils.CREATION_DATE_FIELD, startDate, endDate);
+		addDateRange(parent, Constants.CREATION_DATE_FIELD, startDate, endDate);
 	}
 
 	public void addCreationDates(List<Period> creationPeriods) {
@@ -779,7 +777,7 @@ public class SearchFilter {
 	}
 	
 	public void addModificationDateRange(Element parent, String startDate, String endDate) {
-		addDateRange(parent, EntityIndexUtils.MODIFICATION_DATE_FIELD, startDate, endDate);
+		addDateRange(parent, Constants.MODIFICATION_DATE_FIELD, startDate, endDate);
 	}
 	
 	public void addModificationDateRange(String startDate, String endDate) {
@@ -807,7 +805,7 @@ public class SearchFilter {
 		checkCurrent();
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEntryDefinition);
-		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, Constants.TITLE_FIELD);
 		Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 		filterTermValueEle.setText(title.trim());
 	}
@@ -936,13 +934,13 @@ public class SearchFilter {
 		
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeElement);
-		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, Constants.TITLE_FIELD);
 		Element filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 		filterTermValueEle.setText(place.replaceFirst("\\*", "").trim());
 		
 		filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeElement);
-		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, EntityIndexUtils.TITLE_FIELD);
+		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, Constants.TITLE_FIELD);
 		filterTermValueEle = filterTerm.addElement(SearchFilterKeys.FilterElementValue);
 		filterTermValueEle.setText(place.trim());
 	

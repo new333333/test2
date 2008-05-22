@@ -34,6 +34,8 @@ import java.util.Map;
 import org.dom4j.Document;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.util.DomInputData;
@@ -95,7 +97,12 @@ public class MigrationServiceImpl extends FolderServiceImpl implements
 			getTimestamps(options, creator, creationDate, modifier, modificationDate);
 			Document doc = getDocument(inputDataAsXML);
 			DomInputData inputData = new DomInputData(doc, getIcalModule());
-			return getBinderModule().addBinder(parentId, definitionId, inputData, null, options).longValue();
+			Long binderId = getBinderModule().addBinder(parentId, definitionId, inputData, null, options).longValue();
+			Binder binder = getBinderModule().getBinder(binderId);
+			//sub-folders should inherit
+			if (binder instanceof Folder && binder.getParentBinder() instanceof Folder)
+				getBinderModule().setDefinitionsInherited(binderId, true);
+			return binderId;
 		} catch(WriteFilesException e) {
 			throw new RemotingException(e);
 		}

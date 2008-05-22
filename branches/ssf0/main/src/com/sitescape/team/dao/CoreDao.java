@@ -47,6 +47,7 @@ import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
@@ -129,6 +130,7 @@ public interface CoreDao {
 	public List<Tag> loadPersonalTagsByOwner(EntityIdentifier ownerId);
     public List loadPostings(Long zoneId);
 	public PostingDef loadPosting(String aliasId, Long zoneId);
+	public PostingDef findPosting(String emailAddress, Long zoneId);
 	public Binder loadReservedBinder(String reservedId, Long zoneId);
 	public Definition loadReservedDefinition(String reservedId, Long zoneId);
 	public List<Subscription> loadSubscriptionByEntity(final EntityIdentifier entityId);
@@ -156,4 +158,16 @@ public interface CoreDao {
     public Long getEntityIdForMatchingTitle(Long binderId, String title); 
 
     public int daysSinceInstallation();
+    
+    /**
+     * Returns <code>SimpleName</code> matching the criteria, or <code>null</code> if no match is found.
+     * 
+     * @param name
+     * @param type
+     * @param zoneId
+     * @return
+     */
+    public SimpleName loadSimpleName(String name, String type, Long zoneId);
+    
+    public List<SimpleName> loadSimpleNames(String type, Long binderId, Long zoneId);
 }

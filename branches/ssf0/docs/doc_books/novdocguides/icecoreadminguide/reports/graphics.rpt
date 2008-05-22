@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreadminguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `4/30/2008 2:16:53 PM'>
+   <String `5/14/2008 5:24:05 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2392,7 +2392,7 @@
   <ParaLine 
    <String `click_profiledesigner_a.png'>
    <Char Tab> 
-   <String `1'>
+   <String `2'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2400,7 +2400,7 @@
   <ParaLine 
    <String `click_ptorequest_a.png'>
    <Char Tab> 
-   <String `5'>
+   <String `6'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2496,7 +2496,7 @@
   <ParaLine 
    <String `click_user_a.png'>
    <Char Tab> 
-   <String `1'>
+   <String `2'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2599,14 +2599,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `clickconfigureroles_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickdiscussion_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2856,13 +2848,21 @@
   <ParaLine 
    <String `expand_workflowprocesses_a.png'>
    <Char Tab> 
-   <String `5'>
+   <String `6'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
    <String `expandbusinesscard_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `filesupporttable.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2888,7 +2888,7 @@
   <ParaLine 
    <String `icecoreadminportlet_a.png'>
    <Char Tab> 
-   <String `8'>
+   <String `10'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2903,6 +2903,30 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `layoutoptions_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `ldap-connection-fields_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `ldap-email-authentication_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `ldap-selectenabled_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -2926,31 +2950,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `ldap_groups-settings_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
    <String `ldap_searchfilter_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `ldap_url_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `ldap_users_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -3014,6 +3014,14 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `newuserfield_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `notification_text_a.png'>
    <Char Tab> 
    <String `1'>
@@ -3039,6 +3047,14 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `options_transitions_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `profiledesignerform_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -3168,21 +3184,13 @@
   <ParaLine 
    <String `select_workflowdesigner_a.png'>
    <Char Tab> 
-   <String `6'>
+   <String `7'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
    <String `select_workflowprocesses_a.png'>
-   <Char Tab> 
-   <String `1'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `selectemailsettings_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -3222,6 +3230,14 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `standformelem-text_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `state_question_a.png'>
    <Char Tab> 
    <String `1'>
@@ -3255,6 +3271,22 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `switchworkspacecreatorright_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `team-ldap-connection-settings_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `team-ldap-users-settings_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -3342,6 +3374,22 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `workflow-ptoreq-state_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `workflow-ptoreq_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `workflow_review_question_a.png'>
    <Char Tab> 
    <String `1'>
@@ -3370,139 +3418,19 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `accesscontrolform_a.png'>
+   <String `teamingadminportlet-formview_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `add_businesselement_a.png'>
+   <String `teamingadminportlet_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `clickaddcontent_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickcloseaddgroup.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `clickicecoreadminadd_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `enter_installtype_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `features-markup-page-name-a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `filesupporttable.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `icecorediagram_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `install_db_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `ldap_password_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `managebyrights_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `managebyrols_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `managementnavlinks_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `managemenus_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `modifyaccess_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `option_modify_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `righthandcorner_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `select_managemodify_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `signin_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `teammembers_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `wsemailsettings_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `xml_luceneserver_a.png'>
+   <String `winconfigureroles-team_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5417,6 +5345,39 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|1119008'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `click_profiledesigner_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 36%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Form and view designers\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
     <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02b_profiledesigner.fm|1119008'>
     <MCurrPage `1'>
    > # end of Marker
@@ -5470,7 +5431,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 52%, Indent: Current Indent'>
+   <String `Width: 50%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5503,7 +5464,40 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 52%, Indent: Current Indent'>
+   <String `Width: 50%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Workflow processes\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1355923'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `click_ptorequest_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 50%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5536,7 +5530,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 52%, Indent: Current Indent'>
+   <String `Width: 50%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5569,7 +5563,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 52%, Indent: Current Indent'>
+   <String `Width: 50%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6089,6 +6083,39 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|1119093'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `click_user_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 32%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Profile view\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
     <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02b_profiledesigner.fm|1119093'>
     <MCurrPage `1'>
    > # end of Marker
@@ -6142,7 +6169,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 64%, Indent: Current Indent'>
+   <String `Width: 60%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6175,7 +6202,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 64%, Indent: Current Indent'>
+   <String `Width: 60%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6448,7 +6475,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 42%, Indent: Current Indent'>
+   <String `Width: 41%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6526,7 +6553,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 76%, Indent: Current Indent'>
+   <String `Width: 73%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -6655,45 +6682,6 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `clickdiscussion_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|1107012'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `clickdiscussion_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 35%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Discussion folder\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
    <String `clickicecoreportlets_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -6760,7 +6748,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
+   <String `Width: 65%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -7999,7 +7987,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 56%, Indent: Current Indent'>
+   <String `Width: 50%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8032,7 +8020,40 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 56%, Indent: Current Indent'>
+   <String `Width: 50%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Workflow processes\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1355881'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `expand_workflowprocesses_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 50%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8065,7 +8086,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 56%, Indent: Current Indent'>
+   <String `Width: 50%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8098,7 +8119,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 56%, Indent: Current Indent'>
+   <String `Width: 50%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8177,6 +8198,51 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Business card\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `filesupporttable.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|2501692'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `filesupporttable.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 75%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Document and File Support'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Document and File Support\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8273,7 +8339,40 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1036074'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|3784793'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `icecoreadminportlet_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 55%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: ICEcore Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1386149'>
     <MCurrPage `1'>
    > # end of Marker
    <String `icecoreadminportlet_a.png'>
@@ -8306,7 +8405,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1065150'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1386208'>
     <MCurrPage `1'>
    > # end of Marker
    <String `icecoreadminportlet_a.png'>
@@ -8339,7 +8438,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1320101'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1386371'>
     <MCurrPage `1'>
    > # end of Marker
    <String `icecoreadminportlet_a.png'>
@@ -8372,7 +8471,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_customentries.fm|1036074'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_customentries.fm|1281997'>
     <MCurrPage `1'>
    > # end of Marker
    <String `icecoreadminportlet_a.png'>
@@ -8405,7 +8504,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1065150'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1388652'>
     <MCurrPage `1'>
    > # end of Marker
    <String `icecoreadminportlet_a.png'>
@@ -8438,7 +8537,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1233360'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1388763'>
     <MCurrPage `1'>
    > # end of Marker
    <String `icecoreadminportlet_a.png'>
@@ -8471,7 +8570,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1234265'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1388952'>
     <MCurrPage `1'>
    > # end of Marker
    <String `icecoreadminportlet_a.png'>
@@ -8504,7 +8603,40 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02b_profiledesigner.fm|1036074'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1389102'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `icecoreadminportlet_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 55%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: ICEcore Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02b_profiledesigner.fm|1368725'>
     <MCurrPage `1'>
    > # end of Marker
    <String `icecoreadminportlet_a.png'>
@@ -8602,6 +8734,129 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
+   <String `ldap-connection-fields_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|2551368'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `ldap-connection-fields_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 78%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: LDAP Connection Settings Fields\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `ldap-email-authentication_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|2546337'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `ldap-email-authentication_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Enterprise Admin Authentication'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Enterprise Admin Authentication\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `ldap-selectenabled_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|2535770'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `ldap-selectenabled_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 36%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Enabled setting\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
    <String `ldap_ecryption_dropdownlist_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -8680,51 +8935,6 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `ldap_groups-settings_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|1148278'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `ldap_groups-settings_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 56%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Title: LDAP Group Settiong'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: LDAP group settings\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
    <String `ldap_searchfilter_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -8759,96 +8969,6 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Ldap search filter\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `ldap_url_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|1147457'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `ldap_url_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 99%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Title: LDAP URL Settings'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: LDAP URL\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `ldap_users_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|1147861'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `ldap_users_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 96%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Title: LDAP Users Settings'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: LDAP users settings\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -9115,6 +9235,45 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
+   <String `newuserfield_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|3745760'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `newuserfield_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 47%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Text element dialog\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
    <String `notification_text_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -9260,6 +9419,45 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Transition Options dialog\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `profiledesignerform_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|3744496'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `profiledesignerform_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 57%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Profile form definition Form\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -9448,7 +9646,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 52%, Indent: Current Indent'>
+   <String `Width: 39%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -9487,7 +9685,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 89%, Indent: Current Indent'>
+   <String `Width: 88%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -9956,6 +10154,39 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1355839'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `select_workflowdesigner_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 41%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Form and view designers\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
     <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1065192'>
     <MCurrPage `1'>
    > # end of Marker
@@ -10075,46 +10306,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 47%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `selectemailsettings_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|1107066'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `selectemailsettings_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 19%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: Manage menu\q'>
+   <String `Width: 37%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -10298,6 +10490,45 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Manage menu\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `standformelem-text_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|3745083'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `standformelem-text_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 28%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Standard form elements list\q'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -10498,6 +10729,84 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
+   <String `team-ldap-connection-settings_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|1088324'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `team-ldap-connection-settings_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 95%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Teaming Connection section of the Configuration LDAP Synchronization page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `team-ldap-users-settings_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|1088582'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `team-ldap-users-settings_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 95%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Users section of the Configure LDAP Synchronization page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
    <String `timeoff_entryform_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -10564,7 +10873,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 62%, Indent: Current Indent'>
+   <String `Width: 60%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -10862,7 +11171,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|1093782'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|3784917'>
     <MCurrPage `1'>
    > # end of Marker
    <String `winconfigureroles_a.png'>
@@ -10883,6 +11192,96 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Description: \qDescription: Configure Roles page\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `workflow-ptoreq-state_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1359557'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `workflow-ptoreq-state_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 66%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Workflow State Features'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Workflow designer expanded state\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `workflow-ptoreq_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1356802'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `workflow-ptoreq_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 66%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Workflow Designer'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Workflow designer\q'>
   > # end of ParaLine
  > # end of Para
  <Para 

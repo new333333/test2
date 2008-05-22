@@ -51,7 +51,6 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
@@ -66,6 +65,7 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 
 public class ListProfilesController extends   SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
@@ -174,7 +174,7 @@ public class ListProfilesController extends   SAbstractController {
 		
 		String searchFilterName = (String)userFolderProperties.getProperty(ObjectKeys.USER_PROPERTY_USER_FILTER);
 		options.put(ObjectKeys.SEARCH_MAX_HITS, new Integer(ObjectKeys.LISTING_MAX_PAGE_SIZE));
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.TITLE1_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.TITLE1_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 
 		//initializing tabs

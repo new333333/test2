@@ -40,10 +40,10 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.fi.connection.ResourceDriver;
 import com.sitescape.team.fi.connection.ResourceDriverManagerUtil;
 import com.sitescape.team.modelprocessor.InstanceLevelProcessorSupport;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 
 /**
  * This object represents a container.
@@ -82,7 +82,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected int binderCount=0;
     protected HKey binderKey;
     protected int nextBinderNumber=1;
-
+    protected String branding; //initialized by hiberate access=field
     
     public Binder() {
     }
@@ -111,6 +111,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 		 mirrored = source.mirrored;
 		 resourceDriverName = source.resourceDriverName;
 		 resourcePath = source.resourcePath;
+		 branding = source.branding;
 		 //don't copy postingDef, notificationDef, internalId, binders, or pathName
  
      }
@@ -594,6 +595,14 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
 	public boolean isMirroredAndReadOnly() {
 		return isMirrored() && getResourceDriver().isReadonly();
 	}
+    public String getBranding() {
+    	if (Validator.isNotNull(branding)) return branding;
+        if (parentBinder == null) return null;
+        return parentBinder.getBranding();
+    }
+    public void setBranding(String branding) {
+    	this.branding = branding; 
+    }
     //*****************WorkArea interface stuff***********/
     public Long getWorkAreaId() {
         return getId();
@@ -657,7 +666,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      public String getTeamMemberString() {
      	if (!isRoot() && isTeamMembershipInherited()) return getParentBinder().getTeamMemberString();
      	String members = (String)getProperty(ObjectKeys.BINDER_PROPERTY_TEAM_MEMBERS);
-     	if (Validator.isNull(members)) return BasicIndexUtils.EMPTY_ACL_FIELD;
+     	if (Validator.isNull(members)) return Constants.EMPTY_ACL_FIELD;
      	return members;
      	
      }

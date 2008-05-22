@@ -2,15 +2,15 @@
 
 <targets>
 
- <target id="b9vdb7o" pid="b9vdb7o" name="Chapter" level="0" number="2"> <text>Configuring Novell Teaming</text> </target>
+ <target id="b9vdb7o" pid="b9vdb7o" name="Chapter" level="0" number="2"> <text>Configuring ICEcore</text> </target>
 
  <target id="b9vde7e" pid="b9vde7e" name="Sect1" level="1" number="2.1"> <text>Logging in as a Liferay Site Manager</text> </target>
 
  <target id="b9vdfym" pid="b9vde7e" name="Sect2" level="2" number="2.1.1"> <text>Logging in with the Administrator Account:</text> </target>
 
- <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type your company's fully qualified hostname for Novell Teaming into the browser window and press Enter.</text> </target>
+ <target id="b9vdg1s" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Type your company's fully qualified hostname for ICEcore into the browser window and press Enter.</text> </target>
 
- <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type your company's fully qualified hostname for Novell Teaming into the browser window and press Enter.</text> </target>
+ <target id="b9vdg1t" pid="b9vde7e" name="Step" level="4" number="1"> <text>Type your company's fully qualified hostname for ICEcore into the browser window and press Enter.</text> </target>
 
  <target id="b9vdg74" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the Login field, type:</text> </target>
 
@@ -18,15 +18,15 @@
 
  <target id="b9vdg79" pid="b9vde7e" name="Step" level="4" number="4"> <text>Click Login.</text> </target>
 
- <target id="b9vdjua" pid="b9vde7e" name="Sect2" level="2" number="2.1.2"> <text>Logging in with the Teaming Administration Portlet </text> </target>
+ <target id="b9vdjua" pid="b9vde7e" name="Sect2" level="2" number="2.1.2"> <text>Adding the ICEcore Administration Portlet to Your Home Page</text> </target>
 
  <target id="bantho8" pid="b9vde7e" name="Procedure" level="3" number="1"> <text>Click Add Content in the upper right corner.</text> </target>
 
  <target id="bantho9" pid="b9vde7e" name="Step" level="4" number="1"> <text>Click Add Content in the upper right corner.</text> </target>
 
- <target id="bantifv" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the portlet access frame that appears in the upper left corner, click Teaming to view the available Teaming portlets that you can add.</text> </target>
+ <target id="bantifv" pid="b9vde7e" name="Step" level="4" number="2"> <text>In the portlet access frame that appears in the upper left corner, click ICEcore to view the available ICEcore portlets that you can add.</text> </target>
 
- <target id="bantjt4" pid="b9vde7e" name="Step" level="4" number="3"> <text>Click the Add button next to Teaming Administration to add this portlet to your Home Page.</text> </target>
+ <target id="bantjt4" pid="b9vde7e" name="Step" level="4" number="3"> <text>Click the Add button next to ICEcore Administration to add this portlet to your Home Page.</text> </target>
 
  <target id="b9vchnc" pid="b9vchnc" name="Sect1" level="1" number="2.2"> <text>Initial Logon</text> </target>
 
@@ -34,17 +34,29 @@
 
  <target id="bf0zprz" pid="b9vchnc" name="Step" level="3" number="1"> <text>Access your installation with a browser via the following URL:</text> </target>
 
- <target id="bf0zps0" pid="b9vchnc" name="Step" level="3" number="2"> <text>At the login screen, enter: admin</text> </target>
+ <target id="bf0zps0" pid="b9vchnc" name="Step" level="3" number="2"> <text>At the login screen, enter your user name: admin</text> </target>
 
- <target id="bf0zps1" pid="b9vchnc" name="Step" level="3" number="3"> <text>Enter admin as the password.</text> </target>
+ <target id="bf0zps1" pid="b9vchnc" name="Step" level="3" number="3"> <text>Enter your initial password: admin </text> </target>
 
- <target id="bf0znhk" pid="b9vchnc" name="Step" level="3" number="4"> <text>Change your admin password and click OK.</text> </target>
+ <target id="bf0znhk" pid="b9vchnc" name="Step" level="3" number="4"> <text>Change your password and click OK.</text> </target>
 
  <target id="bf0znhl" pid="b9vchnc" name="Step" level="3" number="5"> <text>To add more portlets, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin:</text> </target>
 
  <target id="bc0k0lk" pid="bc0k0lk" name="Sect1" level="1" number="2.3"> <text>Adding Your Company Logo</text> </target>
 
- <target id="b9vchnd" pid="b9vchnd" name="Sect1" level="1" number="2.4"> <text>Adding Users</text> </target>
+ <target id="bc4omwf" pid="bc0k0lk" name="Procedure" level="2"> <text>To replace the ICEcore logo with your own logo:</text> </target>
+
+ <target id="bc4omwi" pid="bc0k0lk" name="Step" level="3" number="1"> <text>Create a GIF file for your logo that is approximately the same size as the ICEcore logo.</text> </target>
+
+ <target id="bc4once" pid="bc0k0lk" name="Step" level="3" number="2"> <text>Name the GIF file teaming_logo.gif.</text> </target>
+
+ <target id="bc4opwp" pid="bc0k0lk" name="Step" level="3" number="3"> <text>Make a backup copy of the original teaming_logo.gif file.</text> </target>
+
+ <target id="bc4onnd" pid="bc0k0lk" name="Step" level="3" number="4"> <text>Under in images subdirectory of each Novell_theme directory, replace the existing teaming_logo.gif file with your company logo teaming_logo.gif file.</text> </target>
+
+ <target id="bc4oox6" pid="bc0k0lk" name="Step" level="3" number="5"> <text>Restart ICEcore.</text> </target>
+
+ <target id="b9vchnd" pid="b9vchnd" name="Sect1" level="1" number="2.4"> <text>Managing Users and LDAP Authentication</text> </target>
 
  <target id="bbihasx" pid="b9vchnd" name="Sect2" level="2" number="2.4.1"> <text>Basic User Management</text> </target>
 
@@ -64,7 +76,11 @@
 
  <target id="bbihi9x" pid="b9vchnd" name="Step" level="4" number="7"> <text>Repeat these steps to add additional users.</text> </target>
 
- <target id="bbihb9h" pid="b9vchnd" name="Sect2" level="2" number="2.4.2"> <text>User Management with LDAP/eDirectory </text> </target>
+ <target id="bf7s4tq" pid="b9vchnd" name="Sect2" level="2" number="2.4.2"> <text>Authenticating Users by E-Mail Address</text> </target>
+
+ <target id="bf86gvr" pid="b9vchnd" name="Figure" level="3" number="Figure 2-1"> <text>Enterprise Admin Authentication</text> </target>
+
+ <target id="bbihb9h" pid="b9vchnd" name="Sect2" level="2" number="2.4.3"> <text>Configuring Liferay for LDAP Authentication </text> </target>
 
  <target id="bbih8mm" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>Using the Liferay Enterprise Admin portlet, click the Settings tab (you might need to click the &#62;&#62; tab to see the Settings tab).</text> </target>
 
@@ -74,43 +90,89 @@
 
  <target id="bbih8oa" pid="b9vchnd" name="Step" level="4" number="3"> <text>Click the LDAP tab.</text> </target>
 
- <target id="bbih97n" pid="b9vchnd" name="Step" level="4" number="4"> <text>Fill out the form with the values needed to map to your corporate directory:</text> </target>
+ <target id="bbih97n" pid="b9vchnd" name="Step" level="4" number="4"> <text>Under Connection Settings, fill out the form with the values needed to map to your corporate directory:</text> </target>
 
- <target name="SubSteps" level="5"> <text>For the search filter, use uid=@screen_name@ or cn=@screen_name@, depending on your site conventions. This should be the same LDAP attribute value that you configure Novell Teaming with to identify the user. For more information, see "The Teaming LDAP Configuration Form" on page 16.</text> </target>
+ <target name="SubSteps" level="5"> <text>Select Enabled.</text> </target>
 
- <target id="bbih9h3" pid="b9vchnd" name="Step" level="6" number="4a"> <text>For the search filter, use uid=@screen_name@ or cn=@screen_name@, depending on your site conventions. This should be the same LDAP attribute value that you configure Novell Teaming with to identify the user. For more information, see "The Teaming LDAP Configuration Form" on page 16.</text> </target>
+ <target id="bf7ps3n" pid="b9vchnd" name="Step" level="6" number="4a"> <text>Select Enabled.</text> </target>
 
- <target id="bbo53bl" pid="b9vchnd" name="Step" level="6" number="4b"> <text>If your LDAP is set up for password comparison, select the algorithm to use for LDAP password encryption from the Encryption Algorithm drop-down list (a blank value means no encryption, MD5 and SHA specify two different algorithms).</text> </target>
+ <target id="bf86zrw" pid="b9vchnd" name="Step" level="6" number="4b"> <text>In the Base Provider URL field, specify the IP address of your LDAP server, followed by the port number it uses (typically, 389 for non-secure connections or 636 for secure SSL connections).</text> </target>
 
- <target id="bbxgsaw" pid="b9vchnd" name="Step" level="6" number="4c"> <text>Provide your specific LDAP values for all of the listed Liferay attributes.</text> </target>
+ <target id="bf872r5" pid="b9vchnd" name="Step" level="6" number="4c"> <text>In the Base DN field, specify the eDirectory context where ICEcore users' User objects are located (for example, ou=users,o=corporate).</text> </target>
 
- <target id="bbih9it" pid="b9vchnd" name="Step" level="6" number="4d"> <text>Under Export Settings, we recommend deselecting the Export Enabled option.</text> </target>
+ <target id="bf873j3" pid="b9vchnd" name="Step" level="6" number="4d"> <text>In the Principle field, specify the full context of your eDirectory Admin User object (for example, cn=admin, ou=users, o=corporate).</text> </target>
+
+ <target id="bf874b6" pid="b9vchnd" name="Step" level="6" number="4e"> <text>In the Credentials field, specify the password of your eDirectory Admin user.</text> </target>
+
+ <target id="bbih9h3" pid="b9vchnd" name="Step" level="6" number="4f"> <text>For the search filter, use uid=@screen_name@ or cn=@screen_name@, depending on your site conventions. This should be the same LDAP attribute value that you configure ICEcore with to identify the user. For more information, see "Configuring ICEcore for LDAP Authentication" on page 21.</text> </target>
+
+ <target id="bbo53bl" pid="b9vchnd" name="Step" level="6" number="4g"> <text>If your LDAP is set up for password comparison, select the algorithm to use for LDAP password encryption from the Encryption Algorithm drop-down list (a blank value means no encryption, MD5 and SHA specify two different algorithms).</text> </target>
+
+ <target id="bbxgsaw" pid="b9vchnd" name="Step" level="6" number="4h"> <text>Map the specific LDAP values you want to use for each user to the appropriate Liferay attributes.</text> </target>
+
+ <target id="bbih9it" pid="b9vchnd" name="Step" level="6" number="4i"> <text>Under Export Settings, we recommend deselecting the Export Enabled option.</text> </target>
 
  <target id="bbih8ol" pid="b9vchnd" name="Step" level="4" number="5"> <text>Click Save.</text> </target>
 
- <target id="bbihbki" pid="b9vchnd" name="Sect2" level="2" number="2.4.3"> <text>The Teaming LDAP Configuration Form</text> </target>
+ <target id="bb46ct6" pid="b9vchnd" name="Sect2" level="2" number="2.4.4"> <text>Configuring ICEcore for LDAP Authentication</text> </target>
 
- <target id="bbih9rw" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>Using the Teaming Administration portlet, click Configure LDAP.</text> </target>
+ <target id="bbrgsm5" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>In the ICEcore Administration portlet, click Configure LDAP.</text> </target>
 
- <target id="bbih9rx" pid="b9vchnd" name="Step" level="4" number="1"> <text>Using the Teaming Administration portlet, click Configure LDAP.</text> </target>
+ <target id="bbrgsm6" pid="b9vchnd" name="Step" level="4" number="1"> <text>In the ICEcore Administration portlet, click Configure LDAP.</text> </target>
 
- <target id="bbiha6m" pid="b9vchnd" name="Step" level="4" number="2"> <text>Fill out the form, using the values that were used to configure Liferay. (See "Users Settings" on page 18 for details on this form). </text> </target>
+ <target id="bbrgusc" pid="b9vchnd" name="Step" level="4" number="2"> <text>With Enable Schedule selected, click Schedule, then set the schedule as needed for LDAP synchronization for your ICEcore site.</text> </target>
 
- <target id="bbih9u6" pid="b9vchnd" name="Step" level="4" number="3"> <text>Click Apply.</text> </target>
+ <target id="bbrgv50" pid="b9vchnd" name="Step" level="4" number="3"> <text>Click Connection.</text> </target>
 
- <target id="bbihcsa" pid="b9vchnd" name="BridgeHead" level="3"> <text>Connection Settings</text> </target>
+ <target id="bbrh5y8" pid="b9vchnd" name="Step" level="4" number="4"> <text>In the URL field, specify the IP address or DNS hostname of your LDAP server, followed by the port number it uses (typically, 389 for non-secure connections or 636 for secure SSL connections).</text> </target>
 
- <target id="bf0zz2w" pid="b9vchnd" name="Figure" level="3" number="Figure 2-1"> <text>LDAP URL Settings</text> </target>
+ <target id="bbx2ss3" pid="b9vchnd" name="Step" level="4" number="5"> <text>After the port number, type a slash (/), then specify the eDirectory context where ICEcore users' User objects are located (for example, ou=users,o=corporate).</text> </target>
 
- <target id="bbihcsb" pid="b9vchnd" name="BridgeHead" level="3"> <text>Users Settings</text> </target>
+ <target id="bbrh5y9" pid="b9vchnd" name="Step" level="4" number="6"> <text>In the Principal field, specify the full context of your eDirectory Admin User object (for example, cn=admin,ou=users,o=corporate).</text> </target>
 
- <target id="bf100jp" pid="b9vchnd" name="Figure" level="3" number="Figure 2-2"> <text>LDAP Users Settings</text> </target>
+ <target id="bbrh5ya" pid="b9vchnd" name="Step" level="4" number="7"> <text>In the Credentials field, specify the password of your eDirectory Admin user.</text> </target>
 
- <target id="bbihcsc" pid="b9vchnd" name="BridgeHead" level="3"> <text>Groups Settings</text> </target>
+ <target id="bbrgxdx" pid="b9vchnd" name="Step" level="4" number="8"> <text>Scroll down to the Users section.</text> </target>
 
- <target id="bf101xd" pid="b9vchnd" name="Figure" level="3" number="Figure 2-3"> <text>LDAP Group Settiong</text> </target>
+ <target id="bbrgyv1" pid="b9vchnd" name="Step" level="4" number="9"> <text>Set the LDAP Attribute field to cn.  The LDAP attribute that identifies the user, for example: uid or cn.</text> </target>
 
- <target id="bbihc08" pid="b9vchnd" name="Sect2" level="2" number="2.4.4"> <text>Secure LDAP/eDirectory Setup</text> </target>
+ <target id="bf87lvi" pid="b9vchnd" name="Step" level="4" number="10"> <text>Map the LDAP attribute names of the user record to the ICEcore internal identifiers. The syntax is: ICEcoreId=ldapAttName, for example:</text> </target>
+
+ <target id="bbrgz1m" pid="b9vchnd" name="Step" level="4" number="11"> <text>Select Synchronize User Profiles (recommended).</text> </target>
+
+ <target id="bbrgz3o" pid="b9vchnd" name="Step" level="4" number="12"> <text>Select Register LDAP User Profiles Automatically recommended).</text> </target>
+
+ <target id="bbrgz67" pid="b9vchnd" name="Step" level="4" number="13"> <text>If you want to synchronize groups:</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Select Register LDAP Group Profiles Automatically (recommended).</text> </target>
+
+ <target id="bbx2v6z" pid="b9vchnd" name="Step" level="6" number="13a"> <text>Select Register LDAP Group Profiles Automatically (recommended).</text> </target>
+
+ <target id="bbx2v1y" pid="b9vchnd" name="Step" level="6" number="13b"> <text>Select Synchronize Group Membership (recommended).</text> </target>
+
+ <target id="bbrgzbn" pid="b9vchnd" name="Step" level="4" number="14"> <text>Click Apply to save your Novell Teaming LDAP synchronization settings.</text> </target>
+
+ <target id="bbrh3st" pid="b9vchnd" name="Step" level="4" number="15"> <text>Select Run Immediately, then click Apply.</text> </target>
+
+ <target id="bb45wdl" pid="b9vchnd" name="Sect2" level="2" number="2.4.5"> <text>Testing LDAP Authentication and Synchronization</text> </target>
+
+ <target id="bb9tr7i" pid="b9vchnd" name="Procedure" level="3"> <text>As a test:</text> </target>
+
+ <target id="bb9tr7j" pid="b9vchnd" name="Step" level="4" number="1"> <text>Display the ICEcore home page.</text> </target>
+
+ <target id="bb9tsyv" pid="b9vchnd" name="Step" level="4" number="2"> <text>Place your cursor in the Find People field, then type the first letter of an eDirectory username.</text> </target>
+
+ <target id="bb9tt8t" pid="b9vchnd" name="Step" level="4" number="3"> <text>Sign in to the ICEcore site as yourself, using your eDirectory username and password.</text> </target>
+
+ <target id="bb9txgm" pid="b9vchnd" name="Procedure" level="3"> <text>To verify that synchronization is taking place:</text> </target>
+
+ <target id="bb9txgn" pid="b9vchnd" name="Step" level="4" number="1"> <text>In ConsoleOne, make a change to the information in your eDirectory user account.</text> </target>
+
+ <target id="bb9txuf" pid="b9vchnd" name="Step" level="4" number="2"> <text>Run LDAP synchronization immediately from the ICEcore Administration portlet.</text> </target>
+
+ <target id="bb9ty0t" pid="b9vchnd" name="Step" level="4" number="3"> <text>Check your ICEcore account to see that the information has been synchronized.</text> </target>
+
+ <target id="bbihc08" pid="b9vchnd" name="Sect2" level="2" number="2.4.6"> <text>Secure LDAP/eDirectory Setup</text> </target>
 
  <target id="banqref" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>Make sure you have openssl available.</text> </target>
 
@@ -120,7 +182,7 @@
 
  <target id="banqrei" pid="b9vchnd" name="Step" level="4" number="3"> <text>Copy everything from the &#212;----BEGIN CERTIFICATE----' to the &#212;----END CERTIFICATE----' lines (inclusive) into a file, such as cert.ldap (the name does not matter).</text> </target>
 
- <target id="banqrej" pid="b9vchnd" name="Step" level="4" number="4"> <text>Change directories to the java/bin directory, then enter: </text> </target>
+ <target id="banqrej" pid="b9vchnd" name="Step" level="4" number="4"> <text>Change directories to the java/bin directory, then enter (this uses the default directory path /opt/icecore/): </text> </target>
 
  <target id="bbq7dcw" pid="b9vchnd" name="Step" level="4" number="5"> <text>If prompted for a password, the keystore's default password is: changeit</text> </target>
 
@@ -128,19 +190,43 @@
 
  <target id="banqrel" pid="b9vchnd" name="Step" level="4" number="7"> <text>Make sure you use ldaps://ldap.company.com:636 as the LDAP URL, rather than the default ldap://ldap.company.com:389 (note protocol and port number changes).</text> </target>
 
+ <target id="bf87myv" pid="b9vchnd" name="Sect2" level="2" number="2.4.7"> <text>Adding a User Internal Identifier in ICEcore</text> </target>
+
+ <target id="bbmqu0h" pid="b9vchnd" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+
+ <target id="bf8spn3" pid="b9vchnd" name="Step" level="4" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+
+ <target id="bbmqu0i" pid="b9vchnd" name="Step" level="4" number="2"> <text>Click Profile designer.</text> </target>
+
+ <target id="bbmr0d8" pid="b9vchnd" name="Step" level="4" number="3"> <text>Expand Profile view and click User.</text> </target>
+
+ <target id="bf88lz4" pid="b9vchnd" name="Step" level="4" number="4"> <text>Expand the following items in the designer tree: User &#62; Profile form definition &#62; Form, then click Three column table - table1.</text> </target>
+
+ <target id="bf88nvl" pid="b9vchnd" name="Step" level="4" number="5"> <text>In the dialog on the right, click Add.</text> </target>
+
+ <target id="bf88nyx" pid="b9vchnd" name="Step" level="4" number="6"> <text>Under Standard form elements click Text.</text> </target>
+
+ <target id="bf88otx" pid="b9vchnd" name="Step" level="4" number="7"> <text>In the dialog that appears, specify the user friendly name you want to use for this element in Caption field, and specify the database name in the Data name field (used cellphone for this example), then click OK. See Chapter 6, "The Profile Designer," on page 107 for adding an element to your business card.</text> </target>
+
+ <target id="bf88vis" pid="b9vchnd" name="Step" level="4" number="8"> <text>Once it is added, in the top right corner click Close.</text> </target>
+
+ <target id="bf88wz3" pid="b9vchnd" name="Step" level="4" number="9"> <text>In the ICEcore Administration portlet, click Configure LDAP  and map the new element (internal identifier, cellphone) to the appropriate LDAP attribute for this new user information.</text> </target>
+
+ <target id="bf88zhn" pid="b9vchnd" name="Step" level="4" number="10"> <text>Select Run immediately, then click Apply.</text> </target>
+
  <target id="b9vchne" pid="b9vchne" name="Sect1" level="1" number="2.5"> <text>Mail Setup</text> </target>
 
- <target id="bf10847" pid="b9vchne" name="Sect2" level="2" number="2.5.1"> <text>System Configuration</text> </target>
+ <target id="bf10847" pid="b9vchne" name="Sect2" level="2" number="2.5.1"> <text>System E-Mail Configuration</text> </target>
 
- <target id="bf108ap" pid="b9vchne" name="Sect2" level="2" number="2.5.2"> <text>Using Aliases</text> </target>
+ <target id="bf108ap" pid="b9vchne" name="Sect2" level="2" number="2.5.2"> <text>Using Aliases E-Mail Addresses for Posting</text> </target>
 
- <target id="bf108eb" pid="b9vchne" name="Sect2" level="2" number="2.5.3"> <text>Using Real E-Mail Addresses</text> </target>
+ <target id="bf108eb" pid="b9vchne" name="Sect2" level="2" number="2.5.3"> <text>Using Real E-Mail Accounts for Posting</text> </target>
 
  <target id="bf108j6" pid="b9vchne" name="Sect2" level="2" number="2.5.4"> <text>Setting Up a Schedule for Incoming Mail</text> </target>
 
- <target id="bc0jt3d" pid="b9vchne" name="Procedure" level="3" number="1"> <text>In the Teaming Administration portlet, click the Configure site incoming email schedule link.</text> </target>
+ <target id="bc0jt3d" pid="b9vchne" name="Procedure" level="3" number="1"> <text>In the ICEcore Administration portlet, click the Configure site incoming email schedule link.</text> </target>
 
- <target id="bc0jt3e" pid="b9vchne" name="Step" level="4" number="1"> <text>In the Teaming Administration portlet, click the Configure site incoming email schedule link.</text> </target>
+ <target id="bc0jt3e" pid="b9vchne" name="Step" level="4" number="1"> <text>In the ICEcore Administration portlet, click the Configure site incoming email schedule link.</text> </target>
 
  <target id="bc0jt4o" pid="b9vchne" name="Step" level="4" number="2"> <text>Select the Enable incoming mail option.</text> </target>
 
@@ -148,13 +234,13 @@
 
  <target id="bc0jt4r" pid="b9vchne" name="Step" level="4" number="4"> <text>Click Apply to save your changes.</text> </target>
 
- <target id="bf108mv" pid="b9vchne" name="Sect2" level="2" number="2.5.5"> <text>Associating an E-mail Address with a Folder</text> </target>
+ <target id="bf108mv" pid="b9vchne" name="Sect2" level="2" number="2.5.5"> <text>Setting up a Folder for Posting</text> </target>
 
  <target id="bf108sy" pid="b9vchne" name="Sect2" level="2" number="2.5.6"> <text>Establishing a Notification Schedule for a Folder</text> </target>
 
- <target id="bf10h3i" pid="b9vchne" name="Procedure" level="3" number="1"> <text>In Novell Teaming, navigate to the folder where you want to post e-mail and select the Manage &#62; Email settings menu item.</text> </target>
+ <target id="bf10h3i" pid="b9vchne" name="Procedure" level="3" number="1"> <text>In ICEcore, navigate to the folder where you want to post e-mail and select the Manage &#62; Email settings menu item.</text> </target>
 
- <target id="bf10h3j" pid="b9vchne" name="Step" level="4" number="1"> <text>In Novell Teaming, navigate to the folder where you want to post e-mail and select the Manage &#62; Email settings menu item.</text> </target>
+ <target id="bf10h3j" pid="b9vchne" name="Step" level="4" number="1"> <text>In ICEcore, navigate to the folder where you want to post e-mail and select the Manage &#62; Email settings menu item.</text> </target>
 
  <target id="bf10h3k" pid="b9vchne" name="Step" level="4" number="2"> <text>Select the Enable outgoing email option.</text> </target>
 
@@ -170,9 +256,9 @@
 
  <target id="b9ve155" pid="b9vdczx" name="Sect2" level="2" number="2.6.2"> <text>Changing a Default Role Definition</text> </target>
 
- <target id="b9ve19v" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the Teaming Administration portlet, click Configure Role Definitions.</text> </target>
+ <target id="b9ve19v" pid="b9vdczx" name="Procedure" level="3" number="1"> <text>In the ICEcore Administration portlet, click Configure Role Definitions.</text> </target>
 
- <target id="b9ve19w" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the Teaming Administration portlet, click Configure Role Definitions.</text> </target>
+ <target id="b9ve19w" pid="b9vdczx" name="Step" level="4" number="1"> <text>In the ICEcore Administration portlet, click Configure Role Definitions.</text> </target>
 
  <target id="b9ve1f5" pid="b9vdczx" name="Step" level="4" number="2"> <text>Click Visitor.</text> </target>
 
@@ -184,9 +270,9 @@
 
  <target id="bf10t9o" pid="b9vdczx" name="Sect3" level="3"> <text>Creating the Team Creator Group</text> </target>
 
- <target id="baprgjf" pid="b9vdczx" name="Procedure" level="4" number="1"> <text>In the Teaming Administration portlet, click Manage Groups.</text> </target>
+ <target id="baprgjf" pid="b9vdczx" name="Procedure" level="4" number="1"> <text>In the ICEcore Administration portlet, click Manage Groups.</text> </target>
 
- <target id="bapt97t" pid="b9vdczx" name="Step" level="5" number="1"> <text>In the Teaming Administration portlet, click Manage Groups.</text> </target>
+ <target id="bapt97t" pid="b9vdczx" name="Step" level="5" number="1"> <text>In the ICEcore Administration portlet, click Manage Groups.</text> </target>
 
  <target id="baprhy5" pid="b9vdczx" name="Step" level="5" number="2"> <text>In the Manage Groups window, click Add a New Group.</text> </target>
 
@@ -264,37 +350,25 @@
 
  <target id="b9vde7i" pid="b9vde7i" name="Sect1" level="1" number="2.8"> <text>Invite Users to the Site</text> </target>
 
- <target id="b9vde7f" pid="b9vde7f" name="Sect1" level="1" number="2.9"> <text>Setting Up E-Mail for a Workspace</text> </target>
+ <target id="bbn4ml9" pid="bbn4ml9" name="Sect1" level="1" number="2.9"> <text>Configuring Mirrored Folders</text> </target>
 
- <target id="baptekl" pid="b9vde7f" name="Procedure" level="2" number="1"> <text>From your workspace, select the top-level folder for which you want to enable e-mail.</text> </target>
+ <target id="bbn4oii" pid="bbn4ml9" name="Procedure" level="2" number="1"> <text>If not already present, add a MirroredFolder section to the installer.xml file.</text> </target>
 
- <target id="baptekm" pid="b9vde7f" name="Step" level="3" number="1"> <text>From your workspace, select the top-level folder for which you want to enable e-mail.</text> </target>
-
- <target id="baptkyb" pid="b9vde7f" name="Step" level="3" number="2"> <text>Select the Manage &#62; Email Settings menu item.</text> </target>
-
- <target id="baptlti" pid="b9vde7f" name="Step" level="3" number="3"> <text>Type in the e-mail address you received from your e-mail administrator in the Receiving Email From field.</text> </target>
-
- <target id="bapto85" pid="b9vde7f" name="Step" level="3" number="4"> <text>Configure the e-mail Notification Schedule and add the users, groups, and any individual e-mail addresses you want to receive e-mail notifications, then click Apply.</text> </target>
-
- <target id="bbn4ml9" pid="bbn4ml9" name="Sect1" level="1" number="2.10"> <text>Configuring Mirrored Folders</text> </target>
-
- <target id="bbn4oii" pid="bbn4ml9" name="Procedure" level="2" number="1"> <text>Add a MirroredFolder section to the installer.xml file. </text> </target>
-
- <target id="bbn4oij" pid="bbn4ml9" name="Step" level="3" number="1"> <text>Add a MirroredFolder section to the installer.xml file. </text> </target>
+ <target id="bbn4oij" pid="bbn4ml9" name="Step" level="3" number="1"> <text>If not already present, add a MirroredFolder section to the installer.xml file.</text> </target>
 
  <target name="SubSteps" level="4"> <text>Set the enabled attribute to true and specify a unique ID, title, the path to the directory to share, and the users and groups that can utilize this resource. To prevent accidental modifications to the file share, set the readonly attribute to true.</text> </target>
 
  <target id="bf119ph" pid="bbn4ml9" name="Step" level="5" number="1a"> <text>Set the enabled attribute to true and specify a unique ID, title, the path to the directory to share, and the users and groups that can utilize this resource. To prevent accidental modifications to the file share, set the readonly attribute to true.</text> </target>
 
- <target id="bf119r6" pid="bbn4ml9" name="Step" level="5" number="1b"> <text>After updating your installer.xml file, you need to run the Novell Teaming installer with the Apply settings only option, and then restart Novell Teaming to create the resource drivers.</text> </target>
+ <target id="bf119r6" pid="bbn4ml9" name="Step" level="5" number="1b"> <text>After updating your installer.xml file, you need to run the ICEcore installer with the Apply settings only option, and then restart ICEcore to create the resource drivers.</text> </target>
 
- <target id="bbn50z6" pid="bbn4ml9" name="Step" level="3" number="2"> <text>Log into Novell Teaming as admin.</text> </target>
+ <target id="bbn50z6" pid="bbn4ml9" name="Step" level="3" number="2"> <text>Log into ICEcore as admin.</text> </target>
 
  <target id="bc4kufr" pid="bbn4ml9" name="Step" level="3" number="3"> <text>Create a custom entry type representing mirrored files:</text> </target>
 
- <target name="SubSteps" level="4"> <text>Go to Teaming Administration portlet &#62; Form and view designers &#62; Entry designer.</text> </target>
+ <target name="SubSteps" level="4"> <text>Go to ICEcore Administration portlet &#62; Form and view designers &#62; Entry designer.</text> </target>
 
- <target id="bc4kurs" pid="bbn4ml9" name="Step" level="5" number="3a"> <text>Go to Teaming Administration portlet &#62; Form and view designers &#62; Entry designer.</text> </target>
+ <target id="bc4kurs" pid="bbn4ml9" name="Step" level="5" number="3a"> <text>Go to ICEcore Administration portlet &#62; Form and view designers &#62; Entry designer.</text> </target>
 
  <target id="bc4kvyp" pid="bbn4ml9" name="Step" level="5" number="3b"> <text>Click Entry definitions.</text> </target>
 
@@ -322,9 +396,9 @@
 
  <target id="bdgzeuf" pid="bbn4ml9" name="Step" level="5" number="3n"> <text>Select the "Use file name as entry title" option, then click OK.</text> </target>
 
- <target id="bc4lbep" pid="bbn4ml9" name="Step" level="5" number="3o"> <text>Exit the Teaming Administration portlet.</text> </target>
+ <target id="bc4lbep" pid="bbn4ml9" name="Step" level="5" number="3o"> <text>Exit the ICEcore Administration portlet.</text> </target>
 
- <target id="bbn548y" pid="bbn4ml9" name="Step" level="3" number="4"> <text>In Novell Teaming, create a folder of type File folder.</text> </target>
+ <target id="bbn548y" pid="bbn4ml9" name="Step" level="3" number="4"> <text>In ICEcore, create a folder of type File folder.</text> </target>
 
  <target id="bbn54nc" pid="bbn4ml9" name="Step" level="3" number="5"> <text>Within the folder, select the Manage &#62; Modify this folder menu item.</text> </target>
 
@@ -350,12 +424,12 @@
 
  <target id="bbn5ep6" pid="bbn4ml9" name="Step" level="3" number="11"> <text>Perform initial synchronization/loading by selecting the Manage this folder &#62; Synchronize menu item from the folder listing.</text> </target>
 
- <target id="b9vchng" pid="b9vchng" name="Sect1" level="1" number="2.11"> <text>Document Support</text> </target>
+ <target id="b9vchng" pid="b9vchng" name="Sect1" level="1" number="2.10"> <text>Document Support</text> </target>
 
- <target id="bf0njeb" pid="b9vchng" name="Sect2" level="2" number="2.11.1"> <text>Uploaded Files</text> </target>
+ <target id="bf0njeb" pid="b9vchng" name="Sect2" level="2" number="2.10.1"> <text>Uploaded Files</text> </target>
 
- <target id="bf0njid" pid="b9vchng" name="Sect2" level="2" number="2.11.2"> <text>Editing Support</text> </target>
+ <target id="bf0njid" pid="b9vchng" name="Sect2" level="2" number="2.10.2"> <text>Editing Support</text> </target>
 
- <target id="bf0nqzj" pid="b9vchng" name="Figure" level="3" number="Figure 2-4"> <text>Document and File Support</text> </target>
+ <target id="bf0nqzj" pid="b9vchng" name="Figure" level="3" number="Figure 2-2"> <text>Document and File Support</text> </target>
 
 </targets>

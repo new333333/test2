@@ -34,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -55,10 +56,12 @@ import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -81,6 +84,7 @@ import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
+import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
@@ -91,11 +95,9 @@ import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchUtils;
@@ -121,7 +123,9 @@ import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.util.BrowserSniffer;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 import com.sitescape.util.search.Criteria;
+
 public class BinderHelper {
 	public static final String RELEVANCE_DASHBOARD_PORTLET="ss_relevance_dashboard";
 	public static final String BLOG_SUMMARY_PORTLET="ss_blog";
@@ -830,7 +834,7 @@ public class BinderHelper {
     	itemData.put("caption", NLT.get("filter.author"));
     	// entryElements.put(EntityIndexUtils.CREATORID_FIELD, itemData);
     	// entryElements.put(EntityIndexUtils.CREATOR_NAME_FIELD, itemData);
-    	entryElements.put(EntityIndexUtils.CREATOR_TITLE_FIELD, itemData);
+    	entryElements.put(Constants.CREATOR_TITLE_FIELD, itemData);
     	
     	//creation date
     	itemData = new HashMap();
@@ -1462,15 +1466,15 @@ public class BinderHelper {
 
 		for (int count = 0; count < entries.size(); count++) {
 			Map entry = (Map)entries.get(count);
-			String type = (String)entry.get(BasicIndexUtils.DOC_TYPE_FIELD);
+			String type = (String)entry.get(Constants.DOC_TYPE_FIELD);
 			// if it's an entry, see if there's already an attachment in the list for it.
-			String docId = (String)entry.get(EntityIndexUtils.DOCID_FIELD);
-			String entityType = (String)entry.get(EntityIndexUtils.ENTITY_FIELD);
-			if (type.equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ENTRY)) {
+			String docId = (String)entry.get(Constants.DOCID_FIELD);
+			String entityType = (String)entry.get(Constants.ENTITY_FIELD);
+			if (type.equalsIgnoreCase(Constants.DOC_TYPE_ENTRY)) {
 				int i = 0;
 				for (i=0; i < count; i++) {
-					String d = (String)((Map)entries.get(i)).get(EntityIndexUtils.DOCID_FIELD);
-					String e = (String)((Map)entries.get(i)).get(EntityIndexUtils.ENTITY_FIELD);
+					String d = (String)((Map)entries.get(i)).get(Constants.DOCID_FIELD);
+					String e = (String)((Map)entries.get(i)).get(Constants.ENTITY_FIELD);
 					if (d.equalsIgnoreCase(docId) && e.equalsIgnoreCase(entityType)) {
 						// if it's already in the list, then it's an attachment, 
 						// so insert ourselves in here, add the attachment to 
@@ -1491,11 +1495,11 @@ public class BinderHelper {
 				if (i == count || count == 1) {
 					entry.put(WebKeys.ENTRY_HAS_META_HIT, true);
 				}
-			} else if (type.equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ATTACHMENT)) {
+			} else if (type.equalsIgnoreCase(Constants.DOC_TYPE_ATTACHMENT)) {
 
 				for (int i = 0; i < count; i++) {
-					String d = (String) ((Map) entries.get(i)).get(EntityIndexUtils.DOCID_FIELD);
-					String e = (String)((Map)entries.get(i)).get(EntityIndexUtils.ENTITY_FIELD);
+					String d = (String) ((Map) entries.get(i)).get(Constants.DOCID_FIELD);
+					String e = (String)((Map)entries.get(i)).get(Constants.ENTITY_FIELD);
 					if (d.equalsIgnoreCase(docId) && e.equalsIgnoreCase(entityType)) {
 						// if it's already in the list, then check if it's an
 						// entry. If it is an entry, then add this attachment to
@@ -1505,7 +1509,7 @@ public class BinderHelper {
 						// create the attachments map, and add the attachment, and this
 						// entry to it.
 						Map ent = (Map) entries.get(i);
-						String typ = (String) ent.get(BasicIndexUtils.DOC_TYPE_FIELD);
+						String typ = (String) ent.get(Constants.DOC_TYPE_FIELD);
 
 						// entry = (Map)entries.get(count);
 						// see if this entry already has attachments
@@ -1513,7 +1517,7 @@ public class BinderHelper {
 						if (attachments == null) {
 							attachments = new ArrayList();
 						}
-						if (typ.equalsIgnoreCase(BasicIndexUtils.DOC_TYPE_ATTACHMENT)) {
+						if (typ.equalsIgnoreCase(Constants.DOC_TYPE_ATTACHMENT)) {
 							attachments.add(ent);
 						}
 						attachments.add(entry);
@@ -1717,7 +1721,7 @@ public class BinderHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
-				String id = (String)entry.get(EntityIndexUtils.BINDER_ID_FIELD);
+				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
 				if (id != null) {
 					Long bId = new Long(id);
 					if (!places.containsKey(id)) {
@@ -1728,6 +1732,84 @@ public class BinderHelper {
 	    	}
     	}
     	model.put(WebKeys.WHATS_NEW_BINDER_FOLDERS, places);
+	}
+	
+	public static void setupUnseenBinderBeans(AllModulesInjected bs, Binder binder, Map model, String page) {		
+		//Get a list of unseen entries in this binder tree
+		Map options = new HashMap();
+		if (page == null || page.equals("")) page = "0";
+		Integer pageNumber = Integer.valueOf(page);
+		if (pageNumber < 0) pageNumber = 0;
+		model.put(WebKeys.PAGE_NUMBER, String.valueOf(pageNumber));
+		int intEntriesPerPage = Integer.valueOf(SPropsUtil.getString("search.whatsNew.entriesPerPage"));
+		int pageStart = pageNumber * intEntriesPerPage;
+		
+		//Prepare for a standard search operation
+		String entriesPerPage = SPropsUtil.getString("search.unseen.maxEntries");
+		options.put(ObjectKeys.SEARCH_PAGE_ENTRIES_PER_PAGE, new Integer(entriesPerPage));
+		
+		Integer searchUserOffset = 0;
+		Integer searchLuceneOffset = 0;
+		options.put(ObjectKeys.SEARCH_OFFSET, searchLuceneOffset);
+		options.put(ObjectKeys.SEARCH_USER_OFFSET, searchUserOffset);
+		
+		Integer maxHits = new Integer(entriesPerPage);
+		options.put(ObjectKeys.SEARCH_USER_MAX_HITS, maxHits);
+		
+		Integer summaryWords = new Integer(20);
+		options.put(WebKeys.SEARCH_FORM_SUMMARY_WORDS, summaryWords);
+		
+		Integer intInternalNumberOfRecordsToBeFetched = searchLuceneOffset + maxHits;
+		if (searchUserOffset > 0) {
+			intInternalNumberOfRecordsToBeFetched+=searchUserOffset;
+		}
+		options.put(ObjectKeys.SEARCH_MAX_HITS, intInternalNumberOfRecordsToBeFetched);
+
+		options.put(ObjectKeys.SEARCH_OFFSET, Integer.valueOf(0));
+		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
+		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
+		
+		List<String> trackedPlaces = new ArrayList<String>();
+		trackedPlaces.add(binder.getId().toString());
+	    //get entries created within last 30 days
+		Date creationDate = new Date();
+		creationDate.setTime(creationDate.getTime() - ObjectKeys.SEEN_TIMEOUT_DAYS*24*60*60*1000);
+		String startDate = DateTools.dateToString(creationDate, DateTools.Resolution.SECOND);
+		String now = DateTools.dateToString(new Date(), DateTools.Resolution.SECOND);
+		Criteria crit = SearchUtils.entriesForTrackedPlaces(bs, trackedPlaces);
+		crit.add(com.sitescape.util.search.Restrictions.between(
+				Constants.MODIFICATION_DATE_FIELD, startDate, now));
+		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
+		List<Map> entries = (List<Map>) results.get(ObjectKeys.SEARCH_ENTRIES);
+		SeenMap seen = bs.getProfileModule().getUserSeenMap(null);
+		List<Map> unseenEntries = new ArrayList();
+		for (Map entry : entries) {
+			//Only show the unseen entries
+			if (!seen.checkIfSeen(entry)) unseenEntries.add(entry);
+			if (unseenEntries.size() >= pageStart + intEntriesPerPage) break;
+		}
+		if (unseenEntries.size() > pageStart && unseenEntries.size() >= pageStart + intEntriesPerPage) {
+			model.put(WebKeys.WHATS_NEW_BINDER, unseenEntries.subList(pageStart, pageStart + intEntriesPerPage));
+		} else if (unseenEntries.size() > pageStart) {
+			model.put(WebKeys.WHATS_NEW_BINDER, unseenEntries.subList(pageStart, unseenEntries.size()));
+		}
+
+		if (unseenEntries.size() > pageStart) {
+			Map places = new HashMap();
+	    	Iterator it = unseenEntries.iterator();
+	    	while (it.hasNext()) {
+	    		Map entry = (Map)it.next();
+				String id = (String)entry.get(Constants.BINDER_ID_FIELD);
+				if (id != null) {
+					Long bId = new Long(id);
+					if (!places.containsKey(id)) {
+						Binder place = bs.getBinderModule().getBinder(bId);
+						places.put(id, place);
+					}
+				}
+	    	}
+	    	model.put(WebKeys.WHATS_NEW_BINDER_FOLDERS, places);
+		}
 	}
 	
 	public static void sendMailOnEntryCreate(AllModulesInjected bs, ActionRequest request, 

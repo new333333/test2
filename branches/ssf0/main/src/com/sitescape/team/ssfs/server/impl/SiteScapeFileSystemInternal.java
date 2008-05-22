@@ -62,10 +62,8 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.EmptyInputData;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.ssfs.AlreadyExistsException;
 import com.sitescape.team.ssfs.CrossContextConstants;
@@ -398,9 +396,9 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
 			Document searchFilter = DocumentHelper.createDocument();
 			Element field = searchFilter.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
 			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-			child.setText(BasicIndexUtils.DOC_TYPE_BINDER);
+			child.setText(Constants.DOC_TYPE_BINDER);
 			
 	    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
 			
@@ -408,7 +406,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			List<Map> groups = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
 			List<String> folderIds = new ArrayList();
 			for (Map groupMap: groups) {
-				String fId = (String)groupMap.get(EntityIndexUtils.DOCID_FIELD);
+				String fId = (String)groupMap.get(Constants.DOCID_FIELD);
 				if (Validator.isNotNull(fId)) folderIds.add(fId);
 				
 			}
@@ -428,7 +426,7 @@ public class SiteScapeFileSystemInternal implements SiteScapeFileSystem {
 			for (int i = 0; i < entries.size(); i++) {
 				Map ent = (Map) entries.get(i);
 				String entryIdString = (String) ent
-						.get(EntityIndexUtils.DOCID_FIELD);
+						.get(Constants.DOCID_FIELD);
 				if (Validator.isNotNull(entryIdString))
 					children.add(entryIdString);
 			}

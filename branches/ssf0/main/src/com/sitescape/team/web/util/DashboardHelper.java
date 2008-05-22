@@ -66,9 +66,7 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portlet.binder.AdvancedSearchController;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
@@ -300,7 +298,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
     	Iterator it = items.iterator();
     	while (it.hasNext()) {
     		Map entry = (Map)it.next();
-    		String entryDefId = (String)entry.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+    		String entryDefId = (String)entry.get(Constants.COMMAND_DEFINITION_FIELD);
     		entry.put(WebKeys.ENTRY_DEFINTION_ELEMENT_DATA, getDefinitionModule().getEntryDefinitionElements(entryDefId));
     	}
     	
@@ -921,7 +919,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 		
 		//Do the search and store the search results in the bean
 		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.MODIFICATION_DATE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.MODIFICATION_DATE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
 		if (data.containsKey(WebKeys.SEARCH_FORM_MAX_HITS)) {
 			try {
@@ -986,13 +984,13 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					Document searchFilter2 = DocumentHelper.createDocument();
 					Element rootElement = searchFilter2.addElement(Constants.AND_ELEMENT);
 					Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
-					field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+					field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
 					Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-					child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
+					child.setText(Constants.DOC_TYPE_ENTRY);
 					field = rootElement.addElement(Constants.FIELD_ELEMENT);
-					field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+					field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
 					child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-					child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
+					child.setText(Constants.ENTRY_TYPE_ENTRY);
 					options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
 				}
 			}
@@ -1361,17 +1359,17 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 
 	protected String resolveBinder(Binder binder, String viewType) {
 		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 		//	get them all
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
 		Map results = getBinderModule().getBinders(binder, options);
 		List<Map> binders = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 		for (Map b:binders) {
-			String defId = (String)b.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+			String defId = (String)b.get(Constants.COMMAND_DEFINITION_FIELD);
 			Definition def = getDefinitionModule().getDefinition(defId);
 			String type = DefinitionUtils.getViewType(def.getDefinition());
-			if (viewType.equals(type)) return (String)b.get(EntityIndexUtils.DOCID_FIELD);
+			if (viewType.equals(type)) return (String)b.get(Constants.DOCID_FIELD);
 		}	
 		return null;
 

@@ -28,6 +28,9 @@
  */
 package com.sitescape.team.samples.remoteapp.web;
 
+import static com.sitescape.util.search.Constants.*;
+import static com.sitescape.util.search.Restrictions.eq;
+
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -55,92 +58,91 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
-import com.sitescape.team.module.folder.FolderModule;
-import com.sitescape.team.module.shared.EntityIndexUtils;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.util.search.Constants;
-import com.sitescape.team.search.filter.SearchFilterKeys;
+import com.sitescape.util.search.Criteria;
 import com.sitescape.team.task.TaskHelper;
-import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.util.servlet.StringServletResponse;
 
 public class TaskListServlet extends HttpServlet {
 
 	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingService";
+
 	private static final Long PROFILE_BINDER_ID = Long.valueOf(2);
-	
+
 	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
+
 	private static final String PARAMETER_NAME_VERSION = "ss_version";
+
 	private static final String PARAMETER_NAME_APPLICATION_ID = "ss_application_id";
+
 	private static final String PARAMETER_NAME_USER_ID = "ss_user_id";
+
 	private static final String PARAMETER_NAME_ACCESS_TOKEN = "ss_access_token";
 
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
-	throws ServletException, IOException {
+	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+			throws ServletException, IOException {
 		try {
 			String action = req.getParameter(PARAMETER_NAME_ACTION);
 			String version = req.getParameter(PARAMETER_NAME_VERSION);
-			String applicationId = req.getParameter(PARAMETER_NAME_APPLICATION_ID);
+			String applicationId = req
+					.getParameter(PARAMETER_NAME_APPLICATION_ID);
 			String userId = req.getParameter(PARAMETER_NAME_USER_ID);
 			String accessToken = req.getParameter(PARAMETER_NAME_ACCESS_TOKEN);
-			
+
 			List taskList = getTaskList(accessToken, Long.valueOf(userId));
-			
-			String jsp = "/WEB-INF/jsp/tasklist/view_task_list.jsp";				
-			RequestDispatcher rd = req.getRequestDispatcher(jsp);	
+
+			String jsp = "/WEB-INF/jsp/tasklist/view_task_list.jsp";
+			RequestDispatcher rd = req.getRequestDispatcher(jsp);
 			StringServletResponse resp2 = new StringServletResponse(resp);
 			req.setAttribute("taskList", taskList);
-			rd.include(req, resp2);	
+			rd.include(req, resp2);
 			resp.getWriter().print(resp2.getString());
-		}
-		catch(IOException e) {
+		} catch (IOException e) {
 			throw e;
-		}
-		catch(Exception e) {
+		} catch (Exception e) {
 			throw new ServletException(e);
 		}
 	}
 
-	private List getTaskList(String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
+	private List getTaskList(String accessToken, Long userId)
+			throws ServiceException, DocumentException, RemoteException {
 		List taskList = new ArrayList();
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		Document query = DocumentHelper.createDocument();
-		Element rootElement = query.addElement(Constants.AND_ELEMENT);
-		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.FAMILY_FIELD);
-		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(EntityIndexUtils.FAMILY_FIELD_TASK);
-		field = rootElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
-		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
-		field = rootElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME);
-		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(userId.toString());
-		String searchResultsAsXML = stub.search_search(accessToken, query.asXML(), 0, 10);
-		
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator
+				.getTeamingService();
+
+		Criteria crit = new Criteria();
+		crit.add(eq(FAMILY_FIELD, FAMILY_FIELD_TASK))
+			.add(eq(ENTRY_TYPE_FIELD, ENTRY_TYPE_ENTRY))
+			.add(eq(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME, userId.toString()));
+
+		Document query = crit.toQuery();
+
+		String searchResultsAsXML = stub.search_search(accessToken, query
+				.asXML(), 0, 10);
+
 		Document doc = DocumentHelper.parseText(searchResultsAsXML);
 		Element rootElem = doc.getRootElement();
-		
+
 		Iterator entryIterator = rootElem.elementIterator();
 		while (entryIterator.hasNext()) {
 			Element entryEle = (Element) entryIterator.next();
-			Long docId = Long.valueOf(((String)entryEle.attributeValue("id")));
-			Long binderId = Long.valueOf(((String)entryEle.attributeValue("binderId")));
+			Long docId = Long.valueOf(((String) entryEle.attributeValue("id")));
+			Long binderId = Long.valueOf(((String) entryEle
+					.attributeValue("binderId")));
 			Map entryMap = new HashMap();
-			entryMap.put("id", Long.valueOf(((String)entryEle.attributeValue("id"))));
-			entryMap.put("binderId", Long.valueOf(((String)entryEle.attributeValue("binderId"))));
-			entryMap.put("title", (String)entryEle.attributeValue("title"));
-			entryMap.put("href", (String)entryEle.attributeValue("href"));
+			entryMap.put("id", Long.valueOf(((String) entryEle
+					.attributeValue("id"))));
+			entryMap.put("binderId", Long.valueOf(((String) entryEle
+					.attributeValue("binderId"))));
+			entryMap.put("title", (String) entryEle.attributeValue("title"));
+			entryMap.put("href", (String) entryEle.attributeValue("href"));
 			taskList.add(entryMap);
 		}
-		
+
 		return taskList;
 	}
 }

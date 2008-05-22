@@ -46,7 +46,6 @@ import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.EntryBuilder;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
@@ -66,6 +65,7 @@ import com.sitescape.team.util.StatusTicket;
 import com.sitescape.team.web.util.DashboardHelper;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 
 public class TemplateModuleImpl extends CommonDependencyInjection implements
 		TemplateModule {
@@ -636,7 +636,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 
 		IndexSynchronizationManager.discardChanges();
 	 	//need to reindex binder tree, cause of copy Attributes code
-		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.ENTRY_ANCESTRY, top.getId().toString()));
+		IndexSynchronizationManager.deleteDocuments(new Term(Constants.ENTRY_ANCESTRY, top.getId().toString()));
 	 	loadBinderProcessor(top).indexTree(top, null, StatusTicket.NULL_TICKET);
 	 	//top will be evicted, reread
 		getCoreDao().refresh(top);

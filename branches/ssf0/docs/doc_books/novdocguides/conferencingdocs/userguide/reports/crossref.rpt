@@ -2042,7 +2042,7 @@
    <String `Cross-Reference Report for userguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `10/31/2007 4:03:36 PM'>
+   <String `5/16/2008 10:09:24 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2066,7 +2066,7 @@
   <ParaLine 
    <String `XrefInt'>
    <Char Tab> 
-   <String `95'>
+   <String `148'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2076,7 +2076,7 @@
   <ParaLine 
    <String `XrefIntText'>
    <Char Tab> 
-   <String `10'>
+   <String `7'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2106,7 +2106,7 @@
   <ParaLine 
    <String `Ulink'>
    <Char Tab> 
-   <String `0'>
+   <String `6'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2116,7 +2116,79 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `105'>
+   <String `161'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `front.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Element'>
+   <Char Tab> 
+   <String `Total'>
+   <Char Tab> 
+   <String `Invalid'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `Ulink'>
+   <Char Tab> 
+   <String `4'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Total'>
+   <Char Tab> 
+   <String `4'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `preface.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Element'>
+   <Char Tab> 
+   <String `Total'>
+   <Char Tab> 
+   <String `Invalid'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTab'>
+  <ParaLine 
+   <String `Ulink'>
+   <Char Tab> 
+   <String `2'>
+   <Char Tab> 
+   <String `0'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `CenterTabBold'>
+  <ParaLine 
+   <String `Total'>
+   <Char Tab> 
+   <String `2'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2142,7 +2214,7 @@
   <ParaLine 
    <String `XrefInt'>
    <Char Tab> 
-   <String `8'>
+   <String `22'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2162,7 +2234,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `9'>
+   <String `23'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2188,7 +2260,7 @@
   <ParaLine 
    <String `XrefInt'>
    <Char Tab> 
-   <String `33'>
+   <String `63'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2198,7 +2270,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `33'>
+   <String `63'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2224,7 +2296,7 @@
   <ParaLine 
    <String `XrefInt'>
    <Char Tab> 
-   <String `54'>
+   <String `63'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2234,7 +2306,7 @@
   <ParaLine 
    <String `XrefIntText'>
    <Char Tab> 
-   <String `9'>
+   <String `6'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine
@@ -2244,7 +2316,7 @@
   <ParaLine 
    <String `Total'>
    <Char Tab> 
-   <String `63'>
+   <String `69'>
    <Char Tab> 
    <String `0'>
   > # end of ParaLine

@@ -33,7 +33,7 @@ import java.util.Map;
 
 import org.apache.lucene.document.Field;
 
-import com.sitescape.team.module.profile.index.ProfileIndexUtils;
+import com.sitescape.util.search.Constants;
 
 /**
  * Implement here cause not all fields are included on every form
@@ -49,16 +49,16 @@ public class FieldBuilderProfileElement extends AbstractFieldBuilder {
         }
         //email and zonName are indexed by default so they can be used in folderListing
     	if ("firstName".equals(dataElemName))  {
-   	        Field nameField = new Field(ProfileIndexUtils.FIRSTNAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
+   	        Field nameField = new Field(Constants.FIRSTNAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
    	        return new Field[] {nameField};
     	} else if ("middleName".equals(dataElemName)) {
-   	        Field nameField = new Field(ProfileIndexUtils.MIDDLENAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
+   	        Field nameField = new Field(Constants.MIDDLENAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
   	        return new Field[] {nameField};    		
        	} else if ("lastName".equals(dataElemName)) {
-   	        Field nameField = new Field(ProfileIndexUtils.LASTNAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
+   	        Field nameField = new Field(Constants.LASTNAME_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
   	        return new Field[] {nameField};    		
       	} else if ("organization".equals(dataElemName)) {
-   	        Field nameField = new Field(ProfileIndexUtils.ORGANIZATION_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
+   	        Field nameField = new Field(Constants.ORGANIZATION_FIELD, val, Field.Store.YES, Field.Index.TOKENIZED);
   	        return new Field[] {nameField};    			
     	}
     	return new Field[0];

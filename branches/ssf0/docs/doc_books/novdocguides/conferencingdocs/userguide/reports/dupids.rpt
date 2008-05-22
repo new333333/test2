@@ -2042,7 +2042,7 @@
    <String `Dupicate Id Report for userguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `10/31/2007 4:03:36 PM'>
+   <String `5/16/2008 10:09:24 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2054,13 +2054,13 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `sitescape_front.fm has no duplicate id(s)'>
+   <String `front.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `sitescape_preface.fm has no duplicate id(s)'>
+   <String `preface.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
  <Para 
