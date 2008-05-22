@@ -1018,6 +1018,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String view = "tag_jsps/tree/get_tree_div";
 		if (user.getDisplayStyle() != null && 
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()) &&
 				user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			view = "tag_jsps/tree/get_tree_div_accessible";
 		} else {

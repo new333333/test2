@@ -389,7 +389,7 @@ public class BinderHelper {
 			catch(AccessControlException e) {
 				if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 					//Access is not allowed
-					throw e;
+					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
 				} else {
 					//Please log in
 					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
