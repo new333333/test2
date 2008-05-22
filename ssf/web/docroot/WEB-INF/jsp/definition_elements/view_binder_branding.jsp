@@ -30,6 +30,7 @@
 %>
 <% //Branding view %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${!empty ssBinder}">
 <c:set var="binder" value="${ssBinder}"/>
 <jsp:useBean id="binder" type="com.sitescape.team.domain.Binder" />
 <%
@@ -44,4 +45,5 @@
     <span><ssf:markup type="view" entity="${binder}"><c:out 
       value="${binder.branding}" escapeXml="false"/></ssf:markup></span>
   </div>
+</c:if>
 </c:if>
