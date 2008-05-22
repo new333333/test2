@@ -34,6 +34,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
@@ -128,8 +129,10 @@ public abstract class Dashboard extends PersistentTimestampObject {
         this.properties = properties;
     }
     public void setProperty(String name, Object value) {
-    	if (properties == null) properties = new HashMap();
-    	properties.put(name, value);
+  	   if (value instanceof Object[]) throw new IllegalArgumentException("Arrays not supported");
+  	   if (value instanceof Document) throw new IllegalArgumentException("XML docs not supported");
+  	   if (properties == null) properties = new HashMap();
+  	   properties.put(name, value);
     }
     public Object getProperty(String name) {
     	if (properties == null) return null;

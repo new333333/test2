@@ -56,6 +56,7 @@ import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.team.NoObjectByTheIdException;
@@ -999,7 +1000,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        	SessionFactory sf = getSessionFactory();
     	Session s = sf.openSession();
     	try {
-    		s.save(obj);
     		s.flush();
     	} finally {
     		s.close();
@@ -1311,43 +1311,101 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	        }
 	     );
 	}
-	public UserDashboard loadUserDashboard(final EntityIdentifier ownerId, final Long binderId) {
-		List result = (List)getHibernateTemplate().execute(
+	public UserDashboard loadUserDashboard(final EntityIdentifier ownerId, final Long binderId) {		
+			return (UserDashboard)getHibernateTemplate().execute(
 				new HibernateCallback() {
 		            public Object doInHibernate(Session session) throws HibernateException {
-	            		return session.createCriteria(UserDashboard.class)
-	            		.add(Expression.eq("binderId", binderId))
-	            		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
-	            		.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
-	            		.setCacheable(true)
-	            		.list();
+	        			Criteria crit = session.createCriteria(UserDashboard.class)
+	        				.add(Expression.eq("binderId", binderId))
+	        				.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
+	        				.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
+	        				.setCacheable(true);
+		        		try {
+		        			List result = crit.list();
+		        			if (result.isEmpty()) return null;
+		        			return result.get(0);
+		        		} catch (HibernateException se) {
+		        			if (se.getCause() instanceof java.io.InvalidClassException) {
+		        				crit.setProjection(Projections.property("id"));
+		        				crit.setCacheable(false);
+		        				List objs = crit.list();
+		        				if (objs.isEmpty()) return Collections.EMPTY_LIST;
+		        				String id = (String)objs.get(0);
+		        				//bad serialized data - get rid of it
+		        				executeDashboardClear(id);
+		        				return session.get(UserDashboard.class, id);
+		        			} else throw se;
+		        		}
 		            }
-		        }
-		 );
-		if (result.isEmpty()) return null;
-		return (UserDashboard)result.get(0);
+				}
+			);
 	}
 	public EntityDashboard loadEntityDashboard(final EntityIdentifier ownerId) {
-		List result = (List)getHibernateTemplate().execute(
+		return (EntityDashboard)getHibernateTemplate().execute(
 				new HibernateCallback() {
-		            public Object doInHibernate(Session session) throws HibernateException {
-		            		return session.createCriteria(EntityDashboard.class)
-		            		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
-		            		.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
-		            		.setCacheable(true)
-		            		.list();
+					public Object doInHibernate(Session session) throws HibernateException {
+						Criteria crit = session.createCriteria(EntityDashboard.class)
+							.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
+							.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
+							.setCacheable(true);
+						try {
+		            		List result = crit.list();
+		            		if (result.isEmpty()) return null;
+		            		return result.get(0);
 		            		
-		            }
-		        }
-		 );
-		if (result.isEmpty()) return null;
-		return (EntityDashboard)result.get(0);
+		        		} catch (HibernateException se) {
+		        			if (se.getCause() instanceof java.io.InvalidClassException) {
+								//bad serialized data - get rid of it
+								crit.setProjection(Projections.property("id"));
+								crit.setCacheable(false);
+								List objs = crit.list();
+								if (objs.isEmpty()) return Collections.EMPTY_LIST;
+								String id = (String)objs.get(0);
+								//bad serialized data - get rid of it
+								executeDashboardClear(id);
+								return session.get(EntityDashboard.class, id);
+							} else throw se;
+						}
+					}
+				}
+		);
 	}
 
 	public Dashboard loadDashboard(String id, Long zoneId) {
-		Dashboard d = (Dashboard)getHibernateTemplate().get(Dashboard.class, id);
-        if (d != null || d.getZoneId().equals(zoneId)) return d;
-        throw new NoObjectByTheIdException("errorcode.no.dashboard.by.the.id", id);
+		Dashboard d=null;
+		try {
+			d = (Dashboard)getHibernateTemplate().get(Dashboard.class, id);
+		} catch (HibernateException se) {
+			if (se.getCause() instanceof java.io.InvalidClassException) {
+				//bad serialized data - get rid of it
+				executeDashboardClear(id);
+				d = (Dashboard)getHibernateTemplate().get(Dashboard.class, id);
+				
+			} else throw se;
+		}
+		if (d != null || d.getZoneId().equals(zoneId)) return d;
+		throw new NoObjectByTheIdException("errorcode.no.dashboard.by.the.id", id);
+	}
+	//At one point dom4j (1.5) objects where serialized,  don4j(1.6) does not recognize them
+	//Somewhere along the way we changed it so we saved the string value instead of the serialized object, but 
+	//occasionally they pop up at home.
+	private void executeDashboardClear(final String id) {
+       	SessionFactory sf = getSessionFactory();
+    	Session session = sf.openSession();
+		Statement statement = null;
+    	try {
+    		statement = session.connection().createStatement();
+    		statement.executeUpdate("update SS_Dashboards set properties=null where id='" + id + "'");
+    		Dashboard d = (Dashboard)session.get(Dashboard.class, id);
+    		d.setProperties(new HashMap());
+    		session.flush();
+    	} catch (SQLException sq) {
+    		throw new HibernateException(sq);
+    	} finally {
+    		try {if (statement != null) statement.close();} catch (Exception ex) {};
+    		session.close();
+    	}
+
 	}
 	//Don't use , only for special cases
 	public void executeUpdate(final String queryStr) {
