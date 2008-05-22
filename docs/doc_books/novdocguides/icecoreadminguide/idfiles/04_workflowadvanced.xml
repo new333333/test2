@@ -4,7 +4,23 @@
 
  <target id="bbfelt9" pid="bbfelt9" name="Chapter" level="0" number="5"> <text>Advanced Workflow</text> </target>
 
- <target id="b9xeakc" pid="b9xeakc" name="Sect1" level="1" number="5.1"> <text>Adding a Question to the Workflow</text> </target>
+ <target id="bf8sc30" pid="bf8sc30" name="Sect1" level="1" number="5.1"> <text>Reviewing the Workflow Features</text> </target>
+
+ <target id="bf8sdtk" pid="bf8sc30" name="Procedure" level="2" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+
+ <target id="bf8uwgf" pid="bf8sc30" name="Step" level="3" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+
+ <target id="bf8spn4" pid="bf8sc30" name="Step" level="3" number="2"> <text>Click Workflow designer.</text> </target>
+
+ <target id="bf8spn5" pid="bf8sc30" name="Step" level="3" number="3"> <text>Expand Workflow processes.</text> </target>
+
+ <target id="bf8spn6" pid="bf8sc30" name="Step" level="3" number="4"> <text>Click PTO Request.</text> </target>
+
+ <target id="bf8strh" pid="bf8sc30" name="Figure" level="2" number="Figure 5-1"> <text>Workflow Designer</text> </target>
+
+ <target id="bf8t7ts" pid="bf8sc30" name="Figure" level="2" number="Figure 5-2"> <text>Workflow State Features</text> </target>
+
+ <target id="b9xeakc" pid="b9xeakc" name="Sect1" level="1" number="5.2"> <text>Adding a Question to the Workflow</text> </target>
 
  <target id="bf19fcm" pid="b9xeakc" name="Table" level="2" number="Table 5-1"> <text>PTO Request Process</text> </target>
 
@@ -20,9 +36,9 @@
 
  <target id="b9xec18" pid="b9xeakc" name="row" level="3"> <text>HR has entered the approved vacation</text> </target>
 
- <target id="b9xecwj" pid="b9xeakc" name="Procedure" level="2" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
+ <target id="b9xecwj" pid="b9xeakc" name="Procedure" level="2" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
 
- <target id="bbh109a" pid="b9xeakc" name="Step" level="3" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
+ <target id="bf8t6ag" pid="b9xeakc" name="Step" level="3" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
 
  <target id="bbh10ei" pid="b9xeakc" name="Step" level="3" number="2"> <text>Click Workflow designer.</text> </target>
 
@@ -48,13 +64,13 @@
 
  <target id="bbgyj8s" pid="b9xeakc" name="Step" level="3" number="13"> <text>Repeat Step 9 through Step 12 to add a "No" response to this Workflow question.</text> </target>
 
- <target id="b9xe8xd" pid="b9xe8xd" name="Sect1" level="1" number="5.2"> <text>Adding Transitions on Response</text> </target>
+ <target id="b9xe8xd" pid="b9xe8xd" name="Sect1" level="1" number="5.3"> <text>Adding Transitions on Response</text> </target>
 
- <target id="b9xego1" pid="b9xe8xd" name="Sect2" level="2" number="5.2.1"> <text>Adding the Response Transitions</text> </target>
+ <target id="b9xego1" pid="b9xe8xd" name="Sect2" level="2" number="5.3.1"> <text>Adding the Response Transitions</text> </target>
 
- <target id="b9xegwi" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
+ <target id="b9xegwi" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
 
- <target id="bf19fcn" pid="b9xe8xd" name="Step" level="4" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
+ <target id="bf8t6ah" pid="b9xe8xd" name="Step" level="4" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
 
  <target id="bf19fco" pid="b9xe8xd" name="Step" level="4" number="2"> <text>Click Workflow designer.</text> </target>
 
@@ -78,11 +94,11 @@
 
  <target id="bbgzt4p" pid="b9xe8xd" name="Step" level="4" number="12"> <text>Repeat this procedure to add a Transition on response for the "No" Workflow response (approve_request_no) that transitions to the Deny state.</text> </target>
 
- <target id="b9xeakf" pid="b9xe8xd" name="Sect2" level="2" number="5.2.2"> <text>Removing Older Transitions</text> </target>
+ <target id="b9xeakf" pid="b9xe8xd" name="Sect2" level="2" number="5.3.2"> <text>Removing Older Transitions</text> </target>
 
- <target id="b9xfd3i" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
+ <target id="b9xfd3i" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
 
- <target id="bf19fcs" pid="b9xe8xd" name="Step" level="4" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
+ <target id="bf8t6ai" pid="b9xe8xd" name="Step" level="4" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
 
  <target id="bf19fct" pid="b9xe8xd" name="Step" level="4" number="2"> <text>Click Workflow designer.</text> </target>
 

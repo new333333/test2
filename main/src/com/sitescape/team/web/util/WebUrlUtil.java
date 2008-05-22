@@ -111,6 +111,10 @@ public class WebUrlUtil {
 		return getSSFContextRootURL(req, secure, getAdapterWebProtocol()).append("a/").toString();
 	}
 	
+	public static String getAdapterRootURL(boolean secure, String hostname, int port) {
+		return getSSFContextRootURL(secure, hostname.toLowerCase(), port).append("a/").toString();
+	}
+	
 	public static String getServletRootURL() {
 		return getServletRootURL((HttpServletRequest) null, false);
 	}
@@ -262,6 +266,16 @@ public class WebUrlUtil {
 			ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
 		else
 			ctx = req.getContextPath();
+		sb.append(ctx).append("/");
+		
+		return sb;
+	}
+	
+	private static StringBuffer getSSFContextRootURL(boolean secure, String hostname, int port) {
+		StringBuffer sb = getHostAndPort(WebApp.SSF, hostname, port, secure, false);
+		
+		String ctx = SPropsUtil.getString(SPropsUtil.SSF_CTX, "/ssf");
+
 		sb.append(ctx).append("/");
 		
 		return sb;

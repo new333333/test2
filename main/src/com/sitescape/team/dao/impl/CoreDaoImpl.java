@@ -54,6 +54,7 @@ import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
@@ -87,6 +88,7 @@ import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.Subscription;
 import com.sitescape.team.domain.Tag;
 import com.sitescape.team.domain.TemplateBinder;
@@ -96,6 +98,7 @@ import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.security.function.Function;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -310,6 +313,12 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   				.setLong("entityId", binder.getId())
 		   			   	.setParameter("entityType", binder.getEntityType().getValue())
 		   			   	.executeUpdate();
+		   			//delete simple names for this binder
+		   			@SuppressWarnings("unchecked")
+		   			List<SimpleName> names = session.createCriteria(SimpleName.class).add(Restrictions.eq("binderId", binder.getId())).list();
+		   			for (SimpleName name : names ) {
+		   				session.delete(name);
+		   			}
 
 		   			if (entryClass != null) {
 		   				//finally delete the entries
@@ -318,13 +327,12 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		       	   				.executeUpdate();		 		   				
 		   			}
 		   			//do ourselves or hibernate will flsuh
-		   			session.createQuery("Delete  com.sitescape.team.domain.Binder where id=:id")
-		   		    	.setLong("id", binder.getId().longValue())
-		   		    	.executeUpdate();
+		   			session.delete(binder);
 		   			
 		   			if (!binder.isRoot()) {
 		   				session.getSessionFactory().evictCollection("com.sitescape.team.domain.Binder.binders", binder.getParentBinder().getId());
 		   			}
+		   			session.flush();
 		   			session.evict(binder);
 		   			
 		   			return null;
@@ -1018,6 +1026,17 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
   		return post;
 		
 	}
+	public PostingDef findPosting(final String emailAddress, Long zoneId) {
+		return (PostingDef)getHibernateTemplate().execute(
+		        new HibernateCallback() {
+		            public Object doInHibernate(Session session) throws HibernateException {
+	               		return session.createCriteria(PostingDef.class)
+	               						.add(Expression.eq("emailAddress", emailAddress))
+	               						.uniqueResult();
+		            }
+		        }
+		     );
+	}
 
 	//build collections manually as an optimization for indexing
 	//evict from session cache, so no longer available to everyone else
@@ -1454,4 +1473,26 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
             );  
        return result;   	
     }
+
+	public SimpleName loadSimpleName(String name, String type, Long zoneId) {
+		return (SimpleName) getHibernateTemplate().get(SimpleName.class, new SimpleName(zoneId, name, type));
+	}
+
+	public List<SimpleName> loadSimpleNames(final String type, final Long binderId, final Long zoneId) {
+        return (List)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        List<SimpleName> results = session.createCriteria(SimpleName.class)
+                        	.add(Expression.eq("zoneId", zoneId))
+                        	.add(Expression.eq("type", type))
+                        	.add(Expression.eq("binderId", binderId))
+                        	.setCacheable(true)
+                        	.addOrder(Order.asc("name"))
+                        	.list();
+                    	return results;
+                    }
+                }
+            );
+
+	}
  }

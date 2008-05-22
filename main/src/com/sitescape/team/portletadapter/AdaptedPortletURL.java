@@ -51,6 +51,13 @@ public class AdaptedPortletURL {
 	private Map params;
 	private Boolean secure;
 	
+	// Normally, hostname and port are taken either from the runtime context 
+	// or from the configuration. The following two fields are used only for
+	// the special situations where the application wishes to suppress the
+	// default behavior with supplied values.
+	private String hostname;
+	private Integer port;
+	
 	private final String ACTION_FALSE = "0";
 	private final String ACTION_TRUE = "1";
 
@@ -103,6 +110,22 @@ public class AdaptedPortletURL {
 	}
 	
 	/**
+	 * Note: The web/portlet controllers serving browser-based client must 
+	 *       *never* use this method. This method is reserved exclusive
+	 *       for other types of clients (eg. email notification, rss, and
+	 *       web services) that need to create valid adapted porlet urls
+	 *       initiated from non web-based interactions. 
+	 * 
+	 * @param portletName
+	 * @param action
+	 * @return
+	 */
+	public static AdaptedPortletURL createAdaptedPortletURLOutOfWebContext
+		(String portletName, boolean action, boolean isSecure, String hostname, int port) {
+		return new AdaptedPortletURL(portletName, action, isSecure, hostname, port);
+	}
+	
+	/**
 	 * Construct an adapted portlet URL without using <code>HttpServletRequest</code>
 	 * or <code>PortletRequest</code>.
 	 * The necessary information such as hostname, port number, etc., are read in
@@ -121,6 +144,13 @@ public class AdaptedPortletURL {
 		this.action = action;
 		this.secure = Boolean.FALSE;
 		this.params = new HashMap();
+	}
+	
+	private AdaptedPortletURL(String portletName, boolean action, boolean isSecure, String hostname, int port) {
+		this(portletName, action);
+		this.secure = Boolean.valueOf(isSecure);
+		this.hostname = hostname;
+		this.port = port;
 	}
 	
 	public void setParameter(String name, String value) {
@@ -185,7 +215,9 @@ public class AdaptedPortletURL {
 		
 		String adapterRootURL = null;
 		
-		if(sreq != null)
+		if(secure != null && hostname != null && port != null)
+			adapterRootURL = WebUrlUtil.getAdapterRootURL(secure, hostname, port);
+		else if(sreq != null)
 			adapterRootURL = WebUrlUtil.getAdapterRootURL(sreq, secure);
 		else
 			adapterRootURL = WebUrlUtil.getAdapterRootURL(preq, secure);

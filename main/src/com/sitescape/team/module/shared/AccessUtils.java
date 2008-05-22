@@ -45,7 +45,6 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WfAcl;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.WorkflowSupport;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.AccessControlManager;
 import com.sitescape.team.security.acl.AclAccessControlException;
@@ -56,6 +55,7 @@ import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 
 public class AccessUtils  {
 	private static AccessUtils instance; // A singleton instance
@@ -110,19 +110,19 @@ public class AccessUtils  {
 		 * access to folder (((folderAcl:1,2,3) OR (folderAcl:team and teamAcl:1,2,3)) AND
 		 * access to entry ((entryAcl:all,1,2,3) OR (entryAcl:team and teamAcl:1,2,3)))
 		 */
-		Element acl = (Element)parent.selectSingleNode(BasicIndexUtils.FOLDER_ACL_FIELD);
+		Element acl = (Element)parent.selectSingleNode(Constants.FOLDER_ACL_FIELD);
 		String folderAcl = null;
 		if (acl != null) folderAcl = acl.getText();
 		if (folderAcl == null) folderAcl = "";
 		String[] folderAclArray = folderAcl.split(" ");
 	 
-		acl = (Element)parent.selectSingleNode(BasicIndexUtils.ENTRY_ACL_FIELD);   	
+		acl = (Element)parent.selectSingleNode(Constants.ENTRY_ACL_FIELD);   	
 		String entryAcl=null;
 		if (acl != null) entryAcl = acl.getText();
-		if (Validator.isNull(entryAcl)) entryAcl = BasicIndexUtils.READ_ACL_ALL;
+		if (Validator.isNull(entryAcl)) entryAcl = Constants.READ_ACL_ALL;
 		String []entryAclArray = entryAcl.split(" ");
 
-		acl = (Element)parent.selectSingleNode(BasicIndexUtils.TEAM_ACL_FIELD);   	
+		acl = (Element)parent.selectSingleNode(Constants.TEAM_ACL_FIELD);   	
 		String teamAcl=null;
 		if (acl != null) teamAcl = acl.getText();
 		if (Validator.isNull(teamAcl)) teamAcl = "";
@@ -132,13 +132,13 @@ public class AccessUtils  {
 			/* access to folder ((entryAcl:all and folderAcl:1,2,3) OR (entryAcl:all and folderAcl:team and teamAcl:1,2,3)
 			 * access to entry  OR (entryAcl:1,2,3) OR (entryAcl:team AND teamAcl:1,2,3))
 			 * */ 
-			if (entryAcl.equals(BasicIndexUtils.READ_ACL_ALL)) {
+			if (entryAcl.equals(Constants.READ_ACL_ALL)) {
 				//(entryAcl:all and folderAcl:1,2,3)
 				for (int i=0; i<folderAclArray.length; ++i) {
 					if (userIds.contains(folderAclArray[i])) return true;
 				}
 				//(entryAcl:all and folderAcl:team and teamAcl:1,2,3)
-				if (folderAcl.contains(BasicIndexUtils.READ_ACL_TEAM)) {
+				if (folderAcl.contains(Constants.READ_ACL_TEAM)) {
 					for (int i=0; i<teamAclArray.length; ++i) {
 						if (userIds.contains(teamAclArray[i])) return true;
 					}
@@ -151,7 +151,7 @@ public class AccessUtils  {
 				if (userIds.contains(entryAclArray[i])) return true;
 			}
 			//(entryAcl:team AND teamAcl:1,2,3))
-			if (entryAcl.contains(BasicIndexUtils.READ_ACL_TEAM)) {
+			if (entryAcl.contains(Constants.READ_ACL_TEAM)) {
 				for (int i=0; i<teamAclArray.length; ++i) {
 					if (userIds.contains(teamAclArray[i])) return true;
 				}
@@ -174,7 +174,7 @@ public class AccessUtils  {
 			}
 			if (!found) {
 				//folderAcl:team and teamAcl:1,2,3
-				if (folderAcl.contains(BasicIndexUtils.READ_ACL_TEAM)) {
+				if (folderAcl.contains(Constants.READ_ACL_TEAM)) {
 					for (int i=0; i<teamAclArray.length; ++i) {
 						if (userIds.contains(teamAclArray[i])){
 							found =true;
@@ -187,12 +187,12 @@ public class AccessUtils  {
 			if (!found) return false;				
 			//check entry for match ((entryAcl:all,1,2,3) OR (entryAcl:team and teamAcl:1,2,3)))
 			//(entryAcl:all,1,2,3)
-			if (entryAcl.equals(BasicIndexUtils.READ_ACL_ALL)) return true;
+			if (entryAcl.equals(Constants.READ_ACL_ALL)) return true;
 			for (int i=0; i<entryAclArray.length; ++i) {
 				if (userIds.contains(entryAclArray[i])) return true;
 			}
 			//(entryAcl:team and teamAcl:1,2,3)
-			if (entryAcl.contains(BasicIndexUtils.READ_ACL_TEAM)) {
+			if (entryAcl.contains(Constants.READ_ACL_TEAM)) {
 				for (int i=0; i<teamAclArray.length; ++i) {
 					if (userIds.contains(teamAclArray[i])) return true;
 				}

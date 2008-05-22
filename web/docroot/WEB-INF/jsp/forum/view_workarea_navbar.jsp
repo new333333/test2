@@ -148,6 +148,13 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 }
 </script>
 
+<c:if test="${!empty ssBinder.branding}">
+  <div>
+    <span><ssf:markup type="view" entity="${ssBinder}"><c:out 
+      value="${ssBinder.branding}" escapeXml="false"/></ssf:markup></span>
+  </div>
+</c:if>
+
 <div id="ss_top_nav_wrapper">
 <div class="ss_5colmask ss_fivecol">
 

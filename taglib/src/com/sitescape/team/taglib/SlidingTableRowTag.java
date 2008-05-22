@@ -40,6 +40,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableColumnAncestorTag {
 	private String _id = "";
+	private String _oddStyle = "";
+	private String _evenStyle = "";
 	private Boolean _headerRow;
 	private List _columns;
 
@@ -64,7 +66,7 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 			//Add the built up row to the table
 			if (_headerRow == null) _headerRow = new Boolean(false);
 			if (_id == null) _id = "";
-			slidingTableRowAncestor.addRow(_id, _columns, _headerRow);
+			slidingTableRowAncestor.addRow(_id, _columns, _headerRow, _oddStyle, _evenStyle);
 
 			return EVAL_PAGE;
 		}
@@ -74,6 +76,8 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 		finally {
 			_columns = null;
 			_id = "";
+			_oddStyle = "";
+			_evenStyle = "";
 			_headerRow = null;
 		}
 	}
@@ -92,6 +96,12 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 
 	public void setId(String id) {
 		_id = id;
+	}
+	public void setOddStyle(String style) {
+		_oddStyle = style;
+	}
+	public void setEvenStyle(String style) {
+		_evenStyle = style;
 	}
 	public void setHeaderRow(Boolean headerRow) {
 		_headerRow = headerRow;

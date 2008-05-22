@@ -52,7 +52,6 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.SpringContextUtil;
@@ -162,7 +161,7 @@ public class SearchFilterToSearchBooleanConverter {
 		    			addEventField(block, filterTerm);    	    			
 			    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
 			    		String fieldName = filterTerm.attributeValue(SearchFilterKeys.FilterElementName, "");
-			    		if (fieldName.equalsIgnoreCase(EntityIndexUtils.CREATION_DAY_FIELD) || fieldName.equalsIgnoreCase(EntityIndexUtils.MODIFICATION_DAY_FIELD)) 
+			    		if (fieldName.equalsIgnoreCase(Constants.CREATION_DAY_FIELD) || fieldName.equalsIgnoreCase(Constants.MODIFICATION_DAY_FIELD)) 
 			    			addDayRange(block, fieldName, filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
 			    		else
 			    			addDateRange(block, fieldName, filterTerm.attributeValue(SearchFilterKeys.FilterStartDate, ""),filterTerm.attributeValue(SearchFilterKeys.FilterEndDate, ""));
@@ -241,7 +240,7 @@ public class SearchFilterToSearchBooleanConverter {
 				
 					Iterator teamMembershipsIt = binderModule.getTeamMemberships(userId).iterator();
 					while (teamMembershipsIt.hasNext()) {
-						usersAndGroupsTeams.add(((Map)teamMembershipsIt.next()).get(EntityIndexUtils.DOCID_FIELD));
+						usersAndGroupsTeams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
 					}
 				}
 			}
@@ -262,7 +261,7 @@ public class SearchFilterToSearchBooleanConverter {
 				if (groupId != null) {
 					Iterator teamMembershipsIt = binderModule.getTeamMemberships(groupId).iterator();
 					while (teamMembershipsIt.hasNext()) {
-						usersAndGroupsTeams.add(((Map)teamMembershipsIt.next()).get(EntityIndexUtils.DOCID_FIELD));
+						usersAndGroupsTeams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
 					}				
 				}
 			}
@@ -278,7 +277,7 @@ public class SearchFilterToSearchBooleanConverter {
    		Long currentUserId = RequestContextHolder.getRequestContext().getUserId();
 		Element andField = block.addElement(Constants.AND_ELEMENT);
 		Element field = andField.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATORID_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.CREATORID_FIELD);
 		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(currentUserId.toString());
 	}
@@ -286,7 +285,7 @@ public class SearchFilterToSearchBooleanConverter {
 	private static void createRelativeDateRange(Element block, Integer daysNumber) {
    		DateTime now = new DateTime();
    		DateTime startDate = now.minusDays(daysNumber);
-   		addDateRange(block, EntityIndexUtils.MODIFICATION_DAY_FIELD, DateTools.dateToString(startDate.toDate(), DateTools.Resolution.DAY), null);
+   		addDateRange(block, Constants.MODIFICATION_DAY_FIELD, DateTools.dateToString(startDate.toDate(), DateTools.Resolution.DAY), null);
 	}
    	
    	private static void createRelativePlace(Element block, String subfolders, String binderId) {
@@ -308,16 +307,16 @@ public class SearchFilterToSearchBooleanConverter {
 			if (!eventDate.equals("")) {
 				Element range = orField2.addElement(Constants.RANGE_ELEMENT);
 				if (attributeName != null && !"".equals(attributeName)) { 
-					range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, attributeName + BasicIndexUtils.DELIMITER + EntityIndexUtils.EVENT_DATES);
+					range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, attributeName + BasicIndexUtils.DELIMITER + Constants.EVENT_DATES);
 				} else {
 					// only for compatibility with old saved searches
-					range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.EVENT_DATES_FIELD);
+					range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.EVENT_DATES_FIELD);
 				}
 				range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
 				if (defId != null && !defId.equals("")) {
 					Element andField2 = orField2.addElement(Constants.AND_ELEMENT);
 					Element field = andField2.addElement(Constants.FIELD_ELEMENT);
-					field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+					field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.COMMAND_DEFINITION_FIELD);
 					Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 			    	child.setText(defId);
 				}				
@@ -460,7 +459,7 @@ public class SearchFilterToSearchBooleanConverter {
 
 	private static void addCommunityTagField(Element block, String text) {
 		Element field = block.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.TAG_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.TAG_FIELD);
     	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(text);
 	}
@@ -505,7 +504,7 @@ public class SearchFilterToSearchBooleanConverter {
 		}
 		
 		Element field2 = block.addElement(Constants.FIELD_ELEMENT);
-		field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.DOC_TYPE_FIELD);
+		field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.DOC_TYPE_FIELD);
 		field2.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
 		Element child2 = field2.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child2.setText(docType);
@@ -529,7 +528,7 @@ public class SearchFilterToSearchBooleanConverter {
 		}
 
 		Element field2 = block.addElement(Constants.FIELD_ELEMENT);
-		field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTITY_FIELD);
+		field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.ENTITY_FIELD);
 		field2.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
 		Element child2 = field2.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child2.setText(entityType);
@@ -553,7 +552,7 @@ public class SearchFilterToSearchBooleanConverter {
 		}
 
 		Element field2 = block.addElement(Constants.FIELD_ELEMENT);
-		field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_TYPE_FIELD);
+		field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.ENTRY_TYPE_FIELD);
 		Element child2 = field2.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child2.setText(entryType);
    	}
@@ -565,7 +564,7 @@ public class SearchFilterToSearchBooleanConverter {
 		if (!folderId.equals("")) {
 			andField = block.addElement(Constants.AND_ELEMENT);
 			field = andField.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.BINDER_ID_FIELD);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.BINDER_ID_FIELD);
 	    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 	    	child.setText(folderId);
 		}
@@ -581,7 +580,7 @@ public class SearchFilterToSearchBooleanConverter {
 				String stateName = ((Element) itTermStates.next()).getText();
 				if (!stateName.equals("")) {
 					Element field2 = orField2.addElement(Constants.FIELD_ELEMENT);
-					field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.BINDER_ID_FIELD);
+					field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.BINDER_ID_FIELD);
 					field2.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
 					Element child2 = field2.addElement(Constants.FIELD_TERMS_ELEMENT);
 					child2.setText(stateName);
@@ -597,7 +596,7 @@ public class SearchFilterToSearchBooleanConverter {
 		if (!folderId.equals("")) {
 			andField = block.addElement(Constants.AND_ELEMENT);
 			field = andField.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.ENTRY_ANCESTRY);
 	    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 	    	child.setText(folderId);
 		}
@@ -615,7 +614,7 @@ public class SearchFilterToSearchBooleanConverter {
 				String stateName = ((Element) itTermStates.next()).getText();
 				if (!stateName.equals("")) {
 					Element field2 = orField2.addElement(Constants.FIELD_ELEMENT);
-					field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.ENTRY_ANCESTRY);
+					field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.ENTRY_ANCESTRY);
 					field2.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
 					Element child2 = field2.addElement(Constants.FIELD_TERMS_ELEMENT);
 					child2.setText(stateName);
@@ -633,7 +632,7 @@ public class SearchFilterToSearchBooleanConverter {
 		if (!defId.equals("")) {
 			andField = block.addElement(Constants.AND_ELEMENT);
 			field = andField.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_PROCESS_FIELD);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.WORKFLOW_PROCESS_FIELD);
 			field.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
 	    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 	    	child.setText(defId);
@@ -647,7 +646,7 @@ public class SearchFilterToSearchBooleanConverter {
 				String stateName = ((Element) itTermStates.next()).getText();
 				if (!stateName.equals("")) {
 					Element field2 = orField2.addElement(Constants.FIELD_ELEMENT);
-					field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.WORKFLOW_STATE_FIELD);
+					field2.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.WORKFLOW_STATE_FIELD);
 					field2.addAttribute(Constants.EXACT_PHRASE_ATTRIBUTE, "true");
 					Element child2 = field2.addElement(Constants.FIELD_TERMS_ELEMENT);
 					child2.setText(stateName);
@@ -680,7 +679,7 @@ public class SearchFilterToSearchBooleanConverter {
 		if (!entryId.equals("")) {
 			andField = block.addElement(Constants.AND_ELEMENT);
 			Element field = andField.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.DOCID_FIELD);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.DOCID_FIELD);
 			Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 	    	child.setText(entryId);
 		}
@@ -693,7 +692,7 @@ public class SearchFilterToSearchBooleanConverter {
 		if (!binderId.equals("")) {
 			andField = block.addElement(Constants.AND_ELEMENT);
 			field = andField.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.BINDERS_PARENT_ID_FIELD);
+			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.BINDERS_PARENT_ID_FIELD);
 	    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 	    	child.setText(binderId);
 		}
@@ -705,14 +704,14 @@ public class SearchFilterToSearchBooleanConverter {
 		Element field;
 		Element child;
        	field = block.addElement(Constants.FIELD_ELEMENT);
-       	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+       	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
        	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-       	child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
+       	child.setText(Constants.ENTRY_TYPE_ENTRY);
        	//Look only for docType=entry
        	field = block.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
     	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);		
+    	child.setText(Constants.DOC_TYPE_ENTRY);		
 	}
 
 	private static void parseAndAddEntryField(Element block, Element filterTerm) {
@@ -734,7 +733,7 @@ public class SearchFilterToSearchBooleanConverter {
 			if (defId != null && !defId.equals("")) {
 				andField = block.addElement(Constants.AND_ELEMENT);
 				field = andField.addElement(Constants.FIELD_ELEMENT);
-				field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+				field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.COMMAND_DEFINITION_FIELD);
 		    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		    	child.setText(defId);
 			}
@@ -754,7 +753,7 @@ public class SearchFilterToSearchBooleanConverter {
 	    			if (defId != null &&!defId.equals("")) {
 	    				andField = block.addElement(Constants.AND_ELEMENT);
 		    			field = andField.addElement(Constants.FIELD_ELEMENT);
-		    			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+		    			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.COMMAND_DEFINITION_FIELD);
 		    	    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		    	    	child.setText(defId);
 	    			}
@@ -790,7 +789,7 @@ public class SearchFilterToSearchBooleanConverter {
 		    			if (defId != null &&!defId.equals("")) {
 		    				andField = block.addElement(Constants.AND_ELEMENT);
 			    			field = andField.addElement(Constants.FIELD_ELEMENT);
-			    			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+			    			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.COMMAND_DEFINITION_FIELD);
 			    	    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 			    	    	child.setText(defId);
 		    			}
@@ -809,7 +808,7 @@ public class SearchFilterToSearchBooleanConverter {
 	private static void addTagsField(Element block, String text) {
 		Element subOr = block.addElement(Constants.OR_ELEMENT);
 		Element field = subOr.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.TAG_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.TAG_FIELD);
     	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(text);
 		field = subOr.addElement(Constants.PERSONALTAGS_ELEMENT);
@@ -821,19 +820,19 @@ public class SearchFilterToSearchBooleanConverter {
 		Element subOr = block.addElement(Constants.OR_ELEMENT);
 		
 		Element field = subOr.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATOR_NAME_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.CREATOR_NAME_FIELD);
     	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(text);
     	
     	field = subOr.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, EntityIndexUtils.CREATOR_TITLE_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.CREATOR_TITLE_FIELD);
     	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
     	child.setText(text);		
 	}
 
 	private static void addSearchTextField(Element block, String text) {
 		Element field = block.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, BasicIndexUtils.ALL_TEXT_FIELD);
+		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.ALL_TEXT_FIELD);
 		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
 		child.setText(text);
 	}
@@ -848,37 +847,37 @@ public class SearchFilterToSearchBooleanConverter {
 			if (itemType.equals("workspace")) {
 				Element subAnd = subOr.addElement(Constants.AND_ELEMENT);
 				addEntityType(subAnd, EntityType.workspace.name());
-				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_BINDER);
+				addDocType(subAnd, Constants.DOC_TYPE_BINDER);
 			} else if (itemType.equals("folder")) {
 				Element subAnd = subOr.addElement(Constants.AND_ELEMENT);
 				addEntityType(subAnd, EntityType.folder.name());
-				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_BINDER);
+				addDocType(subAnd, Constants.DOC_TYPE_BINDER);
 			} else if (itemType.equals("user")) {
 				Element subAnd = subOr.addElement(Constants.AND_ELEMENT);
 				addEntityType(subAnd, EntityType.user.name());
-				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ENTRY);
-				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_USER);
+				addDocType(subAnd, Constants.DOC_TYPE_ENTRY);
+				addEntryType(subAnd, Constants.ENTRY_TYPE_USER);
 			} else if (itemType.equals("attachment")) {
 				Element subAnd = subOr.addElement(Constants.AND_ELEMENT);
 //				addEntityType(subAnd, EntityType.folderEntry.name());
 //				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_ENTRY);
 //Everything has attachments
-				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ATTACHMENT);
+				addDocType(subAnd, Constants.DOC_TYPE_ATTACHMENT);
 			} else if (itemType.equals("entry")) {
 				Element subAnd = subOr.addElement(Constants.AND_ELEMENT);
 				addEntityType(subAnd, EntityType.folderEntry.name());
-				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_ENTRY);
-				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ENTRY);
+				addEntryType(subAnd, Constants.ENTRY_TYPE_ENTRY);
+				addDocType(subAnd, Constants.DOC_TYPE_ENTRY);
 			} else if (itemType.equals("reply")) {
 				Element subAnd = subOr.addElement(Constants.AND_ELEMENT);
 				addEntityType(subAnd, EntityType.folderEntry.name());
-				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_REPLY);
-				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ENTRY);
+				addEntryType(subAnd, Constants.ENTRY_TYPE_REPLY);
+				addDocType(subAnd, Constants.DOC_TYPE_ENTRY);
 			} else if (itemType.equals("application")) {
 				Element subAnd = subOr.addElement(Constants.AND_ELEMENT);
 				addEntityType(subAnd, EntityType.application.name());
-				addDocType(subAnd, BasicIndexUtils.DOC_TYPE_ENTRY);
-				addEntryType(subAnd, EntityIndexUtils.ENTRY_TYPE_APPLICATION);
+				addDocType(subAnd, Constants.DOC_TYPE_ENTRY);
+				addEntryType(subAnd, Constants.ENTRY_TYPE_APPLICATION);
 			}
 		}
 	}

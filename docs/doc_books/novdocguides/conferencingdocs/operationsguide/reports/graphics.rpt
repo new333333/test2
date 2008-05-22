@@ -2042,7 +2042,7 @@
    <String `Graphic Report for operationsguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `10/23/2007 2:38:24 PM'>
+   <String `5/15/2008 12:12:40 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2227,18 +2227,21 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `01_zonsignon.png'>
+   <String ` (moved to unused graphic folder)'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
    <String `createpolicy4_a.png'>
+   <String ` (moved to unused graphic folder)'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
    <String `findcontacts_a.png'>
+   <String ` (moved to unused graphic folder)'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2277,7 +2280,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 45%, Indent: Current Indent'>
+   <String `Width: 51%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2380,7 +2383,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\01_systemoverview.fm|1036460'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\01_systemoverview.fm|1045556'>
     <MCurrPage `1'>
    > # end of Marker
    <String `clustearchitecture_a.png'>
@@ -2395,6 +2398,12 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `Width: 100%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Conferencing Cluster Architecture'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2614,7 +2623,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\02_administrationconsole.fm|1038213'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\02_administrationconsole.fm|1049845'>
     <MCurrPage `1'>
    > # end of Marker
    <String `login_a.png'>
@@ -2628,7 +2637,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 64%, Indent: Current Indent'>
+   <String `Width: 64%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Administration Console Login'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2653,7 +2668,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\03_zoncommunities.fm|1046031'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\03_zoncommunities.fm|1071901'>
     <MCurrPage `1'>
    > # end of Marker
    <String `managecommunnitiesfind_a.png'>
@@ -2667,7 +2682,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 69%, Indent: Current Indent'>
+   <String `Width: 70%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Community Search'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2692,7 +2713,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\03_zoncommunities.fm|1046186'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\03_zoncommunities.fm|1071958'>
     <MCurrPage `1'>
    > # end of Marker
    <String `managecommunnitiesfindtable_a.png'>
@@ -2706,7 +2727,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
+   <String `Width: 100%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Find Communities Table'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2731,7 +2758,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\03_zoncommunities.fm|1045595'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\03_zoncommunities.fm|1070949'>
     <MCurrPage `1'>
    > # end of Marker
    <String `manageconsolmanagecommunities_a.png'>
@@ -2745,7 +2772,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 44%, Indent: Current Indent'>
+   <String `Width: 58%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Manage Communities Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2770,7 +2803,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\02_administrationconsole.fm|1038353'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\02_administrationconsole.fm|1049904'>
     <MCurrPage `1'>
    > # end of Marker
    <String `managementconsole_a.png'>
@@ -2784,7 +2817,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
+   <String `Width: 100%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Component Status Summary Page'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2803,7 +2842,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\05_obtainingserverstatus.fm|1047895'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\05_obtainingserverstatus.fm|1069817'>
     <MCurrPage `1'>
    > # end of Marker
    <String `managementconsole_a.png'>
@@ -2817,7 +2856,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 100%, Indent: Current Indent'>
+   <String `Width: 100%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Components Status Table'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2959,7 +3004,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\05_obtainingserverstatus.fm|1039760'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\05_obtainingserverstatus.fm|1071506'>
     <MCurrPage `1'>
    > # end of Marker
    <String `viewutilization_a.png'>
@@ -2973,7 +3018,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 85%, Indent: Current Indent'>
+   <String `Width: 68%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: View Utilization Tab'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2998,7 +3049,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\05_obtainingserverstatus.fm|1040595'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\operationsguide\\05_obtainingserverstatus.fm|1071667'>
     <MCurrPage `1'>
    > # end of Marker
    <String `viewutilizationusers_a.png'>
@@ -3012,7 +3063,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 86%, Indent: Current Indent'>
+   <String `Width: 86%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: System Load Metrics Users Table'>
   > # end of ParaLine
  > # end of Para
  <Para 

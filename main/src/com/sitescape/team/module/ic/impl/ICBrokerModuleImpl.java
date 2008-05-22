@@ -260,6 +260,7 @@ public class ICBrokerModuleImpl extends CommonDependencyInjection implements
 		Vector result = (Vector)findUserByScreenName(screenname);
 		
 		// the result is buried 4 deep (vectors within vectors)
+		if (result == null) return null;
 		try {
 			return (String) ((Vector) ((Vector) ((Vector)result).get(0))
 				.get(0)).get(1);

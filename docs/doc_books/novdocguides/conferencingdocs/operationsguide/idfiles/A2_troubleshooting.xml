@@ -4,42 +4,42 @@
 
  <target id="bbj1ywi" pid="bbj1ywi" name="Appendix" level="0" number="B"> <text>Troubleshooting Strategies</text> </target>
 
- <target id="bbkm64d" pid="bbkm64d" name="Sect1" level="1" number="B.1"> <text>Verify That Everything is Running</text> </target>
+ <target id="bbkm64d" pid="bbkm64d" name="Sect1" level="1" number="B.1"> <text>Verifying That Everything is Running</text> </target>
 
- <target id="bbkm64g" pid="bbkm64g" name="Sect1" level="1" number="B.2"> <text>Enable Debug Logging</text> </target>
+ <target id="bbkm64g" pid="bbkm64g" name="Sect1" level="1" number="B.2"> <text>Enabling Debug Logging</text> </target>
 
- <target id="bbkm64h" pid="bbkm64h" name="Sect1" level="1" number="B.3"> <text>Service watchdog</text> </target>
+ <target id="bbkm64h" pid="bbkm64h" name="Sect1" level="1" number="B.3"> <text>Using the Service Watchdog</text> </target>
 
- <target id="bbkm64i" pid="bbkm64i" name="Sect1" level="1" number="B.4"> <text>Error codes</text> </target>
+ <target id="bbkm64i" pid="bbkm64i" name="Sect1" level="1" number="B.4"> <text>Error Codes</text> </target>
 
- <target id="bbkm64j" pid="bbkm64j" name="Sect1" level="1" number="B.5"> <text>More advanced checks</text> </target>
+ <target id="bbkm64j" pid="bbkm64j" name="Sect1" level="1" number="B.5"> <text>Advanced Checks</text> </target>
 
  <target id="b9usz21" pid="b9usz21" name="Sect1" level="1" number="B.6"> <text>Conferencing Client</text> </target>
 
  <target id="b9ut1h5" pid="b9usz21" name="FormalPara" level="2"> <text>Symptom:</text> </target>
 
- <target id="b9utnfq" pid="b9usz21" name="FormalPara" level="2"> <text>Possible Causes:</text> </target>
+ <target id="b9utnfq" pid="b9usz21" name="FormalPara" level="2"> <text>Possible Cause:</text> </target>
 
  <target id="b9utvts" pid="b9usz21" name="FormalPara" level="2"> <text>Symptom:</text> </target>
 
- <target id="b9utvtt" pid="b9usz21" name="FormalPara" level="2"> <text>Possible Causes:</text> </target>
+ <target id="b9utvtt" pid="b9usz21" name="FormalPara" level="2"> <text>Possible Cause:</text> </target>
 
  <target id="b9uszuu" pid="b9uszuu" name="Sect1" level="1" number="B.7"> <text>Voice Bridge</text> </target>
 
  <target id="b9varla" pid="b9uszuu" name="FormalPara" level="2"> <text>Symptom:</text> </target>
 
- <target id="b9varlb" pid="b9uszuu" name="FormalPara" level="2"> <text>Possible Causes:</text> </target>
+ <target id="b9varlb" pid="b9uszuu" name="FormalPara" level="2"> <text>Possible Cause:</text> </target>
 
  <target id="b9uszuv" pid="b9uszuv" name="Sect1" level="1" number="B.8"> <text>Meeting Archiver</text> </target>
 
  <target id="b9varlc" pid="b9uszuv" name="FormalPara" level="2"> <text>Symptom:</text> </target>
 
- <target id="b9varld" pid="b9uszuv" name="FormalPara" level="2"> <text>Possible Causes:</text> </target>
+ <target id="b9varld" pid="b9uszuv" name="FormalPara" level="2"> <text>Possible Cause:</text> </target>
 
  <target id="b9varle" pid="b9uszuv" name="FormalPara" level="2"> <text>Solution:</text> </target>
 
  <target id="b9varlf" pid="b9uszuv" name="FormalPara" level="2"> <text>Symptom:</text> </target>
 
- <target id="b9varlg" pid="b9uszuv" name="FormalPara" level="2"> <text>Possible Causes:</text> </target>
+ <target id="b9varlg" pid="b9uszuv" name="FormalPara" level="2"> <text>Possible Cause:</text> </target>
 
 </targets>

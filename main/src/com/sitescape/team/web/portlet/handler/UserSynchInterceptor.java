@@ -31,13 +31,14 @@ package com.sitescape.team.web.portlet.handler;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletResponse;
 import javax.portlet.PortletSession;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.web.portlet.HandlerInterceptor;
-import org.springframework.web.portlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.team.InternalException;
 import com.sitescape.team.context.request.RequestContext;
@@ -51,8 +52,7 @@ import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 
-public class UserSynchInterceptor extends HandlerInterceptorAdapter implements
-		HandlerInterceptor, InitializingBean {
+public class UserSynchInterceptor extends AbstractInterceptor implements InitializingBean {
 
 	private ProfileDao profileDao;
 	private ProfileModule profileModule;
@@ -77,7 +77,16 @@ public class UserSynchInterceptor extends HandlerInterceptorAdapter implements
 		userModify = SPropsUtil.getStringArray("portal.user.auto.synchronize", ",");
  	}
 
-	public boolean preHandle(PortletRequest request, PortletResponse response, Object handler)
+	public boolean preHandleRender(RenderRequest request, RenderResponse response, Object handler)
+		throws Exception {
+		return preHandle(request, handler);
+	}
+
+	public boolean preHandleAction(ActionRequest request, ActionResponse response, Object handler)
+		throws Exception {
+		return preHandle(request, handler);
+	}
+	private boolean preHandle(PortletRequest request, Object handler)
     	throws Exception {
 		RequestContext requestContext = RequestContextHolder.getRequestContext();
 		
@@ -88,6 +97,7 @@ public class UserSynchInterceptor extends HandlerInterceptorAdapter implements
 		
 		return true;
 	}
+
 
 	private void synchUser(PortletRequest request, RequestContext reqCxt) {
 		// If all of the following conditions hold, we update the user in Aspen

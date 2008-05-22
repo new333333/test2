@@ -88,6 +88,7 @@ import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 /**
  *
  * Add entries to the binder
@@ -771,7 +772,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     //***********************************************************************************************************
      protected void indexDeleteEntries(Binder binder) {
 		// Since all matches will be deleted, this will also delete the attachments 
-		IndexSynchronizationManager.deleteDocuments(new Term(EntityIndexUtils.BINDER_ID_FIELD, binder.getId().toString()));
+		IndexSynchronizationManager.deleteDocuments(new Term(Constants.BINDER_ID_FIELD, binder.getId().toString()));
     }
      //***********************************************************************************************************
      public void addEntryWorkflow(Binder binder, Entry entry, Definition definition, Map options) {
@@ -1098,7 +1099,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	searchFilter.newCurrentFilterTermsBlock(true);
     	
    		searchFilter.addFolderId(binder.getId().toString());
-   		searchFilter.addDocumentType(BasicIndexUtils.DOC_TYPE_ENTRY);
+   		searchFilter.addDocumentType(Constants.DOC_TYPE_ENTRY);
    		searchFilter.addEntryTypes(entryTypes);
     }
 
@@ -1206,7 +1207,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         EntityIndexUtils.addModification(indexDoc, entry.getModification(), fieldsOnly);
  
         // Add document type
-        BasicIndexUtils.addDocType(indexDoc, com.sitescape.team.search.BasicIndexUtils.DOC_TYPE_ENTRY, fieldsOnly);
+        BasicIndexUtils.addDocType(indexDoc, Constants.DOC_TYPE_ENTRY, fieldsOnly);
                 
         // Add the events - special indexing for calendar view
         EntityIndexUtils.addEvents(indexDoc, entry, fieldsOnly);
@@ -1225,7 +1226,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     	org.apache.lucene.document.Document indexDoc = new org.apache.lucene.document.Document();
     	//do common part first. Indexing a file overrides some values
     	fillInIndexDocWithCommonPartFromEntry(indexDoc, binder, entry, true);
-        BasicIndexUtils.addAttachmentType(indexDoc, BasicIndexUtils.ATTACHMENT_TYPE_ENTRY, true);
+        BasicIndexUtils.addAttachmentType(indexDoc, Constants.ATTACHMENT_TYPE_ENTRY, true);
   		buildIndexDocumentFromFile(indexDoc, binder, entry, fa, fui, tags);
    		return indexDoc;
  

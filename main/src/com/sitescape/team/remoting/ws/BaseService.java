@@ -46,19 +46,19 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.ws.ElementBuilder;
 import com.sitescape.team.module.definition.ws.ElementBuilderUtil;
-import com.sitescape.team.module.folder.index.IndexUtils;
-import com.sitescape.team.module.profile.index.ProfileIndexUtils;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.remoting.ws.model.FolderEntryBrief;
 import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.Timestamp;
+import com.sitescape.team.remoting.ws.model.Workflow;
 import com.sitescape.team.util.AbstractAllModulesInjected;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
 
 public class BaseService extends AbstractAllModulesInjected implements ElementBuilder.BuilderContext {
 
@@ -108,19 +108,19 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	
 	protected void addEntryAttributes(Element entryElem, Map entry, boolean isPrincipal)
 	{
-		entryElem.addAttribute("id", (String) entry.get(EntityIndexUtils.DOCID_FIELD));
-		entryElem.addAttribute("binderId", (String) entry.get(EntityIndexUtils.BINDER_ID_FIELD));
-		entryElem.addAttribute("definitionId", (String) entry.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD));
-		entryElem.addAttribute("title", (String) entry.get(EntityIndexUtils.TITLE_FIELD));
+		entryElem.addAttribute("id", (String) entry.get(Constants.DOCID_FIELD));
+		entryElem.addAttribute("binderId", (String) entry.get(Constants.BINDER_ID_FIELD));
+		entryElem.addAttribute("definitionId", (String) entry.get(Constants.COMMAND_DEFINITION_FIELD));
+		entryElem.addAttribute("title", (String) entry.get(Constants.TITLE_FIELD));
 		if(isPrincipal) {
-			entryElem.addAttribute("type", (String) entry.get(EntityIndexUtils.ENTRY_TYPE_FIELD));
-			entryElem.addAttribute("reserved", Boolean.toString(entry.get(ProfileIndexUtils.RESERVEDID_FIELD)!=null));
+			entryElem.addAttribute("type", (String) entry.get(Constants.ENTRY_TYPE_FIELD));
+			entryElem.addAttribute("reserved", Boolean.toString(entry.get(Constants.RESERVEDID_FIELD)!=null));
 		} else {
-			entryElem.addAttribute("docNumber", (String) entry.get(IndexUtils.DOCNUMBER_FIELD));
-			entryElem.addAttribute("docLevel", "" + (new HKey((String) entry.get(IndexUtils.SORTNUMBER_FIELD))).getLevel());
+			entryElem.addAttribute("docNumber", (String) entry.get(Constants.DOCNUMBER_FIELD));
+			entryElem.addAttribute("docLevel", "" + (new HKey((String) entry.get(Constants.SORTNUMBER_FIELD))).getLevel());
 
-			String entryUrl = WebUrlUtil.getEntryViewURL((String) entry.get(EntityIndexUtils.BINDER_ID_FIELD),
-					(String) entry.get(EntityIndexUtils.DOCID_FIELD));
+			String entryUrl = WebUrlUtil.getEntryViewURL((String) entry.get(Constants.BINDER_ID_FIELD),
+					(String) entry.get(Constants.DOCID_FIELD));
 			entryElem.addAttribute("href", entryUrl);
 		}
 	}
@@ -147,13 +147,13 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	{
 		Element entryElem = doc.addElement("principal");
 		
-		entryElem.addAttribute("id", (String) user.get(EntityIndexUtils.DOCID_FIELD));
-		entryElem.addAttribute("binderId", (String) user.get(EntityIndexUtils.BINDER_ID_FIELD));
-		entryElem.addAttribute("definitionId", (String) user.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD));
-		entryElem.addAttribute("title", (String) user.get(EntityIndexUtils.TITLE_FIELD));
-		entryElem.addAttribute("emailAddress", (String) user.get(ProfileIndexUtils.EMAIL_FIELD));
-		entryElem.addAttribute("type", (String) user.get(EntityIndexUtils.ENTRY_TYPE_FIELD));
-		entryElem.addAttribute("reserved", Boolean.toString(user.get(ProfileIndexUtils.RESERVEDID_FIELD)!=null));
+		entryElem.addAttribute("id", (String) user.get(Constants.DOCID_FIELD));
+		entryElem.addAttribute("binderId", (String) user.get(Constants.BINDER_ID_FIELD));
+		entryElem.addAttribute("definitionId", (String) user.get(Constants.COMMAND_DEFINITION_FIELD));
+		entryElem.addAttribute("title", (String) user.get(Constants.TITLE_FIELD));
+		entryElem.addAttribute("emailAddress", (String) user.get(Constants.EMAIL_FIELD));
+		entryElem.addAttribute("type", (String) user.get(Constants.ENTRY_TYPE_FIELD));
+		entryElem.addAttribute("reserved", Boolean.toString(user.get(Constants.RESERVEDID_FIELD)!=null));
 		String name = getPrincipalName(user);
 		if(name != null)
 			entryElem.addAttribute("name", name);
@@ -167,14 +167,14 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	}
 
 	String getPrincipalName(Map user) {
-		if (EntityIndexUtils.ENTRY_TYPE_USER.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
-			return (String)user.get(ProfileIndexUtils.LOGINNAME_FIELD);			
-		} else if (EntityIndexUtils.ENTRY_TYPE_GROUP.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
-			return (String)user.get(ProfileIndexUtils.GROUPNAME_FIELD);						
-		} else if (EntityIndexUtils.ENTRY_TYPE_APPLICATION.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
-			return (String)user.get(ProfileIndexUtils.APPLICATION_NAME_FIELD);						
-		} else if (EntityIndexUtils.ENTRY_TYPE_APPLICATION_GROUP.equals(user.get(EntityIndexUtils.ENTRY_TYPE_FIELD))) {
-			return (String)user.get(ProfileIndexUtils.GROUPNAME_FIELD);						
+		if (Constants.ENTRY_TYPE_USER.equals(user.get(Constants.ENTRY_TYPE_FIELD))) {
+			return (String)user.get(Constants.LOGINNAME_FIELD);			
+		} else if (Constants.ENTRY_TYPE_GROUP.equals(user.get(Constants.ENTRY_TYPE_FIELD))) {
+			return (String)user.get(Constants.GROUPNAME_FIELD);						
+		} else if (Constants.ENTRY_TYPE_APPLICATION.equals(user.get(Constants.ENTRY_TYPE_FIELD))) {
+			return (String)user.get(Constants.APPLICATION_NAME_FIELD);						
+		} else if (Constants.ENTRY_TYPE_APPLICATION_GROUP.equals(user.get(Constants.ENTRY_TYPE_FIELD))) {
+			return (String)user.get(Constants.GROUPNAME_FIELD);						
 		} else {
 			return null;
 		}
@@ -191,7 +191,18 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		// FolderEntry specific
 		entryModel.setDocNumber(entry.getDocNumber());
 		entryModel.setDocLevel(entry.getDocLevel());
-		entryModel.setHref(WebUrlUtil.getEntryViewURL(entry));	
+		entryModel.setHref(WebUrlUtil.getEntryViewURL(entry));
+		for (WorkflowState state:entry.getWorkflowStates()) {
+			Workflow wfModel = new Workflow();
+			wfModel.setTokenId(state.getTokenId());
+			wfModel.setDefinitionId(state.getDefinition().getId());
+			wfModel.setState(state.getState());
+			wfModel.setThreadName(state.getThreadName());
+			if (state.getWorkflowChange() != null) {
+				wfModel.setModification(toTimestampModel(state.getWorkflowChange()));
+			}
+			entryModel.addWorkflow(wfModel);
+		}
 	}
 	
 	protected void fillPrincipalModel(com.sitescape.team.remoting.ws.model.Principal principalModel, Principal entry) {
@@ -302,13 +313,13 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 
 	protected PrincipalBrief toPrincipalBrief(Map principal) {
 		PrincipalBrief principalBrief = new PrincipalBrief();
-		principalBrief.setId(Long.valueOf((String) principal.get(EntityIndexUtils.DOCID_FIELD)));
-		principalBrief.setBinderId(Long.valueOf((String) principal.get(EntityIndexUtils.BINDER_ID_FIELD)));
-		principalBrief.setDefinitionId((String) principal.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD));
-		principalBrief.setTitle((String) principal.get(EntityIndexUtils.TITLE_FIELD));
-		principalBrief.setEmailAddress((String) principal.get(ProfileIndexUtils.EMAIL_FIELD));
-		principalBrief.setType((String) principal.get(EntityIndexUtils.ENTRY_TYPE_FIELD));
-		principalBrief.setReserved(principal.get(ProfileIndexUtils.RESERVEDID_FIELD)!=null);
+		principalBrief.setId(Long.valueOf((String) principal.get(Constants.DOCID_FIELD)));
+		principalBrief.setBinderId(Long.valueOf((String) principal.get(Constants.BINDER_ID_FIELD)));
+		principalBrief.setDefinitionId((String) principal.get(Constants.COMMAND_DEFINITION_FIELD));
+		principalBrief.setTitle((String) principal.get(Constants.TITLE_FIELD));
+		principalBrief.setEmailAddress((String) principal.get(Constants.EMAIL_FIELD));
+		principalBrief.setType((String) principal.get(Constants.ENTRY_TYPE_FIELD));
+		principalBrief.setReserved(principal.get(Constants.RESERVEDID_FIELD)!=null);
 		String name = getPrincipalName(principal);
 		if(name != null)
 			principalBrief.setName(name);

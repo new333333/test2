@@ -46,7 +46,6 @@ import com.sitescape.team.ObjectExistsException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
@@ -118,16 +117,16 @@ public class ManageApplicationsController extends  SAbstractController {
 		Binder binder = getProfileModule().getProfileBinder();
 		
 		Map options = new HashMap();
-		options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+		options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
 		options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
 		//get them all
 		options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
 
 		Document searchFilter = DocumentHelper.createDocument();
 		Element field = searchFilter.addElement(Constants.FIELD_ELEMENT);
-    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
     	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-    	child.setText(EntityIndexUtils.ENTRY_TYPE_APPLICATION);
+    	child.setText(Constants.ENTRY_TYPE_APPLICATION);
     	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
     	
 		Map searchResults = getProfileModule().getApplications(binder.getId(), options);

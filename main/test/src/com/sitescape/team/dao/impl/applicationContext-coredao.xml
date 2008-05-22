@@ -22,6 +22,8 @@
 		<!-- Sitescape mappings only -->
 		<property name="mappingResources">
 			<list>
+		<value>com/sitescape/team/security/accesstoken/impl/TokenInfoInteractive.hbm.xml</value>
+		<value>com/sitescape/team/security/accesstoken/impl/TokenInfoBackground.hbm.xml</value>
 		<value>com/sitescape/team/security/function/Function.hbm.xml</value>
 	    <value>com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Attachment.hbm.xml</value>
@@ -40,6 +42,7 @@
 	    <value>com/sitescape/team/domain/Principal.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Ratings.hbm.xml</value>
 	    <value>com/sitescape/team/domain/SeenMap.hbm.xml</value>
+	    <value>com/sitescape/team/domain/SimpleName.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Subscription.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Tag.hbm.xml</value>
 	    <value>com/sitescape/team/domain/UserProperties.hbm.xml</value>
@@ -47,8 +50,6 @@
 	    <value>com/sitescape/team/domain/WorkflowResponse.hbm.xml</value>
 	    <value>com/sitescape/team/domain/WorkflowState.hbm.xml</value>
 	    <value>com/sitescape/team/domain/ZoneInfo.hbm.xml</value>
-		<value>com/sitescape/team/security/accesstoken/impl/TokenInfoInteractive.hbm.xml</value>
-		<value>com/sitescape/team/security/accesstoken/impl/TokenInfoBackground.hbm.xml</value>
 
 			</list>
 		</property>

@@ -166,6 +166,7 @@ public class WebKeys {
 	public static final String URL_TYPE2 = "type2";
 	public static final String URL_VALUE = "value";
 	public static final String URL_VERSION_ID = "versionId";
+	public static final String URL_UNSEEN = "unseen";
 	public static final String URL_UPLOAD_FILE_ID = "ss_upload_file_id";
 	public static final String URL_WORKFLOW_TYPE = "workflowType";
 	public static final String URL_WHATS_NEW = "whatsNew";
@@ -347,6 +348,7 @@ public class WebKeys {
 	public static final String OPERATION_GET_FILTER_TYPE = "get_filter_type";
 	public static final String OPERATION_GET_RELEVANCE_DASHBOARD = "get_relevance_dashboard";
 	public static final String OPERATION_GET_RELEVANCE_DASHBOARD_PAGE = "get_dashboard_page";
+	public static final String OPERATION_GET_WHATS_NEW_PAGE = "get_whats_new_page";
 	public static final String OPERATION_GET_WORKFLOW_STATES = "get_workflow_states";
 	public static final String OPERATION_HIDE_ALL_DASHBOARD_COMPONENTS = "hide_all_dashboard_components";
 	public static final String OPERATION_SET_BINDER_OWNER_ID = "set_binder_owner_id";

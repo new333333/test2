@@ -42,7 +42,6 @@
 <p><ssf:nlt tag="help.setTeamAccess.content.listIntro"/></p>
 
 <ol>
-
 <li><ssf:nlt tag="help.setTeamAccess.content.listItem.viewPage"/></li>
 
 <li><ssf:nlt tag="help.setTeamAccess.content.listItem.aclMenu"><ssf:param name="value" value="${ssProductTitle}"/></ssf:nlt></li>

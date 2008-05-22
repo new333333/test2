@@ -28,11 +28,12 @@
  */
 package com.sitescape.team.web.portlet.handler;
 
+import javax.portlet.ActionRequest;
+import javax.portlet.ActionResponse;
+import javax.portlet.RenderRequest;
+import javax.portlet.RenderResponse;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
-
-import org.springframework.web.portlet.HandlerInterceptor;
-import org.springframework.web.portlet.handler.HandlerInterceptorAdapter;
 
 import com.sitescape.team.context.request.PortletSessionContext;
 import com.sitescape.team.context.request.RequestContext;
@@ -40,7 +41,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
 import com.sitescape.team.web.util.WebHelper;
 
-public class InitRequestContextInterceptor extends HandlerInterceptorAdapter implements HandlerInterceptor {
+public class InitRequestContextInterceptor extends AbstractInterceptor {
 	
 	private boolean resolve = false;
 	
@@ -48,8 +49,16 @@ public class InitRequestContextInterceptor extends HandlerInterceptorAdapter imp
 		this.resolve = resolve;
 	}
 	
-	public boolean preHandle(PortletRequest request, PortletResponse response, 
-			Object handler) throws Exception {
+	public boolean preHandleRender(RenderRequest request, RenderResponse response, Object handler)
+		throws Exception {
+		return preHandle(request, response, handler);
+	}
+
+	public boolean preHandleAction(ActionRequest request, ActionResponse response, Object handler)
+    throws Exception {
+		return preHandle(request, response, handler);
+	}
+	private boolean preHandle(PortletRequest request, PortletResponse response, Object handler) {
 		RequestContextHolder.clear();
 			
 		if(WebHelper.isUnauthenticatedRequest(request)) {
@@ -72,18 +81,6 @@ public class InitRequestContextInterceptor extends HandlerInterceptorAdapter imp
 			rc.resolve();
     	
 	    return true;
+		
 	}
-
-	public void afterCompletion(PortletRequest request, PortletResponse response, Object handler, Exception ex) throws Exception {
-		// Do not clear the thread context here to allow re-use of the context
-		// for other portlets being executed as part of the single user request
-		// carried out by this thread. Specifically, this prevents user objects
-		// from being refetched repeatedly. The only potential danger occurs when
-		// the container re-uses the same thread (which it surely does) for
-		// execution of next user request. But since the thread context will
-		// be reinitialized at the start of each user request, I don't think
-		// it imposes a serious problem. 
-    	//RequestContextUtil.clearThreadContext();
-	}
-
 }

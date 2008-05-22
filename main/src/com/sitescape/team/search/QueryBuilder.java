@@ -47,17 +47,19 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.lucene.LanguageTaster;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.util.search.Constants;
+
 import static com.sitescape.util.search.Constants.*;
 
 public class QueryBuilder {
 
 	private static final String DEFAULT = LanguageTaster.DEFAULT;
 	
-	private static final String TEAM_PREFIX=BasicIndexUtils.TEAM_ACL_FIELD + ":";
-	private static final String FOLDER_PREFIX=BasicIndexUtils.FOLDER_ACL_FIELD + ":";
-	private static final String ENTRY_PREFIX=BasicIndexUtils.ENTRY_ACL_FIELD + ":";
-	private static final String ENTRY_ALL=ENTRY_PREFIX+BasicIndexUtils.READ_ACL_ALL;
-	private static final String BINDER_OWNER_PREFIX=BasicIndexUtils.BINDER_OWNER_ACL_FIELD + ":";
+	private static final String TEAM_PREFIX=Constants.TEAM_ACL_FIELD + ":";
+	private static final String FOLDER_PREFIX=Constants.FOLDER_ACL_FIELD + ":";
+	private static final String ENTRY_PREFIX=Constants.ENTRY_ACL_FIELD + ":";
+	private static final String ENTRY_ALL=ENTRY_PREFIX+Constants.READ_ACL_ALL;
+	private static final String BINDER_OWNER_PREFIX=Constants.BINDER_OWNER_ACL_FIELD + ":";
 
 	private Set userPrincipals;
 	private Set applicationPrincipals;
@@ -269,7 +271,7 @@ public class QueryBuilder {
 				 * BasicIndexUtils.READ_ACL_ALL) + " ";
 				 */
 				User user = RequestContextHolder.getRequestContext().getUser();
-				ptagString += BasicIndexUtils.ACL_TAG_FIELD
+				ptagString += Constants.ACL_TAG_FIELD
 						+ ":"
 						+ BasicIndexUtils.buildAclTag(tagName, user.getId()
 								.toString()) + " ";
@@ -361,32 +363,32 @@ public class QueryBuilder {
 			qString.append("(" + ENTRY_ALL  + " AND "); //(entryAcl:all AND
 			qString.append("(" + idField(principalIds, FOLDER_PREFIX)+ "))"); //(folderAcl:1 OR folderAcl:2))
 			qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:team AND (teamAcl:1 OR teamAcl:2))
-								FOLDER_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " +
+								FOLDER_PREFIX + Constants.READ_ACL_TEAM + " AND " +
 								"(" + idField(principalIds, TEAM_PREFIX) + "))");
 			if(userId != null) {
 				qString.append(" OR (" + ENTRY_ALL  + " AND " +						// OR (entryAcl:all AND folderAcl:own AND bOwnerAcl:<user>)
-						FOLDER_PREFIX + BasicIndexUtils.READ_ACL_BINDER_OWNER + " AND " +
+						FOLDER_PREFIX + Constants.READ_ACL_BINDER_OWNER + " AND " +
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
 			}
 			qString.append(" OR (" + idField(principalIds, ENTRY_PREFIX) + ")"); //OR (entryAcl:1 OR entryAcl:2)
-			qString.append(" OR (" + ENTRY_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
+			qString.append(" OR (" + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
 								"(" + idField(principalIds, TEAM_PREFIX) + "))");
 			qString.append(")");
 		} else {
 			qString.append("(");
 			qString.append("((" + idField(principalIds, FOLDER_PREFIX) + ")"); //((folderAcl:1 OR folderAcl:2)
 			qString.append(" OR ");
-			qString.append("(" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (folderAcl:team AND (teamAcl:1 OR teamAcl:2))
+			qString.append("(" + FOLDER_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (folderAcl:team AND (teamAcl:1 OR teamAcl:2))
 					"(" + idField(principalIds, TEAM_PREFIX) + "))");
 			if(userId != null) {
-				qString.append(" OR (" + FOLDER_PREFIX + BasicIndexUtils.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
+				qString.append(" OR (" + FOLDER_PREFIX + Constants.READ_ACL_BINDER_OWNER + " AND " + //OR (folderAcl:own AND bOwnerAcl:<user>)
 						BINDER_OWNER_PREFIX + userId.toString() + ")");
 			}
 			qString.append(") AND (");												//) AND (
 			qString.append("(" + ENTRY_ALL + " OR " +						//(entryAcl:all OR entryAcl:1 OR entryAcl:2)
 						idField(principalIds, ENTRY_PREFIX) + ")");
 			qString.append(" OR ");
-			qString.append("("  + ENTRY_PREFIX + BasicIndexUtils.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
+			qString.append("("  + ENTRY_PREFIX + Constants.READ_ACL_TEAM + " AND " + //OR (entryAcl:team AND (teamAcl:1 OR teamAcl:2))
 					"(" + idField(principalIds, TEAM_PREFIX) + "))");
 			qString.append("))");
 		}

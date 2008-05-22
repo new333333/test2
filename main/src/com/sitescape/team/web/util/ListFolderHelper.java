@@ -80,13 +80,10 @@ import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
-import com.sitescape.team.module.folder.index.IndexUtils;
 import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.rss.util.UrlUtil;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
-import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
@@ -354,7 +351,7 @@ public class ListFolderHelper {
 		//Start - Determine the Sort Order
 		if (viewType.equals(Definition.VIEW_STYLE_BLOG)) {
 			//This is a blog view, set the default sort order
-			options.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.DOCID_FIELD);
+			options.put(ObjectKeys.SEARCH_SORT_BY, Constants.DOCID_FIELD);
 			options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
 
 		} else {
@@ -374,7 +371,7 @@ public class ListFolderHelper {
 				}
 			}
 			if (!options.containsKey(ObjectKeys.SEARCH_SORT_BY)) { 
-				options.put(ObjectKeys.SEARCH_SORT_BY, IndexUtils.SORTNUMBER_FIELD);
+				options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORTNUMBER_FIELD);
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
 			} else if (!options.containsKey(ObjectKeys.SEARCH_SORT_DESCEND)) 
 				options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.TRUE);
@@ -935,25 +932,25 @@ public class ListFolderHelper {
 		options2.put(ObjectKeys.SEARCH_MAX_HITS, 
 				Integer.valueOf(SPropsUtil.getString("blog.archives.searchCount")));
 		options2.put(ObjectKeys.SEARCH_SORT_DESCEND, new Boolean(true));
-		options2.put(ObjectKeys.SEARCH_SORT_BY, EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
+		options2.put(ObjectKeys.SEARCH_SORT_BY, Constants.CREATION_YEAR_MONTH_FIELD);
     	//Look only for binderId=binder and doctype = entry (not attachement)
     	if (folder != null) {
 			Document searchFilter2 = DocumentHelper.createDocument();
     		Element rootElement = searchFilter2.addElement(Constants.AND_ELEMENT);
     		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
-        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.BINDER_ID_FIELD);
+        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.BINDER_ID_FIELD);
         	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
         	child.setText(folder.getId().toString());
         	
         	//Look only for docType=entry and entryType=entry
         	field = rootElement.addElement(Constants.FIELD_ELEMENT);
-        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,BasicIndexUtils.DOC_TYPE_FIELD);
+        	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.DOC_TYPE_FIELD);
         	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-        	child.setText(BasicIndexUtils.DOC_TYPE_ENTRY);
+        	child.setText(Constants.DOC_TYPE_ENTRY);
            	field = rootElement.addElement(Constants.FIELD_ELEMENT);
-           	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,EntityIndexUtils.ENTRY_TYPE_FIELD);
+           	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
            	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-           	child.setText(EntityIndexUtils.ENTRY_TYPE_ENTRY);
+           	child.setText(Constants.ENTRY_TYPE_ENTRY);
         	options2.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter2);
     	}
 		Map entriesMap = bs.getBinderModule().executeSearchQuery(searchFilter, options2);
@@ -964,8 +961,8 @@ public class ListFolderHelper {
 		Iterator itEntries = entries.iterator();
 		while (itEntries.hasNext()) {
 			Map entry = (Map)itEntries.next();
-			if (entry.containsKey(EntityIndexUtils.CREATION_YEAR_MONTH_FIELD)) {
-				String yearMonth = (String) entry.get(EntityIndexUtils.CREATION_YEAR_MONTH_FIELD);
+			if (entry.containsKey(Constants.CREATION_YEAR_MONTH_FIELD)) {
+				String yearMonth = (String) entry.get(Constants.CREATION_YEAR_MONTH_FIELD);
 				if (!monthHits.containsKey(yearMonth)) {
 					monthHits.put(yearMonth, new Integer(0));
 					String year = yearMonth.substring(0, 4);
@@ -981,7 +978,7 @@ public class ListFolderHelper {
 				int hitCount = (Integer) monthHits.get(yearMonth);
 				monthHits.put(yearMonth, new Integer(++hitCount));
 			}
-			if (entry.containsKey(EntityIndexUtils.CREATION_YEAR_MONTH_FIELD)) {
+			if (entry.containsKey(Constants.CREATION_YEAR_MONTH_FIELD)) {
 				//TODO - ???
 			}
 		}
@@ -1063,7 +1060,7 @@ public class ListFolderHelper {
 		Iterator it = ((List)folderEntries.get(ObjectKeys.SEARCH_ENTRIES)).iterator();
 		while (it.hasNext()) {
 			Map entry = (Map)it.next();
-			String definitionId = (String)entry.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+			String definitionId = (String)entry.get(Constants.COMMAND_DEFINITION_FIELD);
 			if (definitionId == null) {
 				continue;
 			}
@@ -1477,7 +1474,7 @@ public class ListFolderHelper {
 		//Sendmail
 		if (Validator.isNotNull(user.getEmailAddress()) && 
 				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			adapterUrl = new AdaptedPortletURL((PortletRequest) null, "ss_forum", true);
+			adapterUrl = new AdaptedPortletURL((PortletRequest) request, "ss_forum", true);
 			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SEND_EMAIL);
 			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			adapterUrl.setParameter(WebKeys.URL_APPEND_TEAM_MEMBERS, Boolean.TRUE.toString());
@@ -1519,13 +1516,13 @@ public class ListFolderHelper {
 			//number
 			if (so.contains("number")) {
 				qualifiers = new HashMap();
-				if (searchSortBy.equals(EntityIndexUtils.DOCID_FIELD)) 
+				if (searchSortBy.equals(Constants.DOCID_FIELD)) 
 					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.DOCID_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.DOCID_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.Number"), url, qualifiers);
@@ -1534,13 +1531,13 @@ public class ListFolderHelper {
 			//title
 			if (so.contains("title")) {
 				qualifiers = new HashMap();
-				if (searchSortBy.equals(EntityIndexUtils.SORT_TITLE_FIELD)) 
+				if (searchSortBy.equals(Constants.SORT_TITLE_FIELD)) 
 					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.SORT_TITLE_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.SORT_TITLE_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.Title"), url, qualifiers);
@@ -1549,13 +1546,13 @@ public class ListFolderHelper {
 			//state
 			if (so.contains("state")) {
 				qualifiers = new HashMap();
-				if (searchSortBy.equals(EntityIndexUtils.WORKFLOW_STATE_CAPTION_FIELD)) 
+				if (searchSortBy.equals(Constants.WORKFLOW_STATE_CAPTION_FIELD)) 
 					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.WORKFLOW_STATE_CAPTION_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.WORKFLOW_STATE_CAPTION_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.State"), url, qualifiers);
@@ -1564,13 +1561,13 @@ public class ListFolderHelper {
 			//author
 			if (so.contains("author")) {
 				qualifiers = new HashMap();
-				if (searchSortBy.equals(EntityIndexUtils.CREATOR_TITLE_FIELD)) 
+				if (searchSortBy.equals(Constants.CREATOR_TITLE_FIELD)) 
 					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.FOLDER_SORT_BY, EntityIndexUtils.CREATOR_TITLE_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.CREATOR_TITLE_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "false");
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.Author"), url, qualifiers);
@@ -1579,13 +1576,13 @@ public class ListFolderHelper {
 			//last activity date
 			if (so.contains("activity")) {
 				qualifiers = new HashMap();
-				if (searchSortBy.equals(IndexUtils.LASTACTIVITY_FIELD)) 
+				if (searchSortBy.equals(Constants.LASTACTIVITY_FIELD)) 
 					qualifiers.put(WebKeys.TOOLBAR_MENU_SELECTED, true);
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SAVE_FOLDER_SORT_INFO);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-				url.setParameter(WebKeys.FOLDER_SORT_BY, IndexUtils.LASTACTIVITY_FIELD);
+				url.setParameter(WebKeys.FOLDER_SORT_BY, Constants.LASTACTIVITY_FIELD);
 				url.setParameter(WebKeys.FOLDER_SORT_DESCEND, "true");
 				entryToolbar.addToolbarMenuItem("2_display_styles", "sortby", 
 						NLT.get("folder.column.LastActivity"), url, qualifiers);
@@ -1820,8 +1817,8 @@ public class ListFolderHelper {
 			Iterator entriesIt = entries.iterator();
 			while (entriesIt.hasNext()) {
 				Map entry = (Map)entriesIt.next();
-				String creatorId = entry.get(EntityIndexUtils.CREATORID_FIELD).toString();
-				String modificationId = entry.get(EntityIndexUtils.MODIFICATIONID_FIELD).toString();
+				String creatorId = entry.get(Constants.CREATORID_FIELD).toString();
+				String modificationId = entry.get(Constants.MODIFICATIONID_FIELD).toString();
 				principals.add(creatorId);
 				principals.add(modificationId);
 			}	
@@ -1937,7 +1934,7 @@ public class ListFolderHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
-	    		String entryDefId = (String)entry.get(EntityIndexUtils.COMMAND_DEFINITION_FIELD);
+	    		String entryDefId = (String)entry.get(Constants.COMMAND_DEFINITION_FIELD);
 	    		if (cacheEntryDef.get(entryDefId) == null) {
 	    			cacheEntryDef.put(entryDefId, bs.getDefinitionModule().getEntryDefinitionElements(entryDefId));
 	    		}
