@@ -24,20 +24,6 @@
 
  <target id="bcfz444" pid="bcfyy50" name="Step" level="2" number="9"> <text>Skip this step if your conference bridge only supports IP clients. If you have installed  CG6565/64, now is the time to connect the mini RJ21 cable to the back of the CG6565/64 and the other end to the SEP panel to gain access to the 8 T1 or E1 trunks.</text> </target>
 
- <target id="bdj45gn" pid="bcfyy50" name="Step" level="2" number="10"> <text>Download the NMS software and the patch for Conferencing 1.0 that includes the utility for configuring the NMS software (nmsconfig) from http://www.novell.com/downloads (http://www.novell.com/downloads) or get them from your support representative.</text> </target>
-
- <target id="bcfz446" pid="bcfyy50" name="Step" level="2" number="11"> <text>Install NMS software:</text> </target>
-
- <target id="bdj3ygm" pid="bcfyy50" name="Step" level="2" number="12"> <text>Make sure NMS ctdaemon is set to start up on boot and is running:</text> </target>
-
- <target id="bdj46x1" pid="bcfyy50" name="Step" level="2" number="13"> <text>Untar Conferencing software:</text> </target>
-
- <target id="bdj4723" pid="bcfyy50" name="Step" level="2" number="14"> <text>Untar the nmsconfig patch:</text> </target>
-
- <target id="bdj478u" pid="bcfyy50" name="Step" level="2" number="15"> <text>Run nmsconfig and enter information for detected boards (refer to the nmsconfig section below for more information on nmsconfig):</text> </target>
-
- <target id="bdj3y2m" pid="bcfyy50" name="Step" level="2" number="16"> <text>Run conferencing server install (uses info written by nmsconfig):</text> </target>
-
  <target id="bcfz7ez" pid="bcfz7ez" name="Sect1" level="1" number="F.1"> <text>Configuring H.100 Bus Termination</text> </target>
 
  <target id="bf1j6dp" pid="bcfz7ez" name="Figure" level="2" number="Figure F-1"> <text>H.100 Bus Termination</text> </target>

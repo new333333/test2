@@ -2042,7 +2042,7 @@
    <String `Graphic Report for serverinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `4/30/2008 3:38:20 PM'>
+   <String `5/22/2008 11:11:25 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2099,24 +2099,28 @@
   <PgfTag `Body'>
   <ParaLine 
    <String `enable-ssl_a.png'>
+   <String ` (moved to unused graphic folder)'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
    <String `nms_01_a.png'>
+   <String ` (moved to unused graphic folder)'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
    <String `nms_02_a.png'>
+   <String ` (moved to unused graphic folder)'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
    <String `pidgin-ssl_a.png'>
+   <String ` (moved to unused graphic folder)'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2141,7 +2145,7 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\01_systemoverview.fm|1036460'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\conferencingdocs\\serverinstallationguide\\01_systemoverview.fm|1051662'>
     <MCurrPage `1'>
    > # end of Marker
    <String `clustearchitecture_a.png'>
@@ -2155,7 +2159,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 83%, Indent: Current Indent'>
+   <String `Width: 83%, Indent: Left Edge'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Title: Cluster Architecture'>
   > # end of ParaLine
  > # end of Para
  <Para 
