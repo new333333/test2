@@ -6,20 +6,50 @@
 
  <target id="b9ye6xq" pid="b9ye6xq" name="Sect1" level="1" number="3.1"> <text>Backing Up and Restoring the Database</text> </target>
 
- <target id="b9ye7og" pid="b9ye6xq" name="BridgeHead" level="2"> <text>Backing Up the Database</text> </target>
+ <target id="bf9bp5q" pid="b9ye6xq" name="Sect2" level="2" number="3.1.1"> <text>Backing Up the Database</text> </target>
 
- <target id="b9ye7p0" pid="b9ye6xq" name="BridgeHead" level="2"> <text>Restoring the Database</text> </target>
+ <target id="bf9bp5r" pid="b9ye6xq" name="Sect2" level="2" number="3.1.2"> <text>Restoring the Database</text> </target>
 
  <target id="b9ye7fk" pid="b9ye7fk" name="Sect1" level="1" number="3.2"> <text>Reconfiguring Conferencing Hosts</text> </target>
 
+ <target id="bf9bskm" pid="b9ye7fk" name="Procedure" level="2" number="1"> <text>Make a backup copy of the sitescape-conferencing directory:</text> </target>
+
+ <target id="bf9bskn" pid="b9ye7fk" name="Step" level="3" number="1"> <text>Make a backup copy of the sitescape-conferencing directory:</text> </target>
+
+ <target id="bf9bsko" pid="b9ye7fk" name="Step" level="3" number="2"> <text>Open the sitescape-conferencing directory.</text> </target>
+
+ <target id="bf9bskp" pid="b9ye7fk" name="Step" level="3" number="3"> <text>Run ./install.sh</text> </target>
+
  <target id="b9ye7fl" pid="b9ye7fl" name="Sect1" level="1" number="3.3"> <text>Upgrading the Conferencing Client</text> </target>
+
+ <target id="bf9bskq" pid="b9ye7fl" name="Procedure" level="2" number="1"> <text>Make a backup copy of the sitescape-conferencing directory:</text> </target>
+
+ <target id="bf9bskr" pid="b9ye7fl" name="Step" level="3" number="1"> <text>Make a backup copy of the sitescape-conferencing directory:</text> </target>
+
+ <target id="bf9bsks" pid="b9ye7fl" name="Step" level="3" number="2"> <text>Open the sitescape-conferencing directory.</text> </target>
+
+ <target id="bf9bskt" pid="b9ye7fl" name="Step" level="3" number="3"> <text> Copy the new installers.tar.gz archive into your installation directory</text> </target>
+
+ <target id="bf9bsku" pid="b9ye7fl" name="Step" level="3" number="4"> <text>Run ./install.sh</text> </target>
 
  <target id="b9yeaid" pid="b9yeaid" name="Sect1" level="1" number="3.4"> <text>Upgrading the Conferencing Servers</text> </target>
 
+ <target id="bf9bskv" pid="b9yeaid" name="Procedure" level="2" number="1"> <text>Make a backup copy of the sitescape-conferencing directory:</text> </target>
+
+ <target id="bf9bskw" pid="b9yeaid" name="Step" level="3" number="1"> <text>Make a backup copy of the sitescape-conferencing directory:</text> </target>
+
+ <target id="bf9bskx" pid="b9yeaid" name="Step" level="3" number="2"> <text>Extract the new distribution file using: </text> </target>
+
+ <target id="bf9bsky" pid="b9yeaid" name="Step" level="3" number="3"> <text>Open the sitescape-conferencing directory.</text> </target>
+
+ <target id="bf9bskz" pid="b9yeaid" name="Step" level="3" number="4"> <text> Copy the prior configuration directory to the current location:</text> </target>
+
+ <target id="bf9bsl0" pid="b9yeaid" name="Step" level="3" number="5"> <text>Run ./install.sh</text> </target>
+
  <target id="b9ye7fm" pid="b9ye7fm" name="Sect1" level="1" number="3.5"> <text>Starting and Stopping Conferencing Services</text> </target>
 
- <target id="bbj228h" pid="b9ye7fm" name="BridgeHead" level="2"> <text>Starting and Stopping the Cluster</text> </target>
+ <target id="bf9bsyh" pid="b9ye7fm" name="Sect2" level="2" number="3.5.1"> <text>Starting and Stopping the Cluster</text> </target>
 
- <target id="b9yedgd" pid="b9ye7fm" name="BridgeHead" level="2"> <text>Starting and Stopping Individual Machines</text> </target>
+ <target id="bf9bsyi" pid="b9ye7fm" name="Sect2" level="2" number="3.5.2"> <text>Starting and Stopping Individual Machines</text> </target>
 
 </targets>

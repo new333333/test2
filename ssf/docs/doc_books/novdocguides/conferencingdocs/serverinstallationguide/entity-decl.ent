@@ -27,6 +27,7 @@
 <!-- please change product to anything that makes sense in your current release -->
 <!ENTITY product       "Conferencing">
 
+<!ENTITY ICEcore       "Novell Teaming">
 
 <!-- oddities -->
 <!ENTITY thrdmrk "*">

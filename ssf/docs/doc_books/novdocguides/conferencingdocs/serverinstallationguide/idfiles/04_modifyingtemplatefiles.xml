@@ -6,7 +6,7 @@
 
  <target id="b9yego1" pid="b9yego1" name="Sect1" level="1" number="4.1"> <text>Modifying the Meeting Invitation Template </text> </target>
 
- <target name="InformalTable" level="2"> <text>Value </text> </target>
+ <target id="bf9bzy6" pid="b9yego1" name="Table" level="2" number="Table 4-1"> <text>Selector Variable Values</text> </target>
 
  <target id="b9yehw7" pid="b9yego1" name="row" level="3"> <text>Value </text> </target>
 
@@ -16,7 +16,7 @@
 
  <target id="b9yeifc" pid="b9yego1" name="row" level="3"> <text>IM_ONLY</text> </target>
 
- <target name="InformalTable" level="2"> <text>Tag </text> </target>
+ <target id="bf9bzy7" pid="b9yego1" name="Table" level="2" number="Table 4-2"> <text>Meeting Value Tags</text> </target>
 
  <target id="b9yejfu" pid="b9yego1" name="row" level="3"> <text>Tag </text> </target>
 
@@ -48,7 +48,7 @@
 
  <target id="b9yeh9r" pid="b9yeh9r" name="Sect1" level="1" number="4.2"> <text>Using IF Statements</text> </target>
 
- <target name="InformalTable" level="2"> <text>Variable</text> </target>
+ <target id="bf9bzy8" pid="b9yeh9r" name="Table" level="2" number="Table 4-3"> <text>Variable-Expression Variables</text> </target>
 
  <target id="b9yf0av" pid="b9yeh9r" name="row" level="3"> <text>Variable</text> </target>
 
@@ -64,9 +64,9 @@
 
  <target id="b9yf0te" pid="b9yeh9r" name="row" level="3"> <text>PRIVATE</text> </target>
 
- <target id="b9yeh9s" pid="b9yeh9s" name="Sect1" level="1" number="4.3"> <text>Modifying the Meeting Summary E-mail Template</text> </target>
+ <target id="b9yeh9s" pid="b9yeh9s" name="Sect1" level="1" number="4.3"> <text>Modifying the Meeting Summary E-Mail Template</text> </target>
 
- <target name="InformalTable" level="2"> <text>Tag</text> </target>
+ <target id="bf9bzy9" pid="b9yeh9s" name="Table" level="2" number="Table 4-4"> <text>Meeting Summary Embedded Tags</text> </target>
 
  <target id="b9yf262" pid="b9yeh9s" name="row" level="3"> <text>Tag</text> </target>
 
@@ -84,7 +84,7 @@
 
  <target id="b9yeh9t" pid="b9yeh9t" name="Sect1" level="1" number="4.4"> <text>Modifying the New User Greeting E-mail Template</text> </target>
 
- <target name="InformalTable" level="2"> <text>Tag</text> </target>
+ <target id="bf9bzya" pid="b9yeh9t" name="Table" level="2" number="Table 4-5"> <text>New User E-Mail Tags</text> </target>
 
  <target id="b9yf4cb" pid="b9yeh9t" name="row" level="3"> <text>Tag</text> </target>
 
