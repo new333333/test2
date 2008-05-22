@@ -137,11 +137,10 @@ public class ModifyBinderController extends AbstractBinderController {
 					// nothing to do
 				}
 				if (destinationId != null) {
-					Long copyId = getBinderModule().copyBinder(binderId, destinationId, null);
-					setupReloadOpener(response, copyId);
-				} else {
-					setupReloadOpener(response, binderId);
-				}
+					getBinderModule().copyBinder(binderId, destinationId, null);
+				} 
+				setupReloadOpener(response, binderId);
+				
 			} else if (op.equals(WebKeys.OPERATION_DELETE)) {
 				// The delete-mirrored-binder form was submitted.
 				//retrieve binder so we can return to parent
