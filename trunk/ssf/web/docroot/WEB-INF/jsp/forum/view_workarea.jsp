@@ -76,6 +76,7 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
     </div>
 
 <div class="ss_style ss_portlet">
+<c:if test="${!empty ssWsDomTree}">
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 	<ssf:tree treeName="<%= wsTreeName %>" 
 	  topId="${ssWsDomTreeBinderId}" 
@@ -84,6 +85,7 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 	  showIdRoutine="<%= wsTreeName + "_showId" %>"
 	  namespace="${renderResponse.namespace}"
 	  />
+</c:if>
 </div>	
 </c:if>
 </c:if>
