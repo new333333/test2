@@ -952,6 +952,7 @@ public class WebKeys {
     
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
+    public static final String VIEW_ACCESS_DENIED = "forum/access_not_allowed";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
     public static final String VIEW_ADD_BINDER = "binder/add_binder";
     public static final String VIEW_ADD_BINDER_TYPE = "binder/add_binder_type";

@@ -75,6 +75,7 @@ import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchUtils;
 import com.sitescape.team.search.filter.SearchFilter;
+import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.task.TaskHelper.FilterType;
 import com.sitescape.team.util.AllModulesInjected;
@@ -264,6 +265,9 @@ public class WorkspaceTreeHelper {
 				BinderHelper.setupUnseenBinderBeans(bs, binder, model, page);
 			
 		} catch(NoBinderByTheIdException e) {
+		} catch(OperationAccessControlExceptionNoName e) {
+			//Access is not allowed
+			return WebKeys.VIEW_ACCESS_DENIED;
 		}
 		
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
