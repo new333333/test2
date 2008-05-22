@@ -114,8 +114,11 @@
 <ssf:ifnotaccessible>
   <div align="right" valign="top">
     <a href="javascript: ;" 
-      onClick="ss_hideDivNone('relevanceCanvas_${renderResponse.namespace}');return false;"
-    ><span class="ss_fineprint">[<ssf:nlt tag="button.hide"/>]</span>
+      onClick="ss_showHideRelevanceCanvas('${renderResponse.namespace}');return false;">
+      <span id="ss_relevanceShowButton${renderResponse.namespace}" style="display:none;"
+        class="ss_fineprint">[<ssf:nlt tag="button.show"/>]</span>
+      <span id="ss_relevanceHideButton${renderResponse.namespace}" style="display:block;"
+        class="ss_fineprint">[<ssf:nlt tag="button.hide"/>]</span>
     </a>
   </div>
 </ssf:ifnotaccessible>
