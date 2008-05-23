@@ -65,6 +65,7 @@ public class WebUrlUtil {
 	private static int simpleURLWebProtocol = -1;
 	
 	private static final String SSFS_HOST_REWRITE = "ssfs.default.host.rewrite";
+	private static final String SSFS_IGNORE_PASSWORD_ENABLED = "ssfs.ignore.password.enabled";
 	
 	enum WebApp {
 		SSF,
@@ -555,10 +556,14 @@ public class WebUrlUtil {
 		// If rewrite hostname is specified for webdav AND the context zone is the default zone,
 		// apply this hack. Otherwise, leave it alone.
 		if(webApp == WebApp.SSFS) {
-			String ssfsHostRewrite = SPropsUtil.getString(SSFS_HOST_REWRITE, "");
-			if(Validator.isNotNull(ssfsHostRewrite) &&
-					RequestContextHolder.getRequestContext().getZoneName().equals(SZoneConfig.getDefaultZoneName())) {
-				host = ssfsHostRewrite;
+			// Rewrite WebDAV URL only if SSO proxy is performing authentication.
+			if(SPropsUtil.getBoolean(SSFS_IGNORE_PASSWORD_ENABLED, false)) {
+				String ssfsHostRewrite = SPropsUtil.getString(SSFS_HOST_REWRITE, "");
+				// Rewrite WebDAV URL only if rewrite-hostname is specified AND the current zone is the default zone.
+				if(Validator.isNotNull(ssfsHostRewrite) &&
+						RequestContextHolder.getRequestContext().getZoneName().equals(SZoneConfig.getDefaultZoneName())) {
+					host = ssfsHostRewrite;
+				}
 			}
 		}
 		
