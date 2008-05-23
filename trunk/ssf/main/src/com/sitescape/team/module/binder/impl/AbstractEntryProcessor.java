@@ -347,8 +347,9 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         for (Iterator iter=entryData.values().iterator(); iter.hasNext();) {
         	Object obj = iter.next();
         	//need to generate id for the event so its id can be saved in customAttr
-        	if (obj instanceof Event)
+        	if (obj instanceof Event) {
         		getCoreDao().save(obj);
+        	}
         }
         EntryBuilder.buildEntry(entry, entryData);
         
@@ -367,7 +368,15 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
     protected void addEntry_postSave(Binder binder, Entry entry, InputDataAccessor inputData, Map entryData, Map ctx) {
     	//create history - using timestamp and version from fillIn
 		if (binder.isUniqueTitles()) getCoreDao().updateTitle(binder, entry, null, entry.getNormalTitle());
-    	processChangeLog(entry, ChangeLog.ADDENTRY);
+    	
+		//generate event uid
+		Iterator<Event> it = entry.getEvents().iterator();
+		while (it.hasNext()) {
+			Event event = it.next();
+			event.generateUid(entry);
+		}
+		
+		processChangeLog(entry, ChangeLog.ADDENTRY);
     	getReportModule().addAuditTrail(AuditType.add, entry);
     }
 

@@ -62,6 +62,11 @@ public class EventHelper {
     	String prefix = id + "_";
     	
         Event event = new Event();
+        
+        String uid =  inputData.getSingleValue(prefix + "event_uid");
+        if (uid != null && uid.length() > 0) {
+        	event.setUid(uid);
+        }
        
         // duration present means there is a start and end id
         String startId = "dp_" + id;

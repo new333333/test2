@@ -84,6 +84,7 @@ public class SearchFilterKeys {
    	public final static String FilterFolderId = "filterFolderId";
    	public final static String FilterBinderId = "filterBinderId";
    	public final static String FilterEntryId = "filterEntryId";
+   	public final static String FilterEventUid = "eventUid";
    	public final static String FilterTypeSearchText = "text";
    	public final static String FilterTypeCreatorByName = "author";
    	public final static String FilterTypeCreatorById = "creatorById";
@@ -99,6 +100,7 @@ public class SearchFilterKeys {
    	public final static String FilterTypeTopEntry = "topEntry";
    	public final static String FilterTypeWorkflow = "workflow";
    	public final static String FilterTypeFolders = "folders";
+   	public final static String FilterTypeEventUid = "eventsUid";
    	public final static String FilterTypeFoldersList = "foldersList";
    	public final static String FilterTypeAncestry = "ancestry";
    	public final static String FilterTypeAncestriesList = "ancestriesList";

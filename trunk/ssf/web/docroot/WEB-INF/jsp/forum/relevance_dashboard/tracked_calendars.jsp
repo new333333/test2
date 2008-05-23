@@ -31,7 +31,7 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
-<div id="ss_para" "ss_link_5">
+<div id="ss_para" class="ss_link_5">
 <div id="ss_hints"><em><ssf:nlt tag="relevance.calendarsBeingTracked"/></em></div>
 <c:forEach var="binder" items="${ss_trackedCalendars}">
 	    <table cellpadding="0" cellspacing="0"><tbody><tr><td>

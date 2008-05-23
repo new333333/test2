@@ -71,5 +71,6 @@
       </many-to-one>
     </component>
 	<property name="timeZone" access="field" length="16"/>
+	<property name="uid" length="255"/>
   </class>
 </hibernate-mapping>

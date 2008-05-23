@@ -137,7 +137,8 @@ function ss_calendarControl() {
 					(typeof props.eventsTypeSelectId!="undefined")?props.eventsTypeSelectId:null,
 					(typeof props.onCalendarStyleChoose!="undefined")?props.onCalendarStyleChoose:null,
 					(typeof props.addEntryURL!="undefined")?props.addEntryURL:null,
-					(typeof props.stickyId!="undefined")?props.stickyId:null);
+					(typeof props.stickyId!="undefined")?props.stickyId:null,
+					(typeof props.createEntryActive!="undefined")?props.createEntryActive:true);
 	}
 }
 
@@ -424,10 +425,12 @@ function ss_calendarEngine(
 	
 	  
 	this.loadEntryEvents = function (entryId) {
-		calendarDataProvider.loadEntryEvents({
-			ssEntryEvents : true,
-			entryId : entryId
-		}, that);   	
+		if (calendarDataProvider) {
+			calendarDataProvider.loadEntryEvents({
+				ssEntryEvents : true,
+				entryId : entryId
+			}, that);
+		}   	
 	}
 	    
 	this.loadEventsByDate = function (grid, date, requiredDay) {
@@ -449,7 +452,9 @@ function ss_calendarEngine(
 				stickyCalendarParams.month = (date.getMonth() + 1);
 				stickyCalendarParams.dayOfMonth = date.getDate();
 			}
-    		calendarDataProvider.stickyCalendarDisplaySettings(stickyCalendarParams);
+			if (calendarDataProvider) {
+    			calendarDataProvider.stickyCalendarDisplaySettings(stickyCalendarParams);
+			}
     		return;
     	}
     	
@@ -470,7 +475,9 @@ function ss_calendarEngine(
 			requestParams.ssGridType = grid;
 		}
 		
-		calendarDataProvider.loadEventsByDate(requestParams, date, that);
+		if (calendarDataProvider) {
+			calendarDataProvider.loadEventsByDate(requestParams, date, that);
+		}
     }
 	
 	// keeps today and month info data
@@ -519,7 +526,7 @@ function ss_calendarEngine(
 	    gridSize: 7,
 	    gridIncr: 7,
 	    firstDayToShow: null,
-	    readOnly: false,
+	    readOnly: readOnly,
 	    monthGridWeeks: 5, // allowed (and only possible) values are: 4, 5 and 6
 	    currentType: 'day', // allowed are: day or month
 	    dayGridCreated : false,
@@ -927,15 +934,17 @@ function ss_calendarEngine(
 	   	    dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3 - (workDayStart * 42), end: -3 }], 200).play();
 	        
 	        var celendarHoursSelector = dojo.byId(calendarHoursSelectorId);
-	        var children = celendarHoursSelector.childNodes;
-	        var arrow;
-	        for (var i = 0; i < children.length; i++) {
-	        	var a = children[i].nodeValue;
-	        	if (children[i].nodeValue && children[i].nodeValue.indexOf(that.locale.workDayGridTitle) > -1) {
-	        		children[i].nodeValue = that.locale.fullDayGridTitle;
-	        		break;
-	        	}
-	        }
+			if (celendarHoursSelector) {
+		        var children = celendarHoursSelector.childNodes;
+		        var arrow;
+		        for (var i = 0; i < children.length; i++) {
+		        	var a = children[i].nodeValue;
+		        	if (children[i].nodeValue && children[i].nodeValue.indexOf(that.locale.workDayGridTitle) > -1) {
+		        		children[i].nodeValue = that.locale.fullDayGridTitle;
+		        		break;
+		        	}
+		        }
+			}
 	    },
 	
 	    fullDayGrid: function() {
@@ -944,7 +953,9 @@ function ss_calendarEngine(
 			ss_cal_Grid.activateGrid(ss_cal_Grid.currentType);
 	    	ss_cal_Events.redrawAll();
 	    	
-    		calendarDataProvider.stickyCalendarDisplaySettings({dayViewType : "fullday"});
+			if (calendarDataProvider) {
+    			calendarDataProvider.stickyCalendarDisplaySettings({dayViewType : "fullday"});
+			}
 	    },
 	
 	    workDayGrid: function() {
@@ -955,18 +966,22 @@ function ss_calendarEngine(
 	       	dojo.lfx.propertyAnimation(inner, [{ property: "top", start: -3, end: -3 - (workDayStart* 42) }], 200).play();
 	        
 	        var celendarHoursSelector = dojo.byId(calendarHoursSelectorId);
-	        var children = celendarHoursSelector.childNodes;
-	        var arrow;
-	        for (var i = 0; i < children.length; i++) {
-	        	if (children[i].nodeValue && children[i].nodeValue.indexOf(that.locale.fullDayGridTitle) > -1) {
-	        		children[i].nodeValue = that.locale.workDayGridTitle;
-	        		break;
-	        	}
-	        }
+			if (celendarHoursSelector) {
+		        var children = celendarHoursSelector.childNodes;
+		        var arrow;
+		        for (var i = 0; i < children.length; i++) {
+		        	if (children[i].nodeValue && children[i].nodeValue.indexOf(that.locale.fullDayGridTitle) > -1) {
+		        		children[i].nodeValue = that.locale.workDayGridTitle;
+		        		break;
+		        	}
+		        }
+			}
 			ss_cal_Grid.activateGrid(ss_cal_Grid.currentType); // couse of IE... 
 	    	ss_cal_Events.redrawAll();
 	    	
-	    	calendarDataProvider.stickyCalendarDisplaySettings({dayViewType : "workday"});
+			if (calendarDataProvider) {
+	    		calendarDataProvider.stickyCalendarDisplaySettings({dayViewType : "workday"});
+			}
 	    },
 	    
 	    highlightDaySelectorMenuIcon: function() {
@@ -1787,7 +1802,9 @@ function ss_calendarEngine(
 			}
 	
 			if (oldEventType != this.eventsType) {
-				calendarDataProvider.stickyCalendarDisplaySettings({eventType : this.eventsTypes[this.eventsType]});
+				if (calendarDataProvider) {
+					calendarDataProvider.stickyCalendarDisplaySettings({eventType : this.eventsTypes[this.eventsType]});
+				}
 				this.redrawAll();			
 			}
 	    }
@@ -2407,11 +2424,14 @@ if (!window["ss_calendar_import"]) {
 						alert(ss_not_logged_in);
 					} else if (data && data.parseExceptionMsg) {
 						alert(data.parseExceptionMsg);						
-					} else if (data && data.entriesAmountMsg && data.entryIds) {
+					} else if (data && data.entriesAmountMsg) {
 						if (window["ss_calendar_" + prefix]) {
-							for (var i = 0; i < data.entryIds.length; i++) {
-								window["ss_calendar_" + prefix].refreshEntryEvents(data.entryIds[i]);
+							for (var i = 0; i < data.entryAddedIds.length; i++) {
+								window["ss_calendar_" + prefix].refreshEntryEvents(data.entryAddedIds[i]);
 							}
+							for (var i = 0; i < data.entryModifiedIds.length; i++) {
+								window["ss_calendar_" + prefix].refreshEntryEvents(data.entryModifiedIds[i]);
+							}							
 						}
 						alert(data.entriesAmountMsg);
 					} else {

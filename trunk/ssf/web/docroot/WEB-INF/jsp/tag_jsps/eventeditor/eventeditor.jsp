@@ -505,6 +505,7 @@
 	</script>   
 	</c:if>
 	
+	<input type="hidden" name="${prefix}_event_uid" value="${initEvent.uid}" />
 	
 	<script type="text/javascript">
 	
