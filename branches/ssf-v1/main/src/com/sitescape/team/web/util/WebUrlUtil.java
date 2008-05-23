@@ -60,6 +60,7 @@ public class WebUrlUtil {
 	private static int ssfsWebProtocol 		= -1;
 	
 	private static final String SSFS_HOST_REWRITE = "ssfs.host.rewrite";
+	private static final String SSFS_IGNORE_PASSWORD_ENABLED = "ssfs.ignore.password.enabled";
 	
 	enum WebApp {
 		SSF,
@@ -513,9 +514,13 @@ public class WebUrlUtil {
 		
 		// Special processing for WebDAV (ssfs) URL to workaround an issue in iChain.
 		if(webApp == WebApp.SSFS) {
-			String ssfsHostRewrite = SPropsUtil.getString(SSFS_HOST_REWRITE, "");
-			if(Validator.isNotNull(ssfsHostRewrite)) {
-				host = ssfsHostRewrite;
+			// Rewrite WebDAV URL only if SSO proxy is performing authentication.
+			if(SPropsUtil.getBoolean(SSFS_IGNORE_PASSWORD_ENABLED, false)) {
+				String ssfsHostRewrite = SPropsUtil.getString(SSFS_HOST_REWRITE, "");
+				// Rewrite WebDAV URL only if rewrite-hostname is specified.
+				if(Validator.isNotNull(ssfsHostRewrite)) {
+					host = ssfsHostRewrite;
+				}
 			}
 		}
 		sb.append(host);
