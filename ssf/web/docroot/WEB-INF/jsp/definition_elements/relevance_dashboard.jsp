@@ -125,6 +125,7 @@
 <div class="ss_clear_float"></div>
 <script type="text/javascript">
 var ss_relevanceTabCurrent_${renderResponse.namespace} = self.document.getElementById('ss_relevanceInitialTab${renderResponse.namespace}');
+ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
 </script>
 
 <% //Changeable tab canvas; this gets replaced when a tab is clicked %>

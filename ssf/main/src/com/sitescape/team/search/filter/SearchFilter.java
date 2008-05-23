@@ -28,17 +28,12 @@
  */
 package com.sitescape.team.search.filter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.lucene.document.DateTools;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -46,12 +41,8 @@ import org.dom4j.Element;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 
-import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.EntityIdentifier;
-import com.sitescape.team.domain.User;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.web.util.DateHelper;
 import com.sitescape.util.search.Constants;
@@ -712,7 +703,7 @@ public class SearchFilter {
 		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
 		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeDate);
 		filterTerm.addAttribute(SearchFilterKeys.FilterElementName, TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME + "#StartDate");
-		filterTerm.addAttribute(SearchFilterKeys.FilterEndDate, date);
+		filterTerm.addAttribute(SearchFilterKeys.FilterStartDate, date);
 	}
 	
 	public void addTaskEndDate(String date) {
@@ -1020,6 +1011,14 @@ public class SearchFilter {
 		return (filter == null || 
 					!filter.hasContent() ||
 					!filter.getRootElement().hasContent());
+	}
+
+	public void addEventUid(String uid) {
+		checkCurrent();
+		 
+		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
+		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEventUid);
+		filterTerm.addAttribute(SearchFilterKeys.FilterEventUid, uid);	
 	}
 
 }

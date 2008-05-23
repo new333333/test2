@@ -3002,6 +3002,10 @@ table.ss_cal_gridTable td {
   min-width: 300px;
 }
 
+/* on relevance dashboard it's too wide */
+#ss_calendar .ss_cal_reserveWidth {
+  min-width: 0;
+}
 
 /*
  * Used to create a highlight in the grid when the current

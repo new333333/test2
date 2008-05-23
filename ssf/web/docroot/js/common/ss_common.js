@@ -849,19 +849,16 @@ function ss_showHideRelevanceCanvas(namespace) {
 
 function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 	//Clear "current" tab
-	var currentTab = null;
-	eval("currentTab = ss_relevanceTabCurrent_"+namespace+";");
+	var currentTab = window["ss_relevanceTabCurrent_"+namespace];
 	if (currentTab != null) {
 		currentTab.parentNode.className = "";
 	}
 	if (obj != null) {
-		eval("ss_relevanceTabCurrent_"+namespace+" = obj;");
+		window["ss_relevanceTabCurrent_"+namespace] = obj;
 		obj.parentNode.className = "ss_tabsCCurrent";
 	}
-	
 	//Switch to the new tab
-	var url = "";
-	eval("url = ss_relevanceAjaxUrl"+namespace);
+	var url = window["ss_relevanceAjaxUrl"+namespace];
 	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
 	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ss_pagePlaceHolder", "0");
@@ -883,8 +880,20 @@ function ss_showRelevanceTab(s, namespace) {
 	var hideBtn = self.document.getElementById('ss_relevanceHideButton'+namespace)
 	showBtn.style.display = 'none';
 	hideBtn.style.display = 'block';
+	ss_executeJavascript(canvasObj); // calendar view is generated in js
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+
+function ss_executeJavascript(xmlNode) {
+    var scripts = xmlNode.getElementsByTagName("script");
+    for (var i = 0; i < scripts.length; i++) {
+        var script = scripts[i];
+        if (script.getAttribute("type") == "text/javascript") {
+           // var js = script.firstChild.nodeValue;
+            eval(script.innerHTML);
+        }
+    }
 }
 
 function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId, namespace) {

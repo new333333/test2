@@ -33,6 +33,7 @@ import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.folder.FolderModule;
+import com.sitescape.team.module.ical.AttendedEntries;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.EmailPoster;
@@ -132,7 +133,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 		Definition def = getEntryDefinition(folder);
 		processContent(folder, msg, inputData, fileItems, iCalendars);
-		List entryIdsFromICalendars = new ArrayList();
+		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		if (!fileItems.isEmpty()) {
 			entryIdsFromICalendars.addAll(processICalAttachments(folder, def, inputData, fileItems, iCalendars));
 		}
@@ -255,8 +256,8 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 	}
 	//override to provide alternate processing 
-	protected List processICalAttachments(Folder folder, Definition def, Map inputData, Map fileItems, List iCalendars) {
-		List entryIdsFromICalendars = new ArrayList();
+	protected AttendedEntries processICalAttachments(Folder folder, Definition def, Map inputData, Map fileItems, List iCalendars) {
+		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		Iterator fileItemsIt = fileItems.entrySet().iterator();
 		while (fileItemsIt.hasNext()) {
 			Map.Entry me = (Map.Entry)fileItemsIt.next();
@@ -268,7 +269,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			}
 			
 			try {
-				List entryIds = getIcalModule().parseToEntries(folder, def, fileHandler.getInputStream());
+				AttendedEntries entryIds = getIcalModule().parseToEntries(folder, def, fileHandler.getInputStream());
 				entryIdsFromICalendars.addAll(entryIds);
 				if (!entryIds.isEmpty()) {
 					fileItemsIt.remove();
@@ -281,14 +282,14 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		return entryIdsFromICalendars;
 	}
 	//override to provide alternate processing 
-	protected List processICalInline(Folder folder,  Definition def, Map inputData, Map fileItems, List iCalendars) {
+	protected AttendedEntries processICalInline(Folder folder,  Definition def, Map inputData, Map fileItems, List iCalendars) {
 		// process inline iCalendars
-		List entryIdsFromICalendars = new ArrayList();
+		AttendedEntries entryIdsFromICalendars = new AttendedEntries();
 		Iterator icalIt = iCalendars.iterator();
 		while (icalIt.hasNext()) {
 			InputStream icalStream = (InputStream)icalIt.next();
 			try {
-				List entryIds = getIcalModule().parseToEntries(folder, def, icalStream);
+				AttendedEntries entryIds = getIcalModule().parseToEntries(folder, def, icalStream);
 				entryIdsFromICalendars.addAll(entryIds);
 				if (!entryIds.isEmpty()) {
 					icalIt.remove();

@@ -369,7 +369,7 @@
 	
     <!-- ============================== ical Converter ============================ -->
 	
-    <bean id="icalModule" class="com.sitescape.team.module.ical.impl.IcalModuleImpl">	
+    <bean id="icalModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.ical.impl.IcalModuleImpl">	
     	<property name="binderModule"><ref local="binderModule"/></property>
     	<property name="folderModule"><ref local="folderModule"/></property>
     </bean>

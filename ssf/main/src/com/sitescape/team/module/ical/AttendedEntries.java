@@ -26,56 +26,44 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.util;
+package com.sitescape.team.module.ical;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.Locale;
-import java.util.TimeZone;
+import java.util.ArrayList;
+import java.util.List;
 
-import com.sitescape.team.calendar.TimeZoneHelper;
-import com.sitescape.team.context.request.RequestContext;
-import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.User;
+/**
+ * Keep ids of added or modified entries. 
+ */
+public class AttendedEntries {
 
-public class CalendarHelper {
-
-	/**
-	 * Returns calendar with the same time like <code>calendar</code> but in given <code>newTimeZone</code>.
-	 * Routine creates a new calendar object so given <code>calendar</code> is untouched.
-	 * 
-	 * @param calendar
-	 * @param newTimeZone
-	 * @return
-	 */
-	public static Calendar convertToTimeZone(Calendar calendar, TimeZone newTimeZone) {
-		if (calendar == null) {
-			return null;
-		}
-		if (newTimeZone == null) { 
-			newTimeZone = TimeZoneHelper.getTimeZone("GMT");
-		}
-		Calendar result = new GregorianCalendar(newTimeZone);
-		result.setTimeInMillis(calendar.getTimeInMillis());
-		return result;
-	}
+	public List added = new ArrayList<Long>();
 	
-	public static int getFirstDayOfWeek() {
-		return Calendar.getInstance(getLocale()).getFirstDayOfWeek();
-	}
-	
-	private static Locale getLocale() {
-		RequestContext rc = RequestContextHolder.getRequestContext();
-		if(rc != null) {
-			User user = rc.getUser();
-			if(user != null)
-				return user.getLocale();
-			else
-				return Locale.getDefault();			
+	public List modified = new ArrayList<Long>();
+
+	public void addAll(AttendedEntries entryIds) {
+		if (entryIds == null) {
+			return;
 		}
-		else {
-			return Locale.getDefault();
+		
+		if (added == null) {
+			added = new ArrayList<Long>();
+		}
+		if (modified == null) {
+			modified = new ArrayList<Long>();
+		}
+		
+		if (entryIds.added != null) {
+			added.addAll(entryIds.added);
+		}
+		if (entryIds.modified != null) {
+			modified.addAll(entryIds.modified);
 		}
 	}
-	
+
+	public boolean isEmpty() {
+		return (added == null && modified == null) ||
+				 (added == null && modified != null && modified.isEmpty()) ||
+				 (added != null && added.isEmpty() && modified == null) ||
+				 (added != null && added.isEmpty() && modified != null && modified.isEmpty());
+	} 
 }

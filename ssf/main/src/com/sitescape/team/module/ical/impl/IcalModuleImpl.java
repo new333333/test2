@@ -95,16 +95,19 @@ import org.joda.time.YearMonthDay;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.folder.FolderModule;
+import com.sitescape.team.module.ical.AttendedEntries;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.MapInputData;
@@ -112,7 +115,6 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.web.util.DefinitionHelper;
-import com.sitescape.util.Html;
 import com.sitescape.util.cal.DayAndPosition;
 
 /**
@@ -123,7 +125,7 @@ import com.sitescape.util.cal.DayAndPosition;
  * @author Pawel Nowicki
  * 
  */
-public class IcalModuleImpl implements IcalModule {
+public class IcalModuleImpl extends CommonDependencyInjection implements IcalModule {
 	protected Log logger = LogFactory.getLog(getClass());
 	
 	private static final ProdId PROD_ID = new ProdId("-//SiteScape Inc//"
@@ -182,7 +184,7 @@ public class IcalModuleImpl implements IcalModule {
 
 				event = parseEvent(eventComponent.getStartDate(), eventComponent.getEndDate(), null, 
 									eventComponent.getDuration(), (RRule) eventComponent.getProperty("RRULE"),
-									eventComponent.getRecurrenceId(), timeZones);
+									eventComponent.getRecurrenceId(), eventComponent.getUid(), timeZones);
 				
 				String description = null;
 				if(eventComponent.getDescription() != null) {
@@ -199,7 +201,7 @@ public class IcalModuleImpl implements IcalModule {
 				
 				event = parseEvent(todoComponent.getStartDate(), null, todoComponent.getDue(), 
 						todoComponent.getDuration(), (RRule) todoComponent.getProperty("RRULE"),
-						todoComponent.getRecurrenceId(), timeZones);
+						todoComponent.getRecurrenceId(), todoComponent.getUid(), timeZones);
 	
 				String description = null;
 				if(todoComponent.getDescription() != null) {
@@ -257,13 +259,16 @@ public class IcalModuleImpl implements IcalModule {
 	 * @return
 	 */
 	private Event parseEvent(DtStart start, DtEnd end, Due due, Duration duration, RRule recurrence,
-			RecurrenceId recurrenceId, Map<String, TimeZone> timeZones) {	
-		if (start == null && end == null && due == null && duration == null) {
+			RecurrenceId recurrenceId, Uid uid, Map<String, TimeZone> timeZones) {	
+		if (start == null && end == null && due == null && duration == null && uid == null) {
 			return null;
 		}
 		
 		Event event = new Event();
 		
+		if (uid != null) {
+			event.setUid(uid.getValue());
+		}
 		if (start != null) {
 			GregorianCalendar startCal = new GregorianCalendar();
 			startCal.setTime(start.getDate());
@@ -386,63 +391,39 @@ public class IcalModuleImpl implements IcalModule {
 	 * @throws IOException
 	 * @throws ParserException
 	 */
-	public List parseToEntries (final Long folderId, InputStream icalFile) throws IOException, ParserException
+	public AttendedEntries parseToEntries (final Long folderId, InputStream icalFile) throws IOException, ParserException
 	{
 		Folder folder = (Folder)folderModule.getFolder(folderId);
 		return parseToEntries(folder, null, icalFile);
 	}
-	public List parseToEntries (final Folder folder, Definition def, InputStream icalFile) throws IOException, ParserException {
+	public AttendedEntries parseToEntries (final Folder folder, Definition def, InputStream icalFile) throws IOException, ParserException {
 
-		final List<Long> entries = new ArrayList<Long>();
+		final AttendedEntries attendedEntries = new AttendedEntries();
 		if (def == null) {
 			def = folder.getDefaultEntryDef();
-			if (def == null) return entries;
+			if (def == null) return attendedEntries;
 		} 
 		final String entryType = def.getId();
 		final String eventName= getEventName(def.getDefinition());
 		if(eventName == null) {
-			return entries;
+			return attendedEntries;
 		}
 
 		EventHandler entryCreator = new EventHandler() {
+			
 			public void handleEvent(Event event, String description, String summary) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 				
-				if (summary != null && summary.length() > 255) {
-					String summmaryTemp = summary.substring(0, 252);
-					int indexLastAllowedSpace = summmaryTemp.lastIndexOf(" ");
-					summmaryTemp = summary.substring(0, indexLastAllowedSpace) + "...";
-					description = "..." + summary.substring(indexLastAllowedSpace, summary.length()) + "\n\n" + (description != null ? description : "");
-					summary = summmaryTemp;
-				}
-				formData.put("description", new String[] {description != null ? description : ""});
-				formData.put("title", new String[] {summary != null ? summary : ""});
+				shorterSummary(formData, description, summary);
 				formData.put(eventName, event);
 				
-				MapInputData inputData = new MapInputData(formData);
-				try {
-					Long entryId = folderModule.addEntry(folder.getId(), entryType, inputData, null, null);
-					entries.add(entryId);
-				} catch (AccessControlException e) {
-					logger.warn("Can not create entry from iCal file.", e);
-				} catch (WriteFilesException e) {
-					logger.warn("Can not create entry from iCal file.", e);
-				}
+				addOrModifyEntry(event, new MapInputData(formData));
 			}
-			
+
 			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List attendee) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 				
-				if (summary != null && summary.length() > 255) {
-					String summmaryTemp = summary.substring(0, 252);
-					int indexLastAllowedSpace = summmaryTemp.lastIndexOf(" ");
-					summmaryTemp = summary.substring(0, indexLastAllowedSpace) + "...";
-					description = "..." + summary.substring(indexLastAllowedSpace, summary.length()) + "\n\n" + (description != null ? description : "");
-					summary = summmaryTemp;
-				}
-				
-				formData.put("description", new String[] {description != null ? description : ""});
-				formData.put("title", new String[] {summary != null ? summary : ""});
+				shorterSummary(formData, description, summary);
 				formData.put(eventName, event);
 				formData.put("priority", new String[] {priority});
 				formData.put("status", new String[] {status});
@@ -451,24 +432,81 @@ public class IcalModuleImpl implements IcalModule {
 				
 				// TODO: how to find attendee? by email?
 				// TODO: add attachments support
+				// TODO: alert's support
 				
-				MapInputData inputData = new MapInputData(formData);
+				addOrModifyEntry(event, new MapInputData(formData));
+			}
+			
+			private void shorterSummary(Map<String, Object> formData, String description, String summary) {
+				if (summary != null && summary.length() > 255) {
+					String summmaryTemp = summary.substring(0, 252);
+					int indexLastAllowedSpace = summmaryTemp.lastIndexOf(" ");
+					summmaryTemp = summary.substring(0, indexLastAllowedSpace) + "...";
+					description = "..." + summary.substring(indexLastAllowedSpace, summary.length()) + "\n\n" + (description != null ? description : "");
+					summary = summmaryTemp;
+				}
+				formData.put("description", new String[] {description != null ? description : ""});
+				formData.put("title", new String[] {summary != null ? summary : ""});
+			}
+			
+			private void addOrModifyEntry(Event event, MapInputData inputData) {
 				try {
-					Long entryId = folderModule.addEntry(folder.getId(), entryType, inputData, null, null);
-					entries.add(entryId);
-					logger.info("New entry id created from iCal file [" + entryId + "]");
+					Event eventToUpdate = findEventByUid(folder.getId(), event.getUid());
+					if (eventToUpdate != null && eventToUpdate.getOwner() != null &&
+							eventToUpdate.getOwner().getEntity() != null) {
+						DefinableEntity entity = eventToUpdate.getOwner().getEntity();
+						folderModule.modifyEntry(folder.getId(), entity.getId(), inputData, null, null, null, null);
+						attendedEntries.modified.add(entity.getId());
+					} else {
+						Long entryId = folderModule.addEntry(folder.getId(), entryType, inputData, null, null);
+						attendedEntries.added.add(entryId);
+					}
 				} catch (AccessControlException e) {
 					logger.warn("Can not create entry from iCal file.", e);
 				} catch (WriteFilesException e) {
 					logger.warn("Can not create entry from iCal file.", e);
 				}
-			}
+			}			
 		};
 
 		parseEvents(new InputStreamReader(icalFile), entryCreator);
-		return entries;
+		return attendedEntries;
 	}
 	
+	protected Event findEventByUid(Long folderId, String uid) {
+		if (uid == null) {
+			return null;
+		}
+		FilterControls fc = new FilterControls("uid", uid);
+		fc.add("owner.owningBinderId", folderId);
+		List events = getCoreDao().loadObjects(Event.class, fc, RequestContextHolder.getRequestContext().getZoneId());
+		if (events.size() > 0) {
+			return (Event)events.iterator().next();
+		}
+		
+		// check if this is update of v1.0 event (uid is not stored)
+		// find event by folder id and event id
+		String tUid = uid.replaceAll("[^-]", "");
+		if (tUid.length() == 2) {
+			String uidFolderId = uid.substring(0, uid.indexOf("-"));
+			if (uidFolderId.equals(folderId.toString())) {
+				try {
+					String eventId = uid.substring(uid.lastIndexOf("-") + 1);
+					
+					fc = new FilterControls("id", eventId);
+					fc.add("owner.owningBinderId", Long.parseLong(uidFolderId));
+					events = getCoreDao().loadObjects(Event.class, fc, RequestContextHolder.getRequestContext().getZoneId());
+					if (events.size() > 0) {
+						return (Event)events.iterator().next();
+					}
+				} catch (NumberFormatException e) {
+					// folder id is not Long, ignore it because it's not right intern generated event id
+				}
+			}
+		}
+		return null;
+	}
+
 	private String getEventName(Document definition) {
 		Element configRoot = definition.getRootElement();
 		Element eventEl = (Element) configRoot.selectSingleNode("//item[@name='event']//property[@name='name']");
@@ -1013,13 +1051,13 @@ public class IcalModuleImpl implements IcalModule {
 
 	private void setComponentUID(CalendarComponent component,
 			DefinableEntity entry, Event event) {
-		component.getProperties()
-				.add(
-						new Uid(entry.getParentBinder().getId().toString()
-								+ "-"
-								+ entry.getId().toString()
-								+ (event != null ? "-"
-										+ event.getId().toString() : "")));
+		String uid = event.getUid();
+		if (uid == null) {
+			// v1.0 compatibility - old events don't have stored uid
+			uid = event.generateUid(entry);
+		}
+
+		component.getProperties().add(new Uid(uid));
 	}
 
 }
