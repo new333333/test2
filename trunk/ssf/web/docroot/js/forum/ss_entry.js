@@ -58,6 +58,7 @@ function ss_postSaveRatingRequest(obj) {
 	}
 }
 function ss_showRating(rating, id, namespace) {
+	if (typeof ss_ratings_info == "undefined") return;
 	var iRating = parseInt(rating);
 	for (var i = 1; i <= iRating; i++) {
 		var imgId = "ss_rating_img_" + id + "_" + i;

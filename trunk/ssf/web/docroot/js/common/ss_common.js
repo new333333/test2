@@ -3708,6 +3708,8 @@ function ss_setIframeHeight(divId, iframeId) {
 		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = iframeHeight + ss_entryInPlaceIframeOffset + "px"
+			//Signal that the layout changed
+			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	}
 }
@@ -3784,6 +3786,10 @@ function ss_showForumEntryInIframe_Popup(url) {
 	
     self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
     return false;
+}
+
+function ss_postComment(replyStyle) {
+	alert(replyStyle)
 }
 
 function ss_dummyMethodCall() {
