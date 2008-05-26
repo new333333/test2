@@ -176,20 +176,22 @@ public class ResolveIds {
 		if (ids == null) {
 			return Collections.EMPTY_MAP;
 		}
+		ids = LongIdUtil.getIdsAsLongSet(ids); // ids is collection of Longs or Strings
 		Map results = new HashMap();
 		Map data = new HashMap();
 		Map icons = new HashMap();
 		if ((ids == null) || ids.isEmpty()) return data;
 		CoreDao coreDao = (CoreDao)SpringContextUtil.getBean("coreDao");
-		String query = new String("select x.id,x.title,x.iconName from x in class com.sitescape.team.domain.Binder where x.id in (:idList)");
+		String query = new String("select x.id,x.title,x.iconName,x.deleted from x in class com.sitescape.team.domain.Binder where x.id in (:idList)");
 		data.put("idList", ids);
 		List<Object[]> result = coreDao.loadObjects(query, data);
 		data.clear();
 		for (Object[] objs: result) {
 			data = new HashMap();
+			data.put("id", objs[0].toString());
 			data.put("title", objs[1]);
 			data.put("iconName", objs[2]);
-			data.put("id", objs[0].toString());
+			data.put("deleted", objs[3]);
 			results.put(objs[0].toString(), data);
 		}
 		return results;
@@ -242,6 +244,7 @@ public class ResolveIds {
 		if (ids == null) {
 			return Collections.EMPTY_SET;
 		}
+		ids = LongIdUtil.getIdsAsLongSet(ids); // ids is collection of Longs or Strings
 		BinderModule binderModule = (BinderModule)SpringContextUtil.getBean("binderModule");
 		return binderModule.getBinders(ids);
 	}

@@ -47,6 +47,24 @@ public class LongIdUtil {
 		return memberIds;		
 	}
 	
+	public static Set<Long> getIdsAsLongSet(Collection ids) {
+		Set<Long> memberIds = new HashSet();
+		if (ids != null) {
+			Iterator it = ids.iterator();
+			while (it.hasNext()) {
+				Object id = it.next();
+				if (id instanceof Long) {
+					memberIds.add((Long)id);
+				} else {
+					try  {
+						memberIds.add(Long.parseLong((String)id));
+					} catch (NumberFormatException e) {}
+				}
+			}
+		}
+		return memberIds;		
+	}
+	
 	public static Set<Long> getIdsAsLongSet(String ids) {
 		if(ids == null) return new HashSet<Long>();
 		if (ids.contains(",")) return getIdsAsLongSet(ids, COMMA_SEPARATOR);

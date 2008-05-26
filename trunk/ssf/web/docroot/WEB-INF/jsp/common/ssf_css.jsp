@@ -4740,6 +4740,11 @@ table.ssMeetingRecords .ssHeader {
 	background: white;
 }
 
+ul.placesForm, ul.placesForm li {
+	margin: 0;
+	padding: 0;
+}
+
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_global_nav.jsp" />
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_discussion.jsp" />

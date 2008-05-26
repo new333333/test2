@@ -36,6 +36,7 @@
 	<c:forEach var="selection" items="<%= com.sitescape.team.util.ResolveIds.getBinderTitlesAndIcons(places_entry.getCustomAttribute(property_name)) %>" >
 		<li><img border="0" <ssf:alt/>
 		          src="<html:imagesPath/>${selection.value.iconName}" />
+	          <c:if test="${!selection.value.deleted}">
 				<a       
 		          <ssf:ifadapter>
 			          href="<ssf:url adapter="true" portletName="ss_forum" action="view_permalink" binderId="${selection.key}">
@@ -47,7 +48,10 @@
 		    			<ssf:param name="binderId" value="${selection.key}"/>
 						</ssf:url>" 		          
 		          </ssf:ifnotadapter>
-		          class="ss_parentPointer"><c:out value="${selection.value.title}" escapeXml="false"/></a>
+		          class="ss_parentPointer"></c:if><c:out value="${selection.value.title}" escapeXml="false"/><c:if test="${!selection.value.deleted}"></a></c:if>
+				<c:if test="${selection.value.deleted}">
+					<span class="ss_fineprint ss_light"><ssf:nlt tag="milestone.folder.deleted"/></span>
+				</c:if>
 		</li>
 	</c:forEach>
 	</ul>
