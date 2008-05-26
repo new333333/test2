@@ -394,8 +394,8 @@ public class SearchFilterRequestParser {
 					for (int i = 0; i < values.length; i++) {
 						String[] valueSplited = values[i].split("\\s");
 						for (int j = 0; j < valueSplited.length; j++) {
-							if (valueSplited[j] != null && valueSplited[j].indexOf(SearchFilterKeys.SearchFolders) > -1) {
-								String folderId = valueSplited[j].replaceFirst(SearchFilterKeys.SearchFolders, "");
+							if (valueSplited[j] != null && valueSplited[j].indexOf(SearchFilterKeys.SearchFolders + WebKeys.URL_ID_CHOICES_SEPARATOR) > -1) {
+								String folderId = valueSplited[j].replaceFirst(SearchFilterKeys.SearchFolders + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
 								folderIds.add(folderId);
 							}
 						}

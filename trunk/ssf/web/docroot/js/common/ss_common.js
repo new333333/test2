@@ -5904,17 +5904,16 @@ function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 		choicesAreFromParent = true;
 	}
 		
-	// var formObj = null;
 	if (obj.type == 'radio') {
 		if (idChoices != null && typeof idChoices !== "undefined") {
-			if (idChoices.value && idChoices.value != (obj.name + obj.value)) {
+			if (idChoices.value && idChoices.value != (obj.name + "%" + obj.value)) {
 				selected = parent.document.getElementById("ss_tree_radio" + treeName + idChoices.value);
 				if (selected && selected.checked) {
 					selected.checked = false;
 				}
 			}
 		
-			idChoices.value = obj.name + obj.value;
+			idChoices.value = obj.name + "%" + obj.value;
 			if (treeName) {
 
 				// accessible mode only - unselect last choice if visible 

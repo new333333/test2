@@ -1541,13 +1541,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						if (inputData.exists(WebKeys.URL_ID_CHOICES)) {
 							Set<Long> longIds = new HashSet();
 							String[] idChoices = inputData.getValues(WebKeys.URL_ID_CHOICES);
+							String valuePrefix = nameValue + WebKeys.URL_ID_CHOICES_SEPARATOR;
 							for (int i = 0; i < idChoices.length; i++) {
 								String[] idc = idChoices[i].split(" ");
 								for (int j = 0; j < idc.length; j++) {
-									if (idc[j].startsWith(nameValue)) {
+									if (idc[j].startsWith(valuePrefix)) {
 										try {
 											//	validate as long
-											longIds.add(Long.parseLong(idc[j].substring(nameValue.length()))); 
+											longIds.add(Long.parseLong(idc[j].substring(valuePrefix.length()))); 
 										} catch (NumberFormatException ne) {}
 									}
 								}

@@ -146,11 +146,11 @@ public class ReportDownloadController extends  SAbstractController {
 							String[] valueSplited = values[i].split("\\s");
 							for (int j = 0; j < valueSplited.length; j++) {
 								if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-									if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
-										String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER, "");
+									if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_FOLDER + WebKeys.URL_ID_CHOICES_SEPARATOR)) {
+										String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
 										ids.add(Long.valueOf(binderId));
-									} else if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
-										String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE, "");
+									} else if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE + WebKeys.URL_ID_CHOICES_SEPARATOR)) {
+										String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
 										ids.add(Long.valueOf(binderId));
 									}							
 								}
