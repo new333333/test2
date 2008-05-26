@@ -126,3 +126,4 @@
     <span class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></span>
   </c:if>
 </div>
+</div>

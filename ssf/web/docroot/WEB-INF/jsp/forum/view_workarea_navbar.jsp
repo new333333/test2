@@ -98,10 +98,14 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 }
 
 function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
+	ss_debug('In routine: ss_setParentWorkareaIframeSize${renderResponse.namespace}')
 	if (typeof self.parent != "undefined") {
 		var resizeRoutineName = "ss_setWorkareaIframeSize" + ss_parentWorkareaNamespace${renderResponse.namespace};
 		eval("var resizeRoutineExists = typeof(self.parent."+resizeRoutineName+")");
+		ss_debug('resizeRoutineExists = '+resizeRoutineExists)
 		if (resizeRoutineExists != "undefined") {
+			ss_debug('namespace = ${renderResponse.namespace}')
+			eval("ss_debug(self.parent."+resizeRoutineName+")");
 			eval("self.parent."+resizeRoutineName+"()");
 		} else {
 			//See if there is a common routine to call in case the namespaces don't match
@@ -457,16 +461,13 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   </div><!-- end of colmidright-->
 </div>   <!-- end of colmask fivecol-->
 <div class="ss_darkline"></div>
+<ssf:ifLoggedIn>
 <div class="ss_medline">
 
-
 <div id="ss_statusArea" class="ss_global_toolbar_maximized"><!-- beginning of other rows-->  
-
-
 <!-- Beginning of Status Bar:  Status Share/Track Buttons My Teams and Favorites  -->
 
 <!-- Start of Status line -->
-<ssf:ifLoggedIn>
 
 <li class="ss_rt_buffer">
 <script type="text/javascript">
