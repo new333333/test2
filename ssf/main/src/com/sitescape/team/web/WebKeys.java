@@ -184,7 +184,8 @@ public class WebKeys {
 	public static final String URL_VIRTUAL_HOST = "virtualHost";
 	public static final String URL_ID_CHOICES = "idChoices";
 	public static final String URL_ID_CHOICES_SEPARATOR = "%";
-
+	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
+	
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
 	public static final String PRESENCE_PREF_USER_LIST = "com.sitescape.portlet.presence.user.list";
