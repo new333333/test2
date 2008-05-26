@@ -123,7 +123,7 @@ public class EditController extends SAbstractController {
 							String[] valueSplited = values[i].split("\\s");
 							for (int j = 0; j < valueSplited.length; j++) {
 								if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-									String forumId = valueSplited[j].substring(2);
+									String forumId = valueSplited[j].substring(valueSplited[j].indexOf("%") + 1);
 									if (!forumPrefIdList.contains(forumId) && !forumDelIdList.contains(forumId)) forumPrefIdList.add(forumId);
 								}
 							}
@@ -183,7 +183,7 @@ public class EditController extends SAbstractController {
 				prefs.setValue(WebKeys.PRESENCE_PREF_GROUP_LIST, LongIdUtil.getIdsAsString(request.getParameterValues("groups"))); 			
 			} else if (ViewController.WORKSPACE_PORTLET.equals(displayType)) {
 				String id = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
-				id = id.replaceAll("topWorkspace", "").trim();
+				id = id.replaceAll("topWorkspace" + WebKeys.URL_ID_CHOICES_SEPARATOR, "").trim();
 				if (Validator.isNotNull(id)) {
 					prefs.setValue(WebKeys.WORKSPACE_PREF_ID, id);
 				}

@@ -137,7 +137,7 @@ public class ModifyEntryController extends SAbstractController {
 				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 				Long destinationId = null;
 				try {
-					destinationId = Long.valueOf(destinationIdString.replaceAll("destination", "").trim()); 
+					destinationId = Long.valueOf(destinationIdString.replaceAll("destination" + WebKeys.URL_ID_CHOICES_SEPARATOR, "").trim()); 
 				} catch (NumberFormatException e) {
 					// nothing to do
 				}				
@@ -154,7 +154,7 @@ public class ModifyEntryController extends SAbstractController {
 				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 				Long destinationId = null;
 				try {
-					destinationId = Long.valueOf(destinationIdString.replaceAll("destination", "").trim()); 
+					destinationId = Long.valueOf(destinationIdString.replaceAll("destination" + WebKeys.URL_ID_CHOICES_SEPARATOR, "").trim()); 
 				} catch (NumberFormatException e) {
 					// nothing to do
 				}

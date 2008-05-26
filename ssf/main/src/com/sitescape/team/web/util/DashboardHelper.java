@@ -1169,8 +1169,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						String idChoices = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 						String[] idChoices2 = idChoices.split(" ");
 						for (int i = 0; i < idChoices2.length; i++) {
-							if (idChoices2[i].matches("^ss_folder_id[0-9]+$")) {
-								folderIds.add(idChoices2[i].replaceFirst("^ss_folder_id", ""));
+							if (idChoices2[i].matches("^ss_folder_id" + WebKeys.URL_ID_CHOICES_SEPARATOR + "[0-9]+$")) {
+								folderIds.add(idChoices2[i].replaceFirst("^ss_folder_id" + WebKeys.URL_ID_CHOICES_SEPARATOR, ""));
 							}
 						}
 					}
@@ -1289,8 +1289,8 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 						String idChoices = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 						if (!idChoices.equals("")) {
 							//If this is accessibile mode, the id is in idChoices
-							if (idChoices.matches("^ss_folder_id[0-9]+$")) {
-								folderIds.add(idChoices.replaceFirst("^ss_folder_id", ""));
+							if (idChoices.matches("^ss_folder_id" + WebKeys.URL_ID_CHOICES_SEPARATOR + "[0-9]+$")) {
+								folderIds.add(idChoices.replaceFirst("^ss_folder_id" + WebKeys.URL_ID_CHOICES_SEPARATOR, ""));
 							}
 						} else if (id != null) {
 							folderIds.add(id); 
@@ -1320,9 +1320,9 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 					String idChoices = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 					if (!idChoices.equals("")) {
 						//If this is accessibile mode, the id is in idChoices
-						if (idChoices.matches("^data_topId[0-9]+$")) {
+						if (idChoices.matches("^data_topId" + WebKeys.URL_ID_CHOICES_SEPARATOR + "[0-9]+$")) {
 							try {
-								topId = Long.parseLong(idChoices.replaceFirst("^data_topId", ""));
+								topId = Long.parseLong(idChoices.replaceFirst("^data_topId" + WebKeys.URL_ID_CHOICES_SEPARATOR, ""));
 							} catch (NumberFormatException e) {}
 						}
 					}
