@@ -244,7 +244,6 @@ public class ProcessorManager implements ApplicationContextAware {
         return beanName;
     }
 
-	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		this.applicationContext = applicationContext;		

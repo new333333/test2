@@ -35,12 +35,10 @@ public class SpringBeanLocatorAdapter implements BeanLocator,
 	 * 
 	 * @see com.liferay.portal.kernel.bean.BeanLocator#locate(java.lang.String)
 	 */
-	@Override
 	public Object locate(String name) throws BeanLocatorException {
 		return applicationContext.getBean(name);
 	}
 
-	@Override
 	public void setApplicationContext(ApplicationContext applicationContext)
 			throws BeansException {
 		this.applicationContext = applicationContext;

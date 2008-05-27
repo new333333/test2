@@ -4,10 +4,10 @@
 package com.sitescape.team.liferay.events;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.createNiceMock;
-import static org.easymock.classextension.EasyMock.*;
-import static org.junit.Assert.assertTrue;
+import static org.easymock.classextension.EasyMock.replay;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -29,7 +29,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import com.liferay.portal.model.Company;
 import com.liferay.portal.model.impl.UserImpl;
-import com.liferay.portal.util.WebKeys;
 import com.sitescape.team.asmodule.bridge.BridgeUtil;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.domain.User;
@@ -98,7 +97,6 @@ public class LoginPostActionTest extends AbstractTestBase implements BeanClassLo
 		loginPostAction.run(req, res);
 	}
 
-	@Override
 	@Required
 	public void setBeanClassLoader(ClassLoader classLoader) {
 		this.classLoader = classLoader;		
