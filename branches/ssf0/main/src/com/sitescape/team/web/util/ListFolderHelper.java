@@ -1270,12 +1270,14 @@ public class ListFolderHelper {
 		//Copy binder
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.copyBinder)) {
 			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
 			url = response.createActionURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_COPY);
-			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.copy_folder"), url);
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.copy_folder"), url, qualifiers);
 		}
 
 		//Configuration

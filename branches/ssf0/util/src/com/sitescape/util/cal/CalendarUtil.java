@@ -34,6 +34,10 @@ import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.joda.time.DateTime;
+import org.joda.time.Days;
+import org.joda.time.YearMonthDay;
+
 /**
  * <a href="CalendarUtil.java.html"><b><i>View Source</i></b></a>
  *
@@ -107,26 +111,30 @@ public class CalendarUtil {
 
 		return yearDiff;
 	}
+	
+	public static void toGTTime(Calendar cal) {
+		cal.set(Calendar.HOUR_OF_DAY, 0);
+		cal.set(Calendar.MINUTE, 0);
+		cal.set(Calendar.SECOND, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+	}
 
 	public static Date getGTDate(Calendar cal) {
 		Calendar gtCal = (Calendar)cal.clone();
-
-		gtCal.set(Calendar.HOUR_OF_DAY, 0);
-		gtCal.set(Calendar.MINUTE, 0);
-		gtCal.set(Calendar.SECOND, 0);
-		gtCal.set(Calendar.MILLISECOND, 0);
-
+		toGTTime(gtCal);
 		return gtCal.getTime();
+	}
+	
+	public static void toLTTime(Calendar cal) {
+		cal.set(Calendar.HOUR_OF_DAY, 23);
+		cal.set(Calendar.MINUTE, 59);
+		cal.set(Calendar.SECOND, 59);
+		cal.set(Calendar.MILLISECOND, 999);
 	}
 
 	public static Date getLTDate(Calendar cal) {
 		Calendar ltCal = (Calendar)cal.clone();
-
-		ltCal.set(Calendar.HOUR_OF_DAY, 23);
-		ltCal.set(Calendar.MINUTE, 59);
-		ltCal.set(Calendar.SECOND, 59);
-		ltCal.set(Calendar.MILLISECOND, 999);
-
+		toLTTime(ltCal);
 		return ltCal.getTime();
 	}
 
@@ -474,4 +482,14 @@ public class CalendarUtil {
 		return cal;
 	}
 
+	public static int fullDaysBetween(Date a, Date b) {
+		YearMonthDay firstDate = new DateTime(a).toYearMonthDay();
+		YearMonthDay secondDate = new DateTime(b).toYearMonthDay();
+				
+		if (!firstDate.isBefore(secondDate)) {
+			return Days.daysBetween(secondDate, firstDate).getDays();
+		}
+		return Days.daysBetween(firstDate, secondDate).getDays();
+	}
+	
 }

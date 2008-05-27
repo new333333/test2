@@ -32,6 +32,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,7 +41,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Collections;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.Criteria;
@@ -98,7 +99,6 @@ import com.sitescape.team.domain.VersionAttachment;
 import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.security.function.Function;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
@@ -1001,7 +1001,6 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        	SessionFactory sf = getSessionFactory();
     	Session s = sf.openSession();
     	try {
-    		s.save(obj);
     		s.flush();
     	} finally {
     		s.close();
@@ -1314,42 +1313,100 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	     );
 	}
 	public UserDashboard loadUserDashboard(final EntityIdentifier ownerId, final Long binderId) {
-		List result = (List)getHibernateTemplate().execute(
+			return (UserDashboard)getHibernateTemplate().execute(
 				new HibernateCallback() {
 		            public Object doInHibernate(Session session) throws HibernateException {
-	            		return session.createCriteria(UserDashboard.class)
+	        			Criteria crit = session.createCriteria(UserDashboard.class)
 	            		.add(Expression.eq("binderId", binderId))
 	            		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
 	            		.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
-	            		.setCacheable(true)
-	            		.list();
+	        				.setCacheable(true);
+		        		try {
+		        			List result = crit.list();
+		        			if (result.isEmpty()) return null;
+		        			return result.get(0);
+		        		} catch (HibernateException se) {
+		        			if (se.getCause() instanceof java.io.InvalidClassException) {
+		        				crit.setProjection(Projections.property("id"));
+		        				crit.setCacheable(false);
+		        				List objs = crit.list();
+		        				if (objs.isEmpty()) return Collections.EMPTY_LIST;
+		        				String id = (String)objs.get(0);
+		        				//bad serialized data - get rid of it
+		        				executeDashboardClear(id);
+		        				return session.get(UserDashboard.class, id);
+		        			} else throw se;
+		        		}
 		            }
 		        }
 		 );
-		if (result.isEmpty()) return null;
-		return (UserDashboard)result.get(0);
 	}
 	public EntityDashboard loadEntityDashboard(final EntityIdentifier ownerId) {
-		List result = (List)getHibernateTemplate().execute(
+		return (EntityDashboard)getHibernateTemplate().execute(
 				new HibernateCallback() {
 		            public Object doInHibernate(Session session) throws HibernateException {
-		            		return session.createCriteria(EntityDashboard.class)
+						Criteria crit = session.createCriteria(EntityDashboard.class)
 		            		.add(Expression.eq("ownerIdentifier.entityId", ownerId.getEntityId()))
 		            		.add(Expression.eq("ownerIdentifier.type", ownerId.getEntityType().getValue()))
-		            		.setCacheable(true)
-		            		.list();
+							.setCacheable(true);
+						try {
+		            		List result = crit.list();
+		            		if (result.isEmpty()) return null;
+		            		return result.get(0);
 		            		
+		        		} catch (HibernateException se) {
+		        			if (se.getCause() instanceof java.io.InvalidClassException) {
+								//bad serialized data - get rid of it
+								crit.setProjection(Projections.property("id"));
+								crit.setCacheable(false);
+								List objs = crit.list();
+								if (objs.isEmpty()) return Collections.EMPTY_LIST;
+								String id = (String)objs.get(0);
+								//bad serialized data - get rid of it
+								executeDashboardClear(id);
+								return session.get(EntityDashboard.class, id);
+							} else throw se;
 		            }
 		        }
+				}
 		 );
-		if (result.isEmpty()) return null;
-		return (EntityDashboard)result.get(0);
 	}
 
 	public Dashboard loadDashboard(String id, Long zoneId) {
-		Dashboard d = (Dashboard)getHibernateTemplate().get(Dashboard.class, id);
-        if (d != null || d.getZoneId().equals(zoneId)) return d;
+		Dashboard d=null;
+		try {
+			d = (Dashboard)getHibernateTemplate().get(Dashboard.class, id);
+		} catch (HibernateException se) {
+			if (se.getCause() instanceof java.io.InvalidClassException) {
+				//bad serialized data - get rid of it
+				executeDashboardClear(id);
+				d = (Dashboard)getHibernateTemplate().get(Dashboard.class, id);
+				
+			} else throw se;
+		}
+		if (d != null && d.getZoneId().equals(zoneId)) return d;
         throw new NoObjectByTheIdException("errorcode.no.dashboard.by.the.id", id);
+	}
+	//At one point dom4j (1.5) objects where serialized,  don4j(1.6) does not recognize them
+	//Somewhere along the way we changed it so we saved the string value instead of the serialized object, but 
+	//occasionally they pop up at home.
+	private void executeDashboardClear(final String id) {
+       	SessionFactory sf = getSessionFactory();
+    	Session session = sf.openSession();
+		Statement statement = null;
+    	try {
+    		statement = session.connection().createStatement();
+    		statement.executeUpdate("update SS_Dashboards set properties=null where id='" + id + "'");
+    		Dashboard d = (Dashboard)session.get(Dashboard.class, id);
+    		d.setProperties(new HashMap());
+    		session.flush();
+    	} catch (SQLException sq) {
+    		throw new HibernateException(sq);
+    	} finally {
+    		try {if (statement != null) statement.close();} catch (Exception ex) {};
+    		session.close();
+    	}
+
 	}
 	//Don't use , only for special cases
 	public void executeUpdate(final String queryStr) {

@@ -61,7 +61,7 @@
 	</c:if>
 	</script>
 
-<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
@@ -99,7 +99,7 @@
     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
 
-<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
+<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 </c:if>
@@ -128,7 +128,7 @@
 
 		<div id="ss_tabs_container">
 
-<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
+<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 			<% // Breadcrumbs %>
 			<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 </c:if>

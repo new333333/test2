@@ -41,9 +41,9 @@ import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.Definition;
 
 /**
  * Convert back and forth between iCal text and Events
@@ -52,7 +52,7 @@ import com.sitescape.team.domain.Definition;
  *
  */
 public interface IcalModule {
-
+	
 	/*
 	 * Users of parseEvents need to provide an EventHandler implementation that
 	 *  processes the Events as they are parsed.
@@ -124,10 +124,10 @@ public interface IcalModule {
 	 * @throws IOException
 	 * @throws ParserException
 	 */
-	List parseToEntries (final Long folderId, InputStream icalFile)
+	AttendedEntries parseToEntries (final Long folderId, InputStream icalFile)
 		throws IOException, ParserException;
 
-	List parseToEntries (final Folder folder, Definition def, InputStream icalFile)
+	AttendedEntries parseToEntries (final Folder folder, Definition def, InputStream icalFile)
 		throws IOException, ParserException;
 
 	public Calendar generate(DefinableEntity entry, Collection events, String defaultTimeZoneId);

@@ -212,7 +212,7 @@ public class SearchFilterToMapConverter {
     			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
     			if (blocks.get(SearchBlockTypeEntry) == null) blocks.put(SearchBlockTypeEntry, new ArrayList());
     			((List)blocks.get(SearchBlockTypeEntry)).add(createEventBlock(filterTerm, definitionModule));
-    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
+    			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks); 			
     		} else if ( filterType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
     			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
     			if (blocks.get(SearchBlockTypeAuthor) == null) blocks.put(SearchBlockTypeAuthor, new ArrayList());

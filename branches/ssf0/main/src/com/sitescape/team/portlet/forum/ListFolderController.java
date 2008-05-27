@@ -182,12 +182,15 @@ public class ListFolderController extends  SAbstractController {
 	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+        User user = RequestContextHolder.getRequestContext().getUser();
 		String displayType = BinderHelper.getDisplayType(request);
 		if (request.getWindowState().equals(WindowState.NORMAL) &&
 				!BinderHelper.WORKAREA_PORTLET.equals(displayType)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		//If no binder, Default to the user's workspace
+		if (binderId == null) binderId = user.getWorkspaceId();
 		PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 		String namespace = response.getNamespace();
         if (PortletAdapterUtil.isRunByAdapter(request)) {

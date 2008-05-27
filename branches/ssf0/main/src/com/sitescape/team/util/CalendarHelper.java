@@ -29,7 +29,6 @@
 package com.sitescape.team.util;
 
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Locale;
 import java.util.TimeZone;
@@ -42,7 +41,7 @@ import com.sitescape.team.domain.User;
 public class CalendarHelper {
 
 	/**
-	 * Returns calendar with the same like <code>calendar</code> time but in given <code>newTimeZone</code>.
+	 * Returns calendar with the same time like <code>calendar</code> but in given <code>newTimeZone</code>.
 	 * Routine creates a new calendar object so given <code>calendar</code> is untouched.
 	 * 
 	 * @param calendar

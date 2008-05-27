@@ -32,7 +32,6 @@ import javax.portlet.PortletException;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.springframework.web.servlet.ViewRendererServlet;
 import org.springframework.web.portlet.ModelAndView;
 import org.springframework.web.servlet.View;
 
@@ -67,7 +66,8 @@ public class DispatcherPortlet extends org.springframework.web.portlet.Dispatche
 					"' in portlet with name '" + getPortletName() + "'");
 		}
 		
-		// Set the content type on the response if needed and if possible.
+/* commented out for mobile WAP
+ * 		// Set the content type on the response if needed and if possible.
 		// The Portlet spec requires the content type to be set on the RenderResponse;
 		// it's not sufficient to let the View set it on the ServletResponse.
 		if (response.getContentType() != null) {
@@ -85,7 +85,7 @@ public class DispatcherPortlet extends org.springframework.web.portlet.Dispatche
 				response.setContentType(contentType);
 			}
 		}
-		
+*/
 		doRender(view, mv.getModel(), request, response);
 	}
 }

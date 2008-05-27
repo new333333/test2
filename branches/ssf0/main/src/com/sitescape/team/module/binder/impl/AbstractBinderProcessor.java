@@ -487,6 +487,14 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
  		    	binder.setWorkflowAssociations((Map)inputData.getSingleObject(ObjectKeys.INPUT_FIELD_WORKFLOWASSOCIATIONS));
  	    	}
  		}
+ 		
+		//generate events uid
+		Iterator<Event> it = binder.getEvents().iterator();
+		while (it.hasNext()) {
+			Event event = it.next();
+			event.generateUid(binder);
+		}
+		
  		//create history - using timestamp and version from fillIn
     	processChangeLog(binder, ChangeLog.ADDBINDER);
     	getReportModule().addAuditTrail(AuditType.add, binder);

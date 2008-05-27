@@ -531,12 +531,6 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
 	}
  
     //***********************************************************************************************************
-          
-    protected Entry entry_load(Binder parentBinder, Long entryId) {
-        return folderDao.loadFolderEntry(parentBinder.getId(), entryId, parentBinder.getZoneId()); 
-    }
-         
-    //***********************************************************************************************************
     //inside write transaction    
    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
     	if(logger.isDebugEnabled())

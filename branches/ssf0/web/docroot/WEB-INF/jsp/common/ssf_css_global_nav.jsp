@@ -186,11 +186,11 @@ a.ss_buttonSTButton:active span {
 #ss_top_nav_view ul{
 	margin:4px 0 0 0px;
 	list-style:none;
-	width:100%;
+
 	}
 #ss_top_nav_view ul li{
 	display:inline;
-	width:100%;
+
 	}
 #ss_top_nav_view ul li a{
 	background-image:url("<html:rootPath/>images/pics/portalepand_grey.png");   

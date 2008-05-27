@@ -31,83 +31,81 @@
 <%@ page language="java" pageEncoding="UTF-8"%>
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // This is JSON type AJAX response  %>
-{
-<c:if test="${!empty ssCalendarViewBean.eventType}">
-	eventType : "<ssf:escapeJavaScript value="${ssCalendarViewBean.eventType}"/>",
-</c:if>
-<c:if test="${!empty ssCalendarViewBean.dayViewType}">
-	dayViewType : "<ssf:escapeJavaScript value="${ssCalendarViewBean.dayViewType}"/>",
-</c:if>
-<c:if test="${!empty ssCalendarViewBean.today}">
-	today : "<fmt:formatDate value="${ssCalendarViewBean.today}" pattern="yyyyMMdd" timeZone="${ssUser.timeZone.ID}"/>",
-</c:if>
-<c:if test="${!empty ssCurrentDate}">
-	currentDate : "<fmt:formatDate value="${ssCurrentDate}" pattern="yyyyMMdd" timeZone="${ssUser.timeZone.ID}"/>",
-</c:if>
-<c:if test="${!empty ssGridType}">
-	gridType : "${ssGridType}",
-</c:if>
-<c:if test="${!empty ssGridSize}">
-	gridSize : ${ssGridSize},
-</c:if>
-<c:if test="${!empty ssCalendarViewBean.monthInfo}">
-	monthViewInfo : {year : ${ssCalendarViewBean.monthInfo.year}, 
-					month : ${ssCalendarViewBean.monthInfo.month},
-					numberOfDaysInView: ${ssCalendarViewBean.monthInfo.numberOfDaysInView},
-					startViewDate : "<fmt:formatDate value="${ssCalendarViewBean.monthInfo.beginView}" timeZone="${ssUser.timeZone.ID}" pattern="yyyyMMdd"/>",
-					endViewDate : "<fmt:formatDate value="${ssCalendarViewBean.monthInfo.endView}" timeZone="${ssUser.timeZone.ID}" pattern="yyyyMMdd"/>"},
-</c:if>
-events : [<%--
+{<c:if test="${!empty ssCalendarViewBean.eventType}"><%--
+	--%>eventType: "<ssf:escapeJavaScript value="${ssCalendarViewBean.eventType}"/>", <%--
+--%></c:if><%--
+--%><c:if test="${!empty ssCalendarViewBean.dayViewType}"><%--
+	--%>dayViewType: "<ssf:escapeJavaScript value="${ssCalendarViewBean.dayViewType}"/>", <%--
+--%></c:if><%--
+--%><c:if test="${!empty ssCalendarViewBean.today}"><%--
+	--%>today: "<fmt:formatDate value="${ssCalendarViewBean.today}" pattern="yyyyMMdd" timeZone="${ssUser.timeZone.ID}"/>", <%--
+--%></c:if><%--
+--%><c:if test="${!empty ssCurrentDate}"><%--
+	--%>currentDate: "<fmt:formatDate value="${ssCurrentDate}" pattern="yyyyMMdd" timeZone="${ssUser.timeZone.ID}"/>", <%--
+--%></c:if><%--
+--%><c:if test="${!empty ssGridType}"><%--
+	--%>gridType: "${ssGridType}", <%--
+--%></c:if><%--
+--%><c:if test="${!empty ssGridSize}"><%--
+	--%>gridSize: ${ssGridSize}, <%--
+--%></c:if><%--
+--%><c:if test="${!empty ssCalendarViewBean.monthInfo}"><%--
+	--%>monthViewInfo: {year: ${ssCalendarViewBean.monthInfo.year}, <%--
+					--%>month: ${ssCalendarViewBean.monthInfo.month}, <%--
+					--%>numberOfDaysInView: ${ssCalendarViewBean.monthInfo.numberOfDaysInView}, <%--
+					--%>startViewDate: "<fmt:formatDate value="${ssCalendarViewBean.monthInfo.beginView}" timeZone="${ssUser.timeZone.ID}" pattern="yyyyMMdd"/>", <%--
+					--%>endViewDate: "<fmt:formatDate value="${ssCalendarViewBean.monthInfo.endView}" timeZone="${ssUser.timeZone.ID}" pattern="yyyyMMdd"/>"}, <%--
+--%></c:if><%--
+--%>events: [<%--
   --%><c:forEach var="evim" items="${ssCalendarViewBean.events}" varStatus="status"><%--
     --%><jsp:useBean id="evim" type="java.util.Map" /><%--
-    --%>
-		  {
-		  eventId: "<ssf:escapeJavaScript value="${evim.eventid}"/>", 
-		  	entryId : "${evim.entry['_docId']}",
-		  	binderId : "${evim.entry['_binderId']}",
-		  	calendarId : "${evim.entry['_binderId']}",
-		  	<c:set var="timeZone" value="${ssUser.timeZone.ID}"/>
-		  	<c:if test="${(evim.cal_allDay && evim.eventType == 'event') ||
-  						(!evim.cal_timeZoneSensitive && evim.eventType == 'event')}">
-		  		<c:set var="timeZone" value="GMT"/>
-		  	</c:if>
-		  	startDate : "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>",
-		  	endDate : "<fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>", 
-		  	<c:choose>
-			  	<c:when test="${!evim.cal_allDay}">
-				  	<c:choose>
-				  		<c:when test="${!evim.cal_oneDayEvent}">
-			  				text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="both" timeStyle="short" dateStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="both" timeStyle="short" dateStyle="short" />",
-					  	</c:when>
-					  	<c:otherwise>
-					  	  	<c:choose>
-						  		<c:when test="${evim.cal_starttime == evim.cal_endtime}">
-					  				text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="time" timeStyle="short" />",
-							  	</c:when>
-							  	<c:otherwise>
-							  		text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="time" timeStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="time" timeStyle="short" />",
-							  	</c:otherwise>
-							</c:choose>
-					  	</c:otherwise>
-					</c:choose>			  		
-			  	</c:when>
-			  	<c:otherwise>
-				  	<c:choose>
-				  		<c:when test="${!evim.cal_oneDayEvent}">
-			  				text: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="date" timeStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="date" timeStyle="short" />",
-					  	</c:when>
-					  	<c:otherwise>
-					  		text: "",
-					  	</c:otherwise>
-					</c:choose>	
-			  	</c:otherwise>
-			</c:choose>
-		  	dur: ${evim.cal_duration},
-		  	allDay: ${evim.cal_allDay},
-		  	title: "<ssf:escapeJavaScript value="${evim.entry.title}"/>", 
-		  	calsrc: "cal1",
-		  	eventType: "<ssf:escapeJavaScript value="${evim.eventType}"/>",
-                        entityType: "<ssf:escapeJavaScript value="${evim.entry._entityType}"/>",
-			viewOnClick: "ss_loadEntry(this, '${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}', '${ss_namespace}'<c:if test="${ssDashboardRequest}">, 'yes'</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
-	--%></c:forEach>]
-}
+    --%>{<%--
+		  --%>eventId: "<ssf:escapeJavaScript value="${evim.eventid}"/>", <%--
+		  	--%>entryId: "${evim.entry['_docId']}", <%--
+		  	--%>binderId: "${evim.entry['_binderId']}", <%--
+		  	--%>calendarId: "${evim.entry['_binderId']}", <%--
+		  	--%><c:set var="timeZone" value="${ssUser.timeZone.ID}"/><%--
+		  	--%><c:if test="${(evim.cal_allDay && evim.eventType == 'event') ||
+  						(!evim.cal_timeZoneSensitive && evim.eventType == 'event')}"><%--
+		  		--%><c:set var="timeZone" value="GMT"/><%--
+		  	--%></c:if><%--
+		  	--%>startDate: "<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>", <%--
+		  	--%>endDate: "<fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" pattern="yyyyMMdd'T'HHmm"/>", <%--
+		  	--%>text: <c:choose><%--
+			  	--%><c:when test="${!evim.cal_allDay}"><%--
+				  	--%><c:choose><%--
+				  		--%><c:when test="${!evim.cal_oneDayEvent}"><%--
+			  				--%>"<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="both" timeStyle="short" dateStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="both" timeStyle="short" dateStyle="short" />", <%--
+					  	--%></c:when><%--
+					  	--%><c:otherwise><%--
+					  	  	--%><c:choose><%--
+						  		--%><c:when test="${evim.cal_starttime == evim.cal_endtime}"><%--
+					  				--%>"<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="time" timeStyle="short" />", <%--
+							  	--%></c:when><%--
+							  	--%><c:otherwise><%--
+							  		--%>"<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="time" timeStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="time" timeStyle="short" />", <%--
+							  	--%></c:otherwise><%--
+							--%></c:choose><%--
+					  	--%></c:otherwise><%--
+					--%></c:choose><%--		
+			  	--%></c:when><%--
+			  	--%><c:otherwise><%--
+				  	--%><c:choose><%--
+				  		--%><c:when test="${!evim.cal_oneDayEvent}"><%--
+			  				--%>"<fmt:formatDate value="${evim.cal_starttime}" timeZone="${timeZone}" type="date" timeStyle="short" /> - <fmt:formatDate value="${evim.cal_endtime}" timeZone="${timeZone}" type="date" timeStyle="short" />", <%--
+					  	--%></c:when><%--
+					  	--%><c:otherwise><%--
+					  		--%>"", <%--
+					  	--%></c:otherwise><%--
+					--%></c:choose><%--
+			  	--%></c:otherwise><%--
+			--%></c:choose><%--
+		  	--%>dur: ${evim.cal_duration}, <%--
+		  	--%>allDay: ${evim.cal_allDay}, <%--
+		  	--%>title: "<ssf:escapeJavaScript value="${evim.entry.title}"/>", <%--
+		  	--%>calsrc: "cal1", <%--
+		  	--%>eventType: "<ssf:escapeJavaScript value="${evim.eventType}"/>", <%--
+                        --%>entityType: "<ssf:escapeJavaScript value="${evim.entry._entityType}"/>", <%--
+			--%>viewOnClick: "ss_loadEntry(this, '${evim.entry._docId}', '${evim.entry._binderId}', '${evim.entry._entityType}', '${ss_namespace}'<c:if test="${ssDashboardRequest}">, 'yes'</c:if>);"}<c:if test="${!status.last}">,</c:if><%--
+	--%></c:forEach>]<%--
+--%>}

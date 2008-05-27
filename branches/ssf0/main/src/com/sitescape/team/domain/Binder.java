@@ -36,6 +36,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.HashSet;
 
+import org.dom4j.Document;
+
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.fi.connection.ResourceDriver;
 import com.sitescape.team.fi.connection.ResourceDriverManagerUtil;
@@ -377,9 +379,10 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
      */
     public void setProperty(String name, Object value) {
  	   if (value instanceof Object[]) throw new IllegalArgumentException("Arrays not supported");
+ 	   if (value instanceof Document) throw new IllegalArgumentException("XML docs not supported");
  	   if (value == null) removeProperty(name);
-    	if (properties == null) properties = new HashMap();
-    	properties.put(name, value);
+ 	   if (properties == null) properties = new HashMap();
+ 	   properties.put(name, value);
     }
     /**
      * Return a property value.

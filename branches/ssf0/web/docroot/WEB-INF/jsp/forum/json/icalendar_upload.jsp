@@ -43,12 +43,35 @@
 			parseExceptionMsg : "<ssf:nlt tag="calendar.import.status.parseException" />"
 		</c:when>
 		<c:otherwise>
-			entriesAmountMsg: "<c:choose><c:when test="${entriesAmount == 1}"><ssf:nlt tag="calendar.import.status.message.single" /></c:when><c:otherwise><ssf:nlt tag="calendar.import.status.message.plural">
-								<ssf:param name="value" value="${entriesAmount}"/>
-							</ssf:nlt></c:otherwise></c:choose>",
-			entryIds: [<c:forEach var="id" items="${entryIds}" varStatus="status">
+			entriesAmountMsg: "<c:choose><%--
+				--%><c:when test="${entriesAddedAmount == 0 && entriesModifiedAmount == 0}"><%--
+					--%><ssf:nlt tag="calendar.import.added.status.message.zero" />\n<%--
+				--%></c:when><%--
+				--%><c:otherwise><%--
+					--%><c:if test="${entriesAddedAmount == 1}"><%--
+						--%><ssf:nlt tag="calendar.import.added.status.message.single" />\n<%--
+					--%></c:if><%--
+					--%><c:if test="${entriesAddedAmount > 1}"><%--
+						--%><ssf:nlt tag="calendar.import.added.status.message.plural"><%--
+							--%><ssf:param name="value" value="${entriesAddedAmount}"/><%--
+						--%></ssf:nlt>\n<%--
+					--%></c:if><%--
+					--%><c:if test="${entriesModifiedAmount == 1}"><%--
+						--%><ssf:nlt tag="calendar.import.modified.status.message.single" />\n<%--
+					--%></c:if><%--
+					--%><c:if test="${entriesModifiedAmount > 1}"><%--
+						--%><ssf:nlt tag="calendar.import.modified.status.message.plural"><%--
+							--%><ssf:param name="value" value="${entriesModifiedAmount}"/><%--
+						--%></ssf:nlt><%--
+					--%></c:if><%--	
+				--%></c:otherwise><%--
+			--%></c:choose>",					
+			entryAddedIds: [<c:forEach var="id" items="${entryAddedIds}" varStatus="status">
 					"${id}"<c:if test="${!status.last}">,</c:if>
-				</c:forEach>]
+				</c:forEach>],
+			entryModifiedIds: [<c:forEach var="id" items="${entryModifiedIds}" varStatus="status">
+					"${id}"<c:if test="${!status.last}">,</c:if>
+				</c:forEach>]				
 		</c:otherwise>
 	</c:choose>
 	}</textarea>

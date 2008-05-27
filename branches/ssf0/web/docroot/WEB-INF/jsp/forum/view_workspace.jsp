@@ -34,11 +34,9 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <c:set var="showWorkspacePage" value="true"/>
-<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
-  <ssf:ifnotadapter>
-    <c:set var="showWorkspacePage" value="false"/>
-  </ssf:ifnotadapter>
-</c:if>
+<ssf:ifnotadapter>
+  <c:set var="showWorkspacePage" value="false"/>
+</ssf:ifnotadapter>
 
 <ssf:ifadapter>
 <body class="ss_style_body">
@@ -53,7 +51,7 @@
 </c:if>
 
 <c:if test="${empty ssReloadUrl}">
-<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 <script type="text/javascript">
 if (self.parent) {
 	//We are in an iframe inside a portlet (maybe?)
@@ -116,13 +114,17 @@ function ss_setWorkareaIframeSize${renderResponse.namespace}() {
 	var iframeDiv = document.getElementById('ss_workareaIframe${renderResponse.namespace}')
 	if (window.frames['ss_workareaIframe${renderResponse.namespace}'] != null) {
 		eval("var iframeHeight = parseInt(window.ss_workareaIframe${renderResponse.namespace}" + ".document.body.scrollHeight);")
-		if (iframeHeight > 0) {
+		if (iframeHeight > 100) {
 			iframeDiv.style.height = iframeHeight + ss_workareaIframeOffset + "px"
 		}
 	}
 }
 ss_createOnResizeObj('ss_setWorkareaIframeSize${renderResponse.namespace}', ss_setWorkareaIframeSize${renderResponse.namespace});
 ss_createOnLayoutChangeObj('ss_setWorkareaIframeSize${renderResponse.namespace}', ss_setWorkareaIframeSize${renderResponse.namespace});
+
+//If this is the first definition of ss_setWorkareaIframeSize, remember its name in case we need to find it later
+if (typeof ss_setWorkareaIframeSize == "undefined") 
+	var ss_setWorkareaIframeSize = ss_setWorkareaIframeSize${renderResponse.namespace};
 
 var ss_portal_view_normal_url${renderResponse.namespace} = "<ssf:url windowState="normal"/>";
 var ss_portal_view_maximized_url${renderResponse.namespace} = "<ssf:url windowState="maximized"/>";
@@ -159,7 +161,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 	</script>
 
 	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
-<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
@@ -201,7 +203,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
-<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
+<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 </c:if>
@@ -238,7 +240,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 					  	<c:choose>
 					  		<c:when test="${ss_showTeamMembers}">
 								<% // Navigation links %>
-<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
+<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 								<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 </c:if>								
 								<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
@@ -250,7 +252,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 							</c:when>
 							<c:otherwise>
 								<% // Navigation links %>
-<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
+<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 								<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 </c:if>								
 

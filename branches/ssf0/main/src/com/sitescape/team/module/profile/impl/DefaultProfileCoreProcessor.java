@@ -463,11 +463,6 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 		return result;
 	}
 
-    //***********************************************************************************************************           
-    protected  Entry entry_load(Binder parentBinder, Long entryId) {
-        return getProfileDao().loadPrincipal(entryId, parentBinder.getZoneId(), false);        
-    }
-          
     //***********************************************************************************************************
     protected void deleteEntry_delete(Binder parentBinder, Entry entry, Map ctx) {
     	

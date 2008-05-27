@@ -29,11 +29,11 @@
 package com.sitescape.team.module.definition.notify;
 
 import java.util.List;
+
 import org.apache.velocity.VelocityContext;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.module.definition.DefinitionUtils;
 /**
  *
  * @author Janet McCann
@@ -56,6 +56,7 @@ public class NotifyBuilderEntry extends AbstractNotifyBuilder {
     } 
     protected void processDigest(NotifyVisitor visitor, String template, VelocityContext ctx) {
     	doTitle(visitor, ctx);
+    	doWorkflow(visitor, ctx);
     	doDescription(visitor, ctx);
     	doAttachments(visitor, ctx);
     	
@@ -74,6 +75,14 @@ public class NotifyBuilderEntry extends AbstractNotifyBuilder {
     		NotifyBuilderUtil.logger.error("Error processing template " + "digestTitle", ex);
     	}
     	
+    }
+    protected void doWorkflow(NotifyVisitor visitor, VelocityContext ctx) {
+       	Element item = visitor.getItem();
+        List<Element> entryWorkflow = item.selectNodes(".//item[@name='entryWorkflow']");
+        if (entryWorkflow == null || entryWorkflow.isEmpty()) return;
+        Element workflow = (Element)entryWorkflow.get(0);
+        visitor.visit(workflow);   	
+   	
     }
     protected void doDescription(NotifyVisitor visitor, VelocityContext ctx) {
        	Element item = visitor.getItem();

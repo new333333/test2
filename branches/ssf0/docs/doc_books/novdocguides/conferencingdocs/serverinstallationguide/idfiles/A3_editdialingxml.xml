@@ -4,7 +4,7 @@
 
  <target id="b9yfiir" pid="b9yfiir" name="Appendix" level="0" number="C"> <text>Editing the dialing.xml File</text> </target>
 
- <target name="InformalTable" level="1"> <text>Attribute</text> </target>
+ <target id="bf9c9gt" pid="b9yfiir" name="Table" level="1" number="Table C-1"> <text>Dialing.xml Attributes</text> </target>
 
  <target id="b9yfj05" pid="b9yfiir" name="row" level="2"> <text>Attribute</text> </target>
 

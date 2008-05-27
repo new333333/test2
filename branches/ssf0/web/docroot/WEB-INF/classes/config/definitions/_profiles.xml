@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_profiles" caption="__definition_default_profiles" type="6" nextId="9" definitionType="6" internalId="402883b90cc53079010cc539bf260006" databaseId="4028839f124341580112434186dc0001">
+<definition name="_profiles" caption="__definition_default_profiles" type="6" nextId="10" definitionType="6" internalId="402883b90cc53079010cc539bf260006" databaseId="4028839f124341580112434186dc0001">
   <item name="profileForm" caption="__profile_form" type="form" id="1">
     <properties/>
     <item name="title" caption="__title" type="data" id="2">
@@ -19,6 +19,12 @@
         <property name="caption" value="__description"/>
         <property name="height" value=""/>
         <property name="required" value=""/>
+      </properties>
+    </item>
+    <item name="workspaceBranding" caption="__branding" type="data" category="workspaceData" display="form" id="9">
+      <properties>
+        <property name="caption" value="__branding"/>
+        <property name="name" value="branding"/>
       </properties>
     </item>
     <item name="workspaceIcon" caption="__icon" type="data" category="workspaceData" id="8">

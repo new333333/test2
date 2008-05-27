@@ -15,7 +15,7 @@ public interface BinderService {
 	 * @param accessToken
 	 * @param binderId
 	 * @param definitionIds
-	 * @param workflowAssociations <Pairs of entryDefinitionId,workflowDefinitionId
+	 * @param workflowAssociations <Pairs of entryDefinitionId,workflowDefinitionId>
 	 */
 	public void binder_setDefinitions(String accessToken, long binderId, String[] definitionIds, String[] workflowAssociations);
 	/**

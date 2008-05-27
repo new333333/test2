@@ -334,6 +334,7 @@ public class ViewEntryController extends  SAbstractController {
 		if (getFolderModule().testAccess(entry, FolderOperation.addReply)) {
 			accessControlEntryMap.put("addReply", new Boolean(true));
 			List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
+			model.put(WebKeys.ENTRY_REPLY_STYLES, replyStyles);
 			if (!replyStyles.isEmpty()) {
 				if (replyStyles.size() == 1) {
 					//There is only one reply style, so show it not as a drop down menu

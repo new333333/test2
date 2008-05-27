@@ -2042,7 +2042,7 @@
    <String `Graphic Report for userguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `5/16/2008 10:09:24 AM'>
+   <String `5/21/2008 2:23:00 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -5887,7 +5887,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 55%, Indent: Left Edge'>
+   <String `Width: 48%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 

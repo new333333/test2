@@ -55,15 +55,15 @@
 		}
 		if (!multipleAllowed && folderIds.iterator().hasNext()) {
 			folderId = (String)folderIds.iterator().next();
-		}
-		if (folderId == null) {
-			folderId = "-1";
+			// to show current
+			folderIds = java.util.Collections.singleton(folderId);
 		}
 	%>
 </c:if>
 <c:set var="propertyName" value="<%= propertyName %>"/>
 <c:set var="multipleAllowed" value="<%= multipleAllowed %>"/>
 <c:set var="folderId" value="<%= folderId %>"/>
+<c:set var="folderIds" value="<%= folderIds %>"/>
 <div class="ss_entryContent">
 	<div class="ss_labelAbove"><c:out value="${property_caption}"/></div>
   
@@ -106,6 +106,26 @@
 					return false;
 				}
 			</script>
+			
+			
+			<c:if test="${!empty folderIds}">
+				<ssf:nlt tag="places.delete.select.forums"/>
+				<ul class="placesForm">
+					<c:forEach var="folder" items="<%= com.sitescape.team.util.ResolveIds.getBinderTitlesAndIcons(folderIds) %>">
+						<li>
+							<input type="checkbox" name="idChoicesRemove_${propertyName}" id="${treeName}${propertyName}del_${folder.key}"
+								<c:if test="${folder.value.deleted}">
+									checked="true"
+								</c:if> value="${folder.key}" />
+							<label for="${treeName}${propertyName}del_${folder.key}">${folder.value.title}</label>
+			  				<c:if test="${folder.value.deleted}">
+				  				<span class="ss_fineprint ss_light"><ssf:nlt tag="milestone.folder.deleted"/></span>
+			  				</c:if>
+						</li>
+					</c:forEach>	
+				</ul>
+			</c:if>
+			
 
 			<c:choose>
 				<c:when test="${multipleAllowed}">

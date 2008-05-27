@@ -55,7 +55,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
   style="display:block;">
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>
 <div class="ss_actions_bar1_pane" width="100%" style="height: 22px;">
@@ -80,7 +80,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
 
-<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
+<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 </c:if>
@@ -109,7 +109,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</td>
 	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color">
-<c:if test="${ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
+<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
 			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 </c:if>		
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

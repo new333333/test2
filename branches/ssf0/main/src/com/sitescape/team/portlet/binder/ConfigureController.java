@@ -37,18 +37,26 @@ import org.springframework.web.portlet.ModelAndView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.admin.AdminModule.AdminOperation;
+import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 
 /**
@@ -57,9 +65,12 @@ import com.sitescape.util.Validator;
 public class ConfigureController extends AbstractBinderController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		Map formData = request.getParameterMap();
 		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
+		Binder binder = getBinderModule().getBinder(binderId);
 		String binderType = PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_BINDER_TYPE);	
+		response.setRenderParameters(request.getParameterMap());
 			
 		//See if the form was submitted
 		if (formData.containsKey("okBtn")) {
@@ -68,6 +79,38 @@ public class ConfigureController extends AbstractBinderController {
 			getDefinitions(request, definitions, workflowAssociations);
 			getBinderModule().setDefinitions(binderId, definitions, workflowAssociations);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		} else if (formData.containsKey("addUrlBtn")) {
+			String prefix = PortletRequestUtils.getStringParameter(request, "prefix", "");	
+			String name = PortletRequestUtils.getStringParameter(request, "name", "");	
+			if (!name.equals("")) {
+				if (!prefix.trim().equals("")) {
+					name = prefix.trim() + "/" + name;
+				} else if (prefix.trim().equals("") && 
+						!getAdminModule().testAccess(AdminOperation.manageFunction)) { 
+					//Not allowed to have a blank prefix; Force it to start with the user's name
+					name = user.getName() + "/" + name;
+				}
+				SimpleName simpleUrl = getBinderModule().getSimpleName(name, SimpleName.TYPE_URL);
+				if (simpleUrl == null) {
+					getBinderModule().addSimpleName(name, SimpleName.TYPE_URL, binderId, binder.getEntityType().name());
+				} else if (!simpleUrl.getBinderId().equals(binderId)) {
+					response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, "true");
+				}
+			}
+		} else if (formData.containsKey("deleteUrlBtn")) {
+			Set<String> deleteNames = new HashSet();
+			for (Iterator iter=formData.entrySet().iterator(); iter.hasNext();) {
+				Map.Entry e = (Map.Entry)iter.next();
+				String key = (String)e.getKey();
+				if (key.startsWith("delete_")) {
+					deleteNames.add(key.substring(7));
+				}
+			}
+			for (String urlName : deleteNames) {
+				SimpleName simpleName = getBinderModule().getSimpleName(urlName, SimpleName.TYPE_URL);
+				if (simpleName != null && simpleName.getBinderId().equals(binderId))
+					getBinderModule().deleteSimpleName(urlName, SimpleName.TYPE_URL);
+			}
 		} else if (formData.containsKey("inheritanceBtn")) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
 			getBinderModule().setDefinitionsInherited(binderId, inherit);
@@ -79,18 +122,35 @@ public class ConfigureController extends AbstractBinderController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
-		Binder binder = getBinderModule().getBinder(binderId);
-		
 		Map model = new HashMap();
 		User user = RequestContextHolder.getRequestContext().getUser();
+		model.put(WebKeys.USER_PRINCIPAL, user);
 		model.put(WebKeys.USER_PROPERTIES, getProfileModule().getUserProperties(user.getId()));
 
-		setupDefinitions(binder, model);
-		//Build the navigation beans
-		model.put(WebKeys.DEFINITION_ENTRY, binder);
-		BinderHelper.buildNavigationLinkBeans(this, binder, model);
+		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);				
+		if (binderId != null) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			model.put(WebKeys.BINDER, binder);
+		
+			setupDefinitions(binder, model);
+			//Build the navigation beans
+			model.put(WebKeys.DEFINITION_ENTRY, binder);
+			BinderHelper.buildNavigationLinkBeans(this, binder, model);
+			
+			//Build the simple URL beans
+			String[] s = SPropsUtil.getStringArray("simpleUrl.globalKeywords", ",");
+			model.put(WebKeys.SIMPLE_URL_GLOBAL_KEYWORDS, s);
+			model.put(WebKeys.SIMPLE_URL_PREFIX, WebUrlUtil.getSimpleURLContextRootURL(request));
+			model.put(WebKeys.SIMPLE_URL_NAMES,
+					getBinderModule().getSimpleNames(binderId, SimpleName.TYPE_URL));
+			model.put(WebKeys.SIMPLE_URL_CHANGE_ACCESS, 
+					getBinderModule().testAccess(binder,BinderOperation.manageSimpleName));
+			if (getAdminModule().testAccess(AdminOperation.manageFunction)) 
+				model.put(WebKeys.IS_SITE_ADMIN, true);
+			model.put(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, 
+					PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, ""));	
 
+		}
 		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);
 	}
 	protected void getDefinitions(ActionRequest request, List definitions, Map workflowAssociations) {

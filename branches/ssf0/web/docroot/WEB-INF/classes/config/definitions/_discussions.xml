@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_discussions" caption="__template_discussions_workspace" type="8" nextId="9" definitionType="8" databaseId="402880e619c6250f0119c62794b9000c">
+<definition name="_discussions" caption="__template_discussions_workspace" type="8" nextId="10" definitionType="8" databaseId="402880e619c6250f0119c62794b9000c">
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1" display="form">
     <properties/>
     <item name="title" caption="__title" type="data" id="2">
@@ -18,6 +18,12 @@
         <property name="name" value="description"/>
         <property name="height" value=""/>
         <property name="required" value=""/>
+      </properties>
+    </item>
+    <item name="workspaceBranding" caption="__branding" type="data" category="workspaceData" display="form" id="9">
+      <properties>
+        <property name="caption" value="__branding"/>
+        <property name="name" value="branding"/>
       </properties>
     </item>
     <item name="workspaceIcon" caption="__icon" type="data" id="4">

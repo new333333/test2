@@ -143,7 +143,9 @@ public class Constants {
 	public static final String RESERVEDID_FIELD = "_reservedId";
 	public static final String WORKSPACE_ID_FIELD = "_workspaceId";
 	public static final String APPLICATION_NAME_FIELD = "_applicationName";
-
+	public static final String EVENT_FIELD_UID = "uid";
+	public static final String EVENT_UIDS_FIELD = "_eventUids";
+	 
 	public Constants() {
 		super();
 	}
