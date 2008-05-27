@@ -215,6 +215,18 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 </ssf:ifnotadapter>
 		<% // Footer toolbar %>
 		<jsp:include page="/WEB-INF/jsp/definition_elements/footer_toolbar.jsp" />
+		
+		<% // Post a comment form %>
+		<ssf:ifnotaccessible>
+		<c:if test="${0 == 1 && ss_accessControlMap[ssDefinitionEntry.id]['addReply'] && !empty ssEntryReplyStyles}">
+		  <c:set var="replyStyle0" value=""/>
+		  <c:forEach var="replyStyle" items="${ssEntryReplyStyles}">
+		    <c:if test="${empty replyStyle0}"><c:set var="replyStyle0" value="${replyStyle}"/></c:if>
+		  </c:forEach>
+		  <a class="ss_linkButton" href="javascript: ;"
+		    onClick="ss_postComment('${replyStyle0}');return false;">xxx post a comment xxx</a>
+		</c:if>
+		</ssf:ifnotaccessible>
 <ssf:ifnotadapter>
 	</td>
 	</tr>
