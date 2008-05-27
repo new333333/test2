@@ -38,6 +38,7 @@ import org.dom4j.Element;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.util.Validator;
 
 /**
  * This class provides unified access to the SSF zone properties loaded from the 
@@ -166,7 +167,18 @@ public class SZoneConfig {
     public static String getGuestUserName(String zoneName) {
     	return getInstance()._getGuestUserName(zoneName);
     }
-    
+    public static Object getObject(String zoneName, String key, Class defaultClass) {
+		String className = getString(RequestContextHolder.getRequestContext().getZoneName(), key);
+		try {
+			Class processorClass = defaultClass;
+			if (Validator.isNotNull(className)) processorClass = ReflectHelper.classForName(className);
+			return processorClass.newInstance();
+		} catch (Exception e) {
+			   throw new ConfigurationException("Cannot instantiate class name '" + className + "'",
+					e);
+		} 
+
+    }
     protected String _getAdminUserName(String zoneName) {
     	String adminUser = adminUsers.get(zoneName);
     	if(adminUser == null) {

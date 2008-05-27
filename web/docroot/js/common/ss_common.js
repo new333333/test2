@@ -832,21 +832,33 @@ function ss_trackedPeopleDelete(obj, id) {
 	trObj.parentNode.removeChild(trObj)
 }
 
+function ss_showHideRelevanceCanvas(namespace) {
+	var divObj = self.document.getElementById('relevanceCanvas_'+namespace)
+	var showBtn = self.document.getElementById('ss_relevanceShowButton'+namespace)
+	var hideBtn = self.document.getElementById('ss_relevanceHideButton'+namespace)
+	if (typeof divObj.style.display != 'undefined' && divObj.style.display == 'none') {
+		ss_showDiv('relevanceCanvas_'+namespace)
+		showBtn.style.display = 'none';
+		hideBtn.style.display = 'block';
+	} else {
+		ss_hideDivNone('relevanceCanvas_'+namespace)
+		showBtn.style.display = 'block';
+		hideBtn.style.display = 'none';
+	}
+}
+
 function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 	//Clear "current" tab
-	var currentTab = null;
-	eval("currentTab = ss_relevanceTabCurrent_"+namespace+";");
+	var currentTab = window["ss_relevanceTabCurrent_"+namespace];
 	if (currentTab != null) {
 		currentTab.parentNode.className = "";
 	}
 	if (obj != null) {
-		eval("ss_relevanceTabCurrent_"+namespace+" = obj;");
+		window["ss_relevanceTabCurrent_"+namespace] = obj;
 		obj.parentNode.className = "ss_tabsCCurrent";
 	}
-	
 	//Switch to the new tab
-	var url = "";
-	eval("url = ss_relevanceAjaxUrl"+namespace);
+	var url = window["ss_relevanceAjaxUrl"+namespace];
 	url = ss_replaceSubStr(url, "ss_typePlaceHolder", type);
 	url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
 	url = ss_replaceSubStr(url, "ss_pagePlaceHolder", "0");
@@ -863,8 +875,25 @@ function ss_showRelevanceTab(s, namespace) {
 	canvasObj.innerHTML = s;
 	canvasObj.style.display = 'block'
 	canvasObj.style.visibility = 'visible'
+	//Make sure the hide button is visible
+	var showBtn = self.document.getElementById('ss_relevanceShowButton'+namespace)
+	var hideBtn = self.document.getElementById('ss_relevanceHideButton'+namespace)
+	showBtn.style.display = 'none';
+	hideBtn.style.display = 'block';
+	ss_executeJavascript(canvasObj); // calendar view is generated in js
 	//Signal that the layout changed
 	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+
+function ss_executeJavascript(xmlNode) {
+    var scripts = xmlNode.getElementsByTagName("script");
+    for (var i = 0; i < scripts.length; i++) {
+        var script = scripts[i];
+        if (script.getAttribute("type") == "text/javascript") {
+           // var js = script.firstChild.nodeValue;
+            eval(script.innerHTML);
+        }
+    }
 }
 
 function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId, namespace) {
@@ -3679,6 +3708,8 @@ function ss_setIframeHeight(divId, iframeId) {
 		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = iframeHeight + ss_entryInPlaceIframeOffset + "px"
+			//Signal that the layout changed
+			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	}
 }
@@ -3755,6 +3786,10 @@ function ss_showForumEntryInIframe_Popup(url) {
 	
     self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
     return false;
+}
+
+function ss_postComment(replyStyle) {
+	alert(replyStyle)
 }
 
 function ss_dummyMethodCall() {
@@ -3888,7 +3923,7 @@ function ssFavorites(namespace) {
 			t += '<li id ="ss_favorite_' + f.id + '">';
 			t += '<input type="checkbox" style="display: none;" />';
 			t += '<a href="javascript:;" ';
-			if (typeof ss_displayType != "undefined" && ss_displayType == "ss_workarea") {
+			if (1 == 1 || typeof ss_displayType != "undefined" && ss_displayType == "ss_workarea") {
 				t += 'onClick="ss_treeShowIdNoWS(';
 			} else {
 				t += 'onClick="ss_treeShowId(';
@@ -5875,17 +5910,16 @@ function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 		choicesAreFromParent = true;
 	}
 		
-	// var formObj = null;
 	if (obj.type == 'radio') {
 		if (idChoices != null && typeof idChoices !== "undefined") {
-			if (idChoices.value && idChoices.value != (obj.name + obj.value)) {
+			if (idChoices.value && idChoices.value != (obj.name + "%" + obj.value)) {
 				selected = parent.document.getElementById("ss_tree_radio" + treeName + idChoices.value);
 				if (selected && selected.checked) {
 					selected.checked = false;
 				}
 			}
 		
-			idChoices.value = obj.name + obj.value;
+			idChoices.value = obj.name + "%" + obj.value;
 			if (treeName) {
 
 				// accessible mode only - unselect last choice if visible 

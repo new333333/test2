@@ -2042,7 +2042,7 @@
    <String `Graphic Report for operationsguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `5/15/2008 12:12:40 AM'>
+   <String `5/22/2008 10:20:55 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2220,28 +2220,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `Unused Graphics in Book Directory'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `01_zonsignon.png'>
-   <String ` (moved to unused graphic folder)'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `createpolicy4_a.png'>
-   <String ` (moved to unused graphic folder)'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `findcontacts_a.png'>
-   <String ` (moved to unused graphic folder)'>
+   <String `No unreferenced graphics in the /graphics directory are referenced by the book.'>
   > # end of ParaLine
  > # end of Para
  <Para 

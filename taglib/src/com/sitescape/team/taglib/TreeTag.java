@@ -286,7 +286,7 @@ public class TreeTag extends TagSupport {
 							String id = multiSelectIt.next().toString();
 							String name = " name=\"" + this.multiSelectPrefix + id + "\"";
 							sb.append("<input type=\"hidden\" id=\"" + treeName + this.multiSelectPrefix + id + "_lastChoice\"" + name + "/>\n");
-							idChoices += " " + this.multiSelectPrefix + id;
+							idChoices += " " + this.multiSelectPrefix + WebKeys.URL_ID_CHOICES_SEPARATOR + id;
 						}
 					}
 					if (this.multiSelect != null && !this.multiSelectPrefix.equals("")) {
@@ -450,17 +450,15 @@ public class TreeTag extends TagSupport {
 						}
 						jspOut.print("<input type=\"checkbox\" class=\"ss_text\"");
 						jspOut.print(" style=\"margin:0px; padding:0px; width:19px;\"");
-						String name = " name=\"" + mPrefix + s_id + "\"";
-						jspOut.print(name);
+						jspOut.print(" name=\"" + mPrefix + WebKeys.URL_ID_CHOICES_SEPARATOR + s_id + "\"");
 						jspOut.print(" id=\"");
 						jspOut.print("ss_tree_checkbox" + treeName + mPrefix + s_id + "\" ");
 						jspOut.print(checked);
+						jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "');");
 						if (this.multiSelect.contains(s_binderId)) {
-							jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "'); ss_clearMultiSelect('" + treeName + mPrefix + s_id + "')\"");
-						} else {
-							jspOut.print(" onclick=\"ss_saveTreeId(this, '" + treeName + "', '" + s_id + "', '" + getIdChoicesInputId() + "');\"");
-							
+							jspOut.print(" ss_clearMultiSelect('" + treeName + mPrefix + s_id + "');");
 						}
+						jspOut.print("\"");
 						jspOut.print("/>");
 					}
 				} else if (this.singleSelectName != null) {
@@ -1019,9 +1017,9 @@ public class TreeTag extends TagSupport {
 	
 	private String getIdChoicesInputId() {
 		if (this.multiSelect != null && !this.multiSelectPrefix.equals("")) {
-			return treeName + this.multiSelectPrefix + "_idChoices";
+			return treeName + this.multiSelectPrefix + "_" + WebKeys.URL_ID_CHOICES;
 		} else if (this.singleSelectName != null && !this.singleSelectName.equals("")) {
-			return treeName + this.singleSelectName + "_idChoices";
+			return treeName + this.singleSelectName + "_" + WebKeys.URL_ID_CHOICES;
 		}
 		return null;
 	}

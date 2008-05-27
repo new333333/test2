@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_photoFolder" caption="__definition_default_folder_photo" type="5" nextId="11" definitionType="5" databaseId="402883c6115753d8011157619e350008">
+<definition name="_photoFolder" caption="__definition_default_folder_photo" type="5" nextId="14" definitionType="5" databaseId="402883c6115753d8011157619e350008">
   <item name="folderForm" caption="__folder_form" type="form" id="1">
     <properties/>
     <item name="title" caption="__title" type="data" id="3">
@@ -24,6 +24,18 @@
         <property name="required" value=""/>
       </properties>
     </item>
+    <item name="folderRemoteApp" caption="__remoteApp" type="data" category="folderData" display="form" id="11">
+      <properties>
+        <property name="caption" value="__remoteApp"/>
+        <property name="name" value="_remoteApp"/>
+      </properties>
+    </item>
+    <item name="folderBranding" caption="__branding" type="data" category="folderData" display="form" id="12">
+      <properties>
+        <property name="caption" value="__branding"/>
+        <property name="name" value="branding"/>
+      </properties>
+    </item>
     <item name="folderIcon" caption="__icon" type="data" id="5">
       <properties>
         <property name="name" value="iconName"/>
@@ -32,6 +44,12 @@
     </item>
   </item>
   <item name="forumView" caption="__folder_view" id="6">
+    <item name="folderDataItem" type="dataView" caption="__folder_data_item" category="folderViewData" display="view" id="13" formItem="folderRemoteApp">
+      <properties>
+        <property name="caption" value="__remoteApp"/>
+        <property name="name" value="_remoteApp"/>
+      </properties>
+    </item>
     <item name="dashboardCanvas" caption="__dashboard_canvas" id="7">
       <properties>
         <property name="caption" value="__dashboard_canvas"/>

@@ -135,9 +135,8 @@ public class EventsViewHelper {
 	public static final String DAY_VIEW_TYPE_DEFAULT = DAY_VIEW_TYPE_WORK;
 	
 	public static void getEntryEvents( Binder folder,
-			List entrylist, Map model, RenderResponse response, PortletSession portletSession) {
-
-		List events = EventsViewHelper.getCalendarEvents(entrylist,	null);
+			List entrylist, Map model, RenderResponse response, PortletSession portletSession, boolean onlyTrueEvents) {
+		List events = EventsViewHelper.getCalendarEvents(entrylist,	null, onlyTrueEvents);
 		
 		Map calendarViewBean = new HashMap();
 		calendarViewBean.put("events", events);
@@ -146,31 +145,38 @@ public class EventsViewHelper {
 	}
 	
 	public static void getEvents(Date currentDate,
-			CalendarViewRangeDates calendarViewRangeDates, Binder folder,
-			List entrylist, Map model, RenderResponse response, PortletSession portletSession) {
+			AbstractIntervalView calendarViewRangeDates, Binder folder,
+			List entrylist, Map model, PortletSession portletSession, boolean onlyTrueEvents) {
+		getEvents(currentDate,
+				calendarViewRangeDates, folder,
+				entrylist, model, getCalendarDisplayEventType(portletSession), 
+				getCalendarDayViewType(portletSession), onlyTrueEvents);
+	}
+	
+	public static void getEvents(Date currentDate,
+			AbstractIntervalView intervalView, Binder folder,
+			List entrylist, Map model, String eventType, String dayViewType, boolean onlyTrueEvents) {
 
 		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE,
-				calendarViewRangeDates.getStartViewCal().getTime());
-		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, calendarViewRangeDates
-				.getEndViewCal().getTime());
-
+				intervalView.getStart());
+		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, 
+				intervalView.getEnd());
 
 		List events = EventsViewHelper.getCalendarEvents(entrylist,
-				calendarViewRangeDates);
+				intervalView, onlyTrueEvents);
 		
 		Map calendarViewBean = new HashMap();
-		calendarViewBean.put("monthInfo", calendarViewRangeDates.getCurrentDateMonthInfo());
+		calendarViewBean.put("monthInfo", intervalView.getCurrentDateMonthInfo());
 		calendarViewBean.put("today", new Date());
 		calendarViewBean.put("events", events);
-		calendarViewBean.put("eventType", getCalendarDisplayEventType(portletSession));
-		calendarViewBean.put("dayViewType", getCalendarDayViewType(portletSession));
+		calendarViewBean.put("eventType", eventType);
+		calendarViewBean.put("dayViewType", dayViewType);
 		
 		model.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
 	}
 
-
 	private static List getCalendarEvents(List entrylist,
-			CalendarViewRangeDates viewRangeDates) {
+			AbstractIntervalView viewRangeDates, boolean onlyTrueEvents) {
 		
 		List result = new ArrayList();
 		
@@ -182,21 +188,23 @@ public class EventsViewHelper {
 			Map entry = (HashMap) entryIterator.next();
 			int eventsCount = parseEventsCount((String) entry.get(Constants.EVENT_COUNT_FIELD));
 			
-			// Add the creation date as an event
-			Date creationDate = (Date) entry.get(Constants.CREATION_DATE_FIELD);
-			if (creationDate != null && 
-					(viewRangeDates == null || viewRangeDates.dateInView(creationDate))) {
-				result.add(getEventBean(
-						createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, 
-								(String)entry.get(Constants.DOCID_FIELD)), entry, EVENT_TYPE_CREATION));
-			}
-
-			// Add the activity date as an event
-			Date lastActivityDate = (Date) entry.get(Constants.LASTACTIVITY_FIELD);
-			if (lastActivityDate != null && (viewRangeDates == null || viewRangeDates.dateInView(lastActivityDate))) {
-				result.add(getEventBean(
-						createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, 
-								(String)entry.get(Constants.DOCID_FIELD)), entry, EVENT_TYPE_ACTIVITY));
+			if (!onlyTrueEvents) {
+				// Add the creation date as an event
+				Date creationDate = (Date) entry.get(Constants.CREATION_DATE_FIELD);
+				if (creationDate != null && 
+						(viewRangeDates == null || viewRangeDates.dateInView(creationDate))) {
+					result.add(getEventBean(
+							createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, 
+									(String)entry.get(Constants.DOCID_FIELD)), entry, EVENT_TYPE_CREATION));
+				}
+	
+				// Add the activity date as an event
+				Date lastActivityDate = (Date) entry.get(Constants.LASTACTIVITY_FIELD);
+				if (lastActivityDate != null && (viewRangeDates == null || viewRangeDates.dateInView(lastActivityDate))) {
+					result.add(getEventBean(
+							createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, 
+									(String)entry.get(Constants.DOCID_FIELD)), entry, EVENT_TYPE_ACTIVITY));
+				}
 			}
 			
 			result.addAll(getEntryEvents(entry, eventsCount, viewRangeDates));
@@ -204,7 +212,7 @@ public class EventsViewHelper {
 		return result;
 	}
 
-	private static List getEntryEvents(Map entry, int eventsCount, CalendarViewRangeDates viewRangeDates) {
+	private static List getEntryEvents(Map entry, int eventsCount, AbstractIntervalView viewRangeDates) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		TimeZone timeZone = user.getTimeZone();
 		
@@ -240,6 +248,12 @@ public class EventsViewHelper {
 						evStartDate = new Date();
 						evEndDate = new Date();
 					}
+					
+					// in results we have only entries with events in view range but some entries can have
+					// events out of view, so we have to test each event date
+					if (viewRangeDates != null && !viewRangeDates.intervalInView(evStartDate.getTime(), evEndDate.getTime())) {
+						continue;
+					}
 
 					Event event = new Event();
 					event.setId(eventId);
@@ -261,12 +275,7 @@ public class EventsViewHelper {
 					event.setDtStart(startCal);
 					event.setDtEnd(endCal);
 					
-					
-					// in results we have only entries with events in view range but some entries can have
-					// events out of view, so we have to test each event date
-					if (viewRangeDates == null || viewRangeDates.periodInView(evStartDate.getTime(), evEndDate.getTime())) {
-						events.add(getEventBean(event, entry, EVENT_TYPE_EVENT));
-					}
+					events.add(getEventBean(event, entry, EVENT_TYPE_EVENT));
 				}
 			}
 		}

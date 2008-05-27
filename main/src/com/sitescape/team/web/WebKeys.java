@@ -183,6 +183,8 @@ public class WebKeys {
 	public static final String URL_ZONE_NAME = "zoneName";
 	public static final String URL_VIRTUAL_HOST = "virtualHost";
 	public static final String URL_ID_CHOICES = "idChoices";
+	public static final String URL_ID_CHOICES_SEPARATOR = "%";
+	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
@@ -583,6 +585,7 @@ public class WebKeys {
     public static final String TEAM_MEMBERS_COUNT="ssTeamMembersCount";
     
     public static final String ENTRIES="ssEntries";
+    public static final String ENTRY_REPLY_STYLES="ssEntryReplyStyles";
     public static final String ENTRY_SEARCH_COUNT="ssEntrySearchCount";
     public static final String ENTRY_SEARCH_RECORDS_RETURNED="ssEntrySearchRecordReturned";
     public static final String ENTRY_DEFINITION_MAP="ssEntryDefinitionMap";
@@ -812,6 +815,7 @@ public class WebKeys {
     public static final String SELECTED_PRINCIPALS="ssSelectedPrincipals";
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
+    public static final String SIMPLE_URL_NAME_EXISTS_ERROR="ss_simpleUrlNameExistsError";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
     public static final String TRACKED_SITE_PAGE="ss_trackedSitePage";
     public static final String WHATS_HOT_PAGE="ss_whatsHotPage";
@@ -872,6 +876,10 @@ public class WebKeys {
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";
+    public static final String SIMPLE_URL_GLOBAL_KEYWORDS="ssSimpleUrlGlobalKeywords";
+    public static final String SIMPLE_URL_CHANGE_ACCESS="ssSimpleUrlChangeAccess";
+    public static final String SIMPLE_URL_NAMES="ssSimpleUrlNames";
+    public static final String SIMPLE_URL_PREFIX="ssSimpleUrlPrefix";
     public static final String TOOLBAR="ss_toolbar";
     public static final String TOOLBAR_MENU_SELECTED="selected"; 
     public static final String TOOLBAR_STYLE="ss_toolbar_style";
@@ -952,6 +960,7 @@ public class WebKeys {
     
     //View names
     public static final String VIEW_ACCESS_CONTROL = "binder/access_control";
+    public static final String VIEW_ACCESS_DENIED = "forum/access_not_allowed";
     public static final String VIEW_ADD_ENTRY = "entry/add_entry";
     public static final String VIEW_ADD_BINDER = "binder/add_binder";
     public static final String VIEW_ADD_BINDER_TYPE = "binder/add_binder_type";

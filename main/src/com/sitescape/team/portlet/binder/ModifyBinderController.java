@@ -122,7 +122,7 @@ public class ModifyBinderController extends AbstractBinderController {
 				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 				Long destinationId = null;
 				try {
-					destinationId = Long.valueOf(destinationIdString.replaceAll("destination", "").trim()); 
+					destinationId = Long.valueOf(destinationIdString.replaceAll("destination" + WebKeys.URL_ID_CHOICES_SEPARATOR, "").trim()); 
 				} catch (NumberFormatException e) {
 					// nothing to do
 				}
@@ -132,16 +132,15 @@ public class ModifyBinderController extends AbstractBinderController {
 				String destinationIdString = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ID_CHOICES, "");
 				Long destinationId = null;
 				try {
-					destinationId = Long.valueOf(destinationIdString.replaceAll("destination", "").trim()); 
+					destinationId = Long.valueOf(destinationIdString.replaceAll("destination" + WebKeys.URL_ID_CHOICES_SEPARATOR, "").trim()); 
 				} catch (NumberFormatException e) {
 					// nothing to do
 				}
 				if (destinationId != null) {
-					Long copyId = getBinderModule().copyBinder(binderId, destinationId, null);
-					setupReloadOpener(response, copyId);
-				} else {
-					setupReloadOpener(response, binderId);
-				}
+					getBinderModule().copyBinder(binderId, destinationId, null);
+				} 
+				setupReloadOpener(response, binderId);
+				
 			} else if (op.equals(WebKeys.OPERATION_DELETE)) {
 				// The delete-mirrored-binder form was submitted.
 				//retrieve binder so we can return to parent

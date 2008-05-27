@@ -47,7 +47,6 @@ import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Http;
 import com.sitescape.util.Validator;
-import com.sitescape.team.context.request.RequestContextHolder;
 
 public class WebUrlUtil {
 	
@@ -63,12 +62,15 @@ public class WebUrlUtil {
 	private static int rssWebProtocol 		= -1;
 	private static int icalWebProtocol 		= -1;
 	private static int ssfsWebProtocol 		= -1;
+	private static int simpleURLWebProtocol = -1;
 	
 	private static final String SSFS_HOST_REWRITE = "ssfs.default.host.rewrite";
+	private static final String SSFS_IGNORE_PASSWORD_ENABLED = "ssfs.ignore.password.enabled";
 	
 	enum WebApp {
 		SSF,
-		SSFS
+		SSFS,
+		SIMPLE_URL
 	}
 
 	public static StringBuffer getSSFSContextRootURL(HttpServletRequest req) {
@@ -89,6 +91,26 @@ public class WebUrlUtil {
 		sb.append(ctx).append("/");
 		
 		return sb;
+	}
+	
+	public static String getSimpleURLContextRootURL(HttpServletRequest req) {
+		StringBuffer sb = getHostAndPort(WebApp.SIMPLE_URL, req, req.isSecure(), getSimpleURLWebProtocol(), false);
+		
+		String ctx = SPropsUtil.getString(SPropsUtil.SIMPLEURL_CTX, "/teaming");
+		
+		sb.append(ctx).append("/");
+		
+		return sb.toString();
+	}
+	
+	public static String getSimpleURLContextRootURL(PortletRequest req) {
+		StringBuffer sb = getHostAndPort(WebApp.SIMPLE_URL, req, req.isSecure(), getSimpleURLWebProtocol(), false);
+		
+		String ctx = SPropsUtil.getString(SPropsUtil.SIMPLEURL_CTX, "/teaming");
+		
+		sb.append(ctx).append("/");
+		
+		return sb.toString();
 	}
 	
 	/**
@@ -534,10 +556,14 @@ public class WebUrlUtil {
 		// If rewrite hostname is specified for webdav AND the context zone is the default zone,
 		// apply this hack. Otherwise, leave it alone.
 		if(webApp == WebApp.SSFS) {
-			String ssfsHostRewrite = SPropsUtil.getString(SSFS_HOST_REWRITE, "");
-			if(Validator.isNotNull(ssfsHostRewrite) &&
-					RequestContextHolder.getRequestContext().getZoneName().equals(SZoneConfig.getDefaultZoneName())) {
-				host = ssfsHostRewrite;
+			// Rewrite WebDAV URL only if SSO proxy is performing authentication.
+			if(SPropsUtil.getBoolean(SSFS_IGNORE_PASSWORD_ENABLED, false)) {
+				String ssfsHostRewrite = SPropsUtil.getString(SSFS_HOST_REWRITE, "");
+				// Rewrite WebDAV URL only if rewrite-hostname is specified AND the current zone is the default zone.
+				if(Validator.isNotNull(ssfsHostRewrite) &&
+						RequestContextHolder.getRequestContext().getZoneName().equals(SZoneConfig.getDefaultZoneName())) {
+					host = ssfsHostRewrite;
+				}
 			}
 		}
 		
@@ -581,6 +607,11 @@ public class WebUrlUtil {
 	private static int getSsfsWebProtocol() {
 		init();
 		return ssfsWebProtocol;
+	}
+		
+	private static int getSimpleURLWebProtocol() {
+		init();
+		return simpleURLWebProtocol;
 	}
 		
 	private static void init() {
@@ -636,6 +667,16 @@ public class WebUrlUtil {
 				ssfsWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
 			else
 				ssfsWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;			
+
+			prot = SPropsUtil.getString("simpleurl.web.protocol", "context");
+			if(prot.equalsIgnoreCase("http"))
+				simpleURLWebProtocol = WEB_PROTOCOL_HTTP;
+			else if(prot.equalsIgnoreCase("https"))
+				simpleURLWebProtocol = WEB_PROTOCOL_HTTPS;
+			else if(prot.equalsIgnoreCase("context-https"))
+				simpleURLWebProtocol = WEB_PROTOCOL_CONTEXT_HTTPS;
+			else
+				simpleURLWebProtocol = WEB_PROTOCOL_CONTEXT_HTTP;			
 		}
 	}
 	

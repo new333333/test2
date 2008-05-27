@@ -59,6 +59,8 @@ public class NullWorkflowModuleImpl extends CommonDependencyInjection implements
 	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState) {
 	}
 
+	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, Map<String,Object> variables) {
+	}
 	public boolean modifyWorkflowStateOnUpdate(WorkflowSupport entry) {
 		return false;
 	}

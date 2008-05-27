@@ -31,10 +31,8 @@ package com.sitescape.team.portlet.forum;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -55,14 +53,16 @@ import javax.portlet.RenderResponse;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.calendar.CalendarViewRangeDates;
+import com.sitescape.team.calendar.AbstractIntervalView;
 import com.sitescape.team.calendar.EventsViewHelper;
+import com.sitescape.team.calendar.OneMonthView;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.CustomAttribute;
@@ -73,6 +73,7 @@ import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.SeenMap;
@@ -81,7 +82,6 @@ import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -89,10 +89,11 @@ import com.sitescape.team.module.ic.DocumentDownload;
 import com.sitescape.team.module.ic.ICBrokerModule;
 import com.sitescape.team.module.ic.ICException;
 import com.sitescape.team.module.ic.RecordType;
+import com.sitescape.team.module.ical.AttendedEntries;
+
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.OperationAccessControlException;
@@ -104,6 +105,7 @@ import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.TagUtil;
@@ -1018,6 +1020,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		String view = "tag_jsps/tree/get_tree_div";
 		if (user.getDisplayStyle() != null && 
+				!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()) &&
 				user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
 			view = "tag_jsps/tree/get_tree_div_accessible";
 		} else {
@@ -1055,41 +1058,48 @@ public class AjaxController  extends SAbstractControllerRetry {
 	private void ajaxUploadICalendarFile(ActionRequest request, 
 			ActionResponse response) throws Exception {
 		// Get a handle on the uploaded file
-		List createdEntryIds = Collections.EMPTY_LIST;
+		AttendedEntries attendedEntries = new AttendedEntries();
 		String fileHandle = WebHelper.getFileHandleOnUploadedCalendarFile(request);
 		if (fileHandle != null) {
 			MultipartFile file = WebHelper.wrapFileHandleInMultipartFile(fileHandle);
 			Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_FOLDER_ID, -1);
 			if (folderId != -1) {
 				try {
-					createdEntryIds = getIcalModule().parseToEntries(folderId, file.getInputStream());
+					attendedEntries = getIcalModule().parseToEntries(folderId, file.getInputStream());
 				} catch (net.fortuna.ical4j.data.ParserException e) {
 					response.setRenderParameter("ssICalendarParseException", Boolean.TRUE.toString());
 				}
 			}
 			WebHelper.releaseFileHandle(fileHandle);
 		}
-		response.setRenderParameter("ssICalendarEntryIdsSize", Integer.toString(createdEntryIds.size()));
+		response.setRenderParameter("ssICalendarEntryAddedIdsSize", Integer.toString(attendedEntries.added.size()));
+		response.setRenderParameter("ssICalendarEntryModifiedIdsSize", Integer.toString(attendedEntries.modified.size()));
 		
-		List entryIdsAsStrings = new ArrayList();
-		Iterator it = createdEntryIds.iterator();
-		while (it.hasNext()) {
-			entryIdsAsStrings.add(it.next().toString());
-		}
-		String[] ids = new String[entryIdsAsStrings.size()];
-		ids = (String[])entryIdsAsStrings.toArray(ids);
-		response.setRenderParameter("ssICalendarEntryIds", ids);
+		List addedEntriesIdsAsStrings = ResolveIds.longsToString(attendedEntries.added);
+		String[] ids = new String[addedEntriesIdsAsStrings.size()];
+		ids = (String[])addedEntriesIdsAsStrings.toArray(ids);
+		response.setRenderParameter("ssICalendarAddedEntryIds", ids);
+		
+		List modifiedEntriesIdsAsStrings = ResolveIds.longsToString(attendedEntries.modified);
+		ids = new String[modifiedEntriesIdsAsStrings.size()];
+		ids = (String[])modifiedEntriesIdsAsStrings.toArray(ids);
+		response.setRenderParameter("ssICalendarModifiedEntryIds", ids);
+		
 	}
 	
 	private ModelAndView ajaxUploadICalendarFileStatus(RenderRequest request, RenderResponse response) {
-		int entriesAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryIdsSize", 0);
-		long[] entryIds = PortletRequestUtils.getLongParameters(request, "ssICalendarEntryIds");
+		int entriesAddedAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryAddedIdsSize", 0);
+		int entriesModifiedAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryModifiedIdsSize", 0);
+		long[] entryAddedIds = PortletRequestUtils.getLongParameters(request, "ssICalendarAddedEntryIds");
+		long[] entryModifiedIds = PortletRequestUtils.getLongParameters(request, "ssICalendarModifiedEntryIds");
 		boolean parseException = PortletRequestUtils.getBooleanParameter(request, "ssICalendarParseException", false);
 		
 		
 		Map model = new HashMap();
-		model.put("entriesAmount", entriesAmount);
-		model.put("entryIds", entryIds);
+		model.put("entriesAddedAmount", entriesAddedAmount);
+		model.put("entriesModifiedAmount", entriesModifiedAmount);
+		model.put("entryAddedIds", entryAddedIds);
+		model.put("entryModifiedIds", entryModifiedIds);
 		model.put("parseException", parseException);
 		
 		return new ModelAndView("forum/json/icalendar_upload", model);
@@ -1569,6 +1579,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("administration/modify_group", model);
 	}
 	
+	// TODO: move it to ListFolderHelper(?) and use only ones findCalendarEvents
 	private ModelAndView ajaxFindCalendarEvents(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();	
@@ -1602,7 +1613,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 					entries = new ArrayList();
 				}
 				
-				EventsViewHelper.getEntryEvents(binder, entries, model, response, WebHelper.getRequiredPortletSession(request));
+				EventsViewHelper.getEntryEvents(binder, entries, model, response, WebHelper.getRequiredPortletSession(request), false);
 
 			} else {
 				// get events by date
@@ -1634,17 +1645,24 @@ public class AjaxController  extends SAbstractControllerRetry {
 				Integer weekFirstDay = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
 				weekFirstDay = weekFirstDay!=null?weekFirstDay:CalendarHelper.getFirstDayOfWeek();
 				
-				CalendarViewRangeDates calendarViewRangeDates = new CalendarViewRangeDates(currentDate, weekFirstDay);
+				AbstractIntervalView calendarViewRangeDates = new OneMonthView(currentDate, weekFirstDay);
 	
 				options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
-		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, calendarViewRangeDates.getExtViewDayDates());
+				
+				List intervals = new ArrayList(1);
+				intervals.add(calendarViewRangeDates.getVisibleIntervalFormattedDates());
+
+		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervals);
+
 		       	
-		        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
-		       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
-		       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+		       	String start = DateTools.dateToString(calendarViewRangeDates.getVisibleStart(), DateTools.Resolution.SECOND);
+		       	String end =  DateTools.dateToString(calendarViewRangeDates.getVisibleEnd(), DateTools.Resolution.SECOND);
+		       	
+		       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, start);
+		       	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, end);
 	
-		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, formatter.format(calendarViewRangeDates.getStartViewExtWindow().getTime()));
-		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, formatter.format(calendarViewRangeDates.getEndViewExtWindow().getTime()));
+		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_START, start);
+		       	options.put(ObjectKeys.SEARCH_CREATION_DATE_END, end);
 			
 				UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 				options.putAll(ListFolderHelper.getSearchFilter(this, request, userFolderProperties));
@@ -1660,7 +1678,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 					entries = new ArrayList();
 				}
 				
-				EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, binder, entries, model, response, portletSession);
+				EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, binder, entries, model, portletSession, false);
 			}
 		} else {
 			model.put(WebKeys.CALENDAR_VIEWBEAN , Collections.EMPTY_LIST);

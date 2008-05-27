@@ -1,12 +1,15 @@
 package com.sitescape.team.search;
 
 import static com.sitescape.util.search.Constants.*;
-import static com.sitescape.util.search.Restrictions.eq;
-import static com.sitescape.util.search.Restrictions.in;
+import static com.sitescape.util.search.Restrictions.*;
+
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.lucene.document.DateTools;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.Binder;
@@ -16,15 +19,31 @@ import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.util.search.Constants;
 import com.sitescape.util.search.Criteria;
 import com.sitescape.util.search.Order;
+import com.sitescape.util.search.Junction.Disjunction;
 
 public class SearchUtils {
 
-	public static Criteria tasksForUser(Long userId)
+	public static Criteria tasksForUser(Long userId, String[] groupIds, String[] teamIds, Date from, Date to)
 	{
 		Criteria crit = new Criteria();
 		crit.add(eq(FAMILY_FIELD,FAMILY_FIELD_TASK))
 			.add(eq(DOC_TYPE_FIELD, DOC_TYPE_ENTRY))
-			.add(eq(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,userId.toString()));
+			.add(between(
+					TaskHelper.TIME_PERIOD_TASK_ENTRY_ATTRIBUTE_NAME + BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_END_DATE, 
+					DateTools.dateToString(from, DateTools.Resolution.SECOND), 
+					DateTools.dateToString(to, DateTools.Resolution.SECOND)));;
+		
+		Disjunction disjunction = disjunction();
+		disjunction.add(eq(TaskHelper.ASSIGNMENT_TASK_ENTRY_ATTRIBUTE_NAME,userId.toString()));
+		
+		if (groupIds != null & groupIds.length > 0) {
+			disjunction.add(in(TaskHelper.ASSIGNMENT_GROUPS_TASK_ENTRY_ATTRIBUTE_NAME,groupIds));
+		}
+		if (teamIds != null & teamIds.length > 0) {
+			disjunction.add(in(TaskHelper.ASSIGNMENT_TEAMS_TASK_ENTRY_ATTRIBUTE_NAME,teamIds));
+		}
+		crit.add(disjunction);
+		
 		return crit;
 	}
 	
@@ -49,13 +68,14 @@ public class SearchUtils {
 		return crit;
 	}
 	
-	public static Criteria entriesForTrackedCalendars(AllModulesInjected bs, List userWorkspaces)
+	public static Criteria entriesForTrackedCalendars(AllModulesInjected bs, List userWorkspaces, String start, String end)
 	{
 		Criteria crit = new Criteria();
 		crit.add(in(ENTRY_TYPE_FIELD,new String[] {Constants.ENTRY_TYPE_ENTRY, 
 				Constants.ENTRY_TYPE_REPLY}))
 			.add(in(DOC_TYPE_FIELD,new String[] {Constants.DOC_TYPE_ENTRY}))
-			.add(in(ENTRY_ANCESTRY, userWorkspaces));
+			.add(in(ENTRY_ANCESTRY, userWorkspaces))
+			.add(between(Constants.EVENT_DATES_FIELD, start, end));
 		crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
 		return crit;
 	}

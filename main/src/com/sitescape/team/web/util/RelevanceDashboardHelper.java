@@ -28,8 +28,6 @@
  */
 package com.sitescape.team.web.util;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -38,23 +36,25 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.TimeZone;
-import java.util.TreeMap;
 
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
-import org.apache.lucene.document.DateTools;
 import org.dom4j.Element;
+import org.joda.time.DateMidnight;
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.AbstractIntervalView;
+import com.sitescape.team.calendar.EventsViewHelper;
+import com.sitescape.team.calendar.OneDayView;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.ProfileDao;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.SharedEntity;
 import com.sitescape.team.domain.User;
@@ -63,19 +63,16 @@ import com.sitescape.team.domain.AuditTrail.AuditType;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import static com.sitescape.util.search.Constants.*;
 
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.report.ReportModule.ActivityInfo;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.team.search.SearchUtils;
-
-import static com.sitescape.util.search.Restrictions.*;
-
-import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.search.Constants;
 import com.sitescape.util.search.Criteria;
-import com.sitescape.util.search.Order;
 
 public class RelevanceDashboardHelper {
 	
@@ -185,7 +182,7 @@ public class RelevanceDashboardHelper {
 		return true;
 }
 	
-	protected static void setupTasksBeans(AllModulesInjected bs, Binder binder, Map model) {		
+	protected static void setupTasksBeans(AllModulesInjected bs, Binder binder, Map model) {
 		//Get the tasks bean
 		//Prepare for a standard dashboard search operation
 		Map options = new HashMap();
@@ -207,11 +204,31 @@ public class RelevanceDashboardHelper {
 		int offset = ((Integer) options.get(ObjectKeys.SEARCH_OFFSET)).intValue();
 		int maxResults = ((Integer) options.get(ObjectKeys.SEARCH_MAX_HITS)).intValue();
 		
-		java.util.Date now = new java.util.Date();
-		java.util.Date future = new java.util.Date(now.getTime() + 14*24*60*60*1000);
-		String endDateTarget = DateTools.dateToString(future, DateTools.Resolution.DAY);
+		ProfileDao profileDao = (ProfileDao)SpringContextUtil.getBean("profileDao");
+		BinderModule binderModule = (BinderModule) SpringContextUtil.getBean("binderModule");
 
-		Criteria crit = SearchUtils.tasksForUser(binder.getOwnerId());
+		List groups = new ArrayList();
+		List groupsS = new ArrayList();
+		List teams = new ArrayList();
+		
+		groups.addAll(profileDao.getAllGroupMembership(binder.getOwnerId(), binder.getZoneId()));
+		Iterator itG = groups.iterator();
+		while (itG.hasNext()) {
+			groupsS.add(itG.next().toString());
+		}
+		Iterator teamMembershipsIt = binderModule.getTeamMemberships(binder.getOwnerId()).iterator();
+		while (teamMembershipsIt.hasNext()) {
+			teams.add(((Map)teamMembershipsIt.next()).get(Constants.DOCID_FIELD));
+		}
+		
+		DateTime today = (new DateMidnight(DateTimeZone.forTimeZone(user.getTimeZone()))).toDateTime();
+		DateTime future = today.plusWeeks(2).plusDays(1);
+		
+		Criteria crit = SearchUtils.tasksForUser(binder.getOwnerId(), 
+													(String[])groupsS.toArray(new String[groupsS.size()]), 
+													(String[])teams.toArray(new String[teams.size()]),
+													today.toDate(),
+													future.toDate());
 		Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 		model.put(WebKeys.MY_TASKS, results.get(ObjectKeys.SEARCH_ENTRIES));
@@ -223,13 +240,6 @@ public class RelevanceDashboardHelper {
 	    	Iterator it = items.iterator();
 	    	while (it.hasNext()) {
 	    		Map entry = (Map)it.next();
-	    		DateFormat fmt = DateFormat.getDateInstance(DateFormat.FULL,  Locale.US);
-	    		fmt.setTimeZone(TimeZone.getTimeZone("GMT"));
-	    		Date endDate = null;
-	    		try {
-	    			endDate = fmt.parse((String)entry.get("start_end#EndDate"));
-	    		} catch(Exception e) {}
-
 	    		String entryDefId = (String)entry.get(COMMAND_DEFINITION_FIELD);
 	    		if (cacheEntryDef.get(entryDefId) == null) {
 	    			cacheEntryDef.put(entryDefId, bs.getDefinitionModule().getEntryDefinitionElements(entryDefId));
@@ -352,11 +362,21 @@ public class RelevanceDashboardHelper {
 		
 		List trackedCalendars = SearchUtils.getTrackedCalendarIds(bs, binder);
 		if (trackedCalendars.size() > 0) {
-			Criteria crit = SearchUtils.entriesForTrackedCalendars(bs, trackedCalendars);
+			AbstractIntervalView calendarInterval = new OneDayView(new Date());
+			String[] interval = calendarInterval.getVisibleIntervalFormattedDates();
+			Criteria crit = SearchUtils.entriesForTrackedCalendars(bs, trackedCalendars, interval[0], interval[1]);
 			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
+			Date today = new Date();
 			model.put(WebKeys.WHATS_NEW_TRACKED_CALENDARS, results.get(ObjectKeys.SEARCH_ENTRIES));
-
+			
+			EventsViewHelper.getEvents(today, calendarInterval, binder, (List) results.get(ObjectKeys.SEARCH_ENTRIES), model, EventsViewHelper.EVENT_TYPE_EVENT, EventsViewHelper.DAY_VIEW_TYPE_FULL, true);
+			model.put(WebKeys.CALENDAR_GRID_TYPE, EventsViewHelper.GRID_DAY);
+			model.put(WebKeys.CALENDAR_GRID_SIZE, 1);
+			model.put(WebKeys.CALENDAR_CURRENT_DATE, today);
+			
+			
+			
 			Map places = new HashMap();
 	    	List items = (List) results.get(ObjectKeys.SEARCH_ENTRIES);
 	    	if (items != null) {

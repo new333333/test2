@@ -326,7 +326,7 @@
 
  <target id="bawek1m" pid="baux410" name="Step" level="5" number="3"> <text>Click Edit.</text> </target>
 
- <target id="bawek5v" pid="baux410" name="Step" level="5" number="4"> <text>Edit the contacts information. See "Informational Fields" on page 42. </text> </target>
+ <target id="bawek5v" pid="baux410" name="Step" level="5" number="4"> <text>Edit the contacts information. See "Informational Fields" on page 43. </text> </target>
 
  <target id="bawekar" pid="baux410" name="Step" level="5" number="5"> <text>Click OK.</text> </target>
 

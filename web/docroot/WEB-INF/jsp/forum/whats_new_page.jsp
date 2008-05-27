@@ -119,4 +119,11 @@
 	
     </li><br/>
   </c:forEach>
+  <c:if test="${empty ss_whatsNewBinder && ss_pageNumber > '0'}">
+    <span class="ss_italic"><ssf:nlt tag="whatsnew.noMoreEntriesFound"/></span>
+  </c:if>
+  <c:if test="${empty ss_whatsNewBinder && (empty ss_pageNumber || ss_pageNumber <= '0')}">
+    <span class="ss_italic"><ssf:nlt tag="whatsnew.noEntriesFound"/></span>
+  </c:if>
+</div>
 </div>

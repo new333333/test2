@@ -33,7 +33,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 <c:set var="ss_urlWindowState" value="maximized"/>
-<c:if test="${ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
+<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
   <c:set var="ss_urlWindowState" value=""/>
 </c:if>
 <!-- <script type="text/javascript" src="/ssf/js/tree/tree_widget.js"></script> -->
@@ -98,11 +98,20 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 }
 
 function ss_setParentWorkareaIframeSize${renderResponse.namespace}() {
+	ss_debug('In routine: ss_setParentWorkareaIframeSize${renderResponse.namespace}')
 	if (typeof self.parent != "undefined") {
 		var resizeRoutineName = "ss_setWorkareaIframeSize" + ss_parentWorkareaNamespace${renderResponse.namespace};
 		eval("var resizeRoutineExists = typeof(self.parent."+resizeRoutineName+")");
+		ss_debug('resizeRoutineExists = '+resizeRoutineExists)
 		if (resizeRoutineExists != "undefined") {
+			ss_debug('namespace = ${renderResponse.namespace}')
+			eval("ss_debug(self.parent."+resizeRoutineName+")");
 			eval("self.parent."+resizeRoutineName+"()");
+		} else {
+			//See if there is a common routine to call in case the namespaces don't match
+			if (typeof self.parent.ss_setWorkareaIframeSize != "undefined") {
+				self.parent.ss_setWorkareaIframeSize();
+			}
 		}
 	}
 }
@@ -148,12 +157,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 }
 </script>
 
-<c:if test="${!empty ssBinder.branding}">
-  <div>
-    <span><ssf:markup type="view" entity="${ssBinder}"><c:out 
-      value="${ssBinder.branding}" escapeXml="false"/></ssf:markup></span>
-  </div>
-</c:if>
+<jsp:include page="/WEB-INF/jsp/definition_elements/view_binder_branding.jsp" />
 
 <div id="ss_top_nav_wrapper">
 <div class="ss_5colmask ss_fivecol">
@@ -402,16 +406,21 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <ssf:ifaccessible>
 	<div class="ss_global_toolbar_accessible">
 		
-			<label for="ss_searchSearchText${renderResponse.namespace}"><span class="ss_global_toolbar_label_text_quickSearch"><ssf:nlt tag="navigation.search"/></span></label>
-			  <span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
-			  href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+			<label for="ss_searchSearchText${renderResponse.namespace}">
+				<span class="ss_global_toolbar_label_text_quickSearch">
+				<ssf:nlt tag="navigation.search"/></span>
+			</label>
+			  <span class="ss_global_toolbar_quick_advanced">
+			    <a class="ss_advanced ss_fineprint" 
+			  	href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 			  	name="binderId" value="${ssBinder.id}"/><ssf:param 
 			  	name="tabTitle" value="SEARCH FORM"/><ssf:param 
 			  	name="newTab" value="0"/></ssf:url>"
-				><ssf:nlt tag="navigation.search.advanced"/></a></span>
-			  </div>
+				><ssf:nlt tag="navigation.search.advanced"/></a>
+			</span>
+	</div>
 	
-		<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
+	<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
 		  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
                  <c:if test="<%= BrowserSniffer.is_ie(request) %>">
                    offsetX="159" 
@@ -433,12 +442,12 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 					  <img src="<html:imagesPath/>pics/1pix.gif" 
 					  title="<ssf:nlt tag="alt.search"/>"
 					  <ssf:alt tag="alt.search"/> /> 
-					  </a>
+					</a>
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
 			</form>
-     	</div>
+     </div>
      	
 
 </ssf:ifaccessible>
@@ -449,16 +458,13 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   </div><!-- end of colmidright-->
 </div>   <!-- end of colmask fivecol-->
 <div class="ss_darkline"></div>
+<ssf:ifLoggedIn>
 <div class="ss_medline">
 
-
 <div id="ss_statusArea" class="ss_global_toolbar_maximized"><!-- beginning of other rows-->  
-
-
 <!-- Beginning of Status Bar:  Status Share/Track Buttons My Teams and Favorites  -->
 
 <!-- Start of Status line -->
-<ssf:ifLoggedIn>
 
 <li class="ss_rt_buffer">
 <script type="text/javascript">
@@ -477,16 +483,20 @@ ss_statusCurrent = "${ssUser.status}";
 </ssf:ifnotaccessible>
 <ssf:ifaccessible>
 <div style="white-space:nowrap" >
-<label for="ss_statusBoxText${renderResponse.namespace}"><span class="ss_statusprint"><ssf:nlt tag="relevance.userStatus"/></span></label>
-<input type="text" id="ss_statusBoxText${renderResponse.namespace}"
-  size="50" 
-  style="font-size:9px; background-color:#cccccc;" 
-  value="${ssUser.status}"
-  />
-  <input type="submit" style="font-size:9px;"
-  onClick="ss_updateStatusNowAccessible('ss_statusBoxText${renderResponse.namespace}');return false;" 
-  value="<ssf:nlt tag="button.ok"/>"
-  /></div>
+  	<label for="ss_statusBoxText${renderResponse.namespace}">
+  		<span class="ss_statusprint">
+  		<ssf:nlt tag="relevance.userStatus"/></span>
+  	</label>
+	<input type="text" id="ss_statusBoxText${renderResponse.namespace}"
+  		size="50" 
+  		style="font-size:9px; background-color:#cccccc;" 
+  		value="${ssUser.status}"
+  	/>
+  	<input type="submit" style="font-size:9px;"
+  		onClick="ss_updateStatusNowAccessible('ss_statusBoxText${renderResponse.namespace}');return false;" 
+  		value="<ssf:nlt tag="button.ok"/>"
+  	/>
+</div>
 </ssf:ifaccessible>
 </li>
 

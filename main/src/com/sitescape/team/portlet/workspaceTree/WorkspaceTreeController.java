@@ -69,6 +69,15 @@ public class WorkspaceTreeController extends SAbstractController  {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		
+        User user = RequestContextHolder.getRequestContext().getUser();
+        if (user.getInternalId().equals(ObjectKeys.GUEST_USER_INTERNALID) && 
+        		user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+			Map<String,Object> updates = new HashMap<String,Object>();
+			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+        	MapInputData  inputData = new MapInputData (updates);
+        	updates.put(ObjectKeys.FIELD_USER_DISPLAYSTYLE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
+			getProfileModule().modifyEntry(user.getParentBinder().getId(), user.getId(), inputData);
+        }
 		Long binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		if (binderId == null) return BinderHelper.CommonPortletDispatch(this, request, response);
 		

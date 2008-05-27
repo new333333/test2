@@ -85,6 +85,7 @@ import org.joda.time.YearMonthDay;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.shared.XmlUtils;
+import com.sitescape.util.cal.CalendarUtil;
 import com.sitescape.util.cal.DayAndPosition;
 import com.sitescape.util.cal.Duration;
 import com.sitescape.team.ObjectKeys;
@@ -281,7 +282,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	// not null - NOT all day(s) event
 	protected TimeZone timeZone;
 	
-
+	protected String uid;
+	
 	/* Constructors */
 
 	/**
@@ -2843,7 +2845,19 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	public void setTimeZoneSensitive(boolean timeZoneSensitive) {
 		this.timeZoneSensitive = !timeZoneSensitive;
 	}
+	
+	/**
+	 * @hibernate.property length="255"
+	 * @return
+	 */
+	public String getUid() {
+		return uid;
+	}
 
+	public void setUid(String uid) {
+		this.uid = uid;
+	}
+	
 	/**
 	 * @hibernate.property length="100"
 	 * @return
@@ -2987,6 +3001,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			setTimeZoneSensitive(newEvent.isTimeZoneSensitive());
 			changed = true;
 		}
+		if ((getUid() == null && newEvent.getUid() != null) || 
+				(getUid() != null && newEvent.getUid() == null) ||
+				(getUid() != null && newEvent.getUid() != null && !getUid().equals(newEvent.getUid()))) {
+			setUid(newEvent.getUid());
+			changed = true;
+		}
 		if ((getTimeZone() == null && newEvent.getTimeZone() != null) || 
 				(getTimeZone() != null && newEvent.getTimeZone() == null) ||
 				(getTimeZone() != null && newEvent.getTimeZone() != null && !getTimeZone().equals(newEvent.getTimeZone()))) {
@@ -3073,7 +3093,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 		XmlUtils.addProperty(element, "timeZoneSensitive", Boolean
 				.toString(isTimeZoneSensitive()));
-
+		
+		XmlUtils.addProperty(element, "uid", getUid());		
+		
 		XmlUtils.addProperty(element, "bySecond", getBySecondString());
 
 		XmlUtils.addProperty(element, "byMinute", getByMinuteString());
@@ -3176,12 +3198,17 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		List result = new ArrayList();
 		
 		Calendar date = (Calendar)start.clone();
-			
+		result.add(date.clone());
+		
+		date.add(Calendar.DAY_OF_MONTH, 1);
+		CalendarUtil.toGTTime(date);
+		
 		while (date.getTimeInMillis() <= end.getTimeInMillis()) {
 			result.add(date.clone());
 			date.add(Calendar.DAY_OF_MONTH, 1);
-		}
+		};
 		
+		result.add(end.clone());
 		return result;
 	}
 
@@ -3205,6 +3232,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		while (it.hasNext()) {
 			Calendar[] eventDates = (Calendar[]) it.next();
 			result.addAll(getAllDatesBetween(eventDates[0], eventDates[1]));
+			//result.add(eventDates[0]);
+			//result.add(eventDates[1]);
 		}
 		
 		return result;
@@ -3217,5 +3246,34 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			setTimeZone(null);
 		}
 	}
+
+	/**
+	 * Call it first when id is set.
+	 */
+	public String buildUid(DefinableEntity entry) {
+		StringBuilder sb = new StringBuilder();
+		if (entry != null && entry.getParentBinder() != null && entry.getParentBinder().getId() != null) {
+			sb.append(entry.getParentBinder().getId().toString());
+		}
+		if (entry != null && entry.getId() != null) {
+			sb.append("-");
+			sb.append(entry.getId().toString());
+		}
+		if (this.getId() != null) {
+			sb.append("-");
+			sb.append(this.getId());
+		}
+		return sb.toString();
+	}
+
+	/**
+	 * Call it first when id is set. Does nothing if id is already set. 
+	 */
+	public String generateUid(DefinableEntity entry) {
+		if (this.uid == null) {
+			this.uid = buildUid(entry);
+		}
+		return this.uid;
+	}	
 
 }

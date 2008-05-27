@@ -82,9 +82,7 @@ import static com.sitescape.util.search.Constants.*;
  * @author Jong Kim
  */
 public class EntityIndexUtils {
-    
-    // Defines field names
-    
+
     // Defines field values
     public static final String DEFAULT_NOTITLE_TITLE = "---";
         
@@ -304,7 +302,6 @@ public class EntityIndexUtils {
 		// look through the custom attrs of this entry for any of type EVENT, DATE, or DATE_TIME
 
 		Set entryEventsDates = new HashSet();
-
 		while (attIt.hasNext()) {
 			CustomAttribute att = (CustomAttribute) customAttrs.get(attIt.next());
 			if (att.getValueType() == CustomAttribute.EVENT) {
@@ -341,8 +338,8 @@ public class EntityIndexUtils {
 		Iterator datesIt = dates.iterator();
 		while (datesIt.hasNext()) {
 			Calendar c = (Calendar)datesIt.next();
-			sb.append(DateTools.dateToString(c.getTime(), DateTools.Resolution.DAY));
-			sb.append(" ");
+			//sb.append(DateTools.dateToString(c.getTime(), DateTools.Resolution.DAY));
+			//sb.append(" ");
 			sb.append(DateTools.dateToString(c.getTime(), DateTools.Resolution.MINUTE));
 			sb.append(" ");
 		}

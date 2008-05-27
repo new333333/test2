@@ -3002,6 +3002,10 @@ table.ss_cal_gridTable td {
   min-width: 300px;
 }
 
+/* on relevance dashboard it's too wide */
+#ss_calendar .ss_cal_reserveWidth {
+  min-width: 0;
+}
 
 /*
  * Used to create a highlight in the grid when the current
@@ -4734,6 +4738,11 @@ table.ssMeetingRecords .ssHeader {
 	padding:0px;
 	border:1px solid white;
 	background: white;
+}
+
+ul.placesForm, ul.placesForm li {
+	margin: 0;
+	padding: 0;
 }
 
 <jsp:include page="/WEB-INF/jsp/common/ssf_css_dashboard.jsp" />

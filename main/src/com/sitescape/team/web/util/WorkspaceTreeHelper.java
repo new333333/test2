@@ -75,6 +75,7 @@ import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchUtils;
 import com.sitescape.team.search.filter.SearchFilter;
+import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.task.TaskHelper.FilterType;
 import com.sitescape.team.util.AllModulesInjected;
@@ -264,6 +265,9 @@ public class WorkspaceTreeHelper {
 				BinderHelper.setupUnseenBinderBeans(bs, binder, model, page);
 			
 		} catch(NoBinderByTheIdException e) {
+		} catch(OperationAccessControlExceptionNoName e) {
+			//Access is not allowed
+			return WebKeys.VIEW_ACCESS_DENIED;
 		}
 		
 		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
@@ -345,10 +349,11 @@ public class WorkspaceTreeHelper {
 		for (Map binder:binders) {
 			String binderIdString = (String) binder.get(DOCID_FIELD);
 			String binderEntityType = (String) binder.get(ENTITY_FIELD);
-			if (binderIdString != null && binderEntityType != null && 
-					(binderEntityType.equals(EntityIdentifier.EntityType.workspace.name()) ||
-					 binderEntityType.equals(EntityIdentifier.EntityType.profiles.name()))) {
-				binderIdList.add(binderIdString);
+			if (binderIdString != null) {
+				if (binderEntityType != null && (binderEntityType.equals(EntityIdentifier.EntityType.workspace.name()) ||
+						binderEntityType.equals(EntityIdentifier.EntityType.profiles.name()))) {
+					binderIdList.add(binderIdString);
+				}
 				unseenCounts.put(binderIdString, new WorkspaceTreeHelper.Counter());
 			}
 		}
@@ -557,12 +562,14 @@ public class WorkspaceTreeHelper {
 			}
 			if (bs.getBinderModule().testAccess(workspace, BinderOperation.copyBinder)) {
 				adminMenuCreated=true;
+				qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
 				url = response.createActionURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MODIFY_BINDER);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_COPY);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());
-				toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.copy_workspace"), url);
+				toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.copy_workspace"), url, qualifiers);
 			}
 
 		}
@@ -571,7 +578,7 @@ public class WorkspaceTreeHelper {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));
-			url = response.createActionURL();
+			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACTIVITY_REPORT);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_BINDER_TYPE, workspace.getEntityType().name());

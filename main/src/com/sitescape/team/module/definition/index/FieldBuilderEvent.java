@@ -28,6 +28,10 @@
  */
 package com.sitescape.team.module.definition.index;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -37,6 +41,7 @@ import org.apache.lucene.document.Field;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.util.search.Constants;
+
 
 public class FieldBuilderEvent extends AbstractFieldBuilder {
 	
@@ -54,15 +59,22 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 		if (event == null)
 			return new Field[0];
 
-		// range check to see if this event is in range
-		Field evDtStartField = new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_START_DATE), DateTools.dateToString(event.getDtStart().getTime(),	DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
-		Field evDtEndField = new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_END_DATE), DateTools.dateToString(event.getDtEnd().getTime(), DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED);
-		if (event.isAllDayEvent()) {
-			return new Field[] { evDtStartField, evDtEndField};
+
+		List fields = new ArrayList();
+		
+		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_START_DATE), DateTools.dateToString(event.getDtStart().getTime(),	DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED));
+		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_END_DATE), DateTools.dateToString(event.getDtEnd().getTime(), DateTools.Resolution.SECOND), Field.Store.YES, Field.Index.UN_TOKENIZED));
+		if (!event.isAllDayEvent()) {
+			fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.UN_TOKENIZED));
 		}
-		Field evTimeZoneIDField = new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.UN_TOKENIZED);
-		Field evTimeZoneSensitiveField = new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE), Boolean.toString(event.isTimeZoneSensitive()), Field.Store.YES, Field.Index.UN_TOKENIZED);
-		return new Field[] { evDtStartField, evDtEndField, evTimeZoneIDField, evTimeZoneSensitiveField};
+		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE), Boolean.toString(event.isTimeZoneSensitive()), Field.Store.YES, Field.Index.UN_TOKENIZED));
+		if (event.getUid() != null) {
+			fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_UID), event.getUid(), Field.Store.YES, Field.Index.UN_TOKENIZED));
+		}
+		Field[] realFields = new Field[fields.size()];
+		realFields = (Field[]) fields.toArray(realFields);
+		return realFields;
+
 	}
 
 

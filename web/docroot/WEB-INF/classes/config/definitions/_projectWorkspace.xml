@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<definition name="_projectWorkspace" caption="__project_management" type="8" nextId="23" definitionType="8" databaseId="402881831317fb620113180363870017">
+<definition name="_projectWorkspace" caption="__project_management" type="8" nextId="24" definitionType="8" databaseId="402881831317fb620113180363870017">
   <item name="workspaceForm" caption="__workspace_form" type="form" id="1">
     <properties/>
     <item name="title" caption="__title" type="data" id="2">
@@ -18,12 +18,6 @@
         <property name="caption" value="__description"/>
         <property name="height" value=""/>
         <property name="required" value=""/>
-      </properties>
-    </item>
-    <item name="workspaceIcon" caption="__icon" type="data" id="4">
-      <properties>
-        <property name="name" value="iconName"/>
-        <property name="caption" value="__icon"/>
       </properties>
     </item>
     <item name="fieldset" caption="__fieldset" category="generalLayout" id="7">
@@ -81,6 +75,18 @@
           <property name="required" value="false"/>
         </properties>
       </item>
+    </item>
+    <item name="workspaceBranding" caption="__branding" type="data" category="workspaceData" display="form" id="23">
+      <properties>
+        <property name="caption" value="__branding"/>
+        <property name="name" value="branding"/>
+      </properties>
+    </item>
+    <item name="workspaceIcon" caption="__icon" type="data" id="4">
+      <properties>
+        <property name="name" value="iconName"/>
+        <property name="caption" value="__icon"/>
+      </properties>
     </item>
   </item>
   <item name="workspaceView" caption="__workspace_view" id="5">

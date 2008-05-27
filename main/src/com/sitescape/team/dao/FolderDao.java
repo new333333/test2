@@ -40,6 +40,7 @@ import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.NoFolderByTheIdException;
+import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Tag;
 
 /**
@@ -47,7 +48,25 @@ import com.sitescape.team.domain.Tag;
  *
  */
 public interface FolderDao {
-	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, Long zoneId) throws DataAccessException;
+	/**
+	 * Load folder entry
+	 * @param entryId
+	 * @param zoneId
+	 * @return
+	 * @throws DataAccessException
+	 * @throws NoFolderEntryByTheIdException
+	 */
+	public FolderEntry loadFolderEntry(Long entryId, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException;
+	/**
+	 * Same as {@link #loadFolderEntry(Long,Long) loadFolderEntry} except validate entry belongs to the specified folder.
+	 * @param parentFolderId
+	 * @param entryId
+	 * @param zoneId
+	 * @return
+	 * @throws DataAccessException
+	 * @throws NoFolderEntryByTheIdException
+	 */
+	public FolderEntry loadFolderEntry(Long parentFolderId, Long entryId, Long zoneId) throws DataAccessException,NoFolderEntryByTheIdException;
    /**
      * Return iterator of child entries
      * @param parentFolder

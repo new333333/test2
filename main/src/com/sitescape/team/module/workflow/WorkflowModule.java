@@ -93,6 +93,13 @@ public interface WorkflowModule {
 	 */
 	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, String toState);
 	/**
+	 * Set context variables and continue processing.
+	 * @param entry
+	 * @param state
+	 * @param variables
+	 */
+	public void modifyWorkflowState(WorkflowSupport entry, WorkflowState state, Map<String, Object> variables);
+	/**
 	 * A reply was entered.  
 	 * See if that triggers a transition and process
 	 * @param entry

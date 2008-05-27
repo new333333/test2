@@ -741,4 +741,8 @@ div.ss_canvas {
 	padding:10px;
 
 }
+/* Calendar need some other settings */
+#ss_calendar #ss_para, #ss_calendar .ss_paraC, #ss_calendar #ss_cal_para {
+	padding: 0;
+}
 
