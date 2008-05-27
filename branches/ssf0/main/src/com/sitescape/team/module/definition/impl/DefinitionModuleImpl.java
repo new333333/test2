@@ -1802,7 +1802,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
      */
     private void setDefinitionProperties(Element parent, final Element configItem)    {
     	Element properties = parent.addElement("properties");
-    	List<Element> propertyItems = propertyItems = configItem.selectNodes("properties/property");
+    	List<Element> propertyItems = configItem.selectNodes("properties/property");
 		for (Element configProperty:propertyItems)
 		{
 			Element property = properties.addElement("property");

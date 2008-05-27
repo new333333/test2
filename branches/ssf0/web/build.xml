@@ -329,12 +329,12 @@
 	</target>
 	
 	<target name="make-portlet.xml">
-				<java classname="com.sitescape.team.tools.portlet.GeneratePortletXml"
+			<java classname="com.sitescape.team.tools.portlet.GeneratePortletXml"
 						newenvironment="true"
 						failonerror="true"
 				>
 					<classpath refid="project.classpath" />
-					<arg value="${web.dir}/WEB-INF" />
+					<arg value="web/${web.dir}/WEB-INF" />
 				</java>	 
 			</target>
 	
