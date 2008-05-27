@@ -230,6 +230,8 @@ public class WebKeys {
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
 	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
 	public static final String ACTION_UNLOCK_FOLDER_ENTRY = "unlock_folder_entry";
+	public static final String ACTION_LOGIN = "login";
+	public static final String ACTION_LOGOUT = "logout";
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
 	public static final String ACTION_VIEW_CHANGELOG="view_change_log";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
@@ -688,6 +690,8 @@ public class WebKeys {
     
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String LIST_UNSEEN_COUNTS_BINDER_IDS="ss_unseenCountsBinderIds";
+    public static final String LOGIN_URL="ss_loginUrl";
+    public static final String LOGOUT_URL="ss_logoutUrl";
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NAMESPACE="ss_namespace";
@@ -816,6 +820,7 @@ public class WebKeys {
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SIMPLE_URL_NAME_EXISTS_ERROR="ss_simpleUrlNameExistsError";
+    public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
     public static final String TRACKED_SITE_PAGE="ss_trackedSitePage";
     public static final String WHATS_HOT_PAGE="ss_whatsHotPage";

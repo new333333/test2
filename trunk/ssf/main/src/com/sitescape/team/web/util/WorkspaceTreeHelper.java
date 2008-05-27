@@ -47,8 +47,6 @@ import javax.portlet.RenderResponse;
 
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -69,15 +67,11 @@ import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
-import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchUtils;
-import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
-import com.sitescape.team.task.TaskHelper;
-import com.sitescape.team.task.TaskHelper.FilterType;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
@@ -98,7 +92,6 @@ public class WorkspaceTreeHelper {
 	public static String setupWorkspaceBeans(AllModulesInjected bs, Long binderId, RenderRequest request, 
 			RenderResponse response, Map model) throws Exception {
 		model.put(WebKeys.WORKSPACE_BEANS_SETUP, true);
-		String displayType = BinderHelper.getDisplayType(request);
         User user = RequestContextHolder.getRequestContext().getUser();
 
 		BinderHelper.setBinderPermaLink(bs, request, response);
@@ -270,22 +263,12 @@ public class WorkspaceTreeHelper {
 			return WebKeys.VIEW_ACCESS_DENIED;
 		}
 		
-		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
-		UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
-
 		//Set up the standard beans
-		//These have been documented, so don't delete any
-		model.put(WebKeys.USER_PRINCIPAL, user);
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
 		model.put(WebKeys.ENTRY, binder);
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
-			
-		model.put(WebKeys.DISPLAY_TYPE, displayType);
 		
 		Tabs.TabEntry tab = BinderHelper.initTabs(request, binder);
 		model.put(WebKeys.TABS, tab.getTabs());		

@@ -46,8 +46,6 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
@@ -63,7 +61,6 @@ import com.sitescape.team.domain.NoFolderEntryByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.SeenMap;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.ical.util.UrlUtil;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
@@ -146,14 +143,12 @@ public class ViewEntryController extends  SAbstractController {
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
-        User user = RequestContextHolder.getRequestContext().getUser();
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
-		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		Map formData = request.getParameterMap();
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 		
-		Map model = new HashMap();
+		Map<String,Object> model = new HashMap();
 		
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (!operation.equals("")) {
@@ -161,20 +156,10 @@ public class ViewEntryController extends  SAbstractController {
 		}
 		
 		//Set up the standard beans
-		//These have been documented, so don't delete any
-		model.put(WebKeys.USER_PRINCIPAL, user);
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(this));
+		BinderHelper.setupStandardBeans(this, request, response, model);
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_ENTRY);
-		if (!namespace.equals("")) {
-			model.put(WebKeys.NAMESPACE, namespace);
-		} else {
-			model.put(WebKeys.NAMESPACE, response.getNamespace());
-		}
 		
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
  		//BinderHelper.getViewType requires read access to the binder.  
  		//This causes access errors when have access to an entry but not the binder which happens
  		//when you are following an email permalink link
@@ -258,7 +243,7 @@ public class ViewEntryController extends  SAbstractController {
 			if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
 				//doesn't make sense on replies unless we update the visits when replies are show with the entry
 				//that seems wasteful, so don't bother at all
-				if (fe.isTop()) getFolderModule().setUserVisit(fe);  
+				//if (fe.isTop()) getFolderModule().setUserVisit(fe);  
 		       	getReportModule().addAuditTrail(AuditTrail.AuditType.view, fe);
 
 			}

@@ -46,6 +46,7 @@ import java.util.Set;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
@@ -80,12 +81,45 @@ public class ConfigureController extends AbstractBinderController {
 			getBinderModule().setDefinitions(binderId, definitions, workflowAssociations);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} else if (formData.containsKey("addUrlBtn")) {
-			String prefix = PortletRequestUtils.getStringParameter(request, "prefix", "");	
-			String name = PortletRequestUtils.getStringParameter(request, "name", "");	
+			String[] globalKeywords = SPropsUtil.getStringArray("simpleUrl.globalKeywords", ",");
+			String prefix = PortletRequestUtils.getStringParameter(request, "prefix", "").trim();
+			boolean prefixIsGlobalKeyword = false;
+			//See if the prefix was chosen from the list of global names
+			for (int i = 0; i < globalKeywords.length; i++) {
+				if (globalKeywords[i].trim().equals(prefix)) {
+					prefixIsGlobalKeyword = true;
+					break;
+				}
+			}
+			if (!prefix.equals("") && !prefixIsGlobalKeyword && 
+					!prefix.toLowerCase().equals(user.getName().toLowerCase())) {
+				response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, "true");
+				return;
+			}
+			String name = PortletRequestUtils.getStringParameter(request, "name", "").trim();
+			if (name.startsWith("/")) {
+				response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, "true");
+				return;
+			}
+			if (name.indexOf("/") >= 0) {
+				String n1 = name.substring(0, name.indexOf("/"));
+				//See if the name is a user name
+				User u = null;
+				try {
+					u = getProfileModule().findUserByName(n1);
+				} catch(NoUserByTheNameException e) {}
+				if (!n1.equals("") && u != null && 
+						!n1.toLowerCase().equals(user.getName().toLowerCase()) && 
+						!getAdminModule().testAccess(AdminOperation.manageFunction)) {
+					//Cannot use a url name that starts with some other user's name
+					response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, "true");
+					return;
+				}
+			}
 			if (!name.equals("")) {
-				if (!prefix.trim().equals("")) {
-					name = prefix.trim() + "/" + name;
-				} else if (prefix.trim().equals("") && 
+				if (!prefix.equals("")) {
+					name = prefix + "/" + name;
+				} else if (prefix.equals("") && 
 						!getAdminModule().testAccess(AdminOperation.manageFunction)) { 
 					//Not allowed to have a blank prefix; Force it to start with the user's name
 					name = user.getName() + "/" + name;
@@ -109,7 +143,9 @@ public class ConfigureController extends AbstractBinderController {
 			for (String urlName : deleteNames) {
 				SimpleName simpleName = getBinderModule().getSimpleName(urlName, SimpleName.TYPE_URL);
 				if (simpleName != null && simpleName.getBinderId().equals(binderId))
-					getBinderModule().deleteSimpleName(urlName, SimpleName.TYPE_URL);
+					if (getBinderModule().testAccess(binder,BinderOperation.manageSimpleName)) 
+						//Only delete the name if user has right to do so and if the url name is referencing this binder
+						getBinderModule().deleteSimpleName(urlName, SimpleName.TYPE_URL);
 			}
 		} else if (formData.containsKey("inheritanceBtn")) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
@@ -149,6 +185,8 @@ public class ConfigureController extends AbstractBinderController {
 				model.put(WebKeys.IS_SITE_ADMIN, true);
 			model.put(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, 
 					PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, ""));	
+			model.put(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, 
+					PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, ""));	
 
 		}
 		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);

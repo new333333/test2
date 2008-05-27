@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,7 +60,6 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -73,7 +71,6 @@ import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
-import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
@@ -94,22 +91,17 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
-import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchUtils;
-import com.sitescape.team.search.filter.SearchFilter;
-import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
@@ -166,16 +158,10 @@ public class BinderHelper {
 		}
 		
 		//Set up the standard beans
-		//These have been documented, so don't delete any
+		setupStandardBeans(bs, request, response, model);
+		
 		String displayType = getDisplayType(request);
         User user = RequestContextHolder.getRequestContext().getUser();
-		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
-		model.put(WebKeys.USER_PRINCIPAL, user);
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-		model.put(WebKeys.DISPLAY_TYPE, displayType);
-		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
-
 		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
 		model.put(WebKeys.PRODUCT_TITLE, SPropsUtil.getString("product.title", ObjectKeys.PRODUCT_TITLE_DEFAULT));
 		model.put(WebKeys.PRODUCT_NICKNAME, SPropsUtil.getString("product.nickname", ObjectKeys.PRODUCT_NICKNAME_DEFAULT));
@@ -300,6 +286,40 @@ public class BinderHelper {
 		}
 
 		return null;
+	}
+	
+	public static void setupStandardBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Map<String,Object> model) {
+		Long binderId = null;
+		setupStandardBeans(bs, request, response, model, binderId);
+		
+	}
+	public static void setupStandardBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Map<String,Object> model, Long binderId) {
+		//Set up the standard beans
+		//These have been documented, so don't delete any
+		String displayType = getDisplayType(request);
+        User user = RequestContextHolder.getRequestContext().getUser();
+		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+		model.put(WebKeys.USER_PRINCIPAL, user);
+ 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+		model.put(WebKeys.USER_PROPERTIES, userProperties);
+		model.put(WebKeys.DISPLAY_TYPE, displayType);
+		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
+		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+		if (binderId != null) {
+			model.put(WebKeys.BINDER_ID, binderId.toString());
+			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+		}
+		if (!namespace.equals("")) {
+			model.put(WebKeys.NAMESPACE, namespace);
+		} else {
+			model.put(WebKeys.NAMESPACE, response.getNamespace());
+		}
+		AdaptedPortletURL loginUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		loginUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN);
+		model.put(WebKeys.LOGIN_URL, loginUrl.toString());
 	}
 	
 	protected static ModelAndView setupSummaryPortlets(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
@@ -1847,7 +1867,7 @@ public class BinderHelper {
 
 			if (!users.isEmpty()) {
 				try {
-					Map status = bs.getAdminModule().sendMail(users, null, subject, 
+					bs.getAdminModule().sendMail(users, null, subject, 
 							new Description(messageBody, Description.FORMAT_HTML), 
 							entrySet, incAtt);
 				} catch (Exception e) {
@@ -2324,7 +2344,6 @@ public class BinderHelper {
 	
 	private static void preparePagination(Map model, Map results, Map options, Tabs.TabEntry tab) {
 		int totalRecordsFound = (Integer) results.get(ObjectKeys.SEARCH_COUNT_TOTAL);
-		int countReturned = (Integer) results.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
 		int pageInterval = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
 		if (options != null && options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) {
 			pageInterval = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);

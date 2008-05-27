@@ -168,17 +168,10 @@ public class ListFolderHelper {
 		
 		Map<String,Object> model = new HashMap<String,Object>();
 		String view = BinderHelper.getViewListingJsp(bs, null);;
+		
 		//Set up the standard beans
-		//These have been documented, so don't delete any
-		model.put(WebKeys.USER_PRINCIPAL, user);
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
-		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-
-		model.put(WebKeys.DISPLAY_TYPE, displayType);
-		model.put(WebKeys.BINDER_ID, binderId.toString());
-
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
+		
 		//See if the entry to be shown is also included
 		String entryIdToBeShown = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		if (entryIdToBeShown.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) entryIdToBeShown = "";
@@ -220,21 +213,16 @@ public class ListFolderHelper {
 	
 			request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 	
+			Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 				
-			//Set up the standard beans
+			//Set up more standard beans
 			//These have been documented, so don't delete any
-			model.put(WebKeys.USER_PRINCIPAL, user);
 			model.put(WebKeys.BINDER, binder);
 			model.put(WebKeys.FOLDER, binder);
 			model.put(WebKeys.DEFINITION_ENTRY, binder);
 			model.put(WebKeys.ENTRY, binder);
-	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-			model.put(WebKeys.USER_PROPERTIES, userProperties);
 			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-			model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
-	
-			model.put(WebKeys.DISPLAY_TYPE, displayType);
 	
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
