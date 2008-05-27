@@ -1000,6 +1000,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        	SessionFactory sf = getSessionFactory();
     	Session s = sf.openSession();
     	try {
+    		s.save(obj);
     		s.flush();
     	} finally {
     		s.close();
