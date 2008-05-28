@@ -36,47 +36,27 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.Cookie;
 import org.apache.commons.httpclient.Header;
-import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.HttpURL;
-import org.apache.commons.httpclient.URIException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.springframework.web.bind.RequestUtils;
 
 import com.sitescape.team.servlet.portal.PortalLoginController;
 import com.sitescape.team.servlet.portal.PortalLoginException;
-import com.sitescape.team.util.SPropsUtil;
-import com.sitescape.team.web.util.WebHelper;
 
 public class LiferayLoginController extends PortalLoginController {
 
-	private static final String PORTAL_LOGIN_FORCENEW_ALLOWED = "portal.login.forcenew.allowed";
 	private static final String SESSION_COOKIE_NAME = "JSESSIONID";
+	private static final String ID_COOKIE_NAME = "ID";
+	private static final String PASSWORD_COOKIE_NAME = "PASSWORD";
 	private static final String LOGIN_PATH = "/c/portal/login";
+	private static final String LOGOUT_PATH = "/c/portal/logout";
 	private static final String PASSWORD_PATTERN = "name=\".*_password";
 
 	@Override
-	protected Cookie[] logIntoPortal(HttpServletRequest request, HttpServletResponse response, String portalBaseUrl, String username, String password) throws Exception {
-		
-		boolean forceNew = RequestUtils.getBooleanParameter(request, "_forcenew", false);
+	protected Cookie[] logIntoPortal(HttpServletRequest request, HttpServletResponse response, HttpClient httpClient, String username, String password) throws Exception {
 
-		if(!(forceNew && SPropsUtil.getBoolean(PORTAL_LOGIN_FORCENEW_ALLOWED, false))) {
-			if(WebHelper.isUserLoggedIn(request) && username.equalsIgnoreCase(WebHelper.getRequiredUserName(request))) {
-				// This code is executing in the context of a session that belogs to a
-				// user with the same name as the specified username (case insensitively).
-				// This doesn't necessarily mean that the specified password is valid.
-				// But regardless, this code will not attempt to obtain a new session
-				// in this case. Set _forcenew parameter to true to force creation of 
-				// a new session.
-				logger.info("The user " + username + " is already logged in.");
-				return null;
-			}
-		}
-
-		HttpClient httpClient = getHttpClient(portalBaseUrl);
-		
 		GetMethod getMethod = new GetMethod(LOGIN_PATH);
 		String body = null;
 		int statusCode;
@@ -141,13 +121,68 @@ public class LiferayLoginController extends PortalLoginController {
 		
 		return httpClient.getState().getCookies();
 	}
+
+	@Override
+	protected Cookie[] logOutFromPortal(HttpServletRequest request, HttpServletResponse response, HttpClient httpClient) throws Exception {
+		GetMethod getMethod = new GetMethod(LOGOUT_PATH);
+		// There really is no simple way for us to find out whether the previous
+		// logoff indeed invalidated an active session for the user or not (for
+		// example, think about the situation where the user session has already
+		// expired or didn't even exist prior to the attempt to log off).
+		// But the only thing that really matters is the post-condition, that is,
+		// the state in which the user is NOT logged in (possibly except as a guest).
+		// It appears that the HTTP 200 status value is a good indication that
+		// this post-condition is met. However, even when we receive different
+		// status code, there really isn't anything we can do about it. 
+		// Throwing an exception during log-off brings more problem than solution.
+		// So, in this particular scenario, we will simply ignore the status code
+		// from the portal and return normally. This means that the cookies from
+		// the portal, if any, will be copied upstream.
+		try {
+			httpClient.executeMethod(getMethod);
+		}
+		finally {
+			getMethod.releaseConnection();
+		}	
+		
+		// Before returning a list of cookies to copy, we need to first destroy
+		// a couple of cookies that came from the client. This is because, copying
+		// cookies can account only for new and modified cookies, but not deleted
+		// ones. One minor problem is that, we don't really know here which cookies
+		// have been destroyed as the result of logging off from the portal 
+		// (that is, those deleted cookies don't exist by the time this line of
+		// code gets executed). Instead of trying to figure it out by comparing
+		// pre and post states, we will simply use our knowledge of which cookies
+		// Liferay destroys when user logs out of the system: They are ID and 
+		// PASSWORD cookies (at least in the version of Liferay we're currently using).
+		javax.servlet.http.Cookie[] cookies = request.getCookies();
+		if(cookies != null) {
+			javax.servlet.http.Cookie cookie;
+			for(int i = 0; i < cookies.length; i++) {
+				cookie = cookies[i];
+				if(cookie.getName().equalsIgnoreCase(ID_COOKIE_NAME) ||
+						cookie.getName().equalsIgnoreCase(PASSWORD_COOKIE_NAME)) {
+					cookie.setValue("");
+					cookie.setMaxAge(0);
+					cookie.setPath(getCookiePath());
+					response.addCookie(cookie);
+				}
+			}
+		}
+		
+		return httpClient.getState().getCookies();
+	}
+
+	protected String getCookiePath() {
+		return "/";
+	}
 	
 	/*
 	private String getSessionID(HttpClient httpClient) {
 		Cookie[] cookies = httpClient.getState().getCookies();
 		if(cookies == null) return null;
 		for(int i = 0; i < cookies.length; i++) {
-			if(cookies[i].getName().equals(SESSION_COOKIE_NAME))
+			if(cookies[i].getName().equalsIgnoreCase(SESSION_COOKIE_NAME))
 				return cookies[i].getValue();
 		}
 		return null;
@@ -157,20 +192,12 @@ public class LiferayLoginController extends PortalLoginController {
 		javax.servlet.http.Cookie[] cookies = request.getCookies();
 		if(cookies == null) return null;
 		for(int i = 0; i < cookies.length; i++) {
-			if(cookies[i].getName().equals(SESSION_COOKIE_NAME))
+			if(cookies[i].getName().equalsIgnoreCase(SESSION_COOKIE_NAME))
 				return cookies[i].getValue();
 		}
 		return null;
 	}
 	*/
-	
-	private HttpClient getHttpClient(String portalBaseUrl) throws URIException {
-		HttpURL hrl = new HttpURL(portalBaseUrl);
-		HttpClient httpClient = new HttpClient();
-		HostConfiguration hostConfig = httpClient.getHostConfiguration();
-		hostConfig.setHost(hrl);
-		return httpClient;
-	}
 	
 	private String getPasswordFieldName(String body) {
 		String passwordFieldName = null;
