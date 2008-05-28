@@ -87,6 +87,7 @@ import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
@@ -195,6 +196,15 @@ public class ListFolderHelper {
 			try {
 				binder = bs.getBinderModule().getBinder(binderId);
 			} catch(NoBinderByTheIdException e) {
+			} catch(AccessControlException e) {
+				if (WebHelper.isUserLoggedIn(request) && 
+						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					//Access is not allowed
+					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+				} else {
+					//Please log in
+					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
+				}
 			}
 			if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 				String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
