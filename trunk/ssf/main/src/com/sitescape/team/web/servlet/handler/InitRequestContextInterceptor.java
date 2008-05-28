@@ -51,7 +51,9 @@ public class InitRequestContextInterceptor extends HandlerInterceptorAdapter {
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, 
 			Object handler) throws Exception {
 	    
-		if(!WebHelper.isUserLoggedIn(request))
+		if(WebHelper.isUnauthenticatedRequest(request))
+			return true;
+		else if(!WebHelper.isUserLoggedIn(request))
 			throw new UnauthenticatedAccessException();
 				
 		RequestContext rc = RequestContextUtil.setThreadContext(request, new HttpSessionContext(request.getSession(false)));

@@ -57,9 +57,10 @@ public class LoginFilter  implements Filter {
 		}
 		else {
 			// User is not logged in.
+			String path = req.getPathInfo();
 			String actionValue = request.getParameter("action");
-			if(actionValue != null && (actionValue.startsWith("__") || 
-					actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK))) {
+			if((path != null && (path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || path.equals("/"+WebKeys.SERVLET_PORTAL_LOGOUT))) || 
+					(actionValue != null && (actionValue.startsWith("__") || actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK)))) {
 				// The action value indicates that the framework should allow
 				// execution of the controller corresponding to the action value
 				// even when the user is not authenticated (or previous 
