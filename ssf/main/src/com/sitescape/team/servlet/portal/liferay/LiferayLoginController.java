@@ -57,6 +57,8 @@ public class LiferayLoginController extends PortalLoginController {
 	@Override
 	protected Cookie[] logIntoPortal(HttpServletRequest request, HttpServletResponse response, HttpClient httpClient, String username, String password) throws Exception {
 
+		String remember = RequestUtils.getStringParameter(request, "remember", "false");
+
 		GetMethod getMethod = new GetMethod(LOGIN_PATH);
 		String body = null;
 		int statusCode;
@@ -84,7 +86,7 @@ public class LiferayLoginController extends PortalLoginController {
 		try {
 			postMethod.addParameter("cmd", "already-registered");
 			//postMethod.addParameter("tabs1", "already-registered");
-			postMethod.addParameter("rememberMe", "false");
+			postMethod.addParameter("rememberMe", remember);
 			postMethod.addParameter("login", username);
 			postMethod.addParameter(passwordFieldName, password);
 			
@@ -132,43 +134,17 @@ public class LiferayLoginController extends PortalLoginController {
 		// But the only thing that really matters is the post-condition, that is,
 		// the state in which the user is NOT logged in (possibly except as a guest).
 		// It appears that the HTTP 200 status value is a good indication that
-		// this post-condition is met. However, even when we receive different
-		// status code, there really isn't anything we can do about it. 
-		// Throwing an exception during log-off brings more problem than solution.
-		// So, in this particular scenario, we will simply ignore the status code
-		// from the portal and return normally. This means that the cookies from
-		// the portal, if any, will be copied upstream.
+		// this post-condition is met. 
 		try {
-			httpClient.executeMethod(getMethod);
+			int statusCode = httpClient.executeMethod(getMethod);
+			if(statusCode != HttpStatus.SC_OK) {
+				logger.warn("Failed to log out of portal - " + getMethod.getStatusLine().toString());
+				throw new PortalLoginException();
+			}
 		}
 		finally {
 			getMethod.releaseConnection();
 		}	
-		
-		// Before returning a list of cookies to copy, we need to first destroy
-		// a couple of cookies that came from the client. This is because, copying
-		// cookies can account only for new and modified cookies, but not deleted
-		// ones. One minor problem is that, we don't really know here which cookies
-		// have been destroyed as the result of logging off from the portal 
-		// (that is, those deleted cookies don't exist by the time this line of
-		// code gets executed). Instead of trying to figure it out by comparing
-		// pre and post states, we will simply use our knowledge of which cookies
-		// Liferay destroys when user logs out of the system: They are ID and 
-		// PASSWORD cookies (at least in the version of Liferay we're currently using).
-		javax.servlet.http.Cookie[] cookies = request.getCookies();
-		if(cookies != null) {
-			javax.servlet.http.Cookie cookie;
-			for(int i = 0; i < cookies.length; i++) {
-				cookie = cookies[i];
-				if(cookie.getName().equalsIgnoreCase(ID_COOKIE_NAME) ||
-						cookie.getName().equalsIgnoreCase(PASSWORD_COOKIE_NAME)) {
-					cookie.setValue("");
-					cookie.setMaxAge(0);
-					cookie.setPath(getCookiePath());
-					response.addCookie(cookie);
-				}
-			}
-		}
 		
 		return httpClient.getState().getCookies();
 	}

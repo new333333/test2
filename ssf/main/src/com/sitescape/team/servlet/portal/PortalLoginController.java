@@ -41,6 +41,7 @@ import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
 import com.sitescape.team.web.util.WebHelper;
 
@@ -58,7 +59,7 @@ public abstract class PortalLoginController extends SAbstractController {
 		
 		org.apache.commons.httpclient.Cookie[] portalCookies = null;
 		
-		if("/portalLogin".equalsIgnoreCase(request.getPathInfo())) { // login request
+		if(("/" + WebKeys.SERVLET_PORTAL_LOGIN).equalsIgnoreCase(request.getPathInfo())) { // login request
 			if(!isLoginAllowed(request)) {
 				// Portal login is not allowed. Return silently, rather than throwing an exception.
 				return null;
@@ -83,32 +84,43 @@ public abstract class PortalLoginController extends SAbstractController {
 			
 			HttpClient httpClient = getPortalHttpClient(request);
 			if(clientCookies != null)
-				copyCookies(clientCookies, httpClient);
+				copyClientCookies(clientCookies, httpClient);
 			
 			portalCookies = logIntoPortal(request, response, httpClient, username, password);
 		}
 		else { // logout request
 			HttpClient httpClient = getPortalHttpClient(request);
 			if(clientCookies != null)
-				copyCookies(clientCookies, httpClient);
+				copyClientCookies(clientCookies, httpClient);
 			
 			portalCookies = logOutFromPortal(request, response, httpClient);
 		}
 		
-		if(portalCookies != null)
-			copyCookies(portalCookies, response);
+		copyPortalCookies(clientCookies, portalCookies, response);
 		
 		return null;
 	}
 	
-	protected void copyCookies(javax.servlet.http.Cookie[] cookies, HttpClient httpClient) {
+	protected void copyClientCookies(javax.servlet.http.Cookie[] cookies, HttpClient httpClient) {
 		javax.servlet.http.Cookie sourceCookie;
 		org.apache.commons.httpclient.Cookie targetCookie;
 		for(int i = 0; i < cookies.length; i++) {
 			sourceCookie = cookies[i];
-			// Do NOT copy the domain information. Instead, use localhost as the domain.
-			targetCookie = new org.apache.commons.httpclient.Cookie("localhost", sourceCookie.getName(), sourceCookie.getValue());
-			targetCookie.setComment(sourceCookie.getComment());
+			// Usually when the client sends cookies back to the server, they only send
+			// the name and the value pairs. All other information associated with the 
+			// cookies (eg. expiration date, domain, path, etc.) are retained and used
+			// only by the client. We need to take it into account as we make copies
+			// of those cookies here. 
+			
+			// Apache HttpClient requires domain name to be set even for inbound cookies.
+			String domain = sourceCookie.getDomain();
+			if(domain == null)
+				domain = "localhost";
+			targetCookie = new org.apache.commons.httpclient.Cookie(domain, sourceCookie.getName(), sourceCookie.getValue());
+
+			// This is our internal mark that this particular cookie was copied from a client cookie.
+			targetCookie.setComment("_client");
+
 			int maxAge = sourceCookie.getMaxAge();
 			if(maxAge < 0) {
 				targetCookie.setExpiryDate(null);
@@ -116,13 +128,15 @@ public abstract class PortalLoginController extends SAbstractController {
 			else {
 				targetCookie.setExpiryDate(new Date(System.currentTimeMillis() + maxAge*1000L));
 			}
-			targetCookie.setComment("_client");
+			
 			String path = sourceCookie.getPath();
 			if(path == null)
 				path = getCookiePath();
 			targetCookie.setPath(path);
-			targetCookie.setSecure(sourceCookie.getSecure());
-			targetCookie.setVersion(sourceCookie.getVersion());
+			
+			//targetCookie.setSecure(sourceCookie.getSecure());
+			//targetCookie.setVersion(sourceCookie.getVersion());
+			
 			httpClient.getState().addCookie(targetCookie);				
 		}
 	}
@@ -183,36 +197,75 @@ public abstract class PortalLoginController extends SAbstractController {
 		return scheme + "://" + host + ":" + port;
 	}
 	
-	protected void copyCookies(org.apache.commons.httpclient.Cookie[] cookies, HttpServletResponse response) {
-		org.apache.commons.httpclient.Cookie sourceCookie;
+	protected void copyPortalCookies(javax.servlet.http.Cookie[] clientCookies, 
+			org.apache.commons.httpclient.Cookie[] portalCookies, 
+			HttpServletResponse response) {
+		org.apache.commons.httpclient.Cookie portalCookie;
 		javax.servlet.http.Cookie targetCookie;
 		
-		for(int i = 0; i < cookies.length; i++) {
-			sourceCookie = cookies[i];
-			if(sourceCookie.getComment() != null && sourceCookie.getComment().equals("_client")) {
-				// This cookie is a copy of the client cookie passed through to the portal.
-				// We should not copy it back. Skip it.
-				continue;
+		// Step 1: Copy portal cookies into the response. This accounts for both
+		// newly added and modified cookies.
+		if(portalCookies != null) {
+			for(int i = 0; i < portalCookies.length; i++) {
+				portalCookie = portalCookies[i];
+				
+				if(portalCookie.getComment() != null && portalCookie.getComment().equals("_client")) {
+					// What this means is that, this particular cookie was sent by the client
+					// to the portal AND the portal did not modify it. Therefore we must not
+					// include this cookie in the response (ie, leave it as is on the client side).
+					continue;
+				}
+				
+				targetCookie = new javax.servlet.http.Cookie(portalCookie.getName(), portalCookie.getValue());
+				
+				// Copy everything from the portal cookie to the target cookie, EXCEPT
+				// for the domain information.
+				
+				targetCookie.setComment(portalCookie.getComment());
+				
+				// Due to the lack of method on javax.servlet.http.Cookie that takes
+				// absolute expiry date, we lose some precision while translating the
+				// cookie expiration attribute between the source and target cookies.
+				// But that discrepency should be no more than a few seconds.
+				int maxAge = -1;
+				if(portalCookie.getExpiryDate() != null) {
+					maxAge = (int) ((portalCookie.getExpiryDate().getTime() - System.currentTimeMillis()) / 1000L);
+					if(maxAge < 0)
+						maxAge = 0;
+				}
+				targetCookie.setMaxAge(maxAge);
+				
+				targetCookie.setPath(portalCookie.getPath());
+				
+				targetCookie.setSecure(portalCookie.getSecure());
+				
+				targetCookie.setVersion(portalCookie.getVersion());
+				
+				response.addCookie(targetCookie);				
 			}
-			targetCookie = new javax.servlet.http.Cookie(sourceCookie.getName(), sourceCookie.getValue());
-			// Copy the information from the source cookie to the target cookie.
-			// Do NOT ever copy the domain information. 
-			targetCookie.setComment(sourceCookie.getComment());
-			// Due to the lack of method on javax.servlet.http.Cookie that takes
-			// absolute expiry date, we lose some precision while translating the
-			// cookie expiration attribute between the source and target cookies.
-			// But that discrepency should be no more than a few seconds.
-			int maxAge = -1;
-			if(sourceCookie.getExpiryDate() != null) {
-				maxAge = (int) ((sourceCookie.getExpiryDate().getTime() - System.currentTimeMillis()) / 1000L);
-				if(maxAge < 0)
-					maxAge = 0;
+		}
+		
+		// Step 2: For each client cookie, check if it still exists in the list of portal
+		// cookies. If not, it means that the particular cookie was destroyed as result
+		// of the interaction with the portal, and we need to reflect that in the response.
+		if(clientCookies != null) {
+			javax.servlet.http.Cookie clientCookie;
+			outer:
+			for(int i = 0; i < clientCookies.length; i++) {
+				clientCookie = clientCookies[i];
+				// check if the client cookie is still found in the portal cookies.
+				if(portalCookies != null) {
+					for(int j = 0; j < portalCookies.length; j++) {
+						if(clientCookie.getName().equalsIgnoreCase(portalCookies[j].getName()))
+							continue outer; // found it
+					}
+				}
+				// no match
+				targetCookie = new javax.servlet.http.Cookie(clientCookie.getName(), "");
+				targetCookie.setMaxAge(0);
+				targetCookie.setPath(getCookiePath());
+				response.addCookie(targetCookie);
 			}
-			targetCookie.setMaxAge(maxAge);
-			targetCookie.setPath(sourceCookie.getPath());
-			targetCookie.setSecure(sourceCookie.getSecure());
-			targetCookie.setVersion(sourceCookie.getVersion());
-			response.addCookie(targetCookie);				
 		}
 	}
 }
