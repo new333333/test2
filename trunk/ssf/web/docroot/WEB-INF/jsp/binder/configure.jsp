@@ -363,7 +363,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     </c:if>
     <input type="submit" class="ss_submit" name="deleteUrlBtn" 
       value="<ssf:nlt tag="simpleUrl.deleteSelectedUrls"/>"
-      onClick="if(confirm('<ssf:escapeJavaScript><ssf:nlt tag="simpleUrl.confirmDeleteUrl"/></ssf:escapeJavaScript>'){return true}else{return false};"
+      onClick="if(confirm('<ssf:escapeJavaScript><ssf:nlt tag="simpleUrl.confirmDeleteUrl"/></ssf:escapeJavaScript>')){return true}else{return false};"
     />
     <br/>
     <br/>
