@@ -34,5 +34,6 @@
 <div class="ss_entryContent">
  <span><ssf:markup type="view" entity="${ssDefinitionEntry}"><c:out 
    value="${ssDefinitionEntry.description.text}" escapeXml="false"/></ssf:markup></span>
+   <br/>
 </div>
 </c:if>
