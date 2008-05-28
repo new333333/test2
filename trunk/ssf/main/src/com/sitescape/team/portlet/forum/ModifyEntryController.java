@@ -61,6 +61,7 @@ import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.util.Validator;
 
 /**
  * @author Peter Hurley
@@ -102,7 +103,7 @@ public class ModifyEntryController extends SAbstractController {
 			setupViewEntry(response, folderId, entryId);
 			
 		} else if (formData.containsKey("okBtn")) {
-			if (op.equals("")) {
+			if (Validator.isNull(op)) {
 
 				//See if the add entry form was submitted
 				//The form was submitted. Go process it
@@ -162,10 +163,9 @@ public class ModifyEntryController extends SAbstractController {
 					PortletSession portletSession = WebHelper.getRequiredPortletSession(request);
 					portletSession.setAttribute(ObjectKeys.SESSION_SAVE_LOCATION_ID, destinationId);
 					getFolderModule().copyEntry(folderId, entryId, destinationId, null);
-					setupViewFolder(response, folderId);		
-				} else {
-					setupViewEntry(response, folderId, entryId);
-				}
+				} 
+				setupViewEntry(response, folderId, entryId);
+				
 			}
 			
 		} else if (formData.containsKey("editElementBtn")) {
@@ -174,8 +174,12 @@ public class ModifyEntryController extends SAbstractController {
 			setupReloadOpener(response, folderId, entryId);
 
 		} else if (formData.containsKey("cancelBtn")) {
-			//The user clicked the cancel button
-			setupReloadOpener(response, folderId, entryId);
+			//	The user clicked the cancel button
+			if (Validator.isNull(op)) {
+				setupReloadOpener(response, folderId, entryId);
+			} else {
+				setupViewEntry(response, folderId, entryId);
+			}
 		
 		} else {
 			response.setRenderParameters(formData);		
