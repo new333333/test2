@@ -4739,6 +4739,12 @@ table.ssMeetingRecords .ssHeader {
 	border:1px solid white;
 	background: white;
 }
+.ss_pseudoPortalUpperRightToolbar {
+    position:relative;
+    top:-20px;		/* Slide this up into the ss_pseudoPortal margin specified above */
+    display:none;
+    visibility:hidden;
+}
 
 ul.placesForm, ul.placesForm li {
 	margin: 0;

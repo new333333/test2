@@ -320,6 +320,9 @@ public class BinderHelper {
 		AdaptedPortletURL loginUrl = new AdaptedPortletURL(request, "ss_forum", true);
 		loginUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN);
 		model.put(WebKeys.LOGIN_URL, loginUrl.toString());
+		AdaptedPortletURL logoutUrl = new AdaptedPortletURL(request, "ss_forum", true);
+		logoutUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGOUT);
+		model.put(WebKeys.LOGOUT_URL, logoutUrl.toString());
 	}
 	
 	protected static ModelAndView setupSummaryPortlets(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
