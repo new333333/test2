@@ -112,12 +112,12 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
  border-left: #CCCCCC 1px solid;
  border-right: #CCCCCC 1px solid;
  border-bottom: #CCCCCC 1px solid;
- " width="100%"
+ " width="98%"
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
 <div id="col0" class="ss_style ss_sliding_table_column0">
 <table cellspacing="0" cellpadding="2">
- <tr>
+ <tr class="ss_sliding">
   <td >&nbsp;</td>
  </tr>
 </table>

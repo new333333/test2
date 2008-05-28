@@ -78,6 +78,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 </div>
 
 <div align="left" class="ssPageNavi">
+<% // filter toolbar %>
  <table border="0" cellspacing="0px" cellpadding="0px">
   <tr>
 	<td><%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %></td>   
@@ -191,6 +192,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
 		</c:if>
 	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'false' }">
+	    
 			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
@@ -370,6 +372,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 		if (!srFileID.contains(",")) oneFile = true;
 	}
 %>
+<c:set var="seenStyleburst" value="<%= seenStyle %>"/>
 <c:set var="hasFile2" value="<%= hasFile %>"/>
 <c:set var="oneFile2" value="<%= oneFile %>"/>
 <ssf:slidingTableRow id="${folderLineId}" oddStyle="ss_table_tr_odd" evenStyle="ss_table_tr_even">
@@ -394,21 +397,30 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
   
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
-    <a href="<ssf:url     
+  	<a class="ss_new_thread" href="<ssf:url     
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
     binderId="${ssFolder.id}" 
     action="view_folder_entry" 
     entryId="${entry1._docId}" actionUrl="true" />" 
-<c:if test="${slidingTableStyle != 'fixed'}">
-    onClick="ss_loadEntry(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
-</c:if>
-<c:if test="${slidingTableStyle == 'fixed'}">
-    onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
-</c:if>
-    ><span <%= seenStyle %>><c:if test="${empty entry1.title}" >
---<ssf:nlt tag="entry.noTitle" />--
-</c:if><c:out value="${entry1.title}"/></span></a>
+    
+	<c:if test="${slidingTableStyle != 'fixed'}">
+    	onClick="ss_loadEntry(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+	</c:if>
+	
+	<c:if test="${slidingTableStyle == 'fixed'}">
+    	onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+	</c:if>
+    >
+    <span <%= seenStyle %>>
+    
+    <c:if test="${empty entry1.title}" >
+	--<ssf:nlt tag="entry.noTitle" />--
+	</c:if>
+	<c:if test="${!empty seenStyleburst}"> 
+  		<img src="<html:rootPath/>images/pics/1pix.gif" align="absmiddle" <ssf:alt tag="alt.new"/> />
+  	</c:if>
+  	<c:out value="${entry1.title}"/></span></a>
   </ssf:slidingTableColumn>
  </c:if>
   

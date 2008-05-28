@@ -3685,10 +3685,11 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	var iframeCol = document.createElement("td");
 	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
-	iframeCol.innerHTML = '<div style="width:'+(ss_getObjectWidth(tableDivObj)-4)+'px;">' +
+	//Draw Iframe for discussion thread
+	iframeCol.innerHTML = '<div style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
 		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
     	' src="'+obj.href+'"' +
-    	' style="width:'+(ss_getObjectWidth(tableDivObj)-8)+'px; margin:0px; padding:0px;" frameBorder="0"' +
+    	' style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:0px; padding:0px;" frameBorder="1"' +
     	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\')"' +
     	'>xxx</iframe>' +
     	'</div>';
