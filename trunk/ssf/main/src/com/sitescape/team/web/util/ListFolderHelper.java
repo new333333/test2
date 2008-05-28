@@ -1686,16 +1686,39 @@ public class ListFolderHelper {
 				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
 			
 			
-			qualifiers = new HashMap();
-			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
-				qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "', '" + response.getNamespace() + "', '" + 
-						NLT.get("calendar.import.window.title") + "', '" + NLT.get("calendar.import.window.legend") + "', '" + NLT.get("calendar.import.window.upload") + "');return false;");
-				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.calendarImport"), "#", qualifiers);
-			} else {
-				qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "', '" + response.getNamespace() + "', '" + 
-						NLT.get("task.import.window.title") + "', '" + NLT.get("task.import.window.legend") + "', '" + NLT.get("task.import.window.upload") + "');return false;");
-				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.taskImport"), "#", qualifiers);
+			String titleFromFile = NLT.get("calendar.import.window.title.fromFile");
+			String titleByURL = NLT.get("calendar.import.window.title.byURL");
+			String legendFromFile = NLT.get("calendar.import.window.legend.fromFile");
+			String legendByURL = NLT.get("calendar.import.window.legend.byURL");
+			String btnFromFile = NLT.get("calendar.import.window.upload.fromFile");
+			String btnByURL = NLT.get("calendar.import.window.upload.byURL");
+			String optionTitle = NLT.get("toolbar.menu.calendarImport");
+			String importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
+			String importByURL = NLT.get("toolbar.menu.calendarImport.byURL");
+			if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
+				titleFromFile = NLT.get("task.import.window.title.fromFile");
+				titleByURL = NLT.get("task.import.window.title.byURL");
+				legendFromFile = NLT.get("task.import.window.legend.fromFile");
+				legendByURL = NLT.get("task.import.window.legend.byURL");
+				btnFromFile = NLT.get("task.import.window.upload.fromFile");
+				btnByURL = NLT.get("task.import.window.upload.byURL");
+				optionTitle = NLT.get("toolbar.menu.taskImport");
+				importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
+				importByURL = NLT.get("toolbar.menu.taskImport.byURL");				
 			}
+			
+			
+			entryToolbar.addToolbarMenu("5_calendar", optionTitle);	
+			
+			Map qualifiersByFile = new HashMap();
+			qualifiersByFile.put("onClick", "ss_calendar_import.importFormFromFile({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
+					titleFromFile + "', legend: '" + legendFromFile + "', btn: '" + btnFromFile + "'});return false;");
+			entryToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
+			
+			Map qualifiersByURL = new HashMap();
+			qualifiersByURL.put("onClick", "ss_calendar_import.importFormByURL({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
+					titleByURL + "', legend: '" + legendByURL + "', btn: '" + btnByURL + "'});return false;");
+			entryToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
 		}
 		
 		//Build the "Manage dashboard" toolbar

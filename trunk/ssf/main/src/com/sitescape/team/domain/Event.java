@@ -83,6 +83,8 @@ import org.joda.time.DateTime;
 import org.joda.time.YearMonthDay;
 
 import com.sitescape.team.calendar.TimeZoneHelper;
+import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.util.cal.CalendarUtil;
@@ -3246,28 +3248,96 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			setTimeZone(null);
 		}
 	}
-
+	
 	/**
-	 * Call it first when id is set.
+	 * Uid format: [binderId]-[entryId]-[eventId]
+	 * 
+	 * @author nowicki
 	 */
-	public String buildUid(DefinableEntity entry) {
-		StringBuilder sb = new StringBuilder();
-		if (entry != null && entry.getParentBinder() != null && entry.getParentBinder().getId() != null) {
-			sb.append(entry.getParentBinder().getId().toString());
+	public class UidBuilder {
+		
+		Long binderId;
+		
+		Long entryId;
+		
+		String eventId;
+		
+		public UidBuilder(DefinableEntity entry) {
+			if (entry != null && entry.getParentBinder() != null && entry.getParentBinder().getId() != null) {
+				this.binderId = entry.getParentBinder().getId();
+			}
+			if (entry != null && entry.getId() != null) {
+				this.entryId = entry.getId();
+			}
+			if (getId() != null) {
+				this.eventId = getId();
+			}
 		}
-		if (entry != null && entry.getId() != null) {
-			sb.append("-");
-			sb.append(entry.getId().toString());
+
+		/**
+		 * Parse uid.
+		 * 
+		 * @param uid
+		 */
+		public UidBuilder(String uid) {
+			if (uid == null) {
+				return;
+			}
+			try {
+				String tUid = uid.replaceAll("[^-]", "");
+				if (tUid.length() == 2) {
+					this.binderId = Long.parseLong(uid.substring(0, uid.indexOf("-")));
+					this.entryId = Long.parseLong(uid.substring(uid.indexOf("-") + 1, uid.lastIndexOf("-")));
+					this.eventId = uid.substring(uid.lastIndexOf("-") + 1);
+				}
+			} catch (NumberFormatException e) {
+				// it's not intern generated uid, skip parsing
+				this.binderId = null;
+				this.entryId = null;
+				this.eventId = null;
+			}
 		}
-		if (this.getId() != null) {
-			sb.append("-");
-			sb.append(this.getId());
+		
+		public String toString() {
+			StringBuilder sb = new StringBuilder();
+			if (binderId != null) {
+				sb.append(binderId.toString());
+				sb.append("-");
+			}
+			if (entryId != null) {
+				sb.append(entryId.toString());
+				sb.append("-");
+			}
+			if (eventId != null) {
+				sb.append(eventId);
+			}
+			return sb.toString();
 		}
-		return sb.toString();
+
+		public Long getBinderId() {
+			return binderId;
+		}
+
+		public Long getEntryId() {
+			return entryId;
+		}
+
+		public String getEventId() {
+			return eventId;
+		}
+		
 	}
 
 	/**
-	 * Call it first when id is set. Does nothing if id is already set. 
+	 * Call it first when event id is set (event id is the part of uid).
+	 */
+	public String buildUid(DefinableEntity entry) {
+		UidBuilder uidBuilder = new UidBuilder(entry);
+		return uidBuilder.toString();
+	}
+
+	/**
+	 * Call it first when event id is set (event id is the part of uid). Does nothing if uid is already set. 
 	 */
 	public String generateUid(DefinableEntity entry) {
 		if (this.uid == null) {
@@ -3275,5 +3345,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		}
 		return this.uid;
 	}	
+	
+	public UidBuilder parseUid() {
+		return new UidBuilder(this.uid);
+	}
 
 }

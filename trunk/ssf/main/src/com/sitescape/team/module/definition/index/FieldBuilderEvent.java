@@ -68,9 +68,6 @@ public class FieldBuilderEvent extends AbstractFieldBuilder {
 			fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_ID), event.getTimeZone().getID(), Field.Store.YES, Field.Index.UN_TOKENIZED));
 		}
 		fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_TIME_ZONE_SENSITIVE), Boolean.toString(event.isTimeZoneSensitive()), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		if (event.getUid() != null) {
-			fields.add(new Field(makeFieldName(dataElemName, Constants.EVENT_FIELD_UID), event.getUid(), Field.Store.YES, Field.Index.UN_TOKENIZED));
-		}
 		Field[] realFields = new Field[fields.size()];
 		realFields = (Field[]) fields.toArray(realFields);
 		return realFields;

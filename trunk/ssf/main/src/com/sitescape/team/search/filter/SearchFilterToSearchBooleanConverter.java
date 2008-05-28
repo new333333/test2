@@ -158,9 +158,7 @@ public class SearchFilterToSearchBooleanConverter {
 		    			lang = checkLanguage(filterTerm.getText(),parent, lang);
 		    			addPersonalTagField(block, filterTerm.getText());
 		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
-		    			addEventField(block, filterTerm);    	
-		    		} else if (filterType.equals(SearchFilterKeys.FilterTypeEventUid)) {
-		    			addEventUidField(block, filterTerm); 		    			
+		    			addEventField(block, filterTerm);    			    			
 			    	} else if (filterType.equals(SearchFilterKeys.FilterTypeDate)) {
 			    		String fieldName = filterTerm.attributeValue(SearchFilterKeys.FilterElementName, "");
 			    		if (fieldName.equalsIgnoreCase(Constants.CREATION_DAY_FIELD) || fieldName.equalsIgnoreCase(Constants.MODIFICATION_DAY_FIELD)) 
@@ -327,21 +325,6 @@ public class SearchFilterToSearchBooleanConverter {
 				Element finish = range.addElement(Constants.RANGE_FINISH);
 				finish.addText(formatEndDate(eventDate, DateTools.Resolution.MINUTE));				
 			}
-		}
-	}
-	
-	private static void addEventUidField(Element block, Element filterTerm) {
-		String eventUid = filterTerm.attributeValue(SearchFilterKeys.FilterEventUid, "");
-		
-		Element field;
-		Element child;
-		Element andField = block;
-		if (!eventUid.equals("")) {
-			andField = block.addElement(Constants.AND_ELEMENT);
-			field = andField.addElement(Constants.FIELD_ELEMENT);
-			field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.EVENT_UIDS_FIELD);
-	    	child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-	    	child.setText(eventUid);
 		}
 	}
 	

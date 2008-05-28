@@ -102,7 +102,6 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.Principal;
-import com.sitescape.team.domain.ReservedByAnotherUserException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.file.WriteFilesException;
@@ -451,7 +450,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			
 			private void addOrModifyEntry(Event event, MapInputData inputData) {
 				try {
-					Event eventToUpdate = findEventByUid(folder.getId(), event.getUid());
+					Event eventToUpdate = findEventByUid(folder.getId(), event);
 					if (eventToUpdate != null && eventToUpdate.getOwner() != null &&
 							eventToUpdate.getOwner().getEntity() != null) {
 						DefinableEntity entity = eventToUpdate.getOwner().getEntity();
@@ -473,11 +472,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		return attendedEntries;
 	}
 	
-	protected Event findEventByUid(Long folderId, String uid) {
-		if (uid == null) {
+	protected Event findEventByUid(Long folderId, Event event) {
+		if (event == null || event.getUid() == null) {
 			return null;
 		}
-		FilterControls fc = new FilterControls("uid", uid);
+		FilterControls fc = new FilterControls("uid", event.getUid());
 		fc.add("owner.owningBinderId", folderId);
 		List events = getCoreDao().loadObjects(Event.class, fc, RequestContextHolder.getRequestContext().getZoneId());
 		if (events.size() > 0) {
@@ -486,24 +485,25 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 		
 		// check if this is update of v1.0 event (uid is not stored)
 		// find event by folder id and event id
-		String tUid = uid.replaceAll("[^-]", "");
-		if (tUid.length() == 2) {
-			String uidFolderId = uid.substring(0, uid.indexOf("-"));
-			if (uidFolderId.equals(folderId.toString())) {
-				try {
-					String eventId = uid.substring(uid.lastIndexOf("-") + 1);
-					
-					fc = new FilterControls("id", eventId);
-					fc.add("owner.owningBinderId", Long.parseLong(uidFolderId));
-					events = getCoreDao().loadObjects(Event.class, fc, RequestContextHolder.getRequestContext().getZoneId());
-					if (events.size() > 0) {
-						return (Event)events.iterator().next();
-					}
-				} catch (NumberFormatException e) {
-					// folder id is not Long, ignore it because it's not right intern generated event id
-				}
-			}
+		Event.UidBuilder uidBuilder = event.parseUid();
+		if (uidBuilder.getBinderId() == null || 
+				uidBuilder.getEntryId() == null || 
+				uidBuilder.getEventId() == null) {
+			// uid is not intern uid
+			return null;
 		}
+		if (!uidBuilder.getBinderId().equals(folderId)) {
+			// wrong folder
+			return null;
+		}
+		
+		fc = new FilterControls("id", uidBuilder.getEventId());
+		fc.add("owner.owningBinderId", uidBuilder.getBinderId());
+		events = getCoreDao().loadObjects(Event.class, fc, RequestContextHolder.getRequestContext().getZoneId());
+		if (events.size() > 0) {
+			return (Event)events.iterator().next();
+		}
+		
 		return null;
 	}
 
