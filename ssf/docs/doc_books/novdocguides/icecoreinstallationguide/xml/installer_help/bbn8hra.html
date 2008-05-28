@@ -7,9 +7,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="Content-Language" content="en" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Monday, May 05, 2008 19:00" />
+<meta name="Generation-Date" content="Wednesday, May 28, 2008 16:11" />
 <meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
-<meta name="Copyright" content="Copyright Novell, Inc. 2006" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2008" />
 
 <style type="text/css">
   @import url(ui/styles.css);
@@ -133,6 +133,18 @@ iptables -t nat -A PREROUTING -d yourHostname -p tcp --dport 443 -j REDIRECT --t
 <p class="para">Liferay/Novell Teaming contains support for single sign-on (SSO) based on iChain®. When Novell Teaming is running in this mode, the iChain server performs user authentication tasks and passes a token representing the authenticated user’s login name to Liferay/Novell Teaming in each request to indicate who made the request. </p>
 <p class="para">You must configure Liferay/Novell Teaming with the same LDAP that iChain is using so that it can obtain and copy the user information into the portal. However, this configuration differs from the regular portal/LDAP integration in that no password checking is performed against LDAP when logging into the portal (because credential checking is only performed by the iChain server). This technique is safe only if all access to the portal is routed through the iChain proxy. </p>
 <p class="para">The SSO configuration sets up a valve that only permits access from the local server and the iChain proxy server. For more information about Tomcat’s valve configuration, see <a href="http://tomcat.apache.org/tomcat-5.5-doc/config/valve.html" class="ulink">tomcat.apache.org</a>.</p>
+<p class="para"></p>
+<div class="important">
+<p class="para"><em class="title">IMPORTANT:</em>You have to options available for WebDAV support:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">To use a two-accelerator configuration for WebDAV support, you must select the<span class="guimenu"> Use iChain proxy for WebDAV </span>option and specify the iChain WebDAV accelerator in the <span class="guimenu">iChain WebDAV Proxy</span> field during installation.</p></li>
+<li class="listitem">
+<p class="listitem">If you do not use a a two-accelerator configuration for WebDAV support, you must use basic authorization headers to support WebDAV. With basic authorization headers, the WebDAV URLs are made public with iChain and the authentication work is delegated to Novell Teaming, which stores the passwords locally so that the Teaming WebDAV server can use them for WebDAV client authentication. In this case, the value of <span class="guimenu">iChain WebDAV Proxy</span> field in the installer is ignored and Novell Teaming does not perform hostname re-write for the WebDAV URLs.</p></li></ul></div>
+
+<p class="para">See <a href="installer.html">Running the Installer</a>. </p></div>
+
 <p class="para">To set up an iChain proxy:</p>
 <div class="procedure">
 <ol class="steps">
@@ -189,7 +201,7 @@ work/Catalina/localhost/_/org/apache/jsp/html/portal/login_jsp.*
 
 </div>
 
-<p class="trademark">A trademark symbol (<sup><small>&reg;</small></sup>, <sup><small>TM</small></sup>, etc.) denotes a Novell trademark. An asterisk (*) denotes a third-party trademark. For more information, see <a href="legal.html">Legal Notices</a>.</p>
+<p class="trademark"> For more information, see <a href="legal.html">Legal Notices</a>.</p>
 
 <script type="text/javascript" src="ui/bottomnav.js"></script>
 </body>

@@ -94,8 +94,12 @@
 	#output a {
 		text-decoration:none; 
 		font-weight:bold; 
-		color:black;
+		color:#0000cc;
 	}
-	#output a:hover {color:gray;}
-	#output a:focus {color:#cc0000;}
+	#output a:hover {color:#3366ff;}
+	#output a:visited {color:#993333;}
 	
+	input:focus, textarea:focus{
+		background-color: lightyellow;
+	}
+
