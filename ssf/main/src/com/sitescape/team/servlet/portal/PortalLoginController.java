@@ -84,14 +84,14 @@ public abstract class PortalLoginController extends SAbstractController {
 			
 			HttpClient httpClient = getPortalHttpClient(request);
 			if(clientCookies != null)
-				copyClientCookies(clientCookies, httpClient);
+				copyClientCookies(request, clientCookies, httpClient);
 			
 			portalCookies = logIntoPortal(request, response, httpClient, username, password);
 		}
 		else { // logout request
 			HttpClient httpClient = getPortalHttpClient(request);
 			if(clientCookies != null)
-				copyClientCookies(clientCookies, httpClient);
+				copyClientCookies(request, clientCookies, httpClient);
 			
 			portalCookies = logOutFromPortal(request, response, httpClient);
 		}
@@ -101,7 +101,7 @@ public abstract class PortalLoginController extends SAbstractController {
 		return null;
 	}
 	
-	protected void copyClientCookies(javax.servlet.http.Cookie[] cookies, HttpClient httpClient) {
+	protected void copyClientCookies(HttpServletRequest request, javax.servlet.http.Cookie[] cookies, HttpClient httpClient) {
 		javax.servlet.http.Cookie sourceCookie;
 		org.apache.commons.httpclient.Cookie targetCookie;
 		for(int i = 0; i < cookies.length; i++) {
@@ -115,7 +115,7 @@ public abstract class PortalLoginController extends SAbstractController {
 			// Apache HttpClient requires domain name to be set even for inbound cookies.
 			String domain = sourceCookie.getDomain();
 			if(domain == null)
-				domain = "localhost";
+				domain = getPortalHostname(request);
 			targetCookie = new org.apache.commons.httpclient.Cookie(domain, sourceCookie.getName(), sourceCookie.getValue());
 
 			// This is our internal mark that this particular cookie was copied from a client cookie.
@@ -187,14 +187,19 @@ public abstract class PortalLoginController extends SAbstractController {
 		String scheme = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_SCHEME, "");
 		if(scheme.equals(""))
 			scheme = "http";
-		String host = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_HOST, "");
-		if(host.equals(""))
-			host = request.getServerName();
+		String host = getPortalHostname(request);
 		String port = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_PORT, "");
 		if(port.equals(""))
 			port = String.valueOf(request.getServerPort());
 		
 		return scheme + "://" + host + ":" + port;
+	}
+	
+	private String getPortalHostname(HttpServletRequest request) {
+		String host = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_HOST, "");
+		if(host.equals(""))
+			host = request.getServerName();
+		return host;
 	}
 	
 	protected void copyPortalCookies(javax.servlet.http.Cookie[] clientCookies, 
