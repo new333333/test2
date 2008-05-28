@@ -57,7 +57,7 @@ public class LiferayLoginController extends PortalLoginController {
 	@Override
 	protected Cookie[] logIntoPortal(HttpServletRequest request, HttpServletResponse response, HttpClient httpClient, String username, String password) throws Exception {
 
-		String remember = RequestUtils.getStringParameter(request, "remember", "false");
+		String remember = RequestUtils.getStringParameter(request, "remember");
 
 		GetMethod getMethod = new GetMethod(LOGIN_PATH);
 		String body = null;
@@ -86,7 +86,8 @@ public class LiferayLoginController extends PortalLoginController {
 		try {
 			postMethod.addParameter("cmd", "already-registered");
 			//postMethod.addParameter("tabs1", "already-registered");
-			postMethod.addParameter("rememberMe", remember);
+			if(remember != null)
+				postMethod.addParameter("rememberMe", remember);
 			postMethod.addParameter("login", username);
 			postMethod.addParameter(passwordFieldName, password);
 			
