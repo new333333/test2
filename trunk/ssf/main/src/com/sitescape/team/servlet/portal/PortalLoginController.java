@@ -28,14 +28,21 @@
  */
 package com.sitescape.team.servlet.portal;
 
+import java.util.Date;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.httpclient.HostConfiguration;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpURL;
+import org.apache.commons.httpclient.URIException;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.servlet.SAbstractController;
+import com.sitescape.team.web.util.WebHelper;
 
 public abstract class PortalLoginController extends SAbstractController {
 
@@ -43,28 +50,100 @@ public abstract class PortalLoginController extends SAbstractController {
 	private static final String PORTAL_LOGIN_OVERRIDE_HOST = "portal.login.override.host";
 	private static final String PORTAL_LOGIN_OVERRIDE_PORT = "portal.login.override.port";
 	private static final String PORTAL_LOGIN_SUPPORTED_METHOD = "portal.login.supported.method";
+	private static final String PORTAL_LOGIN_FORCENEW_ALLOWED = "portal.login.forcenew.allowed";
 	
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-		if(!isAllowed(request)) {
-			// Portal login is not allowed. Return silently, rather than throwing an exception.
-			return null;
+		javax.servlet.http.Cookie[] clientCookies = request.getCookies();
+		
+		org.apache.commons.httpclient.Cookie[] portalCookies = null;
+		
+		if("/portalLogin".equalsIgnoreCase(request.getPathInfo())) { // login request
+			if(!isLoginAllowed(request)) {
+				// Portal login is not allowed. Return silently, rather than throwing an exception.
+				return null;
+			}
+			
+			String username = RequestUtils.getStringParameter(request, "username", "");
+			String password = RequestUtils.getStringParameter(request, "password", "");			
+			boolean forceNew = RequestUtils.getBooleanParameter(request, "_forcenew", false);
+
+			if(!(forceNew && SPropsUtil.getBoolean(PORTAL_LOGIN_FORCENEW_ALLOWED, false))) {
+				if(WebHelper.isUserLoggedIn(request) && username.equalsIgnoreCase(WebHelper.getRequiredUserName(request))) {
+					// This code is executing in the context of a session that belogs to a
+					// user with the same name as the specified username (case insensitively).
+					// This doesn't necessarily mean that the specified password is valid.
+					// But regardless, this code will not attempt to obtain a new session
+					// in this case. Set _forcenew parameter to true to force creation of 
+					// a new session.
+					logger.info("The user " + username + " is already logged in.");
+					return null;
+				}
+			}
+			
+			HttpClient httpClient = getPortalHttpClient(request);
+			if(clientCookies != null)
+				copyCookies(clientCookies, httpClient);
+			
+			portalCookies = logIntoPortal(request, response, httpClient, username, password);
+		}
+		else { // logout request
+			HttpClient httpClient = getPortalHttpClient(request);
+			if(clientCookies != null)
+				copyCookies(clientCookies, httpClient);
+			
+			portalCookies = logOutFromPortal(request, response, httpClient);
 		}
 		
-		String username = RequestUtils.getStringParameter(request, "username", "");
-		String password = RequestUtils.getStringParameter(request, "password", "");
-		
-		String baseUrl = getPortalBaseUrl(request);
-		
-		org.apache.commons.httpclient.Cookie[] cookies = logIntoPortal(request, response, baseUrl, username, password);
-		
-		if(cookies != null)
-			copyCookies(cookies, response);
+		if(portalCookies != null)
+			copyCookies(portalCookies, response);
 		
 		return null;
 	}
 	
-	protected boolean isAllowed(HttpServletRequest request) {
+	protected void copyCookies(javax.servlet.http.Cookie[] cookies, HttpClient httpClient) {
+		javax.servlet.http.Cookie sourceCookie;
+		org.apache.commons.httpclient.Cookie targetCookie;
+		for(int i = 0; i < cookies.length; i++) {
+			sourceCookie = cookies[i];
+			// Do NOT copy the domain information. Instead, use localhost as the domain.
+			targetCookie = new org.apache.commons.httpclient.Cookie("localhost", sourceCookie.getName(), sourceCookie.getValue());
+			targetCookie.setComment(sourceCookie.getComment());
+			int maxAge = sourceCookie.getMaxAge();
+			if(maxAge < 0) {
+				targetCookie.setExpiryDate(null);
+			}
+			else {
+				targetCookie.setExpiryDate(new Date(System.currentTimeMillis() + maxAge*1000L));
+			}
+			targetCookie.setComment("_client");
+			String path = sourceCookie.getPath();
+			if(path == null)
+				path = getCookiePath();
+			targetCookie.setPath(path);
+			targetCookie.setSecure(sourceCookie.getSecure());
+			targetCookie.setVersion(sourceCookie.getVersion());
+			httpClient.getState().addCookie(targetCookie);				
+		}
+	}
+	
+	protected abstract String getCookiePath();
+	
+	protected HttpClient getPortalHttpClient(HttpServletRequest request) throws URIException {
+		String portalBaseUrl = getPortalBaseUrl(request);
+		
+		return getHttpClient(portalBaseUrl);
+	}
+	
+	protected HttpClient getHttpClient(String portalBaseUrl) throws URIException {
+		HttpURL hrl = new HttpURL(portalBaseUrl);
+		HttpClient httpClient = new HttpClient();
+		HostConfiguration hostConfig = httpClient.getHostConfiguration();
+		hostConfig.setHost(hrl);
+		return httpClient;
+	}
+	
+	protected boolean isLoginAllowed(HttpServletRequest request) {
 		String allowedMethod = SPropsUtil.getString(PORTAL_LOGIN_SUPPORTED_METHOD, "post");
 		if(allowedMethod.equalsIgnoreCase("post")) {
 			if("post".equalsIgnoreCase(request.getMethod()))
@@ -85,8 +164,11 @@ public abstract class PortalLoginController extends SAbstractController {
 	}
 	
 	protected abstract org.apache.commons.httpclient.Cookie[] logIntoPortal(HttpServletRequest request,
-    HttpServletResponse response, String portalBaseUrl, String username, String password) throws Exception;
-	
+		    HttpServletResponse response, HttpClient httpClient, String username, String password) throws Exception;
+			
+	protected abstract org.apache.commons.httpclient.Cookie[] logOutFromPortal(HttpServletRequest request,
+		    HttpServletResponse response, HttpClient httpClient) throws Exception;
+			
 	protected String getPortalBaseUrl(HttpServletRequest request) {
 		String scheme = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_SCHEME, "");
 		if(scheme.equals(""))
@@ -107,8 +189,12 @@ public abstract class PortalLoginController extends SAbstractController {
 		
 		for(int i = 0; i < cookies.length; i++) {
 			sourceCookie = cookies[i];
+			if(sourceCookie.getComment() != null && sourceCookie.getComment().equals("_client")) {
+				// This cookie is a copy of the client cookie passed through to the portal.
+				// We should not copy it back. Skip it.
+				continue;
+			}
 			targetCookie = new javax.servlet.http.Cookie(sourceCookie.getName(), sourceCookie.getValue());
-
 			// Copy the information from the source cookie to the target cookie.
 			// Do NOT ever copy the domain information. 
 			targetCookie.setComment(sourceCookie.getComment());
