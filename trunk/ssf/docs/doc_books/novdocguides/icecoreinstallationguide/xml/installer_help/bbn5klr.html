@@ -1,0 +1,152 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<!-- saved from url=(0014)about:internet -->
+<html>
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Content-Language" content="en" />
+<meta name="Generator" content="Novell Documentation" />
+<meta name="Generation-Date" content="Wednesday, May 28, 2008 16:11" />
+<meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2008" />
+
+<style type="text/css">
+  @import url(ui/styles.css);
+</style>
+
+<title>Security Guidelines</title>
+<script type="text/javascript">
+  var prev_link = "b9vchnf.html";
+  var next_link = "bbnqb4c.html";
+  var parentfile = "../b9vcafr.html";
+  var parenttoc = "../toc_b9vcafr.html";
+  if(parent.location != location) { parent.loadMenu(); }
+</script>
+<script type="text/javascript" src="ui/jsglobal.js"></script>
+</head>
+
+<body>
+<script type="text/javascript" src="ui/topnav.js"></script>
+
+<div class="sect1"  id="bbn5klr">
+
+<h1 class="title"> Security Guidelines</h1>
+
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<div class="formalpara" id="bbxfle4">
+            <p class="title"><em class="title">Liferay Session Timeout:</em>
+            The default session timeout is 2 hours (240 minutes). You can lengthen or shorten this by changing the <span class="guimenu">Liferay session timeout</span> setting in the <span class="guimenu">Network information</span> window of the installer.</p>
+          </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bbqoqlx">
+            <p class="title"><em class="title">Role-Based Access Control:</em>
+            Novell Teaming controls all access to folders and entries by using role-based access controls. See “Adjusting Access Control for the Site” in the Novell Teaming Administration Guide to learn more about the default roles and access settings. Keep in mind that Novell Teaming is intended to be used primarily for the sharing of information, so many default access rights lean toward allowing at least universal read access.</p>
+          </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bbqor09">
+            <p class="title"><em class="title">Inbound E-mail:</em>
+            You can configure Novell Teaming to read e-mail and post those e-mail messages as entries in a folder. Because e-mail is inherently insecure, there is no way to be sure that the sender is who they claim to be. Novell Teaming marks the entries posted by e-mail to alert users about their origin.</p>
+          </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bbqor9h">
+            <p class="title"><em class="title">Web Services are enabled by default:</em>
+            The default Novell Teaming installation allows authenticated access via Web services. If you are not using Web services, you can disable them by deselecting the Enable Web Services option in the <span class="guimenu">Network information</span> window of the installer.</p>
+          </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bbqs5fs">
+            <p class="title"><em class="title">WebDAV Authentication:</em>
+            Authenticated access via WebDAV is via the Basic Authentication mechanism. Because of the weaknesses of Basic Authentication, secure (SSL) connections are recommended.</p>
+          </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bbqorhu">
+            <p class="title"><em class="title">RSS feed URLs:</em>
+            Because RSS readers are outside of the authentication system, the URL provided by Novell Teaming for an RSS feed embeds some authentication information about the user. This means that the RSS URL must be protected and not shared between users. </p>
+          </div>
+
+<p class="listitem">For this reason, RSS is not recommended for use on highly sensitive data. </p>
+<p class="listitem">To disable RSS feeds, deselect the <span class="guimenu">Enable RSS</span> option in the <span class="guimenu">RSS configuration</span> window of the installer during initial installation, or run a reconfiguration with the installer to disable RSS feeds after installation.</p></li>
+<li class="listitem">
+<div class="formalpara" id="bbqorud">
+            <p class="title"><em class="title">LDAP (directory service) Proxy User:</em>
+            You can configure Novell Teaming (and the portal) to utilize information in the LDAP directory service to provide basic user account information (and group memberships). Access to the LDAP server is done via a configuration page that requires you to specify a username and password for access to the LDAP directory. This user should be created in the LDAP directory service with the minimum number of privileges needed to perform the job. In particular, all LDAP synchronization activities are one-way, so the proxy user only requires read access to the directory. We highly advise that you configure LDAP with a secure SSL connection.</p>
+          </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bbqosre">
+            <p class="title"><em class="title">LDAP Directory access is unencrypted by default:</em>
+            See “Secure LDAP/eDirectory Setup” in the Novell Teaming Administration Guide for information about configuring Novell Teaming to use SSL when communicating with the LDAP directory.</p>
+          </div>
+</li>
+<li class="listitem">
+<div class="formalpara" id="bbqospn">
+            <p class="title"><em class="title">File System Repositories contains unencrypted data:</em>
+            See <a href="b9vchn8.html">File System Planning</a> for details about how Novell Teaming uses the local file system for data storage. These directories contain uploaded information in various formats (both native file formats and potentially a number of rendered formats (such as cached HTML versions of files, thumbnails, and RSS feeds) as well as archived data.</p>
+          </div>
+
+<p class="listitem">These files are managed exclusively by the Novell Teaming application software and the file system protections should be set to protect those directories from unauthorized access.</p></li>
+<li class="listitem">
+<div class="formalpara" id="bbqosj1">
+            <p class="title"><em class="title">Database access is unencrypted by default:</em>
+            Depending on your local security guidelines, you might want to encrypt the database connections between the Novell Teaming and Portal software and their respective databases. SSL encrypted data between the applications and database servers imposes a performance penalty because of the increased overhead of encrypting and decrypting the retrieved data.</p>
+          </div>
+
+<p class="listitem">Support for this is highly dependent on the database client drivers and JDBC connector support and how you are configuring your client and server certificates. You should check with the database vendors on how to set up SSL connections on both the client and server sides of the connection. You need to at least update the <span class="guimenu">JDBC URL</span> selections in the Database selection window of the installer. For example, for MySQL you might add <span class="literal">useSSL=true&amp;requireSSL=true</span> to the options part of the URL.</p></li>
+<li class="listitem">
+<div class="formalpara" id="bbqos1s">
+            <p class="title"><em class="title">Mirrored Folder Proxy User:</em>
+            See “Configuring Mirrored Folders” in the Novell Teaming Administration Guide for more information about the mirrored folder feature of the Enterprise version of Novell Teaming.</p>
+          </div>
+
+<p class="listitem">You can configure Novell Teaming to use server directories (either in the local file system or via file sharing) as repositories for Novell Teaming folders. Because the Novell Teaming application server is accessing those directories, the user ID that the application server runs as acts as a proxy user for all file system access (that is, the file system only sees one user accessing the files on behalf of all Novell Teaming users who have access to the Novell Teaming folder). This proxy user should be used to configure any local file system access (or shared file access) appropriately.</p>
+<p class="listitem">If you configure a mirrored folder to a WebDAV or Microsoft SharePoint* directory, the resource driver is configured to use a proxy username and password. The same access control practices should be applied to these resources as are used with the file system resource driver.</p></li>
+<li class="listitem">
+<div class="formalpara" id="bbqs5h6">
+            <p class="title"><em class="title">Conferencing account password is stored in configuration file:</em>
+            If you are using Conferencing, the password to a Conferencing account is stored in: </p>
+          </div>
+<pre class="screen">
+WEB-INF/classes/config/ssf.properties
+</pre></li>
+<li class="listitem">
+<div class="formalpara" id="bbqosan">
+            <p class="title"><em class="title">Password Storage in the Server File System:</em>
+            A number of application accounts and passwords are stored in the file system. These files should be protected against unauthorized access on the server.</p>
+          </div>
+
+<p class="listitem">The<span class="literal"> installer.xml </span>file contains a majority of the account and password information. You should protect this file accordingly. The installer’s <span class="guimenu">Reconfigure</span> option uses this information to create and update a number of configuration files within the application software directory tree. These files are outlined below:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">Database user IDs and passwords for the portal and Novell Teaming software are stored in XML files in the following directories: </p><pre class="screen">
+conf/Catalina/localhost/ssf.xml (Novell Teaming)
+</pre><pre class="screen">
+conf/Catalina/localhost/ROOT.xml (Liferay Portal)
+</pre></li>
+<li class="listitem">
+<p class="listitem">Mirrored folder resource drivers to WebDAV/Sharepoint shares store the proxy user and passwords in:</p><pre class="screen">
+WEB-INF/classes/config/ssf.properties
+</pre></li>
+<li class="listitem">
+<p class="listitem">The e-mail access (both inbound and outbound) might contain usernames and passwords for authentication (such as, authenticated SMTP). These are stored in:</p><pre class="screen">
+conf/Catalina/localhost/ssf.xml (Novell Teaming) 
+</pre><pre class="screen">
+conf/Catalina/localhost/ROOT.xml (Liferay Portal)
+</pre></li></ul></div>
+
+<p class="listitem">Some application accounts and passwords are stored in the database. These are protected by application access controls, but are available if access to the database is obtained through other means, such as an LDAP proxy user and password.</p></li></ul></div>
+
+</div>
+
+<p class="trademark"> For more information, see <a href="legal.html">Legal Notices</a>.</p>
+
+<script type="text/javascript" src="ui/bottomnav.js"></script>
+</body>
+</html>
