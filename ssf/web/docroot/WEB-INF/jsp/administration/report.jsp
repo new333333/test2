@@ -36,12 +36,7 @@
 String wsTreeName = "search_" + renderResponse.getNamespace();
 %>
 <c:set var="formName"><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm</c:set>
-<script type="text/javascript">
-var ssReportURL="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="activity_report"/><portlet:param 
-		name="binderId" value="${ssBinder.id}"/><portlet:param 
-		name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>";
-</script>
+
 
 <table class="ss_style" width="100%"><tr><td>
 <form class="ss_style ss_form" 
@@ -52,7 +47,7 @@ var ssReportURL="<portlet:actionURL windowState="maximized"><portlet:param
   <div class="ss_buttonBarRight">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.action=ssReportURL; document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.submit()">
+    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="self.window.close(); return false;">
   </div>
   <br/>
   <ssf:nlt tag="administration.report.dates"/>
@@ -100,7 +95,7 @@ var ssReportURL="<portlet:actionURL windowState="maximized"><portlet:param
   <div class="ss_buttonBarLeft">
     <input type="submit" class="ss_submit" name="forumOkBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.action=ssReportURL; document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.submit()">
+    <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>" onclick="self.window.close(); return false;">
   </div>
 </form>
 <br>
