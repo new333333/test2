@@ -40,6 +40,7 @@ public class SimpleNameUtil {
 	private static final int SIMPLE_NAME_MAX_LENGTH = 128;
 	
 	private static final char[] ALLOWED_CHARS_FOR_URL = new char[] {'_', '-', '!', '.', '~', '\'', '(', ')', '*', '/' };
+	private static final char[] ALLOWED_CHARS_FOR_EMAIL = new char[] {'_','-','!','.','~','*','#','$','%','/','?','|','^','{','}','`','&','+','='};
 	
 	/**
 	 * Resolve the simple name to a full adapter URL.
@@ -69,6 +70,7 @@ public class SimpleNameUtil {
 	 * The valid characters are<br>
 	 * lower-case letters<br>
 	 * digits<br>
+	 * whitespace<br>
 	 * The following characters: _-!.~'()*
 	 * 
 	 * @param simpleName
@@ -87,6 +89,43 @@ public class SimpleNameUtil {
 			if(!Character.isLetterOrDigit(c[i]) && !Character.isWhitespace(c[i])) {
 				for(int j = 0; j < ALLOWED_CHARS_FOR_URL.length; j++) {
 					if(c[i] == ALLOWED_CHARS_FOR_URL[j])
+						continue outer;
+				}
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
+	/**
+	 * Validate the simple name for use as the local part of an email address. 
+	 * Returns <code>true</code> if it is safe to use the name as the local part
+	 *   of an email address, <code>false</code> otherwise.
+	 * The valid characters (per RFC 2822) are<br>
+	 * upper- and lower-case letters<br>
+	 * digits<br>
+	 * The following characters: _-!.~'*#$%/?|^{}`&+=<br>
+	 *   with the exception that . not appear as the first or last character,
+	 *   nor twice in a row.
+	 *   
+	 * RFC 2822 also allows "quoted string" email addresses (like "quoted string"@foo.bar),
+	 *  but we are not allowing those.
+	 * 
+	 * @param simpleName
+	 * @return
+	 */
+	public static boolean validateForEmail(String simpleName)
+	{
+		if(simpleName.length() > SIMPLE_NAME_MAX_LENGTH)
+			return false;
+		
+		char[] c = simpleName.toCharArray();
+		outer:
+		for(int i = 0; i < c.length; i++) {
+			if(!Character.isLetterOrDigit(c[i])) {
+				for(int j = 0; j < ALLOWED_CHARS_FOR_EMAIL.length; j++) {
+					if(c[i] == ALLOWED_CHARS_FOR_EMAIL[j])
 						continue outer;
 				}
 				return false;

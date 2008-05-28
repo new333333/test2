@@ -206,7 +206,6 @@ public class WebKeys {
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ADMIN_ACTION_GET_LOG_FILES = "get_log_files";
-    public static final String ADMIN_FORUM_RESTORE = "forum_restore";
 	public static final String ACTION_ACTIVITY_REPORT="activity_report";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
     public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
@@ -1030,7 +1029,6 @@ public class WebKeys {
     public static final String VIEW_LISTING_SEARCH_RESULTS_VERTICAL="entry/view_listing_search_results_vertical";
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
     public static final String VIEW_LOGIN_REPORT="administration/login_report";
-    public static final String VIEW_MIGRATION_FORUM_RESTORE="migration/forumRestore"; 
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";
     public static final String VIEW_MODIFY_TEMPLATE="administration/modifyTemplate";
