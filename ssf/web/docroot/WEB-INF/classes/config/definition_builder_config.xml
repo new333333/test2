@@ -2438,6 +2438,11 @@
 	<item name="workflowAction" caption="__workflow_action">
 		<properties>
 			<property name="class" caption="__workflow_action_class" type="text" />
+			<property name="runAs" caption="__workflow_action_runas" type="selectbox">
+				<option name="currentuser" caption="__workflow_action_runas_currentuser"/>
+				<option name="entryowner" caption="__workflow_action_runas_entryowner"/>
+				<option name="binderowner" caption="__workflow_action_runas_binderowner"/>
+			</property>
 		</properties>
 	</item>
 
