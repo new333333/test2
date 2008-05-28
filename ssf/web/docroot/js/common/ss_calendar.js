@@ -2034,15 +2034,15 @@ function ss_calendarEngine(
 	var eventHeights = {
 		4: {
 			1: [9, 9, 9],
-			3: [30.6]
+			3: [9]
 		},
 		5: {
 			1: [6.5, 6.5, 6.5],
-			3: [23]
+			3: [6.5]
 		},
 		6: {
 			1: [5, 5, 4.6],
-			3: [18.1]
+			3: [5]
 		}
 	};
 	
@@ -2365,9 +2365,24 @@ if (!window.ss_calendar) {
 
 if (!window["ss_calendar_import"]) {
 	var ss_calendar_import = {
+		FROM_FILE : "FROM_FILE",
+		
+		BY_URL : "BY_URL",
+
 		divId : "ss_calendar_import_div",
 		
-		importForm : function(forumId, namespace, title, legend, uploadBtn) {
+		importFormFromFile : function(props) {
+			ss_calendar_import.importForm(props, ss_calendar_import.FROM_FILE);
+		},
+		
+		importFormByURL : function(props) {
+			ss_calendar_import.importForm(props, ss_calendar_import.BY_URL);
+		},
+
+		/*
+			forumId, namespace, title, legend, btn 
+		 */
+		importForm : function(props, formType) {
 			
 			// Build the import form
 			var calImportDiv = document.getElementById(this.divId);
@@ -2389,22 +2404,35 @@ if (!window["ss_calendar_import"]) {
 			// Link into the document tree
 			document.getElementsByTagName("body").item(0).appendChild(calImportDiv);
 			
-			dojo.byId("ss_calendar_import_title").appendChild(document.createTextNode(title));
+			dojo.byId("ss_calendar_import_title").appendChild(document.createTextNode(props.title));
 	
 			dojo.event.connect(dojo.byId("ss_calendar_import_close"), "onclick", function(evt) {
 				ss_calendar_import.cancel();
 		    });
-		   
-		    dojo.byId("ss_calendar_import_inner").innerHTML = 
-			    "<form id=\"ss_calendar_import_form\" method=\"post\" enctype=\"multipart/form-data\" name=\"ss_calendar_import_form\">" +
-					"<div style=\"text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; \">" +
-						"<input type=\"file\" name=\"iCalFile\" />" +
-						"<p class=\"ss_smallprint ss_light\">" + legend + "</p>" + 
-					"</div>" +
-					"<input type=\"button\" value=\"" + uploadBtn + "\" onclick=\"ss_calendar_import.uploadFile('" + namespace + "');\"/>" +
-					"<input type=\"hidden\" name=\"folderId\" value=\"" + forumId + "\">" +
-				"</form>";
-		    
+
+		    if (formType == ss_calendar_import.FROM_FILE) {
+			    dojo.byId("ss_calendar_import_inner").innerHTML = 
+					"<form id=\"ss_calendar_import_form\" method=\"post\" enctype=\"multipart/form-data\" name=\"ss_calendar_import_form\">" +
+						"<div style=\"text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; \">" +
+							"<input type=\"file\" name=\"iCalFile\" />" +
+							"<p class=\"ss_smallprint ss_light\">" + props.legend + "</p>" + 
+						"</div>" +
+						"<input type=\"button\" value=\"" + props.btn + "\" onclick=\"ss_calendar_import.uploadFile('" + props.namespace + "');\"/>" +
+						"<input type=\"hidden\" name=\"folderId\" value=\"" + props.forumId + "\">" +
+					"</form>";
+			}
+			
+			if (formType == ss_calendar_import.BY_URL) {
+				dojo.byId("ss_calendar_import_inner").innerHTML = 
+					"<form id=\"ss_calendar_importURL_form\" method=\"post\"  name=\"ss_calendar_importURL_form\">" +
+						"<div style=\"text-align: left; width: 100%; margin-bottom: 10px; margin-top: 10px; \">" +
+							"<input type=\"text\" name=\"iCalURL\" style=\"width: 250px;\"/>" +
+							"<p class=\"ss_smallprint ss_light\">" + props.legend + "</p>" + 
+						"</div>" +
+						"<input type=\"button\" value=\"" + props.btn + "\" onclick=\"ss_calendar_import.loadURL('" + props.namespace + "');\"/>" +
+						"<input type=\"hidden\" name=\"folderId\" value=\"" + props.forumId + "\">" +
+					"</form>";
+		    }
 			ss_showPopupDivCentered(this.divId);
 		},
 		
@@ -2413,6 +2441,43 @@ if (!window["ss_calendar_import"]) {
 			ss_toggleAjaxLoadingIndicator(box, true);			
 			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"uploadICalendarFile"});
 			dojo.debug("uploadFile");
+			dojo.io.bind({
+		    	url: url,
+				error: function(type, data, evt) {
+					alert(ss_not_logged_in);
+					ss_calendar_import.cancel();
+				},
+				load: function(type, data, evt) {
+					if (data && data.notLoggedIn) {
+						alert(ss_not_logged_in);
+					} else if (data && data.parseExceptionMsg) {
+						alert(data.parseExceptionMsg);												
+					} else if (data && data.entriesAmountMsg) {
+						if (window["ss_calendar_" + prefix]) {
+							for (var i = 0; i < data.entryAddedIds.length; i++) {
+								window["ss_calendar_" + prefix].refreshEntryEvents(data.entryAddedIds[i]);
+							}
+							for (var i = 0; i < data.entryModifiedIds.length; i++) {
+								window["ss_calendar_" + prefix].refreshEntryEvents(data.entryModifiedIds[i]);
+							}							
+						}
+						alert(data.entriesAmountMsg);
+					} else {
+						throw "Wrong server response.";
+					}
+					ss_calendar_import.cancel();
+				},
+				preventCache: true,
+				mimetype: "text/json",
+				formNode: dojo.byId("ss_calendar_import_form")
+			});
+	
+		},
+		
+		loadURL : function (prefix) {
+			var box = dojo.byId("ss_calendar_importURL_form");
+			ss_toggleAjaxLoadingIndicator(box, true);
+			var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation:"loadICalendarByURL"});
 			dojo.io.bind({
 		    	url: url,
 				error: function(type, data, evt) {
@@ -2441,7 +2506,7 @@ if (!window["ss_calendar_import"]) {
 				},
 				preventCache: true,
 				mimetype: "text/json",
-				formNode: dojo.byId("ss_calendar_import_form")
+				formNode: dojo.byId("ss_calendar_importURL_form")
 			});
 	
 		},

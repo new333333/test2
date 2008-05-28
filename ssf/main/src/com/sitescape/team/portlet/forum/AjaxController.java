@@ -163,6 +163,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 				ajaxUploadImageFile(request, response); 
 			} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 				ajaxUploadICalendarFile(request, response);
+			} else if (op.equals(WebKeys.OPERATION_LOAD_ICALENDAR_BY_URL)) {
+				ajaxLoadICalendarByURL(request, response);				
 			} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_CONFIGURATION)) {
 				ajaxSaveCalendarConfiguration(request, response);				
 			} else if (op.equals(WebKeys.OPERATION_SET_BINDER_OWNER_ID)) {
@@ -382,6 +384,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxFindPlaceForm(request, response);
 		} else if (op.equals(WebKeys.OPERATION_UPLOAD_ICALENDAR_FILE)) {
 			return ajaxUploadICalendarFileStatus(request, response);
+		} else if (op.equals(WebKeys.OPERATION_LOAD_ICALENDAR_BY_URL)) {
+			return ajaxLoadICalendarByURL(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_SAVE_CALENDAR_CONFIGURATION)) {
 			return ajaxSaveCalendarConfigurationStatus(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_GET_CHANGE_LOG_ENTRY_FORM)) {
@@ -1067,11 +1071,59 @@ public class AjaxController  extends SAbstractControllerRetry {
 				try {
 					attendedEntries = getIcalModule().parseToEntries(folderId, file.getInputStream());
 				} catch (net.fortuna.ical4j.data.ParserException e) {
-					response.setRenderParameter("ssICalendarParseException", Boolean.TRUE.toString());
+					response.setRenderParameter("ssICalendarException", "parseException");
 				}
 			}
 			WebHelper.releaseFileHandle(fileHandle);
 		}
+		response.setRenderParameter("ssICalendarEntryAddedIdsSize", Integer.toString(attendedEntries.added.size()));
+		response.setRenderParameter("ssICalendarEntryModifiedIdsSize", Integer.toString(attendedEntries.modified.size()));
+		
+		List addedEntriesIdsAsStrings = ResolveIds.longsToString(attendedEntries.added);
+		String[] ids = new String[addedEntriesIdsAsStrings.size()];
+		ids = (String[])addedEntriesIdsAsStrings.toArray(ids);
+		response.setRenderParameter("ssICalendarAddedEntryIds", ids);
+		
+		List modifiedEntriesIdsAsStrings = ResolveIds.longsToString(attendedEntries.modified);
+		ids = new String[modifiedEntriesIdsAsStrings.size()];
+		ids = (String[])modifiedEntriesIdsAsStrings.toArray(ids);
+		response.setRenderParameter("ssICalendarModifiedEntryIds", ids);
+		
+	}
+	
+	private void ajaxLoadICalendarByURL(ActionRequest request, 
+			ActionResponse response) throws Exception {
+		AttendedEntries attendedEntries = new AttendedEntries();
+		
+		Long folderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_FOLDER_ID, -1);
+		String iCalURL = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ICAL_URL, null);
+		
+		if (folderId != -1) {
+			HttpClient httpClient = new HttpClient();
+			GetMethod getMethod = new GetMethod(iCalURL);
+			try {
+				int statusCode = httpClient.executeMethod(getMethod);
+				if (statusCode == 200) {
+					// get the resonse as an InputStream
+					InputStream icalInputStream = getMethod.getResponseBodyAsStream();
+					try {
+						attendedEntries = getIcalModule().parseToEntries(folderId, icalInputStream);
+					} catch (net.fortuna.ical4j.data.ParserException e) {
+						response.setRenderParameter("ssICalendarException", "parseException");
+					}
+					icalInputStream.close();
+				} else {
+					response.setRenderParameter("ssICalendarException", "wrongURL");
+				}
+			} catch(Exception e){
+				logger.debug("Get iCalendar by URL [" + iCalURL + "].", e);
+				response.setRenderParameter("ssICalendarException", "wrongURL");
+			} finally{
+				//release the connection
+				getMethod.releaseConnection();
+			}
+		}
+			
 		response.setRenderParameter("ssICalendarEntryAddedIdsSize", Integer.toString(attendedEntries.added.size()));
 		response.setRenderParameter("ssICalendarEntryModifiedIdsSize", Integer.toString(attendedEntries.modified.size()));
 		
@@ -1092,7 +1144,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 		int entriesModifiedAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryModifiedIdsSize", 0);
 		long[] entryAddedIds = PortletRequestUtils.getLongParameters(request, "ssICalendarAddedEntryIds");
 		long[] entryModifiedIds = PortletRequestUtils.getLongParameters(request, "ssICalendarModifiedEntryIds");
-		boolean parseException = PortletRequestUtils.getBooleanParameter(request, "ssICalendarParseException", false);
+		String exception = PortletRequestUtils.getStringParameter(request, "ssICalendarException", "");
 		
 		
 		Map model = new HashMap();
@@ -1100,9 +1152,27 @@ public class AjaxController  extends SAbstractControllerRetry {
 		model.put("entriesModifiedAmount", entriesModifiedAmount);
 		model.put("entryAddedIds", entryAddedIds);
 		model.put("entryModifiedIds", entryModifiedIds);
-		model.put("parseException", parseException);
+		model.put("exception", exception);
 		
 		return new ModelAndView("forum/json/icalendar_upload", model);
+	}
+	
+	private ModelAndView ajaxLoadICalendarByURL(RenderRequest request, RenderResponse response) {
+		int entriesAddedAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryAddedIdsSize", 0);
+		int entriesModifiedAmount = PortletRequestUtils.getIntParameter(request, "ssICalendarEntryModifiedIdsSize", 0);
+		long[] entryAddedIds = PortletRequestUtils.getLongParameters(request, "ssICalendarAddedEntryIds");
+		long[] entryModifiedIds = PortletRequestUtils.getLongParameters(request, "ssICalendarModifiedEntryIds");
+		String exception = PortletRequestUtils.getStringParameter(request, "ssICalendarException", "");
+		
+		
+		Map model = new HashMap();
+		model.put("entriesAddedAmount", entriesAddedAmount);
+		model.put("entriesModifiedAmount", entriesModifiedAmount);
+		model.put("entryAddedIds", entryAddedIds);
+		model.put("entryModifiedIds", entryModifiedIds);
+		model.put("exception", exception);
+		
+		return new ModelAndView("forum/json/icalendar_import", model);
 	}
 	
 	private void ajaxSaveCalendarConfiguration(ActionRequest request, 

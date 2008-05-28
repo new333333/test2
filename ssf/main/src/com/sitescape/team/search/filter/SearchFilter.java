@@ -1013,12 +1013,4 @@ public class SearchFilter {
 					!filter.getRootElement().hasContent());
 	}
 
-	public void addEventUid(String uid) {
-		checkCurrent();
-		 
-		Element filterTerm = currentFilterTerms.addElement(SearchFilterKeys.FilterTerm);
-		filterTerm.addAttribute(SearchFilterKeys.FilterType, SearchFilterKeys.FilterTypeEventUid);
-		filterTerm.addAttribute(SearchFilterKeys.FilterEventUid, uid);	
-	}
-
 }
