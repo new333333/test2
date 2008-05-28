@@ -18,11 +18,11 @@
 
  <target id="b9ptld7" pid="b9vchn6" name="Step" level="3" number="4"> <text>Download the appropriate Novell Teaming kit and unzip it.</text> </target>
 
- <target id="bbijs99" pid="b9vchn6" name="Step" level="3" number="5"> <text>If you want to run the indexing service in Novell Teaming on a different machine from Novell Teaming, install the Lucene Index Server on the other machine. See "Installing a Standalone Lucene Index Server" on page 30.</text> </target>
+ <target id="bbijs99" pid="b9vchn6" name="Step" level="3" number="5"> <text>If you want to run the indexing service in Novell Teaming on a different machine from Novell Teaming, install the Lucene Index Server on the other machine. See "Installing a Standalone Lucene Index Server" on page 31.</text> </target>
 
  <target id="b9ptlgi" pid="b9vchn6" name="Step" level="3" number="6"> <text>Run the installer from where you unzipped the Novell Teaming kit. See "Running the Installer" on page 23.</text> </target>
 
- <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="7"> <text>Start and stop Novell Teaming. See "Starting and Stopping Novell Teaming" on page 32.</text> </target>
+ <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="7"> <text>Start and stop Novell Teaming. See "Starting and Stopping Novell Teaming" on page 33.</text> </target>
 
  <target id="b9vchn7" pid="b9vchn7" name="Sect1" level="1" number="1.3"> <text>Database Planning</text> </target>
 
@@ -182,7 +182,7 @@
 
  <target id="bf48geg" pid="installer" name="Step" level="3" number="15"> <text>In the Presence configuration window, select the Enable presence option to link your Novell Teaming and Conferencing servers together. You need to obtain the values for the following fields from an installed and configured Conferencing server. If you do not know these values now, you can run the installer's Reconfigure option to add this information later. Click Next to continue.</text> </target>
 
- <target id="bf48jzg" pid="installer" name="Step" level="3" number="16"> <text>In the iChain configuration window, select Enable iChain to use the iChain Single Sign-on Support (SSO), set the Logoff URL to the address used to trigger an iChain logoff, set the IP address of the iChain Proxy server, then click Next. </text> </target>
+ <target id="bf48jzg" pid="installer" name="Step" level="3" number="16"> <text>In the iChain configuration window, select Enable iChain to use the iChain Single Sign-on Support (SSO), set the Logoff URL to the address used to trigger an iChain logoff, set the IP address of the iChain Proxy server. </text> </target>
 
  <target id="bf48mn3" pid="installer" name="Step" level="3" number="17"> <text>Mirrored folders are local/shared directories that are exposed within Novell Teaming. You must configure the directories here before they are available in Novell Teaming. For security reasons the set of people who can map Novell Teaming folders to these shared directories should be limited.</text> </target>
 
@@ -206,9 +206,9 @@
 
  <target id="bf49evw" pid="bbijvt7" name="Step" level="3" number="7"> <text>In the Ready to install window, click Next to begin the installation or use the Back button to review the current configuration of the installer. </text> </target>
 
- <target id="bbikxce" pid="bbijvt7" name="Procedure" level="2" number="1"> <text>Shut down Novell Teaming on the Novell Teaming server (see "Starting and Stopping Novell Teaming" on page 32).</text> </target>
+ <target id="bbikxce" pid="bbijvt7" name="Procedure" level="2" number="1"> <text>Shut down Novell Teaming on the Novell Teaming server (see "Starting and Stopping Novell Teaming" on page 33).</text> </target>
 
- <target id="bbo5ce8" pid="bbijvt7" name="Step" level="3" number="1"> <text>Shut down Novell Teaming on the Novell Teaming server (see "Starting and Stopping Novell Teaming" on page 32).</text> </target>
+ <target id="bbo5ce8" pid="bbijvt7" name="Step" level="3" number="1"> <text>Shut down Novell Teaming on the Novell Teaming server (see "Starting and Stopping Novell Teaming" on page 33).</text> </target>
 
  <target id="bf49eib" pid="bbijvt7" name="Step" level="3" number="2"> <text>Run the Lucene installer (see above procedure).</text> </target>
 
@@ -232,7 +232,7 @@
 
  <target id="bbikvz2" pid="bbijvt7" name="Step" level="5" number="8c"> <text>Run the indexserver-startup script in the bin directory</text> </target>
 
- <target id="bbikwk1" pid="bbijvt7" name="Step" level="3" number="9"> <text>Restart Novell Teaming (see "Starting and Stopping Novell Teaming" on page 32).</text> </target>
+ <target id="bbikwk1" pid="bbijvt7" name="Step" level="3" number="9"> <text>Restart Novell Teaming (see "Starting and Stopping Novell Teaming" on page 33).</text> </target>
 
  <target id="b9vchnb" pid="b9vchnb" name="Sect1" level="1" number="1.11"> <text>Starting and Stopping Novell Teaming</text> </target>
 
