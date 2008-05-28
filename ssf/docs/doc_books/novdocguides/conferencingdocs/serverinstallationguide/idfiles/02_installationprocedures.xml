@@ -4,13 +4,19 @@
 
  <target id="b9xzt9v" pid="b9xzt9v" name="Chapter" level="0" number="2"> <text>Installation Procedures</text> </target>
 
- <target id="b9xzzfu" pid="b9xzzfu" name="Sect1" level="1" number="2.1"> <text>Installation Prerequisites</text> </target>
+ <target id="bffyj4a" pid="bffyj4a" name="Sect1" level="1" number="2.1"> <text>Supported Platforms</text> </target>
 
- <target id="b9y02nm" pid="b9xzzfu" name="Sect2" level="2" number="2.1.1"> <text>Conferencing Server Requirements</text> </target>
+ <target id="bffzkc1" pid="bffyj4a" name="Sect2" level="2" number="2.1.1"> <text>Supported Servers</text> </target>
 
- <target id="b9y03ko" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>SUSE Enterprise Server 10 or Red Hat Enterprise Server 4:</text> </target>
+ <target id="bfcfagx" pid="bffyj4a" name="Sect2" level="2" number="2.1.2"> <text>Supported Client Environments</text> </target>
 
- <target id="b9y04gs" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>PostgreSQL:</text> </target>
+ <target id="b9xzzfu" pid="b9xzzfu" name="Sect1" level="1" number="2.2"> <text>Installation Prerequisites</text> </target>
+
+ <target id="b9y02nm" pid="b9xzzfu" name="Sect2" level="2" number="2.2.1"> <text>Conferencing Server Requirements</text> </target>
+
+ <target id="bffzkj3" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Before running the installer, you need to install the following packages:</text> </target>
+
+ <target id="b9y04gs" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Installing the neon, postgresql, and postgresql-server packages:</text> </target>
 
  <target id="b9y04i4" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Time synchronization:</text> </target>
 
@@ -18,9 +24,9 @@
 
  <target id="b9y04l5" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>License key:</text> </target>
 
- <target id="b9y03br" pid="b9xzzfu" name="Sect2" level="2" number="2.1.2"> <text>Network Requirements</text> </target>
+ <target id="b9y03br" pid="b9xzzfu" name="Sect2" level="2" number="2.2.2"> <text>Network Requirements</text> </target>
 
- <target id="b9y0576" pid="b9xzzfu" name="Sect2" level="2" number="2.1.3"> <text>Firewall Requirements</text> </target>
+ <target id="b9y0576" pid="b9xzzfu" name="Sect2" level="2" number="2.2.3"> <text>Firewall Requirements</text> </target>
 
  <target id="b9y05hb" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>XML router IPs:</text> </target>
 
@@ -30,7 +36,7 @@
 
  <target id="b9y09f6" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>(Optional) DMZ Configuration:</text> </target>
 
- <target id="b9y0732" pid="b9xzzfu" name="Sect2" level="2" number="2.1.4"> <text>DNS and Hostname Requirements</text> </target>
+ <target id="b9y0732" pid="b9xzzfu" name="Sect2" level="2" number="2.2.4"> <text>DNS and Hostname Requirements</text> </target>
 
  <target id="b9y07ee" pid="b9xzzfu" name="FormalPara" level="3" number="w"> <text>Three hostnames:</text> </target>
 
@@ -50,51 +56,21 @@
 
  <target id="bf99q1o" pid="b9xzzfu" name="Step" level="4" number="5"> <text>Click OK.</text> </target>
 
- <target id="bbkkpl3" pid="b9xzzfu" name="Sect2" level="2" number="2.1.5"> <text>VoIP Requirements</text> </target>
+ <target id="bbkkpl3" pid="b9xzzfu" name="Sect2" level="2" number="2.2.5"> <text>VoIP Requirements</text> </target>
 
- <target id="b9y07b6" pid="b9xzzfu" name="Sect2" level="2" number="2.1.6"> <text>Load Balancer Requirements</text> </target>
+ <target id="b9y07b6" pid="b9xzzfu" name="Sect2" level="2" number="2.2.6"> <text>Load Balancer Requirements</text> </target>
 
- <target id="bbj2ipj" pid="bbj2ipj" name="Sect1" level="1" number="2.2"> <text>Security</text> </target>
-
- <target id="b9y00b7" pid="b9y00b7" name="Sect1" level="1" number="2.3"> <text>Installation Overview</text> </target>
-
- <target id="b9y00qs" pid="b9y00b7" name="Sect2" level="2" number="2.3.1"> <text>Conferencing Cluster Components</text> </target>
-
- <target id="bf99vab" pid="b9y00b7" name="Procedure" level="3" number="1"> <text>Verify that the Installation Prerequisites are in place and that you have performed all pre-installation steps, see "Preparing for Installation" on page 15.</text> </target>
-
- <target id="bf99vac" pid="b9y00b7" name="Step" level="4" number="1"> <text>Verify that the Installation Prerequisites are in place and that you have performed all pre-installation steps, see "Preparing for Installation" on page 15.</text> </target>
-
- <target id="bf99vad" pid="b9y00b7" name="Step" level="4" number="2"> <text>Unzip/untar the installation kit.</text> </target>
-
- <target id="bf99vae" pid="b9y00b7" name="Step" level="4" number="3"> <text>Unpack the files.</text> </target>
-
- <target id="bf99vaf" pid="b9y00b7" name="Step" level="4" number="4"> <text>Back up the sitescape-conferencing directory (if applicable).</text> </target>
-
- <target id="bf99vag" pid="b9y00b7" name="Step" level="4" number="5"> <text> Install the software by using the installation script, which does the following:</text> </target>
-
- <target id="b9y020c" pid="b9y00b7" name="Sect2" level="2" number="2.3.2"> <text>Conferencing Client Components</text> </target>
-
- <target id="bf99vah" pid="b9y00b7" name="Procedure" level="3" number="1"> <text> Launch the Administration Console.</text> </target>
-
- <target id="bf99vai" pid="b9y00b7" name="Step" level="4" number="1"> <text> Launch the Administration Console.</text> </target>
-
- <target id="bf99vaj" pid="b9y00b7" name="Step" level="4" number="2"> <text> Create a new Community with the Administration Console (see the Conferencing Operations Guide for more information).</text> </target>
-
- <target id="bf99vak" pid="b9y00b7" name="Step" level="4" number="3"> <text> Install a Conferencing Client.</text> </target>
-
- <target id="bf99val" pid="b9y00b7" name="Step" level="4" number="4"> <text>Use the Conferencing Client to create users and perform other administrative tasks.</text> </target>
+ <target id="bbj2ipj" pid="bbj2ipj" name="Sect1" level="1" number="2.3"> <text>Security</text> </target>
 
  <target id="b9y00b8" pid="b9y00b8" name="Sect1" level="1" number="2.4"> <text>Preparing for Installation</text> </target>
 
- <target id="bf99wke" pid="b9y00b8" name="Sect2" level="2" number="2.4.1"> <text>Install neon, postgresql, and postgresql-server packages</text> </target>
+ <target id="bf99wkf" pid="b9y00b8" name="Sect2" level="2" number="2.4.1"> <text>(Optional) Using ssh()</text> </target>
 
- <target id="bf99wkf" pid="b9y00b8" name="Sect2" level="2" number="2.4.2"> <text>Using ssh(1)</text> </target>
+ <target id="bf99wkg" pid="b9y00b8" name="Sect2" level="2" number="2.4.2"> <text>Unpacking the Files</text> </target>
 
- <target id="bf99wkg" pid="b9y00b8" name="Sect2" level="2" number="2.4.3"> <text>Unpacking the Files</text> </target>
+ <target id="bf99wkh" pid="b9y00b8" name="Sect2" level="2" number="2.4.3"> <text>Back Up the Directory</text> </target>
 
- <target id="bf99wkh" pid="b9y00b8" name="Sect2" level="2" number="2.4.4"> <text>Back Up the Directory</text> </target>
-
- <target id="bf9s9j9" pid="b9y00b8" name="Sect2" level="2" number="2.4.5"> <text>Installing and Configuring the NMS Boards</text> </target>
+ <target id="bf9s9j9" pid="b9y00b8" name="Sect2" level="2" number="2.4.4"> <text>Installing and Configuring the NMS Boards</text> </target>
 
  <target id="bfcfktc" pid="b9y00b8" name="Procedure" level="3" number="1"> <text>Change directories to the sitescape-conferencing directory:</text> </target>
 
@@ -128,13 +104,17 @@
 
  <target id="b9y0d1l" pid="b9y0d1l" name="Sect1" level="1" number="2.5"> <text>Installing the Conferencing Server </text> </target>
 
- <target id="bf9a4m8" pid="b9y0d1l" name="Procedure" level="2" number="1"> <text>Open the sitescape-conferencing directory.</text> </target>
+ <target id="bf99vab" pid="b9y0d1l" name="Procedure" level="2" number="1"> <text>Verify that the Installation Prerequisites are in place and that you have performed all pre-installation steps, see "Preparing for Installation" on page 15.</text> </target>
 
- <target id="bf9a4m9" pid="b9y0d1l" name="Step" level="3" number="1"> <text>Open the sitescape-conferencing directory.</text> </target>
+ <target id="bf99vac" pid="b9y0d1l" name="Step" level="3" number="1"> <text>Verify that the Installation Prerequisites are in place and that you have performed all pre-installation steps, see "Preparing for Installation" on page 15.</text> </target>
 
- <target id="bf9a4ma" pid="b9y0d1l" name="Step" level="3" number="2"> <text>Run: ./install.sh</text> </target>
+ <target id="bf99vae" pid="b9y0d1l" name="Step" level="3" number="2"> <text>Unpack the files.</text> </target>
 
- <target id="bf9a4mb" pid="b9y0d1l" name="Step" level="3" number="3"> <text>The installation script prompts you for the configuration information, license key and then installs the software.</text> </target>
+ <target id="bf99vaf" pid="b9y0d1l" name="Step" level="3" number="3"> <text>Back up the sitescape-conferencing directory (if applicable).</text> </target>
+
+ <target id="bf9a4m9" pid="b9y0d1l" name="Step" level="3" number="4"> <text>Open the sitescape-conferencing directory.</text> </target>
+
+ <target id="bf9a4ma" pid="b9y0d1l" name="Step" level="3" number="5"> <text>Run: ./install.sh, which prompts you for the configuration information, license key and then installs the software, see "Running the Installer on SLES:" on page 18:</text> </target>
 
  <target id="bf9a03q" pid="b9y0d1l" name="Sect2" level="2" number="2.5.1"> <text>Running the Installer on SLES:</text> </target>
 
@@ -146,7 +126,7 @@
 
  <target id="bc22qaz" pid="b9y0d1l" name="Step" level="4" number="3"> <text>Change directories to the sitescape-conferencing directory that contains install.sh:</text> </target>
 
- <target id="bcbdn7d" pid="b9y0d1l" name="Step" level="4" number="4"> <text>If you plan on running Active Directory* LDAP Synchronization, edit the ldap.xml.in file in the cluster-prototype directory. (For more information, see Appendix E, "LDAP User Authentication," on page 49):</text> </target>
+ <target id="bcbdn7d" pid="b9y0d1l" name="Step" level="4" number="4"> <text>(Optional) If you plan on running Active Directory* LDAP Synchronization, edit the ldap.xml.in file in the cluster-prototype directory. (For more information, see Appendix E, "LDAP User Authentication," on page 49):</text> </target>
 
  <target name="SubSteps" level="5"> <text>Open the ldap.xml.in file.</text> </target>
 
@@ -158,7 +138,7 @@
 
  <target id="bc22sau" pid="b9y0d1l" name="Step" level="4" number="5"> <text>Run the installer:</text> </target>
 
- <target id="bc22t5s" pid="b9y0d1l" name="Step" level="4" number="6"> <text>When the installer prompts you to accept the license (the default is N), enter Y:</text> </target>
+ <target id="bc22t5s" pid="b9y0d1l" name="Step" level="4" number="6"> <text>When the installer prompts you to accept the license agreement (the default is N), enter Y:</text> </target>
 
  <target id="bc22vgc" pid="b9y0d1l" name="Step" level="4" number="7"> <text>When the installer prompts you to proceed, enter Y:</text> </target>
 
@@ -168,7 +148,7 @@
 
  <target id="bc22x5s" pid="b9y0d1l" name="Step" level="4" number="10"> <text>When the installer prompts you to initialize the database for a new install (the default is Y), you must enter Y here for a new installation or the database service does not start:</text> </target>
 
- <target id="bc2izri" pid="b9y0d1l" name="Step" level="4" number="11"> <text>Provide a password when the installer prompts you to enter a password for the administrator user (this should be set for security reasons, because the Administrator account needs to be a controlled environment):</text> </target>
+ <target id="bc2izri" pid="b9y0d1l" name="Step" level="4" number="11"> <text>Provide a password when the installer prompts you to enter a password for the new administrator account that the installer creates for Conferencing (this should be set for security reasons, because the Administrator account needs to be a controlled environment):</text> </target>
 
  <target id="bc2j4li" pid="b9y0d1l" name="Step" level="4" number="12"> <text>The installer prompts you whether to enable SSL/TLS security (the default is Y):</text> </target>
 
@@ -232,7 +212,7 @@
 
  <target id="bf9a03r" pid="b9y0d1l" name="Sect2" level="2" number="2.5.2"> <text>Initial Address Book Configuration (Synchronization)</text> </target>
 
- <target id="b9y00b9" pid="b9y00b9" name="Sect1" level="1" number="2.6"> <text>Installing the Conferencing Cluster Components</text> </target>
+ <target id="b9y00b9" pid="b9y00b9" name="Sect1" level="1" number="2.6"> <text>Installing the Conferencing System Components</text> </target>
 
  <target id="b9y0hd9" pid="b9y00b9" name="Sect2" level="2" number="2.6.1"> <text>Initial Installation</text> </target>
 
@@ -408,7 +388,17 @@
 
  <target id="b9y19ck" pid="b9y19ck" name="Sect1" level="1" number="2.9"> <text>Conferencing Client Installation</text> </target>
 
- <target id="bfcfagx" pid="b9y19ck" name="Sect2" level="2" number="2.9.1"> <text>Supported Client Environments</text> </target>
+ <target id="b9y020c" pid="b9y19ck" name="Sect2" level="2" number="2.9.1"> <text>Conferencing Client Components</text> </target>
+
+ <target id="bf99vah" pid="b9y19ck" name="Procedure" level="3" number="1"> <text> Launch the Administration Console (see the Conferencing Operations Guide for more information).</text> </target>
+
+ <target id="bf99vai" pid="b9y19ck" name="Step" level="4" number="1"> <text> Launch the Administration Console (see the Conferencing Operations Guide for more information).</text> </target>
+
+ <target id="bf99vaj" pid="b9y19ck" name="Step" level="4" number="2"> <text> Create new Communities with the Administration Console.</text> </target>
+
+ <target id="bf99vak" pid="b9y19ck" name="Step" level="4" number="3"> <text> Install a Conferencing Client.</text> </target>
+
+ <target id="bf99val" pid="b9y19ck" name="Step" level="4" number="4"> <text>Use the Conferencing Client to create users and perform other administrative tasks.</text> </target>
 
  <target id="baudo10" pid="b9y19ck" name="Sect2" level="2" number="2.9.2"> <text>Installing the Conferencing Client</text> </target>
 
