@@ -71,6 +71,7 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchUtils;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
@@ -146,6 +147,16 @@ public class WorkspaceTreeHelper {
 					entry = (User)bs.getProfileModule().getEntry(binderId, entryId);
 					model.put(WebKeys.USER_PRINCIPAL, entry);
 					return WebKeys.VIEW_NO_USER_WORKSPACE;
+				} catch(AccessControlException e) {
+					BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
+					if (WebHelper.isUserLoggedIn(request) && 
+							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+						//Access is not allowed
+						return WebKeys.VIEW_ACCESS_DENIED;
+					} else {
+						//Please log in
+						return WebKeys.VIEW_LOGIN_PLEASE;
+					}
 				}
 			} else {
 				User entry = null;

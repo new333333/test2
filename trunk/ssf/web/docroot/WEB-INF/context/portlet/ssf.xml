@@ -59,6 +59,8 @@
 	<bean id="typeToFindAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.TypeToFindAjaxController" />
 	<bean id="mobileAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.MobileAjaxController" />
 	<bean id="relevanceAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.RelevanceAjaxController" />
+
+	<bean id="loginController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.LoginController" />
  	<!-- Handlers -->
 
 	<bean id="portletModeParameterHandlerMapping" parent="portletModeParameterHandlerMappingTemplate">
@@ -114,6 +116,7 @@
 						<entry key="__ajax_find"><ref bean="typeToFindAjaxController"/></entry>
 						<entry key="__ajax_mobile"><ref bean="mobileAjaxController"/></entry>
 						<entry key="__ajax_relevance"><ref bean="relevanceAjaxController"/></entry>
+						<entry key="__login"><ref bean="loginController"/></entry>
 
 						<entry key="import_definition"><ref bean="importDefinitionController"/></entry>
 						<entry key="import_profiles"><ref bean="importProfilesController"/></entry>

@@ -31,11 +31,9 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <ssf:ifadapter>
 <body class="ss_style_body">
-<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </ssf:ifadapter>
 
-<div style="padding-top:20px;"><span class="ss_bold ss_errorLabel">[<ssf:nlt tag="errorcode.access.denied"/>]</span></div>
+You are logged in!!!
 
 <ssf:ifadapter>
 </div>

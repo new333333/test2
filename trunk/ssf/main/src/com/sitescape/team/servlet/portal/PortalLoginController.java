@@ -29,6 +29,8 @@
 package com.sitescape.team.servlet.portal;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,11 +60,14 @@ public abstract class PortalLoginController extends SAbstractController {
 		javax.servlet.http.Cookie[] clientCookies = request.getCookies();
 		
 		org.apache.commons.httpclient.Cookie[] portalCookies = null;
+		Map<String,Object> model = new HashMap();
+		String view = WebKeys.VIEW_LOGIN_RETURN;
 		
 		if(("/" + WebKeys.SERVLET_PORTAL_LOGIN).equalsIgnoreCase(request.getPathInfo())) { // login request
 			if(!isLoginAllowed(request)) {
 				// Portal login is not allowed. Return silently, rather than throwing an exception.
-				return null;
+				model.put(WebKeys.LOGIN_ERROR, WebKeys.LOGIN_ERROR_LOGINS_NOT_ALLOWED);
+				return new ModelAndView(view, model);
 			}
 			
 			String username = RequestUtils.getStringParameter(request, "username", "");
@@ -78,7 +83,8 @@ public abstract class PortalLoginController extends SAbstractController {
 					// in this case. Set _forcenew parameter to true to force creation of 
 					// a new session.
 					logger.info("The user " + username + " is already logged in.");
-					return null;
+					model.put(WebKeys.LOGIN_ERROR, WebKeys.LOGIN_ERROR_USER_ALREADY_LOGGED_IN);
+					return new ModelAndView(view, model);
 				}
 			}
 			
@@ -94,11 +100,12 @@ public abstract class PortalLoginController extends SAbstractController {
 				copyClientCookies(request, clientCookies, httpClient);
 			
 			portalCookies = logOutFromPortal(request, response, httpClient);
+			view = WebKeys.VIEW_LOGOUT_RETURN;
 		}
 		
 		copyPortalCookies(clientCookies, portalCookies, response);
 		
-		return null;
+		return new ModelAndView(view, model);
 	}
 	
 	protected void copyClientCookies(HttpServletRequest request, javax.servlet.http.Cookie[] cookies, HttpClient httpClient) {

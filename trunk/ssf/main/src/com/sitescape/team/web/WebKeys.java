@@ -230,8 +230,7 @@ public class WebKeys {
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
 	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
 	public static final String ACTION_UNLOCK_FOLDER_ENTRY = "unlock_folder_entry";
-	public static final String ACTION_LOGIN = "login";
-	public static final String ACTION_LOGOUT = "logout";
+	public static final String ACTION_LOGIN = "__login";
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
 	public static final String ACTION_VIEW_CHANGELOG="view_change_log";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
@@ -690,7 +689,12 @@ public class WebKeys {
     
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String LIST_UNSEEN_COUNTS_BINDER_IDS="ss_unseenCountsBinderIds";
+    public static final String LOGIN_ERROR="ss_loginError";
+    public static final String LOGIN_ERROR_LOGIN_FAILED="loginFailed";
+    public static final String LOGIN_ERROR_LOGINS_NOT_ALLOWED="loginsNotAllowed";
+    public static final String LOGIN_ERROR_USER_ALREADY_LOGGED_IN="userAlreadyLoggedIn";
     public static final String LOGIN_URL="ss_loginUrl";
+    public static final String LOGIN_POST_URL="ss_loginPostUrl";
     public static final String LOGOUT_URL="ss_logoutUrl";
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
@@ -1010,6 +1014,8 @@ public class WebKeys {
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
     public static final String VIEW_IMPORT_TEMPLATE="administration/importTemplate";
     public static final String VIEW_LOGIN_PLEASE="forum/login_please";
+    public static final String VIEW_LOGIN_RETURN="forum/login_return";
+    public static final String VIEW_LOGOUT_RETURN="forum/logout_return";
     public static final String VIEW_MOBILE="mobile/view";
     public static final String VIEW_MOBILE_EDIT="mobile/edit";
     public static final String VIEW_TASK_SUMMARY="task_summary/view";
@@ -1059,6 +1065,8 @@ public class WebKeys {
     public static final String VIEW_TEAM_MEMBERS="forum/view_team_members";
     
     //servlet paths
+    public static final String SERVLET_LOGIN="portalLogin";
+    public static final String SERVLET_LOGOUT="portalLogout";
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";
     public static final String SERVLET_DOWNLOAD_REPORT="reportDownload";

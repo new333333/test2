@@ -52,7 +52,7 @@ public class LoginFilter  implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 
 		if(WebHelper.isUserLoggedIn(req)) {
-			// User is logged in. Proceed as normal. 
+			// User is logged in. Proceed as normalt. 
 			chain.doFilter(request, response);
 		}
 		else {

@@ -43,6 +43,16 @@ var ssMyFavorites${renderResponse.namespace} = new ssFavorites('${renderResponse
 var ssMyTeams${renderResponse.namespace} = new ssTeams('${renderResponse.namespace}');
 var ss_displayType = "${ss_displayType}";
 </script>
+<!-- Start of upper right toolbar -->
+<div id="ss_upperRightToolbar${renderResponse.namespace}" align="right"
+  class="ss_pseudoPortalUpperRightToolbar">
+<ssf:ifLoggedIn>
+  <a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
+</ssf:ifLoggedIn>
+<ssf:ifNotLoggedIn>
+  <a href="${ss_loginUrl}"><span><ssf:nlt tag="login"/></span></a>
+</ssf:ifNotLoggedIn>
+</div>
 <c:if test="${ssUserProperties.debugMode}">
 <!-- Start of debug window -->
   <div style="border:1px solid black;">
@@ -93,7 +103,11 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 		if (divObj != null) {
 			divObj.className = "ss_pseudoPortal"
 		}
-
+		divObj = self.document.getElementById('ss_upperRightToolbar${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.style.display = "block"
+			divObj.style.visibility = "visible"
+		}
 	}
 }
 
@@ -758,6 +772,7 @@ function ss_hideRecentPlacesDiv${renderResponse.namespace}() {
 <div style="padding-bottom:0px;"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <div style="padding-bottom:2px;"></div>
+<div class="ss_clear_float"></div>
 
 <script type="text/javascript">
 ss_workarea_showPseudoPortal${renderResponse.namespace}()
