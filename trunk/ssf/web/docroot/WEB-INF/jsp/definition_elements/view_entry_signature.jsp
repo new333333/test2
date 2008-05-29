@@ -55,11 +55,11 @@
 <c:if test="${ssConfigJspStyle == 'mail'}">
 	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
 	    action="view_permalink"
-	    binderId="${ssDefinitionEntry.creation.principal.parentBinder.id}"
-	    entryId="${ssDefinitionEntry.creation.principal.id}">
+	    binderId="${ssDefinitionEntry.modification.principal.parentBinder.id}"
+	    entryId="${ssDefinitionEntry.modification.principal.id}">
 	    <ssf:param name="entityType" value="workspace" />
 	    <ssf:param name="newTab" value="1" />
-		</ssf:url>"><c:out value="${ssDefinitionEntry.creation.principal.title}"/></a>
+		</ssf:url>"><c:out value="${ssDefinitionEntry.modification.principal.title}"/></a>
 </c:if>
 	</div>
   </td>
