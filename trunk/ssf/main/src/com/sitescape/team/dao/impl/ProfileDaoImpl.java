@@ -66,6 +66,7 @@ import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.ApplicationPrincipal;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.EmailAddress;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Group;
@@ -788,9 +789,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     		//this problem was fixed before ship
 			if (se.getRootCause() instanceof java.io.InvalidClassException) {
 				//bad serialized data - get rid of it
-	   			Map params = new HashMap();
-    			params.put("id", id);
-    			getCoreDao().executeUpdate("delete from SS_UserProperties where id=:id", params);
+    			executePropertiesDelete(id);
 			} else throw se;
 		}
    		if (uProps == null) {
@@ -810,9 +809,7 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     		//	this problem was fixed before ship
     		if (se.getRootCause() instanceof java.io.InvalidClassException) {
     			//	bad serialized data - get rid of it
-    			Map params = new HashMap();
-    			params.put("id", id);
-    			getCoreDao().executeUpdate("delete from SS_UserProperties where id=:id", params);
+    			executePropertiesDelete(id);
     		} else throw se;
     	}
 		if (uProps == null) {
@@ -822,7 +819,26 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
     	}
 		return uProps;
     }
+	//At one point dom4j (1.5) objects where serialized,  don4j(1.6) does not recognize them
+	//Somewhere along the way we changed it so we saved the string value instead of the serialized object, but 
+	//occasionally they pop up at home.
+	private void executePropertiesDelete(final UserPropertiesPK id) {
+		//need to execute in new session, so it gets commited
+       	SessionFactory sf = getSessionFactory();
+    	Session session = sf.openSession();
+		Statement statement = null;
+    	try {
+    		statement = session.connection().createStatement();
+    		statement.executeUpdate("delete from SS_UserProperties where principalId=" + id.getPrincipalId() + 
+    				" and binderId=" + id.getBinderId());;
+   	} catch (SQLException sq) {
+    		throw new HibernateException(sq);
+    	} finally {
+    		try {if (statement != null) statement.close();} catch (Exception ex) {};
+    		session.close();
+    	}
 
+	}
     public Group getReservedGroup(String internalId, Long zoneId) {
     	Long id = getReservedId(internalId, zoneId);
     	if (id == null) {
