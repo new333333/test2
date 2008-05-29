@@ -76,7 +76,7 @@ public class DefaultSendEmail extends SSStatefulJob implements SendEmail {
 	 * @see com.sitescape.team.jobs.SSStatefulJob#doExecute(org.quartz.JobExecutionContext)
 	 */
     public void doExecute(JobExecutionContext context) throws JobExecutionException {
-		Object msg = (Map)jobDataMap.get("mailMessage");
+		Object msg = jobDataMap.get("mailMessage");
 		if (msg instanceof Map) {
 			doExecuteV1(context, (Map) msg);
 			return;
