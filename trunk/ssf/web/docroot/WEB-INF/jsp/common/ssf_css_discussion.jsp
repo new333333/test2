@@ -272,16 +272,16 @@ boolean isIE = BrowserSniffer.is_ie(request);
 /****  DISCUSSION THREAD IMAGES ********/
 	
 	a.ss_new_thread img {
-	width: 27px;
+	width: 12px;
 	height: 12px;
 	margin: 0px;
-	padding: 0px;
+	padding: 0px 0 2px 3px;
 	border: 0px;
-	vertical-align: bottom;
+	vertical-align: text-bottom;
 }
 
 a.ss_new_thread img, a.ss_new_thread:link img , a.ss_new_thread:focus img, a.ss_new_thread:visited img { 
-	background: transparent url(<html:rootPath/>images/pics/discussion/new_thread_sm.png) no-repeat top left; 
+	background: transparent url(<html:rootPath/>images/pics/discussion/sunburst.png) no-repeat top left; 
 }
 
 a.ss_new_thread:hover img {
@@ -296,5 +296,8 @@ a.ss_new_thread:hover img {
 .ss_sliding {
 	white-space:nowrap!important;
 	}	
-
+#ss_configureCol {
+	margin-left:20px;
+	padding-bottom:10px;
+	}
 /**********************************/
