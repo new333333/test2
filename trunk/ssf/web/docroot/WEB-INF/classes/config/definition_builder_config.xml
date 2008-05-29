@@ -2427,7 +2427,6 @@
 		</properties>
 		<options>
 			<option name="onEntry"/>
-			<option name="workflowAction"/>
 			<option name="transitions" initial="true" />
 			<option name="accessControls"/>
 			<option name="onExit"/>
@@ -2679,6 +2678,7 @@
 			<option name="notifications" />
 			<option name="moveEntry" />
 			<option name="copyEntry" />
+			<option name="workflowAction"/>
 		</options>
 		<help>ihelp.workflow.on_entry</help>
 	</item>
@@ -2696,6 +2696,7 @@
 			<option name="notifications" />
 			<option name="moveEntry" />
 			<option name="copyEntry" />
+			<option name="workflowAction"/>
 		</options>
 	</item>
 	
