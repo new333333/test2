@@ -50,7 +50,6 @@ public interface Facade {
 	public String getDefinitionListAsXML();
 	/**
 	 * 
-	 * @param accessToken
 	 * @param binderId
 	 * @param definitionIds
 	 * @param workflowAssociations <Pairs of entryDefinitionId,workflowDefinitionId
@@ -66,7 +65,6 @@ public interface Facade {
 	 * <property name="members">1,2,3</property>
 	 * </workAreaFunctionMembership>
 	 * </workAreaFunctionMemberships>  
-	 * @param accessToken
 	 * @param binderId
 	 * @param inputDataAsXml
 	 */
