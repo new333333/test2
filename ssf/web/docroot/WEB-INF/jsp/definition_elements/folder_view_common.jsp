@@ -65,7 +65,35 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 		binderId="${ssFolder.id}"><ssf:param 
 		name="operation" value="save_folder_columns"/></ssf:url>";
 </script>
+<div align="center">
+<div id="ss_diss_inset">
+<div align="left" class="ssPageNavi">
+<% // filter toolbar %>
+ <table border="0" cellspacing="0px" cellpadding="0px">
+  <tr>
+	<td><%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %></td>   
+    <td style="padding-left: 20px;"><%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %></td>
 
+  </tr>
+ </table>
+</div>
+<em>Peter, Need short breadcrumbs here:
+<br/>
+<span style="color:#5A9A98; font-weight:bold">>>Discussion Name &nbsp;&nbsp;</span></em>
+<span style="color:#546292; font-weight:bold"><img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle">&nbsp;Folder Name</span><br/><br/>
+<div id="ss_configureCol">
+<% // configure columns area %>
+	 [<a href="<ssf:url
+			adapter="true" 
+			portletName="ss_forum" 
+			action="__ajax_request" 
+			actionUrl="true" >
+			<ssf:param name="operation" value="configure_folder_columns" />
+			<ssf:param name="binderId" value="${ssBinder.id}" />
+			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
+			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
+		    <span class="ss_muted_label_small ss_underline"><ssf:nlt tag="misc.configureColumns"/> </span> </a>&nbsp;]  
+</div> <!--end of configure columns-->		
 <div id="ss_folder_table_parent" class="ss_folder">
 
 <div class="ss_folder_border">
@@ -77,34 +105,14 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 <div class="ss_clear"></div>
 </div>
 
-<div align="left" class="ssPageNavi">
-<% // filter toolbar %>
- <table border="0" cellspacing="0px" cellpadding="0px">
-  <tr>
-	<td><%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %></td>   
-    <td style="padding-left: 20px;"><%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %></td>
-	<td align="right" width="20%">
-		  <a href="<ssf:url
-			adapter="true" 
-			portletName="ss_forum" 
-			action="__ajax_request" 
-			actionUrl="true" >
-			<ssf:param name="operation" value="configure_folder_columns" />
-			<ssf:param name="binderId" value="${ssBinder.id}" />
-			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    <span class="ss_muted_label_small"><ssf:nlt tag="misc.configureColumns"/></span></a>
-	</td>
-  </tr>
- </table>
-</div>
+
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
 <ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}">
 
 <ssf:slidingTableRow headerRow="true">
   <c:if test="${!empty ssFolderColumns['number']}">
-    <ssf:slidingTableColumn width="12%">
+    <ssf:slidingTableColumn width="6%">
 
     <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
     	name="operation" value="save_folder_sort_info"/><ssf:param 
@@ -171,81 +179,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
       
     </ssf:slidingTableColumn>
   </c:if>
-
-  <c:if test="${!empty ssFolderColumns['comments']}">
-    <ssf:slidingTableColumn width="12%">
-      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Comments"/> </div>
-    </ssf:slidingTableColumn>
-  </c:if>
-
-  <c:if test="${!empty ssFolderColumns['size']}">
-    <ssf:slidingTableColumn width="12%">
-
-    <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
-	    	name="operation" value="save_folder_sort_info"/><ssf:param 
-	    	name="ssFolderSortBy" value="_fileSize"/><c:choose><c:when 
-	    	test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}"><ssf:param 
-	    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><ssf:param 
-	    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></ssf:url>">
-	    <ssf:nlt tag="folder.column.Size"/>
-	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
-		</c:if>
-	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'false' }">
-	    
-			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
-		</c:if>
-    <a/>
-    </ssf:slidingTableColumn>
-  </c:if>
-
-  <c:if test="${!empty ssFolderColumns['download']}">
-    <ssf:slidingTableColumn width="13%">
-      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Download"/> </div>
-    </ssf:slidingTableColumn>
-  </c:if>
-
-  <c:if test="${!empty ssFolderColumns['html']}">
-    <ssf:slidingTableColumn width="10%">
-      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Html"/> </div>
-    </ssf:slidingTableColumn>
-  </c:if>
-
-  <c:if test="${!empty ssFolderColumns['state']}">
-    <ssf:slidingTableColumn width="20%">
-
-    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-    	name="operation" value="save_folder_sort_info"/><ssf:param 
-    	name="binderId" value="${ssFolder.id}"/><ssf:param 
-    	name="ssFolderSortBy" value="_workflowState"/><c:choose><c:when 
-    	test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}"><ssf:param 
-    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
-    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
-	
-	<c:choose>
-	  <c:when test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
-	  	<ssf:title tag="title.sort.by.column.desc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" />
-	  	</ssf:title>
-	  </c:when>
-	  <c:otherwise>
-	  	<ssf:title tag="title.sort.by.column.asc">
-	  		<ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" />
-	  	</ssf:title>
-	  </c:otherwise>
-	</c:choose>
-	>
-    	<ssf:nlt tag="folder.column.State"/>
-	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
-			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
-		</c:if>
-		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
-			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
-		</c:if>
-    <a/>
-    </ssf:slidingTableColumn>
-  </c:if>
-
+  
   <c:if test="${!empty ssFolderColumns['author']}">
     <ssf:slidingTableColumn width="20%">
 
@@ -276,6 +210,80 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 		</c:if>
 		<c:if test="${ ssFolderSortBy == '_creatorTitle' && ssFolderSortDescend == 'false'}">
 			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.Author") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+		</c:if>
+    <a/>
+    </ssf:slidingTableColumn>
+  </c:if>
+
+  <c:if test="${!empty ssFolderColumns['comments']}">
+    <ssf:slidingTableColumn width="12%">
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Comments"/> </div>
+    </ssf:slidingTableColumn>
+  </c:if>
+
+  <c:if test="${!empty ssFolderColumns['size']}">
+    <ssf:slidingTableColumn width="8%">
+
+    <a href="<ssf:url binderId="${ssFolder.id}" action="${action}" actionUrl="true"><ssf:param 
+	    	name="operation" value="save_folder_sort_info"/><ssf:param 
+	    	name="ssFolderSortBy" value="_fileSize"/><c:choose><c:when 
+	    	test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}"><ssf:param 
+	    	name="ssFolderSortDescend" value="false"/></c:when><c:otherwise><ssf:param 
+	    	name="ssFolderSortDescend" value="true"/></c:otherwise></c:choose></ssf:url>">
+	    <ssf:nlt tag="folder.column.Size"/>
+	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'true'}">
+			<img <ssf:alt tag="alt.showMenu"/> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+		</c:if>
+	    <c:if test="${ ssFolderSortBy == '_fileSize' && ssFolderSortDescend == 'false' }">
+	    
+			<img <ssf:alt tag="alt.hideThisMenu"/> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
+		</c:if>
+    <a/>
+    </ssf:slidingTableColumn>
+  </c:if>
+
+  <c:if test="${!empty ssFolderColumns['download']}">
+    <ssf:slidingTableColumn width="8%">
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Download"/> </div>
+    </ssf:slidingTableColumn>
+  </c:if>
+
+  <c:if test="${!empty ssFolderColumns['html']}">
+    <ssf:slidingTableColumn width="10%">
+      <div class="ss_title_menu"><ssf:nlt tag="folder.column.Html"/> </div>
+    </ssf:slidingTableColumn>
+  </c:if>
+
+  <c:if test="${!empty ssFolderColumns['state']}">
+    <ssf:slidingTableColumn width="8%">
+
+    <a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+    	name="operation" value="save_folder_sort_info"/><ssf:param 
+    	name="binderId" value="${ssFolder.id}"/><ssf:param 
+    	name="ssFolderSortBy" value="_workflowState"/><c:choose><c:when 
+    	test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}"><ssf:param 
+    	name="ssFolderSortDescend" value="true"/></c:when><c:otherwise><ssf:param 
+    	name="ssFolderSortDescend" value="false"/></c:otherwise></c:choose></ssf:url>"
+	
+	<c:choose>
+	  <c:when test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
+	  	<ssf:title tag="title.sort.by.column.desc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" />
+	  	</ssf:title>
+	  </c:when>
+	  <c:otherwise>
+	  	<ssf:title tag="title.sort.by.column.asc">
+	  		<ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" />
+	  	</ssf:title>
+	  </c:otherwise>
+	</c:choose>
+	>
+    	<ssf:nlt tag="folder.column.State"/>
+	    <c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'true'}">
+			<img <ssf:alt tag="title.sorted.by.column.desc"><ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+		</c:if>
+		<c:if test="${ ssFolderSortBy == '_workflowState' && ssFolderSortDescend == 'false'}">
+			<img <ssf:alt tag="title.sorted.by.column.asc"><ssf:param name="value" value="<%= NLT.get("folder.column.State") %>" /></ssf:alt> border="0" src="<html:imagesPath/>pics/menuup.gif"/>
 		</c:if>
     <a/>
     </ssf:slidingTableColumn>
@@ -315,6 +323,8 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
     <a/>
     </ssf:slidingTableColumn>
   </c:if>
+  
+  <% // Beginning of Rows %>
   
   <c:forEach var="column" items="${ssFolderColumns}">
     <c:set var="colName" value="${column.key}"/>
@@ -356,6 +366,8 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 
 <jsp:useBean id="entry1" type="java.util.HashMap" />
 <%
+	String seenStyleTitle = "class=\"ss_underline\"";
+	String seenStyleTitle2 = "class=\"ss_underlinePlus\"";
 	String seenStyle = "";
 	String seenStyleAuthor = "";
 	String seenStyleFine = "class=\"ss_fineprint\"";
@@ -373,10 +385,15 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 	}
 %>
 <c:set var="seenStyleburst" value="<%= seenStyle %>"/>
+
+<%
+/** OLD GREY/YELLOW ALTERNATING ROW CODE
+*<ssf:slidingTableRow id="${folderLineId}" oddStyle="ss_table_tr_odd" evenStyle="ss_table_tr_even">
+*/
+%>
 <c:set var="hasFile2" value="<%= hasFile %>"/>
 <c:set var="oneFile2" value="<%= oneFile %>"/>
-<ssf:slidingTableRow id="${folderLineId}" oddStyle="ss_table_tr_odd" evenStyle="ss_table_tr_even">
-
+<ssf:slidingTableRow id="${folderLineId}" >
  <c:if test="${!empty ssFolderColumns['number']}">
   <ssf:slidingTableColumn>
     <a href="<ssf:url     
@@ -412,18 +429,29 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
     	onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 	</c:if>
     >
+    
     <span <%= seenStyle %>>
     
     <c:if test="${empty entry1.title}" >
 	--<ssf:nlt tag="entry.noTitle" />--
 	</c:if>
 	<c:if test="${!empty seenStyleburst}"> 
-  		<img src="<html:rootPath/>images/pics/1pix.gif" align="absmiddle" <ssf:alt tag="alt.new"/> />
+  		<img src="<html:rootPath/>images/pics/1pix.gif" align="left" <ssf:alt tag="alt.new"/> />
+  		<span <%= seenStyleTitle %>><c:out value="${entry1.title}"/></span></span></a>
   	</c:if>
-  	<c:out value="${entry1.title}"/></span></a>
+  	<c:if test="${empty seenStyleburst}"> 
+  		<div <%= seenStyleTitle2 %>><c:out value="${entry1.title}"/></div></span></a>
+  	</c:if>
+  	
   </ssf:slidingTableColumn>
  </c:if>
   
+  <c:if test="${!empty ssFolderColumns['author']}">
+  <ssf:slidingTableColumn>
+	<ssf:showUser user="<%=(User)entry1.get("_principal")%>" titleStyle="<%= seenStyleAuthor %>"/> 
+  </ssf:slidingTableColumn>
+ </c:if>
+ 
  <c:if test="${!empty ssFolderColumns['comments']}">
   <ssf:slidingTableColumn>
       <span <%= seenStyle %>>${entry1._totalReplyCount}</span>
@@ -506,12 +534,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
   </ssf:slidingTableColumn>
  </c:if>
   
- <c:if test="${!empty ssFolderColumns['author']}">
-  <ssf:slidingTableColumn>
-	<ssf:showUser user="<%=(User)entry1.get("_principal")%>" titleStyle="<%= seenStyleAuthor %>"/> 
-  </ssf:slidingTableColumn>
- </c:if>
- 
+
  <c:if test="${!empty ssFolderColumns['date']}">
   <ssf:slidingTableColumn>
     <span <%= seenStyle %>><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
@@ -612,6 +635,6 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 </c:forEach>
 </ssf:slidingTable>
 </div>
-
+</div></div><!-- end of centered inset area -->
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

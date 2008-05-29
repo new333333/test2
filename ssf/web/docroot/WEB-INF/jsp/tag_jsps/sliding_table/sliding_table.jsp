@@ -109,9 +109,9 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
     title="<ssf:nlt tag="helpSpot.folderTable"/>"></ssHelpSpot>
 <div id="${ss_slidingTableId}_2" 
  style="margin:2px; padding-bottom:2px; 
- border-left: #CCCCCC 1px solid;
- border-right: #CCCCCC 1px solid;
- border-bottom: #CCCCCC 1px solid;
+ border-left: #6799C8 1px solid;
+ border-right: #6799C8 1px solid;
+ border-bottom: #6799C8 1px solid;
  " width="98%"
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
@@ -184,7 +184,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" 
   style="position:absolute; z-index:<%= String.valueOf(iCol + slidingTableColumnZ) %>;" 
-  class="ss_style ss_sliding_table_column1">
+  class="ss_sliding_table_column1">
 <table cellspacing="0" cellpadding="2" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 <td class="<%= rowStyle %>" >&nbsp;</td>
