@@ -46,7 +46,7 @@
 <ssf:nlt tag="(checked)"/>
 </c:if>
 <c:if test="${!ssDefinitionEntry.customAttributes[property_name].value}" >
-<ssf:nlt tag="(notchecked)"/>
+(<ssf:nlt tag="notchecked"/>)
 </c:if>
 <span class="ss_labelRight"><c:out value="${property_caption}" /></span>
 </c:if>
