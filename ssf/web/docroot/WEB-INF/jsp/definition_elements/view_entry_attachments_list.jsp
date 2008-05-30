@@ -63,12 +63,9 @@ boolean ss_isMail = false;
   <c:forEach var="fileVersion" items="${selection.fileVersionsUnsorted}">
     <c:set var="versionCount" value="${versionCount + 1}"/>
   </c:forEach>
-  <c:set var="thumbRowSpan" value="${versionCount}"/>
-  <c:if test="${versionCount > 1}">
+  <c:set var="thumbRowSpan" value="1"/>
+  <c:if test="${versionCount >= 1}">
     <c:set var="thumbRowSpan" value="${thumbRowSpan + 2}"/>
-  </c:if>
-  <c:if test="${versionCount == 1}">
-    <c:set var="thumbRowSpan" value="1"/>
   </c:if>
      <tr><td colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>
@@ -198,7 +195,7 @@ boolean ss_isMail = false;
 	    </div>
 	    </c:if>
 		</td>
-		<td class="ss_att_title" width="25%"><a style="text-decoration: none;" 
+		<td style="height:20px;" class="ss_att_title" width="25%"><a style="text-decoration: none;" 
 					<c:if test="${ssConfigJspStyle != 'mail'}">    
 						href="<ssf:url 
 					    webPath="readFile"
@@ -302,11 +299,13 @@ boolean ss_isMail = false;
 		<td class="ss_att_meta" width="15%"></td>
 	</tr>
 	<c:if test="${!empty selection.fileVersions && versionCount > 1 && ssConfigJspStyle != 'mail'}">
-        <tr><td class="ss_att_title" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
+        <tr><td style="height:10px;" class="ss_att_title" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 		<tr>
-		  <td class="ss_att_title ss_subhead2" colspan="8"><ssf:nlt tag="entry.PreviousVersions"/></td>
-		</tr>
-		<c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
+		  <td class="ss_att_title ss_subhead2" colspan="8">
+		    <c:set var="previousVersionsText" value="<%= NLT.get("entry.PreviousVersions") %>"/>
+		    <ssf:expandableArea title="${previousVersionsText}">
+			  <table>
+			  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">
 	          	<c:choose>
 		          	<c:when test="${status.count == 4}">
 						 <tr id="${ss_attachments_namespace}att_row${status.count}n">
@@ -374,9 +373,13 @@ boolean ss_isMail = false;
 				<td class="ss_att_meta">${fileVersion.fileItem.lengthKB}KB</td>
 				<td width="25%" class="ss_att_meta ss_att_space">${fileVersion.modification.principal.title}</td>
 				<td class="ss_att_meta" width="15%"></td>	
-			</tr>				
+			  </tr>				
 				
- 	    </c:forEach>
+ 	    	</c:forEach>
+ 	    	</table>
+ 	    	</ssf:expandableArea>
+		  </td>
+		</tr>
 	</c:if>
 </c:forEach>
 <c:if test="${selectionCount > 0}">
