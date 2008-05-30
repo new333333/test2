@@ -41,16 +41,16 @@ public interface AccessTokenManager {
 	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException;
 	
 	/**
-	 * Generates an access token of background type.
+	 * Returns an access token of background type.
 	 * 
 	 * @param applicationId
 	 * @param userId
 	 * @return
 	 */
-	public AccessToken newBackgroundToken(Long applicationId, Long userId);
+	public AccessToken getBackgroundToken(Long applicationId, Long userId);
 	
 	/**
-	 * Generates an access token of background type.
+	 * Returns an access token of background type.
 	 * Its corresponding <code>binderAccessConstraints</code> value is set to 
 	 * <code>BinderAccessConstraints.BINDER_AND_DESCENDANTS</code> whether
 	 * <code>binderId</code> is specified or not.
@@ -60,10 +60,10 @@ public interface AccessTokenManager {
 	 * @param binderId optional
 	 * @return
 	 */
-	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId);
+	public AccessToken getBackgroundToken(Long applicationId, Long userId, Long binderId);
 	
 	/**
-	 * Generates an access token of background type.
+	 * Returns an access token of background type.
 	 * 
 	 * @param applicationId
 	 * @param userId
@@ -71,7 +71,7 @@ public interface AccessTokenManager {
 	 * @param binderAccessConstraints
 	 * @return
 	 */
-	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId, 
+	public AccessToken getBackgroundToken(Long applicationId, Long userId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints);
 	
 	/**
