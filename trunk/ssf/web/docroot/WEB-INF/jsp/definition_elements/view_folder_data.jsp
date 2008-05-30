@@ -58,10 +58,13 @@
 	} else if (itemType.equals("folderRemoteApp")) {
 		%><%@ include file="/WEB-INF/jsp/definition_elements/remote_application_view.jsp" %><%
 
+	} else if (itemType.equals("user_list") || itemType.equals("userListSelectbox")) {
+		%><%@ include file="/WEB-INF/jsp/definition_elements/view_folder_data_user_list.jsp" %><%
+		
 	} else {
         %>
         <ssf:nlt tag="definition.error.unknownDefinitionElement">
-         <ssf:param name="name" value="<%= itemType %>"/>
+         <ssf:param name="value" value="<%= itemType %>"/>
         </ssf:nlt><br/>
         <%
 	}
