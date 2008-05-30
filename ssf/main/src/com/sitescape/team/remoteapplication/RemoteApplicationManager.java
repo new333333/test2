@@ -35,14 +35,17 @@ import com.sitescape.team.security.accesstoken.AccessToken.BinderAccessConstrain
 
 public interface RemoteApplicationManager {
 
-	public enum Action {
-		view_accessory;
-	};
-
-	public void executeInteractiveAction(Action action, Map<String,String> params, Long applicationId, 
+	public void executeInteractiveAction(Map<String,String> params, Long applicationId, 
 			String tokenInfoId, OutputStream out) throws RemoteApplicationException;
 	
-	public void executeInteractiveAction(Action action, Map<String,String> params, Long applicationId, String tokenInfoId, 
+	public void executeInteractiveAction(Map<String,String> params, Long applicationId, String tokenInfoId, 
 			Long binderId, BinderAccessConstraints binderAccessConstraints, OutputStream out) 
+	throws RemoteApplicationException;
+
+	public void executeBackgroundAction(Map<String,String> params, Long applicationId) 
+	throws RemoteApplicationException;
+	
+	public void executeBackgroundAction(Map<String,String> params, Long applicationId, 
+			Long binderId, BinderAccessConstraints binderAccessConstraints) 
 	throws RemoteApplicationException;
 }

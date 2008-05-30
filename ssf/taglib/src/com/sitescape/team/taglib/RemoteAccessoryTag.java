@@ -43,7 +43,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.remoteapplication.RemoteApplicationManager;
-import com.sitescape.team.remoteapplication.RemoteApplicationManager.Action;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.util.WebHelper;
 
@@ -85,7 +84,7 @@ public class RemoteAccessoryTag extends BodyTagSupport implements ParamAncestorT
 			
 			try {
 				getRemoteApplicationManager().executeInteractiveAction
-				(Action.view_accessory, params, applicationId, WebHelper.getTokenInfoId(httpReq), out);
+				(params, applicationId, WebHelper.getTokenInfoId(httpReq), out);
 			}
 			catch(Exception e) {
 				if(logger.isDebugEnabled()) {

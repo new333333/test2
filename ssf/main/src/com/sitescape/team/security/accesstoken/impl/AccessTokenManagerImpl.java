@@ -72,15 +72,15 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		}
 	}
 
-	public AccessToken newBackgroundToken(Long applicationId, Long userId) {
-		return newBackgroundToken(applicationId, userId, null);
+	public AccessToken getBackgroundToken(Long applicationId, Long userId) {
+		return getBackgroundToken(applicationId, userId, null);
 	}
 
-	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId) {
-		return newBackgroundToken(applicationId, userId, binderId, BinderAccessConstraints.BINDER_AND_DESCENDANTS);
+	public AccessToken getBackgroundToken(Long applicationId, Long userId, Long binderId) {
+		return getBackgroundToken(applicationId, userId, binderId, BinderAccessConstraints.BINDER_AND_DESCENDANTS);
 	}
 
-	public AccessToken newBackgroundToken(Long applicationId, Long userId, Long binderId, 
+	public AccessToken getBackgroundToken(Long applicationId, Long userId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints) {
 		TokenInfoBackground info = loadOrCreateBackground(applicationId, userId, binderId);
 		

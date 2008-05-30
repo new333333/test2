@@ -65,20 +65,22 @@ public class AddEntryServlet extends HttpServlet {
 
 	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingService";
 	
-	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
 	private static final String PARAMETER_NAME_VERSION = "ss_version";
 	private static final String PARAMETER_NAME_APPLICATION_ID = "ss_application_id";
 	private static final String PARAMETER_NAME_USER_ID = "ss_user_id";
 	private static final String PARAMETER_NAME_ACCESS_TOKEN = "ss_access_token";
+	private static final String PARAMETER_NAME_TOKEN_SCOPE = "ss_token_scope";
+	private static final String PARAMETER_NAME_RENDERABLE = "ss_renderable";
 
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
 	throws ServletException, IOException {
 		try {
-			String action = req.getParameter(PARAMETER_NAME_ACTION);
 			String version = req.getParameter(PARAMETER_NAME_VERSION);
 			String applicationId = req.getParameter(PARAMETER_NAME_APPLICATION_ID);
 			String userId = req.getParameter(PARAMETER_NAME_USER_ID);
 			String accessToken = req.getParameter(PARAMETER_NAME_ACCESS_TOKEN);
+			String tokenScope = req.getParameter(PARAMETER_NAME_TOKEN_SCOPE);
+			boolean renderable = Boolean.parseBoolean(req.getParameter(PARAMETER_NAME_RENDERABLE));
 			String pathInfo = req.getPathInfo();
 			if (pathInfo.equals("/form")) {
 				String jsp = "/WEB-INF/jsp/addentry/entry_form.jsp";				
