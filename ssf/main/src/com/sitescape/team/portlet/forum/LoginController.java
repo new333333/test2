@@ -117,6 +117,8 @@ public class LoginController  extends SAbstractControllerRetry {
 		//The user is logged in, go to the user profile page
 		//Set up the standard beans
 		BinderHelper.setupStandardBeans(this, request, response, model, binderId);
+		String url = PortletRequestUtils.getStringParameter(request, WebKeys.URL_URL, "");
+		model.put(WebKeys.URL, url);
 		return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 	} 
 }

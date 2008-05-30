@@ -42,10 +42,15 @@ import org.apache.commons.httpclient.URIException;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.User;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
+import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.WebUrlUtil;
 
 public abstract class PortalLoginController extends SAbstractController {
 
@@ -72,7 +77,9 @@ public abstract class PortalLoginController extends SAbstractController {
 			
 			String username = RequestUtils.getStringParameter(request, "username", "");
 			String password = RequestUtils.getStringParameter(request, "password", "");			
+			String url = RequestUtils.getStringParameter(request, "url", "");			
 			boolean forceNew = RequestUtils.getBooleanParameter(request, "_forcenew", false);
+			model.put(WebKeys.URL, url);
 
 			if(!(forceNew && SPropsUtil.getBoolean(PORTAL_LOGIN_FORCENEW_ALLOWED, false))) {
 				if(WebHelper.isUserLoggedIn(request) && username.equalsIgnoreCase(WebHelper.getRequiredUserName(request))) {
@@ -92,7 +99,16 @@ public abstract class PortalLoginController extends SAbstractController {
 			if(clientCookies != null)
 				copyClientCookies(request, clientCookies, httpClient);
 			
-			portalCookies = logIntoPortal(request, response, httpClient, username, password);
+			try {
+				portalCookies = logIntoPortal(request, response, httpClient, username, password);
+			}
+			catch(Exception e) {
+				model.put(WebKeys.LOGIN_ERROR, WebKeys.LOGIN_ERROR_LOGIN_FAILED);
+				view = WebKeys.VIEW_LOGIN_RETRY;
+				//slow this return down to throttle password guessers a little
+				Thread.sleep(1000);
+				return new ModelAndView(view, model);
+			}
 		}
 		else { // logout request
 			HttpClient httpClient = getPortalHttpClient(request);
@@ -101,6 +117,8 @@ public abstract class PortalLoginController extends SAbstractController {
 			
 			portalCookies = logOutFromPortal(request, response, httpClient);
 			view = WebKeys.VIEW_LOGOUT_RETURN;
+			String url = RequestUtils.getStringParameter(request, "url", "");			
+			model.put(WebKeys.URL, url);
 		}
 		
 		copyPortalCookies(clientCookies, portalCookies, response);

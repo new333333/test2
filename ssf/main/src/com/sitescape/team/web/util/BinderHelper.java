@@ -298,32 +298,41 @@ public class BinderHelper {
 			RenderResponse response, Map<String,Object> model, Long binderId) {
 		//Set up the standard beans
 		//These have been documented, so don't delete any
-		String displayType = getDisplayType(request);
-        User user = RequestContextHolder.getRequestContext().getUser();
-		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
-		model.put(WebKeys.USER_PRINCIPAL, user);
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-		model.put(WebKeys.DISPLAY_TYPE, displayType);
+		if (request != null) {
+			String displayType = getDisplayType(request);
+			model.put(WebKeys.DISPLAY_TYPE, displayType);
+	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+			String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+			if (!namespace.equals("")) {
+				model.put(WebKeys.NAMESPACE, namespace);
+			} else {
+				model.put(WebKeys.NAMESPACE, response.getNamespace());
+			}
+			AdaptedPortletURL loginUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			loginUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN); 
+			model.put(WebKeys.LOGIN_URL, loginUrl.toString());
+			String logoutUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGOUT;
+			model.put(WebKeys.LOGOUT_URL, logoutUrl);
+			String loginPostUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGIN;
+			model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
+		}
+		User user = null;
+		if (RequestContextHolder.getRequestContext() != null) {
+        	user = RequestContextHolder.getRequestContext().getUser();
+    		if (user != null) {
+    			Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+        		model.put(WebKeys.USER_PRINCIPAL, user);
+        		model.put(WebKeys.USER_PROPERTIES, userProperties);
+    		}
+        }
 		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
-		String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
 		if (binderId != null) {
 			model.put(WebKeys.BINDER_ID, binderId.toString());
-			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
-			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+			if (user != null) {
+				UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+				model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+			}
 		}
-		if (!namespace.equals("")) {
-			model.put(WebKeys.NAMESPACE, namespace);
-		} else {
-			model.put(WebKeys.NAMESPACE, response.getNamespace());
-		}
-		AdaptedPortletURL loginUrl = new AdaptedPortletURL(request, "ss_forum", true);
-		loginUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN); 
-		model.put(WebKeys.LOGIN_URL, loginUrl.toString());
-		String logoutUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGOUT;
-		model.put(WebKeys.LOGOUT_URL, logoutUrl);
-		String loginPostUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGIN;
-		model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
 	}
 	
 	protected static ModelAndView setupSummaryPortlets(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
@@ -411,6 +420,8 @@ public class BinderHelper {
 				binder = bs.getBinderModule().getBinder(binderId);
 			}
 			catch(AccessControlException e) {
+				//Set up the standard beans
+				setupStandardBeans(bs, request, response, model, binderId);
 				if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 					//Access is not allowed
 					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
@@ -580,7 +591,7 @@ public class BinderHelper {
 	//  This routine is callable only from a portlet controller
 	static public void setBinderPermaLink(AllModulesInjected bs, 
 			RenderRequest request, RenderResponse response) {
-		if (request.getWindowState().equals(WindowState.MAXIMIZED) || getBinderPermaLink(bs).equals("")) {
+		if (request.getWindowState().equals(WindowState.MAXIMIZED) || getBinderPermaLink(bs, request).equals("")) {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			PortletURL url = response.createActionURL();
 			try {url.setWindowState(WindowState.MAXIMIZED);} catch(Exception e) {};
@@ -590,7 +601,7 @@ public class BinderHelper {
 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_NEW_TAB, WebKeys.URL_NEW_TAB_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_ENTRY_TITLE, WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER);
-			if (!url.toString().equals(getBinderPermaLink(bs)))
+			if (!url.toString().equals(getBinderPermaLink(bs, request)))
 				bs.getProfileModule().setUserProperty(user.getId(), 
 						ObjectKeys.USER_PROPERTY_PERMALINK_URL, url.toString());
 		}
@@ -638,7 +649,16 @@ public class BinderHelper {
 	
 	//Routine to get a portal url that points to a binder or entry 
 	//  This routine is callable from an adaptor controller
-	static public String getBinderPermaLink(AllModulesInjected bs) {
+	static public String getBinderPermaLink(AllModulesInjected bs, PortletRequest request) {
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		url.setParameter(WebKeys.ACTION, WebKeys.URL_ACTION_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_BINDER_ID, WebKeys.URL_BINDER_ID_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_NEW_TAB, WebKeys.URL_NEW_TAB_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_ENTRY_TITLE, WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER);
+		return url.toString();
+		/**
 		User user = null;
 		try {
 			user = RequestContextHolder.getRequestContext().getUser();
@@ -650,6 +670,7 @@ public class BinderHelper {
 		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PERMALINK_URL);
 		if (url == null) url = "";
 		return url;
+		*/
 	}
 	
 	static public void getBinderAccessibleUrl(AllModulesInjected bs, Binder binder, Long entryId,

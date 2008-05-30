@@ -80,6 +80,7 @@ public class WebKeys {
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
     public static final String URL_APPEND_TEAM_MEMBERS = "appendTeamMembers";
+    public static final String URL_ACTION="action";
     public static final String URL_ACTION_PLACE_HOLDER="ss_action_place_holder";
     public static final String URL_AJAX = "ajax";
     public static final String URL_AJAX_ID = "ss_ajaxId";
@@ -185,6 +186,7 @@ public class WebKeys {
 	public static final String URL_ID_CHOICES = "idChoices";
 	public static final String URL_ID_CHOICES_SEPARATOR = "%";
 	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
+	public static final String URL_URL = "url";
 	public static final String URL_ICAL_URL = "iCalURL";
 	public static final String URL_ICAL_SCHEDULE = "iCalSchedule";
 	
@@ -910,6 +912,7 @@ public class WebKeys {
 	public static final String TAG_SEARCH_TEXT = "ssTagSearchText";
     public static final String TAG_SIGN="ssTagSign";
 	public static final String UPLOAD_FILE_URL = "ss_upload_file_url";
+	public static final String URL = "ssUrl";
 	public static final String USER_ID = "com.sitescape.userId";
 	public static final String USER_LIST = "ss_userList";
     public static final String USER_PROPERTIES="ssUserProperties";
@@ -1017,6 +1020,7 @@ public class WebKeys {
     public static final String VIEW_IMPORT_TEMPLATE="administration/importTemplate";
     public static final String VIEW_LOGIN_PLEASE="forum/login_please";
     public static final String VIEW_LOGIN_RETURN="forum/login_return";
+    public static final String VIEW_LOGIN_RETRY="forum/login_retry";
     public static final String VIEW_LOGOUT_RETURN="forum/logout_return";
     public static final String VIEW_MOBILE="mobile/view";
     public static final String VIEW_MOBILE_EDIT="mobile/edit";

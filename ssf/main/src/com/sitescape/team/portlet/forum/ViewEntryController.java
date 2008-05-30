@@ -243,7 +243,7 @@ public class ViewEntryController extends  SAbstractController {
 			if (!PortletRequestUtils.getStringParameter(request, WebKeys.IS_REFRESH, "0").equals("1")) { 
 				//doesn't make sense on replies unless we update the visits when replies are show with the entry
 				//that seems wasteful, so don't bother at all
-				//if (fe.isTop()) getFolderModule().setUserVisit(fe);  
+				if (fe.isTop()) getFolderModule().setUserVisit(fe);  
 		       	getReportModule().addAuditTrail(AuditTrail.AuditType.view, fe);
 
 			}

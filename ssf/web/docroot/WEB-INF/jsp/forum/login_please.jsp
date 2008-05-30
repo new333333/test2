@@ -59,6 +59,7 @@
     </table>
     <br/>
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+    <input type="hidden" name="url" value="${ssUrl}"/>
   </fieldset>
   </form>
 </div>
