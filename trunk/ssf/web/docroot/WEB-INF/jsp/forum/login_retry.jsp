@@ -1,3 +1,4 @@
+<%
 /**
  * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
  * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
@@ -26,32 +27,15 @@
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
  * are trademarks of SiteScape, Inc.
  */
-package com.sitescape.team.taglib;
+%>
+<%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
+<body class="ss_style_body">
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.TagSupport;
-
-import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.User;
-import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
-
-public class IfNotLoggedInTag extends TagSupport {
-
-	public int doStartTag() throws JspException {
-
-	    User user = null;
-	    try {
-	    	user = RequestContextHolder.getRequestContext().getUser();
-	    } catch(Exception e) {}
-		if (user == null  || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-			// Indicates that the request is being served by the adapter framework.
-			return EVAL_BODY_INCLUDE;
-		}
-		else {
-			// Indicates that the request is not served by the adapter framework.
-			return SKIP_BODY;
-		}
-	}
-}
+<div style="padding:50px;">
+  <span class="ss_bold ss_largestprint ss_errorLabel"><ssf:nlt tag="errorcode.login.failed"/></span>
+</div>
+<script type="text/javascript">
+setTimeout("self.window.history.back();", 2000)
+</script>
+	</body>
+</html>

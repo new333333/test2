@@ -33,10 +33,29 @@
 <body class="ss_style_body">
 </ssf:ifadapter>
 
-You are logged in!!!
+<c:if test="${!empty ssUrl}">
+<script type="text/javascript">
+self.location.href = '${ssUrl}'
+</script>
+</c:if>
+
+<c:if test="${empty ssUrl && !empty ssUser && !empty ssUser.workspaceId}">
+<script type="text/javascript">
+var url = '<ssf:url 
+    	adapter="true" 
+    	portletName="ss_forum" 
+    	action="view_ws_listing" 
+    	actionUrl="false" 
+    	binderId="${ssUser.workspaceId}"/>';
+self.location.href = url
+</script>
+</c:if>
+
+<c:if test="${empty ssUrl && (empty ssUser || empty ssUser.workspaceId)}">
+<span class="ss_bold ss_largerprint"><ssf:nlt tag="errorcode.portal.login"/></span>
+</c:if>
 
 <ssf:ifadapter>
-</div>
 	</body>
 </html>
 </ssf:ifadapter>
