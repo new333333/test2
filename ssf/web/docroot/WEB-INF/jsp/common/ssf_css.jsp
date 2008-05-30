@@ -1174,6 +1174,7 @@ div.ss_sliding_table_column0 {
 .ss_sliding_table_column0 * {
   color: ${ss_sliding_table_text_color};
   white-space:nowrap;
+  text-decoration:none!important;
 }
 div.ss_sliding_table_column1 {
   position: absolute; 
@@ -1181,6 +1182,7 @@ div.ss_sliding_table_column1 {
   display: block; 
   border-left: #ffffff solid 1px;
   margin: 0px;
+  font-size: ${ss_style_font_normalprint} !important;
 }
 .ss_sliding_table_column1 * {
   color: ${ss_sliding_table_text_color};
