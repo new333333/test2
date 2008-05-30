@@ -275,17 +275,22 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width: 12px;
 	height: 12px;
 	margin: 0px;
-	padding: 0px 0 2px 3px;
+	padding: 0px 0 5px 3px;
 	border: 0px;
 	vertical-align: text-bottom;
 }
 
 a.ss_new_thread img, a.ss_new_thread:link img , a.ss_new_thread:focus img, a.ss_new_thread:visited img { 
-	background: transparent url(<html:rootPath/>images/pics/discussion/sunburst.png) no-repeat top left; 
+	background: transparent; 
 }
 
 a.ss_new_thread:hover img {
     background-position:  left -12px; 
+<ssf:ifaccessible>
+  outline: dotted 1px gray;
+</ssf:ifaccessible>  
+}
+a.ss_new_thread:hover {
 <ssf:ifaccessible>
   outline: dotted 1px gray;
 </ssf:ifaccessible>  

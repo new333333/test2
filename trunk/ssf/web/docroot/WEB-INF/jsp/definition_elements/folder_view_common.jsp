@@ -67,6 +67,8 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 </script>
 <div align="center">
 <div id="ss_diss_inset">
+<em>I am ${ssUser.title}!</em>
+<br/><br/>
 <div align="left" class="ssPageNavi">
 <% // filter toolbar %>
  <table border="0" cellspacing="0px" cellpadding="0px">
@@ -77,10 +79,10 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
   </tr>
  </table>
 </div>
-<em>Peter, Need short breadcrumbs here:
 <br/>
-<span style="color:#5A9A98; font-weight:bold">>>Discussion Name &nbsp;&nbsp;</span></em>
-<span style="color:#546292; font-weight:bold"><img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle">&nbsp;Folder Name</span><br/><br/>
+<span style="color:#5A9A98; font-weight:bold">>>${ssDefinitionEntry.parentBinder} &nbsp;&nbsp;</span></em>
+<span style="color:#546292; font-weight:bold"><img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle">&nbsp;${ssBinder.title}</span><br/><br/>
+
 <div id="ss_configureCol">
 <% // configure columns area %>
 	 [<a href="<ssf:url
@@ -375,7 +377,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
 	}
 	String seenStyleTitle = seenStyle;
-	String seenStyleTitle2 = seenStyle;
+	String seenStyleTitle2 = "class=\"ss_noUnderlinePlus\"";
 %>
 <c:if test="${slidingTableStyle == 'fixed'}">
 <%
@@ -411,16 +413,17 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 <c:if test="${slidingTableStyle == 'fixed'}">
     onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
-    ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;&nbsp;&nbsp;
+    ><span <%= seenStyle %>><c:out value="${entry1._docNum}"/>.</span></a>&nbsp;
   </ssf:slidingTableColumn>
  </c:if>
   
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
-  	<a 
-<c:if test="${slidingTableStyle == 'fixed'}">
-  	class="ss_new_thread" 
-</c:if>
+  <!-- to keep sunburst in line -->
+    <c:if test="${!empty seenStyleburst}">
+	  		<img src="<html:rootPath/>images/pics/discussion/sunburst.png" align="text-bottom" <ssf:alt tag="alt.new"/> />&nbsp;
+	</c:if>
+  	<a  class="ss_new_thread"
   	href="<ssf:url     
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
@@ -437,14 +440,23 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 	</c:if>
     >
     
-    <span 
-	  <c:if test="${empty seenStyleburst}"><%= seenStyleTitle2 %></c:if>
-	  <c:if test="${!empty seenStyleburst}"><%= seenStyleTitle %></c:if>
-	>
+    <c:if test="${!empty seenStyleburst}">
+  			<strong><span <%= seenStyleTitle %> ><c:out value="${entry1.title}"/></span></strong></a>
+	</c:if>
+
+	<c:if test="${empty seenStyleburst}">
+		<c:if test="${slidingTableStyle == 'fixed'}">
+    		<div <%= seenStyleTitle2 %>><c:out value="${entry1.title}"/></div></a> 
+		</c:if>
+	  	<c:if test="${slidingTableStyle != 'fixed'}">
+    		<span <%= seenStyleTitle2 %>><c:out value="${entry1.title}"/></span></a> 
+		</c:if> 		
+	</c:if>
+	
     <c:if test="${empty entry1.title}" >
 	--<ssf:nlt tag="entry.noTitle" />--
 	</c:if>
-  	<c:out value="${entry1.title}"/></span></a>
+  	
   	
   </ssf:slidingTableColumn>
  </c:if>
