@@ -366,8 +366,6 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 
 <jsp:useBean id="entry1" type="java.util.HashMap" />
 <%
-	String seenStyleTitle = "class=\"ss_underline\"";
-	String seenStyleTitle2 = "class=\"ss_underlinePlus\"";
 	String seenStyle = "";
 	String seenStyleAuthor = "";
 	String seenStyleFine = "class=\"ss_fineprint\"";
@@ -376,6 +374,16 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 		seenStyleAuthor="ss_unseen";
 		seenStyleFine = "class=\"ss_unseen ss_fineprint\"";
 	}
+	String seenStyleTitle = seenStyle;
+	String seenStyleTitle2 = seenStyle;
+%>
+<c:if test="${slidingTableStyle == 'fixed'}">
+<%
+	seenStyleTitle = "class=\"ss_underline\"";
+	seenStyleTitle2 = "class=\"ss_underlinePlus\"";
+%>
+</c:if>
+<%
 	boolean hasFile = false;
 	boolean oneFile = false;
 	if (entry1.containsKey("_fileID")) {
@@ -386,11 +394,6 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 %>
 <c:set var="seenStyleburst" value="<%= seenStyle %>"/>
 
-<%
-/** OLD GREY/YELLOW ALTERNATING ROW CODE
-*<ssf:slidingTableRow id="${folderLineId}" oddStyle="ss_table_tr_odd" evenStyle="ss_table_tr_even">
-*/
-%>
 <c:set var="hasFile2" value="<%= hasFile %>"/>
 <c:set var="oneFile2" value="<%= oneFile %>"/>
 <ssf:slidingTableRow id="${folderLineId}" >
@@ -414,7 +417,11 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
   
  <c:if test="${!empty ssFolderColumns['title']}">
   <ssf:slidingTableColumn>
-  	<a class="ss_new_thread" href="<ssf:url     
+  	<a 
+<c:if test="${slidingTableStyle == 'fixed'}">
+  	class="ss_new_thread" 
+</c:if>
+  	href="<ssf:url     
     adapter="<%= useAdaptor %>" 
     portletName="ss_forum" 
     binderId="${ssFolder.id}" 
@@ -430,18 +437,14 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 	</c:if>
     >
     
-    <span <%= seenStyle %>>
-    
+    <span 
+	  <c:if test="${empty seenStyleburst}"><%= seenStyleTitle2 %></c:if>
+	  <c:if test="${!empty seenStyleburst}"><%= seenStyleTitle %></c:if>
+	>
     <c:if test="${empty entry1.title}" >
 	--<ssf:nlt tag="entry.noTitle" />--
 	</c:if>
-	<c:if test="${!empty seenStyleburst}"> 
-  		<img src="<html:rootPath/>images/pics/1pix.gif" align="left" <ssf:alt tag="alt.new"/> />
-  		<span <%= seenStyleTitle %>><c:out value="${entry1.title}"/></span></span></a>
-  	</c:if>
-  	<c:if test="${empty seenStyleburst}"> 
-  		<div <%= seenStyleTitle2 %>><c:out value="${entry1.title}"/></div></span></a>
-  	</c:if>
+  	<c:out value="${entry1.title}"/></span></a>
   	
   </ssf:slidingTableColumn>
  </c:if>
