@@ -32,18 +32,18 @@ import com.sitescape.util.StringUtil;
 
 public class AccessToken {
 
-	public enum TokenType {
-		interactive (1),
-		background (2);
+	public enum TokenScope {
+		session (1),
+		request (2);
 		int number;
-		TokenType(int number) {
+		TokenScope(int number) {
 			this.number = number;
 		}
 		public int getNumber() {return number;}
-		public static TokenType valueOf(int number) {
+		public static TokenScope valueOf(int number) {
 			switch (number) {
-			case 1: return TokenType.interactive;
-			case 2: return TokenType.background;
+			case 1: return TokenScope.session;
+			case 2: return TokenScope.request;
 			default: throw new IllegalArgumentException(String.valueOf(number));
 			}
 		}
@@ -68,7 +68,7 @@ public class AccessToken {
 		}
 	};
 
-	private TokenType type;										// required
+	private TokenScope scope;									// required
 	private Long applicationId; 								// required
 	private Long userId; 										// required
 	private String digest; 										// required
@@ -76,21 +76,21 @@ public class AccessToken {
 	private BinderAccessConstraints binderAccessConstraints; 	// optional, this value is meaningful iff binderId is non-null
 	private String infoId;										// required for interactive, null for background
 	
-	public static AccessToken interactiveToken(String infoId, Long applicationId, 
+	public static AccessToken sessionScopedToken(String infoId, Long applicationId, 
 			Long userId, String digest, Long binderId, BinderAccessConstraints binderAccessConstraints) {
-		return new AccessToken(TokenType.interactive, infoId, applicationId,
+		return new AccessToken(TokenScope.session, infoId, applicationId,
 				userId, digest, binderId, binderAccessConstraints);
 	}
 	
-	public static AccessToken backgroundToken(Long applicationId, 
+	public static AccessToken requestScopedToken(Long applicationId, 
 			Long userId, String digest, Long binderId, BinderAccessConstraints binderAccessConstraints) {
-		return new AccessToken(TokenType.background, null, applicationId,
+		return new AccessToken(TokenScope.request, null, applicationId,
 				userId, digest, binderId, binderAccessConstraints);
 	}
 	
-	private AccessToken(TokenType type, String infoId, Long applicationId, 
+	private AccessToken(TokenScope scope, String infoId, Long applicationId, 
 			Long userId, String digest, Long binderId, BinderAccessConstraints binderAccessConstraints) {
-		this.type = type;
+		this.scope = scope;
 		this.infoId = infoId;
 		this.applicationId = applicationId;
 		this.userId = userId;
@@ -99,12 +99,12 @@ public class AccessToken {
 		this.binderAccessConstraints = binderAccessConstraints;
 	}
 	
-	public TokenType getType() {
-		return type;
+	public TokenScope getScope() {
+		return scope;
 	}
 
-	public void setType(TokenType type) {
-		this.type = type;
+	public void setScope(TokenScope scope) {
+		this.scope = scope;
 	}
 
 	public String getInfoId() {
@@ -171,15 +171,15 @@ public class AccessToken {
 			throw new IllegalArgumentException();
 		// Access token string encoded representation:
 		// 
-		// tokenTypeNumber-appId-userId-digest-binderId-binderAccessConstraintsNumber-[infoId]
+		// tokenScopeNumber-appId-userId-digest-binderId-binderAccessConstraintsNumber-[infoId]
 		// 
-		// where [infoId] is present only for interactive type token 
+		// where [infoId] is present only for session-scoped token 
 		String[] s = StringUtil.split(accessTokenStr, "-");
 		if(s.length < 6)
 			throw new MalformedAccessTokenException(accessTokenStr);
 		if(s.length > 7)
 			throw new MalformedAccessTokenException(accessTokenStr);
-		type = TokenType.valueOf(Integer.valueOf(s[0]));
+		scope = TokenScope.valueOf(Integer.valueOf(s[0]));
 		applicationId = Long.valueOf(s[1]);
 		userId = Long.valueOf(s[2]);
 		digest = s[3];
@@ -187,12 +187,12 @@ public class AccessToken {
 		if(binderId.longValue() == 0L)
 			binderId = null;
 		binderAccessConstraints = BinderAccessConstraints.valueOf(Integer.valueOf(s[5]));
-		if(TokenType.interactive.equals(type)) {
+		if(TokenScope.session.equals(scope)) {
 			if(s.length == 7)
 				infoId = s[6];
 			else
 				throw new MalformedAccessTokenException(accessTokenStr);
-		} else if(TokenType.background.equals(type)) {
+		} else if(TokenScope.request.equals(scope)) {
 			if(s.length == 7)
 				throw new MalformedAccessTokenException(accessTokenStr);
 		} else {
@@ -207,13 +207,13 @@ public class AccessToken {
 	 * This method does NOT validate the token itself.
 	 */
 	public String toStringRepresentation() throws IllegalStateException {
-		// tokenTypeNumber-appId-userId-digest-binderId-binderAccessConstraintsNumber-[infoId]
-		if(type == null)
-			throw new IllegalStateException("type is missing");
-		if(TokenType.interactive.equals(type)) {
+		// tokenScopeNumber-appId-userId-digest-binderId-binderAccessConstraintsNumber-[infoId]
+		if(scope == null)
+			throw new IllegalStateException("scope is missing");
+		if(TokenScope.session.equals(scope)) {
 			if(infoId == null)
 				throw new IllegalStateException("info id is missing");
-		} else if(TokenType.background.equals(type)) {
+		} else if(TokenScope.request.equals(scope)) {
 			if(infoId != null)
 				throw new IllegalStateException("info id is present");
 		} else {
@@ -226,7 +226,7 @@ public class AccessToken {
 		if(digest == null)
 			throw new IllegalStateException("digest is missing");
 		StringBuilder sb = new StringBuilder()
-		.append(type.getNumber()).append("-")
+		.append(scope.getNumber()).append("-")
 		.append(applicationId).append("-")
 		.append(userId).append("-")
 		.append(digest).append("-")

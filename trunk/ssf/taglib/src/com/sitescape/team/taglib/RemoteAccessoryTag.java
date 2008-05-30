@@ -83,8 +83,8 @@ public class RemoteAccessoryTag extends BodyTagSupport implements ParamAncestorT
 			}
 			
 			try {
-				getRemoteApplicationManager().executeInteractiveAction
-				(params, applicationId, WebHelper.getTokenInfoId(httpReq), out);
+				getRemoteApplicationManager().executeSessionScopedRenderableAction
+				(params, applicationId, httpReq, httpRes);
 			}
 			catch(Exception e) {
 				if(logger.isDebugEnabled()) {

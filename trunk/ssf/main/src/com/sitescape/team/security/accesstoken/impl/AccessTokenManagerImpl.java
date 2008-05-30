@@ -37,7 +37,7 @@ import com.sitescape.team.security.accesstoken.AccessTokenException;
 import com.sitescape.team.security.accesstoken.AccessTokenManager;
 import com.sitescape.team.security.accesstoken.InvalidAccessTokenException;
 import com.sitescape.team.security.accesstoken.AccessToken.BinderAccessConstraints;
-import com.sitescape.team.security.accesstoken.AccessToken.TokenType;
+import com.sitescape.team.security.accesstoken.AccessToken.TokenScope;
 import com.sitescape.team.security.dao.SecurityDao;
 import com.sitescape.team.util.EncryptUtil;
 
@@ -56,7 +56,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		TokenInfo info;
-		if(token.getType() == AccessToken.TokenType.interactive) {
+		if(token.getScope() == AccessToken.TokenScope.session) {
 			info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), token.getInfoId());
 		}
 		else {
@@ -84,9 +84,9 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 			BinderAccessConstraints binderAccessConstraints) {
 		TokenInfoBackground info = loadOrCreateBackground(applicationId, userId, binderId);
 		
-		String digest = computeDigest(TokenType.background, applicationId, userId, binderId, binderAccessConstraints, info.getSeed());
+		String digest = computeDigest(TokenScope.request, applicationId, userId, binderId, binderAccessConstraints, info.getSeed());
 		
-		return AccessToken.backgroundToken(applicationId, userId, digest, binderId, binderAccessConstraints);
+		return AccessToken.requestScopedToken(applicationId, userId, digest, binderId, binderAccessConstraints);
 	}
 
 	public void invalidateBackgroundTokens(Long applicationId, Long userId, Long binderId) {
@@ -129,9 +129,9 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		if(!info.getUserId().equals(userId))
 			throw new AccessTokenException("User IDs do not match: " + userId + " " + info.getUserId());
 		
-		String digest = computeDigest(TokenType.interactive, applicationId, info.getUserId(), binderId, binderAccessConstraints, info.getSeed());
+		String digest = computeDigest(TokenScope.session, applicationId, info.getUserId(), binderId, binderAccessConstraints, info.getSeed());
 		
-		return AccessToken.interactiveToken(infoId, applicationId, info.getUserId(), digest, binderId, binderAccessConstraints);
+		return AccessToken.sessionScopedToken(infoId, applicationId, info.getUserId(), digest, binderId, binderAccessConstraints);
 	}
 
 	public String createTokenInfoInteractive(Long userId) {
@@ -159,14 +159,14 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 	}
 
 	private String computeDigest(AccessToken token, String seed) {
-		return computeDigest(token.getType(), token.getApplicationId(), token.getUserId(), token.getBinderId(), token.getBinderAccessConstraints(), seed);
+		return computeDigest(token.getScope(), token.getApplicationId(), token.getUserId(), token.getBinderId(), token.getBinderAccessConstraints(), seed);
 	}
 	
 	private String getRandomSeed() {
 		return UUID.randomUUID().toString();
 	}
 	
-	private String computeDigest(TokenType type, Long applicationId, Long userId, Long binderId, 
+	private String computeDigest(TokenScope type, Long applicationId, Long userId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints, String seed) {
 		// For the purpose of computing digest, we use string representations of the enum values
 		// while their shorter numeric representations are stored in the token. 
