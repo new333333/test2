@@ -120,17 +120,11 @@ self.window.resizeTo(width, height);
    <input class="ss_style" type="text" name="subject" id="subject" size="86" <c:if test="${!empty ssEntry}">value="${ssEntry.docNumber}. ${ssEntry.title}" </c:if>>
 </td></tr>
 <tr><td>
-   <span class="ss_labelAbove ss_bold"><ssf:nlt tag="sendMail.message"/></span>
+   <span class="ss_labelAbove ss_bold"><c:if test="${!empty ssEntry}"><ssf:nlt tag="entry.sendMail.body"/></c:if><c:if test="${empty ssEntry}"><ssf:nlt tag="sendMail.message"/></c:if></span>
     <div align="left">
-    <ssf:htmleditor name="mailBody" >
+    <ssf:htmleditor name="mailBody" height="200">
 	<br/>
-<c:if test="${!empty ssEntry}">
-	  <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-	    configElement="${ssConfigElement}" 
-	    configJspStyle="${ssConfigJspStyle}"
-	    processThisItem="true" 
-	    entry="${ssEntry}" />
-</c:if>
+
 <c:if test="${empty ssEntry}">
   <a href="<ssf:url 
   		adapter="true" 
@@ -145,6 +139,7 @@ self.window.resizeTo(width, height);
   </div>
 </td></tr>
 <c:if test="${!empty ssEntry}">
+
 <tr><td>
  <input type="checkbox" name="attachments" id="attachments" class="ss_style" >&nbsp;<span class="ss_labelRight">
   <ssf:nlt tag="sendMail.includeAttachments"/></span></td>
