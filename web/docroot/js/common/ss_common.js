@@ -1473,6 +1473,7 @@ function ss_showBackgroundIFrame(divid, frmId) {
 	if (!div) {
 		return;
 	}
+	if (div.getElementsByTagName('iframe').length > 0) return;
 	if (!div.style.zIndex) {
 		div.style.zIndex = ssLightboxZ - 1;
 	}
