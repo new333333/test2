@@ -80,8 +80,11 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
  </table>
 </div>
 <br/>
-<span style="color:#5A9A98; font-weight:bold">>>${ssDefinitionEntry.parentBinder} &nbsp;&nbsp;</span></em>
-<span style="color:#546292; font-weight:bold"><img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle">&nbsp;${ssBinder.title}</span><br/><br/>
+<span style="color:#5A9A98; font-weight:bold">>>${ssDefinitionEntry.parentBinder.title} &nbsp;&nbsp;</span></em>
+<span style="color:#546292; font-weight:bold">
+  <img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle">&nbsp;${ssBinder.title}
+</span>
+<br/><br/>
 
 <div id="ss_configureCol">
 <% // configure columns area %>
@@ -436,27 +439,29 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 	</c:if>
 	
 	<c:if test="${slidingTableStyle == 'fixed'}">
-    	onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
+    	onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no', 'ss_folderEntryTitle_${entry1._docId}');return false;" 
+    	<c:if test="${!empty entry1._desc}">
+    	  onMouseOver="ss_showHoverOver(this, 'ss_folderEntryTitle_${entry1._docId}', event, 20, 12);"
+    	  onMouseOut="ss_hideHoverOver('ss_folderEntryTitle_${entry1._docId}');"
+    	</c:if>
 	</c:if>
     >
     
     <c:if test="${!empty seenStyleburst}">
-  			<strong><span <%= seenStyleTitle %> ><c:out value="${entry1.title}"/></span></strong></a>
+  			<strong><span <%= seenStyleTitle %> ><c:if test="${empty entry1.title}" 
+    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></span></strong></a>
 	</c:if>
 
 	<c:if test="${empty seenStyleburst}">
 		<c:if test="${slidingTableStyle == 'fixed'}">
-    		<div <%= seenStyleTitle2 %>><c:out value="${entry1.title}"/></div></a> 
+    		<div <%= seenStyleTitle2 %>><c:if test="${empty entry1.title}" 
+    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></div></a> 
 		</c:if>
 	  	<c:if test="${slidingTableStyle != 'fixed'}">
-    		<span <%= seenStyleTitle2 %>><c:out value="${entry1.title}"/></span></a> 
+    		<span <%= seenStyleTitle2 %>><c:if test="${empty entry1.title}" 
+    		>--<ssf:nlt tag="entry.noTitle" />--</c:if><c:out value="${entry1.title}"/></span></a> 
 		</c:if> 		
-	</c:if>
-	
-    <c:if test="${empty entry1.title}" >
-	--<ssf:nlt tag="entry.noTitle" />--
-	</c:if>
-  	
+	</c:if>  	
   	
   </ssf:slidingTableColumn>
  </c:if>
@@ -506,7 +511,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 <%
 	}
 %>
-    </c:if>
+    </c:if>&nbsp;
   </ssf:slidingTableColumn>
  </c:if>
   
@@ -525,7 +530,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 			    </ssf:url>" <ssf:title tag="title.open.file.in.html.format" /> 
 			><span <%= seenStyle %>>[<ssf:nlt tag="entry.HTML" />]</span></a>
 		</ssf:ifSupportsViewAsHtml>
-    </c:if>
+    </c:if>&nbsp;
   </ssf:slidingTableColumn>
  </c:if>
   
@@ -545,7 +550,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
     onClick="ss_loadEntryInPlace(this,'<c:out value="${entry1._docId}"/>', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
     ><span <%= seenStyle %>><c:out value="${entry1._workflowStateCaption}"/></span></a>
-    </c:if>
+    </c:if>&nbsp;
   </ssf:slidingTableColumn>
  </c:if>
   
@@ -651,5 +656,14 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 </ssf:slidingTable>
 </div>
 </div></div><!-- end of centered inset area -->
+
+<c:forEach var="entry2" items="${ssFolderEntries}" >
+  <div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" 
+    style="visibility:hidden; display:none;">
+      <span ><ssf:markup type="view" binderId="${entry2._binderId}" entryId="${entry2._docId}"><%--
+    		--%><ssf:textFormat formatAction="limitedDescription" textMaxWords="100">${entry2._desc}</ssf:textFormat><%--
+    		--%></ssf:markup></span>
+  </div>
+</c:forEach>
 
 <c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>
