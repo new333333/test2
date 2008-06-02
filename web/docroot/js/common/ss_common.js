@@ -1466,7 +1466,7 @@ function ss_ShowHideDivXY(divName, x, y) {
 
 /* IE6 workaround - divs under selectboxes */
 var ss_showBackgroundIframeDivId = null;
-function ss_showBackgroundIFrame(divid, frmId) {
+function ss_showBackgroundIFrame(divId, frmId) {
 	if (!ss_isIE6) {
 		return;
 	}
@@ -1480,7 +1480,7 @@ function ss_showBackgroundIFrame(divid, frmId) {
 		} catch (e) {}
 	}
 	ss_showBackgroundIframeDivId = divId;
-	var div = document.getElementById(divid);
+	var div = document.getElementById(divId);
 	if (!div) {
 		return;
 	}
