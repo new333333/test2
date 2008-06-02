@@ -1477,16 +1477,19 @@ function ss_showBackgroundIFrame(divid, frmId) {
 	if (!div.style.zIndex) {
 		div.style.zIndex = ssLightboxZ - 1;
 	}
-	var frm = document.createElement("iframe");
-	if (typeof ss_baseRootPathUrl != 'undefined') {
-		var teaming_url = ss_baseRootPathUrl + 'js/forum/null.html';
-		frm.src = teaming_url;
+	var frm = document.getElementById(frmId);
+	if (frm == null) {
+		frm = document.createElement("iframe");
+		if (typeof ss_baseRootPathUrl != 'undefined') {
+			var teaming_url = ss_baseRootPathUrl + 'js/forum/null.html';
+			frm.src = teaming_url;
+		}
+		frm.frameBorder = 0;
+		frm.scrolling = "no";
+		document.body.appendChild(frm);
+		frm.id = frmId;
+		frm.className = "ss_background_iframe";
 	}
-	frm.frameBorder = 0;
-	frm.scrolling = "no";
-	document.body.appendChild(frm);
-	frm.id = frmId;
-	frm.className = "ss_background_iframe";
 	if (div.style.zIndex) {
 		frm.style.zIndex = div.style.zIndex * 1 - 1;
 	} else {
@@ -1505,10 +1508,12 @@ function ss_showBackgroundIFrame(divid, frmId) {
 }
 
 /* IE6 workaround - divs under selectboxes */
-function ss_hideBackgroundIFrame(frmId) {
+function ss_hideBackgroundIFrame(divId, frmId) {
 	if (!ss_isIE6) {
 		return;
 	}
+	var divObj = document.getElementById(divId)
+	if (divObj != null && divObj.style.visibility != 'hidden') return
 	var frm = document.getElementById(frmId);
 	try {
 		if (frm) {
@@ -1577,7 +1582,7 @@ function ss_hideDiv(divName) {
 			document.getElementById(divName).style.visibility = "hidden";
     ss_divToBeDelayHidden[divName] = null
     ss_divBeingShown = null;
-    ss_hideBackgroundIFrame("ss_background_iframe");
+    ss_hideBackgroundIFrame(divName, "ss_background_iframe");
     
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
@@ -1686,7 +1691,6 @@ function captureXY(e) {
 	        }
 	    }
 	    ss_divToBeHidden = new Array();
-		ss_hideBackgroundIFrame("ss_background_iframe");
     }
     if (ss_isNSN6 || ss_isMoz5) {
         ss_mousePosX = e.pageX
