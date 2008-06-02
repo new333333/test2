@@ -227,9 +227,54 @@ public class DefinitionHelper {
 		model.put(WebKeys.FOLDER_DEFINITION_MAP, defaultFolderDefinitions);
 		Map defaultEntryDefinitions = getEntryDefsAsMap(binder);
 		model.put(WebKeys.ENTRY_DEFINITION_MAP, defaultEntryDefinitions);
+		Map replyDefs = getReplyDefinitions(defaultEntryDefinitions);
+		model.put(WebKeys.REPLY_DEFINITION_MAP, replyDefs);
 		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, getWorkflowDefsAsMap(binder)); 
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 	}
+	
+	public static Map getReplyDefinitions(Map entryDefinitions) {
+		Map resultMap = new HashMap<String,Definition>();
+		Iterator iter = entryDefinitions.entrySet().iterator();
+		
+		while(iter.hasNext()) {
+			List temp = getReplyListFromEntry((Definition)((Map.Entry)iter.next()).getValue());
+			if(temp == null)
+				continue;
+			for(int i = 0; i < temp.size(); i++) {
+				String key = (String)temp.get(i);
+				if((resultMap.get(key) == null) && (entryDefinitions.get(key) == null)) {
+			        resultMap.put(key, getDefinition(key));
+				}
+				else
+					continue;
+			}
+		}
+		return resultMap;
+	}
+	
+	public static List getReplyListFromEntry(Definition def) {
+		List replyStyles = DefinitionUtils.getPropertyValueList(def.getDefinition().getRootElement(), "replyStyle");
+		if (!replyStyles.isEmpty()) {
+			if (replyStyles.size() == 1) {
+				String replyStyleId = (String)replyStyles.get(0);
+				if (Validator.isNotNull(replyStyleId)) {
+					return replyStyles;
+				}
+			} else {
+				List result = new ArrayList();
+				for (int i = 0; i < replyStyles.size(); i++) {
+					String replyStyleId = (String)replyStyles.get(i);
+					if (Validator.isNotNull(replyStyleId)) {
+						result.add(replyStyleId);
+					}
+				}
+				return result;
+			}
+		}
+		return null;
+	}
+	
 	public static Map getBinderDefsAsMap(Binder binder) {
 		Map defaultFolderDefinitions = new HashMap();
 		Iterator itDefaultFolderDefinitions = binder.getViewDefinitions().listIterator();
