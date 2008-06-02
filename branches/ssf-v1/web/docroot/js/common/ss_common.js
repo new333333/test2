@@ -1556,13 +1556,13 @@ function ss_showDivAtXY(divName) {
 	ss_setObjectLeft(divObj, parseInt(ss_getClickPositionX() + objLeftOffset))
 	ss_showDiv(divName)
 }
-function ss_showDiv(divName) {
+function ss_showDiv(divName, allowBackgroundIframe) {
 	if (document.getElementById(divName) == null) return;
     document.getElementById(divName).style.visibility = "visible";
     if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
     	document.getElementById(divName).style.display = "block";
     }
-	ss_showBackgroundIFrame(divName, "ss_background_iframe");
+	if (allowBackgroundIframe) ss_showBackgroundIFrame(divName, "ss_background_iframe");
 
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
