@@ -82,7 +82,7 @@ function ss_endLoadingFiles${ssBinderId}${ss_namespace}() {
 
 function ss_showLoadingFolderDropTargetDiv${ssBinderId}${ss_namespace}() {
 	var divId = 'ss_divFolderDropTargetLoading${ssBinderId}${ss_namespace}';
-	ss_showDiv(divId, false);
+	ss_showDiv(divId, 'no');
 }
 
 //Show Files Loading Div Tag
@@ -90,7 +90,7 @@ function ss_showLoadingFolderDiv${ssBinderId}${ss_namespace}(fileNames) {
 	var divId = 'ss_divFolderFilesLoading${ssBinderId}${ss_namespace}';
 	var divObj = document.getElementById(divId);
 	divObj.innerHTML = '<span class="ss_bold"><ssf:nlt tag="loading.files"/></span>: ' + fileNames
-	ss_showDiv(divId, false);
+	ss_showDiv(divId, 'no');
 }
 
 //Hide Files Loading Div Tag
@@ -104,7 +104,7 @@ function ss_hideLoadingFolderDiv${ssBinderId}${ss_namespace}() {
 //Show Folder Attachment Help Text Div
 function ss_showFolderAttachmentHelpTextDiv${ssBinderId}${ss_namespace}() {
 	var divId = 'ss_divFolderAttachmentHelpText${ssBinderId}${ss_namespace}';
-	ss_showDiv(divId, false);
+	ss_showDiv(divId, 'no');
 }
 
 //Hide Folder Attachment Help Text Div
@@ -118,7 +118,7 @@ function ss_hideFolderAttachmentHelpTextDiv${ssBinderId}${ss_namespace}() {
 //Show Folder Library/Non-Library Attachment Help Text
 function ss_showFolderLibNonLibHelpTextDiv${ssBinderId}${ss_namespace}() {
 	var divId = 'ss_divFolderLibNonLibHelpText${ssBinderId}${ss_namespace}';
-	ss_showDiv(divId, false);
+	ss_showDiv(divId, 'no');
 }
 
 //Hide Folder Library/Non-Library Attachment Help Text
