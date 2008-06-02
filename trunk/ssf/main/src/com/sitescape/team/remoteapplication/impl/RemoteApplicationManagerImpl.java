@@ -117,7 +117,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 	public void executeSessionScopedRenderableAction(Map<String,String> params, Long applicationId, 
 			HttpServletRequest request, HttpServletResponse response) 
 	throws RemoteApplicationException {
-		AccessToken accessToken = getAccessTokenManager().getInteractiveToken
+		AccessToken accessToken = getAccessTokenManager().getSessionScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId(), WebHelper.getTokenInfoId(request));
 		try {
 			executeAction(params, applicationId, accessToken, response.getOutputStream());
@@ -131,7 +131,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 			Long binderId, BinderAccessConstraints binderAccessConstraints, 
 			HttpServletRequest request, HttpServletResponse response) 
 	throws RemoteApplicationException {
-		AccessToken accessToken = getAccessTokenManager().getInteractiveToken
+		AccessToken accessToken = getAccessTokenManager().getSessionScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId(), 
 				WebHelper.getTokenInfoId(request), binderId, binderAccessConstraints);
 		try {
@@ -174,7 +174,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 				}
 			}
 			int timeout = SPropsUtil.getInt("remoteapp.so.timeout", 0);
-			if(timeout > 0) {
+			if(timeout >= 0) {
 				method.getParams().setSoTimeout(timeout);
 			}
 			int statusCode = client.executeMethod(method);
@@ -222,7 +222,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 	}
 
 	public void executeRequestScopedNonRenderableAction(Map<String, String> params, Long applicationId) throws RemoteApplicationException {
-		AccessToken accessToken = getAccessTokenManager().getBackgroundToken
+		AccessToken accessToken = getAccessTokenManager().getRequestScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId());
 		try {
 			executeAction(params, applicationId, accessToken, null);
@@ -234,7 +234,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 
 	public void executeRequestScopedNonRenderableAction(Map<String, String> params, 
 			Long applicationId, Long binderId, BinderAccessConstraints binderAccessConstraints) throws RemoteApplicationException {
-		AccessToken accessToken = getAccessTokenManager().getBackgroundToken
+		AccessToken accessToken = getAccessTokenManager().getRequestScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId(), binderId, binderAccessConstraints);
 		try {
 			executeAction(params, applicationId, accessToken, null);

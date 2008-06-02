@@ -35,35 +35,23 @@ public interface AccessTokenManager {
 	/**
 	 * Validate the access token.
 	 * 
+	 * @param tokenStr string representation from which <code>token</code> was created
 	 * @param token
 	 * @throws InvalidAccessTokenException thrown if the access token is invalid
 	 */
 	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException;
 	
 	/**
-	 * Returns an access token of background type.
+	 * Returns an access token of request scoped.
 	 * 
 	 * @param applicationId
 	 * @param userId
 	 * @return
 	 */
-	public AccessToken getBackgroundToken(Long applicationId, Long userId);
+	public AccessToken getRequestScopedToken(Long applicationId, Long userId);
 	
 	/**
-	 * Returns an access token of background type.
-	 * Its corresponding <code>binderAccessConstraints</code> value is set to 
-	 * <code>BinderAccessConstraints.BINDER_AND_DESCENDANTS</code> whether
-	 * <code>binderId</code> is specified or not.
-	 * 
-	 * @param applicationId
-	 * @param userId
-	 * @param binderId optional
-	 * @return
-	 */
-	public AccessToken getBackgroundToken(Long applicationId, Long userId, Long binderId);
-	
-	/**
-	 * Returns an access token of background type.
+	 * Returns an access token of request scoped.
 	 * 
 	 * @param applicationId
 	 * @param userId
@@ -71,43 +59,27 @@ public interface AccessTokenManager {
 	 * @param binderAccessConstraints
 	 * @return
 	 */
-	public AccessToken getBackgroundToken(Long applicationId, Long userId, Long binderId, 
+	public AccessToken getRequestScopedToken(Long applicationId, Long userId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints);
 	
 	/**
-	 * This invalidates all existing/outstanding background tokens issued for
-	 * the combination.
+	 * Destroy the token of request scoped.
 	 * 
-	 * @param applicationId
-	 * @param userId
-	 * @param binderId optional
+	 * @param token
 	 */
-	public void invalidateBackgroundTokens(Long applicationId, Long userId, Long binderId);
+	public void destroyRequestScopedToken(AccessToken token);
 	
 	/**
-	 * Returns an access token of interactive type.
+	 * Returns an access token of session scoped.
 	 * 
 	 * @param applicationId
 	 * @param infoId
 	 * @return
 	 */
-	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId);
+	public AccessToken getSessionScopedToken(Long applicationId, Long userId, String infoId);
 	
 	/**
-	 * Returns an access token of interactive type.
-	 * Its corresponding <code>binderAccessConstraints</code> value is set to 
-	 * <code>BinderAccessConstraints.BINDER_AND_DESCENDANTS</code> whether
-	 * <code>binderId</code> is specified or not.
-	 * 
-	 * @param applicationId
-	 * @param infoId
-	 * @param binderId optional
-	 * @return
-	 */
-	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId, Long binderId);
-	
-	/**
-	 * Returns an access token of interactive type.
+	 * Returns an access token of session scoped.
 	 * 
 	 * @param applicationId
 	 * @param infoId
@@ -115,48 +87,48 @@ public interface AccessTokenManager {
 	 * @param binderAccessConstraints
 	 * @return
 	 */
-	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId, Long binderId, 
+	public AccessToken getSessionScopedToken(Long applicationId, Long userId, String infoId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints);
 	
 	/**
-	 * Create a <code>TokenInfoInteractive</code> object that the system 
-	 * will use to manage the interactive tokens issued during the user's
-	 * specific interactive session. Typically this is called as a 
-	 * notification that a HTTP session was created for the user.
+	 * Create a <code>TokenInfoSession</code> object that the system 
+	 * will use to manage the session-scoped tokens issued during the 
+	 * user's specific interactive session. Typically this is called 
+	 * as a notification that a HTTP session was created for the user.
 	 * 
 	 * @param userId
 	 * @return ID of the created object.
 	 */
-	public String createTokenInfoInteractive(Long userId);
+	public String createTokenInfoSession(Long userId);
 	
 	/**
-	 * Update the <code>TokenInfoInteractive</code> object represented by the
+	 * Update the <code>TokenInfoSession</code> object represented by the
 	 * ID with the new user ID. It also changes its seed value.
 	 * 
 	 * @param infoId
 	 * @param newUserId
 	 */
-	public void updateTokenInfoInteractive(String infoId, Long newUserId);
+	public void updateTokenInfoSession(String infoId, Long newUserId);
 	
 	/**
-	 * Destroy all <code>TokenInfoInteractive</code> objects that belong
+	 * Destroy all <code>TokenInfoSession</code> objects that belong
 	 * to any user in the system. 
 	 */
-	public void destroyAllTokenInfoInteractive();
+	public void destroyAllTokenInfoSession();
 	
 	/**
-	 * Destroy all <code>TokenInfoInteractive</code> objects that belong
+	 * Destroy all <code>TokenInfoSession</code> objects that belong
 	 * to the user. Effectively this invalidates all existing/outstanding
-	 * interactive tokens bound to any of the interactive sessions held
+	 * session-scoped tokens bound to any of the interactive sessions held
 	 * by the user.
 	 * 
 	 * @param userId
 	 */
-	public void destroyUserTokenInfoInteractive(Long userId);
+	public void destroyUserTokenInfoSession(Long userId);
 	
 	/**
-	 * Destroy the <code>TokenInfoInteractive</code> object represented by the
-	 * ID. Effectively this invalidates all existing/outstanding interactive
+	 * Destroy the <code>TokenInfoSession</code> object represented by the
+	 * ID. Effectively this invalidates all existing/outstanding session-scoped
 	 * tokens bound to the specific session. 
 	 * <p>
 	 * Typically this is called as a notification that the user's HTTP session
@@ -164,6 +136,6 @@ public interface AccessTokenManager {
 	 * 
 	 * @param infoId
 	 */
-	public void destroyTokenInfoInteractive(String infoId);
+	public void destroyTokenInfoSession(String infoId);
 	
 }

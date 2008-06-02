@@ -171,32 +171,32 @@ public class AccessToken {
 			throw new IllegalArgumentException();
 		// Access token string encoded representation:
 		// 
-		// tokenScopeNumber-appId-userId-digest-binderId-binderAccessConstraintsNumber-[infoId]
+		// tokenScopeNumber-digest-infoId-[appId-userId-binderId-binderAccessConstraintsNumber]
+		//
+		// where [] part is present only for session-scoped token.
 		// 
-		// where [infoId] is present only for session-scoped token 
 		String[] s = StringUtil.split(accessTokenStr, "-");
-		if(s.length < 6)
-			throw new MalformedAccessTokenException(accessTokenStr);
-		if(s.length > 7)
+		if(s.length < 3)
 			throw new MalformedAccessTokenException(accessTokenStr);
 		scope = TokenScope.valueOf(Integer.valueOf(s[0]));
-		applicationId = Long.valueOf(s[1]);
-		userId = Long.valueOf(s[2]);
-		digest = s[3];
-		binderId = Long.valueOf(s[4]);
-		if(binderId.longValue() == 0L)
-			binderId = null;
-		binderAccessConstraints = BinderAccessConstraints.valueOf(Integer.valueOf(s[5]));
 		if(TokenScope.session.equals(scope)) {
-			if(s.length == 7)
-				infoId = s[6];
-			else
+			if(s.length != 7)
 				throw new MalformedAccessTokenException(accessTokenStr);
 		} else if(TokenScope.request.equals(scope)) {
-			if(s.length == 7)
+			if(s.length != 3)
 				throw new MalformedAccessTokenException(accessTokenStr);
 		} else {
 			throw new MalformedAccessTokenException(accessTokenStr);
+		}
+		digest = s[1];
+		infoId = s[2];
+		if(TokenScope.session.equals(scope)) {
+			applicationId = Long.valueOf(s[3]);
+			userId = Long.valueOf(s[4]);
+			binderId = Long.valueOf(s[5]);
+			if(binderId.longValue() == 0L)
+				binderId = null;
+			binderAccessConstraints = BinderAccessConstraints.valueOf(Integer.valueOf(s[6]));
 		}
 	}
 	
@@ -207,33 +207,44 @@ public class AccessToken {
 	 * This method does NOT validate the token itself.
 	 */
 	public String toStringRepresentation() throws IllegalStateException {
-		// tokenScopeNumber-appId-userId-digest-binderId-binderAccessConstraintsNumber-[infoId]
+		// Access token string encoded representation:
+		// 
+		// tokenScopeNumber-digest-infoId-[appId-userId-binderId-binderAccessConstraintsNumber]
+		//
+		// where [] part is present only for session-scoped token.
 		if(scope == null)
 			throw new IllegalStateException("scope is missing");
+		if(digest == null)
+			throw new IllegalStateException("digest is missing");
+		if(infoId == null)
+			throw new IllegalStateException("info id is missing");
 		if(TokenScope.session.equals(scope)) {
-			if(infoId == null)
-				throw new IllegalStateException("info id is missing");
+			if(applicationId == null)
+				throw new IllegalStateException("application id is missing");
+			if(userId == null)
+				throw new IllegalStateException("user id is missing");
 		} else if(TokenScope.request.equals(scope)) {
-			if(infoId != null)
-				throw new IllegalStateException("info id is present");
+			if(applicationId != null)
+				throw new IllegalStateException("application id is present");
+			if(userId != null)
+				throw new IllegalStateException("user id is present");
+			if(binderId != null)
+				throw new IllegalStateException("binder id is present");	
+			if(binderId != null)
+				throw new IllegalStateException("binder id is present");	
 		} else {
 			throw new IllegalStateException("something's serious broken");
 		}
-		if(applicationId == null)
-			throw new IllegalStateException("application id is missing");
-		if(userId == null)
-			throw new IllegalStateException("user id is missing");
-		if(digest == null)
-			throw new IllegalStateException("digest is missing");
 		StringBuilder sb = new StringBuilder()
 		.append(scope.getNumber()).append("-")
-		.append(applicationId).append("-")
-		.append(userId).append("-")
 		.append(digest).append("-")
-		.append((binderId != null)? String.valueOf(binderId) : "0").append("-")
-		.append(binderAccessConstraints.getNumber());
-		if(infoId != null)
-			sb.append("-").append(infoId);
+		.append(infoId);
+		if(TokenScope.session.equals(scope)) {
+			sb.append("-").append(applicationId).append("-")
+			.append(userId).append("-")
+			.append((binderId != null)? String.valueOf(binderId) : "0").append("-")
+			.append(binderAccessConstraints.getNumber());
+		}
 		return sb.toString();
 	}
 

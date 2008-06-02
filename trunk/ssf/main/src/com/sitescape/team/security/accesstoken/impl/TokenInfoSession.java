@@ -28,66 +28,29 @@
  */
 package com.sitescape.team.security.accesstoken.impl;
 
-import java.io.Serializable;
-
-import com.sitescape.team.domain.ZonedObject;
-
-public class TokenInfoInteractive extends ZonedObject implements TokenInfo, Serializable {
+public class TokenInfoSession extends TokenInfo {
 
 	private static final long serialVersionUID = 1L;
 	
-	private String id;
 	private Long userId;
-	private String seed;
 	
-	public TokenInfoInteractive(Long userId, String seed) {
+	public TokenInfoSession(Long userId, String seed) {
 		this(userId);
 		this.seed = seed;
 	}
 	
-	public TokenInfoInteractive(Long userId) {
+	public TokenInfoSession(Long userId) {
 		this.userId = userId;
 	}
 	
-	public TokenInfoInteractive() {	
-	}
-	
-	public String getId() {
-		return id;
+	public TokenInfoSession() {	
 	}
 
-	public void setId(String id) {
-		this.id = id;
-	}
-
-	public String getSeed() {
-		return seed;
-	}
-	public void setSeed(String seed) {
-		this.seed = seed;
-	}
 	public Long getUserId() {
 		return userId;
 	}
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-	
-    public boolean equals(Object obj) {
-        if(this == obj)
-            return true;
-
-        if ((obj == null) || !(obj instanceof TokenInfoInteractive))
-            return false;
-            
-        TokenInfoInteractive info = (TokenInfoInteractive) obj;
-        if (userId.equals(info.getUserId())) 
-        	return true;
-        else
-        	return false;
-    }
-    public int hashCode() {
-    	return userId.hashCode();
-    }
 
 }

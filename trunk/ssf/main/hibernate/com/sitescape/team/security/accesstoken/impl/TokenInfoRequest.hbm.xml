@@ -2,14 +2,17 @@
 <!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
 
 <hibernate-mapping auto-import="false">
-  	<class dynamic-update="true" table="SS_TokenInfoInteractive" lazy="false" name="com.sitescape.team.security.accesstoken.impl.TokenInfoInteractive">
+    <class dynamic-update="true" table="SS_TokenInfoRequest" lazy="false" name="com.sitescape.team.security.accesstoken.impl.TokenInfoRequest">
     	<cache usage="nonstrict-read-write"/>
 	    <id unsaved-value="null" name="id">
 	      <column name="id" sql-type="char(32)"/>
 	      <generator class="uuid.hex"/>
-	    </id>
+	    </id>	    
     	<property name="zoneId" access="field"/>
-    	<property name="userId" index="userId_tokenInfoInteractive"/>
+    	<property name="applicationId"/>
+    	<property name="userId"/>
+    	<property name="binderId"/>
+    	<property name="binderAccessConstraints" access="field"/>
     	<property name="seed" length="128"/>
 	</class>
 </hibernate-mapping>

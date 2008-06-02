@@ -55,7 +55,7 @@ public class SessionListener implements HttpSessionListener {
 			// Make sure to run it in the user's context.	
 			RunasTemplate.runas(new RunasCallback() {
 				public Object doAs() {
-					accessTokenManager.destroyTokenInfoInteractive(infoId);
+					accessTokenManager.destroyTokenInfoSession(infoId);
 					return null;
 				}
 			}, zoneId, userId);

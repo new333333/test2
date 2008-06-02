@@ -28,10 +28,51 @@
  */
 package com.sitescape.team.security.accesstoken.impl;
 
-public interface TokenInfo {
+import java.io.Serializable;
 
-	public String getSeed();
+import com.sitescape.team.domain.ZonedObject;
+
+public abstract class TokenInfo extends ZonedObject implements Serializable {
+
+	protected String id;
+	protected String seed;
 	
-	public void setSeed(String seed);
+	public String getId() {
+		return id;
+	}
+	public void setId(String id) {
+		this.id = id;
+	}
+	public String getSeed() {
+		return seed;
+	}
+	public void setSeed(String seed) {
+		this.seed = seed;
+	}
+	
+    public int hashCode() {
+    	if(id != null)
+    		return id.hashCode();
+    	else
+    		return "".hashCode();
+    }
+     
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+
+        if (obj == null) 
+            return false;
+        
+        if (!(obj instanceof TokenInfo)) return false;
+        TokenInfo o = (TokenInfo) obj;
+
+        if (o.getId() == null) return false;
+        if (getId() == null) return false;
+        if (this.id.equals(o.getId()))
+            return true;
+                
+        return false;
+    }
 
 }

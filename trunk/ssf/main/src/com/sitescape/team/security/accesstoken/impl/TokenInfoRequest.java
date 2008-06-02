@@ -28,33 +28,42 @@
  */
 package com.sitescape.team.security.accesstoken.impl;
 
-import java.io.Serializable;
+import com.sitescape.team.security.accesstoken.AccessToken;
 
-import com.sitescape.team.domain.ZonedObject;
-
-public class TokenInfoBackground extends ZonedObject implements TokenInfo, Serializable {
+public class TokenInfoRequest extends TokenInfo {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private Long applicationId; 
 	private Long userId; 
-	private Long binderId; // 0 value in DB represents null in memory
-	private String seed;
+	private Long binderId; // may be null
+	private int binderAccessConstraints; // meaningful only when binderId is specified
 	
-	public TokenInfoBackground(Long applicationId, Long userId, Long binderId, String seed) {
-		this(applicationId, userId, binderId);
+	public TokenInfoRequest(Long applicationId, Long userId, Long binderId, 
+			AccessToken.BinderAccessConstraints binderAccessConstraints, String seed) {
+		this(applicationId, userId);
+		this.binderId = binderId;
+		this.binderAccessConstraints = binderAccessConstraints.getNumber();
 		this.seed = seed;
 	}
 	
-	public TokenInfoBackground(Long applicationId, Long userId, Long binderId) {
+	public TokenInfoRequest(Long applicationId, Long userId) {
 		this.applicationId = applicationId;
 		this.userId = userId;
-		setBinderId(binderId);
+		this.binderAccessConstraints = AccessToken.BinderAccessConstraints.NONE.getNumber();
 	}
 	
-	public TokenInfoBackground() {
+	public TokenInfoRequest() {
 	}
 	
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
 	public Long getApplicationId() {
 		return applicationId;
 	}
@@ -62,22 +71,10 @@ public class TokenInfoBackground extends ZonedObject implements TokenInfo, Seria
 		this.applicationId = applicationId;
 	}
 	public Long getBinderId() {
-		if(Long.valueOf(0L).equals(binderId))
-			return null;
-		else
-			return binderId;
+		return binderId;
 	}
 	public void setBinderId(Long binderId) {
-		if(binderId != null)
-			this.binderId = binderId;
-		else
-			this.binderId = Long.valueOf(0L);
-	}
-	public String getSeed() {
-		return seed;
-	}
-	public void setSeed(String seed) {
-		this.seed = seed;
+		this.binderId = binderId;
 	}
 	public Long getUserId() {
 		return userId;
@@ -85,28 +82,13 @@ public class TokenInfoBackground extends ZonedObject implements TokenInfo, Seria
 	public void setUserId(Long userId) {
 		this.userId = userId;
 	}
-	
-    public boolean equals(Object obj) {
-        if(this == obj)
-            return true;
 
-        if ((obj == null) || !(obj instanceof TokenInfoBackground))
-            return false;
-            
-        TokenInfoBackground info = (TokenInfoBackground) obj;
-        if(applicationId.equals(info.getApplicationId()) &&
-        		userId.equals(info.getUserId()) &&
-        		binderId.equals(info.getBinderId()))
-        	return true;
-        else
-        	return false;
-    }
-    public int hashCode() {
-       	int hash = 7;
-    	hash = 31*hash + applicationId.hashCode();
-    	hash = 31*hash + userId.hashCode();
-    	hash = 31*hash + binderId.hashCode();
-    	return hash;
-    }
+	public AccessToken.BinderAccessConstraints getBinderAccessConstraints() {
+		return AccessToken.BinderAccessConstraints.valueOf(binderAccessConstraints);
+	}
+
+	public void setBinderAccessConstraints(AccessToken.BinderAccessConstraints binderAccessConstraints) {
+		this.binderAccessConstraints = binderAccessConstraints.getNumber();
+	}
 
 }
