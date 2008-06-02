@@ -1465,10 +1465,21 @@ function ss_ShowHideDivXY(divName, x, y) {
 }
 
 /* IE6 workaround - divs under selectboxes */
+var ss_showBackgroundIframeDivId = null;
 function ss_showBackgroundIFrame(divid, frmId) {
 	if (!ss_isIE6) {
 		return;
 	}
+	if (ss_showBackgroundIframeDivId != null && ss_showBackgroundIframeDivId != divId) {
+		//Delete the previous iframe if any
+		var frm = document.getElementById(frmId);
+		try {
+			if (frm) {
+				frm.parentNode.removeChild(frm);
+			}
+		} catch (e) {}
+	}
+	ss_showBackgroundIframeDivId = divId;
 	var div = document.getElementById(divid);
 	if (!div) {
 		return;
@@ -1508,18 +1519,21 @@ function ss_showBackgroundIFrame(divid, frmId) {
 }
 
 /* IE6 workaround - divs under selectboxes */
-function ss_hideBackgroundIFrame(divId, frmId) {
+function ss_hideBackgroundIFrame(frmId) {
 	if (!ss_isIE6) {
 		return;
 	}
-	var divObj = document.getElementById(divId)
-	if (divObj != null && divObj.style.visibility != 'hidden') return
+	if (ss_showBackgroundIframeDivId != null) {
+		var divObj = document.getElementById(ss_showBackgroundIframeDivId)
+		if (divObj != null && divObj.style.visibility != 'hidden') return
+	}
 	var frm = document.getElementById(frmId);
 	try {
 		if (frm) {
 			frm.parentNode.removeChild(frm);
 		}
 	} catch (e) {}
+	ss_showBackgroundIframeDivId = null;
 }
 
 function ss_showDivActivate(divName) {
@@ -1582,7 +1596,7 @@ function ss_hideDiv(divName) {
 			document.getElementById(divName).style.visibility = "hidden";
     ss_divToBeDelayHidden[divName] = null
     ss_divBeingShown = null;
-    ss_hideBackgroundIFrame(divName, "ss_background_iframe");
+    ss_hideBackgroundIFrame("ss_background_iframe");
     
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
