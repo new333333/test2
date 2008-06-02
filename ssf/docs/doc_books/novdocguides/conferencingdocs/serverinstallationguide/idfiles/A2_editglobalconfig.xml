@@ -36,7 +36,7 @@
 
  <target id="b9yfed7" pid="b9yfbqw" name="Step" level="5" number="3c"> <text>Configure the mailer service. Specify the cluster host and XML router listen ports by setting the mailer_host array and the mailer_port array. Currently, only one mailer is supported.</text> </target>
 
- <target id="b9yfed9" pid="b9yfbqw" name="Step" level="5" number="3d"> <text>Configure the voice bridges. Multiple voice bridges can be configured for scaling purposes (see Appendix C, "Editing the dialing.xml File," on page 45):</text> </target>
+ <target id="b9yfed9" pid="b9yfbqw" name="Step" level="5" number="3d"> <text>Configure the voice bridges. Multiple voice bridges can be configured for scaling purposes (see Appendix C, "Editing the dialing.xml File," on page 47):</text> </target>
 
  <target name="SubSteps" level="6"> <text> Specify the cluster hosts and XML router listen ports by setting the voice_host array and the voice_port array.</text> </target>
 
