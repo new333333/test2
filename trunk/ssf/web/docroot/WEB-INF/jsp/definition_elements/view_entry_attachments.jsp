@@ -180,6 +180,4 @@ var ss_labelEntryBrowseAddAttachmentHelpText = "<ssf:nlt tag="entry.browseAddAtt
 
 </div>
 
-<c:if test="${ssConfigJspStyle == 'mail'}">
-<% // The mail support is in "definition_elements/mail" %>
-</c:if>
+

@@ -49,18 +49,9 @@
   <td valign="top" style="padding-left:30px;">
 	<div class="ss_entryContent ss_entrySignature">
 	  <span style="padding-right:8px;"><ssf:nlt tag="entry.modifiedBy"/></span>
-<c:if test="${ssConfigJspStyle != 'mail'}">
+
 	  <ssf:showUser user="${ssDefinitionEntry.modification.principal}"/>
-</c:if>
-<c:if test="${ssConfigJspStyle == 'mail'}">
-	  <a href="<ssf:url adapter="true" portletName="ss_forum" 
-	    action="view_permalink"
-	    binderId="${ssDefinitionEntry.modification.principal.parentBinder.id}"
-	    entryId="${ssDefinitionEntry.modification.principal.id}">
-	    <ssf:param name="entityType" value="workspace" />
-	    <ssf:param name="newTab" value="1" />
-		</ssf:url>"><c:out value="${ssDefinitionEntry.modification.principal.title}"/></a>
-</c:if>
+
 	</div>
   </td>
   <td valign="top" style="padding-left:15px;">

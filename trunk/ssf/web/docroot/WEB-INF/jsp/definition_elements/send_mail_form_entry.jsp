@@ -30,7 +30,7 @@
 %>
 <% // Send mail on submit %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${ssConfigJspStyle != 'mail'}">
+
 <div class="ss_entryContent">
 <div style="padding:15px 0px 15px 0px;">
 <ssf:expandableArea title="${property_caption}">
@@ -67,4 +67,4 @@
 </ssf:expandableArea>
 </div>
 </div>
-</c:if>
+
