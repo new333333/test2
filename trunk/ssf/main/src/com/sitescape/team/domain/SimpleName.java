@@ -32,11 +32,11 @@ import java.io.Serializable;
 
 public class SimpleName extends ZonedObject implements Serializable {
 
-	public static final String TYPE_URL = "url";
-	
-	// The following two fields plus the zone id make up the primary key.
+	// The following field plus the zone id make up the primary key.
 	private String name; // access="field"
-	private String type;
+	
+	
+	private String emailAddress; // access="field"
 	
 	private Long binderId;
 	// folder (= EntityIdentifier.EntityType.folder.name()), or 
@@ -45,15 +45,13 @@ public class SimpleName extends ZonedObject implements Serializable {
 	
 	public SimpleName() {}
 	
-	public SimpleName(Long zoneId, String name, String type) {
+	public SimpleName(Long zoneId, String name) {
 		this.zoneId = zoneId;
-		this.name = name;
-		this.name = name;
-		this.type = type;
+		setName(name);
 	}
 	
-	public SimpleName(Long zoneId, String name, String type, Long binderId, String binderType) {
-		this(zoneId, name, type);
+	public SimpleName(Long zoneId, String name, Long binderId, String binderType) {
+		this(zoneId, name);
 		this.binderId = binderId;
 		this.binderType = binderType;
 	}
@@ -75,12 +73,20 @@ public class SimpleName extends ZonedObject implements Serializable {
 	}
 	public void setName(String name) {
 		this.name = name;
+		setEmailAddress(EmailFromURL(name));
 	}
-	public String getType() {
-		return type;
+	
+	private String EmailFromURL(String url)
+	{
+		return url.replace('/', '.');
 	}
-	public void setType(String type) {
-		this.type = type;
+
+
+	public String getEmailAddress() {
+		return emailAddress;
+	}
+	protected void setEmailAddress(String emailAddress) {
+		this.emailAddress = emailAddress;
 	}
 	
 	public boolean equals(Object obj) {
@@ -91,7 +97,7 @@ public class SimpleName extends ZonedObject implements Serializable {
             return false;
             
         SimpleName sm = (SimpleName) obj;
-        if(zoneId.equals(sm.zoneId) && name.equals(sm.name) && type.equals(sm.type))
+        if(zoneId.equals(sm.zoneId) && name.equals(sm.name))
         	return true;
         else
         	return false;
@@ -100,7 +106,6 @@ public class SimpleName extends ZonedObject implements Serializable {
        	int hash = 7;
     	hash = 31*hash + zoneId.hashCode();
     	hash = 31*hash + name.hashCode();
-    	hash = 31*hash + type.hashCode();
     	return hash;
 	}
 }

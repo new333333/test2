@@ -435,6 +435,32 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     </table>
     <br>
     <input type="submit" class="ss_submit" name="addUrlBtn" value="<ssf:nlt tag="button.add"/>"> 
+	<c:if test="${ssSimpleEmailEnabled}">
+		<br/><br/>
+	    <table cellspacing="0" cellpadding="0">
+	      <tr>
+	      	<td>
+		  <c:choose>
+			<c:when test="${ssBinder.postingEnabled}">
+	    	  <input type="checkbox" id="enableCB" name="allow_simple_email" checked/>
+	    	</c:when>
+	    	<c:otherwise>
+	    	  <input type="checkbox" id="enableCB" name="allow_simple_email"/>
+	    	</c:otherwise>
+	      </c:choose>
+	      	</td>
+	      	<td><label for="enableCB"><span style="padding-left:6px;"><ssf:nlt tag="simpleEmail.title"/></span><label></td>
+	      </tr>
+		  <c:forEach var="name" items="${ssSimpleUrlNames}">
+			<tr>
+		  	  <td>&nbsp;</td>
+			  <td><span style="padding-left:6px;">${name.emailAddress}@${ssSimpleEmailHostname}</span></td>
+			</tr>
+		  </c:forEach>
+		</table>
+		<br>
+		<input type="submit" class="ss_submit" name="updateEmailButton" value="<ssf:nlt tag="button.apply"/>"> 
+	</c:if>
   </fieldset>
   <br>
 </form>

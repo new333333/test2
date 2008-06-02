@@ -400,7 +400,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								if (aliasMsgs.length == 0) continue;
 								Folder folder = (Folder)postingDef.getBinder();
 								EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
-								sendErrors(folder, postingDef, sender, processor.postMessages(folder,postingDef, aliasMsgs, session));
+								sendErrors(folder, postingDef, sender, processor.postMessages(folder,postingDef.getEmailAddress(), aliasMsgs, session));
 							} catch (Exception ex) {
 								logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
 							}
@@ -422,7 +422,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								if ("inbox".equals(mFolder.getFullName())) {
 									try {
 										mFolder.open(javax.mail.Folder.READ_WRITE);
-										sendErrors(folder, postingDef,  sender, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
+										sendErrors(folder, postingDef,  sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session));							
 									} finally {
 										mFolder.close(true);
 									}
@@ -454,7 +454,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					store.connect(null, postingDef.getEmailAddress(), postingDef.getPassword());
 					mFolder = store.getFolder("inbox");				
 					mFolder.open(javax.mail.Folder.READ_WRITE);
-					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
+					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session));							
 				} catch (AuthenticationFailedException ax) {
 					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(ax));
 					continue;

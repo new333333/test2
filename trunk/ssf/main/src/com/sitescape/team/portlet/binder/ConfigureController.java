@@ -35,10 +35,13 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.portlet.ModelAndView;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,13 +49,16 @@ import java.util.Set;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
+import com.sitescape.team.smtp.SMTPManager;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.util.SimpleNameUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
@@ -64,6 +70,16 @@ import com.sitescape.util.Validator;
  *
  */
 public class ConfigureController extends AbstractBinderController {
+	
+	private SMTPManager smtpService;
+	public void setSmtpService(SMTPManager smtpService) {
+		this.smtpService = smtpService;
+	}
+	public SMTPManager getSmtpService()
+	{
+		return smtpService;
+	}
+
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) 
 	throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
@@ -80,6 +96,8 @@ public class ConfigureController extends AbstractBinderController {
 			getDefinitions(request, definitions, workflowAssociations);
 			getBinderModule().setDefinitions(binderId, definitions, workflowAssociations);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		} else if (formData.containsKey("updateEmailButton")) {
+			getBinderModule().setPostingEnabled(binderId, formData.containsKey("allow_simple_email"));
 		} else if (formData.containsKey("addUrlBtn")) {
 			String[] globalKeywords = SPropsUtil.getStringArray("simpleUrl.globalKeywords", ",");
 			String prefix = PortletRequestUtils.getStringParameter(request, "prefix", "").trim();
@@ -124,9 +142,9 @@ public class ConfigureController extends AbstractBinderController {
 					//Not allowed to have a blank prefix; Force it to start with the user's name
 					name = user.getName() + "/" + name;
 				}
-				SimpleName simpleUrl = getBinderModule().getSimpleName(name, SimpleName.TYPE_URL);
+				SimpleName simpleUrl = getBinderModule().getSimpleName(name);
 				if (simpleUrl == null) {
-					getBinderModule().addSimpleName(name, SimpleName.TYPE_URL, binderId, binder.getEntityType().name());
+					getBinderModule().addSimpleName(name, binderId, binder.getEntityType().name());
 				} else if (!simpleUrl.getBinderId().equals(binderId)) {
 					response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, "true");
 				}
@@ -141,11 +159,11 @@ public class ConfigureController extends AbstractBinderController {
 				}
 			}
 			for (String urlName : deleteNames) {
-				SimpleName simpleName = getBinderModule().getSimpleName(urlName, SimpleName.TYPE_URL);
+				SimpleName simpleName = getBinderModule().getSimpleName(urlName);
 				if (simpleName != null && simpleName.getBinderId().equals(binderId))
 					if (getBinderModule().testAccess(binder,BinderOperation.manageSimpleName)) 
 						//Only delete the name if user has right to do so and if the url name is referencing this binder
-						getBinderModule().deleteSimpleName(urlName, SimpleName.TYPE_URL);
+						getBinderModule().deleteSimpleName(urlName);
 			}
 		} else if (formData.containsKey("inheritanceBtn")) {
 			boolean inherit = PortletRequestUtils.getBooleanParameter(request, "inherit", false);
@@ -177,8 +195,8 @@ public class ConfigureController extends AbstractBinderController {
 			String[] s = SPropsUtil.getStringArray("simpleUrl.globalKeywords", ",");
 			model.put(WebKeys.SIMPLE_URL_GLOBAL_KEYWORDS, s);
 			model.put(WebKeys.SIMPLE_URL_PREFIX, WebUrlUtil.getSimpleURLContextRootURL(request));
-			model.put(WebKeys.SIMPLE_URL_NAMES,
-					getBinderModule().getSimpleNames(binderId, SimpleName.TYPE_URL));
+			List<SimpleName> simpleNames = getBinderModule().getSimpleNames(binderId);
+			model.put(WebKeys.SIMPLE_URL_NAMES, simpleNames);
 			model.put(WebKeys.SIMPLE_URL_CHANGE_ACCESS, 
 					getBinderModule().testAccess(binder,BinderOperation.manageSimpleName));
 			if (getAdminModule().testAccess(AdminOperation.manageFunction)) 
@@ -188,6 +206,21 @@ public class ConfigureController extends AbstractBinderController {
 			model.put(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, 
 					PortletRequestUtils.getStringParameter(request, WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, ""));	
 
+			String hostname = getZoneModule().getVirtualHost(RequestContextHolder.getRequestContext().getZoneName());
+			if(hostname == null) {
+				try {
+			        InetAddress addr = InetAddress.getLocalHost();
+			        // Get hostname
+			        hostname = addr.getHostName();
+			    } catch (UnknownHostException e) {
+					hostname = "localhost";
+			    }
+			}
+			model.put(WebKeys.SIMPLE_EMAIL_HOSTNAME, hostname);
+			model.put(WebKeys.SIMPLE_EMAIL_ENABLED,
+					  getSmtpService().isEnabled() &&
+					  	binder.getEntityType().equals(EntityType.folder) &&
+					  	simpleNames.size() > 0);
 		}
 		return new ModelAndView(WebKeys.VIEW_CONFIGURE, model);
 	}

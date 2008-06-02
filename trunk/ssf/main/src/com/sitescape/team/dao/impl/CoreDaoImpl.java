@@ -1531,17 +1531,31 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
        return result;   	
     }
 
-	public SimpleName loadSimpleName(String name, String type, Long zoneId) {
-		return (SimpleName) getHibernateTemplate().get(SimpleName.class, new SimpleName(zoneId, name, type));
+	public SimpleName loadSimpleName(String name, Long zoneId) {
+		return (SimpleName) getHibernateTemplate().get(SimpleName.class, new SimpleName(zoneId, name));
 	}
 
-	public List<SimpleName> loadSimpleNames(final String type, final Long binderId, final Long zoneId) {
+	public SimpleName loadSimpleNameByEmailAddress(final String emailAddress, final Long zoneId) {
+        return (SimpleName)getHibernateTemplate().execute(
+                new HibernateCallback() {
+                    public Object doInHibernate(Session session) throws HibernateException {
+                        return session.createCriteria(SimpleName.class)
+                        	.add(Expression.eq("zoneId", zoneId))
+                        	.add(Expression.eq("emailAddress", emailAddress))
+                        	.setCacheable(true)
+                        	.uniqueResult();
+                    }
+                }
+            );
+
+	}
+	
+	public List<SimpleName> loadSimpleNames(final Long binderId, final Long zoneId) {
         return (List)getHibernateTemplate().execute(
                 new HibernateCallback() {
                     public Object doInHibernate(Session session) throws HibernateException {
                         List<SimpleName> results = session.createCriteria(SimpleName.class)
                         	.add(Expression.eq("zoneId", zoneId))
-                        	.add(Expression.eq("type", type))
                         	.add(Expression.eq("binderId", binderId))
                         	.setCacheable(true)
                         	.addOrder(Order.asc("name"))

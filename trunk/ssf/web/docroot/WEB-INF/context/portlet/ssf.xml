@@ -16,7 +16,9 @@
 
 	<bean id="filterController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.FilterController" />
 	<bean id="accessControlController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.AccessControlController" />
-	<bean id="configureController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" />
+	<bean id="configureController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ConfigureController" >
+			<property name="smtpService"><ref bean="smtpService"/></property>
+	</bean>
 	<bean id="definitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewController" />
 	<bean id="binderModifyController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ModifyBinderController" />
 	<bean id="dashboardModifyController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ModifyDashboardController" />
