@@ -60,7 +60,7 @@ String folderLineId = "folderLine_" + (String) fileEntry.get("_docId");
 %>			
 			    <div>
 			    <a onMouseOver="ss_showHoverOver(this, 'ss_photoTitle_${fileEntry._docId}')" 
-			      onMouseOut="ss_hideHoverOver(this, 'ss_photoTitle_${fileEntry._docId}')"
+			      onMouseOut="ss_hideHoverOver('ss_photoTitle_${fileEntry._docId}')"
 			      href="<ssf:url 
 				    webPath="readFile"
 				    folderId="${fileEntry._binderId}"

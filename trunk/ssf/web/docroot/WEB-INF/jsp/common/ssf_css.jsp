@@ -712,7 +712,7 @@ div.ss_send_friend {
   margin:2px;
   padding:2px;
   background-color: ${ss_style_background_color_opaque};
-  width: 150px;
+  width: 250px;
 }
 
 .ss_popupTitleOptions {

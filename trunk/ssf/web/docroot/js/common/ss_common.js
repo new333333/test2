@@ -965,17 +965,25 @@ function ss_createDivInBody(divId, className) {
 }
 
 //Routines to show or hide a pop-up hover over div
-function ss_showHoverOver(parentObj, divName) {
+function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
+	if (typeof offsetX == 'undefined') offsetX = 0;
+	if (typeof offsetY == 'undefined') offsetY = 0;
 	ss_moveDivToBody(divName);
 	ss_showHideObj(divName, 'visible', 'block');
 	divObj = document.getElementById(divName)
 	divObj.style.zIndex = '500';
 	var x = dojo.html.getAbsolutePosition(parentObj, true).x
 	var y = dojo.html.getAbsolutePosition(parentObj, true).y
-	ss_setObjectTop(divObj, parseInt(parseInt(y) + dojo.html.getContentBoxHeight(parentObj)) + "px")
-	ss_setObjectLeft(divObj, x + "px")
+	if (typeof event != 'undefined') {
+		x = event.clientX;
+	}
+	var topOffset = parseInt(parseInt(y) + dojo.html.getContentBoxHeight(parentObj) + 4)
+	//firefox doesn't compute the content box height right
+	if (dojo.html.getContentBoxHeight(parentObj) <= 0) topOffset += offsetY;
+	ss_setObjectTop(divObj, topOffset + "px")
+	ss_setObjectLeft(divObj, parseInt(parseInt(x) + offsetX) + "px")
 }
-function ss_hideHoverOver(parentObj, divName) {
+function ss_hideHoverOver(divName) {
 	ss_showHideObj(divName, 'hidden', 'none');
 }
 
@@ -3664,11 +3672,12 @@ function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
 }
 var ss_loadEntryInPlaceLastRowObj = null;
 var ss_loadEntryInPlaceLastId = null;
-function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboard) {
+function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboard, hoverOverId) {
 	if (ss_userDisplayStyle == "accessible") {
 		self.location.href = obj.href;
 		return false;
 	}
+	if (hoverOverId != "") ss_hideHoverOver(hoverOverId);
 	
 	trObj = ss_findOwningElement(obj, "tr")
 	tbodyObj = ss_findOwningElement(trObj, "tbody")
@@ -3707,11 +3716,11 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
 	//Draw Iframe for discussion thread
-	iframeCol.innerHTML = '<div style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
+	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
 		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
     	' src="'+obj.href+'"' +
-    	' style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:0px; padding:0px;" frameBorder="1"' +
-    	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\')"' +
+    	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:0px; padding:0px;" frameBorder="1"' +
+    	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
     	'>xxx</iframe>' +
     	'</div>';
 	
@@ -3723,17 +3732,19 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 }
 
 var ss_entryInPlaceIframeOffset = 50;
-function ss_setIframeHeight(divId, iframeId) {
+function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 	var targetDiv = document.getElementById(divId);
 	var iframeDiv = document.getElementById(iframeId);
 	if (window.frames[iframeId] != null) {
 		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
 		if (iframeHeight > 0) {
-			iframeDiv.style.height = iframeHeight + ss_entryInPlaceIframeOffset + "px"
+			iframeDiv.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px"
+			iframeDiv.style.width= parseInt(ss_getObjectWidth(targetDiv) - 6) + "px";
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	}
+	if (hoverOverId != "") ss_hideHoverOver(hoverOverId);
 }
 
 function ss_showForumEntry(url, isDashboard) {	
