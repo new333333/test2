@@ -39,9 +39,7 @@ String strBrowserType = "nonie";
 if (isIECheck) strBrowserType = "ie";
 boolean isAppletSupportedCheck = SsfsUtil.supportApplets();
 String operatingSystem = BrowserSniffer.getOSInfo(request);
-boolean ss_isMail = false;
 %>
-<c:if test="${ssConfigJspStyle == 'mail'}"><% ss_isMail = true; %></c:if>
 
 <table class="ss_attachments_list" cellpadding="0" cellspacing="0">
 <tbody>
@@ -71,7 +69,7 @@ boolean ss_isMail = false;
 	  <tr>
 
 <%
-	if (isIECheck && ext.equals(".ppt") && editInPlaceSupported && !ss_isMail) {
+	if (isIECheck && ext.equals(".ppt") && editInPlaceSupported) {
 	    //This is IE and a ppt file; use the edit app to launch powerpoint because of bug in IE and/or powerpoint
 %>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
@@ -162,10 +160,9 @@ boolean ss_isMail = false;
 <%
 	}
 
-	if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported || ss_isMail) {
+	if (!isIECheck || !ext.equals(".ppt") || !editInPlaceSupported) {
 %>
 		<td valign="top" width="80" rowspan="${thumbRowSpan}">
-		<c:if test="${ssConfigJspStyle != 'mail'}">
 		<div class="ss_thumbnail_gallery ss_thumbnail_small"> 
 			<a style="text-decoration: none;" href="<ssf:url 
 					    webPath="readFile"
@@ -176,9 +173,7 @@ boolean ss_isMail = false;
 					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
 					    <ssf:param name="fileName" value="${selection.fileItem.name}"/>
 					    </ssf:url>" 
-					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
-					</c:if>
 					
 				    <ssf:title tag="title.open.file">
 					    <ssf:param name="value" value="${selection.fileItem.name}" />
@@ -193,10 +188,8 @@ boolean ss_isMail = false;
 		    <ssf:param name="viewType" value="thumbnail"/>
 		    </ssf:url>"/></a>
 	    </div>
-	    </c:if>
 		</td>
 		<td style="height:20px;" class="ss_att_title" width="25%"><a style="text-decoration: none;" 
-					<c:if test="${ssConfigJspStyle != 'mail'}">    
 						href="<ssf:url 
 					    webPath="readFile"
 					    folderId="${ssDefinitionEntry.parentBinder.id}"
@@ -207,20 +200,6 @@ boolean ss_isMail = false;
 					    <ssf:param name="fileName" value="${selection.fileItem.name}"/>
 					    </ssf:url>" 
 					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
-					</c:if>
-					<c:if test="${ssConfigJspStyle == 'mail'}">   
-						href="<ssf:url 
-				  		adapter="true" 
-				    	portletName="ss_forum" 
-				   		action="view_permalink"
-						binderId="${ssDefinitionEntry.parentBinder.id}"
-						entryId="${ssDefinitionEntry.id}">
-						<ssf:param name="entityType" value="${ssDefinitionEntry.entityType}" />
-					    <ssf:param name="fileId" value="${selection.id}"/>
-					    <ssf:param name="fileTime" value="${selection.modification.date.time}"/>
-				    	<ssf:param name="newTab" value="1"/>
-				 	  	</ssf:url>" 
-					</c:if> 
 
 				    <ssf:title tag="title.open.file">
 					    <ssf:param name="value" value="${selection.fileItem.name}" />
@@ -240,7 +219,6 @@ boolean ss_isMail = false;
 
 		<td class="ss_att_meta" width="10%"></td>
 		<td class="ss_att_meta">
-		<c:if test="${ssConfigJspStyle != 'mail'}">
 		<ssf:ifSupportsViewAsHtml relativeFilePath="${selection.fileItem.name}" browserType="<%=strBrowserType%>">
 				<a target="_blank" style="text-decoration: none;" href="<ssf:url 
 				    webPath="viewFile"
@@ -252,10 +230,8 @@ boolean ss_isMail = false;
 			    	<ssf:param name="viewType" value="html"/>
 			    	</ssf:url>" <ssf:title tag="title.open.file.in.html.format" /> ><span class="ss_edit_button ss_smallprint">[<ssf:nlt tag="entry.HTML" />]</span></a>
 		</ssf:ifSupportsViewAsHtml>
-		</c:if>
 		</td>
 		<td class="ss_att_meta">
-		<c:if test="${ssConfigJspStyle != 'mail'}">
 		
 		<ssf:ifnotaccessible>
 		
@@ -289,7 +265,6 @@ boolean ss_isMail = false;
 			
 		</ssf:ifnotaccessible>
 			
-	 	</c:if>
 		</td>
 		<td class="ss_att_meta"><fmt:formatDate timeZone="${ssUser.timeZone.ID}"
 				     value="${selection.modification.date}" type="both" 
@@ -298,7 +273,7 @@ boolean ss_isMail = false;
 		<td class="ss_att_meta ss_att_space">${selection.modification.principal.title}</td>
 		<td class="ss_att_meta" width="15%"></td>
 	</tr>
-	<c:if test="${!empty selection.fileVersions && versionCount > 1 && ssConfigJspStyle != 'mail'}">
+	<c:if test="${!empty selection.fileVersions && versionCount > 1}">
         <tr><td style="height:10px;" class="ss_att_title" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 		<tr>
 		  <td class="ss_att_title ss_subhead2" colspan="8">
@@ -354,9 +329,7 @@ boolean ss_isMail = false;
 				    <ssf:param name="versionId" value="${fileVersion.id}"/>
 				    <ssf:param name="fileTime" value="${fileVersion.modification.date.time}"/>
 				    </ssf:url>"
-					<c:if test="${ssConfigJspStyle != 'mail'}">    
 					    onClick="return ss_launchUrlInNewWindow(this, '<ssf:escapeJavaScript value="${selection.fileItem.name}"/>');"
-					</c:if>
 					
 				    <ssf:title tag="title.open.file.version">
 					    <ssf:param name="value" value="${selection.fileItem.name}" />

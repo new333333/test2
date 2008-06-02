@@ -155,7 +155,6 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_attachments.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_attachments.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_attachments.jsp" />
 		</jsps>
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderAttachments"/>
 	</item>
@@ -322,7 +321,6 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_view.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/entry_view.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/entry_view.jsp" />
 		</jsps>
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEntry"/>
 	</item>
@@ -334,7 +332,6 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/title_view.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_data_title.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_title.jsp" />
 		</jsps>
 		<notify velocity="title.vm"/>
 	</item>
@@ -376,7 +373,6 @@
 		<jsps>
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/view_entry_workflow.jsp" />
 			<jsp name="mobile" value="/WEB-INF/jsp/definition_elements/mobile/view_entry_workflow.jsp" />
-			<jsp name="mail" value="/WEB-INF/jsp/definition_elements/mail/view_entry_workflow.jsp" />
 		</jsps>
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderWorkflow"/>
 	</item>

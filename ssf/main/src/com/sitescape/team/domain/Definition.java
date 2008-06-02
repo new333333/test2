@@ -91,7 +91,6 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String JSP_STYLE_FORM="form";
 	public static final String JSP_STYLE_VIEW="view";
 	public static final String JSP_STYLE_TEMPLATE="template";
-	public static final String JSP_STYLE_MAIL="mail";
 	public static final String JSP_STYLE_MOBILE="mobile";
 	
 	public static final String JSP_STYLE_DEFAULT="default"; //used only in definition_config file
