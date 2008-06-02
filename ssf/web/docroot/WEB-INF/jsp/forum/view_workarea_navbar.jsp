@@ -222,7 +222,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	          title="<ssf:nlt tag="navigation.goToMaximizedView"/>"
               ><ssf:nlt tag="navigation.expandedView"/></a>
           </li>
-                    <li>
+          <c:if test="${!empty ssUser}">
+          <li>
 			  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
 			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 			  </ssHelpSpot>
@@ -233,6 +234,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			      	binderId="${ssUser.workspaceId}"/>"
               ><ssf:nlt tag="navigation.myWorkspace"/> </a>
           </li>
+          </c:if>
           </ul>
           </div>
       </div><!-- end of col1-->

@@ -171,6 +171,7 @@ public class ViewPermalinkController  extends SAbstractController {
 			if (user == null || binderId.equals("") || 
 					!getBinderModule().checkAccess(new Long(binderId), user)) {
 				//User must log in to see this
+				BinderHelper.setupStandardBeans(this, request, response, model);
 	 	    	return new ModelAndView("forum/login_please", model);
 			} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
 				String zoneName = WebHelper.getZoneNameByVirtualHost(request);
@@ -182,7 +183,8 @@ public class ViewPermalinkController  extends SAbstractController {
 						}
 					}, zoneName);
 				} catch(AccessControlException ac) {
-		 	    	return new ModelAndView("forum/login_please", model);
+					BinderHelper.setupStandardBeans(this, request, response, model);
+					return new ModelAndView("forum/login_please", model);
 				}
 			}
 		} else {
