@@ -1867,8 +1867,6 @@ public class BinderHelper {
 		String includeAttachments = PortletRequestUtils.getStringParameter(request, "_sendMail_includeAttachments", "");
 		if (!toList.equals("") || !toTeam.equals("")) {
 			FolderEntry entry = bs.getFolderModule().getEntry(folderId, entryId);
-			Set entrySet = new HashSet();
-			entrySet.add(entry);
 			Set users = new HashSet();
 			users.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("_sendMail_toList")));
 			
@@ -1877,24 +1875,14 @@ public class BinderHelper {
 				if (!teamMemberIds.isEmpty()) users.addAll(teamMemberIds);
 			}
 			
-			String messageBody = "<a href=\"";
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
-			messageBody += adapterUrl.toString();
-			messageBody += "\">" + entry.getTitle() + "</a><br/><br/>";
-			messageBody += body;
 			
 			boolean incAtt = false;
 			if (!includeAttachments.equals("")) incAtt = true;
 
 			if (!users.isEmpty()) {
 				try {
-					bs.getAdminModule().sendMail(users, null, subject, 
-							new Description(messageBody, Description.FORMAT_HTML), 
-							entrySet, incAtt);
+					bs.getAdminModule().sendMail(entry, users, null, subject, 
+							new Description(body, Description.FORMAT_HTML), incAtt);
 				} catch (Exception e) {
 					//TODO Log that mail wasn't sent
 				}

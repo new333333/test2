@@ -30,7 +30,6 @@ package com.sitescape.team.module.definition.notify;
 
 import java.text.DateFormat;
 import java.util.Calendar;
-import java.util.TimeZone;
 
 import org.apache.velocity.VelocityContext;
 
@@ -53,7 +52,7 @@ public class NotifyBuilderEvent extends AbstractNotifyBuilder {
 		if (!(obj instanceof Event)) return;
 		Event event = (Event)obj;
 		//if processing a calendar or task attach events to mail as icals
-    	String family = (String)visitor.getParam("ssFamily");
+    	String family = (String)visitor.getParam("com.sitescape.team.notify.params.family");
     	if (ObjectKeys.FAMILY_CALENDAR.equals(family) || ObjectKeys.FAMILY_TASK.equals(family)) {
     		visitor.getNotifyDef().addEvent(visitor.getEntity(), event);
     	}

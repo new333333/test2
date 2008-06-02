@@ -49,7 +49,8 @@ public class Notify {
 	public enum NotifyType {
 		summary ,
 		full,
-		text;
+		text,
+		interactive;
 	};
 	
 	protected NotifyType type=NotifyType.summary;

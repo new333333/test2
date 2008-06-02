@@ -29,11 +29,11 @@
 package com.sitescape.team.module.definition.notify;
 
 import java.util.List;
+
 import org.apache.velocity.VelocityContext;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.module.definition.DefinitionUtils;
 /**
  *
  * @author Janet McCann
@@ -45,8 +45,8 @@ public class NotifyBuilderEntry extends AbstractNotifyBuilder {
     protected void build(NotifyVisitor visitor, String template, VelocityContext ctx) {
     	if (!Notify.NotifyType.summary.equals(visitor.getNotifyDef().getType())) {
     		super.build(visitor, template, ctx);
-    	} else {
-	    	String family = (String)visitor.getParam("ssFamily");
+       	} else {
+	    	String family = (String)visitor.getParam("com.sitescape.team.notify.params.family");
 	    	if (ObjectKeys.FAMILY_CALENDAR.equals(family) || ObjectKeys.FAMILY_TASK.equals(family)) {
 	    		processDigestCalendar(visitor, template, ctx);
 	    	} else {

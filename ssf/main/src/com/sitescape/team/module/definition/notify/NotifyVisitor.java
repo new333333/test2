@@ -4,7 +4,7 @@ import java.io.Writer;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
+import java.util.HashMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.dom4j.Element;
@@ -66,6 +66,13 @@ public class NotifyVisitor {
 	public void visit(Element nextItem) {
 		try {
 			NotifyBuilderUtil.buildElements(entity, nextItem, notifyDef, writer, params, true);
+		} catch (Exception ex) {
+			NotifyBuilderUtil.logger.error("Error processing template:", ex);
+		}
+  	}
+	public void visit(DefinableEntity entry) {
+		try {
+			NotifyBuilderUtil.buildElements(entry, notifyDef, writer, new HashMap());
 		} catch (Exception ex) {
 			NotifyBuilderUtil.logger.error("Error processing template:", ex);
 		}

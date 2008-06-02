@@ -38,7 +38,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-
+import java.util.Date;
 import javax.mail.internet.InternetAddress;
 
 import org.dom4j.Document;
@@ -60,6 +60,7 @@ import com.sitescape.team.domain.ChangeLog;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.TemplateBinder;
@@ -73,10 +74,12 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.dashboard.DashboardModule;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.file.FileModule;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
+import com.sitescape.team.module.mail.EmailFormatter;
 import com.sitescape.team.module.mail.MailModule;
 import com.sitescape.team.module.shared.AccessUtils;
 import com.sitescape.team.module.shared.ObjectBuilder;
@@ -598,7 +601,10 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
        	}
 	}
 
-    public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception {
+    public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body) throws Exception {
+    	return sendMail(null, ids, emailAddresses, subject, body, false); 
+    }
+    public Map<String, Object> sendMail(Entry entry, Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, boolean sendAttachments) throws Exception {
     	User user = RequestContextHolder.getRequestContext().getUser();
 		Set emailSet = new HashSet();
 		List distribution = new ArrayList();
@@ -654,30 +660,16 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			//cannot send without valid from address
 			return result;
     	}
-    	if (body.getFormat() == Description.FORMAT_HTML)
-    		message.put(MailModule.HTML_MSG, body.getText());
-    	else 
-       		message.put(MailModule.TEXT_MSG, body.getText());
+   		message.put(MailModule.HTML_MSG, body.getText());
     		
     	message.put(MailModule.SUBJECT, subject);
  		message.put(MailModule.TO, emailSet);
- 		if (entries != null) {
- 			List attachments = new ArrayList();
-			List iCalendars = new ArrayList();
-				 	 			
-			for (DefinableEntity entry:entries) {
-				if (sendAttachments) attachments.addAll(entry.getFileAttachments());
-				if (entry.getEvents() != null && !entry.getEvents().isEmpty()) {
-					iCalendars.add(getIcalModule().generate(entry, entry.getEvents(), getMailModule().getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.DEFAULT_TIMEZONE)));
-	 			}
-	 	 	}
-			if (sendAttachments) message.put(MailModule.ATTACHMENTS, attachments);
-			if (!iCalendars.isEmpty()) {
-				message.put(MailModule.ICALENDARS, iCalendars);
-			}
- 			
- 		}
-		boolean sent = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");
+ 		boolean sent;
+ 		if (entry != null) {
+ 	   		sent = getMailModule().sendMail(entry, message, user.getTitle() + " email", sendAttachments);    		
+ 		} else {
+    		sent = getMailModule().sendMail(RequestContextHolder.getRequestContext().getZone(), message, user.getTitle() + " email");    		
+    	}
 		if (sent) result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SENT);
 		else result.put(ObjectKeys.SENDMAIL_STATUS, ObjectKeys.SENDMAIL_STATUS_SCHEDULED);
 		return result;

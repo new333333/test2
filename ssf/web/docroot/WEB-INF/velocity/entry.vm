@@ -27,7 +27,6 @@
  * are trademarks of SiteScape, Inc.
  *#
 #parse ("icecore.vm")
-
 <div style="#ss_entryContent()">
 #if (!$ssVisitor.Entity.ParentEntry)
 $ssVisitor.getNLT("notify.forum.label")
@@ -36,4 +35,11 @@ $esc.html(${ssVisitor.Entity.ParentBinder.PathName})</a>
 #end
 <br/>
 $ssVisitor.visit()
+#set ($replies = ${ssVisitor.getParam("com.sitescape.team.notify.params.replies")})
+#if ($replies && !$replies.isEmpty())
+<div style="#ss_entryContent()"><span style="font-weight:bold;font-size:14px">${ssVisitor.getNLT("__entry_replies")}</span></div>
+#foreach ($selection in $replies)
+$ssVisitor.visit($selection)
+#end
+#end
 </div>
