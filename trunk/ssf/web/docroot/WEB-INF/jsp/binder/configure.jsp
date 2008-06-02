@@ -234,7 +234,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/> <ssf:inlineHelp tag="ihelp.other.workflow_association"/> </legend>
 
-	<table>
+	<table>	
+    <tr><span class="ss_bold"><ssf:nlt tag="workflow.type.entry"/></span></tr>
+    <tr>	
 	<c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 	  <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
 	  <tr>
@@ -257,6 +259,35 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	  </tr>
 	  </c:if>
 	</c:forEach>
+	</tr>
+	</table>
+
+	<table>
+    <tr><span class="ss_bold"><ssf:nlt tag="workflow.type.reply"/></span></tr>
+	<tr>
+	<c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
+	  <c:if test="${!empty ssReplyDefinitionMap[item.key]}">
+	  <tr>
+	    <td><ssf:nlt tag="${item.value.title}" checkIfTag="true"/></td>
+		<td>
+		  <select name="workflow_<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
+		    <option value=""><ssf:nlt tag="common.select.none" text="--none--"/></option>
+	          <c:forEach var="wfp" items="${ssPublicWorkflowDefinitions}">
+	            <c:if test="${ssBinder.workflowAssociations[item.value.id] eq wfp.value}">
+	              <option value="<c:out value="${wfp.value.id}"/>" selected>
+		          <ssf:nlt tag="${wfp.value.title}" checkIfTag="true"/>(${wfp.value.name})</option>
+	            </c:if>
+	            <c:if test="${ssBinder.workflowAssociations[item.value.id] != wfp.value}">
+	              <option value="<c:out value="${wfp.value.id}"/>">
+		          <ssf:nlt tag="${wfp.value.title}" checkIfTag="true"/>(${wfp.value.name})</option>
+	            </c:if>
+	          </c:forEach>
+		  </select>
+		</td>
+	  </tr>
+	  </c:if>
+	</c:forEach>
+	</tr>
 	</table>
 	<br>
 <c:if test="${!ssBinder.definitionsInherited}">
