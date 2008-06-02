@@ -1562,7 +1562,7 @@ function ss_showDiv(divName, backgroundIframe) {
     if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
     	document.getElementById(divName).style.display = "block";
     }
-	if (typeof noBackgroundIframe == 'undefined' || backgroundIframe != 'no') ss_showBackgroundIFrame(divName, "ss_background_iframe");
+	if (typeof backgroundIframe == 'undefined' || backgroundIframe != 'no') ss_showBackgroundIFrame(divName, "ss_background_iframe");
 
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
