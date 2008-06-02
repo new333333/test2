@@ -1884,27 +1884,42 @@ function ss_ShowHideDivXY(divName, x, y) {
 }
 
 /* IE6 workaround - divs under selectboxes */
-function ss_showBackgroundIFrame(divid, frmId) {
+var ss_showBackgroundIframeDivId = null;
+function ss_showBackgroundIFrame(divId, frmId) {
 	if (!ss_isIE6) {
 		return;
 	}
-	var div = document.getElementById(divid);
+	if (ss_showBackgroundIframeDivId != null && ss_showBackgroundIframeDivId != divId) {
+		//Delete the previous iframe if any
+		var frm = document.getElementById(frmId);
+		try {
+			if (frm) {
+				frm.parentNode.removeChild(frm);
+			}
+		} catch (e) {}
+	}
+	ss_showBackgroundIframeDivId = divId;
+	var div = document.getElementById(divId);
 	if (!div) {
 		return;
 	}
+	if (div.getElementsByTagName('iframe').length > 0) return;
 	if (!div.style.zIndex) {
 		div.style.zIndex = ssLightboxZ - 1;
 	}
-	var frm = document.createElement("iframe");
-	if (typeof ss_baseRootPathUrl != 'undefined') {
-		var teaming_url = ss_baseRootPathUrl + 'js/forum/null.html';
-		frm.src = teaming_url;
+	var frm = document.getElementById(frmId);
+	if (frm == null) {
+		frm = document.createElement("iframe");
+		if (typeof ss_baseRootPathUrl != 'undefined') {
+			var teaming_url = ss_baseRootPathUrl + 'js/forum/null.html';
+			frm.src = teaming_url;
+		}
+		frm.frameBorder = 0;
+		frm.scrolling = "no";
+		document.body.appendChild(frm);
+		frm.id = frmId;
+		frm.className = "ss_background_iframe";
 	}
-	frm.frameBorder = 0;
-	frm.scrolling = "no";
-	document.body.appendChild(frm);
-	frm.id = frmId;
-	frm.className = "ss_background_iframe";
 	if (div.style.zIndex) {
 		frm.style.zIndex = div.style.zIndex * 1 - 1;
 	} else {
@@ -1927,12 +1942,17 @@ function ss_hideBackgroundIFrame(frmId) {
 	if (!ss_isIE6) {
 		return;
 	}
+	if (ss_showBackgroundIframeDivId != null) {
+		var divObj = document.getElementById(ss_showBackgroundIframeDivId)
+		if (divObj != null && divObj.style.visibility != 'hidden') return
+	}
 	var frm = document.getElementById(frmId);
 	try {
 		if (frm) {
 			frm.parentNode.removeChild(frm);
 		}
 	} catch (e) {}
+	ss_showBackgroundIframeDivId = null;
 }
 
 function ss_showDivActivate(divName) {
@@ -1974,13 +1994,13 @@ function ss_showDivAtXY(divName) {
 	ss_setObjectLeft(divObj, parseInt(ss_getClickPositionX() + objLeftOffset))
 	ss_showDiv(divName)
 }
-function ss_showDiv(divName) {
+function ss_showDiv(divName, backgroundIframe) {
 	if (document.getElementById(divName) == null) return;
     document.getElementById(divName).style.visibility = "visible";
     if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
     	document.getElementById(divName).style.display = "block";
     }
-	ss_showBackgroundIFrame(divName, "ss_background_iframe");
+	if (typeof backgroundIframe == 'undefined' || backgroundIframe != 'no') ss_showBackgroundIFrame(divName, "ss_background_iframe");
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
 	    	document.getElementById(divName).style.position != "absolute") {
@@ -2063,7 +2083,6 @@ function captureXY(e) {
 	        }
 	    }
 	    ss_divToBeHidden = new Array();
-		ss_hideBackgroundIFrame("ss_background_iframe");
     }
     if (ss_isNSN6 || ss_isMoz5) {
         ss_mousePosX = e.pageX
