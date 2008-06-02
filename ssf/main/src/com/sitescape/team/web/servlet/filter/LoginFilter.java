@@ -39,9 +39,10 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
-import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.WebUrlUtil;
 
 public class LoginFilter  implements Filter {
 
@@ -59,7 +60,8 @@ public class LoginFilter  implements Filter {
 			// User is not logged in.
 			String path = req.getPathInfo();
 			String actionValue = request.getParameter("action");
-			if((path != null && (path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || path.equals("/"+WebKeys.SERVLET_PORTAL_LOGOUT))) || 
+			if((path != null && (path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || path.equals("/"+WebKeys.SERVLET_PORTAL_LOGOUT) || 
+					path.equals("/"+WebKeys.SERVLET_VIEW_CSS))) || 
 					(actionValue != null && (actionValue.startsWith("__") || actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK)))) {
 				// The action value indicates that the framework should allow
 				// execution of the controller corresponding to the action value
@@ -81,12 +83,15 @@ public class LoginFilter  implements Filter {
 				// Unauthenticated access is not allowed. So don't bother 
 				// invoking the servlet. Instead simply redirect the user to 
 				// the portal login page.
-				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/forum/portal_login.jsp");
-				request.setAttribute("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
-				request.setAttribute("ss_screens_to_login_screen", 
-						SPropsUtil.getString("permalink.login.screensToLoginScreen"));
-				request.setAttribute("ss_screens_after_login_screen_to_logged_in", 
-						SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
+				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/forum/login_please.jsp");
+				request.setAttribute(WebKeys.URL, req.getRequestURL()+"?"+req.getQueryString());
+				AdaptedPortletURL loginUrl = new AdaptedPortletURL(req, "ss_forum", true);
+				loginUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN); 
+				request.setAttribute(WebKeys.LOGIN_URL, loginUrl.toString());
+				String logoutUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_LOGOUT;
+				request.setAttribute(WebKeys.LOGOUT_URL, logoutUrl);
+				String loginPostUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_LOGIN;
+				request.setAttribute(WebKeys.LOGIN_POST_URL, loginPostUrl);
 				dispatcher.forward(request, response);
 			}
 		}

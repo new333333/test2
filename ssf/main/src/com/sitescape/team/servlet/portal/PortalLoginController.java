@@ -111,13 +111,29 @@ public abstract class PortalLoginController extends SAbstractController {
 			}
 		}
 		else { // logout request
+			Long userId = null;
+			try {
+				//Get the current user id before logging out
+				userId = WebHelper.getRequiredUserId(request);
+			} catch(Exception e) {}
+			
 			HttpClient httpClient = getPortalHttpClient(request);
 			if(clientCookies != null)
 				copyClientCookies(request, clientCookies, httpClient);
 			
 			portalCookies = logOutFromPortal(request, response, httpClient);
 			view = WebKeys.VIEW_LOGOUT_RETURN;
-			String url = RequestUtils.getStringParameter(request, "url", "");			
+			String url = RequestUtils.getStringParameter(request, "url", "");
+			if (url.equals("")) {
+				if (userId != null) {
+					Long profileBinderId = getProfileModule().getProfileBinder().getId();
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId.toString());
+					url = adapterUrl.toString();
+				}
+			}
 			model.put(WebKeys.URL, url);
 		}
 		
