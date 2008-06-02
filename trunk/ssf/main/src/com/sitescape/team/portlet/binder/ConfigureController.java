@@ -224,6 +224,15 @@ public class ConfigureController extends AbstractBinderController {
 		//Add the allowed entry types
 		// and the workflow associations
 		String[] defEntryIds = PortletRequestUtils.getStringParameters(request, "entryDefinition");
+		
+		Map tempEntryDefMap = new HashMap<String,Definition>();
+		for(int i=0; i < defEntryIds.length; i++)
+		{
+			tempEntryDefMap.put(defEntryIds[i], DefinitionHelper.getDefinition(defEntryIds[i]));
+		}
+		Map replyDefMap = DefinitionHelper.getReplyDefinitions(tempEntryDefMap);
+		Object[] replyIdsArray = replyDefMap.keySet().toArray();
+		
 		if (defEntryIds != null) {
 			for (int i = 0; i < defEntryIds.length; i++) {
 				String defId = defEntryIds[i];
@@ -234,7 +243,16 @@ public class ConfigureController extends AbstractBinderController {
 				}
 			}
 		}
-
+		
+		if (replyIdsArray != null) {
+			for (int i = 0; i < replyIdsArray.length; i++) {
+				String defId = (String) replyIdsArray[i];
+				if (!Validator.isNull(defId)) {
+					String wfDefId = PortletRequestUtils.getStringParameter(request, "workflow_" + defId, "");
+					if (!wfDefId.equals("")) workflowAssociations.put(defId,wfDefId);
+				}
+			}
+		}
 	}
 	protected void setupDefinitions(Binder binder, Map model) {
 
