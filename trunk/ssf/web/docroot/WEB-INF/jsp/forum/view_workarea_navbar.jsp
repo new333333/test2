@@ -655,6 +655,7 @@ ss_statusCurrent = "${ssUser.status}";
 </c:if>
 
 <!-- Start of favorites pane -->
+<ssf:ifLoggedIn>
 <div class="ss_style_trans" id="ss_favorites_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">
 
@@ -731,9 +732,11 @@ ss_statusCurrent = "${ssUser.status}";
 </ssf:popupPane>
 
 </div>
-
+</ssf:ifLoggedIn>
 <!-- End of favorites pane -->
+
 <!-- Start of myteams pane -->
+<ssf:ifLoggedIn>
 <div class="ss_style_trans" id="ss_myteams_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">
 <ssf:popupPane width="175px" titleTag=""
@@ -746,7 +749,9 @@ ss_statusCurrent = "${ssUser.status}";
 </div>
 </ssf:popupPane>
 </div>
+</ssf:ifLoggedIn>
 <!-- End of myteams pane -->
+
 <c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes')}" >
 <!-- iframe div -->
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>

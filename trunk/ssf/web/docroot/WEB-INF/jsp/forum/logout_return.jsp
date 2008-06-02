@@ -29,14 +29,17 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
 <body class="ss_style_body">
-</ssf:ifadapter>
 
-You are logged out!!!
+<c:if test="${!empty ssUrl}">
+<script type="text/javascript">
+self.location.href = '${ssUrl}'
+</script>
+</c:if>
 
-<ssf:ifadapter>
-</div>
+<c:if test="${empty ssUrl}">
+<span class="ss_bold ss_largerprint"><ssf:nlt tag="logout.loggedOutOk"/></span>
+</c:if>
+
 	</body>
 </html>
-</ssf:ifadapter>
