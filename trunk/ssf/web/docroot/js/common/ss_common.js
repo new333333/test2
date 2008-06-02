@@ -39,6 +39,8 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_isMoz5 = ((navigator.userAgent.indexOf("Mozilla/5") > -1) && !ss_isNSN6);
 	var ss_isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
 	var ss_isIE = ((navigator.userAgent.indexOf("IE ") > -1));
+	var ss_isIE6 = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("MSIE 6") > -1));
+	
 	
 	//Random number seed (for building urls that are unique)
 	var ss_now = new Date();
@@ -1883,7 +1885,7 @@ function ss_ShowHideDivXY(divName, x, y) {
 
 /* IE6 workaround - divs under selectboxes */
 function ss_showBackgroundIFrame(divid, frmId) {
-	if (!ss_isIE) {
+	if (!ss_isIE6) {
 		return;
 	}
 	var div = document.getElementById(divid);
@@ -1922,7 +1924,7 @@ function ss_showBackgroundIFrame(divid, frmId) {
 
 /* IE6 workaround - divs under selectboxes */
 function ss_hideBackgroundIFrame(frmId) {
-	if (!ss_isIE) {
+	if (!ss_isIE6) {
 		return;
 	}
 	var frm = document.getElementById(frmId);
