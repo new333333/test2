@@ -2,6 +2,8 @@ package com.sitescape.team.smtp.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
@@ -31,16 +33,21 @@ import org.subethamail.smtp.server.SMTPServer;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.context.request.RequestContextUtil;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.folder.FolderModule;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.mail.EmailPoster;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.smtp.SMTPManager;
 import com.sitescape.team.util.SessionUtil;
+import com.sitescape.team.util.SimpleNameUtil;
 
 public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPManager, SMTPManagerImplMBean, InitializingBean, DisposableBean {
 
@@ -73,6 +80,16 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 	public ZoneModule getZoneModule()
 	{
 		return zoneModule;
+	}
+	
+	protected BinderModule binderModule;
+	public void setBinderModule(BinderModule binderModule)
+	{
+		this.binderModule = binderModule;
+	}
+	public BinderModule getBinderModule()
+	{
+		return binderModule;
 	}
 	
 	public void afterPropertiesSet() throws Exception {
@@ -145,19 +162,24 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 					throw new RejectException(554, "Server error");
 				}
 				for(String recipient : recipients) {
-					if(determineSender(from, recipient) == null) {
+					String hostname = hostnamePart(recipient);
+					String localPart = localPart(recipient);
+					if(hostname == null || localPart == null || determineSender(from, hostname) == null) {
 						throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
 					}
-					PostingDef posting = getCoreDao().findPosting(recipient, RequestContextHolder.getRequestContext().getZoneId());
-					if(posting == null) {
+					SimpleName simpleUrl = getBinderModule().getSimpleNameByEmailAddress(localPart);
+					if(simpleUrl == null || !simpleUrl.getBinderType().equals(EntityType.folder.name())) {
 						throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
 					}
 	
 					logger.debug("Delivering new message to " + recipient);
-					Folder folder = (Folder)posting.getBinder();
-					EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
+					Binder binder = getBinderModule().getBinder(simpleUrl.getBinderId());
+					if(!binder.getPostingEnabled()) {
+						throw new RejectException(550, "Requested action not taken: mailbox " + recipient + " unavailable");
+					}
+					EmailPoster processor = (EmailPoster)processorManager.getProcessor(binder,EmailPoster.PROCESSOR_KEY);
 					try {
-						List errors = processor.postMessages(folder, posting, msgs, session);
+						List errors = processor.postMessages((Folder)binder, recipient, msgs, session);
 						if(errors.size() > 0) {
 							Message m = (Message) errors.get(0);
 							throw new RejectException(554, m.getSubject());
@@ -177,15 +199,28 @@ public class SMTPManagerImpl extends CommonDependencyInjection implements SMTPMa
 			from = null;
 			recipients = new LinkedList<String>();
 		}
-
-		private User determineSender(String from, String recipient)
+		
+		private String localPart(String emailAddress)
 		{
-			String[] recipientParts = recipient.split("@");
-			if(recipientParts.length != 2) {
-				logger.info("Ignoring mail posted to invalid email address: " + recipient);
+			String[] parts = emailAddress.split("@");
+			if(parts.length != 2) {
 				return null;
 			}
-			Long zone = getZoneModule().getZoneIdByVirtualHost(recipientParts[1]);
+			return parts[0];
+		}
+
+		private String hostnamePart(String emailAddress)
+		{
+			String[] parts = emailAddress.split("@");
+			if(parts.length != 2) {
+				return null;
+			}
+			return parts[1];
+		}
+
+		private User determineSender(String from, String hostname)
+		{
+			Long zone = getZoneModule().getZoneIdByVirtualHost(hostname);
 			List<Principal> ps = getProfileDao().loadPrincipalByEmail(from, zone);
 			User user = null;
 			for (Principal p:ps) {

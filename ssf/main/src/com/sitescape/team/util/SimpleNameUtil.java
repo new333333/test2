@@ -56,7 +56,7 @@ public class SimpleNameUtil {
 		simpleName = simpleName.toLowerCase();
         Long zoneId = getZoneModule().getZoneIdByVirtualHost(hostname);
         
-        SimpleName sn = getCoreDao().loadSimpleName(simpleName, SimpleName.TYPE_URL, zoneId);
+        SimpleName sn = getCoreDao().loadSimpleName(simpleName, zoneId);
 		
         if(sn != null)        
         	return getURL(isSecure, hostname, port, sn.getBinderId(), sn.getBinderType());

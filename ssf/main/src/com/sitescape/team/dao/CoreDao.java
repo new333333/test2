@@ -163,11 +163,18 @@ public interface CoreDao {
      * Returns <code>SimpleName</code> matching the criteria, or <code>null</code> if no match is found.
      * 
      * @param name
-     * @param type
      * @param zoneId
      * @return
      */
-    public SimpleName loadSimpleName(String name, String type, Long zoneId);
+    public SimpleName loadSimpleName(String name, Long zoneId);
+    /**
+     * Returns <code>SimpleName</code> matching the criteria, or <code>null</code> if no match is found.
+     * 
+     * @param emailAddress
+     * @param zoneId
+     * @return
+     */
+    public SimpleName loadSimpleNameByEmailAddress(String emailAddress, Long zoneId);
     
-    public List<SimpleName> loadSimpleNames(String type, Long binderId, Long zoneId);
+    public List<SimpleName> loadSimpleNames(Long binderId, Long zoneId);
 }

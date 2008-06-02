@@ -890,6 +890,8 @@ public class WebKeys {
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";
+    public static final String SIMPLE_EMAIL_ENABLED="ssSimpleEmailEnabled";
+    public static final String SIMPLE_EMAIL_HOSTNAME="ssSimpleEmailHostname";
     public static final String SIMPLE_URL_GLOBAL_KEYWORDS="ssSimpleUrlGlobalKeywords";
     public static final String SIMPLE_URL_CHANGE_ACCESS="ssSimpleUrlChangeAccess";
     public static final String SIMPLE_URL_NAMES="ssSimpleUrlNames";

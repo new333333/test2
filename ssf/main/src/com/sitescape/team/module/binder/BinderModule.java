@@ -358,6 +358,14 @@ public interface BinderModule {
     public Binder setDefinitionsInherited(Long binderId, boolean inheritFromParent)
     	throws AccessControlException;
     /**
+     * Set the postingEnabled flag.
+     * 
+     * @param postingEnabled
+     * @throws AccessControlException
+     */
+    public void setPostingEnabled(Long folderId, Boolean postingEnabled) throws AccessControlException;
+    
+    /**
      * Add emailAddress and (options password) for posting to a binder
      * @param binderId
      * @param emailAddress
@@ -407,14 +415,22 @@ public interface BinderModule {
 	public boolean testAccess(Binder binder, BinderOperation operation);
 
 	/**
-	 * Returns <code>SimpleName</code> object matching the name and type.
+	 * Returns <code>SimpleName</code> object matching the name.
 	 * Returns <code>null</code> if no match is found.
 	 * 
 	 * @param name
-	 * @param type
 	 * @return
 	 */
-	public SimpleName getSimpleName(String name, String type);
+	public SimpleName getSimpleName(String name);
+	
+	/**
+	 * Returns <code>SimpleName</code> object matching the email address.
+	 * Returns <code>null</code> if no match is found.
+	 * 
+	 * @param emailAddress
+	 * @return
+	 */
+	public SimpleName getSimpleNameByEmailAddress(String emailAddress);
 	
 	/**
 	 * Returns a list of <code>SimpleName</code> objects of given type for the 
@@ -423,20 +439,20 @@ public interface BinderModule {
 	 * @param binderId
 	 * @return
 	 */
-	public List<SimpleName> getSimpleNames(Long binderId, String type);
+	public List<SimpleName> getSimpleNames(Long binderId);
 	
 	/**
 	 * Add a simple name for the binder.
 	 * 
 	 * @param simpleName
 	 */
-	public void addSimpleName(String name, String type, Long binderId, String binderType);
+	public void addSimpleName(String name, Long binderId, String binderType);
 	
 	/**
 	 * Delete the simple name.
 	 * 
 	 * @param simpleName
 	 */
-	public void deleteSimpleName(String name, String type);
+	public void deleteSimpleName(String name);
 
 }

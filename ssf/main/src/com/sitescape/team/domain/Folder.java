@@ -42,6 +42,7 @@ public class Folder extends Binder {
     protected String entryRootKey;
     protected Folder topFolder;
     protected int nextEntryNumber=1;
+    
     //We don't maintain a list of entries because it is to big and expensive to 
     //maintain.
     public Folder() {
@@ -99,7 +100,7 @@ public class Folder extends Binder {
     }
  
     /**
-     * @hibernate.properoty length="15"
+     * @hibernate.property length="15"
      */
     public String getEntryRootKey() {
     	if (entryRootKey != null) return entryRootKey;
