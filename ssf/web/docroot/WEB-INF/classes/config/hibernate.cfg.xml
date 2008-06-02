@@ -36,8 +36,7 @@
 		<property name="hibernate.generate_statistics">false</property>
  		<property name="hibernate.hbm2ddl.auto">update</property>
 		<!-- Sitescape Mappings -->
-		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfoInteractive.hbm.xml"/>
-		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfoBackground.hbm.xml"/>
+		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfo.hbm.xml"/>
 		<mapping resource="com/sitescape/team/security/function/Function.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/Attachment.hbm.xml"/>

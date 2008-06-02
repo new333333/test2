@@ -21,8 +21,7 @@
 		<!-- Sitescape mappings only -->
 		<property name="mappingResources">
 			<list>
-		<value>com/sitescape/team/security/accesstoken/impl/TokenInfoInteractive.hbm.xml</value>
-		<value>com/sitescape/team/security/accesstoken/impl/TokenInfoBackground.hbm.xml</value>
+		<value>com/sitescape/team/security/accesstoken/impl/TokenInfo.hbm.xml</value>
 		<value>com/sitescape/team/security/function/Function.hbm.xml</value>
 	    <value>com/sitescape/team/security/function/WorkAreaFunctionMembership.hbm.xml</value>
 	    <value>com/sitescape/team/domain/Attachment.hbm.xml</value>

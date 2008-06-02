@@ -55,76 +55,77 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 	
 	public void validate(String tokenStr, AccessToken token) throws InvalidAccessTokenException {
 		RequestContext rc = RequestContextHolder.getRequestContext();
-		TokenInfo info;
 		if(token.getScope() == AccessToken.TokenScope.session) {
-			info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), token.getInfoId());
+			TokenInfoSession info = getSecurityDao().loadTokenInfoSession(rc.getZoneId(), token.getInfoId());
+			if(info != null) {
+				String digest = computeDigest(token.getScope(), token.getApplicationId(), token.getUserId(),
+						token.getBinderId(), token.getBinderAccessConstraints(), info.getSeed());
+				if(!digest.equals(token.getDigest()))
+					throw new InvalidAccessTokenException(tokenStr);
+			}
+			else {
+				throw new InvalidAccessTokenException(tokenStr);				
+			}
 		}
 		else {
-			info = getSecurityDao().loadTokenInfoBackground(rc.getZoneId(), token.getApplicationId(), token.getUserId(), token.getBinderId());	
-		}
-		if(info != null) {
-			String digest = computeDigest(token, info.getSeed());
-			if(!digest.equals(token.getDigest()))
-				throw new InvalidAccessTokenException(tokenStr);
-		}
-		else {
-			throw new InvalidAccessTokenException(tokenStr);
+			TokenInfoRequest info = getSecurityDao().loadTokenInfoRequest(rc.getZoneId(), token.getInfoId());	
+			if(info != null) {
+				String digest = computeDigest(token.getScope(), info.getApplicationId(), info.getUserId(),
+						info.getBinderId(), info.getBinderAccessConstraints(), info.getSeed());
+				if(!digest.equals(token.getDigest()))
+					throw new InvalidAccessTokenException(tokenStr);
+			}
+			else {
+				throw new InvalidAccessTokenException(tokenStr);				
+			}
 		}
 	}
 
-	public AccessToken getBackgroundToken(Long applicationId, Long userId) {
-		return getBackgroundToken(applicationId, userId, null);
+	public AccessToken getRequestScopedToken(Long applicationId, Long userId) {
+		return getRequestScopedToken(applicationId, userId, null, BinderAccessConstraints.NONE);
 	}
 
-	public AccessToken getBackgroundToken(Long applicationId, Long userId, Long binderId) {
-		return getBackgroundToken(applicationId, userId, binderId, BinderAccessConstraints.BINDER_AND_DESCENDANTS);
-	}
-
-	public AccessToken getBackgroundToken(Long applicationId, Long userId, Long binderId, 
+	public AccessToken getRequestScopedToken(Long applicationId, Long userId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints) {
-		TokenInfoBackground info = loadOrCreateBackground(applicationId, userId, binderId);
+		TokenInfoRequest info = new TokenInfoRequest(applicationId, userId, binderId, binderAccessConstraints, getRandomSeed());
 		
+		getSecurityDao().save(info);
+				
 		String digest = computeDigest(TokenScope.request, applicationId, userId, binderId, binderAccessConstraints, info.getSeed());
 		
 		return AccessToken.requestScopedToken(applicationId, userId, digest, binderId, binderAccessConstraints);
 	}
 
-	public void invalidateBackgroundTokens(Long applicationId, Long userId, Long binderId) {
+	public void destroyRequestScopedToken(AccessToken token) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
-		TokenInfoBackground info = getSecurityDao().loadTokenInfoBackground(rc.getZoneId(), applicationId, userId, binderId);
-		if(info != null) {
-			info.setSeed(getRandomSeed());
-			getSecurityDao().update(info);
-		}
-	}
-
-	public void destroyAllTokenInfoInteractive() {
-		getSecurityDao().deleteAll(TokenInfoInteractive.class);
-	}
-
-	public void destroyUserTokenInfoInteractive(Long userId) {
-		getSecurityDao().deleteUserTokenInfoInteractive(userId);
-	}
-
-	public void destroyTokenInfoInteractive(String infoId) {
-		RequestContext rc = RequestContextHolder.getRequestContext();
-		TokenInfoInteractive info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), infoId);	
+		TokenInfoRequest info = getSecurityDao().loadTokenInfoRequest(rc.getZoneId(), token.getInfoId());
 		if(info != null)
 			getSecurityDao().delete(info);
 	}
 
-	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId) {
-		return getInteractiveToken(applicationId, userId, infoId, null);
+	public void destroyAllTokenInfoSession() {
+		getSecurityDao().deleteAll(TokenInfoSession.class);
 	}
 
-	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId, Long binderId) {
-		return getInteractiveToken(applicationId, userId, infoId, binderId, BinderAccessConstraints.BINDER_AND_DESCENDANTS);
+	public void destroyUserTokenInfoSession(Long userId) {
+		getSecurityDao().deleteUserTokenInfoSession(userId);
 	}
 
-	public AccessToken getInteractiveToken(Long applicationId, Long userId, String infoId, Long binderId, 
+	public void destroyTokenInfoSession(String infoId) {
+		RequestContext rc = RequestContextHolder.getRequestContext();
+		TokenInfoSession info = getSecurityDao().loadTokenInfoSession(rc.getZoneId(), infoId);	
+		if(info != null)
+			getSecurityDao().delete(info);
+	}
+
+	public AccessToken getSessionScopedToken(Long applicationId, Long userId, String infoId) {
+		return getSessionScopedToken(applicationId, userId, infoId, null, BinderAccessConstraints.NONE);
+	}
+
+	public AccessToken getSessionScopedToken(Long applicationId, Long userId, String infoId, Long binderId, 
 			BinderAccessConstraints binderAccessConstraints) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
-		TokenInfoInteractive info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), infoId);	
+		TokenInfoSession info = getSecurityDao().loadTokenInfoSession(rc.getZoneId(), infoId);	
 		
 		if(!info.getUserId().equals(userId))
 			throw new AccessTokenException("User IDs do not match: " + userId + " " + info.getUserId());
@@ -134,7 +135,7 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		return AccessToken.sessionScopedToken(infoId, applicationId, info.getUserId(), digest, binderId, binderAccessConstraints);
 	}
 
-	public String createTokenInfoInteractive(Long userId) {
+	public String createTokenInfoSession(Long userId) {
 		/*
 		 * Implementation note:
 		 * 
@@ -153,15 +154,11 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		 * same code for both interactive and background tokens. 
 		 */
 		
-		TokenInfoInteractive info = new TokenInfoInteractive(userId, getRandomSeed());
+		TokenInfoSession info = new TokenInfoSession(userId, getRandomSeed());
 		getSecurityDao().save(info);
 		return info.getId();	
 	}
 
-	private String computeDigest(AccessToken token, String seed) {
-		return computeDigest(token.getScope(), token.getApplicationId(), token.getUserId(), token.getBinderId(), token.getBinderAccessConstraints(), seed);
-	}
-	
 	private String getRandomSeed() {
 		return UUID.randomUUID().toString();
 	}
@@ -178,20 +175,10 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 					userId.toString(), binderId.toString(), binderAccessConstraints.name(), seed);
 		}
 	}
-	
-	private TokenInfoBackground loadOrCreateBackground(Long applicationId, Long userId, Long binderId) {
-		RequestContext rc = RequestContextHolder.getRequestContext();
-		TokenInfoBackground info = getSecurityDao().loadTokenInfoBackground(rc.getZoneId(), applicationId, userId, binderId);	
-		if(info == null) {
-			info = new TokenInfoBackground(applicationId, userId, binderId, getRandomSeed());
-			getSecurityDao().save(info);
-		}
-		return info;
-	}
 
-	public void updateTokenInfoInteractive(String infoId, Long newUserId) {
+	public void updateTokenInfoSession(String infoId, Long newUserId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
-		TokenInfoInteractive info = getSecurityDao().loadTokenInfoInteractive(rc.getZoneId(), infoId);	
+		TokenInfoSession info = getSecurityDao().loadTokenInfoSession(rc.getZoneId(), infoId);	
 		if(info != null) {
 			info.setUserId(newUserId);
 			info.setSeed(getRandomSeed());
