@@ -124,8 +124,7 @@ public class AddFolderController extends SAbstractController {
 					if (!teamMemberIds.isEmpty()) {
 						Map status = getAdminModule().sendMail(teamMemberIds, null, 
 								NLT.get("binder.announcement", new Object[] {user.getTitle(), newBinder.getTitle()}), 
-								new Description(messageBody, Description.FORMAT_HTML), 
-								null, false);
+								new Description(messageBody, Description.FORMAT_HTML));
 					}
 				}
 			}

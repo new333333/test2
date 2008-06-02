@@ -336,6 +336,7 @@ public class AddEntryController extends SAbstractController {
 				Map folderEntryDefs = DefinitionHelper.getEntryDefsAsMap(folder);
 				String entryType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TYPE, "");
 				model.put(WebKeys.FOLDER, folder);
+				model.put(WebKeys.BINDER, folder);
 				model.put(WebKeys.ENTRY_DEFINITION_MAP, folderEntryDefs);
 				model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_FORM);
 				model.put(WebKeys.DEFINITION_ID, entryType);
@@ -389,6 +390,8 @@ public class AddEntryController extends SAbstractController {
 				} else {
 					DefinitionHelper.getDefinition(null, model, "//item[@name='entryForm']");
 				}
+				Workspace ws = getWorkspaceModule().getTopWorkspace();
+				model.put(WebKeys.DOM_TREE, getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this, new FolderConfigHelper()),1));
 			}
 		}
 		return new ModelAndView(path, model);

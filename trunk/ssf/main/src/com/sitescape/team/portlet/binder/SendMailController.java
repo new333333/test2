@@ -28,7 +28,6 @@
  */
 package com.sitescape.team.portlet.binder;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -46,10 +45,10 @@ import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
-import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.StringUtil;
 
@@ -77,8 +76,7 @@ public class SendMailController extends SAbstractController {
 			if (formData.containsKey("users")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("users")));
 			if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 			
-			Map status = getAdminModule().sendMail(memberIds, emailAddress, subject, new Description(body, Description.FORMAT_HTML), null, false);
-			int i = 0;
+			Map status = getAdminModule().sendMail(memberIds, emailAddress, subject, new Description(body, Description.FORMAT_HTML));
 			String result = (String)status.get(ObjectKeys.SENDMAIL_STATUS);
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
 			List addrs = (List)status.get(ObjectKeys.SENDMAIL_DISTRIBUTION);

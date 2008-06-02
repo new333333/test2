@@ -75,8 +75,7 @@ public class MimeMapPreparator extends AbstractMailPreparator {
 					
 					String component = getICalComponentType(iCal);
 					//If okay to send todo or not a todo build alternatative
-					if (false) {
-					//if (sendVTODO || !Component.VTODO.equals(component)) {
+					if (sendVTODO || !Component.VTODO.equals(component)) {
 						// 	attach alternative iCalendar content
 						if (iCals.size() == 1 ) {
 							prepareICalendar(iCal, fileName, component, true, true, helper);

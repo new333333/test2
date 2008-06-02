@@ -86,12 +86,10 @@ public class SendEntryMailController extends SAbstractController {
 			if (formData.containsKey("groups")) memberIds.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("groups")));
 			
 			boolean sendAttachments = PortletRequestUtils.getBooleanParameter(request, "attachments", false);
-			Map folderEntries  = getFolderModule().getEntryTree(folderId, entryId);
-			List entries = (List)folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS);
-			entries.add(0, folderEntries.get(ObjectKeys.FOLDER_ENTRY));
+			FolderEntry entry  = getFolderModule().getEntry(folderId, entryId);
 			
-			Map status = getAdminModule().sendMail(memberIds, emailAddress, subject, 
-					new Description(body, Description.FORMAT_HTML), entries, sendAttachments);
+			Map status = getAdminModule().sendMail(entry, memberIds, emailAddress, subject, 
+					new Description(body, Description.FORMAT_HTML), sendAttachments);
 			
 			String result = (String)status.get(ObjectKeys.SENDMAIL_STATUS);
 			List errors = (List)status.get(ObjectKeys.SENDMAIL_ERRORS);
@@ -123,32 +121,10 @@ public class SendEntryMailController extends SAbstractController {
 		}
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		Long entryId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID));	
-		Map	folderEntries  = getFolderModule().getEntryTree(folderId, entryId);
-		FolderEntry entry = (FolderEntry)folderEntries.get(ObjectKeys.FOLDER_ENTRY);
+		FolderEntry entry = getFolderModule().getEntry(folderId, entryId);
 		Binder folder = entry.getParentFolder();
-		model.put(WebKeys.FOLDER_ENTRY_DESCENDANTS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_DESCENDANTS));
-		model.put(WebKeys.FOLDER_ENTRY_ANCESTORS, folderEntries.get(ObjectKeys.FOLDER_ENTRY_ANCESTORS));
 		model.put(WebKeys.ENTRY, entry);
-		model.put(WebKeys.DEFINITION_ENTRY, entry);
 		model.put(WebKeys.BINDER, folder);
-		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_MAIL);
-		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
-			DefinitionHelper.getDefaultEntryView(entry, model);
-		}
-		List replies = new ArrayList((List)model.get(WebKeys.FOLDER_ENTRY_DESCENDANTS));
-		replies.add(entry);
-
-		Map captionMap = new HashMap();
-		for (int i=0; i<replies.size(); i++) {
-			FolderEntry reply = (FolderEntry)replies.get(i);
-			Set states = reply.getWorkflowStates();
-			for (Iterator iter=states.iterator(); iter.hasNext();) {
-				WorkflowState ws = (WorkflowState)iter.next();
-				//store the UI caption for each state
-				captionMap.put(ws.getTokenId(), WorkflowUtils.getStateCaption(ws.getDefinition(), ws.getState()));
-			}
-		}
-		model.put(WebKeys.WORKFLOW_CAPTIONS, captionMap);
 
 		List userIds = PortletRequestUtils.getLongListParameters(request, WebKeys.USER_IDS_TO_ADD);
 		model.put(WebKeys.USERS, getProfileModule().getUsers(new HashSet(userIds)));

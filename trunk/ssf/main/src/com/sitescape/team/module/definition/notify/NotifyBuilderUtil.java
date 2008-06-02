@@ -39,12 +39,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.dom4j.Document;
 import org.dom4j.Element;
 
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.InternalException;
 import com.sitescape.team.SingletonViolationException;
 import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Definition;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.util.NLT;
@@ -111,10 +113,26 @@ public class NotifyBuilderUtil implements InitializingBean {
 	private static NotifyBuilderUtil getInstance() {
 		return instance;
 	}
+    public static void buildElements(DefinableEntity entity, Notify notifyDef, Writer writer, Map params) {
+		Definition def = entity.getEntryDef();
+		if (def == null) return;
+		Document definitionTree = def.getDefinition();
+		if (definitionTree != null) {
+			Element root = definitionTree.getRootElement();
+
+			//	Get a list of all of the items in the definition
+			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
+			if (entryItem == null) return;
+	    	Element entryType = entryItem.getParent(); //should be entryType
+	    	params.put("com.sitescape.team.notify.params.family",DefinitionUtils.getPropertyValue(entryType, "family"));
+	    	buildElements(entity, entryItem, notifyDef, writer, params, true);
+		}
+
+    }
     public static void buildElements(DefinableEntity entity, Element item, Notify notifyDef, Writer writer, Map params, boolean processItem) {
         String flagElementPath = "./notify";
         List<Element> items;
-        if (processItem) {  //starting poing
+        if (processItem) {  //starting point
         	items = new ArrayList();
         	items.add(item);
         } else {
