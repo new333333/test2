@@ -2042,7 +2042,7 @@
    <String `Dupicate Id Report for icecoreinstallationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `5/30/2008 10:57:15 AM'>
+   <String `6/3/2008 11:41:25 AM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2066,7 +2066,13 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `01_installingicecore.fm has no duplicate id(s)'>
+   <String `01_preinstallation.fm has no duplicate id(s)'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `02_installer.fm has no duplicate id(s)'>
   > # end of ParaLine
  > # end of Para
  <Para 
