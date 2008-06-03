@@ -65,6 +65,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
 		binderId="${ssFolder.id}"><ssf:param 
 		name="operation" value="save_folder_columns"/></ssf:url>";
 </script>
+<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation_init.jsp" %>
 
 <div id="ss_folder_view_common${renderResponse.namespace}">
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_view_common2.jsp" %>

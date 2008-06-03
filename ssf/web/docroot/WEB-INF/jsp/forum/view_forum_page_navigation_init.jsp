@@ -28,12 +28,50 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation_init.jsp" %>
-<div align="left" class="ssPageNavi">
- <table border="0" cellspacing="0px" cellpadding="0px">
-  <tr>
-	<td><%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %></td>   
-    <td style="padding-left: 20px;"><%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %></td>
-  </tr>
- </table>
-</div>
+<% // Common folder page number navigation %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+
+<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
+<script type="text/javascript">
+//Check the Page Number Before Submission
+function ss_goToPage_${renderResponse.namespace}(formObj) {
+	var strGoToPage = formObj.ssGoToPage.value;
+	var pageCount = <c:out value="${ssPageCount}"/>;
+	
+	if (strGoToPage == "") {
+		alert("<ssf:nlt tag="folder.enterPage" />");
+		return false;	
+	}
+	if (strGoToPage == "0") {
+		alert("<ssf:nlt tag="folder.enterValidPage" />");
+		return false;
+	}
+	var blnValueCheck = _isInteger(strGoToPage);
+	if (!blnValueCheck) {
+		alert("<ssf:nlt tag="folder.enterValidPage" />");
+		return false;
+	}
+	if (strGoToPage > pageCount) {
+		formObj.ssGoToPage.value = pageCount;
+	}
+	return true;
+}
+
+function ss_submitPage_${renderResponse.namespace}(formObj) {
+	return (ss_goToPage_${renderResponse.namespace}(formObj));
+}
+
+function ss_clickGoToPage_${renderResponse.namespace}(strFormName) {
+	var formObj = document.getElementById(strFormName);
+	if (ss_goToPage_${renderResponse.namespace}(formObj)) {
+		formObj.submit();
+	}
+}
+
+//Change the number of entries to be displayed in a page
+function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, pageCountValue) {
+	var formObj = document.getElementById(strFormName);
+	formObj.ssEntriesPerPage.value = pageCountValue;
+	formObj.submit();
+}
+</script>

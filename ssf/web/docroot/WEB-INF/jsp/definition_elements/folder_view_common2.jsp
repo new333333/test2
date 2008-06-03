@@ -35,11 +35,9 @@
 <% // filter toolbar %>
 <%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
 </div><br/>
-<div class="ss_clear_float"></div>
 <div align="left" class="ssPageNavi">
 <%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
 </div><br/>
-<div class="ss_clear_float"></div>
 <br/>
 <c:set var="actionVar" value="view_ws_listing"/>
 <c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">

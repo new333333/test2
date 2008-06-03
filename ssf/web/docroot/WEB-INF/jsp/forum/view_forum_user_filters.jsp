@@ -50,17 +50,6 @@
   helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="-45" offsetY="-5" 
   title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>&nbsp;</span>
 
-		<script type="text/javascript">
-			function ss_changeUserFilter(obj, filter) {
-			<c:if test="${ssConfigJspStyle != 'template'}">
-				var loading = "&nbsp;(<ssf:nlt tag="loading" text="loading"/>)&nbsp;"
-				document.getElementById('ss_filterTitle').innerHTML = "&nbsp;"+obj.innerHTML+loading;
-				document.forms.ss_filterSelect.select_filter.value = filter;
-				document.forms.ss_filterSelect.submit();
-			</c:if>
-			}
-		</script>
-	
 		<form class="ss_style" style="display: inline;"  
 		    name="ss_filterSelect" 
 			action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
