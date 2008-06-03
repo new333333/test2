@@ -46,6 +46,9 @@ var ss_displayType = "${ss_displayType}";
 <!-- Start of upper right toolbar -->
 <div id="ss_upperRightToolbar${renderResponse.namespace}" align="right"
   class="ss_pseudoPortalUpperRightToolbar">
+<c:if test="${!empty ssUser}">
+  <span style="padding-right:20px;">${ssUser.title}</span>
+</c:if>
 <ssf:ifLoggedIn>
   <a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
 </ssf:ifLoggedIn>
