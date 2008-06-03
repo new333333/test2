@@ -103,7 +103,7 @@ public interface AccessTokenManager {
 	
 	/**
 	 * Update the <code>TokenInfoSession</code> object represented by the
-	 * ID with the new user ID. It also changes its seed value.
+	 * ID with the new user ID. It also changces its seed value.
 	 * 
 	 * @param infoId
 	 * @param newUserId
@@ -137,5 +137,10 @@ public interface AccessTokenManager {
 	 * @param infoId
 	 */
 	public void destroyTokenInfoSession(String infoId);
+	
+	/**
+	 * Destroy all <code>TokenInfoRequest</code> objects in the system.
+	 */
+	public void destroyAllTokenInfoRequest();
 	
 }
