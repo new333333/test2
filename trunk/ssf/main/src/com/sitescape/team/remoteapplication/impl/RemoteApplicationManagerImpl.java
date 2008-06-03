@@ -142,7 +142,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		}
 	}
 
-	private void executeAction(Map<String,String> params, Long applicationId, 
+	private String executeAction(Map<String,String> params, Long applicationId, 
 	AccessToken accessToken, OutputStream out) throws RemoteApplicationException, IOException {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
@@ -195,6 +195,10 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 						logger.warn("Could not close InputStream", ex);
 					}
 				}
+				return null;
+			}
+			else {
+				return method.getResponseBodyAsString();
 			}
 		}
 		finally {
@@ -221,23 +225,23 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		return byteCount;
 	}
 
-	public void executeRequestScopedNonRenderableAction(Map<String, String> params, Long applicationId) throws RemoteApplicationException {
+	public String executeRequestScopedNonRenderableAction(Map<String, String> params, Long applicationId) throws RemoteApplicationException {
 		AccessToken accessToken = getAccessTokenManager().getRequestScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId());
 		try {
-			executeAction(params, applicationId, accessToken, null);
+			return executeAction(params, applicationId, accessToken, null);
 		}
 		catch(IOException e) {
 			throw new RemoteApplicationException(applicationId, e.toString(), e);
 		}
 	}
 
-	public void executeRequestScopedNonRenderableAction(Map<String, String> params, 
+	public String executeRequestScopedNonRenderableAction(Map<String, String> params, 
 			Long applicationId, Long binderId, BinderAccessConstraints binderAccessConstraints) throws RemoteApplicationException {
 		AccessToken accessToken = getAccessTokenManager().getRequestScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId(), binderId, binderAccessConstraints);
 		try {
-			executeAction(params, applicationId, accessToken, null);
+			return executeAction(params, applicationId, accessToken, null);
 		}
 		catch(IOException e) {
 			throw new RemoteApplicationException(applicationId, e.toString(), e);
