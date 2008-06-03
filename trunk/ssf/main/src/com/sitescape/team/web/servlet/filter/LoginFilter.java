@@ -60,9 +60,8 @@ public class LoginFilter  implements Filter {
 			// User is not logged in.
 			String path = req.getPathInfo();
 			String actionValue = request.getParameter("action");
-			if((path != null && (path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || path.equals("/"+WebKeys.SERVLET_PORTAL_LOGOUT) || 
-					path.equals("/"+WebKeys.SERVLET_VIEW_CSS))) || 
-					(actionValue != null && (actionValue.startsWith("__") || actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK)))) {
+			
+			if(isPathPermittedUnauthenticated(path) || isActionPermittedUnauthenticated(actionValue)) {
 				// The action value indicates that the framework should allow
 				// execution of the controller corresponding to the action value
 				// even when the user is not authenticated (or previous 
@@ -100,4 +99,14 @@ public class LoginFilter  implements Filter {
 	public void destroy() {
 	}
 
+	protected boolean isPathPermittedUnauthenticated(String path) {
+		return (path != null && 
+				(path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || 
+						path.equals("/"+WebKeys.SERVLET_PORTAL_LOGOUT) || 
+						path.equals("/"+WebKeys.SERVLET_VIEW_CSS)));
+	}
+	
+	protected boolean isActionPermittedUnauthenticated(String actionValue) {
+		return (actionValue != null && (actionValue.startsWith("__") || actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK)));
+	}
 }
