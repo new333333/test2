@@ -45,10 +45,10 @@ public interface RemoteApplicationManager {
 			HttpServletRequest request, HttpServletResponse response) 
 	throws RemoteApplicationException;
 
-	public void executeRequestScopedNonRenderableAction(Map<String,String> params, Long applicationId) 
+	public String executeRequestScopedNonRenderableAction(Map<String,String> params, Long applicationId) 
 	throws RemoteApplicationException;
 	
-	public void executeRequestScopedNonRenderableAction(Map<String,String> params, Long applicationId, 
+	public String executeRequestScopedNonRenderableAction(Map<String,String> params, Long applicationId, 
 			Long binderId, BinderAccessConstraints binderAccessConstraints) 
 	throws RemoteApplicationException;
 }
