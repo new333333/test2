@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.portlet.WindowState;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -42,6 +43,7 @@ import org.apache.commons.httpclient.URIException;
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.SPropsUtil;
@@ -131,6 +133,7 @@ public abstract class PortalLoginController extends SAbstractController {
 					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
 					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
 					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId.toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.workspace.toString());
 					url = adapterUrl.toString();
 				}
 			}

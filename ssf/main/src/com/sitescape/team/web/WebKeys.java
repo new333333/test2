@@ -189,6 +189,7 @@ public class WebKeys {
 	public static final String URL_URL = "url";
 	public static final String URL_ICAL_URL = "iCalURL";
 	public static final String URL_ICAL_SCHEDULE = "iCalSchedule";
+	public static final String URL_WINDOW_STATE = "windowState";
 	
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";

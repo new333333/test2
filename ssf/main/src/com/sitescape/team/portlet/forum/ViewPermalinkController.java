@@ -105,9 +105,11 @@ public class ViewPermalinkController  extends SAbstractController {
 		if (!entityType.equals("")) url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
 		if (!newTab.equals("")) url.setParameter(WebKeys.URL_NEW_TAB, newTab);
 		
-		if (entityType.equals("") && entryId.equals("") && !binderId.equals("")) {
-			Binder binder = getBinderModule().getBinder(new Long(binderId));
-			entityType = binder.getEntityType().name();
+		if (entityType.equals("") && !binderId.equals("")) {
+			try {
+				Binder binder = getBinderModule().getBinder(new Long(binderId));
+				entityType = binder.getEntityType().name();
+			} catch(Exception e) {}
 		}
 		if (entityType.equals(EntityIdentifier.EntityType.workspace.toString()) || 
 				entityType.equals(EntityIdentifier.EntityType.user.toString())) {
