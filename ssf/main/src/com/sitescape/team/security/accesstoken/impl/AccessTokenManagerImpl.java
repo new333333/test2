@@ -189,6 +189,10 @@ public class AccessTokenManagerImpl implements AccessTokenManager {
 		}
 	}
 
+	public void destroyAllTokenInfoRequest() {
+		getSecurityDao().deleteAll(TokenInfoRequest.class);
+	}
+
 	/*
 	private TokenInfo loadOrCreate(TokenType type, Long applicationId, Long userId, Long binderId) {
 		RequestContext rc = RequestContextHolder.getRequestContext();
