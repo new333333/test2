@@ -34,50 +34,6 @@
 <ssf:skipLink tag="<%= NLT.get("skip.paging.links") %>" id="navigationLinks_${renderResponse.namespace}">
 
 <c:if test="${ssConfigJspStyle != 'template'}">
-<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
-<script type="text/javascript">
-//Check the Page Number Before Submission
-function ss_goToPage_${renderResponse.namespace}(formObj) {
-	var strGoToPage = formObj.ssGoToPage.value;
-	var pageCount = <c:out value="${ssPageCount}"/>;
-	
-	if (strGoToPage == "") {
-		alert("<ssf:nlt tag="folder.enterPage" />");
-		return false;	
-	}
-	if (strGoToPage == "0") {
-		alert("<ssf:nlt tag="folder.enterValidPage" />");
-		return false;
-	}
-	var blnValueCheck = _isInteger(strGoToPage);
-	if (!blnValueCheck) {
-		alert("<ssf:nlt tag="folder.enterValidPage" />");
-		return false;
-	}
-	if (strGoToPage > pageCount) {
-		formObj.ssGoToPage.value = pageCount;
-	}
-	return true;
-}
-
-function ss_submitPage_${renderResponse.namespace}(formObj) {
-	return (ss_goToPage_${renderResponse.namespace}(formObj));
-}
-
-function ss_clickGoToPage_${renderResponse.namespace}(strFormName) {
-	var formObj = document.getElementById(strFormName);
-	if (ss_goToPage_${renderResponse.namespace}(formObj)) {
-		formObj.submit();
-	}
-}
-
-//Change the number of entries to be displayed in a page
-function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, pageCountValue) {
-	var formObj = document.getElementById(strFormName);
-	formObj.ssEntriesPerPage.value = pageCountValue;
-	formObj.submit();
-}
-</script>
 	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 
 	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
 
