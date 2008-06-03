@@ -22,7 +22,7 @@
 
  <target id="b9ptlgi" pid="b9vchn6" name="Step" level="3" number="6"> <text>Run the installer from where you unzipped the Novell Teaming kit. See "Running the Installer" on page 25.</text> </target>
 
- <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="7"> <text>Start and stop Novell Teaming. See "Starting and Stopping Novell Teaming" on page 34.</text> </target>
+ <target id="b9ptlgm" pid="b9vchn6" name="Step" level="3" number="7"> <text>Start and stop Novell Teaming. See "Starting and Stopping ICEcore" on page 34.</text> </target>
 
  <target id="b9vchn7" pid="b9vchn7" name="Sect1" level="1" number="1.3"> <text>Database Planning</text> </target>
 
@@ -52,9 +52,9 @@
 
  <target id="bbpnnvh" pid="bbn8hra" name="Sect2" level="2" number="1.5.3"> <text>Integrating with iChain</text> </target>
 
- <target id="bbn8j9e" pid="bbn8hra" name="Procedure" level="3" number="1"> <text>Assure that the iChain proxy's host name and port number match the Novell Teaming/Liferay port number. If you have configured Novell Teaming to run on port 8080, the iChain proxy should also use port 8080. If the port numbers differ, you must set the Listen Port setting in the Network information window when you run the installer.</text> </target>
+ <target id="bbn8j9e" pid="bbn8hra" name="Procedure" level="3" number="1"> <text>Assure that the iChain proxy's port number matches the Novell Teaming/Liferay port number. If you have configured Novell Teaming to run on port 8080, the iChain proxy should also use port 8080. If the port numbers differ, you must set the Listen Port setting in the Network information window when you run the installer.</text> </target>
 
- <target id="bbn8j9f" pid="bbn8hra" name="Step" level="4" number="1"> <text>Assure that the iChain proxy's host name and port number match the Novell Teaming/Liferay port number. If you have configured Novell Teaming to run on port 8080, the iChain proxy should also use port 8080. If the port numbers differ, you must set the Listen Port setting in the Network information window when you run the installer.</text> </target>
+ <target id="bbn8j9f" pid="bbn8hra" name="Step" level="4" number="1"> <text>Assure that the iChain proxy's port number matches the Novell Teaming/Liferay port number. If you have configured Novell Teaming to run on port 8080, the iChain proxy should also use port 8080. If the port numbers differ, you must set the Listen Port setting in the Network information window when you run the installer.</text> </target>
 
  <target id="bbn8jfu" pid="bbn8hra" name="Step" level="4" number="2"> <text>In iChain configuration window of the installer, select the Enable iChain option, set the Logoff URL setting to the log-off URL provided by the iChain proxy server, and set the iChain Proxy setting to the IP address of the iChain proxy server.</text> </target>
 
