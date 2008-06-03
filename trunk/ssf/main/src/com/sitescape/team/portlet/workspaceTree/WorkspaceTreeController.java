@@ -71,7 +71,7 @@ public class WorkspaceTreeController extends SAbstractController  {
 		
         User user = RequestContextHolder.getRequestContext().getUser();
         if (user != null && ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId()) && 
-        		user.getDisplayStyle().equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE)) {
+        		ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(user.getDisplayStyle())) {
 			Map<String,Object> updates = new HashMap<String,Object>();
 			updates.put(ObjectKeys.USER_PROPERTY_DISPLAY_STYLE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
         	MapInputData  inputData = new MapInputData (updates);

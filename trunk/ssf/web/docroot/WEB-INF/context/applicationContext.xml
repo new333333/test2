@@ -1020,6 +1020,9 @@ text/calendar											  ics
 		<property name="accessTokenManager"><ref local="accessTokenManager"/></property>
 	</bean>
 	
+	<!-- ============================== Portal Login Support ============================ -->
+	<bean id="portalLoginBean" class="com.sitescape.team.portal.liferay.LiferayLogin"/>
+	
 	<!-- ================================  JMX/MBean Support =============================== -->
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
 	    <property name="beans">
