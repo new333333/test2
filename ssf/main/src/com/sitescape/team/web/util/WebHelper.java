@@ -73,6 +73,7 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.util.FileUploadItem;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleMultipartFile;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.util.TempFileUtil;
@@ -103,6 +104,32 @@ public class WebHelper {
 		catch(IllegalStateException e) {
 			return false;
 		}
+	}
+	
+	public static boolean isGuestLoggedIn(HttpServletRequest request) {
+		try {
+			String username = getRequiredUserName(request);
+			if(username.equals(SZoneConfig.getGuestUserName(getZoneNameByVirtualHost(request))))
+				return true;
+			else
+				return false;
+		}
+		catch(IllegalStateException e) {
+			return false;
+		}	
+	}
+	
+	public static boolean isGuestLoggedIn(PortletRequest request) {
+		try {
+			String username = getRequiredUserName(request);
+			if(username.equals(SZoneConfig.getGuestUserName(getZoneNameByVirtualHost(request))))
+				return true;
+			else
+				return false;
+		}
+		catch(IllegalStateException e) {
+			return false;
+		}	
 	}
 	
 	public static String getRequiredUserName(HttpServletRequest request) 

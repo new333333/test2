@@ -86,6 +86,8 @@
 	<bean id="readFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ReadFileController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
 	</bean>
-	<bean id="portalLogin" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.portal.liferay.LiferayLoginController"/>
+	<bean id="portalLogin" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.portal.PortalLoginController">
+		<property name="portalLogin"><ref bean="portalLoginBean"/></property>
+	</bean>
 
 </beans>

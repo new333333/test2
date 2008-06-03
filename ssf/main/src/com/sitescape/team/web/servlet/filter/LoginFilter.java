@@ -38,8 +38,11 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import com.sitescape.team.portal.PortalLogin;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
@@ -51,13 +54,39 @@ public class LoginFilter  implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
 
 		if(WebHelper.isUserLoggedIn(req)) {
 			// User is logged in. Proceed as normalt. 
 			chain.doFilter(request, response);
 		}
 		else {
-			// User is not logged in.
+			// User is not (yet) logged in.
+			// Try synchronizing Teaming's HTTP state with the portal's by touching into it.
+			// The end result is expected to be one of the following two:
+			// 1. The portal logs the client in if the previous "rememberMe" credential
+			// is present and valid.
+			// 2. The portal logs the client in as a guest allowing anonymous access.
+			// Either way, by the time the following call returns, the client should
+			// have been logged in one way or another.
+			try {
+				getPortalLogin().touchPortal((HttpServletRequest) request, (HttpServletResponse) response);
+			} catch (Exception e) {
+				throw new ServletException(e);
+			}
+			
+			// Now redirect the client to the same original URL instead of proceeding in 
+			// this execution thread. This extra round trip is necessary in order to set
+			// up the request environment (HTTP session, etc.) properly with the HTTP
+			// state obtained from the previous contact with the portal.
+			String redirectUrl;
+			if(req.getQueryString() != null)
+				redirectUrl = req.getRequestURL().append("?").append(req.getQueryString()).toString();
+			else
+				redirectUrl = req.getRequestURL().toString();
+			res.sendRedirect(redirectUrl);
+			
+			/*
 			String path = req.getPathInfo();
 			String actionValue = request.getParameter("action");
 			
@@ -92,7 +121,7 @@ public class LoginFilter  implements Filter {
 				String loginPostUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_LOGIN;
 				request.setAttribute(WebKeys.LOGIN_POST_URL, loginPostUrl);
 				dispatcher.forward(request, response);
-			}
+			}*/
 		}
 	}
 
@@ -108,5 +137,9 @@ public class LoginFilter  implements Filter {
 	
 	protected boolean isActionPermittedUnauthenticated(String actionValue) {
 		return (actionValue != null && (actionValue.startsWith("__") || actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK)));
+	}
+	
+	private PortalLogin getPortalLogin() {
+		return (PortalLogin) SpringContextUtil.getBean("portalLoginBean");
 	}
 }
