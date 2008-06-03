@@ -43,8 +43,9 @@
 <c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">
   <c:set var="actionVar" value="view_folder_listing"/>
 </c:if>
-<span style="color:#5A9A98; font-weight:bold">
-  >><a href="<ssf:url action="${actionVar}" binderId="${ssDefinitionEntry.parentBinder.id}"/>"
+
+<span class="ss_largerprint ss_link_1 ss_bold">
+  &gt;&gt;<a class="ss_link_1" href="<ssf:url action="${actionVar}" binderId="${ssDefinitionEntry.parentBinder.id}"/>"
   >${ssDefinitionEntry.parentBinder.title}</a>&nbsp;&nbsp;
 </span>
 <span style="color:#546292; font-weight:bold">
@@ -627,7 +628,7 @@
 <c:forEach var="entry2" items="${ssFolderEntries}" >
   <div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" 
     style="visibility:hidden; display:none;">
-      <span ><ssf:markup type="view" binderId="${entry2._binderId}" entryId="${entry2._docId}"><%--
+      <span class="ss_style" ><ssf:markup type="view" binderId="${entry2._binderId}" entryId="${entry2._docId}"><%--
     		--%><ssf:textFormat formatAction="limitedDescription" textMaxWords="100">${entry2._desc}</ssf:textFormat><%--
     		--%></ssf:markup></span>
   </div>

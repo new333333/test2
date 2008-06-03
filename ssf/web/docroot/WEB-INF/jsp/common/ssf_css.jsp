@@ -4752,6 +4752,8 @@ table.ssMeetingRecords .ssHeader {
     top:-20px;		/* Slide this up into the ss_pseudoPortal margin specified above */
     display:none;
     visibility:hidden;
+    font-size: ${ss_style_font_smallprint} !important;
+    font-weight:bold;
 }
 
 ul.placesForm, ul.placesForm li {
