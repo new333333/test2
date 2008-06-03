@@ -118,7 +118,7 @@
         <column name="modification_principal"/>
       </many-to-one>
     </component>
-    <property name="postingEnabled"/>
+    <property name="postingEnabled" access="field"/>
     <subclass name="com.sitescape.team.domain.Folder" node="ss_folder" discriminator-value="folder" dynamic-update="true">
       <many-to-one name="topFolder" />
       <property name="nextEntryNumber"/>
