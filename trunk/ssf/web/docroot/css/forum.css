@@ -42,7 +42,15 @@ div.xportlet-box {
   
 .ss_underlinePlus {
   text-decoration:underline;
-  margin-left:16px;
+  margin:0 0 0 16px;
+  padding:0px;
+  
+  }  
+.ss_noUnderlinePlus {
+  text-decoration:none;
+  margin:0 0 0 16px;
+  padding:0px;
+  
   }  
   
 .ss_indent_small {
