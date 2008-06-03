@@ -33,14 +33,13 @@
 <div id="ss_diss_inset">
 <div align="left" class="ssPageNavi">
 <% // filter toolbar %>
- <table border="0" cellspacing="0px" cellpadding="0px">
-  <tr>
-	<td><%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %></td>   
-    <td style="padding-left: 20px;"><%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %></td>
-
-  </tr>
- </table>
-</div>
+<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+</div><br/>
+<div class="ss_clear_float"></div>
+<div align="left" class="ssPageNavi">
+<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
+</div><br/>
+<div class="ss_clear_float"></div>
 <br/>
 <c:set var="actionVar" value="view_ws_listing"/>
 <c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">

@@ -81,7 +81,6 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 
 	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
 
-	<c:if test="${ssFolderViewType != 'blog'}">
 		<table border="0" cellspacing="0px" cellpadding="0px">
 		<tr>
 			<td>
@@ -102,6 +101,7 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 				&nbsp;&nbsp;
 			</td>
 
+			<td>
 			<form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/>
@@ -114,15 +114,14 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 			    
 			    <input type="hidden" name="ssEntriesPerPage" />
 			
-			<td>
 				<div class="ss_results_pro_page">
-				<span class="ss_light ss_fineprint">
+				  <span class="ss_light ss_fineprint">
 	
-				<ssf:menu title="${ssPageMenuControlTitle}" 
-				  titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
-				  titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
+				  <ssf:menu title="${ssPageMenuControlTitle}" 
+				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
+				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
 				
-				<ssf:ifnotaccessible>
+				    <ssf:ifnotaccessible>
 				
 					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
 					<li>
@@ -152,9 +151,9 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 					</li>
 					</ul>
 					
-				</ssf:ifnotaccessible>	
+				    </ssf:ifnotaccessible>	
 				
-				<ssf:ifaccessible>
+				    <ssf:ifaccessible>
 
 					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;"
 					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>">
@@ -181,16 +180,16 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
 					</a><br/>
 
-				</ssf:ifaccessible>
+				    </ssf:ifaccessible>
 					
-				</ssf:menu>
+				  </ssf:menu>
 
 			    </span>
 			    </div>
+			</form>
 			</td>
 
-			</form>
-			
+			<td>
 			<form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
@@ -199,7 +198,6 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 				name="endDate" value="${endDate}"/></c:if><ssf:param 
 				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
-			<td>
 				&nbsp;&nbsp;
 			<c:if test="${ssPageCount > '1.0'}">
 				<ssf:ifnotaccessible>
@@ -214,17 +212,10 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 				<ssf:title tag="title.goto.page" />
 				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;"><ssf:nlt tag="button.go"/></a>
 			</c:if>
-				
+			</form>
 			</td>
 
-			</form>
-		
-		</tr>
-		</table>
-		
-		</td>
-		
-		<td align="center" width="25%">
+			<td align="center" width="25%">
 
 				<c:choose>
 				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
@@ -287,7 +278,9 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 					</a>
 				  </c:otherwise>
 				</c:choose>
-	</c:if>
+			</td>
+		</tr>
+		</table>
 </c:if>
 
 </ssf:skipLink>
