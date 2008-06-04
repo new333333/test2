@@ -33,6 +33,16 @@
 
 <script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
 <script type="text/javascript">
+var ss_baseBinderPageUrl${renderResponse.namespace} = '<ssf:url><ssf:param 
+	name="action" value="ssActionPlaceHolder"/><ssf:param 
+	name="binderId" value="ssBinderIdPlaceHolder"/><ssf:param 
+	name="page" value="ssPagePlaceHolder"/><ssf:param 
+	name="cTag" value="ssCTagPlaceHolder"/><ssf:param 
+	name="pTag" value="ssPTagPlaceHolder"/><ssf:param 
+	name="yearMonth" value="ssYearMonthPlaceHolder"/><ssf:param 
+	name="endDate" value="ssEndDatePlaceHolder"/><ssf:param 
+	name="newTab" value="ssNewTabPlaceHolder"/></ssf:url>';
+
 //Check the Page Number Before Submission
 function ss_goToPage_${renderResponse.namespace}(formObj) {
 	var strGoToPage = formObj.ssGoToPage.value;

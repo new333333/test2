@@ -271,7 +271,14 @@ public class WorkspaceTreeHelper {
 		} catch(NoBinderByTheIdException e) {
 		} catch(OperationAccessControlExceptionNoName e) {
 			//Access is not allowed
-			return WebKeys.VIEW_ACCESS_DENIED;
+			if (WebHelper.isUserLoggedIn(request) && 
+					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				//Access is not allowed
+				return WebKeys.VIEW_ACCESS_DENIED;
+			} else {
+				//Please log in
+				return WebKeys.VIEW_LOGIN_PLEASE;
+			}
 		}
 		
 		//Set up the standard beans
