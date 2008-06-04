@@ -898,11 +898,9 @@ function ss_executeJavascript(xmlNode) {
     }
 }
 
-function ss_showFolderPage(obj, binderId, currentPage, direction, divId, cTag, pTag, yearMonth, endDate) {
-	if (currentPage == "") currentPage = "0";
-	var page = parseInt(currentPage);
-	if (direction == 'next') page = page + 1;
-	if (direction == 'previous') page = page - 1;
+function ss_showFolderPage(obj, binderId, currentPageIndex, divId, cTag, pTag, yearMonth, endDate) {
+	if (currentPageIndex == "") currentPageIndex = "0";
+	var page = parseInt(currentPageIndex);
 	
 	var divObj = self.document.getElementById(divId);
 	if (divObj == null || ss_userDisplayStyle == "accessible") {
@@ -911,7 +909,7 @@ function ss_showFolderPage(obj, binderId, currentPage, direction, divId, cTag, p
 		self.location.href = url;
 	} else {
 		ss_setupStatusMessageDiv();
-		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"show_folder_page", ssPageStartIndex:page, direction:direction, cTag:cTag, pTag:pTag, yearMonth:yearMonth, endDate:endDate}, "");
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"show_folder_page", ssPageStartIndex:page, cTag:cTag, pTag:pTag, yearMonth:yearMonth, endDate:endDate});
 		ss_fetch_url(url, ss_showFolderPageDiv, divId)
 	}
 }
@@ -995,6 +993,7 @@ function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
 	ss_moveDivToBody(divName);
 	ss_showHideObj(divName, 'visible', 'block');
 	divObj = document.getElementById(divName)
+	if (divObj == null) return;
 	divObj.style.zIndex = '500';
 	var x = dojo.html.getAbsolutePosition(parentObj, true).x
 	var y = dojo.html.getAbsolutePosition(parentObj, true).y

@@ -161,6 +161,13 @@
 			</td>
 
 			<td align="center" width="25%" valign="top">
+				<c:set var="ssCurrentPage" value="0"/>
+				<c:forEach var="currentEntryPage" items="${ssPageNumbers}" >
+				    <jsp:useBean id="currentEntryPage" type="java.util.HashMap" />
+					<c:if test="${!empty currentEntryPage.ssPageIsCurrent && currentEntryPage.ssPageIsCurrent == 'true'}">
+					  <c:set var="ssCurrentPage" value="${currentEntryPage.ssPageDisplayValue}"/>
+					</c:if>
+				</c:forEach>
 
 				<c:choose>
 				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
@@ -176,7 +183,7 @@
 						name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 						name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 						title="<ssf:nlt tag="title.goto.prev.page"/>"
-						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${entryPage.ssPageDisplayValue}', 'previous', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
+						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPagePrevious.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
 						> &lt;&lt;
 					</a>&nbsp;&nbsp;
 				  </c:otherwise>
@@ -195,7 +202,9 @@
 						name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
 						name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 						name="endDate" value="${endDate}"/></c:if></ssf:url>" 
-						title="<ssf:nlt tag="title.goto.next.page"/>"> 
+						title="<ssf:nlt tag="title.goto.next.page"/>"
+						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPageNext.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
+						> 
 						&gt;&gt;
 					</a>
 				  </c:otherwise>
@@ -220,8 +229,10 @@
 							name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
 							name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 							name="endDate" value="${endDate}"/></c:if></ssf:url>" 
-							class="ssPageNumber" <ssf:title tag="title.goto.page.number"
-						><ssf:param name="value" value="${entryPage.ssPageDisplayValue}" /></ssf:title> >
+						  onClick="ss_showFolderPage(this, '${ssFolder.id}', '${entryPage.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
+						  class="ssPageNumber" <ssf:title tag="title.goto.page.number"
+						  ><ssf:param name="value" value="${entryPage.ssPageDisplayValue}" /></ssf:title> 
+						>
 						<span><c:out value="${entryPage.ssPageDisplayValue}"/></span><%--
 						--%></a>
 					</c:if>
