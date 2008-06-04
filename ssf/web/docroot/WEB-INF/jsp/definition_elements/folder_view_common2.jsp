@@ -29,6 +29,22 @@
  */
 %>
 <% // Folder listing %>
+<jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
+<jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<%
+boolean useAdaptor = true;
+if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
+		!ObjectKeys.GUEST_USER_INTERNALID.equals(ssUser.getInternalId())) {
+	useAdaptor = false;
+}
+String ssFolderTableHeight = "";
+Map ssFolderPropertiesMap = ssUserFolderProperties.getProperties();
+if (ssFolderPropertiesMap != null && ssFolderPropertiesMap.containsKey("folderEntryHeight")) {
+	ssFolderTableHeight = (String) ssFolderPropertiesMap.get("folderEntryHeight");
+}
+if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") || 
+		ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
+%>
 <div align="center">
 <div id="ss_diss_inset">
 <div align="left" class="ssPageNavi">

@@ -1495,7 +1495,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
 								
 					//We have the element name, see if it has a value in the input data
-					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
+					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea") || 
+							itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
 						//Use the helper routine to parse the date into a date object
 						Description description = new Description();
 						if (inputData.exists(nameValue)) {

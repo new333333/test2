@@ -175,8 +175,9 @@
 						name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
 						name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 						name="endDate" value="${endDate}"/></c:if></ssf:url>" 
-						title="<ssf:nlt tag="title.goto.prev.page"/>"> 
-						&lt;&lt;
+						title="<ssf:nlt tag="title.goto.prev.page"/>"
+						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${entryPage.ssPageDisplayValue}', 'previous', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
+						> &lt;&lt;
 					</a>&nbsp;&nbsp;
 				  </c:otherwise>
 				</c:choose>

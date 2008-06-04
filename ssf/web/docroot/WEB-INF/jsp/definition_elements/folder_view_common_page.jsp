@@ -28,7 +28,8 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% // Folder listing %>
+<% // Folder page %>
+<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
@@ -37,21 +38,26 @@ boolean isIECheck = BrowserSniffer.is_ie(request);
 String strBrowserType = "";
 if (isIECheck) strBrowserType = "ie";
 %>
-<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
-
+<jsp:useBean id="ssUserFolderProperties" type="com.sitescape.team.domain.UserProperties" scope="request" />
+<jsp:useBean id="ssBinder" type="com.sitescape.team.domain.Binder" scope="request" />
+<%
+	Map ssFolderColumns = (Map) ssUserFolderProperties.getProperty("userFolderColumns");
+	if (ssFolderColumns == null) ssFolderColumns = (Map)ssBinder.getProperty("folderColumns");
+	if (ssFolderColumns == null) {
+		ssFolderColumns = new java.util.HashMap();
+		ssFolderColumns.put("number", "number");
+		ssFolderColumns.put("title", "title");
+		ssFolderColumns.put("state", "state");
+		ssFolderColumns.put("author", "author");
+		ssFolderColumns.put("date", "date");
+	}
+%>
+<c:set var="ssFolderColumns" value="<%= ssFolderColumns %>" scope="request"/>
 <c:set var="slidingTableStyle" value="sliding"/>
 <c:if test="${empty ss_folderViewStyle || ss_folderViewStyle == 'folder'}">
   <c:set var="slidingTableStyle" value="fixed"/>
 </c:if>
 
-<script type="text/javascript">
-var ss_saveFolderColumnsUrl = "<ssf:url action="${action}" actionUrl="true"
-		binderId="${ssFolder.id}"><ssf:param 
-		name="operation" value="save_folder_columns"/></ssf:url>";
-</script>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation_init.jsp" %>
-
 <div <c:if test="${slidingTableStyle == 'fixed'}">id="ss_folder_view_common${renderResponse.namespace}"</c:if>>
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_view_common2.jsp" %>
 </div>
-<c:set var="ss_useDefaultViewEntryPopup" value="1" scope="request"/>

@@ -102,6 +102,7 @@ import com.sitescape.team.survey.Question;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.survey.SurveyModel;
 import com.sitescape.team.task.TaskHelper;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
@@ -208,7 +209,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.AJAX_STATUS, statusMap);
 
 			//Check for calls from "ss_fetch_url" (which return 
-			if (op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
+			if (op.equals(WebKeys.OPERATION_SHOW_FOLDER_PAGE)) {
+				return new ModelAndView("forum/fetch_url_return", model);
+			} else if (op.equals(WebKeys.OPERATION_SHOW_BLOG_REPLIES)) {
 				return new ModelAndView("forum/fetch_url_return", model);
 			} else if (op.equals(WebKeys.OPERATION_CONFIGURE_FOLDER_COLUMNS)) {
 				return new ModelAndView("forum/fetch_url_return", model);
@@ -292,7 +295,10 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 		
 		//The user is logged in
-		if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
+		if (op.equals(WebKeys.OPERATION_SHOW_FOLDER_PAGE)) {
+			return ajaxGetFolderPage(this, request, response);
+			
+		} else if (op.equals(WebKeys.OPERATION_UNSEEN_COUNTS)) {
 			return ajaxGetUnseenCounts(request, response);
 			
 		} else if (op.equals(WebKeys.OPERATION_CHECK_IF_LOGGED_IN)) {
@@ -623,8 +629,17 @@ public class AjaxController  extends SAbstractControllerRetry {
 		return new ModelAndView("forum/favorites_tree", model);
 	}
 	
+	private ModelAndView ajaxGetFolderPage(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response) throws Exception {
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		ModelAndView modelAndView = ListFolderHelper.BuildFolderBeans(bs, request, response, binderId);
+		modelAndView.setView("definition_elements/folder_view_common_page");
+		return modelAndView;
+	
+	}
+
 	private ModelAndView ajaxGetUnseenCounts(RenderRequest request, 
-				RenderResponse response) throws Exception {
+			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		String[] forumList = new String[0];
 		if (PortletRequestUtils.getStringParameter(request, "forumList") != null) {
@@ -636,15 +651,14 @@ public class AjaxController  extends SAbstractControllerRetry {
 		}
 		Map unseenCounts = new HashMap();
 		unseenCounts = getFolderModule().getUnseenCounts(folderIds);
-
+	
 		response.setContentType("text/xml");
 		
 		model.put(WebKeys.LIST_UNSEEN_COUNTS_BINDER_IDS, folderIds);
 		model.put(WebKeys.LIST_UNSEEN_COUNTS, unseenCounts);
 		model.put(WebKeys.NAMING_PREFIX, PortletRequestUtils.getStringParameter(request, WebKeys.NAMING_PREFIX, ""));
 		return new ModelAndView("forum/unseen_counts", model);
-
-	}
+}
 
 	private ModelAndView ajaxReturn(RenderRequest request, 
 				RenderResponse response) throws Exception {
