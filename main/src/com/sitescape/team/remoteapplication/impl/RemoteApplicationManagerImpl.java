@@ -33,6 +33,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
@@ -56,6 +59,7 @@ import com.sitescape.team.security.accesstoken.AccessToken;
 import com.sitescape.team.security.accesstoken.AccessTokenManager;
 import com.sitescape.team.security.accesstoken.AccessToken.BinderAccessConstraints;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.web.util.WebHelper;
 
 public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 
@@ -66,8 +70,6 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 
 	protected Log logger = LogFactory.getLog(getClass());
 
-	// The name of the action/operation.
-	private static final String PARAMETER_NAME_ACTION = "ss_action_name";
 	// The version of the API/protocol.
 	private static final String PARAMETER_NAME_VERSION = "ss_version";
 	// The ID of the application - uniquely assigned to the application. 
@@ -76,6 +78,10 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 	private static final String PARAMETER_NAME_USER_ID = "ss_user_id";
 	// The access token
 	private static final String PARAMETER_NAME_ACCESS_TOKEN = "ss_access_token";
+	// The scope of the access token
+	private static final String PARAMETER_NAME_TOKEN_SCOPE = "ss_token_scope";
+	// Renderable or not
+	private static final String PARAMETER_NAME_RENDERABLE = "ss_renderable";
 	// The ID of the binder (optional)
 	private static final String PARAMETER_NAME_BINDER_ID = "ss_binder_id";
 	// The type of access constraints around the binder (optional) - meaningful
@@ -85,6 +91,9 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 	private static final String API_VERSION = "1.0";
 	
 	private static final int BUFFER_SIZE = 4096;
+	
+	private static final String TYPE_INTERACTIVE = "interactive";
+	private static final String TYPE_BACKGROUND = "background";
 
 	private ProfileDao profileDao;
 	private AccessTokenManager accessTokenManager;
@@ -105,32 +114,35 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		this.accessTokenManager = accessTokenManager;
 	}
 
-	public void executeInteractiveAction(Action action, Map<String,String> params, Long applicationId, 
-			String tokenInfoId, OutputStream out) throws RemoteApplicationException {
-		AccessToken accessToken = getAccessTokenManager().getInteractiveToken
-		(applicationId, RequestContextHolder.getRequestContext().getUserId(), tokenInfoId);
-		try {
-			executeInteractiveAction(action, params, applicationId, accessToken, out);
-		}
-		catch(IOException e) {
-			throw new RemoteApplicationException(applicationId, e.toString(), e);
-		}
-	}
-
-	public void executeInteractiveAction(Action action, Map<String,String> params, Long applicationId, String tokenInfoId, 
-			Long binderId, BinderAccessConstraints binderAccessConstraints, OutputStream out) 
+	public void executeSessionScopedRenderableAction(Map<String,String> params, Long applicationId, 
+			HttpServletRequest request, HttpServletResponse response) 
 	throws RemoteApplicationException {
-		AccessToken accessToken = getAccessTokenManager().getInteractiveToken
-		(applicationId, RequestContextHolder.getRequestContext().getUserId(), tokenInfoId, binderId, binderAccessConstraints);
+		AccessToken accessToken = getAccessTokenManager().getSessionScopedToken
+		(applicationId, RequestContextHolder.getRequestContext().getUserId(), WebHelper.getTokenInfoId(request));
 		try {
-			executeInteractiveAction(action, params, applicationId, accessToken, out);
+			executeAction(params, applicationId, accessToken, response.getOutputStream());
 		}
 		catch(IOException e) {
 			throw new RemoteApplicationException(applicationId, e.toString(), e);
 		}
 	}
 
-	private void executeInteractiveAction(Action action, Map<String,String> params, Long applicationId, 
+	public void executeSessionScopedRenderableAction(Map<String,String> params, Long applicationId, 
+			Long binderId, BinderAccessConstraints binderAccessConstraints, 
+			HttpServletRequest request, HttpServletResponse response) 
+	throws RemoteApplicationException {
+		AccessToken accessToken = getAccessTokenManager().getSessionScopedToken
+		(applicationId, RequestContextHolder.getRequestContext().getUserId(), 
+				WebHelper.getTokenInfoId(request), binderId, binderAccessConstraints);
+		try {
+			executeAction(params, applicationId, accessToken, response.getOutputStream());
+		}
+		catch(IOException e) {
+			throw new RemoteApplicationException(applicationId, e.toString(), e);
+		}
+	}
+
+	private String executeAction(Map<String,String> params, Long applicationId, 
 	AccessToken accessToken, OutputStream out) throws RemoteApplicationException, IOException {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
@@ -146,11 +158,12 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		// EasySSLProtocolSocketFactory. 
 		PostMethod method = new PostMethod(hrl.getPathQuery());
 		try {
-			method.addParameter(PARAMETER_NAME_ACTION, action.name());
 			method.addParameter(PARAMETER_NAME_VERSION, API_VERSION);
 			method.addParameter(PARAMETER_NAME_APPLICATION_ID, applicationId.toString());
 			method.addParameter(PARAMETER_NAME_USER_ID, rc.getUserId().toString());
 			method.addParameter(PARAMETER_NAME_ACCESS_TOKEN, accessToken.toStringRepresentation());
+			method.addParameter(PARAMETER_NAME_TOKEN_SCOPE, accessToken.getScope().name());
+			method.addParameter(PARAMETER_NAME_RENDERABLE, (out != null)? "true" : "false");
 			if(accessToken.getBinderId() != null) {
 				method.addParameter(PARAMETER_NAME_BINDER_ID, accessToken.getBinderId().toString());
 				method.addParameter(PARAMETER_NAME_BINDER_ACCESS_CONSTRAINTS, String.valueOf(accessToken.getBinderAccessConstraints().getNumber()));
@@ -161,7 +174,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 				}
 			}
 			int timeout = SPropsUtil.getInt("remoteapp.so.timeout", 0);
-			if(timeout > 0) {
+			if(timeout >= 0) {
 				method.getParams().setSoTimeout(timeout);
 			}
 			int statusCode = client.executeMethod(method);
@@ -169,17 +182,23 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 				StatusLine statusLine = method.getStatusLine();
 				throw new RemoteApplicationException(applicationId, statusLine.toString());
 			}
-			InputStream in = method.getResponseBodyAsStream();
-			try {
-				copy(in, out); // Do NOT use Spring's FileCopyUtils since it closes both streams.
-			}
-			finally {
+			if(out != null) {
+				InputStream in = method.getResponseBodyAsStream();
 				try {
-					in.close();
+					copy(in, out); // Do NOT use Spring's FileCopyUtils since it closes both streams.
 				}
-				catch (IOException ex) {
-					logger.warn("Could not close InputStream", ex);
+				finally {
+					try {
+						in.close();
+					}
+					catch (IOException ex) {
+						logger.warn("Could not close InputStream", ex);
+					}
 				}
+				return null;
+			}
+			else {
+				return method.getResponseBodyAsString();
 			}
 		}
 		finally {
@@ -204,6 +223,32 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		}
 		out.flush();
 		return byteCount;
+	}
+
+	public String executeRequestScopedNonRenderableAction(Map<String, String> params, Long applicationId) throws RemoteApplicationException {
+		AccessToken accessToken = getAccessTokenManager().getRequestScopedToken
+		(applicationId, RequestContextHolder.getRequestContext().getUserId());
+		try {
+			return executeAction(params, applicationId, accessToken, null);
+		}
+		catch(IOException e) {
+			throw new RemoteApplicationException(applicationId, e.toString(), e);
+		}
+		finally {
+			getAccessTokenManager().destroyRequestScopedToken(accessToken);
+		}
+	}
+
+	public String executeRequestScopedNonRenderableAction(Map<String, String> params, 
+			Long applicationId, Long binderId, BinderAccessConstraints binderAccessConstraints) throws RemoteApplicationException {
+		AccessToken accessToken = getAccessTokenManager().getRequestScopedToken
+		(applicationId, RequestContextHolder.getRequestContext().getUserId(), binderId, binderAccessConstraints);
+		try {
+			return executeAction(params, applicationId, accessToken, null);
+		}
+		catch(IOException e) {
+			throw new RemoteApplicationException(applicationId, e.toString(), e);
+		}
 	}
 
 	/*

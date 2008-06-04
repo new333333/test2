@@ -111,7 +111,7 @@
       <c:if test="${subBinder._entityType == 'folder'}">
       <div id="ss_topic_thread">
         <div style="padding-left:25px;">
-       <img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" alt="folder"/> 
+       <img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" <ssf:alt tag="folder"/> /> 
         <span>(${ss_binderUnseenCounts[subBinder._docId].count})</span> 
         <a href="<ssf:url action="view_folder_listing" binderId="${subBinder._docId}"/>">
           <span>${subBinder.title}</span>
@@ -125,17 +125,15 @@
   </c:if>
   
   <c:if test="${binder._entityType == 'folder'}">
-  <div id="ss_topic_thread">
-    <div style="padding-left:10px;">
-      <img src="<html:rootPath/>images/pics/discussion/folder_orange.png" align="absmiddle" alt="folder"/>     
+  <div id="ss_topic_title" class="ss_disc_folder_th1">
+   
     <span>(${ss_binderUnseenCounts[binder._docId].count})</span> 
     <a href="<ssf:url action="view_folder_listing" binderId="${binder._docId}"/>">
-      <span>${binder.title}</span>
+      <span class="ss_title_th1">${binder.title}</span>
     </a>
     <br/>
-    <div id="ss_topic_desc"><c:out value="${binder._desc}" escapeXml="false"/></div>
-    </div><!-- end of left padding -->
     </div><!-- end of folder thread -->
+    <div id="ss_topic_desc"><c:out value="${binder._desc}" escapeXml="false"/></div>
   </c:if>
   
   <br/>

@@ -15,7 +15,7 @@
  www.novell.com
 
 
- ESTIMATED PAGE COUNT (based on 200 words per page): 59
+ ESTIMATED PAGE COUNT (based on 200 words per page): 61
  ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 17
 
 
@@ -23,13 +23,13 @@
 
        Count    Doctype    Title
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-         465    bookinfo   Novell Teaming 1.0.3 Installation Guide
-         353    preface    About This Guide
-        7554    chapter    Installing Novell Teaming
+         414    bookinfo   Novell Teaming 1.0.3 Installation Guide
+         371    preface    About This Guide
+        7816    chapter    Installing Novell Teaming
         2115    appendix   A Sample installer.xml File
         1503    glossary   Glossary
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-       11990    book       Novell Teaming 1.0.3 Installation Guide
+       12219    book       Novell Teaming 1.0.3 Installation Guide
 
 
  GRAPHICS REFERENCED IN BOOK
@@ -62,11 +62,11 @@
 
        Count       Type
       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-          52       xref
+          54       xref
           54       link
            0       ulink-xrefext
            0       ulink-xrefexttext
-          14       ulink
+          13       ulink
 
 
  URLS REFERENCED IN ULINKS
@@ -85,7 +85,6 @@
        http://java.sun.com/products/archive
        http://java.sun.com/j2se/1.5.0/docs/relnotes/version-5.0.html
        http://www.novell.com/info/exports/
-       http://www.opensource.org/licenses/cpal_1.0
        http://wiki.liferay.com/index.php/Liferay_FAQ
 
 ========================================================================-->
@@ -128,8 +127,6 @@
   <title>Third-Party Materials</title>
   <simplelist>
    <member>All third-party trademarks are the property of their respective owners.</member>
-   <member>ICEcore*</member>
-   <member>Copyright © 1998 – 2008 SiteScape, Inc., and its licensors. All rights reserved. ICEcore software is governed by the Common Public Attribution License Version 1.0 (the “CPAL”); you may not use ICEcore software except in compliance with the CPAL. You may obtain a copy of the CPAL at <ulink url="http://www.opensource.org/licenses/cpal_1.0">www.opensource.org</ulink>.</member>
   </simplelist>
  </legalnotice>
 </bookinfo>
@@ -137,8 +134,7 @@
 <preface id="preface" xml:base="preface.xml">
  <title>About This Guide</title>
  <para condition="Novell">This guide covers the installation of Novell® Teaming. The term “ICEcore” appears in some file and directory names and refers to the application technology that enables the Novell Teaming software. In this guide, the term “Novell Teaming” applies to all versions of the Novell Teaming software unless otherwise noted.</para>
- 
- <para>This guide provides information about Installing Novell Teaming.</para>
+ <para condition="OpenSource">This guide covers the installation of ICEcore. In this guide, the term “Novell Teaming” applies to all versions of the Novell Teaming software unless otherwise noted.</para>
  <bridgehead id="audience">Audience</bridgehead>
  <para>This guide is intended for Novell Teaming administrators.</para>
  <bridgehead id="bdgyzut">Software and Documentation Version</bridgehead>
@@ -415,7 +411,7 @@
    <title>MySQL</title>
    <itemizedlist mark="bullet" spacing="normal">
     <listitem>
-     <para> MySQL 5.0.37 (or higher) Server and Client for Linux or MySQL 5.0.26 (or higher) Server and Client for Windows are required with <literal>innodb support</literal> enabled.</para>
+     <para> MySQL 5.0.26 (or higher) Server and Client for Linux or MySQL 5.0.26 (or higher) Server and Client for Windows are required with <literal>innodb support</literal> enabled.</para>
      <note>
       <para>MySQL 5.1 is not yet supported. You can get the MySQL Community Server at: <ulink url="http://www.mysql.com/">http://www.mysql.com/</ulink>.</para>
      </note>
@@ -569,9 +565,21 @@ sqlplus&gt; quit
 \database\mysql\create-database-mysql.sql
 \database\mysql\create-mysql.sql
 
+
+
+</screen>
+
+
+<screen>
 \database\sqlserver\create-database-sqlserver.sql
-\database\sqlserver\create-sqlserver.sql
-\database\oracle\create-database-oracle.sql\database\oracle\create-oracle.sql
+\database\sqlserver\create-sql-server.sql
+
+</screen>
+
+
+<screen>
+\database\oracle\create-database-oracle.sql
+\database\oracle\create-oracle.sql
 </screen>
 
    <para>When you run the installer, select the <guimenu>My DBA has already created the databases</guimenu> option in the <guimenu>Database selection</guimenu> window.</para>
@@ -716,6 +724,19 @@ iptables -t nat -A PREROUTING -d yourHostname -p tcp --dport 443 -j REDIRECT --t
    <para>Liferay/Novell Teaming contains support for single sign-on (SSO) based on iChain®. When Novell Teaming is running in this mode, the iChain server performs user authentication tasks and passes a token representing the authenticated user’s login name to Liferay/Novell Teaming in each request to indicate who made the request. </para>
    <para>You must configure Liferay/Novell Teaming with the same LDAP that iChain is using so that it can obtain and copy the user information into the portal. However, this configuration differs from the regular portal/LDAP integration in that no password checking is performed against LDAP when logging into the portal (because credential checking is only performed by the iChain server). This technique is safe only if all access to the portal is routed through the iChain proxy. </para>
    <para>The SSO configuration sets up a valve that only permits access from the local server and the iChain proxy server. For more information about Tomcat’s valve configuration, see <ulink url="http://tomcat.apache.org/tomcat-5.5-doc/config/valve.html">tomcat.apache.org</ulink>.</para>
+   <para/>
+   <important>
+    <para>You have to options available for WebDAV support:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>To use a two-accelerator configuration for WebDAV support, you must select the<guimenu> Use iChain proxy for WebDAV </guimenu>option and specify the iChain WebDAV accelerator in the <guimenu>iChain WebDAV Proxy</guimenu> field during installation.</para>
+     </listitem>
+     <listitem>
+      <para>If you do not use a a two-accelerator configuration for WebDAV support, you must use basic authorization headers to support WebDAV. With basic authorization headers, the WebDAV URLs are made public with iChain and the authentication work is delegated to Novell Teaming, which stores the passwords locally so that the Teaming WebDAV server can use them for WebDAV client authentication. In this case, the value of <guimenu>iChain WebDAV Proxy</guimenu> field in the installer is ignored and Novell Teaming does not perform hostname re-write for the WebDAV URLs.</para>
+     </listitem>
+    </itemizedlist>
+    <para>See <xref linkend="installer" xrefstyle="HeadingOnPage"/>. </para>
+   </important>
    <para>To set up an iChain proxy:</para>
    <procedure id="bbn8j9e">
     <step id="bbn8j9f" performance="required">
@@ -1418,8 +1439,19 @@ installer-liferay.linux -console
     </informalfigure>
    </step>
    <step id="bf48jzg" performance="required">
-    <para>In the <guimenu>iChain configuration</guimenu> window, select <guimenu>Enable iChain</guimenu> to use the iChain Single Sign-on Support (SSO), set the Logoff URL to the address used to trigger an iChain logoff, set the IP address of the iChain Proxy server, then click <guimenu>Next</guimenu>. </para>
+    <para>In the <guimenu>iChain configuration</guimenu> window, select <guimenu>Enable iChain</guimenu> to use the iChain Single Sign-on Support (SSO), set the Logoff URL to the address used to trigger an iChain logoff, set the IP address of the iChain Proxy server. </para>
     <para>Only transactions from that address and the localhost are allowed. For more information, see <xref linkend="bbpnnvh" xrefstyle="HeadingOnPage"/>.</para>
+    <para>You have to options available for WebDAV support:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>To use a two-accelerator configuration for WebDAV support, you must select the<guimenu> Use iChain proxy for WebDAV </guimenu>option and specify the iChain WebDAV accelerator in the <guimenu>iChain WebDAV Proxy</guimenu> field during installation.</para>
+     </listitem>
+     <listitem>
+      <para>If you do not use a a two-accelerator configuration for WebDAV support, you must use basic authorization headers to support WebDAV. With basic authorization headers, the WebDAV URLs are made public with iChain and the authentication work is delegated to Novell Teaming, which stores the passwords locally so that the Teaming WebDAV server can use them for WebDAV client authentication. In this case, the value of <guimenu>iChain WebDAV Proxy</guimenu> field in the installer is ignored and Novell Teaming does not perform hostname re-write for the WebDAV URLs.</para>
+     </listitem>
+    </itemizedlist>
+    <para>For more information, see <xref linkend="installer" xrefstyle="HeadingOnPage"/>. </para>
+    <para>Click <guimenu>Next</guimenu> to continue. </para>
     <informalfigure pgwide="0">
      <mediaobject>
       <textobject role="description"><phrase>iChain configuration window</phrase></textobject>

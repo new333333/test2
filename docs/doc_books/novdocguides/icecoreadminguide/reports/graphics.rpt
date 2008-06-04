@@ -2042,7 +2042,7 @@
    <String `Graphic Report for icecoreadminguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `5/14/2008 5:24:05 PM'>
+   <String `6/3/2008 12:38:38 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2886,14 +2886,6 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `icecoreadminportlet_a.png'>
-   <Char Tab> 
-   <String `10'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
    <String `icomingmail_a.png'>
    <Char Tab> 
    <String `1'>
@@ -3294,6 +3286,22 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
+   <String `teamingadminportlet-formview_a.png'>
+   <Char Tab> 
+   <String `9'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `teamingadminportlet_a.png'>
+   <Char Tab> 
+   <String `1'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
    <String `timeoff_entryform_a.png'>
    <Char Tab> 
    <String `1'>
@@ -3366,7 +3374,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `winconfigureroles_a.png'>
+   <String `winconfigureroles-team_a.png'>
    <Char Tab> 
    <String `1'>
   > # end of ParaLine
@@ -3418,19 +3426,13 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `teamingadminportlet-formview_a.png'>
+   <String `icecoreadminportlet_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `teamingadminportlet_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `winconfigureroles-team_a.png'>
+   <String `winconfigureroles_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -8326,342 +8328,6 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `icecoreadminportlet_a.png'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|3784793'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `icecoreadminportlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_configuringicecore.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1386149'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `icecoreadminportlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 03_workflowsbasic.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1386208'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `icecoreadminportlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 03_workflowsbasic.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1386371'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `icecoreadminportlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 03_workflowsbasic.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_customentries.fm|1281997'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `icecoreadminportlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02_customentries.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1388652'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `icecoreadminportlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 04_workflowadvanced.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1388763'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `icecoreadminportlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 04_workflowadvanced.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1388952'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `icecoreadminportlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 04_workflowadvanced.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1389102'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `icecoreadminportlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 04_workflowadvanced.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead2'>
-  <ParaLine 
-   <Font 
-    <FTag `blue'>
-    <FLocked No>
-   > # end of Font
-   <Marker 
-    <MType 8>
-    <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02b_profiledesigner.fm|1368725'>
-    <MCurrPage `1'>
-   > # end of Marker
-   <String `icecoreadminportlet_a.png'>
-   <Font 
-    <FTag `'>
-    <FLocked No>
-   > # end of Font
-   <String ` in 02b_profiledesigner.fm'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Width: 55%, Indent: Current Indent'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `Body'>
-  <ParaLine 
-   <String `Description: \qDescription: ICEcore Administration portlet\q'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
    <String `icomingmail_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -10807,6 +10473,348 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
+   <String `teamingadminportlet-formview_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|4009606'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `teamingadminportlet-formview_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_configuringicecore.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Teaming Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1497621'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `teamingadminportlet-formview_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 03_workflowsbasic.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Teaming Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1497680'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `teamingadminportlet-formview_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 03_workflowsbasic.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Teaming Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\03_workflowsbasic.fm|1497843'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `teamingadminportlet-formview_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 03_workflowsbasic.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Teaming Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1412218'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `teamingadminportlet-formview_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Teaming Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1412329'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `teamingadminportlet-formview_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Teaming Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1412518'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `teamingadminportlet-formview_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Teaming Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\04_workflowadvanced.fm|1412668'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `teamingadminportlet-formview_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 04_workflowadvanced.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Teaming Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02b_profiledesigner.fm|1373192'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `teamingadminportlet-formview_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02b_profiledesigner.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 60%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Teaming Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `teamingadminportlet_a.png'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead2'>
+  <ParaLine 
+   <Font 
+    <FTag `blue'>
+    <FLocked No>
+   > # end of Font
+   <Marker 
+    <MType 8>
+    <MTypeName `Hypertext'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_customentries.fm|1310040'>
+    <MCurrPage `1'>
+   > # end of Marker
+   <String `teamingadminportlet_a.png'>
+   <Font 
+    <FTag `'>
+    <FLocked No>
+   > # end of Font
+   <String ` in 02_customentries.fm'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Width: 59%, Indent: Current Indent'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `Body'>
+  <ParaLine 
+   <String `Description: \qDescription: Novell Teaming Administration portlet\q'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
    <String `timeoff_entryform_a.png'>
   > # end of ParaLine
  > # end of Para
@@ -11158,7 +11166,7 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `winconfigureroles_a.png'>
+   <String `winconfigureroles-team_a.png'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -11171,10 +11179,10 @@
    <Marker 
     <MType 8>
     <MTypeName `Hypertext'>
-    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|3784917'>
+    <MText `message Novdoc xref|C:\\ssfdocs\\novdocguides\\icecoreadminguide\\02_configuringicecore.fm|4009730'>
     <MCurrPage `1'>
    > # end of Marker
-   <String `winconfigureroles_a.png'>
+   <String `winconfigureroles-team_a.png'>
    <Font 
     <FTag `'>
     <FLocked No>
@@ -11185,7 +11193,7 @@
  <Para 
   <PgfTag `Body'>
   <ParaLine 
-   <String `Width: 88%, Indent: Current Indent'>
+   <String `Width: 75%, Indent: Current Indent'>
   > # end of ParaLine
  > # end of Para
  <Para 

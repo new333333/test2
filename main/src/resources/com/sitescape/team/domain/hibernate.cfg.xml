@@ -64,8 +64,6 @@
 	    <mapping resource="com/sitescape/team/domain/WorkflowResponse.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/WorkflowState.hbm.xml"/>
 	    <mapping resource="com/sitescape/team/domain/ZoneInfo.hbm.xml"/>
-		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfoInteractive.hbm.xml"/>
-		<mapping resource="com/sitescape/team/security/accesstoken/impl/TokenInfoBackground.hbm.xml"/>
 
  
 	</session-factory>

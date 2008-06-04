@@ -2,7 +2,7 @@
 
 <targets>
 
- <target id="b9yf724" pid="b9yf724" name="Appendix" level="0" number="A"> <text>Configuring ssh(1) Key Authentication</text> </target>
+ <target id="b9yf724" pid="b9yf724" name="Appendix" level="0" number="A"> <text>Configuring ssh() Key Authentication</text> </target>
 
  <target id="b9yf7na" pid="b9yf724" name="BridgeHead" level="1"> <text>Use the following procedures to configure public/private key authentication:</text> </target>
 

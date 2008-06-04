@@ -82,6 +82,7 @@ var ss_saveFolderColumnsUrl = "<ssf:url action="view_folder_listing" actionUrl="
 <div class="ss_clear"></div>
 </div>
 
+<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation_init.jsp" %>
 <div align="left" class="ssPageNavi">
  <table border="0" cellspacing="0px" cellpadding="0px">
   <tr>

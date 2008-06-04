@@ -35,7 +35,7 @@
  * These are set up as request attributes:
  *   property_name - the element name used to save the data in the database
  *   property_caption - the caption specified in the entry definition
- *   ssConfigJspStyle - the type of operation (form, view, mail or mobile)
+ *   ssConfigJspStyle - the type of operation (form, view, or mobile)
  *   ssConfigJsp - default system jsp for this item
  *	 ssDefinitionEntry - the current entry
  *   ssDefinitionEntry.customAttributes[property_name].value - the current value of the data element
@@ -49,9 +49,6 @@
 </c:when>
 <c:when test="${ssConfigJspStyle == 'view'}">
 <%@ include file="/WEB-INF/jsp/custom_jsps/custom_jsp_view.jsp" %>
-</c:when>
-<c:when test="${ssConfigJspStyle == 'mail'}">
-<%@ include file="/WEB-INF/jsp/custom_jsps/custom_jsp_mail.jsp" %>
 </c:when>
 <c:otherwise>
 <c:if test="${!empty ssConfigJsp}">

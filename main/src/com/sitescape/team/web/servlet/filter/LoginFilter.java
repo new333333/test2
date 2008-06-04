@@ -38,10 +38,14 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.portal.PortalLogin;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.WebUrlUtil;
 
 public class LoginFilter  implements Filter {
 
@@ -50,16 +54,43 @@ public class LoginFilter  implements Filter {
 
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
 
 		if(WebHelper.isUserLoggedIn(req)) {
-			// User is logged in. Proceed as normal. 
+			// User is logged in. Proceed as normalt. 
 			chain.doFilter(request, response);
 		}
 		else {
-			// User is not logged in.
+			// User is not (yet) logged in.
+			// Try synchronizing Teaming's HTTP state with the portal's by touching into it.
+			// The end result is expected to be one of the following two:
+			// 1. The portal logs the client in if the previous "rememberMe" credential
+			// is present and valid.
+			// 2. The portal logs the client in as a guest allowing anonymous access.
+			// Either way, by the time the following call returns, the client should
+			// have been logged in one way or another.
+			try {
+				getPortalLogin().touchPortal((HttpServletRequest) request, (HttpServletResponse) response);
+			} catch (Exception e) {
+				throw new ServletException(e);
+			}
+			
+			// Now redirect the client to the same original URL instead of proceeding in 
+			// this execution thread. This extra round trip is necessary in order to set
+			// up the request environment (HTTP session, etc.) properly with the HTTP
+			// state obtained from the previous contact with the portal.
+			String redirectUrl;
+			if(req.getQueryString() != null)
+				redirectUrl = req.getRequestURL().append("?").append(req.getQueryString()).toString();
+			else
+				redirectUrl = req.getRequestURL().toString();
+			res.sendRedirect(redirectUrl);
+			
+			/*
+			String path = req.getPathInfo();
 			String actionValue = request.getParameter("action");
-			if(actionValue != null && (actionValue.startsWith("__") || 
-					actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK))) {
+			
+			if(isPathPermittedUnauthenticated(path) || isActionPermittedUnauthenticated(actionValue)) {
 				// The action value indicates that the framework should allow
 				// execution of the controller corresponding to the action value
 				// even when the user is not authenticated (or previous 
@@ -80,18 +111,35 @@ public class LoginFilter  implements Filter {
 				// Unauthenticated access is not allowed. So don't bother 
 				// invoking the servlet. Instead simply redirect the user to 
 				// the portal login page.
-				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/forum/portal_login.jsp");
-				request.setAttribute("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
-				request.setAttribute("ss_screens_to_login_screen", 
-						SPropsUtil.getString("permalink.login.screensToLoginScreen"));
-				request.setAttribute("ss_screens_after_login_screen_to_logged_in", 
-						SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
+				RequestDispatcher dispatcher = req.getRequestDispatcher("/WEB-INF/jsp/forum/login_please.jsp");
+				request.setAttribute(WebKeys.URL, req.getRequestURL()+"?"+req.getQueryString());
+				AdaptedPortletURL loginUrl = new AdaptedPortletURL(req, "ss_forum", true);
+				loginUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN); 
+				request.setAttribute(WebKeys.LOGIN_URL, loginUrl.toString());
+				String logoutUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_LOGOUT;
+				request.setAttribute(WebKeys.LOGOUT_URL, logoutUrl);
+				String loginPostUrl = WebUrlUtil.getServletRootURL(req) + WebKeys.SERVLET_LOGIN;
+				request.setAttribute(WebKeys.LOGIN_POST_URL, loginPostUrl);
 				dispatcher.forward(request, response);
-			}
+			}*/
 		}
 	}
 
 	public void destroy() {
 	}
 
+	protected boolean isPathPermittedUnauthenticated(String path) {
+		return (path != null && 
+				(path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || 
+						path.equals("/"+WebKeys.SERVLET_PORTAL_LOGOUT) || 
+						path.equals("/"+WebKeys.SERVLET_VIEW_CSS)));
+	}
+	
+	protected boolean isActionPermittedUnauthenticated(String actionValue) {
+		return (actionValue != null && (actionValue.startsWith("__") || actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK)));
+	}
+	
+	private PortalLogin getPortalLogin() {
+		return (PortalLogin) SpringContextUtil.getBean("portalLoginBean");
+	}
 }

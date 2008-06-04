@@ -130,10 +130,6 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 		} 
 		catch (UserDoesNotExistException nu) {
  			if (createUser) {
- 				if(ignorePassword) {
- 					// This password should be ignored. Use username as password instead.
- 					password = userName;
- 				}
  				user=getProfileModule().addUserFromPortal(userName, password, updates, null);
  				if(authenticatorName != null)
  					getReportModule().addLoginInfo(new LoginInfo(authenticatorName, user.getId()));
@@ -178,20 +174,30 @@ public class AuthenticationManagerImpl implements AuthenticationManager,Initiali
 			throw new UserDoesNotExistException("Authentication failed: Unrecognized user [" 
 						+ zoneName + "," + username + "]", e);
     	}
-    	if(!ignorePassword) {
-	   		if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
-	   			// 	Passwords do not match
-	   			if(passwordAutoSynch) {
-	   				// 	Change the user's password to the value passed in. 
-	   				Map updates = new HashMap();
-	   				updates.put("password", password);
-	   				getProfileModule().modifyUserFromPortal(user, updates, null);
-	   			}
-	   			else {
-	   				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");
-	   			}
-	   		} 
-    	}
+    	
+   		if(!PasswordEncryptor.encrypt(password).equals(user.getPassword())) {
+   			// Password does not match.
+   			if(passwordAutoSynch) {
+   				// Change the user's password to the value passed in. 
+   				Map updates = new HashMap();
+   				updates.put("password", password);
+   				getProfileModule().modifyUserFromPortal(user, updates, null);  				
+   			}
+   			else {
+   				// We're not allowed to change the user's password to the value passed in.
+   				// ignorePassword flag indicates whether to ignore the password "for the 
+   				// purpose of authentication" or not. In other word, the value of true does 
+   				// not mean that the password value should be discarded or treated unworthy. 
+   				// It simply means that the password value must not be used for the
+   				// authentication purpose. Therefore, if we require password-based
+   				// authentication AND do not allow automatic synchronization of password,
+   				// then mismatched password results in authentication failure.
+   				if(!ignorePassword) {
+	   				throw new PasswordDoesNotMatchException("Authentication failed: password does not match");  					
+   				}
+   			}
+   		}
+   		
 		return user;
 	}
 

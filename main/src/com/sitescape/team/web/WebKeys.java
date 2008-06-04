@@ -80,6 +80,7 @@ public class WebKeys {
     //URL parameters
     public static final String IS_ACTION_URL="actionUrl";
     public static final String URL_APPEND_TEAM_MEMBERS = "appendTeamMembers";
+    public static final String URL_ACTION="action";
     public static final String URL_ACTION_PLACE_HOLDER="ss_action_place_holder";
     public static final String URL_AJAX = "ajax";
     public static final String URL_AJAX_ID = "ss_ajaxId";
@@ -185,6 +186,10 @@ public class WebKeys {
 	public static final String URL_ID_CHOICES = "idChoices";
 	public static final String URL_ID_CHOICES_SEPARATOR = "%";
 	public static final String URL_ID_CHOICES_REMOVE = "idChoicesRemove";
+	public static final String URL_URL = "url";
+	public static final String URL_ICAL_URL = "iCalURL";
+	public static final String URL_ICAL_SCHEDULE = "iCalSchedule";
+	public static final String URL_WINDOW_STATE = "windowState";
 
 	//Portlet Preferences
 	public static final String FORUM_PREF_FORUM_ID_LIST = "com.sitescape.portlet.forum.ids";
@@ -206,7 +211,6 @@ public class WebKeys {
     //actions
     public static final String ADMIN_ACTION_CONFIGURE_ROLES = "configure_roles";
     public static final String ADMIN_ACTION_GET_LOG_FILES = "get_log_files";
-    public static final String ADMIN_FORUM_RESTORE = "forum_restore";
 	public static final String ACTION_ACTIVITY_REPORT="activity_report";
     public static final String ACTION_ADD_FOLDER_ENTRY = "add_folder_entry";
     public static final String ACTION_ADD_PROFILE_ENTRY="add_profile_entry";
@@ -230,6 +234,7 @@ public class WebKeys {
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
 	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
 	public static final String ACTION_UNLOCK_FOLDER_ENTRY = "unlock_folder_entry";
+	public static final String ACTION_LOGIN = "__login";
 	public static final String ACTION_MODIFY_PROFILE_ENTRY = "modify_profile_entry";
 	public static final String ACTION_VIEW_CHANGELOG="view_change_log";
 	public static final String ACTION_VIEW_PROFILE_LISTING = "view_profile_listing";
@@ -372,6 +377,7 @@ public class WebKeys {
 	public static final String OPERATION_SAVE_FOLDER_COLUMNS = "save_folder_columns";
 	public static final String OPERATION_SAVE_RATING = "save_rating";
 	public static final String OPERATION_SHOW_ALL_DASHBOARD_COMPONENTS = "show_all_dashboard_components";
+	public static final String OPERATION_SHOW_FOLDER_PAGE = "show_folder_page";
 	public static final String OPERATION_SHOW_HELP_PANEL = "show_help_panel";
 	public static final String OPERATION_START_MEETING = "start_meeting";
 	public static final String OPERATION_SCHEDULE_MEETING = "schedule_meeting";
@@ -383,6 +389,7 @@ public class WebKeys {
 	public static final String OPERATION_UNSEEN_LIST = "unseen_list";
 	public static final String OPERATION_UPLOAD_IMAGE_FILE = "upload_image_file";
 	public static final String OPERATION_UPLOAD_ICALENDAR_FILE = "uploadICalendarFile";
+	public static final String OPERATION_LOAD_ICALENDAR_BY_URL = "loadICalendarByURL";
 	public static final String OPERATION_SAVE_CALENDAR_CONFIGURATION = "saveCalendarConfiguration";
 	public static final String OPERATION_USER_LIST_SEARCH = "user_list_search";
 	public static final String OPERATION_WORKSPACE_TREE = "workspace_tree";
@@ -589,6 +596,7 @@ public class WebKeys {
     public static final String ENTRY_SEARCH_COUNT="ssEntrySearchCount";
     public static final String ENTRY_SEARCH_RECORDS_RETURNED="ssEntrySearchRecordReturned";
     public static final String ENTRY_DEFINITION_MAP="ssEntryDefinitionMap";
+    public static final String REPLY_DEFINITION_MAP="ssReplyDefinitionMap";
     public static final String ENTRY_HAS_META_HIT="_entryHasMetaHit";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA="ssEntryDefinitionElementData";
     public static final String ENTRY_DEFINTION_ELEMENT_DATA_MAP="ssEntryDefinitionElementDataMap";
@@ -688,6 +696,13 @@ public class WebKeys {
     
     public static final String LIST_UNSEEN_COUNTS="ss_unseenCounts";
     public static final String LIST_UNSEEN_COUNTS_BINDER_IDS="ss_unseenCountsBinderIds";
+    public static final String LOGIN_ERROR="ss_loginError";
+    public static final String LOGIN_ERROR_LOGIN_FAILED="loginFailed";
+    public static final String LOGIN_ERROR_LOGINS_NOT_ALLOWED="loginsNotAllowed";
+    public static final String LOGIN_ERROR_USER_ALREADY_LOGGED_IN="userAlreadyLoggedIn";
+    public static final String LOGIN_URL="ss_loginUrl";
+    public static final String LOGIN_POST_URL="ss_loginPostUrl";
+    public static final String LOGOUT_URL="ss_logoutUrl";
     public static final String AJAX_STATUS="ss_ajaxStatus";
     public static final String AJAX_STATUS_NOT_LOGGED_IN="ss_ajaxNotLoggedIn";
     public static final String NAMESPACE="ss_namespace";
@@ -816,6 +831,7 @@ public class WebKeys {
     public static final String SHOW_INSTALLATION_GUIDE="ss_showInstallationGuide";
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SIMPLE_URL_NAME_EXISTS_ERROR="ss_simpleUrlNameExistsError";
+    public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
     public static final String TRACKED_SITE_PAGE="ss_trackedSitePage";
     public static final String WHATS_HOT_PAGE="ss_whatsHotPage";
@@ -876,6 +892,8 @@ public class WebKeys {
     public static final String SHOW_TEAM_MEMBERS="ss_showTeamMembers";
     public static final String SIDEBAR_WORKSPACE_TREE="ssSidebarWsTree";
     public static final String SIDEBAR_CURRENT_WORKSPACE="ssSidebarCurrentWorkspace";
+    public static final String SIMPLE_EMAIL_ENABLED="ssSimpleEmailEnabled";
+    public static final String SIMPLE_EMAIL_HOSTNAME="ssSimpleEmailHostname";
     public static final String SIMPLE_URL_GLOBAL_KEYWORDS="ssSimpleUrlGlobalKeywords";
     public static final String SIMPLE_URL_CHANGE_ACCESS="ssSimpleUrlChangeAccess";
     public static final String SIMPLE_URL_NAMES="ssSimpleUrlNames";
@@ -899,6 +917,7 @@ public class WebKeys {
 	public static final String TAG_SEARCH_TEXT = "ssTagSearchText";
     public static final String TAG_SIGN="ssTagSign";
 	public static final String UPLOAD_FILE_URL = "ss_upload_file_url";
+	public static final String URL = "ssUrl";
 	public static final String USER_ID = "com.sitescape.userId";
 	public static final String USER_LIST = "ss_userList";
     public static final String USER_PROPERTIES="ssUserProperties";
@@ -1005,6 +1024,9 @@ public class WebKeys {
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
     public static final String VIEW_IMPORT_TEMPLATE="administration/importTemplate";
     public static final String VIEW_LOGIN_PLEASE="forum/login_please";
+    public static final String VIEW_LOGIN_RETURN="forum/login_return";
+    public static final String VIEW_LOGIN_RETRY="forum/login_retry";
+    public static final String VIEW_LOGOUT_RETURN="forum/logout_return";
     public static final String VIEW_MOBILE="mobile/view";
     public static final String VIEW_MOBILE_EDIT="mobile/edit";
     public static final String VIEW_TASK_SUMMARY="task_summary/view";
@@ -1019,7 +1041,6 @@ public class WebKeys {
     public static final String VIEW_LISTING_SEARCH_RESULTS_VERTICAL="entry/view_listing_search_results_vertical";
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";
     public static final String VIEW_LOGIN_REPORT="administration/login_report";
-    public static final String VIEW_MIGRATION_FORUM_RESTORE="migration/forumRestore"; 
     public static final String VIEW_MODIFY_ENTRY="entry/modify_entry";
     public static final String VIEW_MODIFY_ENTRY_ELEMENT="entry/modify_entry_element";
     public static final String VIEW_MODIFY_TEMPLATE="administration/modifyTemplate";
@@ -1054,8 +1075,12 @@ public class WebKeys {
     public static final String VIEW_TEAM_MEMBERS="forum/view_team_members";
     
     //servlet paths
+    public static final String SERVLET_LOGIN="portalLogin";
+    public static final String SERVLET_LOGOUT="portalLogout";
     public static final String SERVLET_VIEW_FILE="viewFile";
     public static final String SERVLET_VIEW_CSS="viewCss";
     public static final String SERVLET_DOWNLOAD_REPORT="reportDownload";
+    public static final String SERVLET_PORTAL_LOGIN="portalLogin";
+    public static final String SERVLET_PORTAL_LOGOUT="portalLogout";
     
 }

@@ -45,14 +45,9 @@ import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
 import com.sitescape.team.NoObjectByTheIdException;
-import com.sitescape.team.ObjectKeys;
-import com.sitescape.team.domain.LibraryEntry;
-import com.sitescape.team.domain.NoBinderByTheIdException;
-import com.sitescape.team.domain.NoWorkspaceByTheNameException;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.ZoneMismatchException;
-import com.sitescape.team.security.accesstoken.impl.TokenInfoBackground;
-import com.sitescape.team.security.accesstoken.impl.TokenInfoInteractive;
+import com.sitescape.team.security.accesstoken.impl.TokenInfoRequest;
+import com.sitescape.team.security.accesstoken.impl.TokenInfoSession;
 import com.sitescape.team.security.dao.SecurityDao;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
@@ -271,9 +266,9 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 		});
 	}
 
-	public TokenInfoBackground loadTokenInfoBackground(Long zoneId, Long applicationId, Long userId, Long binderId) {
-		TokenInfoBackground info = (TokenInfoBackground) getHibernateTemplate().get
-		(TokenInfoBackground.class, new TokenInfoBackground(applicationId, userId, binderId));
+	public TokenInfoRequest loadTokenInfoRequest(Long zoneId, String infoId) {
+		TokenInfoRequest info = (TokenInfoRequest) getHibernateTemplate().get
+		(TokenInfoRequest.class, infoId);
 		
 		if(info != null) {
 			if(!zoneId.equals(info.getZoneId()))
@@ -283,9 +278,9 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 		return info;
 	}
 
-	public TokenInfoInteractive loadTokenInfoInteractive(Long zoneId, String infoId) {
-		TokenInfoInteractive info = (TokenInfoInteractive) getHibernateTemplate().get
-		(TokenInfoInteractive.class, infoId);
+	public TokenInfoSession loadTokenInfoSession(Long zoneId, String infoId) {
+		TokenInfoSession info = (TokenInfoSession) getHibernateTemplate().get
+		(TokenInfoSession.class, infoId);
 		
 		if(info != null) {
 			if(!zoneId.equals(info.getZoneId()))
@@ -295,11 +290,11 @@ public class SecurityDaoImpl extends HibernateDaoSupport implements SecurityDao 
 		return info;
 	}
 
-	public void deleteUserTokenInfoInteractive(final Long userId) {
+	public void deleteUserTokenInfoSession(final Long userId) {
 	   	getHibernateTemplate().execute(
 	    	   	new HibernateCallback() {
 	    	   		public Object doInHibernate(Session session) throws HibernateException {
-		     	   		session.createQuery("Delete com.sitescape.team.security.accesstoken.impl.TokenInfoInteractive where userId=:userId")
+		     	   		session.createQuery("Delete com.sitescape.team.security.accesstoken.impl.TokenInfoSession where userId=:userId")
 		   				.setLong("userId", userId)
 	     	   			.executeUpdate();
 	       	   		return null;

@@ -46,7 +46,7 @@ public class NotifyBuilderEntry extends AbstractNotifyBuilder {
     	if (!Notify.NotifyType.summary.equals(visitor.getNotifyDef().getType())) {
     		super.build(visitor, template, ctx);
     	} else {
-	    	String family = (String)visitor.getParam("ssFamily");
+	    	String family = (String)visitor.getParam("com.sitescape.team.notify.params.family");
 	    	if (ObjectKeys.FAMILY_CALENDAR.equals(family) || ObjectKeys.FAMILY_TASK.equals(family)) {
 	    		processDigestCalendar(visitor, template, ctx);
 	    	} else {

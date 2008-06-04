@@ -118,7 +118,6 @@ public class ListProfilesController extends   SAbstractController {
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
-		String displayType = BinderHelper.getDisplayType(request);
  		Long binderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		HashMap model = new HashMap();
@@ -151,14 +150,7 @@ public class ListProfilesController extends   SAbstractController {
 		UserProperties userFolderProperties = getProfileModule().getUserProperties(user.getId(), binderId);
 		
 		//Set up the standard beans
-		//These have been documented, so don't delete any
-		model.put(WebKeys.USER_PRINCIPAL, user);
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-		model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(this));
-
-		model.put(WebKeys.DISPLAY_TYPE, displayType);
+		BinderHelper.setupStandardBeans(this, request, response, model, binderId);
 
 		model.put(WebKeys.ACTION, WebKeys.ACTION_VIEW_PROFILE_LISTING);
 		//Build a reload url
@@ -448,8 +440,6 @@ public class ListProfilesController extends   SAbstractController {
         User user = RequestContextHolder.getRequestContext().getUser();
         String userDisplayStyle = user.getDisplayStyle();
         if (userDisplayStyle == null) userDisplayStyle = ObjectKeys.USER_DISPLAY_STYLE_IFRAME;
-		PortletURL url;
-		String binderId = binder.getId().toString();
 		//Build the toolbar array
 		Toolbar toolbar = new Toolbar();
 		//	The "Add" menu (Turned off because adding users must be done in the portal)

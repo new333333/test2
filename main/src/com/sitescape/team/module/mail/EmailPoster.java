@@ -10,6 +10,6 @@ import com.sitescape.team.domain.PostingDef;
 
 public interface EmailPoster {
     public static final String PROCESSOR_KEY = "processorKey_emailPoster";
-	public List postMessages(Folder folder, PostingDef pDef, Message[] msgs, Session session);
+	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session);
 
 }

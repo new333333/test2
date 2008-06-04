@@ -46,7 +46,9 @@
 --%><ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter><%--
 --%><ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter><%--
 --%><c:if test="${aclMap[entity.id]['modifyEntry']}"><%--
-	--%><div class="ss_editableTab"><a href="javascript:;"<%--
+
+
+	--%><div align="right" class="ss_editableTab"><a href="javascript:;"<%--
     --%> onMouseOver="ss_editableHighlight('over', this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
     --%> onMouseOut="ss_editableHighlight('out', this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
     --%> onClick="ss_editablePopUp('${editUrl}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--

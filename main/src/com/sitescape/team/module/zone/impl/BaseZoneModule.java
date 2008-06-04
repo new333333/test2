@@ -6,6 +6,7 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.ZoneInfo;
 import com.sitescape.team.module.zone.ZoneException;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 
 public class BaseZoneModule extends AbstractZoneModule {
@@ -31,7 +32,7 @@ public class BaseZoneModule extends AbstractZoneModule {
 	}
 
 	public String getVirtualHost(String zoneName) {
-		return null;
+		return SPropsUtil.getString(SPropsUtil.SSF_DEFAULT_HOST);
 	}
 	protected void removeZone(String zoneName) {
 		logger.info("Cannot remove zone " + zoneName + " - Open source edition does not support multi zone");

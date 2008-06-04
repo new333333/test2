@@ -85,7 +85,8 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected HKey binderKey;
     protected int nextBinderNumber=1;
     protected String branding; //initialized by hiberate access=field
-    
+    protected Boolean postingEnabled;
+   
     public Binder() {
     }
     /**
@@ -606,6 +607,21 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     public void setBranding(String branding) {
     	this.branding = branding; 
     }
+    
+    /**
+     * @hibernate.property
+     * @return
+     */
+    public Boolean getPostingEnabled()
+    {
+    	return postingEnabled != null && postingEnabled;
+    }
+    public void setPostingEnabled(Boolean postingEnabled)
+    {
+    	this.postingEnabled = postingEnabled;
+    }
+    
+
     //*****************WorkArea interface stuff***********/
     public Long getWorkAreaId() {
         return getId();

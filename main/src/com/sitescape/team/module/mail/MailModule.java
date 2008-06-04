@@ -33,6 +33,7 @@ import java.util.Map;
 import javax.mail.internet.MimeMessage;
 
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Entry;
 
 /**
  * @author Janet McCann
@@ -89,6 +90,7 @@ public interface MailModule {
 	public void sendMail(String mailSenderName, String account, String password, java.io.InputStream input);
     public void sendMail(String mailSenderName, MimeMessagePreparator preparer);
     public boolean sendMail(Binder binder, Map message, String comment);
+    public boolean sendMail(Entry entry, Map message, String comment, boolean sendAttachments);
     public void scheduleMail(Binder binder, Map message, String comment) throws Exception;
 	public String getMailProperty(String zoneName, Property property);
 	public String getMailProperty(String zoneName, String name);

@@ -43,6 +43,19 @@ var ssMyFavorites${renderResponse.namespace} = new ssFavorites('${renderResponse
 var ssMyTeams${renderResponse.namespace} = new ssTeams('${renderResponse.namespace}');
 var ss_displayType = "${ss_displayType}";
 </script>
+<!-- Start of upper right toolbar -->
+<div id="ss_upperRightToolbar${renderResponse.namespace}" align="right"
+  class="ss_pseudoPortalUpperRightToolbar">
+<c:if test="${!empty ssUser}">
+  <span style="padding-right:20px;">${ssUser.title}</span>
+</c:if>
+<ssf:ifLoggedIn>
+  <a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
+</ssf:ifLoggedIn>
+<ssf:ifNotLoggedIn>
+  <a href="${ss_loginUrl}"><span><ssf:nlt tag="login"/></span></a>
+</ssf:ifNotLoggedIn>
+</div>
 <c:if test="${ssUserProperties.debugMode}">
 <!-- Start of debug window -->
   <div style="border:1px solid black;">
@@ -93,7 +106,11 @@ function ss_workarea_showPseudoPortal${renderResponse.namespace}(obj) {
 		if (divObj != null) {
 			divObj.className = "ss_pseudoPortal"
 		}
-
+		divObj = self.document.getElementById('ss_upperRightToolbar${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.style.display = "block"
+			divObj.style.visibility = "visible"
+		}
 	}
 }
 
@@ -205,7 +222,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 	          title="<ssf:nlt tag="navigation.goToMaximizedView"/>"
               ><ssf:nlt tag="navigation.expandedView"/></a>
           </li>
-                    <li>
+          <c:if test="${!empty ssUser}">
+          <li>
 			  <ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
 			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 			  </ssHelpSpot>
@@ -216,6 +234,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			      	binderId="${ssUser.workspaceId}"/>"
               ><ssf:nlt tag="navigation.myWorkspace"/> </a>
           </li>
+          </c:if>
           </ul>
           </div>
       </div><!-- end of col1-->
@@ -638,6 +657,7 @@ ss_statusCurrent = "${ssUser.status}";
 </c:if>
 
 <!-- Start of favorites pane -->
+<ssf:ifLoggedIn>
 <div class="ss_style_trans" id="ss_favorites_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">
 
@@ -714,9 +734,11 @@ ss_statusCurrent = "${ssUser.status}";
 </ssf:popupPane>
 
 </div>
-
+</ssf:ifLoggedIn>
 <!-- End of favorites pane -->
+
 <!-- Start of myteams pane -->
+<ssf:ifLoggedIn>
 <div class="ss_style_trans" id="ss_myteams_pane${renderResponse.namespace}" 
   style="position:absolute; visibility:hidden;">
 <ssf:popupPane width="175px" titleTag=""
@@ -729,7 +751,9 @@ ss_statusCurrent = "${ssUser.status}";
 </div>
 </ssf:popupPane>
 </div>
+</ssf:ifLoggedIn>
 <!-- End of myteams pane -->
+
 <c:if test="${empty ssUser.displayStyle || ssUser.displayStyle == 'iframe' || (!empty ssFolderActionVerticalOverride && ssFolderActionVerticalOverride == 'yes')}" >
 <!-- iframe div -->
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
@@ -755,6 +779,7 @@ function ss_hideRecentPlacesDiv${renderResponse.namespace}() {
 <div style="padding-bottom:0px;"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <div style="padding-bottom:2px;"></div>
+<div class="ss_clear_float"></div>
 
 <script type="text/javascript">
 ss_workarea_showPseudoPortal${renderResponse.namespace}()

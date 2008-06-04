@@ -32,13 +32,13 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.Date;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,13 +47,14 @@ import org.hibernate.FetchMode;
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.Order;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate3.HibernateSystemException;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 
-import com.sitescape.team.NoObjectByTheNameException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.comparator.LongIdComparator;
 import com.sitescape.team.dao.CoreDao;
@@ -65,7 +66,7 @@ import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.ApplicationPrincipal;
 import com.sitescape.team.domain.Binder;
-import com.sitescape.team.domain.DefinableEntity;
+import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.EmailAddress;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Group;
@@ -79,7 +80,6 @@ import com.sitescape.team.domain.NoPrincipalByTheIdException;
 import com.sitescape.team.domain.NoPrincipalByTheNameException;
 import com.sitescape.team.domain.NoUserByTheIdException;
 import com.sitescape.team.domain.NoUserByTheNameException;
-import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.Rating;
@@ -781,25 +781,64 @@ public class ProfileDaoImpl extends HibernateDaoSupport implements ProfileDao {
  	
     public UserProperties loadUserProperties(Long userId) {
     	UserPropertiesPK id = new UserPropertiesPK(userId);
-        UserProperties uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);         
- 		if (uProps == null) {
- 			uProps = new UserProperties(id);
- 			uProps=(UserProperties)getCoreDao().saveNewSession(uProps);
-         }
- 		return uProps;
+    	UserProperties uProps=null;
+    	try {
+    		uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);         
+ 		} catch (HibernateSystemException se) {
+    		//old dom trees cause errors with the new dom4j.  These properties should be stored as strings, and
+    		//this problem was fixed before ship
+			if (se.getRootCause() instanceof java.io.InvalidClassException) {
+				//bad serialized data - get rid of it
+    			executePropertiesDelete(id);
+			} else throw se;
+		}
+   		if (uProps == null) {
+			uProps = new UserProperties(id);
+			uProps=(UserProperties)getCoreDao().saveNewSession(uProps);
+		}
+		return uProps;
     }
  
     public UserProperties loadUserProperties(Long userId, Long binderId) {
     	UserPropertiesPK id = new UserPropertiesPK(userId, binderId);
-        UserProperties uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);
-        if (uProps == null) {
+    	UserProperties uProps=null;
+    	try {
+    		uProps = (UserProperties)getHibernateTemplate().get(UserProperties.class, id);
+    	} catch (HibernateSystemException se) {
+    		//old dom trees cause errors with the new dom4j.  These properties should be stored as strings, and
+    		//	this problem was fixed before ship
+    		if (se.getRootCause() instanceof java.io.InvalidClassException) {
+    			//	bad serialized data - get rid of it
+    			executePropertiesDelete(id);
+    		} else throw se;
+    	}
+		if (uProps == null) {
         	uProps = new UserProperties(id);
         	//quick write
         	uProps=(UserProperties)getCoreDao().saveNewSession(uProps);
     	}
-        return uProps;
+		return uProps;
     }
- 
+	//At one point dom4j (1.5) objects where serialized,  don4j(1.6) does not recognize them
+	//Somewhere along the way we changed it so we saved the string value instead of the serialized object, but 
+	//occasionally they pop up at home.
+	private void executePropertiesDelete(final UserPropertiesPK id) {
+		//need to execute in new session, so it gets commited
+       	SessionFactory sf = getSessionFactory();
+    	Session session = sf.openSession();
+		Statement statement = null;
+    	try {
+    		statement = session.connection().createStatement();
+    		statement.executeUpdate("delete from SS_UserProperties where principalId=" + id.getPrincipalId() + 
+    				" and binderId=" + id.getBinderId());;
+   	} catch (SQLException sq) {
+    		throw new HibernateException(sq);
+    	} finally {
+    		try {if (statement != null) statement.close();} catch (Exception ex) {};
+    		session.close();
+    	}
+
+	}
     public Group getReservedGroup(String internalId, Long zoneId) {
     	Long id = getReservedId(internalId, zoneId);
     	if (id == null) {

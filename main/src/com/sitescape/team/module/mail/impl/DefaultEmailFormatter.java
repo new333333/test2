@@ -43,13 +43,13 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.velocity.VelocityContext;
-import org.apache.velocity.app.VelocityEngine;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.domain.Definition;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HistoryStamp;
@@ -61,7 +61,6 @@ import com.sitescape.team.domain.WorkflowControlledEntry;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
-import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.definition.notify.NotifyBuilderUtil;
 import com.sitescape.team.module.definition.notify.NotifyVisitor;
@@ -109,10 +108,11 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	 * Determine which users have access to the entry.
 	 * Return a map from locale to a collection of email Addresses
 	 */
-	public Map buildDistributionList(FolderEntry entry, Collection subscriptions, int style) {
+	public Map buildDistributionList(Entry entry, Collection subscriptions, int style) {
+		FolderEntry fEntry = (FolderEntry)entry;
 		List entries = new ArrayList();
 		entries.add(entry);
-		Map<User, String[]> userMap = getUserList(entry.getRootFolder(), entries, subscriptions,  style);
+		Map<User, String[]> userMap = getUserList(fEntry.getRootFolder(), entries, subscriptions,  style);
 		Map languageMap = new HashMap();
 		//check access to folder/entry and build lists of users to receive mail
 		Set email = new HashSet();
@@ -130,7 +130,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 				}
 			} catch (Exception ex) {};
 		}
-		NotificationDef nDef = entry.getRootFolder().getNotificationDef();
+		NotificationDef nDef = fEntry.getRootFolder().getNotificationDef();
 		if (nDef.getStyle() == style) {
 			//add in email address only subscriptions
 	 		String addrs = nDef.getEmailAddress();
@@ -178,7 +178,8 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 	 * The list of entries will maintain the order used to do lookup.  This is important
 	 * when actually building the digest message	
 	 */
-	public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style) {
+	public List buildDistributionList(Binder binder, Collection entries, Collection subscriptions, int style) {
+		Folder folder = (Folder)binder;
 		List result = new ArrayList();
 		Map<User, String[]> userMap = getUserList(folder, entries, subscriptions,  style);
 		if (!userMap.isEmpty()) {
@@ -339,14 +340,14 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		
 	}
 
-	public String getSubject(Folder folder, FolderEntry entry, Notify notify) {
+	public String getSubject(Binder binder, Entry entry, Notify notify) {
 		if (entry == null) {
-			String subject = folder.getNotificationDef().getSubject();
+			String subject = binder.getNotificationDef().getSubject();
 			if (Validator.isNull(subject))
 				subject = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_SUBJECT);
 			//	if not specified, use a localized default
 			if (Validator.isNull(subject))
-				return NLT.get("notify.subject", notify.getLocale()) + " " + folder.toString();
+				return NLT.get("notify.subject", notify.getLocale()) + " " + binder.toString();
 			return subject;
 		} else {
 			StringBuffer buf = new StringBuffer();
@@ -354,7 +355,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			buf.append(":");
 			if (checkDate(entry.getCreation(), notify.getStartDate()) > 0) {
 				buf.append(NLT.get("notify.newEntry", notify.getLocale()));
-			} else if (checkDate(entry.getWorkflowChange(), entry.getModification()) >= 0) {
+			} else if (checkDate(((FolderEntry)entry).getWorkflowChange(), entry.getModification()) >= 0) {
 				buf.append(NLT.get("notify.workflowEntry", notify.getLocale()));
 			} else {
 				buf.append(NLT.get("notify.modifiedEntry", notify.getLocale()));
@@ -363,14 +364,14 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 			if (Notify.NotifyType.text.equals(notify.getType())) {
 				buf.append(entry.toString());
 			} else {
-				buf.append(folder.toString() + "/" + entry.toString());				
+				buf.append(binder.toString() + "/" + entry.toString());				
 			}
 			return buf.toString();
 		}
 	}
 	
-	public String getFrom(Folder folder, Notify notify) {
-		String from = folder.getNotificationDef().getFromAddress();
+	public String getFrom(Binder binder, Notify notify) {
+		String from = binder.getNotificationDef().getFromAddress();
 		if (Validator.isNull(from))
 			from = mailModule.getMailProperty(RequestContextHolder.getRequestContext().getZoneName(), MailModule.Property.NOTIFY_FROM);
 		return from;
@@ -446,7 +447,7 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 
 	}
 
-	public Map buildNotificationMessage(Folder folder, Collection entries,  Notify notify) {
+	public Map buildMessage(Binder binder, Collection entries,  Notify notify) {
 	    Map result = new HashMap();
 	    if (notify.getStartDate() == null) return result;
 		Set seenIds = new TreeSet();
@@ -494,27 +495,16 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		
 			
 //		result.put(FolderEmailFormatter.PLAIN, doTransform(mailDigest, folder.getZoneName(), MailModule.NOTIFY_TEMPLATE_TEXT, notify.getLocale(), notify.isSummary()));
-		doTOC(folder, toc, notify, tocWriter);
+		doTOC((Folder)binder, toc, notify, tocWriter);
 		result.put(EmailFormatter.HTML, tocWriter.toString() + entryWriter.toString());
 		
 		return result;
 	}
 	protected void doDigestEntry(FolderEntry entry, Notify notify, StringWriter writer, Element element) {
-		Definition def = entry.getEntryDef();
-		if (def == null) return;
-		Document definitionTree = def.getDefinition();
-		if (definitionTree != null) {
-			Element root = definitionTree.getRootElement();
 			Map params = new HashMap();
 			params.put("ssElement", element);
-			//	Get a list of all of the items in the definition
-			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
-			if (entryItem == null) return;
-	    	Element entryType = entryItem.getParent(); //should be entryType
-	    	params.put("ssFamily",DefinitionUtils.getPropertyValue(entryType, "family"));
-			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, params, true);
+		NotifyBuilderUtil.buildElements(entry, notify, writer, params);
 		}
-	}
 	protected void doTOC(Folder folder, Document document, Notify notifyDef, StringWriter writer) {
 		try {
 		    VelocityContext ctx = NotifyBuilderUtil.getVelocityContext();
@@ -538,35 +528,42 @@ public class DefaultEmailFormatter extends CommonDependencyInjection implements 
 		}
 
 	}
-	public Map buildNotificationMessage(Folder folder, FolderEntry entry,  Notify notify) {
+	public Map buildMessage(Binder binder, Entry entry,  Notify notify) {
 	    Map result = new HashMap();
 	    if (notify.getStartDate() == null) return result;
-
 		final StringWriter writer = new StringWriter();
-		doEntry(entry, notify, writer);
+		if (Notify.NotifyType.interactive.equals(notify.getType())) {
+			Map params = new HashMap();
+			params.put("com.sitescape.team.notify.params.replies",getFolderDao().loadEntryDescendants((FolderEntry)entry));
+			NotifyBuilderUtil.buildElements(entry, notify, writer, params);
+		} else {
+			doEntry((FolderEntry)entry, notify, writer);
+		}
+
 		result.put(EmailFormatter.HTML, writer.toString());
 		
 		return result;
 
 	}
-	protected void doEntry(FolderEntry entry, Notify notify, StringWriter writer) {
+	private void doEntry(FolderEntry entry, Notify notify, StringWriter writer) {
 		if (entry == null) return;
+		//handle direct ancestors of the changed entry first
 		doEntry(entry.getParentEntry(), notify, writer); 
-		Definition def = entry.getEntryDef();
-		if (def == null) return;
-		Document definitionTree = def.getDefinition();
-		if (definitionTree != null) {
-			Element root = definitionTree.getRootElement();
-
-			//	Get a list of all of the items in the definition
-			Element entryItem = (Element)root.selectSingleNode("//item[@name='entryView']");
-			if (entryItem == null) return;
-			Map params = new HashMap();
-	    	Element entryType = entryItem.getParent(); //should be entryType
-	    	params.put("ssFamily",DefinitionUtils.getPropertyValue(entryType, "family"));
-			NotifyBuilderUtil.buildElements(entry, entryItem, notify, writer, params, true);
-		}
+		NotifyBuilderUtil.buildElements(entry, notify, writer, new HashMap());
 	}
+	/**
+	 * Build a message for and entry and replies you can see.
+	 * Don't use for email notifications which go to multiple users who may not be able to see
+	 * the same replies.  This is for interactive sendMail situations where we cannot control
+	 * who gets the mail, but do control what the current user can see
+	 * 
+	 * @param folder
+	 * @param entry
+	 * @param replies
+	 * @param notify
+	 * @return
+	 */
+
 	protected class AclChecker {
 		private User user;
 		private String [] emails;

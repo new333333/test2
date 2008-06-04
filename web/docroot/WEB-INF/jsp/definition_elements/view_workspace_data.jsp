@@ -76,7 +76,7 @@
 	} else {
         %>
         <ssf:nlt tag="definition.error.unknownDefinitionElement">
-         <ssf:param name="name" value="<%= itemType %>"/>
+         <ssf:param name="value" value="<%= itemType %>"/>
         </ssf:nlt><br/>
         <%
 	}

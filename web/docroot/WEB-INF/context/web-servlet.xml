@@ -35,6 +35,8 @@
 				<entry key="/errorHandler"><ref local="errorHandler"/></entry>
 				<entry key="/readFile"><ref local="readFile"/></entry>
 				<entry key="/readFile/**/*"><ref local="readFile"/></entry>
+				<entry key="/portalLogin"><ref local="portalLogin"/></entry>
+				<entry key="/portalLogout"><ref local="portalLogin"/></entry>
 			</map>
 		</property>
 	</bean>
@@ -82,6 +84,9 @@
 	<bean id="errorHandler" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ErrorController"/>
 	<bean id="readFile" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.forum.ReadFileController">
 		<property name="fileTypeMap"><ref bean="mimeTypes"/></property>
+	</bean>
+	<bean id="portalLogin" parent="dependOnAllModulesTemplate" class="com.sitescape.team.servlet.portal.PortalLoginController">
+		<property name="portalLogin"><ref bean="portalLoginBean"/></property>
 	</bean>
 
 </beans>

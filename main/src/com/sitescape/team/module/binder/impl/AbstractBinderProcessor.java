@@ -1250,7 +1250,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     
 
        	
-       	SearchFilter searchFilter = new SearchFilter(true);
+       	SearchFilter searchFilter = new SearchFilter();
 
        	if ((searchOptions != null) && searchOptions.containsKey(ObjectKeys.SEARCH_SEARCH_FILTER)) {
        		org.dom4j.Document userSearchFilter = (org.dom4j.Document) searchOptions.get(ObjectKeys.SEARCH_SEARCH_FILTER);

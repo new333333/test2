@@ -35,9 +35,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sitescape.team.domain.ChangeLog;
-import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.security.AccessControlException;
@@ -142,17 +142,27 @@ public interface AdminModule {
     public void modifyFunction(Long functionId, Map<String, Object> updates) throws AccessControlException;
     public void modifyPosting(String postingId, Map<String, Object> updates)throws AccessControlException;
 	/**
-	 * Send a mail message to a collection of users and/or explicit email address.  Include attachments and ICals from entries if specified  
+	 * Send a mail message to a collection of users and/or explicit email address.  Include attachments  from entries if specified  
+	 * @param entry - may be null
 	 * @param ids
 	 * @param emailAddresses
 	 * @param subject
 	 * @param body
-	 * @param entries
 	 * @param sendAttachments
 	 * @return
 	 * @throws Exception
 	 */
-    public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body, Collection<DefinableEntity> entries, boolean sendAttachments) throws Exception;
+    public Map<String, Object> sendMail(Entry entry, Collection<Long> userIds, Collection<String> emailAddresses, String subject, Description body,  boolean sendAttachments) throws Exception;
+    /**
+     * Send a mail message to a collection of users and/or explicit email address. 
+     * @param ids
+     * @param emailAddresses
+     * @param subject
+     * @param body
+     * @return
+     * @throws Exception
+     */
+    public Map<String, Object> sendMail(Collection<Long> ids, Collection<String> emailAddresses, String subject, Description body) throws Exception;
 
     /**
      * Set the schedule by which digest notifications are sent.  Use this to both enable and disable notifications

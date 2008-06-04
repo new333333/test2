@@ -100,7 +100,7 @@ list-style-type:none;margin-left:0px;margin-bottom:0px;padding-left:0px;
  * are trademarks of SiteScape, Inc.
  *#
 #macro (ss_entryContent)
-  font-size:12px;font-weight:normal;font-family:Arial;margin:0px;padding:2px;padding-left:22px;background-color:inherit;
+  font-size:12px;font-weight:normal;font-family:Arial;margin:0px;padding:2px;padding-left:22px;
 #end
 #macro (ss_entryTitle)
   font-weight:bold;font-size:14px;font-family:Arial,Helvetica,sans-serif;margin-bottom:4px;margin-top:4px;

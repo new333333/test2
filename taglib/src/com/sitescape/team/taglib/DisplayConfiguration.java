@@ -130,8 +130,7 @@ public class DisplayConfiguration extends TagSupport {
 											itemEle = itemEle.getParent().getParent();
 											if (formItem.equals("customJsp")) {
 												String jspType = "viewJsp";
-												if (configJspStyle.equals(Definition.JSP_STYLE_MAIL)) jspType = "mailJsp";
-												else if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
+												if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
 												jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
 												if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
 											}
@@ -148,8 +147,7 @@ public class DisplayConfiguration extends TagSupport {
 								}
 							} else if (itemType.equals("customJspView")) {
 								String jspType = "viewJsp";
-								if (configJspStyle.equals(Definition.JSP_STYLE_MAIL)) jspType = "mailJsp";
-								else if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
+								if (configJspStyle.equals(Definition.JSP_STYLE_MOBILE)) jspType = "mobileJsp";
 								jspName = DefinitionUtils.getPropertyValue(nextItem, jspType);
 								if (Validator.isNotNull(jspName)) customJsp = "/WEB-INF/jsp/custom_jsps/" + jspName;
 							}
