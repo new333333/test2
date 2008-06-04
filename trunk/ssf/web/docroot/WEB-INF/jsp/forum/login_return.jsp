@@ -32,6 +32,9 @@
 <ssf:ifadapter>
 <body class="ss_style_body">
 </ssf:ifadapter>
+<script type="text/javascript">
+alert('${ssUrl} = ${ssUser.title}')
+</script>
 
 <c:if test="${!empty ssUrl}">
 <script type="text/javascript">
