@@ -32,6 +32,10 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
+/**
+ * Deprecated, singletons should be managed by Spring
+ */
+@Deprecated
 public class PropsUtil {
 	// This is a singleton class. 
 	

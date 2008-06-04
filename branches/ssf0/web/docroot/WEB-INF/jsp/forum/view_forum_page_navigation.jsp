@@ -34,74 +34,45 @@
 <ssf:skipLink tag="<%= NLT.get("skip.paging.links") %>" id="navigationLinks_${renderResponse.namespace}">
 
 <c:if test="${ssConfigJspStyle != 'template'}">
-<script type="text/javascript" src="<html:rootPath/>js/datepicker/date.js"></script>
-<script type="text/javascript">
-//Check the Page Number Before Submission
-function ss_goToPage_${renderResponse.namespace}(formObj) {
-	var strGoToPage = formObj.ssGoToPage.value;
-	var pageCount = <c:out value="${ssPageCount}"/>;
-	
-	if (strGoToPage == "") {
-		alert("<ssf:nlt tag="folder.enterPage" />");
-		return false;	
-	}
-	if (strGoToPage == "0") {
-		alert("<ssf:nlt tag="folder.enterValidPage" />");
-		return false;
-	}
-	var blnValueCheck = _isInteger(strGoToPage);
-	if (!blnValueCheck) {
-		alert("<ssf:nlt tag="folder.enterValidPage" />");
-		return false;
-	}
-	if (strGoToPage > pageCount) {
-		formObj.ssGoToPage.value = pageCount;
-	}
-	return true;
-}
-
-function ss_submitPage_${renderResponse.namespace}(formObj) {
-	return (ss_goToPage_${renderResponse.namespace}(formObj));
-}
-
-function ss_clickGoToPage_${renderResponse.namespace}(strFormName) {
-	var formObj = document.getElementById(strFormName);
-	if (ss_goToPage_${renderResponse.namespace}(formObj)) {
-		formObj.submit();
-	}
-}
-
-//Change the number of entries to be displayed in a page
-function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, pageCountValue) {
-	var formObj = document.getElementById(strFormName);
-	formObj.ssEntriesPerPage.value = pageCountValue;
-	formObj.submit();
-}
-</script>
 	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 
 	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
 
-	<c:if test="${ssFolderViewType != 'blog'}">
 		<table border="0" cellspacing="0px" cellpadding="0px">
+		<tbody>
 		<tr>
+		
+
 			<td>
-			    <span class="ssVisibleEntryNumbers">
-					<c:choose>
-					  <c:when test="${ssTotalRecords == '0'}">
-						[<ssf:nlt tag="folder.NoResults" />]
-					  </c:when>
-					  <c:otherwise>
-						[<ssf:nlt tag="folder.Results">
-						<ssf:param name="value" value="${ssPageStartIndex}"/>
-						<ssf:param name="value" value="${ssPageEndIndex}"/>
-						<ssf:param name="value" value="${ssTotalRecords}"/>
-						</ssf:nlt>]
-					  </c:otherwise>
-					</c:choose>
-				</span>
-				&nbsp;&nbsp;
+			
+			
 			</td>
 
+			<td valign="top">
+			<form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
+			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
+				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+				name="endDate" value="${endDate}"/></c:if><ssf:param 
+				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
+				&nbsp;&nbsp;
+			<c:if test="${ssPageCount > '1.0'}">
+				<ssf:ifnotaccessible>
+			    	<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
+			    </ssf:ifnotaccessible>
+			    
+			    <ssf:ifaccessible>
+			    	<span class="ss_go_to_page"><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
+			    </ssf:ifaccessible>
+			    <input name="ssGoToPage" id="ssGoToPage" size="1" type="text" class="form-text" />
+				<a class="ss_linkButton" href="javascript: ;" 
+				<ssf:title tag="title.goto.page" />
+				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;"><ssf:nlt tag="button.go"/></a>
+			</c:if>
+			</form>
+			<br/>
+			<% // Number of entries per page %>
 			<form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/>
@@ -114,15 +85,14 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 			    
 			    <input type="hidden" name="ssEntriesPerPage" />
 			
-			<td>
 				<div class="ss_results_pro_page">
-				<span class="ss_light ss_fineprint">
+				  <span class="ss_light ss_fineprint">
 	
-				<ssf:menu title="${ssPageMenuControlTitle}" 
-				  titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
-				  titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
+				  <ssf:menu title="${ssPageMenuControlTitle}" 
+				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
+				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
 				
-				<ssf:ifnotaccessible>
+				    <ssf:ifnotaccessible>
 				
 					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
 					<li>
@@ -152,9 +122,9 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 					</li>
 					</ul>
 					
-				</ssf:ifnotaccessible>	
+				    </ssf:ifnotaccessible>	
 				
-				<ssf:ifaccessible>
+				    <ssf:ifaccessible>
 
 					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;"
 					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>">
@@ -181,50 +151,23 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
 					</a><br/>
 
-				</ssf:ifaccessible>
+				    </ssf:ifaccessible>
 					
-				</ssf:menu>
+				  </ssf:menu>
 
 			    </span>
 			    </div>
+			</form>
 			</td>
 
-			</form>
-			
-			<form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
-			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-				name="endDate" value="${endDate}"/></c:if><ssf:param 
-				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
-			<td>
-				&nbsp;&nbsp;
-			<c:if test="${ssPageCount > '1.0'}">
-				<ssf:ifnotaccessible>
-			    	<span class="ss_go_to_page"><ssf:nlt tag="folder.GoToPage"/></span>
-			    </ssf:ifnotaccessible>
-			    
-			    <ssf:ifaccessible>
-			    	<span class="ss_go_to_page"><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
-			    </ssf:ifaccessible>
-			    <input name="ssGoToPage" id="ssGoToPage" size="1" type="text" class="form-text" />
-				<a class="ss_linkButton" href="javascript: ;" 
-				<ssf:title tag="title.goto.page" />
-				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;"><ssf:nlt tag="button.go"/></a>
-			</c:if>
-				
-			</td>
-
-			</form>
-		
-		</tr>
-		</table>
-		
-		</td>
-		
-		<td align="center" width="25%">
+			<td align="center" width="25%" valign="top">
+				<c:set var="ssCurrentPage" value="0"/>
+				<c:forEach var="currentEntryPage" items="${ssPageNumbers}" >
+				    <jsp:useBean id="currentEntryPage" type="java.util.HashMap" />
+					<c:if test="${!empty currentEntryPage.ssPageIsCurrent && currentEntryPage.ssPageIsCurrent == 'true'}">
+					  <c:set var="ssCurrentPage" value="${currentEntryPage.ssPageDisplayValue}"/>
+					</c:if>
+				</c:forEach>
 
 				<c:choose>
 				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
@@ -239,7 +182,30 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 						name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
 						name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 						name="endDate" value="${endDate}"/></c:if></ssf:url>" 
-						<ssf:title tag="title.goto.prev.page" /> >&lt;&lt;
+						title="<ssf:nlt tag="title.goto.prev.page"/>"
+						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPagePrevious.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
+						> &lt;&lt;
+					</a>&nbsp;&nbsp;
+				  </c:otherwise>
+				</c:choose>
+				
+				<c:choose>
+				  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
+					
+				  </c:when>
+				  <c:otherwise>
+					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+						name="operation" value="save_folder_page_info"/><ssf:param 
+						name="binderId" value="${ssFolder.id}"/><ssf:param 
+						name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
+						name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+						name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+						name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+						name="endDate" value="${endDate}"/></c:if></ssf:url>" 
+						title="<ssf:nlt tag="title.goto.next.page"/>"
+						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPageNext.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
+						> 
+						&gt;&gt;
 					</a>
 				  </c:otherwise>
 				</c:choose>
@@ -263,31 +229,36 @@ function ss_changePageEntriesCount_${renderResponse.namespace}(strFormName, page
 							name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
 							name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
 							name="endDate" value="${endDate}"/></c:if></ssf:url>" 
-							class="ssPageNumber" <ssf:title tag="title.goto.page.number"
-						><ssf:param name="value" value="${entryPage.ssPageDisplayValue}" /></ssf:title> >
+						  onClick="ss_showFolderPage(this, '${ssFolder.id}', '${entryPage.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
+						  class="ssPageNumber" <ssf:title tag="title.goto.page.number"
+						  ><ssf:param name="value" value="${entryPage.ssPageDisplayValue}" /></ssf:title> 
+						>
 						<span><c:out value="${entryPage.ssPageDisplayValue}"/></span><%--
 						--%></a>
 					</c:if>
 				</c:forEach>
 
-				<c:choose>
-				  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
-					
-				  </c:when>
-				  <c:otherwise>
-					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-						name="operation" value="save_folder_page_info"/><ssf:param 
-						name="binderId" value="${ssFolder.id}"/><ssf:param 
-						name="ssPageStartIndex" value="${ssPageNext.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
-						name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-						name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-						name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-						name="endDate" value="${endDate}"/></c:if></ssf:url>" 
-						<ssf:title tag="title.goto.next.page" />>&gt;&gt;
-					</a>
-				  </c:otherwise>
-				</c:choose>
-	</c:if>
+			<br/><br/>
+			<span class="ssVisibleEntryNumbers">
+				
+					<c:choose>
+					  <c:when test="${ssTotalRecords == '0'}">
+						[<ssf:nlt tag="folder.NoResults" />]
+					  </c:when>
+					  <c:otherwise>
+						[<ssf:nlt tag="folder.Results">
+						<ssf:param name="value" value="${ssPageStartIndex}"/>
+						<ssf:param name="value" value="${ssPageEndIndex}"/>
+						<ssf:param name="value" value="${ssTotalRecords}"/>
+						</ssf:nlt>]
+					  </c:otherwise>
+					</c:choose>
+				</span>
+				&nbsp;&nbsp;
+			</td>
+		</tr>
+		</tbody>
+		</table>
 </c:if>
 
 </ssf:skipLink>

@@ -34,46 +34,6 @@
 <html>
 	<head></head>
 	<body>
-	<textarea>{
-	<c:choose>
-		<c:when test="${ss_ajaxStatus.ss_ajaxNotLoggedIn}">
-			notLoggedIn : ${ss_ajaxStatus.ss_ajaxNotLoggedIn} 
-		</c:when>
-		<c:when test="${parseException}">
-			parseExceptionMsg : "<ssf:nlt tag="calendar.import.status.parseException" />"
-		</c:when>
-		<c:otherwise>
-			entriesAmountMsg: "<c:choose><%--
-				--%><c:when test="${entriesAddedAmount == 0 && entriesModifiedAmount == 0}"><%--
-					--%><ssf:nlt tag="calendar.import.added.status.message.zero" />\n<%--
-				--%></c:when><%--
-				--%><c:otherwise><%--
-					--%><c:if test="${entriesAddedAmount == 1}"><%--
-						--%><ssf:nlt tag="calendar.import.added.status.message.single" />\n<%--
-					--%></c:if><%--
-					--%><c:if test="${entriesAddedAmount > 1}"><%--
-						--%><ssf:nlt tag="calendar.import.added.status.message.plural"><%--
-							--%><ssf:param name="value" value="${entriesAddedAmount}"/><%--
-						--%></ssf:nlt>\n<%--
-					--%></c:if><%--
-					--%><c:if test="${entriesModifiedAmount == 1}"><%--
-						--%><ssf:nlt tag="calendar.import.modified.status.message.single" />\n<%--
-					--%></c:if><%--
-					--%><c:if test="${entriesModifiedAmount > 1}"><%--
-						--%><ssf:nlt tag="calendar.import.modified.status.message.plural"><%--
-							--%><ssf:param name="value" value="${entriesModifiedAmount}"/><%--
-						--%></ssf:nlt><%--
-					--%></c:if><%--	
-				--%></c:otherwise><%--
-			--%></c:choose>",					
-			entryAddedIds: [<c:forEach var="id" items="${entryAddedIds}" varStatus="status">
-					"${id}"<c:if test="${!status.last}">,</c:if>
-				</c:forEach>],
-			entryModifiedIds: [<c:forEach var="id" items="${entryModifiedIds}" varStatus="status">
-					"${id}"<c:if test="${!status.last}">,</c:if>
-				</c:forEach>]				
-		</c:otherwise>
-	</c:choose>
-	}</textarea>
+	<textarea><%@ include file="/WEB-INF/jsp/forum/json/icalendar_import.jsp" %></textarea>
 	</body>
 </html>

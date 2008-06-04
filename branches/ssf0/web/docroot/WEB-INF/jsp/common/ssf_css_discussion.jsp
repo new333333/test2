@@ -189,6 +189,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-position: 1% 1%;
 	color: #00ADef;
 }
+.ss_disc_folder_th1
+{
+	background-image: url("<html:rootPath/>images/icons/folder_blue.gif");
+	background-repeat: no-repeat;
+	background-position: 1% 1%;
+	color: #00ADef!important;
+}
 
 .ss_disc_th2
 {
@@ -262,6 +269,40 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size:10px!important;
 	}
 
-/**********************************/
+/****  DISCUSSION THREAD IMAGES ********/
 	
-		
+	a.ss_new_thread img {
+	width: 12px;
+	height: 12px;
+	margin: 0px;
+	padding: 0px 0 5px 3px;
+	border: 0px;
+	vertical-align: text-bottom;
+}
+
+a.ss_new_thread img, a.ss_new_thread:link img , a.ss_new_thread:focus img, a.ss_new_thread:visited img { 
+	background: transparent; 
+}
+
+a.ss_new_thread:hover img {
+    background-position:  left -12px; 
+<ssf:ifaccessible>
+  outline: dotted 1px gray;
+</ssf:ifaccessible>  
+}
+a.ss_new_thread:hover {
+<ssf:ifaccessible>
+  outline: dotted 1px gray;
+</ssf:ifaccessible>  
+}
+.ss_nowrapFixed {
+	white-space:normal!important;
+	}
+.ss_sliding {
+	white-space:nowrap!important;
+	}	
+#ss_configureCol {
+	margin-left:20px;
+	padding-bottom:10px;
+	}
+/**********************************/

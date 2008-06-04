@@ -66,8 +66,11 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.NotifyStatus;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.Subscription;
@@ -82,8 +85,9 @@ import com.sitescape.team.module.mail.EmailFormatter;
 import com.sitescape.team.module.mail.EmailPoster;
 import com.sitescape.team.module.mail.JavaMailSender;
 import com.sitescape.team.module.mail.MailModule;
-import com.sitescape.team.module.mail.MimeMapPreparator;
+import com.sitescape.team.module.mail.MimeEntryPreparator;
 import com.sitescape.team.module.mail.MimeMessagePreparator;
+import com.sitescape.team.module.mail.MimeMapPreparator;
 import com.sitescape.team.module.mail.MimeNotifyPreparator;
 import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.NLT;
@@ -400,7 +404,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								if (aliasMsgs.length == 0) continue;
 								Folder folder = (Folder)postingDef.getBinder();
 								EmailPoster processor = (EmailPoster)processorManager.getProcessor(folder,EmailPoster.PROCESSOR_KEY);
-								sendErrors(folder, postingDef, sender, processor.postMessages(folder,postingDef, aliasMsgs, session));
+								sendErrors(folder, postingDef, sender, processor.postMessages(folder,postingDef.getEmailAddress(), aliasMsgs, session));
 							} catch (Exception ex) {
 								logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress(), ex);
 							}
@@ -422,7 +426,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 								if ("inbox".equals(mFolder.getFullName())) {
 									try {
 										mFolder.open(javax.mail.Folder.READ_WRITE);
-										sendErrors(folder, postingDef,  sender, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
+										sendErrors(folder, postingDef,  sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session));							
 									} finally {
 										mFolder.close(true);
 									}
@@ -454,7 +458,7 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 					store.connect(null, postingDef.getEmailAddress(), postingDef.getPassword());
 					mFolder = store.getFolder("inbox");				
 					mFolder.open(javax.mail.Folder.READ_WRITE);
-					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef, mFolder.getMessages(), session));							
+					sendErrors(folder, postingDef, sender, processor.postMessages(folder, postingDef.getEmailAddress(), mFolder.getMessages(), session));							
 				} catch (AuthenticationFailedException ax) {
 					logger.error("Error posting mail from [" + hostName + "]"+postingDef.getEmailAddress() + " " + getMessage(ax));
 					continue;
@@ -821,7 +825,6 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
     }
     //send mail now, if fails, reschedule
     public boolean sendMail(Binder binder, Map message, String comment) {
-  		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
   		JavaMailSender mailSender = getMailSender(binder);
 		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
 		if ((addrs == null) || addrs.isEmpty()) return true;
@@ -837,9 +840,11 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 	 			sent = true;
 	 		} catch (MailSendException sx) {
 	 			logger.error("Error sending mail:" + getMessage(sx));
+	 	  		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	 			job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
 	 	   	} catch (MailAuthenticationException ax) {
 	       		logger.error("Authentication Exception:" + getMessage(ax));				
+	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
 	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(binder), false);
 	 		} catch (Exception ex) {
 	 			//message gets thrown away here
@@ -849,6 +854,45 @@ public class MailModuleImpl extends CommonDependencyInjection implements MailMod
 		//replace list with original
 		message.put(MailModule.TO, addrs);
 		return sent;
+    }
+    public boolean sendMail(Entry entry, Map message, String comment, boolean sendAttachments) {
+  		JavaMailSender mailSender = getMailSender(entry.getParentBinder());
+		Collection<InternetAddress> addrs = (Collection)message.get(MailModule.TO);
+		if ((addrs == null) || addrs.isEmpty()) return true;
+		//handle large recipient list 
+		EmailFormatter	processor = (EmailFormatter)processorManager.getProcessor(entry.getParentBinder(), EmailFormatter.PROCESSOR_KEY);
+ 		boolean sent = true;
+		ArrayList rcpts = new ArrayList(addrs);
+		User user = RequestContextHolder.getRequestContext().getUser();
+		for (int i=0; i<rcpts.size(); i+=rcptToLimit) {
+			List subList = rcpts.subList(i, Math.min(rcpts.size(), i+rcptToLimit));
+			message.put(MailModule.TO, subList);
+			MimeEntryPreparator helper = new MimeEntryPreparator(processor, entry, message, logger, sendVTODO);
+	 		helper.setDefaultFrom(mailSender.getDefaultFrom());		
+	 		helper.setTimeZone(user.getTimeZone().getID());
+	 		helper.setLocale(user.getLocale());
+	 		helper.setType(Notify.NotifyType.interactive);
+	 		helper.setSendAttachments(sendAttachments);
+	 		try {
+	 			mailSender.send(helper);
+	 			sent = true;
+	 		} catch (MailSendException sx) {
+	 			logger.error("Error sending mail:" + getMessage(sx));
+	 	  		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
+	 			job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);
+	 	   	} catch (MailAuthenticationException ax) {
+	       		logger.error("Authentication Exception:" + getMessage(ax));				
+	      		SendEmail job = getEmailJob(RequestContextHolder.getRequestContext().getZone());
+	       		job.schedule(mailSender, helper.getMessage(), comment, getMailDirPath(entry.getParentBinder()), false);
+	 		} catch (Exception ex) {
+	 			//message gets thrown away here
+	 			logger.error(getMessage(ex));
+	 		}
+		}
+		//replace list with original
+		message.put(MailModule.TO, addrs);
+		return sent;
+
     }
     // schedule mail delivery - 
     public void scheduleMail(Binder binder, Map message, String comment) throws Exception {

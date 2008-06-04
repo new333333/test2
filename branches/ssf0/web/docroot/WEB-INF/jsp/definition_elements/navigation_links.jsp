@@ -34,6 +34,7 @@
 <%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<c:if test="${!empty ssDefinitionEntry}">
 <c:if test="${empty ss_breadcrumbsShowIdRoutine}">
   <c:set var="ss_breadcrumbsShowIdRoutine" value="ss_treeShowIdNoWS" scope="request" />
 </c:if>
@@ -195,3 +196,4 @@
 <div class="ss_clear_float"></div>
 
 </ssf:skipLink>
+</c:if>

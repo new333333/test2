@@ -4,7 +4,7 @@
 
  <target id="b9vcafr" pid="b9vcafr" name="Chapter" level="0" number="1"> <text>Introduction</text> </target>
 
- <target id="bf8uca7" pid="bf8uca7" name="Sect1" level="1" number="1.1"> <text>Configuring ICEcore</text> </target>
+ <target id="bf8uca7" pid="bf8uca7" name="Sect1" level="1" number="1.1"> <text>Configuring Novell Teaming</text> </target>
 
  <target id="b9wu634" pid="b9wu634" name="Sect1" level="1" number="1.2"> <text>What Is a Workflow Process?</text> </target>
 

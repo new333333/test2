@@ -49,6 +49,10 @@ import com.sitescape.util.PropsUtil;
  * @author jong
  *
  */
+/**
+ * Deprecated, singletons should be managed by Spring
+ */
+@Deprecated
 public class SPropsUtil extends PropsUtil implements InitializingBean {
 	// This is a singleton class. 
 	

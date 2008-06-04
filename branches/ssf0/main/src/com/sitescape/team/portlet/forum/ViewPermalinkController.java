@@ -33,6 +33,7 @@ import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
+import javax.portlet.PortletRequest;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
@@ -53,6 +54,11 @@ import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.module.shared.AccessUtils;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
+import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.web.util.WebUrlUtil;
 
 
@@ -89,53 +95,52 @@ public class ViewPermalinkController  extends SAbstractController {
 			}
 		}
  		
- 		//See if there is a portlet url to use for this request
-        String url = BinderHelper.getBinderPermaLink(this);
- 		if (url.equals("")) {
- 			response.setRenderParameters(request.getParameterMap());
- 			return;
- 		}
+ 		//It is ok to see this request, get the url to use for this request
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		if (!binderId.equals("")) url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+		if (!entryId.equals("")) url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		if (!entryTitle.equals("")) url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
+		if (!entityType.equals("")) url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
+		if (!newTab.equals("")) url.setParameter(WebKeys.URL_NEW_TAB, newTab);
  		
-		if (!binderId.equals("")) url = url.replaceAll(WebKeys.URL_BINDER_ID_PLACE_HOLDER, binderId);
-		if (!entryId.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_ID_PLACE_HOLDER, entryId);
-		if (!entryTitle.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER, entryTitle);
-		if (!entityType.equals("")) url = url.replaceAll(WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER, entityType);
-		if (!newTab.equals("")) url = url.replaceAll(WebKeys.URL_NEW_TAB_PLACE_HOLDER, newTab);
-		
-		if (entityType.equals("") && entryId.equals("") && !binderId.equals("")) {
+		if (entityType.equals("") && !binderId.equals("")) {
+			try {
 			Binder binder = getBinderModule().getBinder(new Long(binderId));
 			entityType = binder.getEntityType().name();
+			} catch(Exception e) {}
 		}
-		if (entityType.equals(EntityIdentifier.EntityType.workspace.toString()) || entityType.equals(EntityIdentifier.EntityType.user.toString())) {
-			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_ws_listing");
+		if (entityType.equals(EntityIdentifier.EntityType.workspace.toString()) || 
+				entityType.equals(EntityIdentifier.EntityType.user.toString())) {
+			url.setParameter(WebKeys.URL_ACTION, "view_ws_listing");
 		} else if (entityType.equals(EntityIdentifier.EntityType.folder.toString())) {
-			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
+			url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
 		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
 			String displayStyle = user.getDisplayStyle();
 			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");
+				url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");
 			} else {
 				try {
 					getBinderModule().getBinder(new Long(binderId));
-					url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
+					url.setParameter(WebKeys.URL_ACTION, "view_folder_listing");
 				} catch (AccessControlException ac) {
-					url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");					
+					url.setParameter(WebKeys.URL_ACTION, "view_folder_entry");					
 				}
 			}
 		}
+		String sUrl = url.toString();
 		if (!fileId.equals("") && !binderId.equals("") && !entityType.equals("")) {
-			url = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?" +
+			sUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?" +
 				WebKeys.URL_BINDER_ID + "=" + binderId +
 				"&" + WebKeys.URL_ENTITY_TYPE + "=" + entityType;
-			if (!entryId.equals("")) url += "&" + WebKeys.URL_ENTRY_ID + "=" + entryId;
-			url += "&" + WebKeys.URL_FILE_ID + "=" + fileId;
+			if (!entryId.equals("")) sUrl += "&" + WebKeys.URL_ENTRY_ID + "=" + entryId;
+			sUrl += "&" + WebKeys.URL_FILE_ID + "=" + fileId;
 		}
  		
     	if(logger.isDebugEnabled()) {
-    		logger.debug("Permalink followed: " + url);
+    		logger.debug("Permalink followed: " + sUrl);
     	}
-    	response.sendRedirect(url);
+    	response.sendRedirect(sUrl);
 
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
@@ -147,7 +152,18 @@ public class ViewPermalinkController  extends SAbstractController {
 		String newTab= PortletRequestUtils.getStringParameter(request, WebKeys.URL_NEW_TAB, "");
 		String entryTitle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_TITLE, "");
 
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+		if (!binderId.equals("")) url.setParameter(WebKeys.URL_BINDER_ID, binderId);
+		if (!entryId.equals("")) url.setParameter(WebKeys.URL_ENTRY_ID, entryId);
+		if (!entryTitle.equals("")) url.setParameter(WebKeys.URL_ENTRY_TITLE, entryTitle);
+		if (!entityType.equals("")) url.setParameter(WebKeys.URL_ENTITY_TYPE, entityType);
+		if (!fileId.equals("")) url.setParameter(WebKeys.URL_FILE_ID, fileId);
+		if (!newTab.equals("")) url.setParameter(WebKeys.URL_NEW_TAB, newTab);
+		
 		Map<String,Object> model = new HashMap<String,Object>();
+		model.put(WebKeys.URL, url.toString());
+		
 		User user = null;
 		Long zoneId = WebHelper.getZoneIdByVirtualHost(request);
 		if (!WebHelper.isUserLoggedIn(request) || RequestContextHolder.getRequestContext() == null) {
@@ -155,12 +171,8 @@ public class ViewPermalinkController  extends SAbstractController {
 			if (user == null || binderId.equals("") || 
 					!getBinderModule().checkAccess(new Long(binderId), user)) {
 				//User must log in to see this
-				model.put("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
-				model.put("ss_screens_to_login_screen", 
-						SPropsUtil.getString("permalink.login.screensToLoginScreen"));
-				model.put("ss_screens_after_login_screen_to_logged_in", 
-						SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
-	 	    	return new ModelAndView("forum/portal_login", model);
+				BinderHelper.setupStandardBeans(this, request, response, model);
+	 	    	return new ModelAndView("forum/login_please", model);
 			} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
 				String zoneName = WebHelper.getZoneNameByVirtualHost(request);
 				try {
@@ -171,12 +183,8 @@ public class ViewPermalinkController  extends SAbstractController {
 						}
 					}, zoneName);
 				} catch(AccessControlException ac) {
-					model.put("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
-					model.put("ss_screens_to_login_screen", 
-							SPropsUtil.getString("permalink.login.screensToLoginScreen"));
-					model.put("ss_screens_after_login_screen_to_logged_in", 
-							SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
-		 	    	return new ModelAndView("forum/portal_login", model);
+					BinderHelper.setupStandardBeans(this, request, response, model);
+					return new ModelAndView("forum/login_please", model);
 				}
 			}
 		} else {
@@ -193,67 +201,23 @@ public class ViewPermalinkController  extends SAbstractController {
 							getFolderModule().getEntry(new Long(binderId), new Long(entryId));
 						}
 					} catch(AccessControlException ac) {
-						model.put("ss_portalLoginUrl", SPropsUtil.getString("permalink.login.url"));
-						model.put("ss_screens_to_login_screen", 
-								SPropsUtil.getString("permalink.login.screensToLoginScreen"));
-						model.put("ss_screens_after_login_screen_to_logged_in", 
-								SPropsUtil.getString("permalink.login.screensAfterLoginScreenToLoggedIn"));
-			 	    	return new ModelAndView("forum/portal_login", model);
-					}
-				}
-			}
-		}
-		
- 		String url = BinderHelper.getBinderPermaLink(this);
- 		if (url.equals("")) {
- 			url = SPropsUtil.getString("permalink.fallback.url", "");
- 			model.put(WebKeys.PERMALINK, url);
- 	    	return new ModelAndView("binder/view_permalink", model);
- 		}
-		
-		if (!binderId.equals("")) url = url.replaceAll(WebKeys.URL_BINDER_ID_PLACE_HOLDER, binderId);
-		if (!entryId.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_ID_PLACE_HOLDER, entryId);
-		if (!entryTitle.equals("")) url = url.replaceAll(WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER, entryTitle);
-		if (!entityType.equals("")) url = url.replaceAll(WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER, entityType);
-		if (!newTab.equals("")) url = url.replaceAll(WebKeys.URL_NEW_TAB_PLACE_HOLDER, newTab);
-		
-		if (entityType.equals("") && entryId.equals("") && !binderId.equals("")) {
-			Binder binder = getBinderModule().getBinder(new Long(binderId));
-			entityType = binder.getEntityType().name();
-		}
-		if (entityType.equals(EntityIdentifier.EntityType.workspace.toString()) || entityType.equals(EntityIdentifier.EntityType.user.toString())) {
-			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_ws_listing");
-		} else if (entityType.equals(EntityIdentifier.EntityType.folder.toString())) {
-			url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
-		} else if (entityType.equals(EntityIdentifier.EntityType.folderEntry.toString())) {
-			String displayStyle = user.getDisplayStyle();
-			if (displayStyle != null && displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE) &&
+						//Set up the standard beans
+						BinderHelper.setupStandardBeans(this, request, response, model, new Long(binderId));
+						if (WebHelper.isUserLoggedIn(request) && 
 					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
-				url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");
+							//Access is not allowed
+							return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
 			} else {
-				try {
-					getBinderModule().getBinder(new Long(binderId));
-					url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_listing");
-				} catch (AccessControlException ac) {
-					url = url.replaceAll(WebKeys.URL_ACTION_PLACE_HOLDER, "view_folder_entry");					
+							//Please log in
+							return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 				}
 			}
 		}
-		if (!fileId.equals("") && !binderId.equals("") && !entityType.equals("")) {
-			url = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_VIEW_FILE + "?" +
-				"&" + WebKeys.URL_BINDER_ID + "=" + binderId +
-				"&" + WebKeys.URL_ENTITY_TYPE + "=" + entityType;
-			if (!entryId.equals("")) url += "&" + WebKeys.URL_ENTRY_ID + "=" + entryId;
-			url += "&" + WebKeys.URL_FILE_ID + "=" + fileId;
 		}
- 		
-		model.put(WebKeys.PERMALINK, url);
-			
-    	if(logger.isDebugEnabled()) {
-    		logger.debug("Permalink followed: " + url);
     	}
 
-    	return new ModelAndView("binder/view_permalink", model);
+		//The user is allowed to see this, go redirect to the url	
+    	return new ModelAndView("forum/login_return", model);
 	}
 
 }

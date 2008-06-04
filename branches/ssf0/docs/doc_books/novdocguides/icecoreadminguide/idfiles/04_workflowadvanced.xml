@@ -6,9 +6,9 @@
 
  <target id="bf8sc30" pid="bf8sc30" name="Sect1" level="1" number="5.1"> <text>Reviewing the Workflow Features</text> </target>
 
- <target id="bf8sdtk" pid="bf8sc30" name="Procedure" level="2" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+ <target id="bf8sdtk" pid="bf8sc30" name="Procedure" level="2" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, See "Adding the Teaming Administration Portlet to Your Home Page" on page 14.</text> </target>
 
- <target id="bf8uwgf" pid="bf8sc30" name="Step" level="3" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+ <target id="bf8uwgf" pid="bf8sc30" name="Step" level="3" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, See "Adding the Teaming Administration Portlet to Your Home Page" on page 14.</text> </target>
 
  <target id="bf8spn4" pid="bf8sc30" name="Step" level="3" number="2"> <text>Click Workflow designer.</text> </target>
 
@@ -36,9 +36,9 @@
 
  <target id="b9xec18" pid="b9xeakc" name="row" level="3"> <text>HR has entered the approved vacation</text> </target>
 
- <target id="b9xecwj" pid="b9xeakc" name="Procedure" level="2" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+ <target id="b9xecwj" pid="b9xeakc" name="Procedure" level="2" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, See "Adding the Teaming Administration Portlet to Your Home Page" on page 14.</text> </target>
 
- <target id="bf8t6ag" pid="b9xeakc" name="Step" level="3" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+ <target id="bf8t6ag" pid="b9xeakc" name="Step" level="3" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, See "Adding the Teaming Administration Portlet to Your Home Page" on page 14.</text> </target>
 
  <target id="bbh10ei" pid="b9xeakc" name="Step" level="3" number="2"> <text>Click Workflow designer.</text> </target>
 
@@ -68,9 +68,9 @@
 
  <target id="b9xego1" pid="b9xe8xd" name="Sect2" level="2" number="5.3.1"> <text>Adding the Response Transitions</text> </target>
 
- <target id="b9xegwi" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+ <target id="b9xegwi" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, See "Adding the Teaming Administration Portlet to Your Home Page" on page 14.</text> </target>
 
- <target id="bf8t6ah" pid="b9xe8xd" name="Step" level="4" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+ <target id="bf8t6ah" pid="b9xe8xd" name="Step" level="4" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, See "Adding the Teaming Administration Portlet to Your Home Page" on page 14.</text> </target>
 
  <target id="bf19fco" pid="b9xe8xd" name="Step" level="4" number="2"> <text>Click Workflow designer.</text> </target>
 
@@ -96,9 +96,9 @@
 
  <target id="b9xeakf" pid="b9xe8xd" name="Sect2" level="2" number="5.3.2"> <text>Removing Older Transitions</text> </target>
 
- <target id="b9xfd3i" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+ <target id="b9xfd3i" pid="b9xe8xd" name="Procedure" level="3" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, See "Adding the Teaming Administration Portlet to Your Home Page" on page 14.</text> </target>
 
- <target id="bf8t6ai" pid="b9xe8xd" name="Step" level="4" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+ <target id="bf8t6ai" pid="b9xe8xd" name="Step" level="4" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, See "Adding the Teaming Administration Portlet to Your Home Page" on page 14.</text> </target>
 
  <target id="bf19fct" pid="b9xe8xd" name="Step" level="4" number="2"> <text>Click Workflow designer.</text> </target>
 

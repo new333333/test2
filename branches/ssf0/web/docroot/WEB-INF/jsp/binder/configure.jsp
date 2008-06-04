@@ -234,7 +234,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/> <ssf:inlineHelp tag="ihelp.other.workflow_association"/> </legend>
 
-	<table>
+	<table>	
+    <tr><span class="ss_bold"><ssf:nlt tag="workflow.type.entry"/></span></tr>
+    <tr>	
 	<c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
 	  <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
 	  <tr>
@@ -257,6 +259,35 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	  </tr>
 	  </c:if>
 	</c:forEach>
+	</tr>
+	</table>
+
+	<table>
+    <tr><span class="ss_bold"><ssf:nlt tag="workflow.type.reply"/></span></tr>
+	<tr>
+	<c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
+	  <c:if test="${!empty ssReplyDefinitionMap[item.key]}">
+	  <tr>
+	    <td><ssf:nlt tag="${item.value.title}" checkIfTag="true"/></td>
+		<td>
+		  <select name="workflow_<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
+		    <option value=""><ssf:nlt tag="common.select.none" text="--none--"/></option>
+	          <c:forEach var="wfp" items="${ssPublicWorkflowDefinitions}">
+	            <c:if test="${ssBinder.workflowAssociations[item.value.id] eq wfp.value}">
+	              <option value="<c:out value="${wfp.value.id}"/>" selected>
+		          <ssf:nlt tag="${wfp.value.title}" checkIfTag="true"/>(${wfp.value.name})</option>
+	            </c:if>
+	            <c:if test="${ssBinder.workflowAssociations[item.value.id] != wfp.value}">
+	              <option value="<c:out value="${wfp.value.id}"/>">
+		          <ssf:nlt tag="${wfp.value.title}" checkIfTag="true"/>(${wfp.value.name})</option>
+	            </c:if>
+	          </c:forEach>
+		  </select>
+		</td>
+	  </tr>
+	  </c:if>
+	</c:forEach>
+	</tr>
 	</table>
 	<br>
 <c:if test="${!ssBinder.definitionsInherited}">
@@ -363,12 +394,15 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     </c:if>
     <input type="submit" class="ss_submit" name="deleteUrlBtn" 
       value="<ssf:nlt tag="simpleUrl.deleteSelectedUrls"/>"
-      onClick="if(confirm('<ssf:escapeJavaScript><ssf:nlt tag="simpleUrl.confirmDeleteUrl"/></ssf:escapeJavaScript>'){return true}else{return false};"
+      onClick="if(confirm('<ssf:escapeJavaScript><ssf:nlt tag="simpleUrl.confirmDeleteUrl"/></ssf:escapeJavaScript>')){return true}else{return false};"
     />
     <br/>
     <br/>
     <c:if test="${ss_simpleUrlNameExistsError}">
     	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameAlreadyExists"/></span><br/><br/>
+    </c:if>
+    <c:if test="${ss_simpleUrlNameNotAllowedError}">
+    	<span class="ss_bold ss_errorLabel"><ssf:nlt tag="simpleUrl.nameNotAllowed"/></span><br/><br/>
     </c:if>
     
     <span class="ss_labelAbove"><ssf:nlt tag="simpleUrl.addUrl"/></span> 
@@ -401,6 +435,32 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     </table>
     <br>
     <input type="submit" class="ss_submit" name="addUrlBtn" value="<ssf:nlt tag="button.add"/>"> 
+	<c:if test="${ssSimpleEmailEnabled}">
+		<br/><br/>
+	    <table cellspacing="0" cellpadding="0">
+	      <tr>
+	      	<td>
+		  <c:choose>
+			<c:when test="${ssBinder.postingEnabled}">
+	    	  <input type="checkbox" id="enableCB" name="allow_simple_email" checked/>
+	    	</c:when>
+	    	<c:otherwise>
+	    	  <input type="checkbox" id="enableCB" name="allow_simple_email"/>
+	    	</c:otherwise>
+	      </c:choose>
+	      	</td>
+	      	<td><label for="enableCB"><span style="padding-left:6px;"><ssf:nlt tag="simpleEmail.title"/></span><label></td>
+	      </tr>
+		  <c:forEach var="name" items="${ssSimpleUrlNames}">
+			<tr>
+		  	  <td>&nbsp;</td>
+			  <td><span style="padding-left:6px;">${name.emailAddress}@${ssSimpleEmailHostname}</span></td>
+			</tr>
+		  </c:forEach>
+		</table>
+		<br>
+		<input type="submit" class="ss_submit" name="updateEmailButton" value="<ssf:nlt tag="button.apply"/>"> 
+	</c:if>
   </fieldset>
   <br>
 </form>

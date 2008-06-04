@@ -18,7 +18,7 @@
 
  <target id="bcnmsed" pid="preface" name="row" level="2"> <text>Guide Revision</text> </target>
 
- <target id="bcnmsee" pid="preface" name="row" level="2"> <text>0 (First Version)</text> </target>
+ <target id="bcnmsee" pid="preface" name="row" level="2"> <text>1.0.3</text> </target>
 
  <target id="docupdates" pid="preface" name="BridgeHead" level="1"> <text>Documentation Updates</text> </target>
 

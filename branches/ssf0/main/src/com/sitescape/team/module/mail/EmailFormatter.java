@@ -28,15 +28,11 @@
  */
 package com.sitescape.team.module.mail;
 import java.util.Collection;
-import java.util.Map;
-import java.util.Date;
 import java.util.List;
-import javax.mail.Message;
-import javax.mail.Session;
+import java.util.Map;
 
-import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.FolderEntry;
-import com.sitescape.team.domain.PostingDef;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.module.definition.notify.Notify;
 /**
  * Interface to define 
@@ -48,11 +44,11 @@ public interface EmailFormatter {
     public static final String PLAIN="plain";
     public static final String HTML="html";
     public static final String ATTACHMENT="attachment";
-    public List buildDistributionList(Folder folder, Collection entries, Collection subscriptions, int style);
-	public Map buildDistributionList(FolderEntry entry, Collection subscriptions, int style);
-	public Map buildNotificationMessage(Folder folder, Collection entries, Notify notify);
-	public Map buildNotificationMessage(Folder folder, FolderEntry entry, Notify notify);
-	public String getSubject(Folder folder, FolderEntry entry, Notify notify);
-	public String getFrom(Folder folder, Notify notify);
+    public List buildDistributionList(Binder binder, Collection entries, Collection subscriptions, int style);
+	public Map buildDistributionList(Entry entry, Collection subscriptions, int style);
+	public Map buildMessage(Binder binder, Collection entries, Notify notify);
+	public Map buildMessage(Binder binder, Entry entry, Notify notify);
+	public String getSubject(Binder binder, Entry entry, Notify notify);
+	public String getFrom(Binder binder, Notify notify);
 
 }

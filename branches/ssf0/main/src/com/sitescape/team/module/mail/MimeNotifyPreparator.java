@@ -21,8 +21,8 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.domain.Folder;
-import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.Entry;
 import com.sitescape.team.module.definition.notify.Notify;
 import com.sitescape.team.module.ical.IcalModule;
 import com.sitescape.team.util.SpringContextUtil;
@@ -31,10 +31,10 @@ import com.sitescape.util.Validator;
 
 public class MimeNotifyPreparator extends AbstractMailPreparator {
 	EmailFormatter processor;
-	Folder folder;
+	Binder binder;
 	Collection toAddrs;
 	Collection entries;
-	FolderEntry entry;
+	Entry entry;
 	Notify.NotifyType messageType;
 	Date startDate;
 	Locale locale;
@@ -42,10 +42,11 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	boolean sendAttachments=false;
 	boolean sendVTODO;
 	IcalModule icalModule;
-	public MimeNotifyPreparator(EmailFormatter processor, Folder folder, Date startDate, Log logger, boolean sendVTODO) {
+	Notify notify;
+	public MimeNotifyPreparator(EmailFormatter processor, Binder binder, Date startDate, Log logger, boolean sendVTODO) {
 		super(logger);
 		this.processor = processor;
-		this.folder = folder;
+		this.binder = binder;
 		this.startDate = startDate;	
 		this.sendVTODO = sendVTODO;
 		icalModule = (IcalModule)SpringContextUtil.getBean("icalModule");
@@ -53,7 +54,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	public void setToAddrs(Collection toAddrs) {
 		this.toAddrs = toAddrs;			
 	}
-	public void setEntry(FolderEntry entry) {
+	public void setEntry(Entry entry) {
 		this.entry = entry;		
 	}
 	public void setStartDate(Date startDate) {
@@ -74,9 +75,30 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 	public void setType(Notify.NotifyType type) {
 		messageType = type;
 	}
+	protected void setSubject(MimeMessageHelper helper) throws MessagingException {
+		helper.setSubject(processor.getSubject(binder, entry, notify));
+	}
+	protected void setFrom(MimeMessageHelper helper) throws MessagingException {
+		String from = processor.getFrom(binder, notify);
+		if (Validator.isNull(from)) {
+			from = defaultFrom;
+		}
+		helper.setFrom(from);
+	}
+	protected void setToAddrs(MimeMessageHelper helper) throws MessagingException {
+		for (Iterator iter=toAddrs.iterator();iter.hasNext();) {
+			String email = (String)iter.next();
+			try	{
+				if (!Validator.isNull(email)) helper.addTo(email);
+			} catch (AddressException ae) {
+				logger.error("Skipping email notifications for " + email + " Bad email address");
+			}
+		}
+		
+	}
 	public void prepare(MimeMessage mimeMessage) throws MessagingException {
 		//make sure nothing saved yet
-		Notify notify = new Notify(messageType, locale, timezone, startDate);
+		notify = new Notify(messageType, locale, timezone, startDate);
 		notify.setAttachmentsIncluded(sendAttachments);
 				
 		message = null;
@@ -84,9 +106,9 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		//set up events here
 		if (!messageType.equals(Notify.NotifyType.text)) {
 			if (entry != null) {
-				result = processor.buildNotificationMessage(folder, (FolderEntry)entry, notify);
+				result = processor.buildMessage(binder, entry, notify);
 			} else {
-				result = processor.buildNotificationMessage(folder, entries, notify);
+				result = processor.buildMessage(binder, entries, notify);
 			}
 		}
 		int multipartMode = MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED;
@@ -99,27 +121,16 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		}
 		MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, multipartMode);
 		mimeMessage.addHeader(MailModule.HEADER_CONTENT_TRANSFER_ENCODING, MailModule.HEADER_CONTENT_TRANSFER_ENCODING_8BIT);
-		helper.setSubject(processor.getSubject(folder, (FolderEntry)entry, notify));
-		for (Iterator iter=toAddrs.iterator();iter.hasNext();) {
-			String email = (String)iter.next();
-			try	{
-				if (!Validator.isNull(email)) helper.addTo(email);
-			} catch (AddressException ae) {
-				logger.error("Skipping email notifications for " + email + " Bad email address");
-			}
-		}
-		String from = processor.getFrom(folder, notify);
-		if (Validator.isNull(from)) {
-			from = defaultFrom;
-		}
-		helper.setFrom(from);
+		setSubject(helper);
+		setToAddrs(helper);
+		setFrom(helper);
 
 		if (!messageType.equals(Notify.NotifyType.text)) {
 			//use MailHelper so alternative part added for calendars
 			setText(null, (String)result.get(EmailFormatter.HTML), helper);
 			if (sendAttachments) prepareAttachments(notify.getAttachments(), helper);
 			notify.clearAttachments();
-			prepareICalendars(notify, helper);
+			prepareICalendars(helper);
 		} else {
 			//just a subject line
 			setText("", "", helper);
@@ -129,7 +140,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		message = mimeMessage;
 	}
 	
-	private void prepareICalendars(Notify notify, MimeMessageHelper helper) throws MessagingException {
+	protected void prepareICalendars(MimeMessageHelper helper) throws MessagingException {
 		int c = 0;
 		int eventsSize = notify.getEvents().size();
 		Calendar margedCalendars = null;
@@ -137,7 +148,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 				Map.Entry mapEntry = (Map.Entry)entryEventsIt.next();
 				DefinableEntity entry = (DefinableEntity)mapEntry.getKey();
 				List events = (List)mapEntry.getValue();
-				Calendar iCal = icalModule.generate(entry, events, timezone.getID());
+				Calendar iCal = icalModule.generate(entry, events, notify.getTimeZone().getID());
 				
 				String fileName = entry.getTitle() + MailModule.ICAL_FILE_EXTENSION;
 				if (eventsSize > 1) {
@@ -170,7 +181,7 @@ public class MimeNotifyPreparator extends AbstractMailPreparator {
 		
 		if (margedCalendars != null) {
 			//add to alternative text, attachments handled already
-			prepareICalendar(margedCalendars, folder.getTitle() + MailModule.ICAL_FILE_EXTENSION, getICalComponentType(margedCalendars), false, true, helper);
+			prepareICalendar(margedCalendars, binder.getTitle() + MailModule.ICAL_FILE_EXTENSION, getICalComponentType(margedCalendars), false, true, helper);
 		}
 		
 		notify.clearEvents();

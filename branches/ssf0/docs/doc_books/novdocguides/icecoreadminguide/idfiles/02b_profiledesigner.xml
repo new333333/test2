@@ -4,9 +4,9 @@
 
  <target id="bbmqmww" pid="bbmqmww" name="Chapter" level="0" number="6"> <text>The Profile Designer</text> </target>
 
- <target id="bf8uwsk" pid="bbmqmww" name="Procedure" level="1" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+ <target id="bf8uwsk" pid="bbmqmww" name="Procedure" level="1" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, See "Adding the Teaming Administration Portlet to Your Home Page" on page 14.</text> </target>
 
- <target id="bf8uxam" pid="bbmqmww" name="Step" level="2" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, See "Adding the ICEcore Administration Portlet to Your Home Page" on page 14.</text> </target>
+ <target id="bf8uxam" pid="bbmqmww" name="Step" level="2" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, See "Adding the Teaming Administration Portlet to Your Home Page" on page 14.</text> </target>
 
  <target id="bf8uwz9" pid="bbmqmww" name="Step" level="2" number="2"> <text>Click Profile designer.</text> </target>
 

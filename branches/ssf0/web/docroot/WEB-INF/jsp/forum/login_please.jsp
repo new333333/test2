@@ -29,4 +29,45 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<span><ssf:nlt tag="login.please"/></span>
+<ssf:ifadapter>
+<body class="ss_style_body">
+<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
+<div class="ss_portlet_style ss_portlet">
+<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+<div class="ss_clear_float"></div>
+</ssf:ifadapter>
+<div style="padding:30px;">
+  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
+    <table>
+      <tr>
+        <td valign="top" align="right">
+          <span><ssf:nlt tag="login.name"/></span>
+        </td>
+        <td valign="top" style="padding-left:4px;">
+          <input type="text" size="40" name="username"/>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="right">
+          <span><ssf:nlt tag="login.password"/></span>
+        </td>
+        <td valign="top" style="padding-left:4px;">
+          <input type="password" size="40" name="password"/>
+        </td>
+      </tr>
+    </table>
+    <br/>
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+    <input type="hidden" name="url" value="${ssUrl}"/>
+  </fieldset>
+  </form>
+</div>
+
+<ssf:ifadapter>
+</div>
+</div>
+	</body>
+</html>
+</ssf:ifadapter>

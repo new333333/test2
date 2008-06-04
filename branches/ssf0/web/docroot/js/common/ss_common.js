@@ -39,6 +39,8 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_isMoz5 = ((navigator.userAgent.indexOf("Mozilla/5") > -1) && !ss_isNSN6);
 	var ss_isMacIE = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("Mac") > -1));
 	var ss_isIE = ((navigator.userAgent.indexOf("IE ") > -1));
+	var ss_isIE6 = ((navigator.userAgent.indexOf("IE ") > -1) && (navigator.userAgent.indexOf("MSIE 6") > -1));
+	
 	
 	//Random number seed (for building urls that are unique)
 	var ss_now = new Date();
@@ -896,6 +898,28 @@ function ss_executeJavascript(xmlNode) {
     }
 }
 
+function ss_showFolderPage(obj, binderId, currentPageIndex, divId, cTag, pTag, yearMonth, endDate) {
+	if (currentPageIndex == "") currentPageIndex = "0";
+	var page = parseInt(currentPageIndex);
+	
+	var divObj = self.document.getElementById(divId);
+	if (divObj == null || ss_userDisplayStyle == "accessible") {
+		//In accessible mode, redraw the whole page
+		var url = obj.href;
+		self.location.href = url;
+	} else {
+		ss_setupStatusMessageDiv();
+		var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, operation:"show_folder_page", ssPageStartIndex:page, cTag:cTag, pTag:pTag, yearMonth:yearMonth, endDate:endDate});
+		ss_fetch_url(url, ss_showFolderPageDiv, divId)
+	}
+}
+function ss_showFolderPageDiv(s, divId) {
+	var divObj = self.document.getElementById(divId);
+	divObj.innerHTML = s;
+	//Signal that the layout changed
+	if (ssf_onLayoutChange) ssf_onLayoutChange();
+}
+
 function ss_showDashboardPage(binderId, type, op, currentPage, direction, divId, namespace) {
 	if (currentPage == "") currentPage = "0";
 	var page = parseInt(currentPage);
@@ -963,17 +987,26 @@ function ss_createDivInBody(divId, className) {
 }
 
 //Routines to show or hide a pop-up hover over div
-function ss_showHoverOver(parentObj, divName) {
+function ss_showHoverOver(parentObj, divName, event, offsetX, offsetY) {
+	if (typeof offsetX == 'undefined') offsetX = 0;
+	if (typeof offsetY == 'undefined') offsetY = 0;
 	ss_moveDivToBody(divName);
 	ss_showHideObj(divName, 'visible', 'block');
 	divObj = document.getElementById(divName)
+	if (divObj == null) return;
 	divObj.style.zIndex = '500';
 	var x = dojo.html.getAbsolutePosition(parentObj, true).x
 	var y = dojo.html.getAbsolutePosition(parentObj, true).y
-	ss_setObjectTop(divObj, parseInt(parseInt(y) + dojo.html.getContentBoxHeight(parentObj)) + "px")
-	ss_setObjectLeft(divObj, x + "px")
+	if (typeof event != 'undefined') {
+		x = event.clientX;
+	}
+	var topOffset = parseInt(parseInt(y) + dojo.html.getContentBoxHeight(parentObj) + 4)
+	//firefox doesn't compute the content box height right
+	if (dojo.html.getContentBoxHeight(parentObj) <= 0) topOffset += offsetY;
+	ss_setObjectTop(divObj, topOffset + "px")
+	ss_setObjectLeft(divObj, parseInt(parseInt(x) + offsetX) + "px")
 }
-function ss_hideHoverOver(parentObj, divName) {
+function ss_hideHoverOver(divName) {
 	ss_showHideObj(divName, 'hidden', 'none');
 }
 
@@ -1882,27 +1915,42 @@ function ss_ShowHideDivXY(divName, x, y) {
 }
 
 /* IE6 workaround - divs under selectboxes */
-function ss_showBackgroundIFrame(divid, frmId) {
-	if (!ss_isIE) {
+var ss_showBackgroundIframeDivId = null;
+function ss_showBackgroundIFrame(divId, frmId) {
+	if (!ss_isIE6) {
 		return;
 	}
-	var div = document.getElementById(divid);
+	if (ss_showBackgroundIframeDivId != null && ss_showBackgroundIframeDivId != divId) {
+		//Delete the previous iframe if any
+		var frm = document.getElementById(frmId);
+		try {
+			if (frm) {
+				frm.parentNode.removeChild(frm);
+			}
+		} catch (e) {}
+	}
+	ss_showBackgroundIframeDivId = divId;
+	var div = document.getElementById(divId);
 	if (!div) {
 		return;
 	}
+	if (div.getElementsByTagName('iframe').length > 0) return;
 	if (!div.style.zIndex) {
 		div.style.zIndex = ssLightboxZ - 1;
 	}
-	var frm = document.createElement("iframe");
-	if (typeof ss_baseRootPathUrl != 'undefined') {
-		var teaming_url = ss_baseRootPathUrl + 'js/forum/null.html';
-		frm.src = teaming_url;
+	var frm = document.getElementById(frmId);
+	if (frm == null) {
+		frm = document.createElement("iframe");
+		if (typeof ss_baseRootPathUrl != 'undefined') {
+			var teaming_url = ss_baseRootPathUrl + 'js/forum/null.html';
+			frm.src = teaming_url;
+		}
+		frm.frameBorder = 0;
+		frm.scrolling = "no";
+		document.body.appendChild(frm);
+		frm.id = frmId;
+		frm.className = "ss_background_iframe";
 	}
-	frm.frameBorder = 0;
-	frm.scrolling = "no";
-	document.body.appendChild(frm);
-	frm.id = frmId;
-	frm.className = "ss_background_iframe";
 	if (div.style.zIndex) {
 		frm.style.zIndex = div.style.zIndex * 1 - 1;
 	} else {
@@ -1922,8 +1970,12 @@ function ss_showBackgroundIFrame(divid, frmId) {
 
 /* IE6 workaround - divs under selectboxes */
 function ss_hideBackgroundIFrame(frmId) {
-	if (!ss_isIE) {
+	if (!ss_isIE6) {
 		return;
+	}
+	if (ss_showBackgroundIframeDivId != null) {
+		var divObj = document.getElementById(ss_showBackgroundIframeDivId)
+		if (divObj != null && divObj.style.visibility != 'hidden') return
 	}
 	var frm = document.getElementById(frmId);
 	try {
@@ -1931,6 +1983,7 @@ function ss_hideBackgroundIFrame(frmId) {
 			frm.parentNode.removeChild(frm);
 		}
 	} catch (e) {}
+	ss_showBackgroundIframeDivId = null;
 }
 
 function ss_showDivActivate(divName) {
@@ -1972,13 +2025,13 @@ function ss_showDivAtXY(divName) {
 	ss_setObjectLeft(divObj, parseInt(ss_getClickPositionX() + objLeftOffset))
 	ss_showDiv(divName)
 }
-function ss_showDiv(divName) {
+function ss_showDiv(divName, backgroundIframe) {
 	if (document.getElementById(divName) == null) return;
     document.getElementById(divName).style.visibility = "visible";
     if (!document.getElementById(divName).style.display || document.getElementById(divName).style.display != 'inline') {
     	document.getElementById(divName).style.display = "block";
     }
-	ss_showBackgroundIFrame(divName, "ss_background_iframe");
+	if (typeof backgroundIframe == 'undefined' || backgroundIframe != 'no') ss_showBackgroundIFrame(divName, "ss_background_iframe");
 	//Signal that the layout changed
 	if (!document.getElementById(divName) || 
 	    	document.getElementById(divName).style.position != "absolute") {
@@ -2061,7 +2114,6 @@ function captureXY(e) {
 	        }
 	    }
 	    ss_divToBeHidden = new Array();
-		ss_hideBackgroundIFrame("ss_background_iframe");
     }
     if (ss_isNSN6 || ss_isMoz5) {
         ss_mousePosX = e.pageX
@@ -3643,11 +3695,12 @@ function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
 }
 var ss_loadEntryInPlaceLastRowObj = null;
 var ss_loadEntryInPlaceLastId = null;
-function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboard) {
+function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboard, hoverOverId) {
 	if (ss_userDisplayStyle == "accessible") {
 		self.location.href = obj.href;
 		return false;
 	}
+	if (hoverOverId != "") ss_hideHoverOver(hoverOverId);
 	
 	trObj = ss_findOwningElement(obj, "tr")
 	tbodyObj = ss_findOwningElement(trObj, "tbody")
@@ -3685,11 +3738,12 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	var iframeCol = document.createElement("td");
 	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
-	iframeCol.innerHTML = '<div style="width:'+(ss_getObjectWidth(tableDivObj)-4)+'px;">' +
+	//Draw Iframe for discussion thread
+	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
 		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
     	' src="'+obj.href+'"' +
-    	' style="width:'+(ss_getObjectWidth(tableDivObj)-8)+'px; margin:0px; padding:0px;" frameBorder="0"' +
-    	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\')"' +
+    	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:0px; padding:0px;" frameBorder="1"' +
+    	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
     	'>xxx</iframe>' +
     	'</div>';
 	
@@ -3701,17 +3755,19 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 }
 
 var ss_entryInPlaceIframeOffset = 50;
-function ss_setIframeHeight(divId, iframeId) {
+function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 	var targetDiv = document.getElementById(divId);
 	var iframeDiv = document.getElementById(iframeId);
 	if (window.frames[iframeId] != null) {
 		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
 		if (iframeHeight > 0) {
-			iframeDiv.style.height = iframeHeight + ss_entryInPlaceIframeOffset + "px"
+			iframeDiv.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px"
+			iframeDiv.style.width= parseInt(ss_getObjectWidth(targetDiv) - 6) + "px";
 			//Signal that the layout changed
 			if (ssf_onLayoutChange) ssf_onLayoutChange();
 		}
 	}
+	if (hoverOverId != "") ss_hideHoverOver(hoverOverId);
 }
 
 function ss_showForumEntry(url, isDashboard) {	

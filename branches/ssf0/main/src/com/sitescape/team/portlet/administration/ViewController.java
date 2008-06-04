@@ -494,20 +494,6 @@ public class ViewController extends  SAbstractController {
 			reports.put(element.attributeValue("title"), element);
 		}
 		
-		//Forum restore
-		if (getAdminModule().testAccess(AdminOperation.manageFunction)) {
-			element = DocumentHelper.createElement("child");
-			element.addAttribute("title", NLT.get("administration.forum_restore"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ADMIN_FORUM_RESTORE);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
-		}
-
 		if (!reports.isEmpty()) {
 			elements.put(reportElement.attributeValue("title"), reportElement);
 			for (Iterator iter=reports.entrySet().iterator(); iter.hasNext(); ) {

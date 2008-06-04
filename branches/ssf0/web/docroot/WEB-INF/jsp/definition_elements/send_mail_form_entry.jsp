@@ -30,7 +30,7 @@
 %>
 <% // Send mail on submit %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<c:if test="${ssConfigJspStyle != 'mail'}">
+
 <div class="ss_entryContent">
 <div style="padding:15px 0px 15px 0px;">
 <ssf:expandableArea title="${property_caption}">
@@ -50,7 +50,7 @@
   <span class="ss_labelAbove"><label for="_sendMail_subject">
     <ssf:nlt tag="entry.sendMail.subject"/>
   </label></span>
-  <input type="text" size="80" name="_sendMail_subject" />
+  <input type="text" size="80" name="_sendMail_subject" value="<ssf:nlt tag='entry.sendMail.newEntry'><ssf:param name="value" value="${ssBinder.title}"/></ssf:nlt>"/>
   <br/>
 
   <span class="ss_labelAbove"><label for="_sendMail_body">
@@ -67,4 +67,4 @@
 </ssf:expandableArea>
 </div>
 </div>
-</c:if>
+

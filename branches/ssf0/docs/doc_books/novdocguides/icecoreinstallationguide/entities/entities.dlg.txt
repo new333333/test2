@@ -1,3 +1,4 @@
+"company","Novell","no description"
 "product","Novell Teaming","no description"
 "productshort","Teaming","no description"
 "zon","Conferencing","no description"

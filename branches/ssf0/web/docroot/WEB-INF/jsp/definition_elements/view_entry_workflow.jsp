@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
 <c:if test="${!empty ssDefinitionEntry.workflowStates}">
-<c:if test="${ssConfigJspStyle != 'mail'}">
+
 <div class="ss_workflow">
 <table border="0" cellspacing="0" cellpadding="0">
 <tr><th align="left" colspan="4" style="padding:0px 0px 6px 2px;"><ssf:nlt tag="workflow"/></th></tr>
@@ -186,9 +186,5 @@
 </c:forEach>
 </table>
 </div>
-</c:if>
-<c:if test="${ssConfigJspStyle == 'mail'}">
-<% // The mail support is in "definition_elements/mail" %>
-</c:if>
 
 </c:if>

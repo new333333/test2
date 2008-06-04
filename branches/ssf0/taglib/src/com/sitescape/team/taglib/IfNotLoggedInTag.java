@@ -41,8 +41,11 @@ public class IfNotLoggedInTag extends TagSupport {
 
 	public int doStartTag() throws JspException {
 
-	    User user = RequestContextHolder.getRequestContext().getUser();
-		if (ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+	    User user = null;
+	    try {
+	    	user = RequestContextHolder.getRequestContext().getUser();
+	    } catch(Exception e) {}
+		if (user == null  || ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 			// Indicates that the request is being served by the adapter framework.
 			return EVAL_BODY_INCLUDE;
 		}

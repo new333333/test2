@@ -41,7 +41,15 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border: 1px;
 	padding-bottom:2px;
 	}
-	
+
+	/*BRANDING*/
+#ss_branding{
+	margin:0px;
+	padding:0px;
+	height:100px;       /* Need to define specific height for graphics */
+	overflow:hidden;	/* This chops off any overhanging divs */
+	}
+		
 	/* NAVIGATION AREA FOR STATUS LINE */
 
 #ss_statusArea{

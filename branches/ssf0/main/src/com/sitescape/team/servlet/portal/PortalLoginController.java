@@ -28,43 +28,113 @@
  */
 package com.sitescape.team.servlet.portal;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.portal.PortalLogin;
+import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
+import com.sitescape.team.web.util.WebHelper;
 
-public abstract class PortalLoginController extends SAbstractController {
+public class PortalLoginController extends SAbstractController {
 
-	private static final String PORTAL_LOGIN_OVERRIDE_SCHEME = "portal.login.override.scheme";
-	private static final String PORTAL_LOGIN_OVERRIDE_HOST = "portal.login.override.host";
-	private static final String PORTAL_LOGIN_OVERRIDE_PORT = "portal.login.override.port";
 	private static final String PORTAL_LOGIN_SUPPORTED_METHOD = "portal.login.supported.method";
+	private static final String PORTAL_LOGIN_FORCENEW_ALLOWED = "portal.login.forcenew.allowed";
 	
+	private PortalLogin portalLogin;
+
+	protected PortalLogin getPortalLogin() {
+		return portalLogin;
+	}
+
+	public void setPortalLogin(PortalLogin portalLogin) {
+		this.portalLogin = portalLogin;
+	}
+
 	protected ModelAndView handleRequestAfterValidation(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-		if(!isAllowed(request)) {
-			// Portal login is not allowed. Return silently, rather than throwing an exception.
-			return null;
+		
+		Map<String,Object> model = new HashMap();
+		String view = WebKeys.VIEW_LOGIN_RETURN;
+		
+		if(("/" + WebKeys.SERVLET_PORTAL_LOGIN).equalsIgnoreCase(request.getPathInfo())) { // login request
+			if(!isInteractiveLoginAllowed(request)) {
+				// Interactive portal login through the Teaming is not allowed. 
+				model.put(WebKeys.LOGIN_ERROR, WebKeys.LOGIN_ERROR_LOGINS_NOT_ALLOWED);
+				return new ModelAndView(view, model);
+			}
+			
+			String username = RequestUtils.getStringParameter(request, "username", "");
+			String password = RequestUtils.getStringParameter(request, "password", "");			
+			String remember = RequestUtils.getStringParameter(request, "remember");
+			String url = RequestUtils.getStringParameter(request, "url", "");			
+			boolean forceNew = RequestUtils.getBooleanParameter(request, "_forcenew", false);
+			model.put(WebKeys.URL, url);
+
+			if(!(forceNew && SPropsUtil.getBoolean(PORTAL_LOGIN_FORCENEW_ALLOWED, false))) {
+				if(WebHelper.isUserLoggedIn(request) && username.equalsIgnoreCase(WebHelper.getRequiredUserName(request))) {
+					// This code is executing in the context of a session that belogs to a
+					// user with the same name as the specified username (case insensitively).
+					// This doesn't necessarily mean that the specified password is valid.
+					// But regardless, this code will not attempt to obtain a new session
+					// in this case. Set _forcenew parameter to true to force creation of 
+					// a new session.
+					logger.info("The user " + username + " is already logged in.");
+					model.put(WebKeys.LOGIN_ERROR, WebKeys.LOGIN_ERROR_USER_ALREADY_LOGGED_IN);
+					return new ModelAndView(view, model);
+				}
+			}
+			
+			try {
+				getPortalLogin().loginPortal(request, response, username, password,
+						(remember != null && (remember.equalsIgnoreCase("on") || remember.equalsIgnoreCase("true")) ? true : false));
+			}
+			catch(Exception e) {
+				model.put(WebKeys.LOGIN_ERROR, WebKeys.LOGIN_ERROR_LOGIN_FAILED);
+				view = WebKeys.VIEW_LOGIN_RETRY;
+				//slow this return down to throttle password guessers a little
+				Thread.sleep(1000);
+				return new ModelAndView(view, model);
+			}
+		}
+		else { // logout request
+			Long userId = null;
+			try {
+				//Get the current user id before logging out
+				userId = WebHelper.getRequiredUserId(request);
+			} catch(Exception e) {}
+			
+			getPortalLogin().logoutPortal(request, response);
+
+			view = WebKeys.VIEW_LOGOUT_RETURN;
+			String url = RequestUtils.getStringParameter(request, "url", "");
+			if (url.equals("")) {
+				if (userId != null) {
+					Long profileBinderId = getProfileModule().getProfileBinder().getId();
+					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
+					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId.toString());
+					adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.workspace.toString());
+					url = adapterUrl.toString();
+				}
+			}
+			model.put(WebKeys.URL, url);
 		}
 		
-		String username = RequestUtils.getStringParameter(request, "username", "");
-		String password = RequestUtils.getStringParameter(request, "password", "");
-		
-		String baseUrl = getPortalBaseUrl(request);
-		
-		org.apache.commons.httpclient.Cookie[] cookies = logIntoPortal(request, response, baseUrl, username, password);
-		
-		if(cookies != null)
-			copyCookies(cookies, response);
-		
-		return null;
+		return new ModelAndView(view, model);
 	}
 	
-	protected boolean isAllowed(HttpServletRequest request) {
+	protected boolean isInteractiveLoginAllowed(HttpServletRequest request) {
 		String allowedMethod = SPropsUtil.getString(PORTAL_LOGIN_SUPPORTED_METHOD, "post");
 		if(allowedMethod.equalsIgnoreCase("post")) {
 			if("post".equalsIgnoreCase(request.getMethod()))
@@ -84,49 +154,4 @@ public abstract class PortalLoginController extends SAbstractController {
 		}		
 	}
 	
-	protected abstract org.apache.commons.httpclient.Cookie[] logIntoPortal(HttpServletRequest request,
-    HttpServletResponse response, String portalBaseUrl, String username, String password) throws Exception;
-	
-	protected String getPortalBaseUrl(HttpServletRequest request) {
-		String scheme = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_SCHEME, "");
-		if(scheme.equals(""))
-			scheme = "http";
-		String host = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_HOST, "");
-		if(host.equals(""))
-			host = request.getServerName();
-		String port = SPropsUtil.getString(PORTAL_LOGIN_OVERRIDE_PORT, "");
-		if(port.equals(""))
-			port = String.valueOf(request.getServerPort());
-		
-		return scheme + "://" + host + ":" + port;
-	}
-	
-	protected void copyCookies(org.apache.commons.httpclient.Cookie[] cookies, HttpServletResponse response) {
-		org.apache.commons.httpclient.Cookie sourceCookie;
-		javax.servlet.http.Cookie targetCookie;
-		
-		for(int i = 0; i < cookies.length; i++) {
-			sourceCookie = cookies[i];
-			targetCookie = new javax.servlet.http.Cookie(sourceCookie.getName(), sourceCookie.getValue());
-
-			// Copy the information from the source cookie to the target cookie.
-			// Do NOT ever copy the domain information. 
-			targetCookie.setComment(sourceCookie.getComment());
-			// Due to the lack of method on javax.servlet.http.Cookie that takes
-			// absolute expiry date, we lose some precision while translating the
-			// cookie expiration attribute between the source and target cookies.
-			// But that discrepency should be no more than a few seconds.
-			int maxAge = -1;
-			if(sourceCookie.getExpiryDate() != null) {
-				maxAge = (int) ((sourceCookie.getExpiryDate().getTime() - System.currentTimeMillis()) / 1000L);
-				if(maxAge < 0)
-					maxAge = 0;
-			}
-			targetCookie.setMaxAge(maxAge);
-			targetCookie.setPath(sourceCookie.getPath());
-			targetCookie.setSecure(sourceCookie.getSecure());
-			targetCookie.setVersion(sourceCookie.getVersion());
-			response.addCookie(targetCookie);				
-		}
-	}
 }

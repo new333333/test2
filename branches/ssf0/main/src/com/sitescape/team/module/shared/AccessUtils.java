@@ -57,6 +57,10 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
 
+/**
+ * Deprecated, singletons should be managed by Spring
+ */
+@Deprecated
 public class AccessUtils  {
 	private static AccessUtils instance; // A singleton instance
 	protected AccessControlManager accessControlManager;

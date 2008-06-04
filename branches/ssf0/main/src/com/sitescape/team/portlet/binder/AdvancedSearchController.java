@@ -29,8 +29,6 @@
 package com.sitescape.team.portlet.binder;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -38,11 +36,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Date;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
-import java.text.DateFormat;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -51,11 +47,7 @@ import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 import javax.portlet.WindowState;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.dom4j.Document;
-import org.dom4j.DocumentHelper;
-import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
@@ -64,17 +56,11 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
-import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
-import com.sitescape.team.search.filter.SearchFilterRequestParser;
-import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
@@ -93,8 +79,6 @@ import com.sitescape.util.search.Constants;
 
 public class AdvancedSearchController extends AbstractBinderController {
 	
-	private static Log logger = LogFactory.getLog(AdvancedSearchController.class);
-	
 	public static final String NEW_TAB_VALUE = "1";
 		
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
@@ -105,8 +89,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 		try {response.setWindowState(request.getWindowState());} catch(Exception e){};
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, RenderResponse response) throws Exception {
-        User user = RequestContextHolder.getRequestContext().getUser();
-		String displayType = BinderHelper.getDisplayType(request);
 		String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		//ajax requests
 		if (op.equals(WebKeys.OPERATION_FIND_TAG_WIDGET)) {
@@ -126,16 +108,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		} else if (op.equals(WebKeys.OPERATION_FIND_TEAMS_WIDGET)) {
 			return ajaxGetTeams(request, response);
 		}
-		Map model = new HashMap();
+		Map<String,Object> model = new HashMap();
 		//Set up the standard beans
-		//These have been documented, so don't delete any
-		model.put(WebKeys.USER_PRINCIPAL, user);
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(this));
-		Map userProperties = (Map) getProfileModule().getUserProperties(user.getId()).getProperties();
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-
-		model.put(WebKeys.DISPLAY_TYPE, displayType);
+		BinderHelper.setupStandardBeans(this, request, response, model);
 
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
@@ -236,7 +211,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 	
 	private Toolbar buildFooterToolbar(Map model, RenderRequest request) {
 		Toolbar footerToolbar = new Toolbar();
-		List users = (List)model.get(WebKeys.FOLDER_ENTRIES);
 		String[] contributorIds = collectContributorIds((List)model.get(WebKeys.FOLDER_ENTRYPEOPLE + "_all"));
 
 		addClipboardOption(footerToolbar, contributorIds);
@@ -575,7 +549,6 @@ public class AdvancedSearchController extends AbstractBinderController {
 	
 	private ModelAndView ajaxGetTeams(RenderRequest request, RenderResponse response) {
 		Map model = new HashMap();
-		User currentUser = RequestContextHolder.getRequestContext().getUser();
 		String search = PortletRequestUtils.getStringParameter(request, "searchText", "");
 		String pagerText = PortletRequestUtils.getStringParameter(request, "pager", "");
 

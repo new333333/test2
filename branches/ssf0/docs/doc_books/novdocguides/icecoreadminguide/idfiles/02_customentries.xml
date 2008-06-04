@@ -8,9 +8,9 @@
 
  <target id="bbfzhdh" pid="bbfequg" name="Sect2" level="2" number="4.1.1"> <text>Creating the Custom Entry</text> </target>
 
- <target id="bbferji" pid="bbfequg" name="Procedure" level="3" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the ICEcore section to add more ICEcore features, such as the ICEcore Administration portlet.</text> </target>
+ <target id="bbferji" pid="bbfequg" name="Procedure" level="3" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
 
- <target id="bbferjj" pid="bbfequg" name="Step" level="4" number="1"> <text>From the ICEcore Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the ICEcore Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the ICEcore section to add more ICEcore features, such as the ICEcore Administration portlet.</text> </target>
+ <target id="bbferjj" pid="bbfequg" name="Step" level="4" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
 
  <target id="bbfeu64" pid="bbfequg" name="Step" level="4" number="2"> <text>Click Entry designer.</text> </target>
 
@@ -18,7 +18,7 @@
 
  <target id="bbfigvt" pid="bbfequg" name="Step" level="4" number="4"> <text>On the right side of the window, click Add a new entry definition.</text> </target>
 
- <target id="bbfion2" pid="bbfequg" name="Step" level="4" number="5"> <text>In the Caption field, type the name for the entry that you want to see in ICEcore.</text> </target>
+ <target id="bbfion2" pid="bbfequg" name="Step" level="4" number="5"> <text>In the Caption field, type the name for the entry that you want to see in Novell Teaming.</text> </target>
 
  <target id="bbfijdy" pid="bbfequg" name="Step" level="4" number="6"> <text>In the Name field, type the name for this entry type.</text> </target>
 

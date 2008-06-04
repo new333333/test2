@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -61,7 +60,6 @@ import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
-import org.hibernate.criterion.Restrictions;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
@@ -73,7 +71,6 @@ import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.ChangeLog;
-import com.sitescape.team.domain.Dashboard;
 import com.sitescape.team.domain.DashboardPortlet;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Description;
@@ -94,22 +91,17 @@ import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.folder.FolderModule.FolderOperation;
-import com.sitescape.team.module.profile.index.ProfileIndexUtils;
 import com.sitescape.team.portlet.forum.ViewController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
-import com.sitescape.team.search.QueryBuilder;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.SearchUtils;
-import com.sitescape.team.search.filter.SearchFilter;
-import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.search.filter.SearchFilterRequestParser;
 import com.sitescape.team.search.filter.SearchFilterToMapConverter;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
-import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
@@ -166,16 +158,10 @@ public class BinderHelper {
 		}
 		
 		//Set up the standard beans
-		//These have been documented, so don't delete any
+		setupStandardBeans(bs, request, response, model);
+		
 		String displayType = getDisplayType(request);
         User user = RequestContextHolder.getRequestContext().getUser();
-		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
-		model.put(WebKeys.USER_PRINCIPAL, user);
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-		model.put(WebKeys.DISPLAY_TYPE, displayType);
-		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
-
 		model.put(WebKeys.PRODUCT_NAME, SPropsUtil.getString("product.name", ObjectKeys.PRODUCT_NAME_DEFAULT));
 		model.put(WebKeys.PRODUCT_TITLE, SPropsUtil.getString("product.title", ObjectKeys.PRODUCT_TITLE_DEFAULT));
 		model.put(WebKeys.PRODUCT_NICKNAME, SPropsUtil.getString("product.nickname", ObjectKeys.PRODUCT_NICKNAME_DEFAULT));
@@ -302,6 +288,53 @@ public class BinderHelper {
 		return null;
 	}
 	
+	public static void setupStandardBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Map<String,Object> model) {
+		Long binderId = null;
+		setupStandardBeans(bs, request, response, model, binderId);
+		
+	}
+	public static void setupStandardBeans(AllModulesInjected bs, RenderRequest request, 
+			RenderResponse response, Map<String,Object> model, Long binderId) {
+		//Set up the standard beans
+		//These have been documented, so don't delete any
+		if (request != null) {
+			String displayType = getDisplayType(request);
+			model.put(WebKeys.DISPLAY_TYPE, displayType);
+	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
+			String namespace = PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE, "");
+			if (!namespace.equals("")) {
+				model.put(WebKeys.NAMESPACE, namespace);
+			} else {
+				model.put(WebKeys.NAMESPACE, response.getNamespace());
+			}
+			AdaptedPortletURL loginUrl = new AdaptedPortletURL(request, "ss_forum", true);
+			loginUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_LOGIN); 
+			model.put(WebKeys.LOGIN_URL, loginUrl.toString());
+			String logoutUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGOUT;
+			model.put(WebKeys.LOGOUT_URL, logoutUrl);
+			String loginPostUrl = WebUrlUtil.getServletRootURL(request) + WebKeys.SERVLET_LOGIN;
+			model.put(WebKeys.LOGIN_POST_URL, loginPostUrl);
+		}
+		User user = null;
+		if (RequestContextHolder.getRequestContext() != null) {
+        	user = RequestContextHolder.getRequestContext().getUser();
+    		if (user != null) {
+    			Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
+        		model.put(WebKeys.USER_PRINCIPAL, user);
+        		model.put(WebKeys.USER_PROPERTIES, userProperties);
+    		}
+        }
+		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
+		if (binderId != null) {
+			model.put(WebKeys.BINDER_ID, binderId.toString());
+			if (user != null) {
+				UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
+				model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
+			}
+		}
+	}
+	
 	protected static ModelAndView setupSummaryPortlets(AllModulesInjected bs, RenderRequest request, PortletPreferences prefs, Map model, String view) {
 		String gId = null;
 		if (prefs != null) gId = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_DASHBOARD, null);
@@ -387,6 +420,8 @@ public class BinderHelper {
 				binder = bs.getBinderModule().getBinder(binderId);
 			}
 			catch(AccessControlException e) {
+				//Set up the standard beans
+				setupStandardBeans(bs, request, response, model, binderId);
 				if (WebHelper.isUserLoggedIn(request) && !ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
 					//Access is not allowed
 					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
@@ -556,7 +591,7 @@ public class BinderHelper {
 	//  This routine is callable only from a portlet controller
 	static public void setBinderPermaLink(AllModulesInjected bs, 
 			RenderRequest request, RenderResponse response) {
-		if (request.getWindowState().equals(WindowState.MAXIMIZED) || getBinderPermaLink(bs).equals("")) {
+		if (request.getWindowState().equals(WindowState.MAXIMIZED) || getBinderPermaLink(bs, request).equals("")) {
 			User user = RequestContextHolder.getRequestContext().getUser();
 			PortletURL url = response.createActionURL();
 			try {url.setWindowState(WindowState.MAXIMIZED);} catch(Exception e) {};
@@ -566,7 +601,7 @@ public class BinderHelper {
 			url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_NEW_TAB, WebKeys.URL_NEW_TAB_PLACE_HOLDER);
 			url.setParameter(WebKeys.URL_ENTRY_TITLE, WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER);
-			if (!url.toString().equals(getBinderPermaLink(bs)))
+			if (!url.toString().equals(getBinderPermaLink(bs, request)))
 				bs.getProfileModule().setUserProperty(user.getId(), 
 						ObjectKeys.USER_PROPERTY_PERMALINK_URL, url.toString());
 		}
@@ -614,7 +649,16 @@ public class BinderHelper {
 	
 	//Routine to get a portal url that points to a binder or entry 
 	//  This routine is callable from an adaptor controller
-	static public String getBinderPermaLink(AllModulesInjected bs) {
+	static public String getBinderPermaLink(AllModulesInjected bs, PortletRequest request) {
+		AdaptedPortletURL url = new AdaptedPortletURL(request, "ss_forum", true);
+		url.setParameter(WebKeys.ACTION, WebKeys.URL_ACTION_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_ENTITY_TYPE, WebKeys.URL_ENTITY_TYPE_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_BINDER_ID, WebKeys.URL_BINDER_ID_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_ENTRY_ID, WebKeys.URL_ENTRY_ID_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_NEW_TAB, WebKeys.URL_NEW_TAB_PLACE_HOLDER);
+		url.setParameter(WebKeys.URL_ENTRY_TITLE, WebKeys.URL_ENTRY_TITLE_PLACE_HOLDER);
+		return url.toString();
+		/**
 		User user = null;
 		try {
 			user = RequestContextHolder.getRequestContext().getUser();
@@ -626,6 +670,7 @@ public class BinderHelper {
 		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PERMALINK_URL);
 		if (url == null) url = "";
 		return url;
+		*/
 	}
 	
 	static public void getBinderAccessibleUrl(AllModulesInjected bs, Binder binder, Long entryId,
@@ -1822,8 +1867,6 @@ public class BinderHelper {
 		String includeAttachments = PortletRequestUtils.getStringParameter(request, "_sendMail_includeAttachments", "");
 		if (!toList.equals("") || !toTeam.equals("")) {
 			FolderEntry entry = bs.getFolderModule().getEntry(folderId, entryId);
-			Set entrySet = new HashSet();
-			entrySet.add(entry);
 			Set users = new HashSet();
 			users.addAll(LongIdUtil.getIdsAsLongSet(request.getParameterValues("_sendMail_toList")));
 			
@@ -1832,24 +1875,14 @@ public class BinderHelper {
 				if (!teamMemberIds.isEmpty()) users.addAll(teamMemberIds);
 			}
 			
-			String messageBody = "<a href=\"";
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, folderId.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, entryId.toString());
-			adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, entry.getEntityType().toString());
-			messageBody += adapterUrl.toString();
-			messageBody += "\">" + entry.getTitle() + "</a><br/><br/>";
-			messageBody += body;
 			
 			boolean incAtt = false;
 			if (!includeAttachments.equals("")) incAtt = true;
 
 			if (!users.isEmpty()) {
 				try {
-					Map status = bs.getAdminModule().sendMail(users, null, subject, 
-							new Description(messageBody, Description.FORMAT_HTML), 
-							entrySet, incAtt);
+					bs.getAdminModule().sendMail(entry, users, null, subject, 
+							new Description(body, Description.FORMAT_HTML), incAtt);
 				} catch (Exception e) {
 					//TODO Log that mail wasn't sent
 				}
@@ -2324,7 +2357,6 @@ public class BinderHelper {
 	
 	private static void preparePagination(Map model, Map results, Map options, Tabs.TabEntry tab) {
 		int totalRecordsFound = (Integer) results.get(ObjectKeys.SEARCH_COUNT_TOTAL);
-		int countReturned = (Integer) results.get(ObjectKeys.TOTAL_SEARCH_RECORDS_RETURNED);
 		int pageInterval = ObjectKeys.SEARCH_MAX_HITS_DEFAULT;
 		if (options != null && options.get(ObjectKeys.SEARCH_USER_MAX_HITS) != null) {
 			pageInterval = (Integer) options.get(ObjectKeys.SEARCH_USER_MAX_HITS);

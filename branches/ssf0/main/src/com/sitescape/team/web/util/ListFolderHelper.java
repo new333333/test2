@@ -87,6 +87,7 @@ import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
 import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.security.AccessControlException;
+import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
@@ -168,17 +169,10 @@ public class ListFolderHelper {
 		
 		Map<String,Object> model = new HashMap<String,Object>();
 		String view = BinderHelper.getViewListingJsp(bs, null);;
+		
 		//Set up the standard beans
-		//These have been documented, so don't delete any
-		model.put(WebKeys.USER_PRINCIPAL, user);
- 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-		model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
-		Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
-		model.put(WebKeys.USER_PROPERTIES, userProperties);
-
-		model.put(WebKeys.DISPLAY_TYPE, displayType);
-		model.put(WebKeys.BINDER_ID, binderId.toString());
-
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
+		
 		//See if the entry to be shown is also included
 		String entryIdToBeShown = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		if (entryIdToBeShown.equals(WebKeys.URL_ENTRY_ID_PLACE_HOLDER)) entryIdToBeShown = "";
@@ -202,6 +196,15 @@ public class ListFolderHelper {
 			try {
 				binder = bs.getBinderModule().getBinder(binderId);
 			} catch(NoBinderByTheIdException e) {
+			} catch(AccessControlException e) {
+				if (WebHelper.isUserLoggedIn(request) && 
+						!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+					//Access is not allowed
+					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+				} else {
+					//Please log in
+					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
+				}
 			}
 			if (op.equals(WebKeys.OPERATION_VIEW_ENTRY)) {
 				String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
@@ -220,21 +223,16 @@ public class ListFolderHelper {
 	
 			request.setAttribute(WebKeys.ACTION, WebKeys.ACTION_VIEW_FOLDER_LISTING);
 	
+			Map userProperties = (Map) bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
 				
-			//Set up the standard beans
+			//Set up more standard beans
 			//These have been documented, so don't delete any
-			model.put(WebKeys.USER_PRINCIPAL, user);
 			model.put(WebKeys.BINDER, binder);
 			model.put(WebKeys.FOLDER, binder);
 			model.put(WebKeys.DEFINITION_ENTRY, binder);
 			model.put(WebKeys.ENTRY, binder);
-	 		model.put(WebKeys.WINDOW_STATE, request.getWindowState());
-			model.put(WebKeys.USER_PROPERTIES, userProperties);
 			model.put(WebKeys.USER_FOLDER_PROPERTIES, userFolderProperties);
-			model.put(WebKeys.PORTAL_URL, BinderHelper.getPortalUrl(bs));
-	
-			model.put(WebKeys.DISPLAY_TYPE, displayType);
 	
 			//Build a reload url
 			PortletURL reloadUrl = response.createRenderURL();
@@ -1688,16 +1686,39 @@ public class ListFolderHelper {
 				bs.getFolderModule().testAccess(folder, FolderOperation.addEntry)) {
 			
 			
-			qualifiers = new HashMap();
-			if (viewType.equals(Definition.VIEW_STYLE_CALENDAR)) {
-				qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "', '" + response.getNamespace() + "', '" + 
-						NLT.get("calendar.import.window.title") + "', '" + NLT.get("calendar.import.window.legend") + "', '" + NLT.get("calendar.import.window.upload") + "');return false;");
-				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.calendarImport"), "#", qualifiers);
-			} else {
-				qualifiers.put("onClick", "ss_calendar_import.importForm('" + forumId + "', '" + response.getNamespace() + "', '" + 
-						NLT.get("task.import.window.title") + "', '" + NLT.get("task.import.window.legend") + "', '" + NLT.get("task.import.window.upload") + "');return false;");
-				entryToolbar.addToolbarMenu("5_calendar", NLT.get("toolbar.menu.taskImport"), "#", qualifiers);
+			String titleFromFile = NLT.get("calendar.import.window.title.fromFile");
+			String titleByURL = NLT.get("calendar.import.window.title.byURL");
+			String legendFromFile = NLT.get("calendar.import.window.legend.fromFile");
+			String legendByURL = NLT.get("calendar.import.window.legend.byURL");
+			String btnFromFile = NLT.get("calendar.import.window.upload.fromFile");
+			String btnByURL = NLT.get("calendar.import.window.upload.byURL");
+			String optionTitle = NLT.get("toolbar.menu.calendarImport");
+			String importFromFile = NLT.get("toolbar.menu.calendarImport.fromFile");
+			String importByURL = NLT.get("toolbar.menu.calendarImport.byURL");
+			if (viewType.equals(Definition.VIEW_STYLE_TASK)) {
+				titleFromFile = NLT.get("task.import.window.title.fromFile");
+				titleByURL = NLT.get("task.import.window.title.byURL");
+				legendFromFile = NLT.get("task.import.window.legend.fromFile");
+				legendByURL = NLT.get("task.import.window.legend.byURL");
+				btnFromFile = NLT.get("task.import.window.upload.fromFile");
+				btnByURL = NLT.get("task.import.window.upload.byURL");
+				optionTitle = NLT.get("toolbar.menu.taskImport");
+				importFromFile = NLT.get("toolbar.menu.taskImport.fromFile");
+				importByURL = NLT.get("toolbar.menu.taskImport.byURL");				
 			}
+			
+			
+			entryToolbar.addToolbarMenu("5_calendar", optionTitle);	
+			
+			Map qualifiersByFile = new HashMap();
+			qualifiersByFile.put("onClick", "ss_calendar_import.importFormFromFile({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
+					titleFromFile + "', legend: '" + legendFromFile + "', btn: '" + btnFromFile + "'});return false;");
+			entryToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
+			
+			Map qualifiersByURL = new HashMap();
+			qualifiersByURL.put("onClick", "ss_calendar_import.importFormByURL({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
+					titleByURL + "', legend: '" + legendByURL + "', btn: '" + btnByURL + "'});return false;");
+			entryToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
 		}
 		
 		//Build the "Manage dashboard" toolbar

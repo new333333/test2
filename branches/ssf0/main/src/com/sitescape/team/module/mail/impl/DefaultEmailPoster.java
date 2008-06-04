@@ -58,7 +58,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	public void setIcalModule(IcalModule icalModule) {
 		this.icalModule = icalModule;
 	}	
-	public List postMessages(Folder folder, PostingDef pDef, Message[] msgs, Session session) {
+	public List postMessages(Folder folder, String recipient, Message[] msgs, Session session) {
 		//initialize collections
 		Map fileItems = new HashMap();
 		List iCalendars = new ArrayList();
@@ -96,7 +96,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 			} catch (Exception ex) {
 				logger.error("Error posting the message from: " + from.toString() + " Error: " + (ex.getLocalizedMessage()==null? ex.getMessage():ex.getLocalizedMessage()));
 				//if fails and from self, don't reply or we will get it back
-				errors.add(postError(pDef, msgs[i], from, ex));
+				errors.add(postError(recipient, msgs[i], from, ex));
 			} finally {
 				RequestContextHolder.setRequestContext(oldCtx);				
 			}
@@ -146,14 +146,14 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 		}
 		msg.setFlag(Flags.Flag.DELETED, true);
 	}
-	private Message postError(PostingDef pDef, Message msg, InternetAddress from, Exception error) {
+	private Message postError(String recipient, Message msg, InternetAddress from, Exception error) {
 		try {
 			msg.setFlag(Flags.Flag.DELETED, true);
-			if (!pDef.getEmailAddress().equals(from.getAddress())) {
+			if (!recipient.equals(from.getAddress())) {
 				String errorMsg = NLT.get("errorcode.postMessage.failed", new Object[]{Html.stripHtml((error.getLocalizedMessage()==null? error.getMessage():error.getLocalizedMessage()))});
 				Message reject = msg.reply(false);
 				reject.setText(errorMsg);
-				reject.setFrom(new InternetAddress(pDef.getEmailAddress()));
+				reject.setFrom(new InternetAddress(recipient));
 				reject.setContent(msg.getContent(), msg.getContentType());
 				reject.setSubject(reject.getSubject() + " " + errorMsg); 
 				return reject;

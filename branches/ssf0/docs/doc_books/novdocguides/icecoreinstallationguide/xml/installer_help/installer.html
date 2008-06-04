@@ -7,9 +7,9 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta http-equiv="Content-Language" content="en" />
 <meta name="Generator" content="Novell Documentation" />
-<meta name="Generation-Date" content="Monday, May 05, 2008 19:00" />
+<meta name="Generation-Date" content="Wednesday, May 28, 2008 16:11" />
 <meta name="Content-Date" content="Mon, 01 Jan 2003 12:00:00 GMT" />
-<meta name="Copyright" content="Copyright Novell, Inc. 2006" />
+<meta name="Copyright" content="Copyright Novell, Inc. 2008" />
 
 <style type="text/css">
   @import url(ui/styles.css);
@@ -202,8 +202,18 @@ installer-liferay.linux -console
               </div>
 </li>
 <li class="step" id="bf48jzg">
-<p class="para">In the <span class="guimenu">iChain configuration</span> window, select <span class="guimenu">Enable iChain</span> to use the iChain Single Sign-on Support (SSO), set the Logoff URL to the address used to trigger an iChain logoff, set the IP address of the iChain Proxy server, then click <span class="guimenu">Next</span>. </p>
+<p class="para">In the <span class="guimenu">iChain configuration</span> window, select <span class="guimenu">Enable iChain</span> to use the iChain Single Sign-on Support (SSO), set the Logoff URL to the address used to trigger an iChain logoff, set the IP address of the iChain Proxy server. </p>
 <p class="para">Only transactions from that address and the localhost are allowed. For more information, see <a href="bbn8hra.html#bbpnnvh">Integrating with iChain</a>.</p>
+<p class="para">You have to options available for WebDAV support:</p>
+<div class="itemizedlist">
+<ul class="listbullet">
+<li class="listitem">
+<p class="listitem">To use a two-accelerator configuration for WebDAV support, you must select the<span class="guimenu"> Use iChain proxy for WebDAV </span>option and specify the iChain WebDAV accelerator in the <span class="guimenu">iChain WebDAV Proxy</span> field during installation.</p></li>
+<li class="listitem">
+<p class="listitem">If you do not use a a two-accelerator configuration for WebDAV support, you must use basic authorization headers to support WebDAV. With basic authorization headers, the WebDAV URLs are made public with iChain and the authentication work is delegated to Novell Teaming, which stores the passwords locally so that the Teaming WebDAV server can use them for WebDAV client authentication. In this case, the value of <span class="guimenu">iChain WebDAV Proxy</span> field in the installer is ignored and Novell Teaming does not perform hostname re-write for the WebDAV URLs.</p></li></ul></div>
+
+<p class="para">For more information, see <a href="installer.html">Running the Installer</a>. </p>
+<p class="para">Click <span class="guimenu">Next</span> to continue. </p>
 <div class="informalfigure">
                 <img src="images/installer_16_a.png" alt="iChain configuration window" />
               </div>
@@ -238,7 +248,7 @@ installer-liferay.linux -console
 
 </div>
 
-<p class="trademark">A trademark symbol (<sup><small>&reg;</small></sup>, <sup><small>TM</small></sup>, etc.) denotes a Novell trademark. An asterisk (*) denotes a third-party trademark. For more information, see <a href="legal.html">Legal Notices</a>.</p>
+<p class="trademark"> For more information, see <a href="legal.html">Legal Notices</a>.</p>
 
 <script type="text/javascript" src="ui/bottomnav.js"></script>
 </body>

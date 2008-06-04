@@ -90,6 +90,7 @@ import com.sitescape.team.lucene.Hits;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.binder.processor.BinderProcessor;
 import com.sitescape.team.module.file.WriteFilesException;
+import com.sitescape.team.module.folder.FolderModule.FolderOperation;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.ObjectBuilder;
@@ -1370,25 +1371,40 @@ public class BinderModuleImpl extends CommonDependencyInjection implements Binde
     	return binderMap;
     }
     
-	public SimpleName getSimpleName(String name, String type) {
+	public SimpleName getSimpleName(String name) {
 		// Do we need access check here or not?
-		return getCoreDao().loadSimpleName(name.toLowerCase(), type, RequestContextHolder.getRequestContext().getZoneId());
+		return getCoreDao().loadSimpleName(name.toLowerCase(), RequestContextHolder.getRequestContext().getZoneId());
 	}
-	public void addSimpleName(String name, String type, Long binderId, String binderType) {
+	public SimpleName getSimpleNameByEmailAddress(String emailAddress) {
+		// Do we need access check here or not?
+		return getCoreDao().loadSimpleNameByEmailAddress(emailAddress.toLowerCase(), RequestContextHolder.getRequestContext().getZoneId());
+	}
+	public void addSimpleName(String name, Long binderId, String binderType) {
 		Binder binder = loadBinder(binderId);
 		checkAccess(binder, BinderOperation.manageSimpleName); 
 		SimpleName simpleName = new SimpleName(RequestContextHolder.getRequestContext().getZoneId(),
-				name.toLowerCase(), type, binderId, binderType);
+				name.toLowerCase(), binderId, binderType);
 		getCoreDao().save(simpleName);
 	}
-	public void deleteSimpleName(String name, String type) {
-		SimpleName simpleName = getCoreDao().loadSimpleName(name.toLowerCase(), type, RequestContextHolder.getRequestContext().getZoneId());
+	public void deleteSimpleName(String name) {
+		SimpleName simpleName = getCoreDao().loadSimpleName(name.toLowerCase(), RequestContextHolder.getRequestContext().getZoneId());
 		Binder binder = loadBinder(simpleName.getBinderId());
 		checkAccess(binder, BinderOperation.manageSimpleName); 
 		getCoreDao().delete(simpleName);
 	}
-	public List<SimpleName> getSimpleNames(Long binderId, String type) {
-		return getCoreDao().loadSimpleNames(type, binderId, RequestContextHolder.getRequestContext().getZoneId());
+	public List<SimpleName> getSimpleNames(Long binderId) {
+		return getCoreDao().loadSimpleNames(binderId, RequestContextHolder.getRequestContext().getZoneId());
 	}
-
+	// no transaction
+	public void setPostingEnabled(Long binderId, final Boolean postingEnabled) throws AccessControlException
+	{
+		final Binder binder = loadBinder(binderId);
+		checkAccess(binder, BinderOperation.modifyBinder);
+	    getTransactionTemplate().execute(new TransactionCallback() {
+	    	public Object doInTransaction(TransactionStatus status) {
+	    		binder.setPostingEnabled(postingEnabled);
+	    		return postingEnabled;
+	    	}
+	    });
+	}
 }

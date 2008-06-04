@@ -424,7 +424,7 @@ div.ss_editorHints {
 .ss_entryContent {
   margin: 0px;
   padding: 2px;
-  padding-left: 22px;
+  padding-left: 2px;
   background-color:inherit;
   }
 .ss_entryContent table {
@@ -467,9 +467,10 @@ div.ss_entryDescription ol li {
 
 
 div.ss_editableTab {
-  float: right;
-  background-color: ${ss_style_background_color_opaque};
-  margin-left: 5px;
+  float: right; 
+  width:100%;
+  /* background-color: ${ss_style_background_color_opaque}; */
+  margin-left: 0px;
   margin-top: -4px;
   padding-bottom: 3px;
   padding-right: 5px;
@@ -711,7 +712,7 @@ div.ss_send_friend {
   margin:2px;
   padding:2px;
   background-color: ${ss_style_background_color_opaque};
-  width: 150px;
+  width: 250px;
 }
 
 .ss_popupTitleOptions {
@@ -1173,6 +1174,7 @@ div.ss_sliding_table_column0 {
 .ss_sliding_table_column0 * {
   color: ${ss_sliding_table_text_color};
   white-space:nowrap;
+  text-decoration:none!important;
 }
 div.ss_sliding_table_column1 {
   position: absolute; 
@@ -1180,6 +1182,7 @@ div.ss_sliding_table_column1 {
   display: block; 
   border-left: #ffffff solid 1px;
   margin: 0px;
+  font-size: ${ss_style_font_normalprint} !important;
 }
 .ss_sliding_table_column1 * {
   color: ${ss_sliding_table_text_color};
@@ -1266,7 +1269,11 @@ table.ss_mouseOverInfo {
   top:0px;
 }
 
-
+/* Parent Folder 
+#ss_folder_table_parent{
+	width:98%;
+	}
+	*/
 /* Folder */
 .ss_folder_border, .ss_folder_border table , .ss_folder_border form {
   background-color: ${ss_folder_border_color} !important;
@@ -1281,7 +1288,7 @@ table.ss_mouseOverInfo {
 /* Forum toolbars */
 
 .ss_toolbar {
-  width: 100%; 
+  /* width:100%;  */
   border-top: 1px solid ${ss_toolbar_border_color};
   border-bottom: 1px solid ${ss_toolbar_border_color};
   background-color: ${ss_toolbar_background_color};
@@ -2450,6 +2457,7 @@ div.ss_utils_bar {
     text-align:right;
 	margin-bottom:0px;
 	background:transparent none repeat scroll 0%;
+	width:100%;
 }
 div.ss_line {
 	border-bottom: 1px solid #666666;
@@ -2856,7 +2864,7 @@ background-color: ${ss_table_background_color_even_row};
 /* row is lite grey */
 .ss_table_tr_odd{
 background-color: ${ss_table_background_color_odd_row} !important;
-white-space: nowrap !important;
+
 }
 
 /* yellow hover for table rows */	
@@ -4738,6 +4746,14 @@ table.ssMeetingRecords .ssHeader {
 	padding:0px;
 	border:1px solid white;
 	background: white;
+}
+.ss_pseudoPortalUpperRightToolbar {
+    position:relative;
+    top:-20px;		/* Slide this up into the ss_pseudoPortal margin specified above */
+    display:none;
+    visibility:hidden;
+    font-size: ${ss_style_font_smallprint} !important;
+    font-weight:bold;
 }
 
 ul.placesForm, ul.placesForm li {
