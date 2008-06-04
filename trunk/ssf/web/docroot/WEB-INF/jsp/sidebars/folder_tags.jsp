@@ -25,12 +25,122 @@
  * 
  * 
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
- * are trademarks of SiteScape, Inc.
+ * are trademarks of SiteScape, Inc.     
  */
 %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
+<ssf:sidebarPanel title="sidebar.tags.tools" id="ss_placetags_sidebar" divClass="ss_place_tags"
+    initOpen="false" sticky="true">
+
+<em>Add a Filter, Show Entries, Folder View, and Folder Action to go here</em>
+<hr>
+<div>
+	<ul style="padding-top: 2px; padding-left: 5px;">
+	<li>
+		<c:if test="${ssConfigJspStyle != 'template'}">
+		<a href="<ssf:url ><ssf:param 
+			name="action" value="build_filter"/><ssf:param 
+			name="binderId" value="${ssBinder.id}"/><ssf:param 
+			name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
+		><span class="ss_tabs_title"><ssf:nlt tag="sidebar.tags.filter" text="Add a Filter"/></span></a>
+		</c:if>
+		<c:if test="${ssConfigJspStyle == 'template'}">
+		<span class="ss_tabs_title"><ssf:nlt tag="sidebar.tags.filter" text="Add a Filter"/></span>
+		</c:if>
+	</li>
+	</ul>	
+</div>
+			
+			<% // Show number of entries per page %>
+			<form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
+			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssFolder.id}"/>
+				<c:if test="${!empty cTag}"><ssf:param 
+				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+				name="endDate" value="${endDate}"/></c:if><ssf:param 
+				name="operation" value="change_entries_on_page"/></ssf:url>">
+			    
+			    <input type="hidden" name="ssEntriesPerPage" />
+			
+				<div class="ss_results_pro_page">
+				  <span class="ss_tabs_title">
+	
+				  <ssf:menu title="${ssPageMenuControlTitle}" 
+				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
+				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
+				
+				    <ssf:ifnotaccessible>
+				
+					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
+					<li>
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;">
+							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
+						</a>
+					</li>
+					<li>	
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;">
+							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
+						</a>
+					</li>
+					<li>
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;">
+							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
+						</a>
+					</li>
+					<li>
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;">
+							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
+						</a>
+					</li>
+					<li>
+						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;">
+							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
+						</a>
+					</li>
+					</ul>
+					
+				    </ssf:ifnotaccessible>	
+				
+				    <ssf:ifaccessible>
+
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;"
+					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>">
+						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
+					</a><br/>
+
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;"
+					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>">
+						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
+					</a><br/>
+
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;"
+					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>">
+						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
+					</a><br/>
+
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;"
+					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>">
+						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
+					</a><br/>
+
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;"
+					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>">
+						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
+					</a><br/>
+
+				    </ssf:ifaccessible>
+					
+				  </ssf:menu>
+
+			    </span>
+			    </div>
+			</form>
+</ssf:sidebarPanel>
 <ssf:sidebarPanel title="sidebar.tags.folder" id="ss_placetags_sidebar" divClass="ss_place_tags"
     initOpen="false" sticky="true">
+
   <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
   <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 </ssf:sidebarPanel>

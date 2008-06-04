@@ -305,4 +305,28 @@ a.ss_new_thread:hover {
 	margin-left:20px;
 	padding-bottom:10px;
 	}
-/**********************************/
+	
+/**** INLINE NAVBAR STYLE ************/
+
+#ss_navbar_inline ul{
+	margin:0px;
+	}
+#ss_navbar_inline ul li{
+	display: inline!important;
+	white-space: nowrap;
+	margin-right: 10px!important;
+	}
+#ss_navbar_inline ul a{
+	color:#666666;
+	text-decoration: underline;
+	}	
+#ss_navbar_inline ul a:hover{
+	color:#0C9;
+	font-weight:bold;
+	}
+#ss_navbar_inline ul a:active{
+	font-weitght:bold;
+	color:#C00000;
+	}	
+
+/*************************************/
