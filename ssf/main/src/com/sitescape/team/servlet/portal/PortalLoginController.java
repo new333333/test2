@@ -38,6 +38,7 @@ import org.springframework.web.bind.RequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.portal.PortalLogin;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.SPropsUtil;
@@ -105,6 +106,9 @@ public class PortalLoginController extends SAbstractController {
 				Thread.sleep(1000);
 				return new ModelAndView(view, model);
 			}
+			//Get the user object for the newly logged in user
+			User user = getProfileModule().findUserByName(username);
+			model.put(WebKeys.USER_PRINCIPAL, user);
 		}
 		else { // logout request
 			Long userId = null;
