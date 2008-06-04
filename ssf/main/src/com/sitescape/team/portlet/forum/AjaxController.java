@@ -137,7 +137,9 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setRenderParameters(request.getParameterMap());
 		if (WebHelper.isUserLoggedIn(request)) {
 			String op = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
-			if (op.equals(WebKeys.OPERATION_SAVE_COLUMN_POSITIONS)) {
+			if (op.equals(WebKeys.OPERATION_SHOW_FOLDER_PAGE)) {
+				ajaxSaveFolderPage(request, response);
+			} else if (op.equals(WebKeys.OPERATION_SAVE_COLUMN_POSITIONS)) {
 				ajaxSaveColumnPositions(request, response);
 			} else if (op.equals(WebKeys.OPERATION_ADD_FAVORITE_BINDER)) {
 				ajaxAddFavoriteBinder(request, response);
@@ -422,6 +424,18 @@ public class AjaxController  extends SAbstractControllerRetry {
 	} 
 
 
+	private void ajaxSaveFolderPage(ActionRequest request, ActionResponse response) throws Exception {
+		Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+		String pageStartIndex = PortletRequestUtils.getStringParameter(request, WebKeys.PAGE_START_INDEX, "");
+		Tabs.TabEntry tab = Tabs.getTabs(request).getTab(binderId);
+		if (tab != null) {
+			Map tabData = tab.getData();
+			tabData.put(Tabs.PAGE, new Integer(pageStartIndex));			
+			tab.setData(tabData);
+		}
+		response.setRenderParameter(WebKeys.URL_NEW_TAB, "0");
+	}
+	
 	private void ajaxSaveColumnPositions(ActionRequest request, ActionResponse response) throws Exception {
 		Long binderId = null;
 		try {
