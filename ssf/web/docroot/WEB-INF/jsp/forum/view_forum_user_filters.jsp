@@ -45,45 +45,63 @@
 		renderRequest.setAttribute("currentFilter", filterName);
 	}
 %>
-<div class="ss_style">
+<table>
+<tbody>
+<tr><td align="right" width="10%">
+<div class="ss_style ss_bold ss_fineprint">
 <ssf:nlt tag="filter.filter" text="Filter"/>:<ssHelpSpot 
   helpId="workspaces_folders/menus_toolbars/folder_toolbar" offsetX="-45" offsetY="-5" 
   title="<ssf:nlt tag="helpSpot.folderControlAndFiltering"/>"></ssHelpSpot>&nbsp;</span>
-
-		<form class="ss_style" style="display: inline;"  
-		    name="ss_filterSelect" 
-			action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+  </div>
+</td>
+<td>
+		<div id="ss_navbar_inline" "class="ss_style ss_fineprint">
+			
+					<ul>
+					<li>
+					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><ssf:param 
-				name="operation" value="select_filter"/></ssf:url>" 
-			method="post" >
-			
-			
-			<%
-			//	if (filterName.length() > 10) {
-			//		filterName = filterName.substring(0, 6) + "...";
-			//	}
-			%>
-
-			  <ssf:ifnotaccessible>
-					<select name="select_filter" onchange="ss_submitParentForm(this);">
-					<option value="">--<ssf:nlt tag="none" text="none"/>--</option>
+				name="operation" value="select_filter"/><ssf:param 
+				name="select_filter" value=""/></ssf:url>">
+					<span <c:if test="${select_filter == currentFilter}"> class="ss_largeprint"</c:if>>
+						<ssf:nlt tag="none" text="none"/>
+					</a></li>
+					
 					<c:forEach var="filter" items="${ss_searchFilters}">
-					<option value="${filter.key}"
-					<c:if test="${filter.key == currentFilter}"> selected="true"</c:if>					
-					><c:out value="${filter.key}"/></option>
+					<li><a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssFolder.id}"/><ssf:param 
+				name="operation" value="select_filter"/><ssf:param 
+				name="select_filter" value="${filter.key}"/></ssf:url>">
+					<span <c:if test="${filter.key == currentFilter}"> class="ss_largeprint"</c:if>>				
+					<c:out value="${filter.key}"/></span>
+					</a></li>
 					</c:forEach>
-					</select>					
-			  </ssf:ifnotaccessible>
-			 				
-		</form>
+					</ul>
+				
+		</div>
+
+</td>
+</tr>
+<td>					 				
+<div>
+	<ssf:ifaccessible>
+	<ul style="padding-top: 2px; padding-left: 5px;">
+	<li>
 		<c:if test="${ssConfigJspStyle != 'template'}">
-		<a class="ss_actions_bar_inline" href="<ssf:url ><ssf:param 
+		<a href="<ssf:url ><ssf:param 
 			name="action" value="build_filter"/><ssf:param 
 			name="binderId" value="${ssBinder.id}"/><ssf:param 
 			name="binderType" value="${ssBinder.entityType}"/></ssf:url>"
-		><ssf:nlt tag="Edit" text="Edit"/></a>
+		><span class="ss_tabs_title"><ssf:nlt tag="sidebar.tags.filter" text="Add a Filter"/></span></a>
 		</c:if>
 		<c:if test="${ssConfigJspStyle == 'template'}">
-		<ssf:nlt tag="Edit" text="Edit"/>
+		<span class="ss_tabs_title"><ssf:nlt tag="filter.add" text="Add a New Filter"/></span>
 		</c:if>
+	</li>
+	</ul>	
+	</ssf:ifaccessible>
 </div>
+</td>
+</tr>
+</tbody>
+</table>

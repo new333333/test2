@@ -37,17 +37,12 @@
 	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 
 	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
 
-		<table border="0" cellspacing="0px" cellpadding="0px">
+		<table border="0" cellspacing="0px" cellpadding="0px" width="100%">
 		<tbody>
 		<tr>
-		
 
-			<td>
-			
-			
-			</td>
 
-			<td valign="top">
+			<td valign="top" width="18%">
 			<form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
@@ -72,95 +67,26 @@
 			</c:if>
 			</form>
 			<br/>
-			<% // Number of entries per page %>
-			<form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
-			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-				name="binderId" value="${ssFolder.id}"/>
-				<c:if test="${!empty cTag}"><ssf:param 
-				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-				name="endDate" value="${endDate}"/></c:if><ssf:param 
-				name="operation" value="change_entries_on_page"/></ssf:url>">
-			    
-			    <input type="hidden" name="ssEntriesPerPage" />
-			
-				<div class="ss_results_pro_page">
-				  <span class="ss_light ss_fineprint">
-	
-				  <ssf:menu title="${ssPageMenuControlTitle}" 
-				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
-				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
+			<span class="ssVisibleEntryNumbers">
 				
-				    <ssf:ifnotaccessible>
-				
-					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;">
-							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
-						</a>
-					</li>
-					<li>	
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;">
-							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
-						</a>
-					</li>
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;">
-							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
-						</a>
-					</li>
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;">
-							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
-						</a>
-					</li>
-					<li>
-						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;">
-							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
-						</a>
-					</li>
-					</ul>
-					
-				    </ssf:ifnotaccessible>	
-				
-				    <ssf:ifaccessible>
+					<c:choose>
+					  <c:when test="${ssTotalRecords == '0'}">
+						[<ssf:nlt tag="folder.NoResults" />]
+					  </c:when>
+					  <c:otherwise>
+						&nbsp;&nbsp;&nbsp;<ssf:nlt tag="entry.showing"/>: [<ssf:nlt tag="folder.Results">
+						<ssf:param name="value" value="${ssPageStartIndex}"/>
+						<ssf:param name="value" value="${ssPageEndIndex}"/>
+						<ssf:param name="value" value="${ssTotalRecords}"/>
+						</ssf:nlt>]
+					  </c:otherwise>
+					</c:choose>
+				</span>
+				&nbsp;&nbsp;
 
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;"
-					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>">
-						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
-					</a><br/>
-
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;"
-					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>">
-						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
-					</a><br/>
-
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;"
-					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>">
-						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
-					</a><br/>
-
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;"
-					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>">
-						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
-					</a><br/>
-
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;"
-					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>">
-						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
-					</a><br/>
-
-				    </ssf:ifaccessible>
-					
-				  </ssf:menu>
-
-			    </span>
-			    </div>
-			</form>
 			</td>
 
-			<td align="center" width="25%" valign="top">
+			<td valign="top">
 				<c:set var="ssCurrentPage" value="0"/>
 				<c:forEach var="currentEntryPage" items="${ssPageNumbers}" >
 				    <jsp:useBean id="currentEntryPage" type="java.util.HashMap" />
@@ -238,23 +164,65 @@
 					</c:if>
 				</c:forEach>
 
+			<% // Show number of entries per page-- only shows here in accessible mode %>
+			<ssf:ifaccessible>
 			<br/><br/>
-			<span class="ssVisibleEntryNumbers">
+			<form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
+			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssFolder.id}"/>
+				<c:if test="${!empty cTag}"><ssf:param 
+				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+				name="endDate" value="${endDate}"/></c:if><ssf:param 
+				name="operation" value="change_entries_on_page"/></ssf:url>">
+			    
+			    <input type="hidden" name="ssEntriesPerPage" />
+			
+				<div class="ss_results_pro_page">
+				  <span class="ss_tabs_title">
+	
+				  <ssf:menu title="${ssPageMenuControlTitle}" 
+				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
+				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
 				
-					<c:choose>
-					  <c:when test="${ssTotalRecords == '0'}">
-						[<ssf:nlt tag="folder.NoResults" />]
-					  </c:when>
-					  <c:otherwise>
-						[<ssf:nlt tag="folder.Results">
-						<ssf:param name="value" value="${ssPageStartIndex}"/>
-						<ssf:param name="value" value="${ssPageEndIndex}"/>
-						<ssf:param name="value" value="${ssTotalRecords}"/>
-						</ssf:nlt>]
-					  </c:otherwise>
-					</c:choose>
-				</span>
-				&nbsp;&nbsp;
+				    
+				
+				    
+
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;"
+					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>">
+						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
+					</a><br/>
+
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;"
+					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>">
+						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
+					</a><br/>
+
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;"
+					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>">
+						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
+					</a><br/>
+
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;"
+					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>">
+						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
+					</a><br/>
+
+					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;"
+					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>">
+						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
+					</a><br/>
+
+				    
+					
+				  </ssf:menu>
+
+			    </span>
+			    </div>
+			</form>
+			</ssf:ifaccessible>
 			</td>
 		</tr>
 		</tbody>
