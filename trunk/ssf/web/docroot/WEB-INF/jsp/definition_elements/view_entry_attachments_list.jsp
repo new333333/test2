@@ -30,6 +30,7 @@
 %>
 <%@ page import="com.sitescape.util.BrowserSniffer" %>
 <%@ page import="com.sitescape.team.ssfs.util.SsfsUtil" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <c:set var="ss_attachments_namespace" value="${renderResponse.namespace}"/>
 <c:if test="${!empty ss_namespace}"><c:set var="ss_attachments_namespace" value="${ss_namespace}"/></c:if>
 <div id="${ss_viewEntryAttachmentDivId}">

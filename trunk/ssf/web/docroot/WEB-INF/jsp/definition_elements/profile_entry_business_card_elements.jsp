@@ -148,7 +148,6 @@
 <div class="ss_entryContent">
   <div id="ss_presenceOptions1_${renderResponse.namespace}"></div>
   <ssf:presenceInfo user="${ssDefinitionEntry}" 
-      showOptionsInline="false" 
       optionsDivId="ss_presenceOptions1_${renderResponse.namespace}"/>
 <c:if test="${empty ssDefinitionEntry.title}">
 <span style="font-size: 18px;"><c:out value="${ssDefinitionEntry.name}"/></span>
@@ -233,7 +232,6 @@
  <div class="ss_entryContent">
   <div id="ss_presenceOptions2_${renderResponse.namespace}"></div>
   <ssf:presenceInfo user="${ssDefinitionEntry}" 
-      showOptionsInline="false" 
       optionsDivId="ss_presenceOptions2_${renderResponse.namespace}"/>
 
  <c:if test="${empty ssDefinitionEntry.title}">

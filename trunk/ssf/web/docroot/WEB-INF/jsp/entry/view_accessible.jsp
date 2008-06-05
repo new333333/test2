@@ -47,6 +47,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 </c:if>
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+	<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
 	    <div class="ss_style_color">
 			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 <c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">

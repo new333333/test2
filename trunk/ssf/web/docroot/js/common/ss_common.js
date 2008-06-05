@@ -3739,6 +3739,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
 	//Draw Iframe for discussion thread
+	/**
 	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
 		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
     	' src="'+obj.href+'"' +
@@ -3746,12 +3747,26 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
     	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
     	'>xxx</iframe>' +
     	'</div>';
+    */
+    var entryInlineDivId = 'ss_entry_inlineDiv'+id+random;
+    iframeCol.innerHTML = '<div id="ss_entry_inlineDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
+    	'</div>';
 	
 	tbodyObj.replaceChild(iframeRow, trObj)
 	ss_loadEntryInPlaceLastRowObj = iframeRow;
+	
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:id, entityType:entityType, entryViewType:"entryBlogView", namespace:namespace}, "view_folder_entry");
+	ss_fetch_url(url, ss_loadEntryInPlaceUrlFetchReturn, entryInlineDivId);
 
 	ss_highlightLine(id, namespace);
 	return false;
+}
+
+function ss_loadEntryInPlaceUrlFetchReturn(s, divId) {
+	var divObj = self.document.getElementById(divId)
+	if (divObj != null) {
+		divObj.innerHTML = s;
+	}
 }
 
 var ss_entryInPlaceIframeOffset = 50;

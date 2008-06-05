@@ -28,13 +28,17 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //View a blog entry %>
+<% // The snippet entry view - for viewing entries via ajax %>
+<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
+ <jsp:useBean id="ssConfigElement" type="org.dom4j.Element" scope="request" />
+ <jsp:useBean id="ssUserProperties" type="java.util.Map" scope="request" />
+ <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 
-<div class="ss_style ss_portlet">
+<div class="ss_style ss_portlet_style ss_portlet">
+<c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}" 
+  configElement="${ssConfigElement}" 
+  configJspStyle="${ssConfigJspStyle}"
   entry="${ssDefinitionEntry}" />
 </div>

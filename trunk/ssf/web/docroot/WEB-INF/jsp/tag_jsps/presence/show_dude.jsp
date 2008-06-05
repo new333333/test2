@@ -36,13 +36,11 @@
 <ssf:ifadapter><portletadapter:defineObjects2/></ssf:ifadapter>
 <ssf:ifnotadapter><portlet:defineObjects/></ssf:ifnotadapter>
 
-<c:if test="${empty ss_presence_user && !ss_presence_show_options_inline}">
+<c:if test="${empty ss_presence_user}">
 <a href="javascript: ;"
  onClick="ss_popupPresenceMenu(this, '', '', '-1', '', '', '', '', '', '${ss_presence_component_id}', '${ss_presence_zonBridge}', '');return false;"
 ><img border="0" src="<html:imagesPath/>pics/<c:out value="${ss_presence_dude}"/>"
  alt="<c:out value="${ss_presence_text}"/>"/></a>
-</c:if>
-<c:if test="${empty ss_presence_user && ss_presence_show_options_inline}">
 </c:if>
 
 <c:if test="${!empty ss_presence_user}">
@@ -82,7 +80,6 @@
 <c:if test="${ssUser.zonName == ss_presence_user.zonName}">
 <c:set var="current" value="current"/>
 </c:if>
-<c:if test="${!ss_presence_show_options_inline}">
 <a href="javascript: ;"
  style="padding-right:2px; text-decoration:none;"
  onClick="ss_popupPresenceMenu(this, 
@@ -132,26 +129,5 @@
 	</ssf:ifnotadapter>
  
   </c:if>
-</c:if>
-<c:if test="${ss_presence_show_options_inline}">
-<script type="text/javascript">
-function ss_showPresenceInline_${ss_presence_div_id}() {
-	ss_presenceMenu('${ss_presence_div_id}', this, 
-	    '${ss_presence_user.id}', 
-	    '<%= presenceUserTitle %>', 
-	    '${ss_presence_userStatus}', 
-	    '<%= presenceUserZonName %>', 
-	    '<fmt:formatDate timeZone="${ssUser.timeZone.ID}" value="${ss_presence_sweep_time}" type="both" timeStyle="short" dateStyle="medium" />', 
-	    '<%= presenceUserEmailAddress %>', 
-	    '${ss_presence_vcard}', 
-	    '${current}', 
-	    '${ss_presence_component_id}', 
-	    '${ss_presence_zonBridge}',
-	    '<%= presenceUserSkypeId %>');
-}
-ss_createOnLoadObj("ss_showPresenceInline_${ss_presence_div_id}", ss_showPresenceInline_${ss_presence_div_id});
-
-</script>
-</c:if>
 
 </c:if>
