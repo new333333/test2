@@ -128,6 +128,7 @@ public class WebKeys {
     public static final String URL_ENTRY_PAGE_TITLE="page_title";
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
+    public static final String URL_ENTRY_VIEW_TYPE="entryViewType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
 	public static final String URL_FILE_NAME = "fileName";
@@ -832,6 +833,7 @@ public class WebKeys {
     public static final String SHOW_SEARCH_RESULTS="ss_showSearchResults";
     public static final String SIMPLE_URL_NAME_EXISTS_ERROR="ss_simpleUrlNameExistsError";
     public static final String SIMPLE_URL_NAME_NOT_ALLOWED_ERROR="ss_simpleUrlNameNotAllowedError";
+    public static final String SNIPPET="ss_snippet";
     public static final String TRACKED_PLACES_PAGE="ss_trackedPlacesPage";
     public static final String TRACKED_SITE_PAGE="ss_trackedSitePage";
     public static final String WHATS_HOT_PAGE="ss_whatsHotPage";

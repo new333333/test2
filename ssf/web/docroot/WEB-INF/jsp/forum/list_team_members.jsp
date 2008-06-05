@@ -121,7 +121,6 @@
 						<td>
 							<div id="ss_presenceOptions_${member.id}_${ss_namespace}_${componentId}"></div>
 							<ssf:presenceInfo user="${member}" 
-							    showOptionsInline="false" 
 							    optionsDivId="ss_presenceOptions_${member.id}_${ss_namespace}_${componentId}"/>
 						</td>
 						<td><a href="mailto:<c:out value="${member.emailAddress}" 

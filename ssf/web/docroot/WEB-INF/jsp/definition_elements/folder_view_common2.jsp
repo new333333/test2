@@ -423,7 +423,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	</c:if>
 	
 	<c:if test="${slidingTableStyle == 'fixed'}">
-    	onClick="ss_loadEntryInPlace(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no', 'ss_folderEntryTitle_${entry1._docId}');return false;" 
+    	onClick="ss_loadEntryInPlace(this, '${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no', 'ss_folderEntryTitle_${entry1._docId}');return false;" 
     	<c:if test="${!empty entry1._desc}">
     	  onMouseOver="ss_showHoverOver(this, 'ss_folderEntryTitle_${entry1._docId}', event, 20, 12);"
     	  onMouseOut="ss_hideHoverOver('ss_folderEntryTitle_${entry1._docId}');"
@@ -645,7 +645,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   <div id="ss_folderEntryTitle_${entry2._docId}" class="ss_hover_over" 
     style="visibility:hidden; display:none;">
       <span class="ss_style" ><ssf:markup type="view" binderId="${entry2._binderId}" entryId="${entry2._docId}"><%--
-    		--%><ssf:textFormat formatAction="limitedDescription" textMaxWords="100">${entry2._desc}</ssf:textFormat><%--
+    		--%><ssf:textFormat formatAction="limitedDescription" textMaxWords="50">${entry2._desc}</ssf:textFormat><%--
     		--%></ssf:markup></span>
   </div>
 </c:forEach>

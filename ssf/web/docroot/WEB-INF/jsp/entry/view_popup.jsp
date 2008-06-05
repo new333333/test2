@@ -55,6 +55,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
   style="display:block;">
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+	<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
 <c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
 	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 </c:if>

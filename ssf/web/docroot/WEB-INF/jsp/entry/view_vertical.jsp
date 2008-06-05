@@ -49,6 +49,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+	<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
 
 	<script type="text/javascript">
 		//Set up variables needed by the javascript routines

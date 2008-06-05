@@ -28,13 +28,22 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<% //View a blog entry %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
+<c:if test="${empty ss_ratingSupportLoaded}">
+<script type="text/javascript">
+var ss_ratingImages = new Array();
+var ss_ratingRedStar = "<html:imagesPath/>pics/star_red.gif";
+var ss_ratings_info = new Array();
+var ss_currentRatingInfoId = "";
 
-<div class="ss_style ss_portlet">
-<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
-  configElement="${item}" 
-  configJspStyle="${ssConfigJspStyle}" 
-  entry="${ssDefinitionEntry}" />
-</div>
+var ss_binderId = "${ssBinder.id}";
+var ss_confirmDeleteEntryText = "<ssf:nlt tag="entry.confirmDeleteEntry"/>";
+var ss_confirmUnlockEntryText = "<ssf:nlt tag="entry.confirmUnlockEntry"/>";
+
+ss_ratings_info[1] = "<ssf:nlt tag="popularity.rating.1star" />"
+ss_ratings_info[2] = "<ssf:nlt tag="popularity.rating.2stars" />"
+ss_ratings_info[3] = "<ssf:nlt tag="popularity.rating.3stars" />"
+ss_ratings_info[4] = "<ssf:nlt tag="popularity.rating.4stars" />"
+ss_ratings_info[5] = "<ssf:nlt tag="popularity.rating.5stars" />"
+</script>
+<script type="text/javascript" src="<html:rootPath/>js/forum/ss_entry.js"></script>
+</c:if>

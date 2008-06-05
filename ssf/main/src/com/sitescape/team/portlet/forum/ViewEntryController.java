@@ -145,6 +145,7 @@ public class ViewEntryController extends  SAbstractController {
 		
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
+		String entryViewType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_TYPE, "entryView");
 		Map formData = request.getParameterMap();
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 		
@@ -175,7 +176,7 @@ public class ViewEntryController extends  SAbstractController {
 				if (entries.size() == 1) {
 					FolderEntry entry = (FolderEntry)entries.iterator().next();
 					entryId = entry.getId().toString();
-					fe = getShowEntry(entryId, formData, request, response, folderId, model);
+					fe = getShowEntry(entryId, formData, request, response, folderId, model, entryViewType);
 				} else if (entries.size() == 0) {
 					//There are no entries by this title
 					Folder folder = getFolderModule().getFolder(folderId);
@@ -188,7 +189,7 @@ public class ViewEntryController extends  SAbstractController {
 				}
 			} else {
 				try {
-					fe = getShowEntry(entryId, formData, request, response, folderId, model);
+					fe = getShowEntry(entryId, formData, request, response, folderId, model, entryViewType);
 				} catch (NoFolderEntryByTheIdException nf) {
 					Folder newFolder = getFolderModule().locateEntry(Long.valueOf(entryId));
 					if (newFolder == null) throw nf;
@@ -253,6 +254,10 @@ public class ViewEntryController extends  SAbstractController {
 		if(fe == null) {
 			return new ModelAndView("entry/deleted_entry", model);		
 		} else {
+			if (entryViewType.equals("entryBlogView") && PortletAdapterUtil.isRunByAdapter(request)) {
+				model.put(WebKeys.SNIPPET, true);
+				viewPath = "entry/view_entry_snippet";
+			}
 			return new ModelAndView(viewPath, model);
 		}
 	} 
@@ -666,7 +671,7 @@ public class ViewEntryController extends  SAbstractController {
 	}
 	
 	protected FolderEntry getShowEntry(String entryId, Map formData, RenderRequest req, RenderResponse response, 
-			Long folderId, Map model)  {
+			Long folderId, Map model, String viewType)  {
 		Folder folder = null;
 		FolderEntry entry = null;
 		Map folderEntries = null;
@@ -696,8 +701,8 @@ public class ViewEntryController extends  SAbstractController {
 		model.put(WebKeys.COMMUNITY_TAGS, tagResults.get(ObjectKeys.COMMUNITY_ENTITY_TAGS));
 		model.put(WebKeys.PERSONAL_TAGS, tagResults.get(ObjectKeys.PERSONAL_ENTITY_TAGS));
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
-		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='entryView']") == false) {
-			DefinitionHelper.getDefaultEntryView(entry, model);
+		if (DefinitionHelper.getDefinition(entry.getEntryDef(), model, "//item[@name='"+viewType+"']") == false) {
+			DefinitionHelper.getDefaultEntryView(entry, model, "//item[@name='"+viewType+"']");
 		}
 
 		//only start transaction if necessary

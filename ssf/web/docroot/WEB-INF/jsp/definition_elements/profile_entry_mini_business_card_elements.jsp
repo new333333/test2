@@ -65,7 +65,7 @@
 								<c:if test="${element == 'name'}">
 									  <div id="ss_presenceOptions_${renderResponse.namespace}"></div>
 										  <ssf:presenceInfo user="${ssDefinitionEntry}" 
-										    showOptionsInline="false" componentId="${renderResponse.namespace}"
+										    componentId="${renderResponse.namespace}"
 										    optionsDivId="ss_presenceOptions_${renderResponse.namespace}"/>
 													
 								</c:if>
