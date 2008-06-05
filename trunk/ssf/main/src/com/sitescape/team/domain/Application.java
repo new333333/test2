@@ -28,12 +28,15 @@
  */
 package com.sitescape.team.domain;
 
+import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.util.Validator;
 
 public class Application extends ApplicationPrincipal implements IndividualPrincipal {
 
     private String postUrl;
-    private Boolean trusted;
+    private Boolean trusted; // access="field"
+    private Integer timeout; // access="field"
+    private String runAs;
     
 	public EntityIdentifier.EntityType getEntityType() {
 		return EntityIdentifier.EntityType.application;
@@ -68,6 +71,27 @@ public class Application extends ApplicationPrincipal implements IndividualPrinc
 
 	public void setTrusted(boolean trusted) {
 		this.trusted = Boolean.valueOf(trusted);
+	}
+
+	public int getTimeout() {
+		if(timeout != null)
+			return timeout.intValue();
+		else
+			return SPropsUtil.getInt("remoteapp.timeout");
+	}
+
+	public void setTimeout(int timeout) {
+		if(timeout < 0)
+			throw new IllegalArgumentException("Timeout value cannot be negative");
+		this.timeout = Integer.valueOf(timeout);
+	}
+
+	public String getRunAs() {
+		return runAs;
+	}
+
+	public void setRunAs(String runAs) {
+		this.runAs = runAs;
 	}
 
 }

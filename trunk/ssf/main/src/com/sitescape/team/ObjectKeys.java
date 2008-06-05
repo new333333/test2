@@ -321,6 +321,7 @@ public interface ObjectKeys {
     public static final String FIELD_FILE_ID="_fileID";
     
     public static final String FIELD_APPLICATION_POST_URL="postUrl";
+    public static final String FIELD_APPLICATION_TIMEOUT="timeout";
     public static final String FIELD_APPLICATION_TRUSTED="trusted";
     public static final String FIELD_BINDER_LIBRARY="library";
     public static final String FIELD_BINDER_NAME="name";

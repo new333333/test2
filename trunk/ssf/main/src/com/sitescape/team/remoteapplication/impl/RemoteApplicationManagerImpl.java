@@ -173,10 +173,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 					method.addParameter(entry.getKey(), entry.getValue());
 				}
 			}
-			int timeout = SPropsUtil.getInt("remoteapp.so.timeout", 0);
-			if(timeout >= 0) {
-				method.getParams().setSoTimeout(timeout);
-			}
+			method.getParams().setSoTimeout(application.getTimeout()*1000);
 			int statusCode = client.executeMethod(method);
 			if(statusCode != HttpStatus.SC_OK) {
 				StatusLine statusLine = method.getStatusLine();
