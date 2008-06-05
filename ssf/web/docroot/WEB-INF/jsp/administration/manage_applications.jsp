@@ -70,8 +70,11 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 	<input type="text" class="ss_text" size="70" name="postUrl"><br/><br/>
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/>
-	<textarea name="description" wrap="virtual" rows="4" cols="80"></textarea><br/><br/>
+	<textarea name="description" wrap="virtual" rows="4" cols="70"></textarea><br/><br/>
 	
+	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/>
+	<input type="text" class="ss_text" size="15" name="timeout" value="<%=com.sitescape.team.util.SPropsUtil.getString("remoteapp.timeout")%>"><br/><br/>
+		
 	<input type="checkbox" name="trusted" value="true"> <span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span></input><br/><br/>
 	
 	<input type="submit" class="ss_submit" name="addBtn" value="<ssf:nlt tag="button.add" text="Add"/>">
@@ -119,6 +122,9 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationDescription"/></span><br/>
 	<textarea name="description" wrap="virtual" rows="4" cols="50">${ssApplication.description}</textarea><br/><br/>
 	
+	<span class="ss_bold"><ssf:nlt tag="administration.add.applicationTimeout"/></span><br/>
+	<input type="text" class="ss_text" size="15" name="timeout" value="${ssApplication.timeout}"><br/><br/>		
+		
 	<input type="checkbox" name="trusted" value="true" <c:if test="${ssApplication.trusted}">checked</c:if>> <span class="ss_bold"><ssf:nlt tag="administration.add.applicationTrusted"/></span></input><br/><br/>
 </ssf:expandableArea>
 
