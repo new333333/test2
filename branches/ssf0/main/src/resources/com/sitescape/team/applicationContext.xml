@@ -14,7 +14,7 @@
 		     from SpropsUtil, NOT from the properties file specified below.
 		     In other words, the following 'location' property is ignored,
 		     but nevertheless present here to satisfy initialization requirement. -->
-		<property name="location"><value>ssf.properties</value></property>								
+		<property name="location" value="/com/sitescape/team/ssf.properties" />								
 	</bean>
 	
 	<!-- This bean enforces the @Required annotation on bean properties -->
@@ -249,6 +249,7 @@
 	<!-- Template for the Portlet Mode - Parameter Handler Mapping Beans -->
 	<bean id="portletModeParameterHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeParameterHandlerMapping" lazy-init="true" abstract="true">
         <property name="order"><value>10</value></property>
+		<property name="applyWebRequestInterceptorsToRenderPhaseOnly"><value>false</value></property>
 		<property name="interceptors">
 			<list>
 				<ref bean="portletParameterMappingInterceptor"/>
@@ -269,6 +270,7 @@
 	<!-- Template for the Portlet Mode Handler Mapping Beans -->
 	<bean id="portletModeHandlerMappingTemplate" class="org.springframework.web.portlet.handler.PortletModeHandlerMapping" lazy-init="true" abstract="true">
         <property name="order"><value>20</value></property>
+		<property name="applyWebRequestInterceptorsToRenderPhaseOnly"><value>false</value></property>
 		<property name="interceptors">
 			<list>
 				<!-- Check user login -->
@@ -362,7 +364,7 @@
 	
     <!-- ============================== ical Converter ============================ -->
 	
-    <bean id="icalModule" class="com.sitescape.team.module.ical.impl.IcalModuleImpl">	
+    <bean id="icalModule" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.ical.impl.IcalModuleImpl">	
     	<property name="binderModule"><ref local="binderModule"/></property>
     	<property name="folderModule"><ref local="folderModule"/></property>
     </bean>
@@ -591,6 +593,7 @@
 				<prop key="setNotification*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setPosting*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				<prop key="setTag*">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
+				<prop key="addSimpleName">PROPAGATION_REQUIRED,ISOLATION_READ_COMMITTED</prop>
 				
 			</props>
 		</property>
@@ -840,6 +843,14 @@ text/calendar											  ics
 		<property name="transactionTemplate"><ref local="transactionTemplate"/></property>
 	</bean>	
 	
+	<bean id="smtpService" parent="dependOnCommonServicesTemplate" class="com.sitescape.team.smtp.impl.SMTPManagerImpl"
+			depends-on="zoneConfig, springContextUtil">
+		<property name="enabled"><value>${smtp.service.enable}</value></property>
+		<property name="port"><value>${smtp.service.port}</value></property>
+		<property name="zoneModule"><ref bean="zoneModule"/></property>
+		<property name="binderModule"><ref bean="binderModule"/></property>
+	</bean>
+	
 	<!-- ============================== Web Services Components ============================ -->
 	
 	<bean id="loginInfoInterceptor" class="com.sitescape.team.remoting.ws.interceptor.LoginInfoInterceptor">
@@ -1005,6 +1016,9 @@ text/calendar											  ics
 		<property name="accessTokenManager"><ref local="accessTokenManager"/></property>
 	</bean>
 	
+	<!-- ============================== Portal Login Support ============================ -->
+	<bean id="portalLoginBean" class="com.sitescape.team.portal.liferay.LiferayLogin"/>
+	
 	<!-- ================================  JMX/MBean Support =============================== -->
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
 	    <property name="beans">
@@ -1044,6 +1058,9 @@ text/calendar											  ics
 	        </entry>
 	        <entry key="SiteScape:type=Module,name=folderModule">
 	          <ref bean="folderModuleTarget"/>
+	        </entry>
+	        <entry key="SiteScape:type=Server,name=smtpService">
+	          <ref local="smtpService"/>
 	        </entry>
 	      </map>
 	    </property>

@@ -143,7 +143,9 @@ if (typeof djConfig == "undefined") {
 }
 </script>
 		<script type="text/javascript" src="<html:rootPath/>js/dojo/dojo.js"></script>
-		<script type="text/javascript" src="/html/js/jquery/jquery.js"></script>
+		<ssf:ifadapter>
+			<script type="text/javascript" src="/html/js/jquery/jquery.js"></script>
+		</ssf:ifadapter>
 		<script type="text/javascript">
 var ss_scripts_loaded = "no";
 var scripts = document.getElementsByTagName("script");
@@ -241,6 +243,8 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		<script type="text/javascript">
 
 function ss_createStyleSheet(url, title, enabled) {
+	console.log("url: " + url);
+	console.log("jQuery: " + jQuery);
 	if (ss_scripts_loaded && ss_scripts_loaded == "no") {
 		var link = jQuery(document.createElement('link'))
 			.attr({
