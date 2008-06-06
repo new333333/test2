@@ -147,7 +147,9 @@ public class LoginFilter  implements Filter {
 	}
 	
 	protected boolean isActionPermittedUnauthenticated(String actionValue) {
-		return (actionValue != null && (actionValue.startsWith("__") || actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK)));
+		return (actionValue != null && 
+				(actionValue.startsWith("__") || 
+						actionValue.equals(WebKeys.ACTION_VIEW_PERMALINK)));
 	}
 	
 	private PortalLogin getPortalLogin() {
