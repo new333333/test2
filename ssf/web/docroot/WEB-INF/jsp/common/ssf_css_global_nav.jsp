@@ -50,8 +50,134 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	overflow:hidden;	/* This chops off any overhanging divs */
 	}
 		
-	/* NAVIGATION AREA FOR STATUS LINE */
+	/* MASTHEAD CODE */
+	
+#ss_input {
+	background-color:#FFFFFF;
+	background-position:center;
+	display:block;
+	font-family:Arial, Helvetica, sans-serif;
+	font-size:0.6em;
+	height:10px;
+	text-align:left;
+	width:70px;
+	margin-bottom: 2px;
+	color: #333333;
+}
 
+.ss_searchbox {
+	height: 12px;
+	width: 100px;
+	background-color: #006666;
+}
+
+.ss_search_TD {
+	width: 120px;
+}
+
+.ss_searchtext {
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-size: 10px !important;
+	color: #FFFFFF !important;
+	background-color: #5A9A98;
+	text-align: center;
+	vertical-align: bottom;
+}
+.ss_searchtext a{
+	color: #FFFFFF !important;
+}
+.ss_searchtext a:hover{
+	color: #FF9000 !important;
+}
+.ss_search_title {
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-size: 1.em !important;
+	font-weight: 100;
+	color: #FFFFFF !important;
+	background-color: #5A9A98;
+	padding-top: 10px;
+	padding-right: 4px;
+	padding-bottom: 0px;
+	padding-left: 0px;
+}
+.ss_find {
+	height:30px;
+	}
+.ss_workspace {
+	background-position: left center;
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-size: 11px !important;
+	font-weight: normal;
+	color: #FFFFFF !important;
+	white-space:nowrap;
+}
+.ss_workspace a
+	{color: #FFFFFF !important;}
+.ss_workspace a:hover{
+	color: #FF9000 !important;
+}
+.ss_masthead_top {
+	background-image: url("<html:rootPath/>images/pics/masthead/masthead_bg.png");  
+	background-repeat: repeat-y;
+	background-position: right;
+}
+.ss_companyName {	
+	text-align: left;
+	vertical-align: middle;
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-weight: bold;
+	overflow: hidden;
+	font-size: 36px !important;
+	color: #999999 !important;
+	text-indent: 5px;
+}
+
+.ss_masthead_top div {
+	clear: none;
+	float: none;
+	height: 54px;
+	width: 92px;
+	position: relative;
+}
+.ss_mastheadName {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	color: #FFFFFF;
+	font-style: oblique;
+	text-align: right;
+	line-height: 16px;
+	padding-right: 5px;
+}
+.ss_mastheadtoplinks {
+
+	background-position: left center;
+	font-family: Arial, Helvetica, sans-serif !important;
+	font-size: 11px !important;
+	font-weight: bold;
+	color: #5A9A98 !important;
+	white-space:nowrap !important;
+}
+.ss_masthead_fullscreen {
+
+	background-position: left center;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 11px;
+	font-weight: normal;
+	color: #FFFFFF;
+}
+.ss_masthead_favorites 
+	{color: #375E5C !important;}
+	
+.ss_masthead_favorites a
+	{color: #375E5C !important;}
+.ss_masthead_favorites a:hover{
+	color: #FF9000 !important;
+}	
+
+
+	/* NAVIGATION AREA FOR STATUS LINE */
+	
 #ss_statusArea{
 	float:left;
 	min-width:300px;
