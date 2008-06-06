@@ -186,6 +186,7 @@ public class DefaultEmailPoster  extends CommonDependencyInjection implements Em
 	}
 	//override to provide alternate processing 
 	protected Definition getEntryDefinition(Folder folder) {
+		if(folder.getPosting() == null) return null;
 		Definition definition = folder.getPosting().getDefinition();
 		//if not defined, let folderModule figure it out
 		if (definition == null) return null;
