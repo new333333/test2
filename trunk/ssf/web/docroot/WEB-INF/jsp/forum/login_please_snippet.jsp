@@ -28,34 +28,37 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
-<body class="ss_style_body">
-</ssf:ifadapter>
-
-<c:if test="${!empty ssUrl}">
-<script type="text/javascript">
-self.location.href = '${ssUrl}'
-</script>
-</c:if>
-
-<c:if test="${empty ssUrl && !empty ssUser && !empty ssUser.workspaceId}">
-<script type="text/javascript">
-var url = '<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="view_ws_listing" 
-    	actionUrl="false" 
-    	binderId="${ssUser.workspaceId}"/>';
-self.location.href = url
-</script>
-</c:if>
-
-<c:if test="${empty ssUrl && (empty ssUser || empty ssUser.workspaceId)}">
-<span class="ss_bold ss_largerprint"><ssf:nlt tag="errorcode.portal.login"/></span>
-</c:if>
-
-<ssf:ifadapter>
-	</body>
-</html>
-</ssf:ifadapter>
+<div id="ss_pseudoPortalDiv${renderResponse.namespace}">
+<div class="ss_portlet_style ss_portlet">
+<div style="padding:30px;">
+  <form name="loginForm" id="loginForm" method="post" action="${ss_loginPostUrl}">
+  <fieldset class="ss_fieldset">
+    <legend class="ss_legend"><ssf:nlt tag="login.please"/></legend>
+    <table>
+      <tr>
+        <td valign="top" align="right">
+          <span><ssf:nlt tag="login.name"/></span>
+        </td>
+        <td valign="top" style="padding-left:4px;">
+          <input type="text" size="40" name="username"/>
+        </td>
+      </tr>
+      <tr>
+        <td valign="top" align="right">
+          <span><ssf:nlt tag="login.password"/></span>
+        </td>
+        <td valign="top" style="padding-left:4px;">
+          <input type="password" size="40" name="password"/>
+        </td>
+      </tr>
+    </table>
+    <br/>
+    <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>
+    <input type="hidden" name="url" value="${ssUrl}"/>
+  </fieldset>
+  </form>
+</div>
+</div>
+</div>

@@ -56,9 +56,19 @@ public class LoginFilter  implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
-		if(WebHelper.isUserLoggedIn(req)) {
-			// User is logged in. Proceed as normalt. 
+		if(WebHelper.isUserLoggedIn(req) && WebHelper.isGuestLoggedIn(req)) {
+			// User is logged in as guest. Proceed to the login screen. 
+			String refererUrl;
+			if(req.getQueryString() != null)
+				refererUrl = req.getRequestURL().append("?").append(req.getQueryString()).toString();
+			else
+				refererUrl = req.getRequestURL().toString();
+			req.setAttribute(WebKeys.REFERER_URL, refererUrl);
 			chain.doFilter(request, response);
+		} else if(WebHelper.isUserLoggedIn(req)) {
+				// User is logged in. Proceed as normalt. 
+				req.setAttribute("referer", req.getQueryString());
+				chain.doFilter(request, response);
 		}
 		else {
 			// User is not (yet) logged in.

@@ -30,6 +30,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
 <div class="ss_style ss_portlet_style">
 	
 

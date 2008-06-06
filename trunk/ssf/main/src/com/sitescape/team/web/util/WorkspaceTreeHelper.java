@@ -155,6 +155,8 @@ public class WorkspaceTreeHelper {
 						return WebKeys.VIEW_ACCESS_DENIED;
 					} else {
 						//Please log in
+						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+						model.put(WebKeys.URL, refererUrl);
 						return WebKeys.VIEW_LOGIN_PLEASE;
 					}
 				}
@@ -277,6 +279,8 @@ public class WorkspaceTreeHelper {
 				return WebKeys.VIEW_ACCESS_DENIED;
 			} else {
 				//Please log in
+				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+				model.put(WebKeys.URL, refererUrl);
 				return WebKeys.VIEW_LOGIN_PLEASE;
 			}
 		}

@@ -6132,4 +6132,15 @@ function ss_showHideSidebar(namespace) {
 	ajaxRequest.sendRequest();  //Send the request
 }
 
+//Routine to get the current url and post it to the login controller so we can return here after logging in
+function ss_requestLogin(obj, binderId, userWorkspaceId, userName) {
+	//If we are looking at the guest user workspace, don't return here. Go to the new user's workspace
+	if (userName == "guest" && binderId == userWorkspaceId) return true;
+	var formObj = ss_findOwningElement(obj, "form");
+	if (formObj == null) return true;
+	formObj.url.value = self.location.href;
+	formObj.action = obj.href; 
+	formObj.submit();
+	return false;
+}
 

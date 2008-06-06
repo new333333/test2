@@ -152,6 +152,7 @@ function ss_loadEntryUrl(url,id) {
 <c:if test="<%= !reloadCaller %>">
   <c:if test="<%= isViewEntry %>">
 <div id="ss_entryTop_${renderResponse.namespace}"></div>
+<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
 <script type="text/javascript">
 
 if (self.parent && self.parent.ss_highlightLineById) {
