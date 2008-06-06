@@ -56,13 +56,9 @@ public class LoginFilter  implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
-		if(WebHelper.isUserLoggedIn(req) && WebHelper.isGuestLoggedIn(req)) {
+		if(WebHelper.isGuestLoggedIn(req)) {
 			// User is logged in as guest. Proceed to the login screen. 
-			String refererUrl;
-			if(req.getQueryString() != null)
-				refererUrl = req.getRequestURL().append("?").append(req.getQueryString()).toString();
-			else
-				refererUrl = req.getRequestURL().toString();
+			String refererUrl = getOriginalURL(req);
 			req.setAttribute(WebKeys.REFERER_URL, refererUrl);
 			chain.doFilter(request, response);
 		} else if(WebHelper.isUserLoggedIn(req)) {
@@ -89,11 +85,7 @@ public class LoginFilter  implements Filter {
 			// this execution thread. This extra round trip is necessary in order to set
 			// up the request environment (HTTP session, etc.) properly with the HTTP
 			// state obtained from the previous contact with the portal.
-			String redirectUrl;
-			if(req.getQueryString() != null)
-				redirectUrl = req.getRequestURL().append("?").append(req.getQueryString()).toString();
-			else
-				redirectUrl = req.getRequestURL().toString();
+			String redirectUrl = getOriginalURL(req);
 			res.sendRedirect(redirectUrl);
 			
 			/*
@@ -134,10 +126,19 @@ public class LoginFilter  implements Filter {
 			}*/
 		}
 	}
-
+	
 	public void destroy() {
 	}
 
+	protected String getOriginalURL(HttpServletRequest req) {
+		String url;
+		if(req.getQueryString() != null)
+			url = req.getRequestURL().append("?").append(req.getQueryString()).toString();
+		else
+			url = req.getRequestURL().toString();
+		return url;
+	}
+	
 	protected boolean isPathPermittedUnauthenticated(String path) {
 		return (path != null && 
 				(path.equals("/"+WebKeys.SERVLET_PORTAL_LOGIN) || 
