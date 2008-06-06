@@ -427,6 +427,8 @@ public class BinderHelper {
 					return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
 				} else {
 					//Please log in
+					String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+					model.put(WebKeys.URL, refererUrl);
 					return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE, model);
 				}
 			}

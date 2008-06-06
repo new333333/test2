@@ -70,6 +70,7 @@ import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
+import com.sitescape.team.security.function.OperationAccessControlExceptionNoName;
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.TagUtil;
@@ -80,6 +81,7 @@ import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
+import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 
@@ -140,6 +142,7 @@ public class ViewEntryController extends  SAbstractController {
 	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
+		User user = RequestContextHolder.getRequestContext().getUser();
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
 		
@@ -195,6 +198,18 @@ public class ViewEntryController extends  SAbstractController {
 					if (newFolder == null) throw nf;
 					model.put("entryMoved", newFolder);
 					throw nf;
+				} catch(OperationAccessControlExceptionNoName e) {
+					//Access is not allowed
+					if (WebHelper.isUserLoggedIn(request) && 
+							!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+						//Access is not allowed
+						return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+					} else {
+						//Please log in
+						String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+						model.put(WebKeys.URL, refererUrl);
+						return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE_SNIPPET, model);
+					}
 				}
 			}
 
@@ -249,6 +264,18 @@ public class ViewEntryController extends  SAbstractController {
 
 			}
 		} catch(NoFolderEntryByTheIdException e) {
+		} catch(OperationAccessControlExceptionNoName e) {
+			//Access is not allowed
+			if (WebHelper.isUserLoggedIn(request) && 
+					!ObjectKeys.GUEST_USER_INTERNALID.equals(user.getInternalId())) {
+				//Access is not allowed
+				return new ModelAndView(WebKeys.VIEW_ACCESS_DENIED, model);
+			} else {
+				//Please log in
+				String refererUrl = (String)request.getAttribute(WebKeys.REFERER_URL);
+				model.put(WebKeys.URL, refererUrl);
+				return new ModelAndView(WebKeys.VIEW_LOGIN_PLEASE_SNIPPET, model);
+			}
 		}
 		
 		if(fe == null) {

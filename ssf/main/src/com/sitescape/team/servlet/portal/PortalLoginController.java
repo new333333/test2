@@ -109,6 +109,15 @@ public class PortalLoginController extends SAbstractController {
 			//Get the user object for the newly logged in user
 			User user = getProfileModule().findUserByName(username);
 			model.put(WebKeys.USER_PRINCIPAL, user);
+			String redirectUrl;
+			if(request.getQueryString() != null)
+				redirectUrl = request.getRequestURL().append("?").append(request.getQueryString()).toString();
+			else
+				redirectUrl = request.getRequestURL().toString();
+			//If there was a url passed in (e.g., from a permalink), use it
+			if (!url.equals("")) redirectUrl = url;
+			response.sendRedirect(redirectUrl);
+			return null;
 		}
 		else { // logout request
 			Long userId = null;

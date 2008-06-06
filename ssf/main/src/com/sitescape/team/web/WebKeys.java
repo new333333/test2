@@ -776,6 +776,7 @@ public class WebKeys {
     public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String RECORDS_DIV_ID="ss_recordsDivId";
+    public static final String REFERER_URL="ss_refererUrl";
     public static final String RELEVANCE_SHARED_ENTITIES="ss_sharedEntities";
     public static final String RELEVANCE_SHARED_ENTITIES_PAGE="ss_sharedEntitiesPage";
     public static final String RELEVANCE_TRACKED_BINDERS="ss_trackedBinders";
@@ -1026,6 +1027,7 @@ public class WebKeys {
     public static final String VIEW_GUESTBOOK_EDIT="guestbook_summary/edit";
     public static final String VIEW_IMPORT_TEMPLATE="administration/importTemplate";
     public static final String VIEW_LOGIN_PLEASE="forum/login_please";
+    public static final String VIEW_LOGIN_PLEASE_SNIPPET="forum/login_please_snippet";
     public static final String VIEW_LOGIN_RETURN="forum/login_return";
     public static final String VIEW_LOGIN_RETRY="forum/login_retry";
     public static final String VIEW_LOGOUT_RETURN="forum/logout_return";

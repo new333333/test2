@@ -53,7 +53,10 @@ var ss_displayType = "${ss_displayType}";
   <a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
 </ssf:ifLoggedIn>
 <ssf:ifNotLoggedIn>
-  <a href="${ss_loginUrl}"><span><ssf:nlt tag="login"/></span></a>
+  <form method="post" id="ss_loginForm$renderResponse.namespace}" 
+    style="display"inline;"><a href="${ss_loginUrl}"
+    onClick="return(ss_requestLogin(this, '${ssBinder.id}', '${ssUser.workspaceId}', '${ssUser.name}'));"
+  ><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url"/></form>
 </ssf:ifNotLoggedIn>
 </div>
 <c:if test="${ssUserProperties.debugMode}">
