@@ -38,9 +38,7 @@
 </c:if>
 <c:set var="ss_tagDivNumber" value="${ss_tagDivNumber + 1}" scope="request"/>
 <c:if test="${empty ss_tags_loaded}">
-<script type="text/javascript">
-	ss_loadJsFile(ss_rootPath, "js/forum/ss_tags.js");
-</script> 
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_calendar.js"></script>
 <c:set var="ss_tags_loaded" value="1" scope="request"/>
 </c:if>
 <c:set var="ssEntry" value="${ss_tagObject}" scope="request"/>
