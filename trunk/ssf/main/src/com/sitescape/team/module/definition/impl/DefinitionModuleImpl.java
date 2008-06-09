@@ -1495,8 +1495,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 					if (Validator.isNull(nameValue)) {nameValue = nextItem.attributeValue("name");}
 								
 					//We have the element name, see if it has a value in the input data
-					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea") || 
-							itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
+					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
 						//Use the helper routine to parse the date into a date object
 						Description description = new Description();
 						if (inputData.exists(nameValue)) {
@@ -1506,6 +1505,17 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							WebHelper.scanDescriptionForAttachmentFileUrls(description);
 							WebHelper.scanDescriptionForICLinks(description);
 							entryData.put(nameValue, description);
+						}
+					} else if (itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
+						//Use the helper routine to parse the date into a date object
+						Description description = new Description();
+						if (inputData.exists(nameValue)) {
+							description.setText(inputData.getSingleValue(nameValue));
+							//Deal with any markup language transformations before storing the description
+							WebHelper.scanDescriptionForUploadFiles(description, nameValue, fileData);
+							WebHelper.scanDescriptionForAttachmentFileUrls(description);
+							WebHelper.scanDescriptionForICLinks(description);
+							entryData.put(nameValue, description.getText());
 						}
 					} else if (itemName.equals("date") || itemName.equals("date_time")) {
 						//Use the helper routine to parse the date into a date object
