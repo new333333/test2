@@ -70,7 +70,10 @@
   <c:if test="${property_name == 'description'}" >
     <c:set var="textValue" value="${ssDefinitionEntry.description.text}"/>
   </c:if>
-  <c:if test="${property_name != 'description'}" >
+  <c:if test="${property_name == 'branding'}" >
+    <c:set var="textValue" value="${ssDefinitionEntry.branding}"/>
+  </c:if>
+  <c:if test="${property_name != 'description' && property_name != 'branding'}" >
     <c:set var="textValue" value="${ssDefinitionEntry.customAttributes[property_name].value.text}"/>
   </c:if>
 </c:if>

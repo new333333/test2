@@ -44,6 +44,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 
 	/*BRANDING*/
 #ss_branding{
+	width:100%;
 	margin:0px;
 	padding:0px;
 	height:100px;       /* Need to define specific height for graphics */

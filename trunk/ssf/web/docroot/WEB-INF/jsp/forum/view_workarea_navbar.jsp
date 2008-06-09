@@ -161,18 +161,16 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 }
 </script>
 
-<jsp:include page="/WEB-INF/jsp/definition_elements/view_binder_branding.jsp" />
-
 <div id="ss_top_nav_wrapper">
 <!-- Begin New Header  -->  
 <table width="100%" height="60" border="0" cellspacing="0" cellpadding="0">
   <tr class="ss_masthead_top" bgcolor="#FFFFFF">
-    <td align="left" valign="middle"><table width="100%" border="0" cellspacing="0" cellpadding="0">
+    <td align="left" valign="middle">
+      <table width="100%" border="0" cellspacing="0" cellpadding="0">
       <tr>
-        <td width="9%" rowspan="3">
-        	<img title="<ssf:nlt tag="alt.search"/>"<ssf:alt tag="alt.search"/> src="<html:rootPath/>images/pics/masthead/logo.jpg" height="54" />
+        <td width="59%" rowspan="3">
+            <jsp:include page="/WEB-INF/jsp/definition_elements/view_binder_branding.jsp" />
         </td>
-        <td width="50%" rowspan="3" class="ss_companyName">User Interface Design </td>
         <td height="24" colspan="2" class="ss_mastheadtoplinks ss_masthead_favorites" >
         	<ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
 			      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
@@ -273,12 +271,13 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   					</span>
 				</ssf:ifaccessible>
  		</td>
-        <td height="19" colspan="4" valign="top"><span class="ss_mastheadName">${ssUser.title}</span></td>
+        <td height="19" colspan="3" valign="top"><span class="ss_mastheadName">${ssUser.title}</span></td>
 	    </tr>
       <tr>
-        <td colspan="5">&nbsp;</td>
+        <td colspan="4">&nbsp;</td>
       </tr>
-    </table></td>
+    </table>
+   </td>
   </tr>
   <tr>
     <td colspan="2" bgcolor="#5A9A98">
