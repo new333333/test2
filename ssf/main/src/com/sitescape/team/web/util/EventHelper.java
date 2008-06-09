@@ -114,6 +114,11 @@ public class EventHelper {
         if ("true".equals(timeZoneSensitive)) {
         	event.setTimeZoneSensitive(true);
         }
+        try {
+        	String freeBusy = inputData.getSingleValue(prefix + "freeBusy");
+        	event.setFreeBusy(Event.FreeBusyType.valueOf(freeBusy));
+        } catch (IllegalArgumentException e) {
+        } catch (NullPointerException e) {}
         if (hasRecurrence.booleanValue()) {
             String repeatUnit = inputData.getSingleValue(prefix+"repeatUnit");
             String intervalStr = inputData.getSingleValue(prefix+"everyN");

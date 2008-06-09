@@ -3776,6 +3776,60 @@ ul.ss_calendarNaviBar li.ss_taskViewOptions {
 	padding-left: 30px;
 }
 
+.ss_event_scheduler {
+	width: 600px;
+}
+
+.ss_event_scheduler div.timeLine {
+	width: 400px;
+	float: left;
+}
+
+.ss_event_scheduler ul.usersList, .ss_event_scheduler ul.usersList li {
+	width: 200px;
+}
+
+.ss_event_scheduler ul, .ss_event_scheduler ul li {
+	overflow: hidden;
+}
+
+.ss_event_scheduler ul.usersList {
+	float: left;
+}
+
+.ss_event_scheduler ul {
+	margin: 0;
+	padding: 0;
+}
+
+.ss_event_scheduler ul.usersList li {
+	margin-top: 0.5em;
+	height: 1.5em;
+	padding-left: 5px;
+	background-color: #CCCCCC;
+}
+
+.ss_event_scheduler ul.legend {
+	clear: both;
+	width: 300px;
+}
+
+
+.ss_event_scheduler ul.legend table {
+	display: inline;
+	empty-cells: show;
+}
+
+.ss_event_scheduler ul.legend table, .ss_event_scheduler ul.legend td {
+	width: 10px;
+	height: 10px;
+	color: #FFFFFF;
+}
+.ss_event_scheduler ul.legend li {
+	margin-top: 5px;
+}
+
+
 /* TEAM BUDDIES LIST */
 
 div.ss_buddies {

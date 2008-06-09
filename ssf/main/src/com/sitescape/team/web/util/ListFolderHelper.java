@@ -59,7 +59,10 @@ import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.AbstractIntervalView;
 import com.sitescape.team.calendar.EventsViewHelper;
+import com.sitescape.team.calendar.OneDayView;
+import com.sitescape.team.calendar.OneMonthView;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.AuditTrail;
 import com.sitescape.team.domain.Binder;
@@ -91,6 +94,7 @@ import com.sitescape.team.security.function.OperationAccessControlExceptionNoNam
 import com.sitescape.team.ssfs.util.SsfsUtil;
 import com.sitescape.team.task.TaskHelper;
 import com.sitescape.team.util.AllModulesInjected;
+import com.sitescape.team.util.CalendarHelper;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.TagUtil;
@@ -565,22 +569,30 @@ public class ListFolderHelper {
        	String strSessGridSize = "";
        	if (sessGridSize != null) strSessGridSize = sessGridSize.toString(); 
       	
+       	AbstractIntervalView intervalView = null;
        	if (EventsViewHelper.GRID_MONTH.equals(strSessGridType)) {
-    		setStartDayOfMonth(calStartDateRange);
-    		calEndDateRange = (Calendar) calStartDateRange.clone();
-    		setEndDayOfMonth(calEndDateRange);
+			Integer weekFirstDay = (Integer)userProperties.getProperty(ObjectKeys.USER_PROPERTY_CALENDAR_FIRST_DAY_OF_WEEK);
+			weekFirstDay = weekFirstDay!=null?weekFirstDay:CalendarHelper.getFirstDayOfWeek();
+			
+       		intervalView = new OneMonthView(currentDate, weekFirstDay);
+       		
+//    		setStartDayOfMonth(calStartDateRange);
+//    		calEndDateRange = (Calendar) calStartDateRange.clone();
+//    		setEndDayOfMonth(calEndDateRange);
        		
        		nextDate.add(Calendar.MONTH, 1);
        		prevDate.add(Calendar.MONTH, -1);
        		
        	} else if (EventsViewHelper.GRID_DAY.equals(strSessGridType)) {
+       		intervalView = new OneDayView(currentDate);
        		setDatesForGridDayView(calStartDateRange, calEndDateRange, strSessGridSize, prevDate, nextDate);
        	}
        	
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 		
 		options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
-       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
+       	// options.put(ObjectKeys.SEARCH_EVENT_DAYS, getExtViewDayDates(calStartDateRange, calEndDateRange));
+       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervalView.getVisibleInterval());
        	
        	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_START, formatter.format(calStartDateRange.getTime()));
        	options.put(ObjectKeys.SEARCH_LASTACTIVITY_DATE_END, formatter.format(calEndDateRange.getTime()));

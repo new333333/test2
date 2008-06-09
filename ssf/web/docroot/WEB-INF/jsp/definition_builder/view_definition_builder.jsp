@@ -51,8 +51,7 @@
 	}
 	if (nodeOpen.equals("")) {nodeOpen = " ";}
 %>
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_user.js"></script>
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/user_list.js"></script>
+<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/find.js"></script>
 <script type="text/javascript">
 dojo.require('dojo.widget.*');
 dojo.require('sitescape.widget.SelectPageable');

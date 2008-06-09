@@ -53,12 +53,17 @@ public class WebKeys {
 	public static final String CALENDAR_GRID_TYPE = "ssGridType";
 	public static final String CALENDAR_GRID_SIZE = "ssGridSize";
 	public static final String CALENDAR_STICKY_ID = "calendarStickyId";
+	public static final String CALENDAR_FREE_BUSY_INFO = "ssCalendarFreeBusyInfo";
 	public static final String TASK_FILTER_TYPE = "ssTaskFilterType";
 	public static final String TASK_CURRENT_FILTER_TYPE = "ssCurrentTaskFilterType";
 	public static final String CALENDAR_PREV_DATE= "ssPrevDate";
 	public static final String CALENDAR_NEXT_DATE= "ssNextDate";
 	public static final String CALENDAR_CURR_DATE= "ssCurrDate";
 	public static final String CALENDAR_RANGE_END_DATE= "ssRangeEndDate";
+	public static final String CALENDAR_SCHEDULE_USER_IDS= "ssUsersId";
+	public static final String CALENDAR_SCHEDULE_START_DATE= "ssStartDate";
+	public static final String CALENDAR_SCHEDULE_END_DATE= "ssEndDate";
+	public static final String CALENDAR_SCHEDULE_USER_LIST_NAME= "ssUserListName";
 	
 	public static final String DEFAULT_SAVE_LOCATION="ssDefaultSaveLocation";
 	public static final String DEFAULT_SAVE_LOCATION_ID="ssDefaultSaveLocationId";
@@ -405,6 +410,7 @@ public class WebKeys {
 	public static final String OPERATION_SHOW_TEAM_MEMBERS = "show_team_members";
 	public static final String OPERATION_FIND_CALENDAR_EVENTS = "find_calendar_events";
 	public static final String OPERATION_STICKY_CALENDAR_DISPLAY_SETTINGS = "sticky_calendar_display_settings";
+	public static final String OPERATION_GET_CALENDAR_FREE_INFO = "get_calendar_free_info";
 	public static final String OPERATION_UPDATE_TASK = "update_task";
 	public static final String OPERATION_START_WORKFLOW = "start_workflow";
 	public static final String OPERATION_STOP_WORKFLOW = "stop_workflow";
@@ -857,7 +863,8 @@ public class WebKeys {
     public static final String FIND_LIST_TYPE="ssFindListType";
     public static final String FIND_SINGLE_ITEM="ssFindSingleItem";
     public static final String FIND_CLICK_ROUTINE="ssFindClickRoutine";
-    public static final String FIND_CLICK_ROUTINE_ARGS="ssFindClickRoutineArgs";
+    public static final String FIND_CLICK_ROUTINE_OBJ="ssFindClickRoutineObj";
+    public static final String FIND_MULTIPLE_OBJ="ssFindMultipleObj";
     public static final String FIND_INSTANCE_COUNT="ssFindInstanceCount";
     public static final String FIND_INSTANCE_CODE="ssFindInstanceCode";
     public static final String FIND_LEAVE_RESULTS_VISIBLE="ssFindLeaveResultsVisible";

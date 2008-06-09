@@ -123,6 +123,13 @@ import com.sitescape.team.ObjectKeys;
  */
 public class Event extends PersistentTimestampObject implements Cloneable, UpdateAttributeSupport {
 
+	public enum FreeBusyType {
+		free,
+		busy,
+		tentative, 
+		outOfOffice
+	};
+	
 	// Recurrence types
 
 	/**
@@ -285,6 +292,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	protected TimeZone timeZone;
 	
 	protected String uid;
+	
+	protected FreeBusyType freeBusy;
 	
 	/* Constructors */
 
@@ -2845,6 +2854,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 
 	public void setTimeZoneSensitive(boolean timeZoneSensitive) {
+		// v1.1 compatibility - default value was false (should be true) 
 		this.timeZoneSensitive = !timeZoneSensitive;
 	}
 	
@@ -2858,6 +2868,27 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 
 	public void setUid(String uid) {
 		this.uid = uid;
+	}
+	
+	/**
+	 * @hibernate.property
+	 * @return
+	 */
+	public FreeBusyType getFreeBusy() {
+		// ver. 1.x compatibility, there was no freeBusy info
+		if (freeBusy == null) {
+			if (this.isAllDayEvent()) {
+				return FreeBusyType.free;
+			} else {
+				return FreeBusyType.busy;
+			}
+		}
+		
+		return freeBusy;
+	}
+
+	public void setFreeBusy(FreeBusyType freeBusy) {
+		this.freeBusy = freeBusy;
 	}
 	
 	/**
@@ -3009,6 +3040,12 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 			setUid(newEvent.getUid());
 			changed = true;
 		}
+		if ((getFreeBusy() == null && newEvent.getFreeBusy() != null) || 
+				(getFreeBusy() != null && newEvent.getFreeBusy() == null) ||
+				(getFreeBusy() != null && newEvent.getFreeBusy() != null && !getFreeBusy().equals(newEvent.getFreeBusy()))) {
+			setFreeBusy(newEvent.getFreeBusy());
+			changed = true;
+		}
 		if ((getTimeZone() == null && newEvent.getTimeZone() != null) || 
 				(getTimeZone() != null && newEvent.getTimeZone() == null) ||
 				(getTimeZone() != null && newEvent.getTimeZone() != null && !getTimeZone().equals(newEvent.getTimeZone()))) {
@@ -3097,6 +3134,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 				.toString(isTimeZoneSensitive()));
 		
 		XmlUtils.addProperty(element, "uid", getUid());		
+		
+		XmlUtils.addProperty(element, "freeBusy", getFreeBusy());	
 		
 		XmlUtils.addProperty(element, "bySecond", getBySecondString());
 

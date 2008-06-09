@@ -52,6 +52,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.AbstractIntervalView;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
@@ -227,14 +228,14 @@ public class SearchUtils {
     		Element orBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(Constants.OR_ELEMENT);
     		Iterator it = ((List)options.get(ObjectKeys.SEARCH_EVENT_DAYS)).iterator();
     		while (it.hasNext()) {
-    			String[] eventDay = (String[])it.next();
+    			AbstractIntervalView.VisibleIntervalFormattedDates eventDay = (AbstractIntervalView.VisibleIntervalFormattedDates)it.next();
     			Element range = orBoolElement.addElement(Constants.RANGE_ELEMENT);
     			range.addAttribute(Constants.FIELD_NAME_ATTRIBUTE, Constants.EVENT_DATES_FIELD);
     			range.addAttribute(Constants.INCLUSIVE_ATTRIBUTE, "true");
     			Element start = range.addElement(Constants.RANGE_START);
-    			start.addText(eventDay[0]);
+    			start.addText(eventDay.startDate);
     			Element finish = range.addElement(Constants.RANGE_FINISH);
-    			finish.addText(eventDay[1]);
+    			finish.addText(eventDay.endDate);
     		}
         			        		
     		Element orLastActivityDateBoolElement = orEventOrLastActivityOrCreationBoolElement.addElement(Constants.OR_ELEMENT);

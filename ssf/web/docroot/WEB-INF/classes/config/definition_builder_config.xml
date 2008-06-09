@@ -262,6 +262,7 @@
 				<help>ihelp.designers.recur</help>
 			</property>	
 			<property name="timeZoneSensitiveActive" caption="__time_zone_sensitive_active" type="boolean" default="false"/>
+			<property name="freeBusyActive" caption="__free_busy_active" type="boolean" default="false"/>
 			<property name="required" caption="__required" type="boolean" default="false" >
 				<help>ihelp.designers.required</help>
 			</property>
@@ -1605,6 +1606,27 @@
 		<webService apply="true"
 			elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderUserListSelect"/>
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderPrincipalList" />
+	</item>
+	
+	<item name="eventScheduler" caption="__eventScheduler" type="data" category="commonEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="sourceEventElement" caption="__event_items_from_the_entry_form_for_scheduler" definitionType="1" type="selectbox">
+				<option name="ss_none" caption="__none"/>
+			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='event']" 
+					optionCaption="__event_items_from_the_entry_form_for_scheduler"/>
+				<help>ihelp.designers.source_event</help>					
+			</property>		
+			<property name="sourceUserListElement" caption="__user_list_items_from_the_entry_form_for_scheduler" definitionType="1" type="selectbox">
+				<option name="ss_none" caption="__none"/>
+			    <option_entry_data select_type="data" path="//item[@name='entryForm']/.//item[@name='user_list']" 
+					optionCaption="__user_list_items_from_the_entry_form_for_scheduler"/>
+				<help>ihelp.designers.source_user_list</help>					
+			</property>					
+		</properties>	
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/event_scheduler_form.jsp"/>
+		</jsps>
 	</item>
 
 	<item name="radio" caption="__radio_buttons" type="data" category="commonEntryData" display="form">

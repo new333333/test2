@@ -28,6 +28,13 @@
  */
 package com.sitescape.team.portlet.forum;
 
+import static com.sitescape.util.search.Constants.DOC_TYPE_FIELD;
+import static com.sitescape.util.search.Constants.ENTRY_ANCESTRY;
+import static com.sitescape.util.search.Constants.ENTRY_TYPE_FIELD;
+import static com.sitescape.util.search.Constants.MODIFICATION_DATE_FIELD;
+import static com.sitescape.util.search.Restrictions.between;
+import static com.sitescape.util.search.Restrictions.in;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -50,11 +57,16 @@ import javax.portlet.PortletSession;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
 
+import org.apache.commons.collections.OrderedMap;
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.lucene.document.DateTools;
 import org.dom4j.Document;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestBindingException;
 import org.springframework.web.portlet.ModelAndView;
@@ -62,6 +74,8 @@ import org.springframework.web.portlet.ModelAndView;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.AbstractIntervalView;
 import com.sitescape.team.calendar.EventsViewHelper;
+import com.sitescape.team.calendar.StartEndDatesView;
+import com.sitescape.team.calendar.OneDayView;
 import com.sitescape.team.calendar.OneMonthView;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
@@ -69,6 +83,7 @@ import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityIdentifier;
 import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
@@ -94,6 +109,7 @@ import com.sitescape.team.module.ical.AttendedEntries;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.portlet.binder.AccessControlController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.search.SearchFieldResult;
 import com.sitescape.team.search.filter.SearchFiltersBuilder;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.OperationAccessControlException;
@@ -125,6 +141,9 @@ import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
+import com.sitescape.util.search.Constants;
+import com.sitescape.util.search.Criteria;
+import com.sitescape.util.search.Order;
 /**
  * @author Peter Hurley
  *
@@ -366,6 +385,8 @@ public class AjaxController  extends SAbstractControllerRetry {
 			return ajaxGetGroup(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_FIND_CALENDAR_EVENTS)) {
 			return ajaxFindCalendarEvents(request, response);
+		} else if (op.equals(WebKeys.OPERATION_GET_CALENDAR_FREE_INFO)) {
+			return ajaxGetCalendarFreeInfo(request, response);			
 		} else if (op.equals(WebKeys.OPERATION_FIND_ENTRY_FOR_FILE)) {
 			return ajaxFindEntryForFile(request, response);
 		} else if (op.equals(WebKeys.OPERATION_CHECK_BINDER_TITLE)) {
@@ -1711,7 +1732,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 					entries = new ArrayList();
 				}
 				
-				EventsViewHelper.getEntryEvents(binder, entries, model, response, WebHelper.getRequiredPortletSession(request), false);
+				model.putAll(EventsViewHelper.getEntryEventsBeans(binder, entries, response, WebHelper.getRequiredPortletSession(request), false));
 
 			} else {
 				// get events by date
@@ -1748,7 +1769,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 				options.put(ObjectKeys.SEARCH_MAX_HITS, 10000);
 				
 				List intervals = new ArrayList(1);
-				intervals.add(calendarViewRangeDates.getVisibleIntervalFormattedDates());
+				intervals.add(calendarViewRangeDates.getVisibleInterval());
 
 		       	options.put(ObjectKeys.SEARCH_EVENT_DAYS, intervals);
 
@@ -1776,7 +1797,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 					entries = new ArrayList();
 				}
 				
-				EventsViewHelper.getEvents(currentDate, calendarViewRangeDates, binder, entries, model, portletSession, false);
+				model.putAll(EventsViewHelper.getEventsBeans(entries, calendarViewRangeDates, portletSession, false));
 			}
 		} else {
 			model.put(WebKeys.CALENDAR_VIEWBEAN , Collections.EMPTY_LIST);
@@ -1785,6 +1806,145 @@ public class AjaxController  extends SAbstractControllerRetry {
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/events", model);
 	}
+	
+	private ModelAndView ajaxGetCalendarFreeInfo(RenderRequest request, RenderResponse response) throws PortletRequestBindingException {
+		Map model = new HashMap();	
+		if (WebHelper.isUserLoggedIn(request)) {
+			model.put(WebKeys.NAMESPACE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_NAMESPACE));
+			model.put(WebKeys.USER_PRINCIPAL, RequestContextHolder.getRequestContext().getUser());
+
+			Long binderId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+			Binder binder = getBinderModule().getBinder(binderId);
+			
+			if (binder instanceof Folder || binder instanceof Workspace) {
+				DateTime startDate = null;
+				DateTime endDate = null;
+			
+				String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, null);
+				
+				String[] usersId = PortletRequestUtils.getStringParameters(request, WebKeys.CALENDAR_SCHEDULE_USER_IDS);
+				String startS = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_SCHEDULE_START_DATE, null);
+				if (startS != null) {
+					try {
+						DateTimeFormatter formatter = ISODateTimeFormat.date();
+						startDate = formatter.parseDateTime(startS);
+					} catch (IllegalArgumentException e) {
+						// wrong date
+					}
+				}
+				String endS = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_SCHEDULE_END_DATE, null);
+				if (endS != null) {
+					try {
+						DateTimeFormatter formatter = ISODateTimeFormat.date();
+						endDate = formatter.parseDateTime(endS);
+					} catch (IllegalArgumentException e) {
+						// wrong date
+					}
+				}				
+				String userListName = PortletRequestUtils.getStringParameter(request, WebKeys.CALENDAR_SCHEDULE_USER_LIST_NAME, null);
+				
+				
+				if (usersId != null && usersId.length > 0 && 
+						startDate != null && endDate != null && userListName != null) {
+				
+					AbstractIntervalView calendarInterval = new StartEndDatesView(startDate.toDate(), endDate.toDate());
+					AbstractIntervalView.VisibleIntervalFormattedDates interval = calendarInterval.getVisibleInterval();
+					
+					Criteria crit = new Criteria();
+					crit.add(in(ENTRY_TYPE_FIELD, new String[] {Constants.ENTRY_TYPE_ENTRY, 
+							Constants.ENTRY_TYPE_REPLY}))
+						.add(in(DOC_TYPE_FIELD, new String[] {Constants.DOC_TYPE_ENTRY}))
+						.add(in(userListName, usersId))
+						.add(between(Constants.EVENT_DATES_FIELD, 
+								interval.startDate, interval.endDate));
+					crit.addOrder(Order.asc(MODIFICATION_DATE_FIELD));
+		
+					Map searchResults = getBinderModule().executeSearchQuery(crit, 0, 1000);
+					
+					OrderedMap usersFreeBusyInfo = new LinkedMap();
+					OrderedMap allUsersDates = new LinkedMap();
+					allUsersDates.put(Event.FreeBusyType.tentative, new ArrayList());
+					allUsersDates.put(Event.FreeBusyType.busy, new ArrayList());
+					allUsersDates.put(Event.FreeBusyType.outOfOffice, new ArrayList());
+					usersFreeBusyInfo.put("all", allUsersDates);
+					for (int i = 0; i < usersId.length; i++) {
+						OrderedMap userEvents = new LinkedMap();
+						userEvents.put(Event.FreeBusyType.tentative, new ArrayList());
+						userEvents.put(Event.FreeBusyType.busy, new ArrayList());
+						userEvents.put(Event.FreeBusyType.outOfOffice, new ArrayList());						
+						usersFreeBusyInfo.put(usersId[i], userEvents);
+					}
+					
+					Map<Map, List<Event>> events = EventsViewHelper.getEvents((List) searchResults.get(ObjectKeys.SEARCH_ENTRIES), calendarInterval);				
+					Iterator<Map.Entry<Map, List<Event>>> it = events.entrySet().iterator();
+					while (it.hasNext()) {
+						Map.Entry<Map, List<Event>> mapEntry = it.next();
+						Map entry = mapEntry.getKey();
+						
+						if (entryId != null && (entry.get(Constants.DOCID_FIELD).equals(entryId))) {
+							// it's entry modify
+							continue;
+						}
+						
+						List<Event> entryEvents = mapEntry.getValue();
+						
+						Set userIdsSearchResult = new HashSet();
+						Object userListValue = entry.get(userListName);
+						if (userListValue != null) {
+							if (userListValue instanceof String) {
+								userIdsSearchResult.add(userListValue);
+							} else {
+								userIdsSearchResult = ((SearchFieldResult)userListValue).getValueSet();
+							}
+						}
+						for (Event event : entryEvents) {
+							Iterator userIdsSearchResultIt = userIdsSearchResult.iterator();
+							while (userIdsSearchResultIt.hasNext()) {
+								Map userDates = (Map)usersFreeBusyInfo.get(userIdsSearchResultIt.next());
+								if (userDates == null) {
+									// don't collect data for this user
+									continue;
+								}
+								Map eventInfo = new HashMap();
+								
+								eventInfo.put("start", event.getDtStart().getTime());
+								eventInfo.put("end", event.getDtEnd().getTime());
+								eventInfo.put("type", event.getFreeBusy().name());
+								eventInfo.put("allDay", event.isAllDayEvent());
+								eventInfo.put("timeZoneSensitive", event.isTimeZoneSensitive());
+								
+								if (event.getFreeBusy() != Event.FreeBusyType.free) {
+									((List)userDates.get(event.getFreeBusy())).add(eventInfo);
+									((List)allUsersDates.get(event.getFreeBusy())).add(eventInfo);
+								}
+							}
+						}
+					}
+					
+					// remove empty lists from map
+					Iterator<Map.Entry<String, OrderedMap>> usersFreeBusyInfoIt = usersFreeBusyInfo.entrySet().iterator();
+					while (usersFreeBusyInfoIt.hasNext()) {
+						Map.Entry<String, OrderedMap> mapEntry = usersFreeBusyInfoIt.next();
+						Iterator<Map.Entry<Event.FreeBusyType, List>> userEventIt = mapEntry.getValue().entrySet().iterator();	
+						while (userEventIt.hasNext()) {
+							Map.Entry<Event.FreeBusyType, List> userEventMapEntry = userEventIt.next();
+							if (userEventMapEntry.getValue() == null || userEventMapEntry.getValue().isEmpty()) {
+								userEventIt.remove();
+							}
+						}
+					}
+					
+					model.put(WebKeys.CALENDAR_FREE_BUSY_INFO , usersFreeBusyInfo);
+				}
+			}
+		} else {
+			model.put(WebKeys.CALENDAR_FREE_BUSY_INFO , new HashMap());
+		}
+		
+		response.setContentType("text/json");
+		return new ModelAndView("forum/json/freeInfo", model);
+	}
+	
 	
 	private ModelAndView ajaxUpdateTask(RenderRequest request, 
 			RenderResponse response) throws Exception {
@@ -2421,8 +2581,6 @@ public class AjaxController  extends SAbstractControllerRetry {
 		          }
 			}
 		}
-		
 	}
-	
-	
+		
 }

@@ -42,6 +42,7 @@
           <property name="hasDuration" value="true"/>
           <property name="hasRecurrence" value="true"/>
           <property name="timeZoneSensitiveActive" value="true"/>
+          <property name="freeBusyActive" value="true"/>
           <property name="required" caption="__required" type="boolean" default="false" value="true">
             <help>ihelp.designers.required</help>
           </property>
@@ -54,6 +55,13 @@
           <property name="required" value="false"/>
         </properties>
       </item>
+      <item name="eventScheduler" caption="__eventScheduler" type="data" category="commonEntryData" display="form" id="38">
+      	<properties>
+      		<property name="caption" value="scheduler"/>
+      		<property name="sourceEventElement" value="event"/>
+      		<property name="sourceUserListElement" value="attendee"/>
+      	</properties>
+      </item>      
       <item name="attachFiles" caption="__attach_files" type="data" id="5">
         <properties>
           <property name="name" value="ss_attachFile"/>
