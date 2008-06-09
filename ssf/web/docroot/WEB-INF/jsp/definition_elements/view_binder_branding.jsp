@@ -40,10 +40,10 @@
 		binder = binder.getParentBinder();
 	}
 %>
-<c:if test="${!empty binder && !empty binder.branding}">
+<c:if test="${!empty binder && !empty binder.brandingSource.branding}">
   <div id="ss_branding">
-    <span><ssf:markup type="view" entity="${binder}"><c:out 
-      value="${binder.branding}" escapeXml="false"/></ssf:markup></span>
+    <span><ssf:markup type="view" entity="${binder.brandingSource}"><c:out 
+      value="${binder.brandingSource.branding}" escapeXml="false"/></ssf:markup></span>
   </div>
 </c:if>
 </c:if>
