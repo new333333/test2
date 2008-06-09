@@ -64,7 +64,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
   </c:forEach>
   <c:set var="thumbRowSpan" value="1"/>
   <c:if test="${versionCount >= 1}">
-    <c:set var="thumbRowSpan" value="${thumbRowSpan + 2}"/>
+    <c:set var="thumbRowSpan" value="2"/>
   </c:if>
      <tr><td colspan="9"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 	  <tr>

@@ -57,6 +57,14 @@
           <input type="password" size="40" name="password"/>
         </td>
       </tr>
+      <tr>
+        <td valign="top" align="right">
+          <span><ssf:nlt tag="login.remember"/></span>
+        </td>
+        <td valign="top" style="padding-left:4px;">
+          <input type="checkbox" name="remember"/>
+        </td>
+      </tr>
     </table>
     <br/>
     <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok"/>"/>

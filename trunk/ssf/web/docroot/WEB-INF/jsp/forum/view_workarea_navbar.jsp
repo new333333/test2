@@ -43,7 +43,6 @@ var ssMyFavorites${renderResponse.namespace} = new ssFavorites('${renderResponse
 var ssMyTeams${renderResponse.namespace} = new ssTeams('${renderResponse.namespace}');
 var ss_displayType = "${ss_displayType}";
 </script>
-
 <c:if test="${ssUserProperties.debugMode}">
 <!-- Start of debug window -->
   <div style="border:1px solid black;">
@@ -211,10 +210,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   					<a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
 			 </ssf:ifLoggedIn>
 			 <ssf:ifNotLoggedIn>
-  					<form method="post" id="ss_loginForm$renderResponse.namespace}" 
-    				style="display"inline;"><a href="${ss_loginUrl}"
-    				onClick="return(ss_requestLogin(this, '${ssBinder.id}', '${ssUser.workspaceId}', '${ssUser.name}'));"
-  					><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url"/></form>
+				  <form method="post" id="ss_loginForm$renderResponse.namespace}" 
+				    style="display:inline;"><a href="${ss_loginUrl}"
+				    onClick="return(ss_requestLogin(this, '${ssBinder.id}', '${ssUser.workspaceId}', '${ssUser.name}'));"
+				  ><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url"/></form>
 			</ssf:ifNotLoggedIn></td>
         <td width="6%" height="24" class="ss_workspace">&nbsp;</span></span></td>
         <td width="3%" height="24" class="ss_workspace">
