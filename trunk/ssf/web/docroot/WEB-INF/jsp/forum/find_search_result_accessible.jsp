@@ -30,8 +30,6 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/servlet.include.jsp" %>
 <body>
-<script type="text/javascript" src="<html:rootPath/>js/jsp/tag_jsps/find/single_user.js"></script>
-
   <c:set var="count" value="0"/>
   <div id="${ss_divId}" style="padding:2px;margin:2px;">
 	<c:if test="${!empty ssEntries}">
@@ -55,7 +53,7 @@
 		    				--%>parent.ss_putValueInto('ss_findUser_searchText_${ss_namespace}', '${entry.ssTag}');return false;<%--
 		    			--%></c:when><%--
 						--%><c:otherwise><%--
-							--%>parent.ss_findUserSelectItemAccessible('${ss_namespace}', this.parentNode, '${entry._entityType}');return false;<%--
+							--%>parent['${findObjectName}'].selectItemAccessible(this.parentNode, '${entry._entityType}');return false;<%--
 						--%></c:otherwise><%--
 			   		 --%></c:choose>" 
 		    href="javascript: ;"
@@ -82,13 +80,13 @@
       <tr>
       <td width="100" nowrap="nowrap" style="white-space:nowrap;">
         <c:if test="${ss_pageNumber > 0}">
-          <a href="javascript:;" onClick="parent.ss_findUserPrevPage('${ss_namespace}');return false;"
+          <a href="javascript:;" onClick="parent['${findObjectName}'].prevPage();return false;"
           ><ssf:nlt tag="general.Previous"/>...</a>
         </c:if>
         </td>
        <td style="white-space:nowrap;">
         <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
-          <a href="javascript:;" onClick="parent.ss_findUserNextPage('${ss_namespace}');return false;"
+          <a href="javascript:;" onClick="parent['${findObjectName}'].nextPage();return false;"
           ><ssf:nlt tag="general.Next"/>...</a>
         </c:if>
        </td>

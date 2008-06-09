@@ -363,14 +363,14 @@ public class RelevanceDashboardHelper {
 		List trackedCalendars = SearchUtils.getTrackedCalendarIds(bs, binder);
 		if (trackedCalendars.size() > 0) {
 			AbstractIntervalView calendarInterval = new OneDayView(new Date());
-			String[] interval = calendarInterval.getVisibleIntervalFormattedDates();
-			Criteria crit = SearchUtils.entriesForTrackedCalendars(bs, trackedCalendars, interval[0], interval[1]);
+			AbstractIntervalView.VisibleIntervalFormattedDates interval = calendarInterval.getVisibleInterval();
+			Criteria crit = SearchUtils.entriesForTrackedCalendars(bs, trackedCalendars, interval.startDate, interval.endDate);
 			Map results = bs.getBinderModule().executeSearchQuery(crit, offset, maxResults);
 
 			Date today = new Date();
 			model.put(WebKeys.WHATS_NEW_TRACKED_CALENDARS, results.get(ObjectKeys.SEARCH_ENTRIES));
 			
-			EventsViewHelper.getEvents(today, calendarInterval, binder, (List) results.get(ObjectKeys.SEARCH_ENTRIES), model, EventsViewHelper.EVENT_TYPE_EVENT, EventsViewHelper.DAY_VIEW_TYPE_FULL, true);
+			model.putAll(EventsViewHelper.getEventsBeans((List) results.get(ObjectKeys.SEARCH_ENTRIES), calendarInterval, EventsViewHelper.EVENT_TYPE_EVENT, EventsViewHelper.DAY_VIEW_TYPE_FULL, true));
 			model.put(WebKeys.CALENDAR_GRID_TYPE, EventsViewHelper.GRID_DAY);
 			model.put(WebKeys.CALENDAR_GRID_SIZE, 1);
 			model.put(WebKeys.CALENDAR_CURRENT_DATE, today);

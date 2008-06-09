@@ -60,7 +60,8 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
     private Boolean singleItem;
     private Boolean leaveResultsVisible;
     private String clickRoutine = "";
-    private String clickRoutineArgs = "";
+    private String clickRoutineObj = "";
+    private String findMultipleObj = "";
     private String binderId = "";
     private Boolean searchSubFolders;
     private Boolean foldersOnly;
@@ -115,7 +116,8 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			req.setAttribute(WebKeys.FIND_LIST_TYPE, this.type);
 			req.setAttribute(WebKeys.FIND_SINGLE_ITEM, this.singleItem);
 			req.setAttribute(WebKeys.FIND_CLICK_ROUTINE, this.clickRoutine);
-			req.setAttribute(WebKeys.FIND_CLICK_ROUTINE_ARGS, this.clickRoutineArgs);
+			req.setAttribute(WebKeys.FIND_CLICK_ROUTINE_OBJ, this.clickRoutineObj);
+			req.setAttribute(WebKeys.FIND_MULTIPLE_OBJ, this.findMultipleObj);
 			req.setAttribute(WebKeys.FIND_INSTANCE_COUNT, this.instanceCount);
 			req.setAttribute(WebKeys.FIND_INSTANCE_CODE, this.hashCode() + "_" + this.formName + "_" + this.formElement);
 			req.setAttribute(WebKeys.FIND_LEAVE_RESULTS_VISIBLE, this.leaveResultsVisible.toString());
@@ -140,7 +142,8 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 			this.singleItem = false;
 			this.width = "30";
 			this.clickRoutine = "";
-			this.clickRoutineArgs = "";
+			this.clickRoutineObj = "";
+			this.findMultipleObj = "";
 			this.leaveResultsVisible = false;
 			this.binderId = "";
 			this.searchSubFolders = false;
@@ -194,8 +197,12 @@ public class Find extends BodyTagSupport implements ParamAncestorTag {
 	    this.clickRoutine = clickRoutine;
 	}
 
-	public void setClickRoutineArgs(String clickRoutineArgs) {
-		this.clickRoutineArgs = clickRoutineArgs;
+	public void setClickRoutineObj(String clickRoutineObj) {
+		this.clickRoutineObj = clickRoutineObj;
+	}
+	
+	public void setFindMultipleObj(String findMultipleObj) {
+		this.findMultipleObj = findMultipleObj;
 	}
 	
 	public void setSingleItem(Boolean singleItem) {

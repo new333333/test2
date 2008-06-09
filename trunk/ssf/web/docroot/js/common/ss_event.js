@@ -34,7 +34,7 @@ function ssEventEditor(prefix, frequency, interval, weekDays, monthDays) {
 	
 	var that = this;
 	
-	var interval = typeof interval !== undefined?interval:1;
+	var interval = (typeof interval !== undefined&&interval != -1)?interval:1;
 	
 	var frequency = typeof frequency !== undefined?frequency:"none";
 	
@@ -266,3 +266,421 @@ function ssEventEditor(prefix, frequency, interval, weekDays, monthDays) {
 	}	
 	
 }
+
+
+if (typeof ssEventScheduler === "undefined" || !ssEventScheduler) {
+    var ssEventScheduler = {};
+}
+
+ssEventScheduler.create = function(params) {
+	var containerId = ("containerId" in params) ? params.containerId : null;
+	var container = document.getElementById(containerId);
+	
+	var userListObj = ("userListObj" in params) ? params.userListObj : null;
+	var eventStartObj = ("eventStartObj" in params) ? params.eventStartObj : null;
+	var eventStartTimeObj = ("eventStartTimeObj" in params) ? params.eventStartTimeObj : null;	
+	var eventEndObj = ("eventEndObj" in params) ? params.eventEndObj : null;
+	var eventEndTimeObj = ("eventEndTimeObj" in params) ? params.eventEndTimeObj : null;
+	var userListDataName = ("userListDataName" in params) ? params.userListDataName : null;
+	var binderId = ("binderId" in params) ? params.binderId : null;
+	var entryId = ("entryId" in params) ? params.entryId : null;
+	
+	return new ssEventScheduler.Scheduler(container, userListObj, eventStartObj, eventStartTimeObj, eventEndObj, eventEndTimeObj, userListDataName, binderId, entryId);
+}
+
+ssEventScheduler.locale = {
+	allAttendees: "All attendees",
+	busy: "Busy",
+	tentative: "Tentative",
+	outOfOffice: "Out Of Office"
+}
+
+ssEventScheduler.Scheduler = function(container, userListObj, eventStartObj, eventStartTimeObj, eventEndObj, eventEndTimeObj, userListDataName, binderId, entryId) {
+	var that = this;
+	
+	this._container = container;
+	this._userListObj = userListObj;
+	this._eventStartObj = eventStartObj;
+	this._eventStartTimeObj = eventStartTimeObj;
+	this._eventEndObj = eventEndObj;
+	this._eventEndTimeObj = eventEndTimeObj;	
+	this._userListDataName = userListDataName;
+	this._binderId = binderId;
+	this._entryId = entryId;
+
+	this._isDisplayed = false;
+	this._ulLegend;
+	this._ulObj;
+	this._divObj;
+	this._minStart;
+	this._maxEnd;	
+	this._timeLine;
+	this._bandInfos;
+	this._decorators;
+	this._eventSource;
+	this._usersList = [];
+	this._startDate = new Date();
+	this._eventStartDate = new Date();
+	this._eventEndDate = new Date();
+	
+	// add listeners
+	if (this._userListObj != null) {
+
+		this._userListObj.addListener("onAdd", function(user) {
+			that.addUser(user);
+		});
+		
+		this._userListObj.addListener("onDelete", function(user) {
+			that.deleteUser(user);
+		});
+		
+	}
+	
+	if (this._eventStartObj != null) {
+		dojo.event.connect(this._eventStartObj, "onValueChanged", function(evt) {
+			that.changeStartDate(evt);
+		});
+	}
+	if (this._eventStartTimeObj != null) {
+		dojo.event.connect(this._eventStartTimeObj, "onValueChanged", function(evt) {
+			that.changeStartTime(evt);
+		});	
+	}
+	if (this._eventEndObj != null) {
+		dojo.event.connect(this._eventEndObj, "onValueChanged", function(evt) {
+			that.changeEndDate(evt);
+		});
+	}
+	if (this._eventEndTimeObj != null) {
+		dojo.event.connect(this._eventEndTimeObj, "onValueChanged", function(evt) {
+			that.changeEndTime(evt);
+		});	
+	}	
+	
+	
+	this.display = function() {
+		if (that._isDisplayed) {
+			that.hide();
+			return;
+		}
+		if (that._container) {
+			that._container.style.display = "block";
+		}
+		that._isDisplayed = true;
+		
+		if (that._userListObj) {
+			that._usersList = that._userListObj.getList();
+		}
+		if (that._eventStartObj) {
+			that._setStartDate(that._eventStartObj.getDate());
+		}
+		if (that._eventStartTimeObj) {
+			that._setStartTime(dojo.date.fromRfc3339(that._eventStartTimeObj.getTime()));
+		}
+		if (that._eventEndObj) {
+			that._setEndDate(that._eventEndObj.getDate());
+		}
+		if (that._eventEndTimeObj) {
+			that._setEndTime(dojo.date.fromRfc3339(that._eventEndTimeObj.getTime()));
+		}
+		
+		that._displayUsers(true);
+		that._displayTimeLine(true);
+		that._displayLegend();
+		
+		that.loadData();
+	}
+	
+	this._displayLegend = function() {
+		if (that._ulLegend) {
+			return;
+		}
+		that._ulLegend = document.createElement("UL");
+		that._ulLegend.className = "legend";
+		
+		
+		var liBusy = document.createElement("LI");
+		
+		var busySquereTable = document.createElement("TABLE");
+		var busySquereTBody = document.createElement("TBODY");
+		var busySquereTR = document.createElement("TR");
+		var busySquereTD = document.createElement("TD");
+		busySquereTable.appendChild(busySquereTBody);
+		busySquereTBody.appendChild(busySquereTR);
+		busySquereTR.appendChild(busySquereTD);
+		busySquereTD.style.backgroundColor = "#990000";
+
+
+		liBusy.appendChild(busySquereTable);
+		busySquereTD.appendChild(document.createTextNode(ssEventScheduler.locale.busy));
+		
+		that._ulLegend.appendChild(liBusy);
+
+
+		var liTentative = document.createElement("LI");
+		var tentativeSquereTable = document.createElement("TABLE");
+		var tentativeSquereTBody = document.createElement("TBODY");
+		var tentativeSquereTR = document.createElement("TR");
+		var tentativeSquereTD = document.createElement("TD");
+		tentativeSquereTable.appendChild(tentativeSquereTBody);
+		tentativeSquereTBody.appendChild(tentativeSquereTR);
+		tentativeSquereTR.appendChild(tentativeSquereTD);
+		tentativeSquereTD.style.backgroundColor = "#FF3300";
+		
+		liTentative.appendChild(tentativeSquereTable);
+		tentativeSquereTD.appendChild(document.createTextNode(ssEventScheduler.locale.tentative));
+		
+		that._ulLegend.appendChild(liTentative);
+		
+		
+		var liOutOfOffice = document.createElement("LI");
+		var outOfOfficeSquereTable = document.createElement("TABLE");
+		var outOfOfficeSquereTBody = document.createElement("TBODY");
+		var outOfOfficeSquereTR = document.createElement("TR");
+		var outOfOfficeSquereTD = document.createElement("TD");
+		outOfOfficeSquereTable.appendChild(outOfOfficeSquereTBody);
+		outOfOfficeSquereTBody.appendChild(outOfOfficeSquereTR);
+		outOfOfficeSquereTR.appendChild(outOfOfficeSquereTD);
+		outOfOfficeSquereTD.style.backgroundColor = "#FFCC00";
+		
+		liOutOfOffice.appendChild(outOfOfficeSquereTable);
+		outOfOfficeSquereTD.appendChild(document.createTextNode(ssEventScheduler.locale.outOfOffice));				
+		
+		that._ulLegend.appendChild(liOutOfOffice);		
+		
+		if (that._container) {
+			that._container.appendChild(that._ulLegend);
+		}
+	}
+	
+	this._displayUsers = function(init) {
+		if (!that._ulObj && !init) {
+			return;
+		}
+
+		var newList = that._ulObj == null;		
+		if (!that._ulObj) {
+			that._ulObj = document.createElement("UL");
+			that._ulObj.className = "usersList";
+		}
+		while (that._ulObj.hasChildNodes()) {
+			that._ulObj.removeChild(that._ulObj.firstChild);
+		}
+
+		var li = document.createElement("LI");
+		li.appendChild(document.createTextNode(ssEventScheduler.locale.allAttendees));
+		that._ulObj.appendChild(li);
+			
+		for (id in that._usersList) {
+			var li = document.createElement("LI");
+			li.appendChild(document.createTextNode(that._usersList[id]));
+			that._ulObj.appendChild(li);
+		}
+		
+		if (newList && that._container) {	
+			that._container.appendChild(that._ulObj);
+		}
+	}
+	
+	this._displayTimeLine = function(init) {
+		if (!that._divObj && !init) {
+			return;
+		}
+		
+		if (!that._divObj && that._container) {	
+			that._divObj = document.createElement("DIV");
+			that._container.appendChild(that._divObj);			
+			
+			that._divObj.className = "timeLine";
+		}
+		
+		var usersListLength = 0;
+		for (key in that._usersList) {
+			usersListLength++;
+		}	
+		var height = usersListLength * 30 + 80;
+		height = height * 100 / 80; // add 20% for days band
+		that._divObj.style.height = height + "px";
+		
+		if (that._timeLine == null) {
+			that._eventSource = new Timeline.DefaultEventSource(0);
+
+			that._bandInfos = [
+					Timeline.createBandInfo({
+						width:          "80%", 
+						date:           that._startDate,
+						intervalUnit:   Timeline.DateTime.HOUR, 
+						eventSource:    that._eventSource,
+						intervalPixels: 30
+					}),
+					Timeline.createBandInfo({
+						width:          "20%", 
+						date:			that._startDate,
+						intervalUnit:   Timeline.DateTime.DAY, 
+						intervalPixels: 150
+					})			
+			];
+			that._bandInfos[1].syncWith = 0;
+			that._bandInfos[1].highlight = true;
+			
+			that._decorators = [
+				new Timeline.SpanHighlightDecorator({
+						startDate:  that._eventStartDate,
+						endDate:    that._eventEndDate,
+						color:      "#FFC080",
+						startLabel: "",
+						endLabel: "",
+						opacity: 20
+                    }),
+				new Timeline.SpanHighlightDecorator({
+						startDate:  that._eventStartDate,
+						endDate:    that._eventEndDate,
+						color:      "#FFC080",
+						startLabel: "",
+						endLabel: "",
+						opacity: 20
+                    })			
+			];
+			            
+			for (var i = 0; i < that._bandInfos.length; i++) {
+				that._bandInfos[i].decorators = [that._decorators[i]];
+            }
+			
+			
+			that._timeLine = Timeline.create(that._divObj, that._bandInfos);
+			
+			that._timeLine.getBand(0).addOnScrollListener(function(band) {
+				if (band.getMinDate() < that._minStart) {
+					that._setStartDate(band.getMinDate());
+					that.loadData();
+				}
+				if (that._maxEnd < band.getMaxDate()) {
+					that._setStartDate(band.getMaxDate());
+					that.loadData();
+				}
+			}); 
+		} else {
+			that._timeLine.layout();
+		}
+	}
+	
+	this.hide = function() {
+		if (that._container) {
+			that._container.style.display = "none";
+		}
+		that._isDisplayed = false;
+	}
+	
+	this.addUser = function(user) {
+		that._usersList[user.id] = user.name;
+		that._displayUsers(false);
+		that._displayTimeLine(false);
+		that.loadData();
+	}
+	
+	this.deleteUser = function(user) {
+		delete that._usersList[user.id];
+		that._displayUsers(false);
+		that._displayTimeLine(false);
+		that.loadData();		
+	}
+	
+	this.changeStartDate = function(date) {
+		that._setStartDate(date);
+		that._timeLine.getBand(0).scrollToCenter(that._startDate);
+		that.loadData();
+		that._repaintEventOnTimeLine();		
+	}
+	
+	this.changeStartTime = function(dateTime) {
+		that._setStartTime(dojo.date.fromRfc3339(dateTime));
+		that._timeLine.getBand(0).scrollToCenter(that._startDate);
+		that.loadData();
+		that._repaintEventOnTimeLine();		
+	}	
+
+	this.changeEndDate = function(date) {
+		that._setEndDate(date);
+		that._repaintEventOnTimeLine();		
+	}	
+	
+	this.changeEndTime = function(dateTime) {
+		that._setEndTime(dojo.date.fromRfc3339(dateTime));
+		that._repaintEventOnTimeLine();
+	}
+		
+	this._setStartDate = function(date) {
+		that._startDate.setFullYear(date.getFullYear());
+		that._startDate.setMonth(date.getMonth());
+		that._startDate.setDate(date.getDate());
+		
+		that._eventStartDate.setFullYear(date.getFullYear());
+		that._eventStartDate.setMonth(date.getMonth());
+		that._eventStartDate.setDate(date.getDate());
+		
+				
+		that._minStart = dojo.date.add(that._startDate, dojo.date.dateParts.WEEK, -1);
+		that._minStart.setHours(0);
+		that._minStart.setMinutes(0);
+		
+		that._maxEnd = dojo.date.add(that._startDate, dojo.date.dateParts.WEEK, 3);
+		that._maxEnd.setHours(0);
+		that._maxEnd.setMinutes(0);
+	}
+
+	this._setStartTime = function(time) {
+		that._startDate.setHours(time.getHours() - time.getTimezoneOffset()/60 + 5);// band center
+		that._startDate.setMinutes(time.getMinutes());
+		
+		that._eventStartDate.setHours(time.getHours() - time.getTimezoneOffset()/60);
+		that._eventStartDate.setMinutes(time.getMinutes());	
+	}
+	
+	this._setEndDate = function(date) {	
+		that._eventEndDate.setFullYear(date.getFullYear());
+		that._eventEndDate.setMonth(date.getMonth());
+		that._eventEndDate.setDate(date.getDate());
+	}
+
+	this._setEndTime = function(time) {
+		that._eventEndDate.setHours(time.getHours() - time.getTimezoneOffset()/60);
+		that._eventEndDate.setMinutes(time.getMinutes());		
+	}	
+	
+	this._repaintEventOnTimeLine = function() {
+		if (that._decorators) {
+			for (var i = 0; i < that._decorators.length; i++) {
+				that._decorators[i]._startDate = that._eventStartDate;
+			    that._decorators[i]._endDate = that._eventEndDate;
+			    that._decorators[i].paint();
+			}
+		}
+	}
+	
+	this.loadData = function() {
+		if (that._eventSource == null) {
+			return;
+		}
+		that._eventSource.clear();
+		var usersIds =[];
+		for (var i in that._usersList) {
+			usersIds.push(i);
+		}
+		if (usersIds.length == 0) {
+			return;
+		}
+		var jsonUrl = ss_buildAdapterUrl(ss_AjaxBaseUrl, {operation: "get_calendar_free_info",
+														binderId: that._binderId != null ? that._binderId : -1,
+														entryId: that._entryId != null ? that._entryId : -1,
+														ssUsersId: usersIds,
+														ssStartDate: dojo.date.toRfc3339(that._minStart, "dateOnly"),
+														ssEndDate: dojo.date.toRfc3339(that._maxEnd, "dateOnly"),
+														ssUserListName: that._userListDataName != null ? that._userListDataName : ""
+														});
+		that._timeLine.loadJSON(jsonUrl, function(json, url) {
+			that._eventSource.loadJSON(json, url);
+		});
+	}
+
+}
+

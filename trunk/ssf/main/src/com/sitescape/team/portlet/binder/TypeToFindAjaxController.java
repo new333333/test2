@@ -139,6 +139,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		String foldersOnly = PortletRequestUtils.getStringParameter(request, "foldersOnly", "false");
 		String namespace = PortletRequestUtils.getStringParameter(request, "namespace", "");
 		String binderId = PortletRequestUtils.getStringParameter(request, "binderId", "");
+		String findObjectName = PortletRequestUtils.getStringParameter(request, "findObjectName", "");
 		String searchSubFolders = PortletRequestUtils.getStringParameter(request, "searchSubFolders", "");
 		boolean addCurrentUser = PortletRequestUtils.getBooleanParameter(request, "addCurrentUser", false);
 		Integer startingCount = Integer.parseInt(pageNumber) * Integer.parseInt(maxEntries);
@@ -290,7 +291,7 @@ public class TypeToFindAjaxController extends SAbstractController {
 		model.put(WebKeys.FIND_TYPE, findType);
 		model.put(WebKeys.PAGE_SIZE, maxEntries);
 		model.put(WebKeys.PAGE_NUMBER, pageNumber);
-		
+		model.put("findObjectName", findObjectName);
 		model.put(WebKeys.NAMESPACE, namespace);
 		
 		

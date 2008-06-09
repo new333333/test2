@@ -134,35 +134,37 @@ public class EventsViewHelper {
 
 	public static final String DAY_VIEW_TYPE_DEFAULT = DAY_VIEW_TYPE_WORK;
 	
-	public static void getEntryEvents( Binder folder,
-			List entrylist, Map model, RenderResponse response, PortletSession portletSession, boolean onlyTrueEvents) {
-		List events = EventsViewHelper.getCalendarEvents(entrylist,	null, onlyTrueEvents);
+	public static Map getEntryEventsBeans( Binder folder,
+			List searchResults, RenderResponse response, PortletSession portletSession, boolean onlyTrueEvents) {
+		Map result = new HashMap();
+		
+		List events = EventsViewHelper.getCalendarEventsBeans(searchResults,	null, onlyTrueEvents);
 		
 		Map calendarViewBean = new HashMap();
 		calendarViewBean.put("events", events);
 		
-		model.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
+		result.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
+		
+		return result;
 	}
 	
-	public static void getEvents(Date currentDate,
-			AbstractIntervalView calendarViewRangeDates, Binder folder,
-			List entrylist, Map model, PortletSession portletSession, boolean onlyTrueEvents) {
-		getEvents(currentDate,
-				calendarViewRangeDates, folder,
-				entrylist, model, getCalendarDisplayEventType(portletSession), 
+	public static Map getEventsBeans(List searchResults, AbstractIntervalView calendarViewRangeDates, 
+			PortletSession portletSession, boolean onlyTrueEvents) {
+		return getEventsBeans(searchResults, calendarViewRangeDates, 
+				getCalendarDisplayEventType(portletSession), 
 				getCalendarDayViewType(portletSession), onlyTrueEvents);
 	}
 	
-	public static void getEvents(Date currentDate,
-			AbstractIntervalView intervalView, Binder folder,
-			List entrylist, Map model, String eventType, String dayViewType, boolean onlyTrueEvents) {
-
-		model.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE,
+	public static Map getEventsBeans(List searchResults, AbstractIntervalView intervalView, 
+			String eventType, String dayViewType, boolean onlyTrueEvents) {
+		Map result = new HashMap();
+		
+		result.put(WebKeys.CALENDAR_CURRENT_VIEW_STARTDATE,
 				intervalView.getStart());
-		model.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, 
+		result.put(WebKeys.CALENDAR_CURRENT_VIEW_ENDDATE, 
 				intervalView.getEnd());
 
-		List events = EventsViewHelper.getCalendarEvents(entrylist,
+		List events = EventsViewHelper.getCalendarEventsBeans(searchResults,
 				intervalView, onlyTrueEvents);
 		
 		Map calendarViewBean = new HashMap();
@@ -172,10 +174,24 @@ public class EventsViewHelper {
 		calendarViewBean.put("eventType", eventType);
 		calendarViewBean.put("dayViewType", dayViewType);
 		
-		model.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
+		result.put(WebKeys.CALENDAR_VIEWBEAN, calendarViewBean);
+		
+		return result;
 	}
+	
+	public static Map<Map, List<Event>> getEvents(List searchResults, AbstractIntervalView intervalView) {
+		Map<Map, List<Event>> results = new HashMap<Map, List<Event>>();
+		
+		Iterator entryIterator = searchResults.iterator();
+		while (entryIterator.hasNext()) {
+			Map entry = (HashMap) entryIterator.next();
+			List<Event> events = parseSearchResultEntryToEvents(entry, intervalView);
+			results.put(entry, events);
+		}
+		return results;
+	}	
 
-	private static List getCalendarEvents(List entrylist,
+	private static List getCalendarEventsBeans(List searchResults,
 			AbstractIntervalView viewRangeDates, boolean onlyTrueEvents) {
 		
 		List result = new ArrayList();
@@ -183,44 +199,50 @@ public class EventsViewHelper {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		TimeZone timeZone = user.getTimeZone();
 
-		Iterator entryIterator = entrylist.iterator();
+		Iterator entryIterator = searchResults.iterator();
 		while (entryIterator.hasNext()) {
 			Map entry = (HashMap) entryIterator.next();
-			int eventsCount = parseEventsCount((String) entry.get(Constants.EVENT_COUNT_FIELD));
 			
 			if (!onlyTrueEvents) {
 				// Add the creation date as an event
 				Date creationDate = (Date) entry.get(Constants.CREATION_DATE_FIELD);
 				if (creationDate != null && 
 						(viewRangeDates == null || viewRangeDates.dateInView(creationDate))) {
-					result.add(getEventBean(
-							createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, 
-									(String)entry.get(Constants.DOCID_FIELD)), entry, EVENT_TYPE_CREATION));
+					List events = new ArrayList();
+					events.add(createEvent(creationDate, timeZone, EVENT_TYPE_CREATION, 
+							(String)entry.get(Constants.DOCID_FIELD)));
+					result.addAll(getEventsBeansByEvents(entry, events, EVENT_TYPE_CREATION));
 				}
 	
 				// Add the activity date as an event
 				Date lastActivityDate = (Date) entry.get(Constants.LASTACTIVITY_FIELD);
 				if (lastActivityDate != null && (viewRangeDates == null || viewRangeDates.dateInView(lastActivityDate))) {
-					result.add(getEventBean(
-							createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, 
-									(String)entry.get(Constants.DOCID_FIELD)), entry, EVENT_TYPE_ACTIVITY));
+					List events = new ArrayList();
+					events.add(createEvent(lastActivityDate, timeZone, EVENT_TYPE_ACTIVITY, 
+							(String)entry.get(Constants.DOCID_FIELD)));
+					result.addAll(getEventsBeansByEvents(entry, events, EVENT_TYPE_ACTIVITY));
 				}
 			}
 			
-			result.addAll(getEntryEvents(entry, eventsCount, viewRangeDates));
+			List<Event> events = parseSearchResultEntryToEvents(entry, viewRangeDates);
+			
+			result.addAll(getEventsBeansByEvents(entry, events, EVENT_TYPE_EVENT));
 		}
 		return result;
 	}
-
-	private static List getEntryEvents(Map entry, int eventsCount, AbstractIntervalView viewRangeDates) {
+	
+	/**
+	 * One entry can contain many events.
+	 */
+	private static List<Event> parseSearchResultEntryToEvents(Map entry, AbstractIntervalView viewRangeDates) {
 		User user = RequestContextHolder.getRequestContext().getUser();
 		TimeZone timeZone = user.getTimeZone();
 		
-		List events = new ArrayList();
-		
+		List<Event> events = new ArrayList<Event>();
 		
 		// Add the events
 		// look through the custom attrs of this entry for any of type EVENT
+		int eventsCount = parseEventsCount((String) entry.get(Constants.EVENT_COUNT_FIELD));
 		for (int j = 0; j < eventsCount; j++) {
 			String name = (String) entry.get(Constants.EVENT_FIELD + j);
 
@@ -232,6 +254,12 @@ public class EventsViewHelper {
 			if ("false".equals(timeZoneSensitiveString)) {
 				timeZoneSensitive = false;
 			}
+			String freeBusyString = (String) entry.get(name + BasicIndexUtils.DELIMITER + Constants.EVENT_FIELD_FREE_BUSY);
+			Event.FreeBusyType freeBusy = null;
+			try {
+				freeBusy = Event.FreeBusyType.valueOf(freeBusyString);
+			} catch (NullPointerException e) {				
+			} catch (IllegalArgumentException e) {}
 			if (recurrenceDatesField != null) {
 				String[] recurrenceDates = recurrenceDatesField.split(",");
 				for (int recCounter = 0; recCounter < recurrenceDates.length; recCounter++) {
@@ -261,6 +289,7 @@ public class EventsViewHelper {
 						event.setTimeZone(TimeZoneHelper.getTimeZone(timeZoneID));
 					}
 					event.setTimeZoneSensitive(timeZoneSensitive);
+					event.setFreeBusy(freeBusy);
 					Calendar startCal = Calendar.getInstance();
 					startCal.setTime(evStartDate);
 					
@@ -275,14 +304,13 @@ public class EventsViewHelper {
 					event.setDtStart(startCal);
 					event.setDtEnd(endCal);
 					
-					events.add(getEventBean(event, entry, EVENT_TYPE_EVENT));
+					events.add(event);
 				}
 			}
 		}
 		
 		return events;
 	}
-
 
 	private static int parseEventsCount(String eventCountField) {
 		int count = 0;
@@ -293,33 +321,41 @@ public class EventsViewHelper {
 	}
 
 
-	private static Map getEventBean(Event event, Map entry, String eventType) {
-		Map eventBean = new HashMap();
+	private static List<Map> getEventsBeansByEvents(Map entry, List<Event> events, String eventType) {
+		List<Map> result = new ArrayList<Map>();
+		
+		if (events == null) {
+			return result;
+		}
 		
 		User user = RequestContextHolder.getRequestContext().getUser();
 		TimeZone timeZone = user.getTimeZone();
 		
 		SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm");
 		sdf2.setTimeZone(timeZone);
-			
-		eventBean.put("entry", entry);
-		eventBean.put("eventType", eventType);
-		eventBean.put("eventid", event.getId() + "_" + event.getDtStart().getTimeInMillis() +"_" + event.getDtEnd().getTimeInMillis());
-		eventBean.put("entry_tostring", entry.get(Constants.UID_FIELD).toString());
-		eventBean.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2
-				.format(event.getDtStart().getTime()));
-		eventBean.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(event
-				.getDtEnd().getTime()));
-		eventBean.put("cal_starttime", event.getDtStart().getTime());
-		eventBean.put("cal_endtime", event.getDtEnd().getTime());
-		eventBean.put("cal_oneDayEvent", event.isOneDayEvent());
-		eventBean.put("cal_allDay", event.isAllDayEvent());
-		eventBean.put("cal_timeZoneSensitive", event.isTimeZoneSensitive());
-		eventBean.put("cal_duration", (event.getDtEnd().getTime()
-				.getTime() - event.getDtStart().getTime()
-				.getTime()) / 60000);
+
+		for (Event event : events) {
+			Map eventBean = new HashMap();
+			eventBean.put("entry", entry);
+			eventBean.put("eventType", eventType);
+			eventBean.put("eventid", event.getId() + "_" + event.getDtStart().getTimeInMillis() +"_" + event.getDtEnd().getTimeInMillis());
+			eventBean.put(WebKeys.CALENDAR_STARTTIMESTRING, sdf2
+					.format(event.getDtStart().getTime()));
+			eventBean.put(WebKeys.CALENDAR_ENDTIMESTRING, sdf2.format(event
+					.getDtEnd().getTime()));
+			eventBean.put("cal_starttime", event.getDtStart().getTime());
+			eventBean.put("cal_endtime", event.getDtEnd().getTime());
+			eventBean.put("cal_oneDayEvent", event.isOneDayEvent());
+			eventBean.put("cal_allDay", event.isAllDayEvent());
+			eventBean.put("cal_timeZoneSensitive", event.isTimeZoneSensitive());
+			eventBean.put("cal_freeBusy", event.getFreeBusy().name());
+			eventBean.put("cal_duration", (event.getDtEnd().getTime()
+					.getTime() - event.getDtStart().getTime()
+					.getTime()) / 60000);
+			result.add(eventBean);
+		}
 		
-		return eventBean;
+		return result;
 	}
 
 	private static Event createEvent(Date eventDate, TimeZone timeZone, String type, String entryId) {

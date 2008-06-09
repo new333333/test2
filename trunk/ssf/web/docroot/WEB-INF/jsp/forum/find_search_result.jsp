@@ -63,7 +63,7 @@
 		    				--%>ss_putValueInto('ss_findUser_searchText_${ss_namespace}', '${entry.ssTag}');<%--
 		    			--%></c:when><%--
 						--%><c:otherwise><%--
-							--%>ss_findUserSelectItem('${ss_namespace}', this.parentNode, '${entry._entityType}');return false;<%--
+							--%>window['${findObjectName}']._selectItem(this.parentNode, '${entry._entityType}');return false;<%--
 						--%></c:otherwise><%--
 			   		 --%></c:choose>" 
 			    href="javascript: ;"><span style="white-space:nowrap;"><c:choose><%--
@@ -82,12 +82,12 @@
 			<table class="ss_typeToFindNav" cellpadding="0" cellspacing="0" border="0"><tbody>
 			<tr><td width="10%">
             <c:if test="${ss_pageNumber > 0}">
-              <a href="javascript:;" onClick="ss_findUserPrevPage('${ss_namespace}');return false;"
+              <a href="javascript:;" onClick="window['${findObjectName}'].prevPage();return false;"
               ><img border="0" style="margin-right: 20px;" title="<ssf:nlt tag="general.Previous"/>" src="<html:imagesPath/>pics/sym_arrow_left_.gif"/></a>
              </c:if>
              </td><td width="80%"></td><td width="10%">
             <c:if test="${count + ss_pageNumber * ss_pageSize < ss_searchTotalHits}">
-              <a href="javascript: ;" onClick="ss_findUserNextPage('${ss_namespace}');return false;"
+              <a href="javascript: ;" onClick="window['${findObjectName}'].nextPage();return false;"
               ><img border="0" style="margin-left: 20px;" title="<ssf:nlt tag="general.Next"/>" src="<html:imagesPath/>pics/sym_arrow_right_.gif"/></a>
             </c:if>
            </td></tr></tbody></table>

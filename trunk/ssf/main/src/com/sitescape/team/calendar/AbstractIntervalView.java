@@ -11,15 +11,27 @@ import com.sitescape.util.cal.CalendarUtil;
 
 public abstract class AbstractIntervalView {
 	
+	public static class VisibleIntervalFormattedDates {
+		
+		public String startDate;
+		
+		public String endDate;
+		
+		public VisibleIntervalFormattedDates(String startDate, String endDate) {
+			super();
+			this.startDate = startDate;
+			this.endDate = endDate;
+		}
+	}
+	
 	protected Interval interval;
 	
 	protected Interval visibleInterval;
 	
-	public String[] getVisibleIntervalFormattedDates() {
-		return new String[] {
+	public VisibleIntervalFormattedDates getVisibleInterval() {		
+		return new VisibleIntervalFormattedDates (
 				DateTools.dateToString(visibleInterval.getStart().toDate(), DateTools.Resolution.MINUTE), 
-				DateTools.dateToString(visibleInterval.getEnd().toDate(), DateTools.Resolution.MINUTE)
-		};
+				DateTools.dateToString(visibleInterval.getEnd().toDate(), DateTools.Resolution.MINUTE));
 	}
 	
 	public boolean dateInView(Date dateToTest) {

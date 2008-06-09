@@ -102,6 +102,7 @@
 			--%></c:choose><%--
 		  	--%>dur: ${evim.cal_duration}, <%--
 		  	--%>allDay: ${evim.cal_allDay}, <%--
+		  	--%>freeBusy: "${evim.cal_freeBusy}", <%--
 		  	--%>title: "<ssf:escapeJavaScript value="${evim.entry.title}"/>", <%--
 		  	--%>calsrc: "cal1", <%--
 		  	--%>eventType: "<ssf:escapeJavaScript value="${evim.eventType}"/>", <%--

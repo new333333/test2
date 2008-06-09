@@ -426,6 +426,12 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 			<type>java.lang.Boolean</type>
+		</attribute>
+		<attribute>
+			<name>isFreeBusyActive</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>java.lang.Boolean</type>
 		</attribute>		
 		<attribute>
 			<name>initEvent</name>
@@ -521,10 +527,15 @@
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
 		<attribute>
-			<name>clickRoutineArgs</name>
+			<name>clickRoutineObj</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
-		</attribute>		
+		</attribute>
+		<attribute>
+			<name>findMultipleObj</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 		<attribute>
 			<name>leaveResultsVisible</name>
 			<required>false</required>
