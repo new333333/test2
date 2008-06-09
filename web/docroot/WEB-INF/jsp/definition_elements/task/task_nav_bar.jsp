@@ -29,9 +29,7 @@
  */
 %>
 <div class="ss_clear"></div>
-<script type="text/javascript">
-	ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
-</script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_calendar.js"></script>
 <div>
   <ssHelpSpot helpId="workspaces_folders/misc_tools/calendar_tools" offsetX="0" 
     title="<ssf:nlt tag="helpSpot.calendarTools"/>"></ssHelpSpot>

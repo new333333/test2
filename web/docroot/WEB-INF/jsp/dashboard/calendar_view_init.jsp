@@ -33,11 +33,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/dashboard/common_setup.jsp" %>
 <c:set var="prefix" value="${ssComponentId}${renderResponse.namespace}" />
-	<script type="text/javascript">
-		<% //needs its own script section to endure loaded before accessed below %>
- 		ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
-	</script>
-
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_calendar.js"></script>
 <script type="text/javascript">
 	dojo.require("dojo.lfx.rounded");
 	

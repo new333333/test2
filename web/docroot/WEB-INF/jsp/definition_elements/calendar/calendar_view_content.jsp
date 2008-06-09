@@ -30,10 +30,7 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <c:if test="${empty isDashboard}">
-	<script type="text/javascript">
-		<% //needs its own script section to endure loaded before accessed below %>
- 		ss_loadJsFile(ss_rootPath, "js/common/ss_calendar.js");
-	</script>
+	<script type="text/javascript" src="<html:rootPath/>js/common/ss_calendar.js"></script>
 	<script type="text/javascript">
 		
 		function ss_getMonthCalendarEvents${prefix}() {
