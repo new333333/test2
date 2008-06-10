@@ -29,9 +29,7 @@
 package com.sitescape.team.web.util;
 
 import javax.portlet.PortletRequest;
-import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -324,30 +322,7 @@ public class WebUrlUtil {
 		
 		if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTP) {
 			if(req != null) {
-				HttpSession ses = req.getSession(false);
-				if(ses != null) {
-					host = (String) ses.getAttribute(WebKeys.SERVER_NAME);
-					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT);
-					if(intPort != null)
-						port = intPort.intValue();
-					if(logger.isTraceEnabled()) {
-						if(host == null)
-							logger.trace("*** No host name found in http session");
-						else
-							logger.trace("Host name from http session is " + host);
-						if(intPort == null)
-							logger.trace("*** No host port found in http session");
-						else
-							logger.trace("Host port from http session is " + intPort);
-					}
-				}
-				else {
-					if(logger.isTraceEnabled())
-						logger.trace("*** No http session found from http request");
-				}
-				
-				if(host == null)
-					host = req.getServerName().toLowerCase();
+				host = req.getServerName().toLowerCase();
 				if(port == -1)
 					port = req.getServerPort();
 				
@@ -365,31 +340,8 @@ public class WebUrlUtil {
 			}
 		}
 		else if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTPS) {
-			if(req != null) {
-				HttpSession ses = req.getSession(false);
-				if(ses != null) {
-					host = (String) ses.getAttribute(WebKeys.SERVER_NAME);
-					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT);
-					if(intPort != null)
-						port = intPort.intValue();
-					if(logger.isTraceEnabled()) {
-						if(host == null)
-							logger.trace("*** No host name found in http session");
-						else
-							logger.trace("Host name from http session is " + host);
-						if(intPort == null)
-							logger.trace("*** No host port found in http session");
-						else
-							logger.trace("Host port from http session is " + intPort);
-					}
-				}
-				else {
-					if(logger.isTraceEnabled())
-						logger.trace("*** No http session found from http request");
-				}
-				
-				if(host == null)
-					host = req.getServerName().toLowerCase();
+			if(req != null) {				
+				host = req.getServerName().toLowerCase();
 				if(port == -1)
 					port = req.getServerPort();
 				
@@ -432,30 +384,7 @@ public class WebUrlUtil {
 		
 		if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTP) {
 			if(req != null) {
-				PortletSession ses = req.getPortletSession(false);
-				if(ses != null) {
-					host = (String) ses.getAttribute(WebKeys.SERVER_NAME, PortletSession.APPLICATION_SCOPE);
-					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT, PortletSession.APPLICATION_SCOPE);
-					if(intPort != null)
-						port = intPort.intValue();
-					if(logger.isTraceEnabled()) {
-						if(host == null)
-							logger.trace("*** No host name found in portlet session");
-						else
-							logger.trace("Host name from portlet session is " + host);
-						if(intPort == null)
-							logger.trace("*** No host port found in portlet session");
-						else
-							logger.trace("Host port from portlet session is " + intPort);
-					}
-				}
-				else {
-					if(logger.isTraceEnabled())
-						logger.trace("*** No portlet session found from portlet request");
-				}
-				
-				if(host == null)
-					host = req.getServerName().toLowerCase();
+				host = req.getServerName().toLowerCase();
 				if(port == -1)
 					port = req.getServerPort();
 				
@@ -475,30 +404,7 @@ public class WebUrlUtil {
 		}
 		else if(webProtocol == WEB_PROTOCOL_CONTEXT_HTTPS) {
 			if(req != null) {
-				PortletSession ses = req.getPortletSession(false);
-				if(ses != null) {
-					host = (String) ses.getAttribute(WebKeys.SERVER_NAME, PortletSession.APPLICATION_SCOPE);
-					Integer intPort = (Integer) ses.getAttribute(WebKeys.SERVER_PORT, PortletSession.APPLICATION_SCOPE);
-					if(intPort != null)
-						port = intPort.intValue();
-					if(logger.isTraceEnabled()) {
-						if(host == null)
-							logger.trace("*** No host name found in portlet session");
-						else
-							logger.trace("Host name from portlet session is " + host);
-						if(intPort == null)
-							logger.trace("*** No host port found in portlet session");
-						else
-							logger.trace("Host port from portlet session is " + intPort);
-					}
-				}
-				else {
-					if(logger.isTraceEnabled())
-						logger.trace("*** No portlet session from portlet request");				
-				}
-				
-				if(host == null)
-					host = req.getServerName().toLowerCase();
+				host = req.getServerName().toLowerCase();
 				if(port == -1)
 					port = req.getServerPort();
 				
