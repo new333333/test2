@@ -44,6 +44,7 @@ import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
+import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.team.web.util.WebHelper;
 
 public class PortalLoginController extends SAbstractController {
@@ -110,12 +111,17 @@ public class PortalLoginController extends SAbstractController {
 			User user = getProfileModule().findUserByName(username);
 			model.put(WebKeys.USER_PRINCIPAL, user);
 			String redirectUrl;
-			if(request.getQueryString() != null)
-				redirectUrl = request.getRequestURL().append("?").append(request.getQueryString()).toString();
-			else
-				redirectUrl = request.getRequestURL().toString();
 			//If there was a url passed in (e.g., from a permalink), use it
-			if (!url.equals("")) redirectUrl = url;
+			if (!url.equals("")) { 
+				redirectUrl = url;
+				redirectUrl = redirectUrl.replace(WebKeys.USERID_PLACEHOLDER, user.getId().toString()); 
+			}
+			else {
+				if(request.getQueryString() != null)
+					redirectUrl = request.getRequestURL().append("?").append(request.getQueryString()).toString();
+				else
+					redirectUrl = request.getRequestURL().toString();			
+			}
 			response.sendRedirect(redirectUrl);
 			return null;
 		}
@@ -132,13 +138,7 @@ public class PortalLoginController extends SAbstractController {
 			String url = RequestUtils.getStringParameter(request, "url", "");
 			if (url.equals("")) {
 				if (userId != null) {
-					Long profileBinderId = getProfileModule().getProfileBinder().getId();
-					AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-					adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_PERMALINK);
-					adapterUrl.setParameter(WebKeys.URL_BINDER_ID, profileBinderId.toString());
-					adapterUrl.setParameter(WebKeys.URL_ENTRY_ID, userId.toString());
-					adapterUrl.setParameter(WebKeys.URL_ENTITY_TYPE, EntityIdentifier.EntityType.workspace.toString());
-					url = adapterUrl.toString();
+					url = PermaLinkUtil.getWorkspaceURL(request, userId.toString());
 				}
 			}
 			model.put(WebKeys.URL, url);

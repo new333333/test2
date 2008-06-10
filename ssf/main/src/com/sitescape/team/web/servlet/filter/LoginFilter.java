@@ -33,7 +33,6 @@ import java.io.IOException;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
@@ -41,11 +40,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.sitescape.team.portal.PortalLogin;
-import com.sitescape.team.portletadapter.AdaptedPortletURL;
+import com.sitescape.team.runas.RunasCallback;
+import com.sitescape.team.runas.RunasTemplate;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.util.PermaLinkUtil;
 import com.sitescape.team.web.util.WebHelper;
-import com.sitescape.team.web.util.WebUrlUtil;
 
 public class LoginFilter  implements Filter {
 
@@ -56,15 +56,27 @@ public class LoginFilter  implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 
-		if(WebHelper.isGuestLoggedIn(req)) {
-			// User is logged in as guest. Proceed to the login screen. 
-			String refererUrl = getOriginalURL(req);
-			req.setAttribute(WebKeys.REFERER_URL, refererUrl);
-			chain.doFilter(request, response);
-		} else if(WebHelper.isUserLoggedIn(req)) {
-				// User is logged in. Proceed as normalt. 
-				req.setAttribute("referer", req.getQueryString());
-				chain.doFilter(request, response);
+		if(WebHelper.isUserLoggedIn(req)) {
+			// User is logged in either as guest or as regular user.
+			if(isAtRoot(req) && req.getMethod().equalsIgnoreCase("get")) {
+				// We're at the root URL. Re-direct the client to its workspace.
+				// Do this only if the request method is GET.
+				String workspaceUrl = getWorkspaceURL(req);
+				res.sendRedirect(workspaceUrl);
+			}
+			else {
+				if(WebHelper.isGuestLoggedIn(req)) {
+					// User is logged in as guest. Proceed to the login screen.
+					String refererUrl = getOriginalURL(req);
+					req.setAttribute(WebKeys.REFERER_URL, refererUrl);
+					chain.doFilter(request, response);
+				}
+				else {
+					// User is logged in as regular user. Proceed as normal.
+					req.setAttribute("referer", req.getQueryString());
+					chain.doFilter(request, response);
+				}
+			}
 		}
 		else {
 			// User is not (yet) logged in.
@@ -130,6 +142,28 @@ public class LoginFilter  implements Filter {
 	public void destroy() {
 	}
 
+	protected String getWorkspaceURL(final HttpServletRequest req) {
+		final String userId;
+		if(WebHelper.isGuestLoggedIn(req))
+			userId = WebKeys.USERID_PLACEHOLDER;
+		else
+			userId = WebHelper.getRequiredUserId(req).toString();
+		
+		return (String) RunasTemplate.runasAdmin(new RunasCallback() {
+			public Object doAs() {
+				return PermaLinkUtil.getWorkspaceURL(req, userId);
+			}
+		}, WebHelper.getRequiredZoneName(req));									
+	}
+	
+	protected boolean isAtRoot(HttpServletRequest req) {
+		String path = req.getPathInfo();
+		if(path == null || path.equals("/"))
+			return true;
+		else
+			return false;
+	}
+	
 	protected String getOriginalURL(HttpServletRequest req) {
 		String url;
 		if(req.getQueryString() != null)
