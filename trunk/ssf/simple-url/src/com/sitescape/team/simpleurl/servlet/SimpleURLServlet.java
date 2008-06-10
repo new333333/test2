@@ -30,6 +30,7 @@ package com.sitescape.team.simpleurl.servlet;
 
 import java.io.IOException;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -46,23 +47,36 @@ public class SimpleURLServlet extends HttpServlet {
 	private static final Class[] SERVICE_METHOD_ARG_TYPES = 
 		new Class[] {boolean.class, String.class, int.class, String.class};
 
+	private String landingPagePath;
+	
+	public void init(ServletConfig config) throws ServletException {
+		landingPagePath = config.getServletContext().getInitParameter("landingPagePath");
+		super.init(config);
+	}
+	
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 	throws ServletException, IOException {
-    	boolean isSecure = req.isSecure();
-    	String hostname = req.getServerName();
-    	int port = req.getServerPort();
     	String simpleName = req.getPathInfo();
-    	if(simpleName.startsWith("/"))
-    		simpleName = simpleName.substring(1);
-    	
 		String resolvedURI;
-		try {
-			resolvedURI = (String) BridgeClient.invoke(null, null, 
-					SERVICE_CLASS_NAME, SERVICE_METHOD_NAME, SERVICE_METHOD_ARG_TYPES,
-					new Object[] {isSecure, hostname, port, simpleName});
-		} catch (Exception e) {
-			throw new ServletException(e);
-		}
+    	
+    	if(simpleName == null || simpleName.equals("/")) {
+    		resolvedURI = landingPagePath;
+    	}
+    	else {
+	    	boolean isSecure = req.isSecure();
+	    	String hostname = req.getServerName();
+	    	int port = req.getServerPort();
+	    	if(simpleName.startsWith("/"))
+	    		simpleName = simpleName.substring(1);
+	    	
+			try {
+				resolvedURI = (String) BridgeClient.invoke(null, null, 
+						SERVICE_CLASS_NAME, SERVICE_METHOD_NAME, SERVICE_METHOD_ARG_TYPES,
+						new Object[] {isSecure, hostname, port, simpleName});
+			} catch (Exception e) {
+				throw new ServletException(e);
+			}
+    	}
 
 		if(resolvedURI != null)
 			resp.sendRedirect(resolvedURI);
