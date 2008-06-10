@@ -28,10 +28,17 @@
  */
 package com.sitescape.team.samples.remoteapp.web;
 
+import static com.sitescape.util.search.Constants.ENTRY_TYPE_ENTRY;
+import static com.sitescape.util.search.Constants.ENTRY_TYPE_FIELD;
+import static com.sitescape.util.search.Constants.FAMILY_FIELD;
+import static com.sitescape.util.search.Constants.FAMILY_FIELD_TASK;
+import static com.sitescape.util.search.Restrictions.eq;
+
 import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Map;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -58,7 +65,9 @@ import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.util.search.Constants;
+import com.sitescape.util.search.Criteria;
 import com.sitescape.team.search.filter.SearchFilterKeys;
+import com.sitescape.team.task.TaskHelper;
 import com.sitescape.util.servlet.StringServletResponse;
 
 public class AddEntryServlet extends HttpServlet {
@@ -72,6 +81,13 @@ public class AddEntryServlet extends HttpServlet {
 	private static final String PARAMETER_NAME_TOKEN_SCOPE = "ss_token_scope";
 	private static final String PARAMETER_NAME_RENDERABLE = "ss_renderable";
 
+	private static final String PARAMETER_FORM_TITLE = "title";
+	private static final String PARAMETER_FORM_DESCRIPTION = "description";
+	private static final String PARAMETER_FORM_BINDER_ID = "binderId";
+	private static final String PARAMETER_FORM_DEFINITION_ID = "definitionId";
+	private static final String PARAMETER_FORM_BUTTON_OK = "okBtn";
+	private static final String PARAMETER_FORM_BUTTON_CANCEL = "cancelBtn";
+
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
 	throws ServletException, IOException {
 		try {
@@ -83,16 +99,45 @@ public class AddEntryServlet extends HttpServlet {
 			boolean renderable = Boolean.parseBoolean(req.getParameter(PARAMETER_NAME_RENDERABLE));
 			String pathInfo = req.getPathInfo();
 			if (pathInfo.equals("/form")) {
+				String binderId = req.getParameter(PARAMETER_FORM_BINDER_ID);
+				String definitionId = ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF;
 				String jsp = "/WEB-INF/jsp/addentry/entry_form.jsp";				
 				RequestDispatcher rd = req.getRequestDispatcher(jsp);	
 				StringServletResponse resp2 = new StringServletResponse(resp);	
+				req.setAttribute(PARAMETER_FORM_BINDER_ID, binderId);
+				req.setAttribute(PARAMETER_FORM_DEFINITION_ID, definitionId);
 				rd.include(req, resp2);	
 				resp.getWriter().print(resp2.getString());
-			} else {
 			
-				Document tasksDoc = getTaskList(accessToken, Long.valueOf(userId));
+			} else if (pathInfo.equals("/submit")) {
+				Map params = req.getParameterMap();
+				String result = "";
+				if (params.containsKey(PARAMETER_FORM_BUTTON_OK)) {
+					String title = req.getParameter(PARAMETER_FORM_TITLE);
+					String description = req.getParameter(PARAMETER_FORM_DESCRIPTION);
+					String binderId = req.getParameter(PARAMETER_FORM_BINDER_ID);
+					String definitionId = req.getParameter(PARAMETER_FORM_DEFINITION_ID);
+
+					TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+					locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);
+					TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator
+							.getTeamingService();
+
+					Document entryDoc = DocumentHelper.createDocument();
+					Element rootElement = entryDoc.addElement(Constants.ENTRY_TYPE_FIELD);
+					Element titleElement = rootElement.addElement(Constants.TITLE_FIELD);
+					titleElement.setText(title);
+					Element descriptionElement = rootElement.addElement(Constants.DESC_FIELD);
+					descriptionElement.setText(description);
+					Long entryId = stub.folder_addFolderEntry(accessToken, new Long(binderId), 
+							definitionId, entryDoc.asXML(), null);
+				} else if (params.containsKey(PARAMETER_FORM_BUTTON_CANCEL)) {
+					//Cancel button
+				}
+				resp.getWriter().print(result);
 				
-				String result = tasksDoc.toString();
+			} else {
+				String result = "error: URL must end with \"/form\" or \"/submit\"";
 				
 				resp.getWriter().print(result);
 			}
@@ -103,27 +148,5 @@ public class AddEntryServlet extends HttpServlet {
 		catch(Exception e) {
 			throw new ServletException(e);
 		}
-	}
-
-	private Document getTaskList(String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
-		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
-		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);
-		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
-		Document query = DocumentHelper.createDocument();
-		Element rootElement = query.addElement(Constants.AND_ELEMENT);
-		Element field = rootElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.FAMILY_FIELD);
-		Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(Constants.FAMILY_FIELD_TASK);
-		field = rootElement.addElement(Constants.FIELD_ELEMENT);
-		field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
-		child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
-		child.setText(Constants.ENTRY_TYPE_ENTRY);
-		String searchResultsAsXML = stub.search_search(accessToken, query.asXML(), 0, 10);
-		
-		Document doc = DocumentHelper.parseText(searchResultsAsXML);
-		Element rootElem = doc.getRootElement();
-		
-		return doc;
 	}
 }
