@@ -39,6 +39,14 @@
 		/>
 	</target>
 
+	<target name="deploy-jsp">
+		<copy todir="${app.server.dir}/webapps/remoteapp/WEB-INF/jsp">
+			<fileset dir="war/WEB-INF/jsp"
+				includes="**/*"
+			/>
+		</copy>
+	</target>
+	
 	<target name="deploy-jar" depends="jar">
 		<antcall target="deploy-jar">
 			<param name="deploy-support.jar.file" value="${jar.file}" />
