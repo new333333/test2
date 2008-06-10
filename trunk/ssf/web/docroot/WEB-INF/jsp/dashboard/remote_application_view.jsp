@@ -31,5 +31,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${!empty ssDashboard.dashboard.components[ssComponentId].data}">
-<ssf:remoteAccessory applicationId="${ssDashboard.dashboard.components[ssComponentId].data.applicationId}"/>
+<ssf:remoteAccessory applicationId="${ssDashboard.dashboard.components[ssComponentId].data.applicationId}">
+  <ssf:param name="binderId" value="${ssBinder.id}"/>
+</ssf:remoteAccessory>
 </c:if>

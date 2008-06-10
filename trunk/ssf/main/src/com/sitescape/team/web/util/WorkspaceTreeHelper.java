@@ -169,6 +169,7 @@ public class WorkspaceTreeHelper {
 			binderId = workspaceId;
 			entryId = null;
 		}
+		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
 
  		//Remember the last binder viewed
 		String namespace = response.getNamespace();
@@ -227,6 +228,7 @@ public class WorkspaceTreeHelper {
 				}
 			}
 
+			//Set up more standard beans
 			Map userProperties = bs.getProfileModule().getUserProperties(user.getId()).getProperties();
 			model.put(WebKeys.USER_PROPERTIES, userProperties);
 			UserProperties userFolderProperties = bs.getProfileModule().getUserProperties(user.getId(), binderId);
@@ -286,7 +288,6 @@ public class WorkspaceTreeHelper {
 		}
 		
 		//Set up the standard beans
-		BinderHelper.setupStandardBeans(bs, request, response, model, binderId);
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.FOLDER, binder);
 		model.put(WebKeys.DEFINITION_ENTRY, binder);
