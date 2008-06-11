@@ -20,6 +20,7 @@ Description:
 <br/>
 <input type="submit" name="okBtn" value="OK"/>
 
+<input type="hidden" name="ss_access_token" value="${ss_access_token}"/>
 <input type="hidden" name="binderId" value="${binderId}"/>
 <input type="hidden" name="definitionId" value="${definitionId}"/>
 

@@ -104,6 +104,8 @@ public class AddEntryServlet extends HttpServlet {
 				String jsp = "/WEB-INF/jsp/addentry/entry_form.jsp";				
 				RequestDispatcher rd = req.getRequestDispatcher(jsp);	
 				StringServletResponse resp2 = new StringServletResponse(resp);	
+				req.setAttribute(PARAMETER_NAME_ACCESS_TOKEN, accessToken);
+				req.setAttribute(PARAMETER_NAME_USER_ID, userId);
 				req.setAttribute(PARAMETER_FORM_BINDER_ID, binderId);
 				req.setAttribute(PARAMETER_FORM_DEFINITION_ID, definitionId);
 				rd.include(req, resp2);	
@@ -124,10 +126,14 @@ public class AddEntryServlet extends HttpServlet {
 							.getTeamingService();
 
 					Document entryDoc = DocumentHelper.createDocument();
-					Element rootElement = entryDoc.addElement(Constants.ENTRY_TYPE_FIELD);
-					Element titleElement = rootElement.addElement(Constants.TITLE_FIELD);
+					Element rootElement = entryDoc.addElement("entry");
+					Element titleElement = rootElement.addElement("attribute");
+					titleElement.addAttribute("name", "title");
 					titleElement.setText(title);
-					Element descriptionElement = rootElement.addElement(Constants.DESC_FIELD);
+					Element descriptionElement = rootElement.addElement("attribute");
+					descriptionElement.addAttribute("name", "description");
+					descriptionElement.addAttribute("type", "description");
+					descriptionElement.addAttribute("format", "1");
 					descriptionElement.setText(description);
 					Long entryId = stub.folder_addFolderEntry(accessToken, new Long(binderId), 
 							definitionId, entryDoc.asXML(), null);

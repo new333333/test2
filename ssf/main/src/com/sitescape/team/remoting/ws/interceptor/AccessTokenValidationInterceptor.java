@@ -88,7 +88,11 @@ public class AccessTokenValidationInterceptor implements MethodInterceptor {
 	            rc.setBinderAccessConstraints(token.getBinderAccessConstraints());
 			}
 			else {
-				throw new IllegalArgumentException("Argument type mismatch: " + args[0].getClass().getName());
+				if (args[0] == null) {
+					throw new IllegalArgumentException("Argument type mismatch: null");
+				} else {
+					throw new IllegalArgumentException("Argument type mismatch: " + args[0].getClass().getName());
+				}
 			}
 		}
 		

@@ -132,7 +132,7 @@ public class WSTesterServlet extends HttpServlet {
 						result = stub.search_search(accessToken, query, new Integer(start), new Integer(max));
 						
 					}
-					resp.getWriter().print(result);
+					
 				} else if (params.containsKey(PARAMETER_FORM_BUTTON_CANCEL)) {
 					//Cancel button
 				}
