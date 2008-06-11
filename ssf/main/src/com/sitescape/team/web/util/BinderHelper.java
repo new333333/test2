@@ -607,46 +607,12 @@ public class BinderHelper {
 				bs.getProfileModule().setUserProperty(user.getId(), 
 						ObjectKeys.USER_PROPERTY_PERMALINK_URL, url.toString());
 		}
-		setPortalUrl(bs, request, response);
-	}
-	
-	//Routine to set the user's portal url 
-	static public void setPortalUrl(AllModulesInjected bs, 
-			RenderRequest request, RenderResponse response) {
-		try {
-			if (PortletAdapterUtil.isRunByAdapter(request)) return;
-		} catch(Exception e) {return;}
-		
-		User user = null;
-		try {
-			user = RequestContextHolder.getRequestContext().getUser();
-		} catch(Exception e) {
-			//TODO If there is no user, then get the permalink of the guest account
-			return;
-		}
-		UserProperties userProperties = (UserProperties) bs.getProfileModule().getUserProperties(user.getId());
-		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PORTAL_URL);
-		PortletURL pUrl = response.createRenderURL();
-		try {pUrl.setWindowState(WindowState.NORMAL);} catch(Exception e) {};
-			if (url == null || (!url.equals("") && !url.equals(pUrl.toString()))) 
-				bs.getProfileModule().setUserProperty(user.getId(), 
-						ObjectKeys.USER_PROPERTY_PORTAL_URL, pUrl.toString());
 	}
 	
 	//Routine to get the user's portal url 
 	//  This routine is callable from an adaptor controller
 	static public String getPortalUrl(AllModulesInjected bs) {
-		User user = null;
-		try {
-			user = RequestContextHolder.getRequestContext().getUser();
-		} catch(Exception e) {
-			//No user, return the default
-			return SPropsUtil.getString("permalink.fallback.url");
-		}
-		UserProperties userProperties = (UserProperties) bs.getProfileModule().getUserProperties(user.getId());
-		String url = (String)userProperties.getProperty(ObjectKeys.USER_PROPERTY_PORTAL_URL);
-		if (url == null || url.equals("")) url = SPropsUtil.getString("permalink.fallback.url");
-		return url;
+		return SPropsUtil.getString("permalink.fallback.url");
 	}
 	
 	//Routine to get a portal url that points to a binder or entry 
