@@ -91,8 +91,7 @@ public class ViewFileController extends SAbstractController {
 			//This is a request to view a recently uploaded file in the temp area
 			String shortFileName = WebHelper.getFileName(fileId);	
 			response.setContentType(mimeTypes.getContentType(shortFileName));
-			response.setHeader("Cache-Control", "private");
-			response.setHeader("Pragma", "no-cache");
+			response.setHeader("Cache-Control", "no-cache");
 			String attachment = "attachment; ";
 			response.setHeader(
 						"Content-Disposition",
@@ -226,10 +225,10 @@ public class ViewFileController extends SAbstractController {
 			if (fa != null) {
 				String shortFileName = FileUtil.getShortFileName(fa.getFileItem().getName());	
 				response.setContentType(mimeTypes.getContentType(shortFileName));
+				response.setHeader("Cache-Control", "private");
 				if (fileTime.equals("") || 
 						!fileTime.equals(String.valueOf(fa.getModification().getDate().getTime()))) {
-					response.setHeader("Cache-Control", "private");
-					response.setHeader("Pragma", "no-cache");
+					response.setHeader("Cache-Control", "no-cache");
 				}
 				String attachment = "";
 				if (!downloadFile.equals("")) attachment = "attachment; ";
@@ -291,8 +290,7 @@ public class ViewFileController extends SAbstractController {
 			java.io.InputStream in = TempFileUtil.openTempFile(fileId);
 
 			response.setContentType("application/zip");
-			response.setHeader("Cache-Control", "private");
-			response.setHeader("Pragma", "no-cache");
+			response.setHeader("Cache-Control", "no-cache");
 			if (Validator.isNotNull(fileTitle)) {
 				String attachment = "attachment; ";
 				response.setHeader(

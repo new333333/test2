@@ -90,8 +90,7 @@ public class ViewICalController extends SAbstractController {
 
 		response.resetBuffer();
 		response.setContentType(MailModule.CONTENT_TYPE_CALENDAR + "; charset=" + XmlFileUtil.FILE_ENCODING);
-		response.setHeader("Cache-Control", "private");
-		response.setHeader("Pragma", "no-cache");
+		response.setHeader("Cache-Control", "no-cache");
 		
 		CalendarOutputter calendarOutputter = new CalendarOutputter();
 		Calendar calendar = getIcalModule().generate(entry, entry.getEvents(), 

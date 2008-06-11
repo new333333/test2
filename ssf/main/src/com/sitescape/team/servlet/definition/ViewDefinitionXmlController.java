@@ -55,8 +55,7 @@ public class ViewDefinitionXmlController extends SAbstractController {
 			data = workflowDoc.asXML();
 		}
 		response.setContentType("text/xml");
-		response.setHeader("Cache-Control", "private");
-		response.setHeader("Pragma", "no-cache");
+		response.setHeader("Cache-Control", "no-cache");
 		response.getOutputStream().write(data.getBytes());
 
 		response.getOutputStream().flush();
