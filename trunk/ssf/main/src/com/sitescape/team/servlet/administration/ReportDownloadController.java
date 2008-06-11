@@ -119,8 +119,7 @@ public class ReportDownloadController extends  SAbstractController {
 		}
 		if (formData.containsKey("forumOkBtn")) {
 			response.setContentType(mimeTypes.getContentType("report.csv"));
-			response.setHeader("Cache-Control", "private");
-			response.setHeader("Pragma", "no-cache");
+			response.setHeader("Cache-Control", "no-cache");
 			response.setHeader(
 						"Content-Disposition",
 						"attachment; filename=\"report.csv\"");
