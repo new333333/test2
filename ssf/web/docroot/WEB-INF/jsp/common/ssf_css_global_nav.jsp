@@ -45,11 +45,11 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	/*BRANDING*/
 #ss_branding{
 	width:100%;
-	margin:0px;
-	padding:0px;
-	height:100px;       /* Need to define specific height for graphics */
+	margin-top: 0px !important;
+	padding: 0px !important;
+	height:60px;       /* Need to define specific height for graphics */
 	overflow:hidden;	/* This chops off any overhanging divs */
-	}
+	}	
 		
 	/* MASTHEAD CODE */
 	
@@ -81,8 +81,10 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-size: 10px !important;
 	color: #FFFFFF !important;
 	background-color: #5A9A98;
-	text-align: center;
-	vertical-align: bottom;
+	text-align: left;
+	margin:0px;
+	padding-left:3px;
+	white-space:nowrap !important;
 }
 .ss_searchtext a{
 	color: #FFFFFF !important;
@@ -100,6 +102,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	padding-right: 4px;
 	padding-bottom: 0px;
 	padding-left: 0px;
+	white-space:nowrap !important;
 }
 .ss_find {
 	height:30px;
@@ -146,9 +149,8 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-weight: normal;
 	color: #FFFFFF;
 	font-style: oblique;
-	text-align: right;
 	line-height: 16px;
-	padding-right: 5px;
+	padding-right: 10px;
 }
 .ss_mastheadtoplinks {
 
@@ -167,14 +169,19 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-weight: normal;
 	color: #FFFFFF;
 }
-.ss_masthead_favorites 
+.ss_masthead_portals 
 	{color: #375E5C !important;}
 	
-.ss_masthead_favorites a
+.ss_masthead_portals a
 	{color: #375E5C !important;}
-.ss_masthead_favorites a:hover{
+.ss_masthead_portals a:hover{
 	color: #FF9000 !important;
 }	
+.ss_masthead_favorites a
+	{color: #5A9A98 !important;}
+ss_masthead_favorites a:hover{
+	color: #FF9000 !important;
+}
 
 
 	/* NAVIGATION AREA FOR STATUS LINE */

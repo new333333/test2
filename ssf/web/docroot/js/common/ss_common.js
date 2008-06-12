@@ -121,8 +121,8 @@ if (!ss_common_loaded || ss_common_loaded == undefined || ss_common_loaded == "u
 	var ss_helpSystemRequestInProgress = 0;
 	var ss_helpSystemPanelMarginOffset = 4;
 	
-	var ss_favoritesPaneTopOffset = 5;
-	var ss_favoritesPaneLeftOffset = 4;
+	var ss_favoritesPaneTopOffset = 65;
+	var ss_favoritesPaneLeftOffset = 400;
 
 	var ss_dashboardClones = new Array();
 	var ss_dashboardSliderObj = null;
@@ -1480,6 +1480,7 @@ function ss_getDivLeft(divName) {
     }
     return parseInt(left);
 }
+
 
 function ss_getDivScrollTop(divName) {
     var obj = self.document.getElementById(divName)
@@ -3966,7 +3967,7 @@ function ssFavorites(namespace) {
 		fObj.style.display = "block";
 		var w = ss_getObjectWidth(fObj)
 		ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_favorites" + namespace) + ss_favoritesPaneTopOffset))
-		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_favorites" + namespace)))
+		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_favorites" + "namespace")+ ss_favoritesPaneLeftOffset))
 		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
 		dojo.html.hide("ss_favorites_editor" + namespace);
     	dojo.html.show(fObj);
@@ -4166,7 +4167,7 @@ function ssTeams(namespace) {
 		fObj.style.display = "block";
 		var w = ss_getObjectWidth(fObj)
 		ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_myteams" + namespace) + ss_favoritesPaneTopOffset))
-		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)))
+		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)+ ss_favoritesPaneLeftOffset))
 		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
 	    dojo.html.show(fObj);
 		dojo.html.setDisplay(fObj, "block");
