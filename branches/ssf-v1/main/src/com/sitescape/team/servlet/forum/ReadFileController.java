@@ -121,8 +121,7 @@ public class ReadFileController extends SAbstractController {
 					String contentType = mimeTypes.getContentType(shortFileName);
 					response.setContentType(contentType);
 					response.setHeader("Cache-Control", "private");
-					if (fileTime.equals("") || 
-							!fileTime.equals(String.valueOf(fa.getModification().getDate().getTime()))) {
+					if (fileTime.equals("")) {
 						response.setHeader("Cache-Control", "no-cache");
 						//response.setHeader("Pragma", "no-cache");
 					}
