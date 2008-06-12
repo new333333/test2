@@ -163,15 +163,15 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 
 <div id="ss_top_nav_wrapper">
 <!-- Begin New Header  -->  
-<table width="100%" height="60" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr class="ss_masthead_top" bgcolor="#FFFFFF">
-    <td align="left" valign="middle">
+    <td align="left">
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
       <tr>
-        <td width="59%" rowspan="3">
+        <td width="59%" rowspan="3" valign="top">
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_binder_branding.jsp" />
         </td>
-        <td height="24" colspan="2" class="ss_mastheadtoplinks ss_masthead_favorites" >
+        <td height="24" colspan="2" class="ss_mastheadtoplinks ss_masthead_portals" >
         	<ssHelpSpot helpId="navigation_bar/my_portal_button" offsetY="-10" offsetX="-5" 
 			      title="<ssf:nlt tag="helpSpot.myPortalButton" text="My Portal"/>">
 			  </ssHelpSpot>
@@ -214,22 +214,31 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				  ><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url"/></form>
 			</ssf:ifNotLoggedIn></td>
         <td width="6%" height="24" class="ss_workspace">&nbsp;</span></span></td>
-        <td width="3%" height="24" class="ss_workspace">
-        	<img title="<ssf:nlt tag="navigation.print"/>" <ssf:alt tag="navigation.print"/> src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21" align="right" />
-        </td>
-        <td width="4%">
-        	<img title="<ssf:nlt tag="navigation.help"/>"<ssf:alt tag="navigation.help"/> src="<html:rootPath/>images/pics/masthead/mastheadHelp.png" width="19" height="21" hspace="2" />
+        <td width="3%" height="24" class="ss_workspace" colspan="2">
+        	
+        	
+			<table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
+		
+			<td valign="middle" style="height: 22px; white-space: nowrap;">
+			<a href="javascript: window.print();"><img border="0" 
+    		class="ss_print_button"
+    		alt="<ssf:nlt tag="navigation.print"/>" title="<ssf:nlt tag="navigation.print"/>"
+    		src="<html:rootPath/>images/pics/masthead/masthead_printer.png" width="23" height="21" align="right" /></a></td>
+			<td><a href="javascript: ss_helpSystem.run();"><img border="0" style="margin-left: 10px; margin-right: 10px;" title="<ssf:nlt tag="navigation.help"/>"
+    		<ssf:alt tag="navigation.help"/> src="<html:rootPath/>images/pics/masthead/mastheadHelp.png" width="19" height="21" hspace="2" /></a></td>
+			</tr></tbody></table>
+			
         </td>
       </tr>
       <tr>
-        <td width="24%" height="19" class="ss_mastheadtoplinks">
+        <td width="24%" height="19" class="ss_mastheadtoplinks ss_masthead_favorites">
         	<!-- Begin Favorites -->  
         	<a title="<ssf:nlt tag="navigation.favorites"/>"
 	  			href="javascript: ;" 
 	  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
               ><ssf:nlt tag="navigation.favorites"/> <img border="0" 
               src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
-		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="3" offsetY="13"  
+		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="-15" offsetY="1"  
 		          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 			  </ssHelpSpot>
 		      <span class="ss_navbar_favorites${renderResponse.namespace}" 
@@ -245,13 +254,15 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			  		onClick="ssMyTeams${renderResponse.namespace}.showAccessible()"
 				</ssf:ifaccessible>
               ><ssf:nlt tag="navigation.myTeams"/> <img border="0" 
-              src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> </a>
-		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="3" offsetY="13"  
+              src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> 
+		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="5" offsetY="1"  
 		          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
-			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}">
+		      </ssHelpSpot>  
+		      </a>  
+			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}" style="display:none;">
 			      	
 			    </div>
-			  </ssHelpSpot>
+			  
 				<ssf:ifnotaccessible>
   					<span class="ss_navbar_myteams${renderResponse.namespace}"
       				style="visibility:hidden;margin:20px 0px 0px 0px;padding:0px;">
@@ -271,97 +282,111 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   					</span>
 				</ssf:ifaccessible>
  		</td>
-        <td height="19" colspan="3" valign="top"><span class="ss_mastheadName">${ssUser.title}</span></td>
+        <td height="19" colspan="4" valign="top" align="right"><span class="ss_mastheadName">${ssUser.title}</span></td>
 	    </tr>
       <tr>
-        <td colspan="4">&nbsp;</td>
+        <td colspan="5">&nbsp;</td>
       </tr>
     </table>
    </td>
   </tr>
   <tr>
-    <td colspan="2" bgcolor="#5A9A98">
-              <!-- Beginning of Search Buttons -->
-    <table align="center" border="0" cellpadding="0" cellspacing="0" width="643">
-      <div>
-        <tbody>
-          <tr>
-            <td width="56"><table align="left" border="0" cellpadding="0" cellspacing="0" width="52">
-              <tbody>
-                <tr>
-                  <td class="ss_search_title"><ssf:nlt tag="navigation.search"/></td>
-                </tr>
-              </tbody>
-            </table></td>
-          <td width="127">
-			<ssf:ifnotaccessible>
-			<div class="ss_searchtext">
-				  
-			<a 
-				  href="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
-				  name="action" value="advanced_search"/><ssf:param 
-				  name="tabTitle" value="SEARCH FORM"/><ssf:param 
-				  name="newTab" value="0"/></ssf:url>"
-				><ssf:nlt tag="navigation.search.advanced"/></a>
-		</div>		
-	<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" 
-		  onMouseOver="this.style.cursor = 'pointer';">
-     		<form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
-		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
-		  		style="display:inline;"
-		  		action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
-		  			name="newTab" value="1"/></ssf:url>">
-		  			
-			  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
-                 <c:if test="<%= BrowserSniffer.is_ie(request) %>">
-                   offsetX="159" 
-                 </c:if>
-                 <c:if test="<%= !BrowserSniffer.is_ie(request) %>">
-                   offsetX="147" 
-                 </c:if>
-			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
-					<input name="searchText" style="width: 100px;" type="text" /> 
-					<a 
-					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
-					  <img 
-					  title="<ssf:nlt tag="alt.search"/>"
-					  <ssf:alt tag="alt.search"/> src="<html:rootPath/>images/masthead/search.png" width="19" height="34" border="0"  /></a>
-					<input type="hidden" name="searchBtn" value="searchBtn"/>
-					<input type="hidden" name="quickSearch" value="true"/>					
-					<input type="hidden" name="operation" value="ss_searchResults"/>
-			  </ssHelpSpot>
-			 
-				<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
-				  title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
-				  onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
-				  '<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
-				  name="newTab" value="1"/></ssf:url>');">
-				  <img src="<html:imagesPath/>pics/menudown.gif" /></a>
-				<div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
-				
-			</form>
-     	</div>		
-	
-		
+    <td bgcolor="#5A9A98">
+    <!-- Beginning of Search Buttons -->
+    <table align="center" border="0" cellpadding="0" cellspacing="0" width="90%">
+       <tbody>
+         <tr>
+          
+          <td width="35%">
+<table border="0" cellpadding="0" cellspacing="0"  align="right">
+<tbody>
+<tr>
+	<td rowspan="2">
+            <div class="ss_search_title" align="right"><ssf:nlt tag="navigation.search"/></div>
+    </td>
+<td>
+	<ssf:ifnotaccessible>
+		<div class="ss_searchtext">		  
+		<a 
+			href="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
+			name="action" value="advanced_search"/><ssf:param 
+			name="tabTitle" value="SEARCH FORM"/><ssf:param 
+			name="newTab" value="0"/></ssf:url>"
+			><ssf:nlt tag="navigation.search.advanced"/>
+		</a>
 	</div>
-</ssf:ifnotaccessible>
-<ssf:ifaccessible>
-	<div class="ss_global_toolbar_accessible">
+	</ssf:ifnotaccessible>
+
+	<ssf:ifaccessible>
+		<div class="ss_searchtext">
 		
-			<label for="ss_searchSearchText${renderResponse.namespace}">
-				
-				<ssf:nlt tag="navigation.search"/>
-			</label>
-			  <span class="ss_searchtext">
-			    <a class="ss_advanced ss_fineprint" 
-			  	href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+			<a class="ss_advanced ss_fineprint" 
+				href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 			  	name="binderId" value="${ssBinder.id}"/><ssf:param 
 			  	name="tabTitle" value="SEARCH FORM"/><ssf:param 
 			  	name="newTab" value="0"/></ssf:url>"
-				><ssf:nlt tag="navigation.search.advanced"/></a>
-			</span>
-	</div>
-	
+				><ssf:nlt tag="navigation.search.advanced"/>
+			</a>
+		</div>
+	</ssf:ifaccessible>
+</td>
+<td>
+	&nbsp;
+</td>
+<td>
+	&nbsp;
+</td>
+</tr>
+<tr>
+<td colspan="3">
+	<div width="100%" class="ss_nowrap">
+
+	<ssf:ifnotaccessible>
+
+<div class="ss_global_toolbar_search" id="ss_navbarSearchButton${renderResponse.namespace}" 
+		  		onMouseOver="this.style.cursor = 'pointer';">
+
+	<form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
+		  	name="ss_simpleSearchForm${renderResponse.namespace}" 
+		  	style="display:inline;"
+		  	action="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+		  	name="newTab" value="1"/></ssf:url>">
+		  			
+	  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="5" 
+                 <c:if test="<%= BrowserSniffer.is_ie(request) %>">
+                   offsetX="120" 
+                 </c:if>
+                 <c:if test="<%= !BrowserSniffer.is_ie(request) %>">
+                   offsetX="110" 
+                 </c:if>
+			    title="<ssf:nlt tag="helpSpot.searchButton"/>">
+			
+		<input name="searchText" style="width: 100px;" type="text" /> 
+					
+		<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
+			
+			<img title="<ssf:nlt tag="alt.search"/>"
+			<ssf:alt tag="alt.search"/> src="<html:rootPath/>images/pics/masthead/search.png" width="19" height="20" border="0" align="absmiddle" />
+		</a>
+				<input type="hidden" name="searchBtn" value="searchBtn"/>
+				<input type="hidden" name="quickSearch" value="true"/>					
+				<input type="hidden" name="operation" value="ss_searchResults"/>
+	  </ssHelpSpot>
+			 
+		<a class="ss_savedQueries" alt="<ssf:nlt tag="searchResult.savedSearchTitle"/>" 
+				title="<ssf:nlt tag="searchResult.savedSearchTitle"/>" href="javascript: // ;" 
+				onclick="ss_showSavedQueriesList(this, 'ss_navbarPopupPane${renderResponse.namespace}',
+				'<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+				 name="newTab" value="1"/></ssf:url>');">
+				 <img border="0" src="<html:imagesPath/>pics/menudown.gif"/>
+		</a>
+	<div id="ss_navbarPopupPane${renderResponse.namespace}" class="ss_navbarPopupPane"></div>
+				
+	</form></div>
+</ssf:ifnotaccessible>
+		
+<ssf:ifaccessible>
+			
 	<div class="ss_global_toolbar_search"  id="ss_navbarSearchButton${renderResponse.namespace}" >
 		  <ssHelpSpot helpId="navigation_bar/search_button" offsetY="-12" 
                  <c:if test="<%= BrowserSniffer.is_ie(request) %>">
@@ -370,187 +395,191 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
                  <c:if test="<%= !BrowserSniffer.is_ie(request) %>">
                    offsetX="147" 
                  </c:if>
-		    title="<ssf:nlt tag="helpSpot.searchButton"/>">
+		    	title="<ssf:nlt tag="helpSpot.searchButton"/>">
 		  </ssHelpSpot>
-     		<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
+     	
+     	<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
 		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
 		  		action="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
-		  			name="action" value="advanced_search"/><ssf:param 
-		  			name="newTab" value="1"/></ssf:url>">
-					<input name="searchText" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
-					<a  
-					  href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
-					  <img src="<html:imagesPath/>pics/masthead/search.png" width="19" height="34" border="0" 
-					  title="<ssf:nlt tag="alt.search"/>"
-					  <ssf:alt tag="alt.search"/> /> 
-					</a>
+		  		name="action" value="advanced_search"/><ssf:param 
+		  		name="newTab" value="1"/></ssf:url>">
+					
+				<input name="searchText" style="width: 100px;" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
+				<a  
+					href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
+					<img src="<html:rootPath/>images/pics/masthead/search.png" width="19" height="20" border="0" align="absmiddle"
+					title="<ssf:nlt tag="alt.search"/>"
+					<ssf:alt tag="alt.search"/> /> 
+				</a>
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
-			</form>
+		</form>
      </div>
-     	
-
+     
 </ssf:ifaccessible>
+</div>
+       </td>
+		</tr>
+</tbody>
+</table>
+
       
-            </td>
-            
-            
-            <td width="12">
-            <!-- Beginning of Find Bar:  Find People/Places/Tags  --> 
-              <table align="left" border="0" cellpadding="0" cellspacing="0" width="12	">
-               <tbody>
-                <tr>
-                  <td><img src="<html:rootPath/>images/pics/masthead/whitepixel.jpg" width="1" height="30" hspace="2" /></td>
-                </tr>
-              </tbody>
-             </table></td>
-            <td class="ss_search_title" width="35">
-            	Find</td>
-            <td class="ss_searchtext">
-            <!-- Find People --> 
-             <table align="center" border="0" cellpadding="0" cellspacing="0" width="79">
-              <tbody>
-                <tr valign="bottom">
-                  <td class="ss_searchtext">
+       </td>
+ 
+       <!-- Beginning of Find Bar:  Find People/Places/Tags  --> 
+       <td width="1%">
+          <div align="center">
+             	<img src="<html:rootPath/>images/pics/masthead/whitepixel.jpg" width="1" height="30" hspace="6"/>
+             </div>
+       </td>
+       <td width="5%">
+            	<div  class="ss_search_title" >
+            	<ssf:nlt tag="navigation.find"/>
+            	</div>
+       </td>
+       <td width="12%">
+       <!-- Find People --> 
+        <div valign="middle">     
+        		<div class="ss_searchtext">
                   	<ssf:ifnotaccessible>
-						<ssf:nlt tag="navigation.findUser"/>
+                  	
+						<span style="padding-left:5px;"><ssf:nlt tag="navigation.findUser"/></span>
+						<div class="ss_global_toolbar_search" id="ss_navbarFindUserButton${renderResponse.namespace}" onMouseOver="this.style.cursor = 'pointer';">
+							
+							<form class="ss_form" method="post" id="ss_findUserForm${renderResponse.namespace}" 
+			  					name="ss_findUserForm${renderResponse.namespace}" 
+			  					style="display:inline;"
+			  					action="<ssf:url action="findUser" actionUrl="true"/>">
+				  				<ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
+				    			formElement="searchText" 
+				    			type="user"
+				    			width="70px"
+				    			singleItem="true"/> 
+							</form>
+
+						</div>	
 					</ssf:ifnotaccessible>
-					<ssf:ifnotaccessible>
-						<div id="ss_navbarFindUserButton${renderResponse.namespace}"
-     					onMouseOver="this.style.cursor = 'pointer';">
-						</div>
-					</ssf:ifnotaccessible>
-				  </td>
-                </tr>
-                <tr>
-                  <td><form method="post" id="ss_findUserForm${renderResponse.namespace}" 
-			  				name="ss_findUserForm${renderResponse.namespace}" 
-			  				action="<ssf:url action="findUser" actionUrl="true"/>">
-				  			<ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
-				    		formElement="searchText" 
-				    		type="user"
-				    		width="79px"
-				    		singleItem="true"/> 
-						</form></td>
-                </tr>
-              </tbody>
-             </table></td>
-            <td class="ss_searchtext">
+
+               		<ssf:ifaccessible>
+	  					<span style="padding-left:5px;">
+	  					<label for="ss_navbarFindPlacesButton${renderResponse.namespace}"><ssf:nlt tag="navigation.findUser"/></label>
+	  					</span>
+	  						<form method="post" id="ss_findUserForm${renderResponse.namespace}" 
+			  					name="ss_findUserForm${renderResponse.namespace}" 
+			  					style="display:inline;"
+			  					action="<ssf:url action="findUser" actionUrl="true"/>">
+				  				<ssf:find formName="ss_findUserForm${renderResponse.namespace}" 
+				    			formElement="searchText" 
+				    			type="user"
+				    			width="70px"
+				    			singleItem="true"/> 
+							</form>
+		 			</ssf:ifaccessible>
+			
+				</div>		
+			</div>				
+			</td>
+            
+            <td width="12%">
             <!-- Find Place -->
-            <table align="center" border="0" cellpadding="0" cellspacing="0" width="79">
-              <tbody>
-                <tr valign="bottom">
-                  <td class="ss_searchtext">
-            <ssf:ifnotaccessible>
-				<ssf:nlt tag="navigation.findPlace"/>
-			</ssf:ifnotaccessible>
-	
-			<ssf:ifnotaccessible>
-				<div class="ss_global_toolbar_findUser"  id="ss_navbarFindPlacesButton${renderResponse.namespace}"
-     			onMouseOver="this.style.cursor = 'pointer';">
-				<div>
-				</td>
-                </tr>
-                <tr>
-                  <td>
+            
+            	<ssf:ifnotaccessible>
+            	<div class="ss_searchtext">
+					<span style="padding-left:5px;"><ssf:nlt tag="navigation.findPlace"/></span>
+					<div class="ss_global_toolbar_search" id="ss_navbarFindPlacesButton${renderResponse.namespace}" 
+					onMouseOver="this.style.cursor = 'pointer';">
+					
+						<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
+			  			name="ss_findPlacesForm${renderResponse.namespace}" 
+			  			style="display:inline;"
+			  			action="<ssf:url action="findUser" actionUrl="true"/>">
+				  		<ssf:find 
+				    		formName="ss_findPlacesForm${renderResponse.namespace}" 
+				    		formElement="searchText" 
+				    		type="places"
+				    		width="70px" singleItem="true"/> 
+				    	
+						</form>
+					</div>
+				</div>
+				</ssf:ifnotaccessible>
+				<ssf:ifaccessible>
+			<div class="ss_searchtext">
+	  			<span style="padding-left:5px;">
+	  			<label for="ss_navbarFindPlacesButton${renderResponse.namespace}"><ssf:nlt tag="navigation.findPlace"/></label>
+	  			</span>
+			
 				<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
 			  		name="ss_findPlacesForm${renderResponse.namespace}" 
-			  		action="<ssf:url action="findUser" actionUrl="true"/>">
-				  	<ssf:find 
-				    formName="ss_findPlacesForm${renderResponse.namespace}" 
-				    formElement="searchText" 
-				    type="places"
-				    width="79px" singleItem="true"/> 
+			  		style="display:inline;"
+			  		action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
+				 	<ssf:find 
+				    	formName="ss_findPlacesForm${renderResponse.namespace}" 
+				    	formElement="searchText" 
+				    	type="places"
+				    	width="70px" singleItem="true"> 
+				  		<ssf:param name="label" useBody="true">
+				    		<ssf:nlt tag="navigation.findPlace"/>
+				  		</ssf:param>
+				 	</ssf:find>
 				</form>
-				</div>
-				</div>
-		</ssf:ifnotaccessible>
-		<ssf:ifaccessible>
-		<div>
-	  		<label for="ss_navbarFindPlacesButton${renderResponse.namespace}"><ssf:nlt tag="navigation.findPlace"/></label>
-		 <div>
-			<form method="post" id="ss_findPlacesForm${renderResponse.namespace}" 
-			  name="ss_findPlacesForm${renderResponse.namespace}" 
-			  style="display:inline;"
-			  action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
-				 <ssf:find 
-				    formName="ss_findPlacesForm${renderResponse.namespace}" 
-				    formElement="searchText" 
-				    type="places"
-				    width="79px" singleItem="true"> 
-				  <ssf:param name="label" useBody="true">
-				    <ssf:nlt tag="navigation.findPlace"/>
-				  </ssf:param>
-				 </ssf:find>
-			</form>
 		 </div>
-		</div>
-		</ssf:ifaccessible></td>
-                </tr>
-              </tbody>
-             </table>
-            </td>
-            <td class="ss_searchtext">
+				</ssf:ifaccessible>
+            
+           </td>
+           
+           <td width="12%">
             <!-- Find Tags -->
-             <table align="center" border="0" cellpadding="0" cellspacing="0" width="79">
-              <tbody>
-                <tr>
-                  <td class="ss_searchtext">
+            <div class="ss_searchtext">
+                 
                   <ssf:ifnotaccessible>
-					<ssf:nlt tag="navigation.findTag"/>
-				  </ssf:ifnotaccessible>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                  <ssf:ifnotaccessible>
-					<div id="ss_navbarFindTagsButton${renderResponse.namespace}"
+					<span style="padding-left:5px;"><ssf:nlt tag="navigation.findTag"/></span>
+					<div class="ss_global_toolbar_search" id="ss_navbarFindTagsButton${renderResponse.namespace}"
      					onMouseOver="this.style.cursor = 'pointer';">
-					<div>
+    
 					<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
 						name="ss_findTagsForm${renderResponse.namespace}" 
+						style="display:inline;"
 			  			action="<ssf:url action="findUser" actionUrl="true"/>">
 				  		<ssf:find 
 				    		formName="ss_findTagsForm${renderResponse.namespace}" 
 				    		formElement="searchText" 
 				    		type="tags"
-				    		width="79px" singleItem="true"/> 
+				    		width="70px" singleItem="true"/> 
 					</form>
 					</div>
-					</div>
 				</ssf:ifnotaccessible>
-				<ssf:ifaccessible>
-				<div> 
-				<label for="ss_navbarFindTagsButton${renderResponse.namespace}"><ssf:nlt tag="navigation.findTag"/></label>
-				<div>
+				
+				<ssf:ifaccessible> 
+					<span style="padding-left:5px;">
+					<label for="ss_navbarFindTagsButton${renderResponse.namespace}"><ssf:nlt tag="navigation.findTag"/></label>
+					</span>
+
 				<form method="post" id="ss_findTagsForm${renderResponse.namespace}" 
 			  		name="ss_findTagsForm${renderResponse.namespace}" 
+			  		style="display:inline;"
 			  		action="<ssf:url windowState="maximized" action="findUser" actionUrl="true"/>">
-				  <ssf:find 
-				    formName="ss_findTagsForm${renderResponse.namespace}" 
-				    formElement="searchText" 
-				    type="tags"
-				    width="79px" singleItem="true"> 
-				  <ssf:param name="label" useBody="true">
-				    <ssf:nlt tag="navigation.findTag"/>
-				  </ssf:param>
-				  </ssf:find>
+				  	<ssf:find 
+				    	formName="ss_findTagsForm${renderResponse.namespace}" 
+				    	formElement="searchText" 
+				    	type="tags"
+				    	width="70px" singleItem="true"> 
+				  		<ssf:param name="label" useBody="true">
+				    		<ssf:nlt tag="navigation.findTag"/>
+				  		</ssf:param>
+				  	</ssf:find>
 				</form>
-				</div>
-				</div>
 				</ssf:ifaccessible>
-                  </td>
-                </tr>
-              </tbody>
-             </table></td>
-            <td width="8">
+			</div>
+           </td>
+                
+            <td width="1%">
              <div align="center">
              	<img src="<html:rootPath/>images/pics/masthead/whitepixel.jpg" width="1" height="30" hspace="6"/>
-             </div></td>
-            <td width="10">&nbsp;</td>
-            <td width="31" bordercolor="0"><a href="#" <img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" width="30" height="34" border="0" id="Image1" /></a></td>
-            <td width="108" class="ss_workspace">
+             </div>
+            </td>
+            <td width="22%" class="ss_workspace">
             	<ssHelpSpot helpId="navigation_bar/my_workspace_button" offsetY="-10" offsetX="-5" 
 			      title="<ssf:nlt tag="helpSpot.myWorkspaceButton" text="My Workspace"/>">
 			  	</ssHelpSpot>
@@ -559,10 +588,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				    windowState="${ss_urlWindowState}"
 			      	action="view_ws_listing"
 			      	binderId="${ssUser.workspaceId}"/>"
-              	><ssf:nlt tag="navigation.myWorkspace"/> </a> </td>
+              	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" width="30" height="34" border="0" align="absmiddle" hspace="6" /><ssf:nlt tag="navigation.myWorkspace"/> </a> </td>
           </tr>
         </tbody>
-      </div>
     </table></td>
   </tr>
 
@@ -581,7 +609,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <!-- Start of favorites pane -->
 <ssf:ifLoggedIn>
 <div class="ss_style_trans" id="ss_favorites_pane${renderResponse.namespace}" 
-  style="position:absolute; visibility:hidden;">
+style="position:absolute; visibility:hidden;">
 
 <ssf:popupPane width="200px" titleTag=""
       closeScript="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();return false;">
@@ -662,7 +690,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <!-- Start of myteams pane -->
 <ssf:ifLoggedIn>
 <div class="ss_style_trans" id="ss_myteams_pane${renderResponse.namespace}" 
-  style="position:absolute; visibility:hidden;">
+  style="position:absolute; visibility:hidden; display:none;">
 <ssf:popupPane width="175px" titleTag=""
       closeScript="ssMyTeams${renderResponse.namespace}.hide();return false;">
 <div style="padding: 2px 5px 2px 5px;">

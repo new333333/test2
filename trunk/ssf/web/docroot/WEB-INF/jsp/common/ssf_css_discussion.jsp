@@ -325,7 +325,7 @@ a.ss_new_thread:hover {
 	font-weight:bold;
 	}
 #ss_navbar_inline ul a:active{
-	font-weitght:bold;
+	font-weight:bold;
 	color:#C00000;
 	}	
 

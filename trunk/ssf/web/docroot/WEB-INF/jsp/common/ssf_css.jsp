@@ -2038,6 +2038,7 @@ span.ss_tabs_title {
 }
 .ss_breadcrumb ul{
 	margin-left:-15px;
+	margin-top:-12px;
 }
 .ss_breadcrumb li{
 	float:left;
@@ -4002,6 +4003,26 @@ a.ss_searchButton img, a.ss_searchButton:link img , a.ss_searchButton:focus img,
 }
 
 a.ss_searchButton:hover img {
+    background-position:  left -16px; 
+<ssf:ifaccessible>
+  outline: dotted 1px gray;
+</ssf:ifaccessible>  
+}
+/***  NEW LAYOUT SEARCH BUTTON ***/
+a.ss_searchButton2 img {
+	width: 19px;
+	height: 34px;
+	margin: 0px;
+	padding: 0px;
+	border: 0px;
+	vertical-align: bottom;
+}
+
+a.ss_searchButton2 img, a.ss_searchButton:link img , a.ss_searchButton:focus img, a.ss_searchButton:visited img { 
+	background: transparent url(<html:rootPath/>images/pics/masthead/search.png) no-repeat top left; 
+}
+
+a.ss_searchButton2:hover img {
     background-position:  left -16px; 
 <ssf:ifaccessible>
   outline: dotted 1px gray;
