@@ -218,8 +218,7 @@ public class ViewFileController extends SAbstractController {
 				FileTypeMap mimeTypes = (FileTypeMap)SpringContextUtil.getBean("mimeTypes");
 				response.setContentType(mimeTypes.getContentType(shortFileName));
 				response.setHeader("Cache-Control", "private");
-				if (fileTime.equals("") || 
-						!fileTime.equals(String.valueOf(fa.getModification().getDate().getTime()))) {
+				if (fileTime.equals("")) {
 					response.setHeader("Cache-Control", "no-cache");
 					//response.setHeader("Pragma", "no-cache");
 				}
