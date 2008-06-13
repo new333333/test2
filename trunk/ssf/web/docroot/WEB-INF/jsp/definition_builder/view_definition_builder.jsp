@@ -601,9 +601,8 @@ function ss_saveUserGroupResults(s) {
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 <td><span class="ss_titlebold">
-<a href="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="definition_builder" /><portlet:param 
-	name="definition_type" value="<%= definitionType %>" /></portlet:actionURL>">
+<a href="<ssf:url action="definition_builder" actionUrl="true"><ssf:param 
+	name="definition_type" value="<%= definitionType %>" /></ssf:url>">
 <ssf:nlt tag="definition.builder" text="Definition builder" />
 </a>
 <%
@@ -619,8 +618,7 @@ function ss_saveUserGroupResults(s) {
 <td align="right">
 <form>
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>"
-  onClick="self.location.href='<portlet:renderURL windowState="normal"><portlet:param
-  name="action" value="view"/></portlet:renderURL>';return false;">
+  onClick="self.location.href='<ssf:url action="site_administration" actionUrl="false"/>';return false;">
 </form>
 </td>
 </tr>
@@ -654,9 +652,8 @@ function ss_saveUserGroupResults(s) {
 			<div id="displaydiv_spacer" style="height:1px;">&nbsp;
 			</div>
 			<div id="displaydiv0" style="display:inline; visibility:hidden; z-index:100;">
-			<form class="ss_form" action="<portlet:actionURL windowState="maximized"><portlet:param 
-				name="action" value="definition_builder" /><portlet:param 
-				name="definition_type" value="<%= definitionType %>" /></portlet:actionURL>" 
+			<form class="ss_form" action="<ssf:url action="definition_builder" actionUrl="true"><ssf:param 
+				name="definition_type" value="<%= definitionType %>" /></ssf:url>" 
 				method="post" name="definitionbuilder" id="definitionbuilder" 
 				onSubmit="setSubmitData(this)" style="display:inline;" >
 			<ssf:box>

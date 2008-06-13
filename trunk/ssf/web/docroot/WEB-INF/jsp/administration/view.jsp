@@ -29,34 +29,143 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<c:if test="${empty ss_portletInitialization}">
-<c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
-  <div class="ss_portlet_style ss_portlet">
-  <div class="ss_style">
-    <c:out value="${releaseInfo}"/>
-<ssf:ifLicenseExpired><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expired.warning"/></span></div></ssf:ifLicenseExpired>
-<ssf:ifLicenseExpired invert="true">
-  <ssf:ifLicenseExpired inThisManyDays="30"><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expiring.soon.warning"/></span></div></ssf:ifLicenseExpired>
-  <ssf:ifLicenseExpired inThisManyDays="30" invert="true">  
-	  <ssf:ifLicenseOutOfCompliance><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.out.of.compliance"/></span></div></ssf:ifLicenseOutOfCompliance>
-  </ssf:ifLicenseExpired>
-</ssf:ifLicenseExpired>
+<c:set var="showAdministrationPage" value="true"/>
+<ssf:ifnotadapter>
+  <c:set var="showAdministrationPage" value="false"/>
+</ssf:ifnotadapter>
 
+<ssf:ifadapter>
+<body class="ss_style_body">
+<div id="ss_pseudoAdministrationPortalDiv${renderResponse.namespace}">
+</ssf:ifadapter>
+
+<c:if test="${showAdministrationPage}">
+	<div id="ss_administrationHeader_${renderResponse.namespace}" style="display:none;">
+	  <%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+	</div>
+
+	<c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
+	  <div class="ss_portlet_style ss_portlet">
+	  <div class="ss_style" style="padding:10px;">
+	    <c:out value="${releaseInfo}"/>
+	<ssf:ifLicenseExpired><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expired.warning"/></span></div></ssf:ifLicenseExpired>
+	<ssf:ifLicenseExpired invert="true">
+	  <ssf:ifLicenseExpired inThisManyDays="30"><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.expiring.soon.warning"/></span></div></ssf:ifLicenseExpired>
+	  <ssf:ifLicenseExpired inThisManyDays="30" invert="true">  
+		  <ssf:ifLicenseOutOfCompliance><div class="ss_warning ss_license_warning"><span class="ss_warning ss_license_warning"><ssf:nlt tag="license.out.of.compliance"/></span></div></ssf:ifLicenseOutOfCompliance>
+	  </ssf:ifLicenseExpired>
+	</ssf:ifLicenseExpired>
+</c:if>
+
+<c:if test="${empty ss_portletInitialization}">
+<script type="text/javascript">
+var ss_parentAdministrationNamespace${renderResponse.namespace} = "";
+function ss_administration_showPseudoPortal${renderResponse.namespace}(obj) {
+	//See if we are in an iframe inside a portlet 
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_administrationIframe") == 0) {
+		//We are running inside a portlet iframe; set up for layout changes
+		ss_parentAdministrationNamespace${renderResponse.namespace} = windowName.substr("ss_administrationIframe".length)
+		ss_createOnResizeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
+		ss_createOnLayoutChangeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
+	} else {
+		//Show the pseudo portal
+		var divObj = self.document.getElementById('ss_pseudoAdministrationPortalDiv${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.className = "ss_pseudoPortal"
+		}
+		divObj = self.document.getElementById('ss_upperRightToolbar${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.style.display = "block"
+			divObj.style.visibility = "visible"
+		}
+		divObj = self.document.getElementById('ss_administrationHeader_${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.style.display = "block"
+			divObj.style.visibility = "visible"
+		}
+	}
+}
+
+function ss_setParentAdministrationIframeSize${renderResponse.namespace}() {
+	ss_debug('In routine: ss_setParentAdministrationIframeSize${renderResponse.namespace}')
+	if (typeof self.parent != "undefined") {
+		var resizeRoutineName = "ss_setAdministrationIframeSize" + ss_parentAdministrationNamespace${renderResponse.namespace};
+		eval("var resizeRoutineExists = typeof(self.parent."+resizeRoutineName+")");
+		ss_debug('resizeRoutineExists = '+resizeRoutineExists)
+		if (resizeRoutineExists != "undefined") {
+			ss_debug('namespace = ${renderResponse.namespace}')
+			eval("ss_debug(self.parent."+resizeRoutineName+")");
+			eval("self.parent."+resizeRoutineName+"()");
+		} else {
+			//See if there is a common routine to call in case the namespaces don't match
+			if (typeof self.parent.ss_setAdministrationIframeSize != "undefined") {
+				self.parent.ss_setAdministrationIframeSize();
+			}
+		}
+	}
+}
+
+function ss_administration_showPortal${renderResponse.namespace}(obj) {
+	//See if we are in an iframe inside a portlet 
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_administrationIframe") == 0) {
+		//We are running inside a portlet iframe
+		if (obj.href != "") self.parent.location.href = obj.href;
+	} else {
+		self.location.href = obj.href;
+	}
+}
+
+var ss_administrationIframeOffset = 50;
+function ss_setAdministrationIframeSize${renderResponse.namespace}() {
+	var iframeDiv = document.getElementById('ss_administrationIframe${renderResponse.namespace}')
+	if (window.frames['ss_administrationIframe${renderResponse.namespace}'] != null) {
+		eval("var iframeHeight = parseInt(window.ss_administrationIframe${renderResponse.namespace}" + ".document.body.scrollHeight);")
+		if (iframeHeight > 100) {
+			iframeDiv.style.height = iframeHeight + ss_administrationIframeOffset + "px"
+		}
+	}
+}
+ss_createOnResizeObj('ss_setAdministrationIframeSize${renderResponse.namespace}', ss_setAdministrationIframeSize${renderResponse.namespace});
+ss_createOnLayoutChangeObj('ss_setAdministrationIframeSize${renderResponse.namespace}', ss_setAdministrationIframeSize${renderResponse.namespace});
+//If this is the first definition of ss_setAdministrationIframeSize, remember its name in case we need to find it later
+if (typeof ss_setAdministrationIframeSize == "undefined") 
+	var ss_setAdministrationIframeSize = ss_setAdministrationIframeSize${renderResponse.namespace};
+
+</script>
+<ssf:ifnotadapter>
+<iframe id="ss_administrationIframe${renderResponse.namespace}" 
+    name="ss_administrationIframe${renderResponse.namespace}" 
+    style="width:100%; height:400px; display:block; position:relative;"
+	src="<ssf:url     
+    		adapter="true" 
+    		portletName="ss_forum" 
+    		action="site_administration" 
+    		actionUrl="false" >
+        <ssf:param name="namespace" value="${renderResponse.namespace}"/>
+        </ssf:url>" 
+	onLoad="ss_setAdministrationIframeSize${renderResponse.namespace}();" 
+	frameBorder="0" >xxx</iframe>
+
+</ssf:ifnotadapter>
+
+<c:if test="${showAdministrationPage}">
 	<table border="0" width="100%">
 	<tr>
 	  <td>
-<c:if test="${ss_isSiteAdmin}">
+  <c:if test="${ss_isSiteAdmin}">
 	    <ssHelpSpot helpId="portlets/admin/admin_portlet_site" 
 	      title="<ssf:nlt tag="helpSpot.adminPortletSite"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt>" 
 	      offsetY="5" offsetX="-13">
 	    </ssHelpSpot>
-</c:if>
-<c:if test="${!ss_isSiteAdmin}">
+  </c:if>
+  <c:if test="${!ss_isSiteAdmin}">
 	    <ssHelpSpot helpId="portlets/admin/admin_portlet" 
 	      title="<ssf:nlt tag="helpSpot.adminPortlet"><ssf:param name="value" value="${ssProductName}"/></ssf:nlt>" 
 	      offsetY="5" offsetX="-13">
 	    </ssHelpSpot>
-</c:if>
+  </c:if>
 	  </td>
 	</tr>
 	<tr>
@@ -90,5 +199,17 @@
 	</table>
   </div>
   </div>
+  
+<script type="text/javascript">
+ss_administration_showPseudoPortal${renderResponse.namespace}();
+</script>
+
+</c:if>
 <jsp:include page="/WEB-INF/jsp/common/help_welcome.jsp" />
 </c:if>
+
+<ssf:ifadapter>
+</div>
+	</body>
+</html>
+</ssf:ifadapter>

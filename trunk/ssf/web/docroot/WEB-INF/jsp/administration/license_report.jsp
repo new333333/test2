@@ -35,10 +35,9 @@
 
 <table class="ss_style" width="100%"><tr><td>
 <form class="ss_style ss_form" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="license_report"/><portlet:param 
-		name="binderId" value="${ssBinder.id}"/><portlet:param 
-		name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>" 
+	action="<ssf:url action="license_report" actionUrl="true"><ssf:param 
+		name="binderId" value="${ssBinder.id}"/><ssf:param 
+		name="binderType" value="${ssBinder.entityType}"/></ssf:url>" 
 	method="post" 
 	name="${formName}">
 <input type="hidden" name="ss_reportType" value="license"/>

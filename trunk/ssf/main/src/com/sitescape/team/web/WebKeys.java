@@ -274,6 +274,7 @@ public class WebKeys {
 	public static final String ACTION_QUOTA_REPORT="quota_report";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
+	public static final String ACTION_SITE_ADMINISTRATION="site_administration";
 	public static final String ACTION_START_WORKFLOW="start_workflow";
 	public static final String ACTION_STOP_WORKFLOW="stop_workflow";
 	public static final String ACTION_VIEW_UPLOAD_FILE="view_upload_file";

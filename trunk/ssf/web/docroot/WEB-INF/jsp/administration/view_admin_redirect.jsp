@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${empty ssErrorList}">
 <script type="text/javascript">
-var url_str = '<portlet:renderURL windowState="normal" portletMode="view"/>';
+var url_str = '<ssf:url action="site_administration" actionUrl="false"/>';
 var timeout = 0;
 <c:if test="${!empty ssDownloadURL}">
 timeout = 200;
@@ -41,8 +41,8 @@ setTimeout("self.location.replace('"+url_str+"')", timeout);
 </script>
 </c:if>
 <c:if test="${!empty ssErrorList}">
-<form class="ss_style ss_form" action="<portlet:renderURL windowState="normal" portletMode="view"/>"
-		 method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+<form class="ss_style ss_form" action="<ssf:url action="site_administration" actionUrl="false"/>"
+		 method="post" name="${renderResponse.namespace}fm">
 <br/>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>

@@ -136,7 +136,7 @@ function <%=cTreeName%>_showId(id, obj, action) {
 <br/>
 
 <form class="ss_style ss_form" method="post" 
-	action="<ssf:url />">
+	action="<ssf:url action="site_administration" actionUrl="false"/>">
 
 	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>

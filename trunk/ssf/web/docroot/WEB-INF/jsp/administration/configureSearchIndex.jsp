@@ -87,7 +87,7 @@ function ss_submitIndexingForm() {
 		return false;
 	} else {
 		if(ss_indexTimeout) { clearTimeout(ss_indexTimeout); }
-		formObj.action = '<portlet:actionURL windowState="maximized"><portlet:param name="action" value="configure_index"/></portlet:actionURL>'
+		formObj.action = '<ssf:url action="configure_index" actionUrl="true"/>'
 		return true;
 	}
 }
@@ -97,7 +97,7 @@ function ss_indexingDone() {
 	ss_buttonSelect('closeBtn');
 	var formObj = document.forms['<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm'];
 	formObj.btnClicked.value = 'closeBtn';
-	formObj.action = '<portlet:actionURL windowState="maximized"><portlet:param name="action" value="configure_index"/></portlet:actionURL>'
+	formObj.action = '<ssf:url action="configure_index" actionUrl="true"/>'
 	formObj.submit();
 }
 

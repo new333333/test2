@@ -47,7 +47,7 @@ a:hover {
   <div align="right">
 	<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
 	  name="${ssNamespace}_btnForm" method="post" 
-	  action="<portlet:renderURL windowState="normal"/>">
+	  action="<ssf:url action="site_administration" actionUrl="false"/>">
 		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 	</form>
   </div>
@@ -3284,7 +3284,7 @@ LGPL - http://jboss.com/opensource/lgpl/faq
 <br/>
 	<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
 	  name="${ssNamespace}_btnForm" method="post" 
-	  action="<portlet:renderURL windowState="normal"/>">
+	  action="<ssf:url action="site_administration" actionUrl="false"/>">
 		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
 	</form>
   </div>

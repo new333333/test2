@@ -58,8 +58,7 @@ function ss_confirmDeleteZone() {
 <br>
 <ssf:expandableArea title="<%= NLT.get("administration.add.zone") %>">
 <form class="ss_style ss_form" method="post" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="manage_zones"/></portlet:actionURL>" 
+	action="<ssf:url action="manage_zones" actionUrl="true"/>" 
 	onSubmit="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this))">
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.zoneName"/></span><br/>
@@ -86,9 +85,8 @@ function ss_confirmDeleteZone() {
   <c:forEach var="zoneInfo" items="${ss_zoneInfoList}">
   <tr>
 	<form class="ss_style ss_form" method="post" 
-	action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="manage_zones"/></portlet:actionURL>" 
-	onSubmit="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this))">
+	action="<ssf:url action="manage_zones" actionUrl="true"/>" 
+	onSubmit="return(${renderResponse.namespace}_onsub(this))">
 		
     <td align="left" valign="middle">
 	<input type="text" class="ss_text" size="50" name="zoneName" value="${zoneInfo.zoneName}" readonly>

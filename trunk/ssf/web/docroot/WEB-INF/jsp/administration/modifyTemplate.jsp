@@ -78,10 +78,9 @@ function ss_checkForm(obj, binderId) {
 ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </script>
 </c:if>
-<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="configure_configuration"/><portlet:param 
-		name="operation" value="modify_template"/><portlet:param 
-		name="binderId" value="${ssBinderConfig.id}"/></portlet:actionURL>" 
+<form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
+		name="operation" value="modify_template"/><ssf:param 
+		name="binderId" value="${ssBinderConfig.id}"/></ssf:url>" 
 		onSubmit="return ss_checkForm(this, '${ssBinderConfig.id}');">
 
 <div class="ss_buttonBarRight">
@@ -145,9 +144,8 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 <form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" 
     id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
-    action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="configure_configuration"/><portlet:param 
-		name="operation" value="add"/></portlet:actionURL>" >
+    action="<ssf:url action="configure_configuration" actionUrl="true"><ssf:param 
+		name="operation" value="add"/></ssf:url>" >
 <input type="hidden" name="cfgType" value="-1"/>
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>">
@@ -180,9 +178,8 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 </script>
 
 
-<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="configure_configuration"/><portlet:param 
-		name="operation" value="add"/></portlet:actionURL>" 
+<form method="post" action="<ssf:url action="configure_configuration" actionUrl="true"><portlet:param 
+		name="operation" value="add"/></ssf:url>" 
 		onSubmit="return ss_checkForm(this);">
 <input type="hidden" name="cfgType" value="${cfgType}"/>
 <div class="ss_buttonBarRight">

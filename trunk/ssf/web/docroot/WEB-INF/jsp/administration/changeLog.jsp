@@ -52,7 +52,7 @@ function ss_saveChangeLogEntryId(id) {
 <form class="ss_portlet_style ss_form" 
   id="ss_changeLogForm" 
   name="ss_changeLogForm" method="post" 
-  action="<portlet:renderURL windowState="maximized"/>">
+  action="<ssf:url action="view_change_log" actionUrl="true"/>">
 
 <span class="ss_largerprint ss_bold"><ssf:nlt tag="administration.view_change_log"/></span>
 <br/>

@@ -114,8 +114,7 @@
 <br/>
 	<form class="ss_portlet_style ss_form" id="${ssNamespace}_btnForm" 
 	  name="${ssNamespace}_btnForm" method="post"  
-	  action="<portlet:actionURL windowState="maximized"><portlet:param 
-		name="action" value="manage_license"/></portlet:actionURL>">
+	  action="<ssf:url action="manage_license" actionUrl="true"/>">
 		<input type="submit" class="ss_submit" name="updateBtn" value="<ssf:nlt tag="button.update_license"/>">
 		<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 	</form>

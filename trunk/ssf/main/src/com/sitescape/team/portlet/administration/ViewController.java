@@ -68,6 +68,7 @@ import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
+import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletPreferencesUtil;
 import com.sitescape.util.Validator;
 
@@ -96,18 +97,24 @@ public class ViewController extends  SAbstractController {
 		model.put(WebKeys.PRODUCT_CONFERENCING_NAME, SPropsUtil.getString("product.conferencing.name", ObjectKeys.PRODUCT_CONFERENCING_NAME_DEFAULT));
 		model.put(WebKeys.PRODUCT_CONFERENCING_TITLE, SPropsUtil.getString("product.conferencing.title", ObjectKeys.PRODUCT_CONFERENCING_TITLE_DEFAULT));
  		model.put(WebKeys.PORTLET_TYPE, WebKeys.PORTLET_TYPE_ADMIN);
- 		PortletPreferences prefs = request.getPreferences();
-		String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
-		if (Validator.isNull(ss_initialized)) {
-			//Signal that this is the initialization step
-			model.put(WebKeys.PORTLET_INITIALIZATION, "1");
-			
-			PortletURL url;
-			url = response.createActionURL();
-			model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
-			return new ModelAndView("administration/view", model);
-
-		}
+ 		try {
+ 			//If running in a portal, see if we should redraw ourselves just after adding the portlet
+ 			PortletPreferences prefs = request.getPreferences();
+			String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
+			if (Validator.isNull(ss_initialized)) {
+				//Signal that this is the initialization step
+				model.put(WebKeys.PORTLET_INITIALIZATION, "1");
+				
+				PortletURL url;
+				url = response.createActionURL();
+				model.put(WebKeys.PORTLET_INITIALIZATION_URL, url);
+				return new ModelAndView("administration/view", model);
+	
+			}
+ 		} catch(Exception e) {}
+		
+		//Set up the standard beans
+ 		BinderHelper.setupStandardBeans(this, request, response, model);
 		
 		if (getAdminModule().testAccess(AdminOperation.manageFunction)) model.put(WebKeys.IS_SITE_ADMIN, true);
 		
@@ -472,11 +479,9 @@ public class ViewController extends  SAbstractController {
 			element.addAttribute("title", NLT.get("administration.view_change_log"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_CHANGELOG);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
+			adapterUrl = new AdaptedPortletURL(request, "ss_forum", false);
+			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_VIEW_CHANGELOG);
+			element.addAttribute("url", adapterUrl.toString());
 			reports.put(element.attributeValue("title"), element);
 		}
 		
