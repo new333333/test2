@@ -734,3 +734,4 @@ function ss_hideRecentPlacesDiv${renderResponse.namespace}() {
 <script type="text/javascript">
 ss_workarea_showPseudoPortal${renderResponse.namespace}()
 </script>
+</div>

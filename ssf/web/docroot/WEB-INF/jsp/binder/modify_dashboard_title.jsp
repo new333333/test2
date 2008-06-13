@@ -39,9 +39,8 @@
 <br>
 
 <div class="ss_form">
-<form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="modify_dashboard"/><portlet:param 
-	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
+<form method="post" action="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
+	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 <div class="ss_form ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="closeBtn" 
   value="<ssf:nlt tag="button.close" text="Close"/>">
@@ -89,9 +88,8 @@
 <span class="ss_bold"><ssf:nlt tag="dashboard.newTitle" /></span>
 <br/>
 <div class="ss_indent_medium">
-	  <form method="post" action="<portlet:actionURL windowState="maximized"><portlet:param 
-	  	name="action" value="modify_dashboard"/><portlet:param 
-	  	name="binderId" value="${ssBinder.id}"/></portlet:actionURL>">
+	  <form method="post" action="<ssf:url action="modify_dashboard" actionUrl="true"><ssf:param 
+	  	name="binderId" value="${ssBinder.id}"/></ssf:url>">
 		<input type="text" name="title" size="80"/><br/>
 		<input type="checkbox" name="includeBinderTitle"/>
 		<span><ssf:nlt tag="dashboard.includeBinderTitle"/></span>

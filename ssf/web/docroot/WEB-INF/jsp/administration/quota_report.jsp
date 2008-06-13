@@ -43,10 +43,9 @@ function ss_numbers_only(evt)
 </script>
 <c:set var="formName"><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm</c:set>
 <script type="text/javascript">
-var ssReportURL="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="quota_report"/><portlet:param 
-	name="binderId" value="${ssBinder.id}"/><portlet:param 
-	name="binderType" value="${ssBinder.entityType}"/></portlet:actionURL>";
+var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param 
+	name="binderId" value="${ssBinder.id}"/><ssf:param 
+	name="binderType" value="${ssBinder.entityType}"/></ssf:url>";
 </script>
 
 <table class="ss_style" width="100%"><tr><td>

@@ -35,10 +35,9 @@
 <br>
 
 <form class="ss_style ss_form" method="post" 
-		  action="<portlet:actionURL windowState="maximized"><portlet:param 
-		  name="action" value="import_definition"/><portlet:param 
-		  name="operation" value="reload"/></portlet:actionURL>" 
-		  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+		  action="<ssf:url action="import_definition" actionUrl="true"><ssf:param 
+		  name="operation" value="reload"/></ssf:url>" 
+		  name="${renderResponse.namespace}fm">
 
 <span>
 <ssf:nlt tag="administration.reload.definitions.warning"/>
@@ -49,7 +48,7 @@
 <input type="submit" class="ss_submit" name="reloadDefinitionsBtn" value="<ssf:nlt tag="button.ok" />">
 &nbsp;&nbsp;&nbsp;
 <input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-onClick="self.location.href='<portlet:renderURL windowState="normal" portletMode="view"/>';return false;">
+onClick="self.location.href='<ssf:url action="site_administration" actionUrl="false"/>';return false;">
 
 </form>
 </div>

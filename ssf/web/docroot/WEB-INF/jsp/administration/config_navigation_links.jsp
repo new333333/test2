@@ -54,9 +54,8 @@
 <li style="float:left;">
 <c:if test="${empty ssNavigationLinkTree[nextConfig.id]}">
 <a
-  href="<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="configure_configuration"/><portlet:param 
-		name="binderId" value="${nextConfig.id}"/></portlet:renderURL>" >"
+  href="<ssf:url action="configure_configuration" actionUrl="false"><ssf:param 
+		name="binderId" value="${nextConfig.id}"/></ssf:url>" >"
   onClick="return(ss_navigation_goto(this.href));"
 >
 <c:if test="${empty nextConfig.templateTitle}" >
@@ -80,10 +79,8 @@
 <li style="float:left;">
 <c:if test="${empty ssNavigationLinkTree[ssBinderConfig.id]}">
 <a class="ss_bold"
-  href="<portlet:renderURL windowState="maximized"><portlet:param 
-		name="action" value="configure_configuration"/><portlet:param 
-		name="binderId" value="${nextConfig.id}"/></portlet:renderURL>" >"
-
+  href="<ssf:url action="configure_configuration" actionUrl="false"><ssf:param 
+		name="binderId" value="${nextConfig.id}"/></ssf:url>"
   onClick="return(ss_navigation_goto(this.href));"
 >
 <c:if test="${empty ssBinderConfig.templateTitle}" >

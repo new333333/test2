@@ -32,8 +32,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
-var ssExportURL="<portlet:actionURL windowState="maximized"><portlet:param 
-	name="action" value="export_definition"/></portlet:actionURL>";
+var ssExportURL="<ssf:url action="export_definition" actionUrl="true"/>";
 </script>
 
 <table class="ss_style" width="100%"><tr><td>

@@ -38,8 +38,7 @@
 </c:if>
 
 <form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
-  action="<portlet:actionURL windowState="maximized"><portlet:param 
-  name="action" value="configure_ldap"/></portlet:actionURL>">
+  action="<ssf:url action="configure_ldap" actionUrl="true"/>">
 <div class="ss_buttonBarRight">
 <br/>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply"/>">
