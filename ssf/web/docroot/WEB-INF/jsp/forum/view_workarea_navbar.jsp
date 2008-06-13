@@ -244,6 +244,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		      <span class="ss_navbar_favorites${renderResponse.namespace}" 
 		      style="visibility:hidden;margin:20px 0px 0px 0px;padding:0px;"
 		      ></span> &nbsp;|
+		      
 		    <!-- Begin Teams -->   
         	<a title="<ssf:nlt tag="navigation.myTeams"/>"
 			  href="javascript:;" 
@@ -302,7 +303,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <tbody>
 <tr>
 	<td rowspan="2">
-            <div class="ss_search_title" align="right"><ssf:nlt tag="navigation.search"/></div>
+            <div class="ss_search_title" align="right" style="padding-left:5px;"><ssf:nlt tag="navigation.search"/></div>
     </td>
 <td>
 	<ssf:ifnotaccessible>
@@ -398,8 +399,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		    	title="<ssf:nlt tag="helpSpot.searchButton"/>">
 		  </ssHelpSpot>
      	
-     	<form method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
+     	<form class="ss_form" method="post" id="ss_simpleSearchForm${renderResponse.namespace}" 
 		  		name="ss_simpleSearchForm${renderResponse.namespace}" 
+		  		style="display:inline;"
 		  		action="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
 		  		name="action" value="advanced_search"/><ssf:param 
 		  		name="newTab" value="1"/></ssf:url>">
@@ -433,12 +435,16 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
              	<img src="<html:rootPath/>images/pics/masthead/whitepixel.jpg" width="1" height="30" hspace="6"/>
              </div>
        </td>
-       <td width="5%">
+       <td width="30%">
+       <table align="center">
+       <tbody>
+       <tr>
+       <td>
             	<div  class="ss_search_title" >
             	<ssf:nlt tag="navigation.find"/>
             	</div>
        </td>
-       <td width="12%">
+       <td>
        <!-- Find People --> 
         <div valign="middle">     
         		<div class="ss_searchtext">
@@ -481,7 +487,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			</div>				
 			</td>
             
-            <td width="12%">
+            <td>
             <!-- Find Place -->
             
             	<ssf:ifnotaccessible>
@@ -529,7 +535,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
             
            </td>
            
-           <td width="12%">
+           <td>
             <!-- Find Tags -->
             <div class="ss_searchtext">
                  
@@ -572,8 +578,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				</form>
 				</ssf:ifaccessible>
 			</div>
-           </td>
-                
+           		</td>
+                </tr>
+              </tbody>
+              </table>
+            </td>  
             <td width="1%">
              <div align="center">
              	<img src="<html:rootPath/>images/pics/masthead/whitepixel.jpg" width="1" height="30" hspace="6"/>
