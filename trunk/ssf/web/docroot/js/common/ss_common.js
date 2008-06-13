@@ -4167,7 +4167,7 @@ function ssTeams(namespace) {
 		fObj.style.display = "block";
 		var w = ss_getObjectWidth(fObj)
 		ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_myteams" + namespace) + ss_favoritesPaneTopOffset))
-		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)+ ss_favoritesPaneLeftOffset))
+		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)))
 		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
 	    dojo.html.show(fObj);
 		dojo.html.setDisplay(fObj, "block");
