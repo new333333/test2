@@ -1305,6 +1305,15 @@ public class ListFolderHelper {
 					NLT.get("toolbar.menu.configuration"), url, qualifiers);
 		}
 		
+		//Site administration
+		if (bs.getAdminModule().testAccess(AdminOperation.manageFunction)) {
+			adminMenuCreated=true;
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SITE_ADMINISTRATION);
+			folderToolbar.addToolbarMenuItem("1_administration", "", 
+					NLT.get("toolbar.menu.siteAdministration"), url);
+		}
+
 		//Reporting
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.report)) {
 			adminMenuCreated=true;
