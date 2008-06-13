@@ -60,7 +60,7 @@ public abstract class ZipDownloadController extends  SAbstractController {
             HttpServletResponse response) throws Exception {		
 		String filename = getFilename();
 		response.setContentType(mimeTypes.getContentType(filename));
-		response.setHeader("Cache-Control", "no-cache");
+		response.setHeader("Cache-Control", "private");
 		response.setHeader(
 					"Content-Disposition",
 					"attachment; filename=\"" + filename + "\"");

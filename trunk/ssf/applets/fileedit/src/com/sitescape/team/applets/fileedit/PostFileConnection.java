@@ -107,7 +107,7 @@ public class PostFileConnection {
             conn.setUseCaches(false);
             String boundary = "---------------------------7d226f700d0";
             conn.setRequestProperty("Content-type","multipart/form-data; boundary=" + boundary);
-            conn.setRequestProperty("Cache-Control", "no-cache");
+            conn.setRequestProperty("Cache-Control", "private");
             DataOutputStream out = new DataOutputStream(conn.getOutputStream());
             out.writeBytes("--" + boundary + "\r\n");
             if (data.getUnlockFlag())
