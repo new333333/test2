@@ -408,7 +408,7 @@ public class WebHelper {
 	 */
 	public static void scanDescriptionForUploadFiles(Description description, String fieldName, List fileData) {
     	String fileHandle = "";
-    	Pattern pattern = Pattern.compile("(<img [^>]*src=\"https?://[^>]*viewType=ss_viewUploadFile[^>]*>)");
+    	Pattern pattern = Pattern.compile("(<img [^>]*src=\"[^\"]*viewType=ss_viewUploadFile[^>]*>)");
     	Matcher m = pattern.matcher(description.getText());
     	int loopDetector = 0;
     	while (m.find()) {
