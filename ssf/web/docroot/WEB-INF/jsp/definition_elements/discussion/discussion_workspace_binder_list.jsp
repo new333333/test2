@@ -77,7 +77,9 @@
     </a>
     <br/>
     </div><!-- end of title -->
-    <div id="ss_topic_desc"><c:out value="${binder._desc}" escapeXml="false"/></div>
+    <div id="ss_topic_desc"><ssf:markup type="view" binderId="${binder._docId}">
+		<ssf:textFormat formatAction="limitedDescription" 
+		  textMaxWords="50">${binder._desc}</ssf:textFormat></ssf:markup></div>
     <c:forEach var="subBinder" items="${ss_bindersSubBinders[binder._docId]}">
       <c:if test="${subBinder._entityType == 'workspace' || subBinder._entityType == 'profiles'}">
       <div id="ss_topic_title" class="ss_disc_th1">
@@ -94,7 +96,9 @@
         ><span>${subBinder.title}</span>
         </a>
         <br/>
-        <div><c:out value="${subBinder._desc}" escapeXml="false"/></div>
+        <div><ssf:markup type="view" binderId="${subBinder._docId}">
+		<ssf:textFormat formatAction="limitedDescription" 
+		  textMaxWords="50">${subBinder._desc}</ssf:textFormat></ssf:markup></div>
         </div><!-- end of left padding -->
         </div><!-- end of title -->
       </c:if>
@@ -133,7 +137,9 @@
     </a>
     <br/>
     </div><!-- end of folder thread -->
-    <div id="ss_topic_desc"><c:out value="${binder._desc}" escapeXml="false"/></div>
+    <div id="ss_topic_desc"><ssf:markup type="view" binderId="${binder._docId}">
+		<ssf:textFormat formatAction="limitedDescription" 
+		  textMaxWords="50">${binder._desc}</ssf:textFormat></ssf:markup></div>
   </c:if>
   
   <br/>

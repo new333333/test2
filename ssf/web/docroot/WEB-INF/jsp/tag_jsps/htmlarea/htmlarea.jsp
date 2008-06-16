@@ -50,8 +50,7 @@
 --%><script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript">
 tinyMCE.init(
- {<c:if test="${empty element_id}">mode: "specific_textareas", editor_selector: "mceEditable"</c:if><%--
-  --%><c:if test="${!empty element_id}">mode: "exact", elements: "${element_id}"</c:if>,
+ {mode: "specific_textareas", editor_selector: "mceEditable",
 <c:choose><%--
     --%><c:when test="${language == 'da_DK'}">language: 'da',</c:when><%--
     --%><c:when test="${language == 'de_DE'}">language: 'de',</c:when><%--
