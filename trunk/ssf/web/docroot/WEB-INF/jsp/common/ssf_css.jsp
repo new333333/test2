@@ -192,6 +192,11 @@ a.ss_download_link {
 .ss_size_14px { font-size: 14px !important;}
 .ss_size_15px { font-size: 15px !important;}
 .ss_size_16px { font-size: 16px !important;}
+.ss_size_18px { font-size: 18px !important;}
+.ss_size_20px { font-size: 20px !important;}
+.ss_size_24px { font-size: 24px !important;}
+.ss_size_28px { font-size: 28px !important;}
+.ss_size_32px { font-size: 32px !important;}
 
 
 

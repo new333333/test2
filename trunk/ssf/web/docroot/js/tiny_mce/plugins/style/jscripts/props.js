@@ -7,7 +7,7 @@ var defaultFonts = "" +
 	"Verdana, Arial, Helvetica, sans-serif=Verdana, Arial, Helvetica, sans-serif;" + 
 	"Geneva, Arial, Helvetica, sans-serif=Geneva, Arial, Helvetica, sans-serif";
 
-var defaultSizes = "9;10;12;14;16;18;24;xx-small;x-small;small;medium;large;x-large;xx-large;smaller;larger";
+var defaultSizes = "9;10;12;14;16;18;20;24;28;32;xx-small;x-small;small;medium;large;x-large;xx-large;smaller;larger";
 var defaultMeasurement = "+pixels=px;points=pt;in;cm;mm;picas;ems;exs;%";
 var defaultSpacingMeasurement = "pixels=px;points=pt;in;cm;mm;picas;+ems;exs;%";
 var defaultIndentMeasurement = "pixels=px;+points=pt;in;cm;mm;picas;ems;exs;%";

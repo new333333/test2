@@ -50,12 +50,14 @@
 --%><script type="text/javascript" src="<html:rootPath/>js/tiny_mce/tiny_mce.js"></script>
 <script type="text/javascript">
 tinyMCE.init(
- {mode: "specific_textareas", editor_selector: "mceEditable",
+ {<c:if test="${empty element_id}">mode: "specific_textareas", editor_selector: "mceEditable"</c:if><%--
+  --%><c:if test="${!empty element_id}">mode: "exact", elements: "${element_id}"</c:if>,
 <c:choose><%--
     --%><c:when test="${language == 'da_DK'}">language: 'da',</c:when><%--
     --%><c:when test="${language == 'de_DE'}">language: 'de',</c:when><%--
     --%><c:when test="${language == 'es_ES'}">language: 'es',</c:when><%--
     --%><c:when test="${language == 'fr_FR'}">language: 'fr',</c:when><%--
+    --%><c:when test="${language == 'hu_HU'}">language: 'hu',</c:when><%--
     --%><c:when test="${language == 'it_IT'}">language: 'it',</c:when><%--
     --%><c:when test="${language == 'ja_JP'}">language: 'ja_utf-8',</c:when><%--
     --%><c:when test="${language == 'nl_NL'}">language: 'nl',</c:when><%--
@@ -82,7 +84,7 @@ tinyMCE.init(
   theme_advanced_toolbar_align: "left", theme_advanced_statusbar_location: "bottom", 
   theme_advanced_resizing: true, 
   convert_fonts_to_spans: true,
-  theme_advanced_styles: "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px",
+  theme_advanced_styles: "8px=ss_size_8px;9px=ss_size_9px;10px=ss_size_10px;11px=ss_size_11px;12px=ss_size_12px;13px=ss_size_13px;14px=ss_size_14px;15px=ss_size_15px;16px=ss_size_16px;18px=ss_size_18px;20px=ss_size_20px;24px=ss_size_24px;28px=ss_size_28px;32px=ss_size_32px",
   theme_advanced_buttons1_add: "forecolor,backcolor",
   theme_advanced_buttons2_add: "pastetext,pasteword<%--
   --%><c:if test="${empty ssInlineNoImage}">,ss_addimage</c:if><%--
