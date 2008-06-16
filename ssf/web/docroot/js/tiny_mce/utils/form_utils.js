@@ -119,7 +119,6 @@ function addSelectValue(form_obj, field_name, name, value) {
 function addClassesToList(list_id, specific_option) {
 	// Setup class droplist
 	var styleSelectElm = document.getElementById(list_id);
-	if (styleSelectElm == null) return
 	var styles = tinyMCE.getParam('theme_advanced_styles', false);
 	styles = tinyMCE.getParam(specific_option, styles);
 

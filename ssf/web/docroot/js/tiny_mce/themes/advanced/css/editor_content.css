@@ -29,10 +29,6 @@ div.mceVisualAid {
 	background-repeat: no-repeat;
 }
 
-a.ss_icecore_link {
-    text-decoration: underline;
-    background-color: #CCCCFF;
-}
 /* Important is needed in Gecko browsers inorder to style links */
 /*
 a {

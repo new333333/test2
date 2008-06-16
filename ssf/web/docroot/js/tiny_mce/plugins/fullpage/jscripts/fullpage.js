@@ -4,7 +4,7 @@ var defaultDocTypes =
 	'XHTML 1.0 Transitional=<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">,' +
 	'XHTML 1.0 Frameset=<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">,' +
 	'XHTML 1.0 Strict=<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">,' +
-	'XHTML 1.1=<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">">,' +
+	'XHTML 1.1=<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">,' +
 	'HTML 4.01 Transitional=<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">,' +
 	'HTML 4.01 Strict=<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">,' +
 	'HTML 4.01 Frameset=<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">';
@@ -32,7 +32,7 @@ var defaultMediaTypes =
 	'aural=aural';
 
 var defaultFontNames = 'Arial=arial,helvetica,sans-serif;Courier New=courier new,courier,monospace;Georgia=georgia,times new roman,times,serif;Tahoma=tahoma,arial,helvetica,sans-serif;Times New Roman=times new roman,times,serif;Verdana=verdana,arial,helvetica,sans-serif;Impact=impact;WingDings=wingdings';
-var defaultFontSizes = '10px,11px,12px,13px,14px,15px,16px';
+var defaultFontSizes = '10px,11px,12px,13px,14px,15px,16px,18px,20px,24px,28px,32px';
 
 var addMenuLayer = new MCLayer("addmenu");
 var lastElementType = null;
@@ -393,10 +393,10 @@ function updateAction() {
 
 	h = h.substring(0, h.lastIndexOf('</body>'));
 
-	if (h.indexOf('<title>') == -1)
-		h = h.replace(/<head.*?>/, '$&\n' + '<title>' + inst.cleanup.xmlEncode(f.metatitle.value) + '</title>');
-	else
-		h = h.replace(/<title>(.*?)<\/title>/, '<title>' + inst.cleanup.xmlEncode(f.metatitle.value) + '</title>');
+//	if (h.indexOf('<title>') == -1)
+//		h = h.replace(/<head.*?>/, '$&\n' + '<title>' + inst.cleanup.xmlEncode(f.metatitle.value) + '</title>');
+//	else
+//		h = h.replace(/<title>(.*?)<\/title>/, '<title>' + inst.cleanup.xmlEncode(f.metatitle.value) + '</title>');
 
 	if ((v = getSelectValue(f, 'doctypes')) != '')
 		h = v + '\n' + h;
