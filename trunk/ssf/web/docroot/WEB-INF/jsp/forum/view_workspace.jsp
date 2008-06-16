@@ -272,7 +272,8 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 ><ssf:nlt tag="workspace.listUnseen"/></a>
 
 <ssf:ifLoggedIn>
-<div id="ss_statusArea" class="ss_global_toolbar_maximized"><!-- beginning of other rows-->  
+<div id="ss_statusArea" class="ss_global_toolbar_maximized">
+<!-- beginning of other rows -->  
 <!-- Beginning of Status Bar:  Status Share/Track Buttons My Teams and Favorites  -->
 
 <!-- Start of Status line -->
