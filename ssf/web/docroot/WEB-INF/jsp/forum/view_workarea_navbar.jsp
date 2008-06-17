@@ -247,14 +247,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		      
 		    <!-- Begin Teams -->   
         	<a title="<ssf:nlt tag="navigation.myTeams"/>"
-			  href="javascript:;" 
-				<ssf:ifnotaccessible>
-			  		onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
-				</ssf:ifnotaccessible>
-				<ssf:ifaccessible>
-			  		onClick="ssMyTeams${renderResponse.namespace}.showAccessible()"
-				</ssf:ifaccessible>
-              ><ssf:nlt tag="navigation.myTeams"/> <img border="0" 
+			  href="javascript:;" onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
+				    ><ssf:nlt tag="navigation.myTeams"/><img border="0" 
               src="<html:imagesPath/>pics/menudown.gif" style="padding-left: 2px;"/> 
 		      <ssHelpSpot helpId="navigation_bar/my_teams" offsetX="5" offsetY="1"  
 		          title="<ssf:nlt tag="helpSpot.myTeamsButton"/>">
@@ -263,26 +257,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}" style="display:none;">
 			      	
 			    </div>
-			  
-				<ssf:ifnotaccessible>
-  					<span class="ss_navbar_myteams${renderResponse.namespace}"
+			  		<span class="ss_navbar_myteams${renderResponse.namespace}"
       				style="visibility:hidden;margin:20px 0px 0px 0px;padding:0px;">
   					</span>
-				</ssf:ifnotaccessible>
-				<ssf:ifaccessible>
-  					<span class="ss_navbar_myteams${renderResponse.namespace}"
-      					style="position:relative;display:none;visibility:hidden;
-             			margin:25px 0px 0px 0px;padding:0px;">
-						<iframe src="<html:rootPath/>js/forum/null.html" style="background-color:#ffffff;"
-	  					id="ss_myTeamsIframe${renderResponse.namespace}">xxx</iframe>
-						<div style="background-color:#ffffff;">
-	  						<a href="javascript: ;" onClick="ssMyTeams${renderResponse.namespace}.hideAccessible();return false;">
-	    						<span><ssf:nlt tag="button.close"/></span>
-	  						</a>
-						</div>
-  					</span>
-				</ssf:ifaccessible>
- 		</td>
+				
+						</td>
         <td height="19" colspan="4" valign="top" align="right"><span class="ss_mastheadName">${ssUser.title}</span></td>
 	    </tr>
       <tr>
@@ -407,12 +386,9 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		  		name="newTab" value="1"/></ssf:url>">
 					
 				<input name="searchText" style="width: 100px;" type="text" id="ss_searchSearchText${renderResponse.namespace}" /> 
-				<a  
-					href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
+				<a href="javascript: document.ss_simpleSearchForm${renderResponse.namespace}.submit();" >
 					<img src="<html:rootPath/>images/pics/masthead/search.png" width="19" height="20" border="0" align="absmiddle"
-					title="<ssf:nlt tag="alt.search"/>"
-					<ssf:alt tag="alt.search"/> /> 
-				</a>
+					title="<ssf:nlt tag="alt.search"/>"<ssf:alt tag="alt.search"/> /></a>
 					<input type="hidden" name="searchBtn" value="searchBtn"/>
 					<input type="hidden" name="quickSearch" value="true"/>					
 					<input type="hidden" name="operation" value="ss_searchResults"/>
@@ -597,7 +573,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				    windowState="${ss_urlWindowState}"
 			      	action="view_ws_listing"
 			      	binderId="${ssUser.workspaceId}"/>"
-              	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" width="30" height="34" border="0" align="absmiddle" hspace="6" /><ssf:nlt tag="navigation.myWorkspace"/> </a> </td>
+              	><img src="<html:rootPath/>images/pics/masthead/ss_banner_guy.png" width="30" height="34" border="0" align="absmiddle" />&nbsp;&nbsp;<ssf:nlt tag="navigation.myWorkspace"/></a> </td>
           </tr>
         </tbody>
     </table></td>

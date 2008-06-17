@@ -41,8 +41,9 @@
 
 <c:if test="${showAdministrationPage}">
 	<div id="ss_administrationHeader_${renderResponse.namespace}" style="display:none;">
+	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 	  <%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
-	</div>
+	
 
 	<c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
 	  <div class="ss_portlet_style ss_portlet">
@@ -208,7 +209,7 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 	</table>
   </div>
   </div>
-  
+  </div></div>
 <script type="text/javascript">
 ss_administration_showPseudoPortal${renderResponse.namespace}();
 </script>
