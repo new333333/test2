@@ -31,6 +31,11 @@
 <%@ page import="com.sitescape.team.util.NLT" %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body class="ss_style_body">
+<div id="ss_pseudoAdministrationPortalDiv${renderResponse.namespace}">
+</ssf:ifadapter>
+
 <script type="text/javascript">
 var <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex;
 
@@ -57,7 +62,8 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 	action="<ssf:url action="configure_posting_job" actionUrl="true"/>">
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
 </div>
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="notify.header" /></legend>	
@@ -129,7 +135,8 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
 <br/>
 <div class="ss_buttonBarLeft">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
 </div>
 </form>
 <div class="ss_style ss_popupMenu" style="visibility:hidden; display:block" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv">
@@ -155,3 +162,39 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
 </form>
 </div>
 </div>
+
+<ssf:ifadapter>
+</div>
+<script type="text/javascript">
+var ss_parentAdministrationNamespace${renderResponse.namespace} = "";
+function ss_administration_showPseudoPortal${renderResponse.namespace}(obj) {
+	//See if we are in an iframe inside a portlet 
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_administrationIframe") == 0) {
+		//We are running inside a portlet iframe; set up for layout changes
+		ss_parentAdministrationNamespace${renderResponse.namespace} = windowName.substr("ss_administrationIframe".length)
+		ss_createOnResizeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
+		ss_createOnLayoutChangeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
+	} else {
+		//Show the pseudo portal
+		var divObj = self.document.getElementById('ss_pseudoAdministrationPortalDiv${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.className = "ss_pseudoPortal"
+		}
+		divObj = self.document.getElementById('ss_upperRightToolbar${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.style.display = "block"
+			divObj.style.visibility = "visible"
+		}
+		divObj = self.document.getElementById('ss_administrationHeader_${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.style.display = "block"
+			divObj.style.visibility = "visible"
+		}
+	}
+}
+ss_administration_showPseudoPortal${renderResponse.namespace}();
+</script>
+	</body>
+</html>
+</ssf:ifadapter>

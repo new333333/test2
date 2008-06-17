@@ -127,6 +127,12 @@ function ss_setAdministrationIframeSize${renderResponse.namespace}() {
 		}
 	}
 }
+
+function ss_showAdminMenuOption${renderResponse.namespace}(id, obj) {
+	self.window.open(obj.href, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
+	return false;
+}
+
 ss_createOnResizeObj('ss_setAdministrationIframeSize${renderResponse.namespace}', ss_setAdministrationIframeSize${renderResponse.namespace});
 ss_createOnLayoutChangeObj('ss_setAdministrationIframeSize${renderResponse.namespace}', ss_setAdministrationIframeSize${renderResponse.namespace});
 //If this is the first definition of ss_setAdministrationIframeSize, remember its name in case we need to find it later
@@ -177,7 +183,8 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 						<ssf:ifnotaccessible>
 						  <ssf:tree treeName="${adminTreeName}" 
 						    treeDocument="${ssAdminDomTree}" 
-						    rootOpen="true" />
+						    rootOpen="true" 
+						    showIdRoutine="ss_showAdminMenuOption${renderResponse.namespace}" />
 						</ssf:ifnotaccessible>
 						<ssf:ifaccessible>
 						<ssf:tree treeName="${adminTreeName}" 
