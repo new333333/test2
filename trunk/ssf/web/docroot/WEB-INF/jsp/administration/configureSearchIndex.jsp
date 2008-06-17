@@ -32,6 +32,11 @@
 <jsp:useBean id="ssWsDomTree" type="org.dom4j.Document" scope="request" />
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body class="ss_style_body">
+<div id="ss_pseudoAdministrationPortalDiv${renderResponse.namespace}">
+</ssf:ifadapter>
+
 <%
 String wsTreeName = "search_" + renderResponse.getNamespace();
 %>
@@ -48,8 +53,8 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
 <input type="submit" class="ss_submit" name="okBtn" 
   value="<ssf:nlt tag="button.ok" text="OK"/>" onclick="ss_buttonSelect('okBtn');ss_startSpinner();">
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="submit" class="ss_submit" name="closeBtn" 
- value="<ssf:nlt tag="button.close" text="Close"/>" onClick="ss_buttonSelect('closeBtn');">
+<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
+		  onClick="self.window.close();return false;"/>
 </div>
 <br>
 <span class="ss_bold"><ssf:nlt tag="administration.configure.index.select" text="Select the forums to be re-indexed:"/></span>
@@ -94,11 +99,8 @@ function ss_submitIndexingForm() {
 
 function ss_indexingDone() {
 	if(ss_indexTimeout) { clearTimeout(ss_indexTimeout); }
-	ss_buttonSelect('closeBtn');
-	var formObj = document.forms['<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm'];
-	formObj.btnClicked.value = 'closeBtn';
-	formObj.action = '<ssf:url action="configure_index" actionUrl="true"/>'
-	formObj.submit();
+	ss_showPopupDivCentered('ss_indexing_done_div${renderResponse.namespace}');
+	setTimeout("self.window.close();", 4000)
 }
 
 
@@ -141,3 +143,42 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 <br>
 </td></tr></table>
 
+<div id="ss_indexing_done_div${renderResponse.namespace}" style="position:absolute;display:none;">
+<span><ssf:nlt tag="index.finished"/></span>
+</div>
+
+<ssf:ifadapter>
+</div>
+<script type="text/javascript">
+var ss_parentAdministrationNamespace${renderResponse.namespace} = "";
+function ss_administration_showPseudoPortal${renderResponse.namespace}(obj) {
+	//See if we are in an iframe inside a portlet 
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_administrationIframe") == 0) {
+		//We are running inside a portlet iframe; set up for layout changes
+		ss_parentAdministrationNamespace${renderResponse.namespace} = windowName.substr("ss_administrationIframe".length)
+		ss_createOnResizeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
+		ss_createOnLayoutChangeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
+	} else {
+		//Show the pseudo portal
+		var divObj = self.document.getElementById('ss_pseudoAdministrationPortalDiv${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.className = "ss_pseudoPortal"
+		}
+		divObj = self.document.getElementById('ss_upperRightToolbar${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.style.display = "block"
+			divObj.style.visibility = "visible"
+		}
+		divObj = self.document.getElementById('ss_administrationHeader_${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.style.display = "block"
+			divObj.style.visibility = "visible"
+		}
+	}
+}
+ss_administration_showPseudoPortal${renderResponse.namespace}();
+</script>
+	</body>
+</html>
+</ssf:ifadapter>
