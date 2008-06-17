@@ -85,6 +85,7 @@ public class AddEntryServlet extends HttpServlet {
 	private static final String PARAMETER_FORM_DESCRIPTION = "description";
 	private static final String PARAMETER_FORM_BINDER_ID = "binderId";
 	private static final String PARAMETER_FORM_DEFINITION_ID = "definitionId";
+	private static final String PARAMETER_FORM_RETURN_URL = "returnUrl";
 	private static final String PARAMETER_FORM_BUTTON_OK = "okBtn";
 	private static final String PARAMETER_FORM_BUTTON_CANCEL = "cancelBtn";
 
@@ -119,6 +120,7 @@ public class AddEntryServlet extends HttpServlet {
 					String description = req.getParameter(PARAMETER_FORM_DESCRIPTION);
 					String binderId = req.getParameter(PARAMETER_FORM_BINDER_ID);
 					String definitionId = req.getParameter(PARAMETER_FORM_DEFINITION_ID);
+					String returnUrl = req.getParameter(PARAMETER_FORM_RETURN_URL);
 
 					TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 					locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);
@@ -137,22 +139,35 @@ public class AddEntryServlet extends HttpServlet {
 					descriptionElement.setText(description);
 					Long entryId = stub.folder_addFolderEntry(accessToken, new Long(binderId), 
 							definitionId, entryDoc.asXML(), null);
+					String jsp = "/WEB-INF/jsp/addentry/entry_return.jsp";				
+					RequestDispatcher rd = req.getRequestDispatcher(jsp);	
+					StringServletResponse resp2 = new StringServletResponse(resp);	
+					req.setAttribute(PARAMETER_NAME_ACCESS_TOKEN, accessToken);
+					req.setAttribute(PARAMETER_NAME_USER_ID, userId);
+					req.setAttribute(PARAMETER_FORM_BINDER_ID, binderId);
+					req.setAttribute(PARAMETER_FORM_DEFINITION_ID, definitionId);
+					req.setAttribute(PARAMETER_FORM_RETURN_URL, returnUrl);
+					rd.include(req, resp2);	
+					resp.getWriter().print(resp2.getString());
 				} else if (params.containsKey(PARAMETER_FORM_BUTTON_CANCEL)) {
 					//Cancel button
 				}
 				resp.getWriter().print(result);
 				
 			} else {
-				String result = "error: URL must end with \"/form\" or \"/submit\"";
-				
+				String result = "Error: URL must end with \"/form\" or \"/submit\"";
 				resp.getWriter().print(result);
 			}
 		}
 		catch(IOException e) {
-			throw e;
+			String result = "Error: an unexpected error occurred: ";
+			resp.getWriter().print(result);
+			resp.getWriter().print(e.toString());
 		}
 		catch(Exception e) {
-			throw new ServletException(e);
+			String result = "Error: an unexpected error occurred: ";
+			resp.getWriter().print(result);
+			resp.getWriter().print(e.toString());
 		}
 	}
 }

@@ -31,5 +31,7 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${!empty ssDefinitionEntry.customAttributes[property_name].value}">
-<ssf:remoteAccessory applicationId="${ssDefinitionEntry.customAttributes[property_name].value}"/>
+<ssf:remoteAccessory applicationId="${ssDefinitionEntry.customAttributes[property_name].value}">
+  <ssf:param name="binderId" value="${ssBinder.id}"/>
+</ssf:remoteAccessory>
 </c:if>
