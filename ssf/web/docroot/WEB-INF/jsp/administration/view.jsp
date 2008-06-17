@@ -128,7 +128,9 @@ function ss_setAdministrationIframeSize${renderResponse.namespace}() {
 	}
 }
 
-function ss_showAdminMenuOption${renderResponse.namespace}(id, obj) {
+function ss_showAdminMenuOption${renderResponse.namespace}(id, obj, action) {
+	//If this is a request to show the error logs, don't pop-up
+	if (action == 'get_log_files') return true;
 	self.window.open(obj.href, "_blank", "directories=no,location=no,menubar=yes,resizable=yes,scrollbars=yes,status=no,toolbar=no");
 	return false;
 }

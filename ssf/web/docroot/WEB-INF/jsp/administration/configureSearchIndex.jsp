@@ -99,6 +99,7 @@ function ss_submitIndexingForm() {
 
 function ss_indexingDone() {
 	if(ss_indexTimeout) { clearTimeout(ss_indexTimeout); }
+	ss_stopSpinner();
 	ss_showPopupDivCentered('ss_indexing_done_div${renderResponse.namespace}');
 	setTimeout("self.window.close();", 4000)
 }
