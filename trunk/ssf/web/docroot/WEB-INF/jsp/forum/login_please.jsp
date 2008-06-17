@@ -32,7 +32,7 @@
 <ssf:ifadapter>
 <body class="ss_style_body">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
-<div class="ss_portlet_style ss_portlet">
+<div id="ss_showfolder" class="ss_style ss_portlet ss_content_outer">
 <%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 <div class="ss_clear_float"></div>
 </ssf:ifadapter>

@@ -424,15 +424,16 @@ table.ss_borderTable {
   border-bottom: 1px solid #6799C8;
   margin-top: 3px;
   }
-
-table.ss_borderTable tr td {
-  padding-top: 4px;
-  padding-bottom: 5px;
-  padding-left: 5px;
-  padding-right: 2px;
-  border: 1px solid #6799C8;
-  border-collapse: collapse;
-} 
+/*
+*table.ss_borderTable tr td {
+*  padding-top: 4px;
+*  padding-bottom: 5px;
+*  padding-left: 5px;
+*  padding-right: 2px;
+*  border: 1px solid #6799C8;
+*  border-collapse: collapse;
+*} 
+*/
 
 table.ss_borderTable tr.ss_headerRow td {
   padding-top: 4px;

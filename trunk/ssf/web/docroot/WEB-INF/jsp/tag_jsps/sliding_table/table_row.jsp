@@ -81,11 +81,11 @@
 			if (width != null && !width.equals("")) widthAttr = "width='" + width + "' ";
 			if (slidingTableHeaderRow != null && slidingTableHeaderRow.booleanValue()) {
 %>
-  <th scope="col" class="ss_bold" align="left" <%= widthAttr %>><%= text %></th>
+  <th scope="col" class="ss_bold" align="left" <%= widthAttr %> style="padding: 4px 2px 5px 5px; border:1px solid #6799C8; border-collapse: collapse;"><%= text %></th>
 <%
 			} else {
 %>
-  <td valign="top" <%= widthAttr %>><%= text %></td>
+  <td valign="top" <%= widthAttr %> style="padding: 4px 2px 5px 5px; border:1px solid #6799C8; border-collapse: collapse;"><%= text %></td>
 <%
 			}
 		}
