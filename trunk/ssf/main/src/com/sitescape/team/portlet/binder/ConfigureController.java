@@ -148,6 +148,20 @@ public class ConfigureController extends AbstractBinderController {
 				} else if (!simpleUrl.getBinderId().equals(binderId)) {
 					response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, "true");
 				}
+			} else {
+				//name is null, see if prefix is user's name
+				if (prefix.toLowerCase().equals(user.getName().toLowerCase())) {
+					SimpleName simpleUrl = getBinderModule().getSimpleName(prefix);
+					if (simpleUrl == null) {
+						getBinderModule().addSimpleName(prefix, binderId, binder.getEntityType().name());
+					} else if (simpleUrl.getBinderId().equals(binderId)) {
+						response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_EXISTS_ERROR, "true");
+					} else {
+						response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, "true");
+					}
+				} else {
+					response.setRenderParameter(WebKeys.SIMPLE_URL_NAME_NOT_ALLOWED_ERROR, "true");
+				}
 			}
 		} else if (formData.containsKey("deleteUrlBtn")) {
 			Set<String> deleteNames = new HashSet();
