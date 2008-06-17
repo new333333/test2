@@ -30,6 +30,10 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<ssf:ifadapter>
+<body class="ss_style_body">
+<div id="ss_pseudoAdministrationPortalDiv${renderResponse.namespace}">
+</ssf:ifadapter>
 <c:if test="${empty ssErrorList}">
 <script type="text/javascript">
 var url_str = '<ssf:url action="site_administration" actionUrl="false"/>';
@@ -57,3 +61,38 @@ setTimeout("self.location.replace('"+url_str+"')", timeout);
 
 </form>
 </c:if>
+<ssf:ifadapter>
+</div>
+<script type="text/javascript">
+var ss_parentAdministrationNamespace${renderResponse.namespace} = "";
+function ss_administration_showPseudoPortal${renderResponse.namespace}(obj) {
+	//See if we are in an iframe inside a portlet 
+	var windowName = self.window.name    
+	if (windowName.indexOf("ss_administrationIframe") == 0) {
+		//We are running inside a portlet iframe; set up for layout changes
+		ss_parentAdministrationNamespace${renderResponse.namespace} = windowName.substr("ss_administrationIframe".length)
+		//ss_createOnResizeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
+		//ss_createOnLayoutChangeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
+	} else {
+		//Show the pseudo portal
+		var divObj = self.document.getElementById('ss_pseudoAdministrationPortalDiv${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.className = "ss_pseudoPortal"
+		}
+		divObj = self.document.getElementById('ss_upperRightToolbar${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.style.display = "block"
+			divObj.style.visibility = "visible"
+		}
+		divObj = self.document.getElementById('ss_administrationHeader_${renderResponse.namespace}');
+		if (divObj != null) {
+			divObj.style.display = "block"
+			divObj.style.visibility = "visible"
+		}
+	}
+}
+ss_administration_showPseudoPortal${renderResponse.namespace}();
+</script>
+	</body>
+</html>
+</ssf:ifadapter>
