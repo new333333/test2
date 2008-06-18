@@ -29,6 +29,7 @@
  */
 %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
+
 <ssf:sidebarPanel title="sidebar.tags.tools" id="ss_placetags_sidebar" divClass="ss_place_tags"
     initOpen="false" sticky="true">
 
@@ -161,6 +162,23 @@
 </ssf:sidebarPanel>
 </c:if>
 <c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
+<ssf:sidebarPanel title="relevance.userStatus" id="ss_placetags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
+<ssf:ifLoggedIn>
+<script type="text/javascript">
+ss_statusCurrent = "${ssUser.status}";
+</script>
+
+<input type="text" size="42" style="font-size:9px; background-color:#e6e6e6;" value="${ssUser.status}"
+  onFocus="ss_setStatusBackground(this, 'focus');"
+  onKeyPress="ss_updateStatusSoon(this, event);"
+  onChange="ss_updateStatusNow(this);"
+  onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
+  onMouseover="ss_setStatusBackground(this, 'mouseOver');"
+  onMouseout="ss_setStatusBackgroundCheck(this);"
+  />
+
+</ssf:ifLoggedIn> 
+</ssf:sidebarPanel>
 <ssf:sidebarPanel title="sidebar.tags.workspace" id="ss_placetags_sidebar" divClass="ss_place_tags"
     initOpen="false" sticky="true">
   <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
