@@ -51,8 +51,10 @@ public interface DefinitionModule {
 	public enum DefinitionOperation {
 		manageDefinition,
 	}
-	public String addDefinition(Document doc, boolean replace) throws AccessControlException;
-	public Definition addDefinition(String name, String title, int type, InputDataAccessor inputData) throws AccessControlException;
+	public Definition addPublicDefinition(Document doc, String name, String title, boolean replace) throws AccessControlException;
+	public Definition addPublicDefinition(String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException;
+	public Definition addBinderDefinition(Document doc, Binder binder, String name, String title, boolean replace) throws AccessControlException;
+	public Definition addBinderDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException;
 	/**
 	 * Adds an item to an item in a definition tree.
 	 *
@@ -68,14 +70,18 @@ public interface DefinitionModule {
 	 * @exception NoSuchElementException iteration has no more elements.
 	 */
 	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException, AccessControlException;
-	public Definition addDefaultDefinition(int type);
+	public Definition addDefaultDefinition(Integer type);
 	public void deleteDefinition(String id) throws AccessControlException;
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException, AccessControlException;
 
 	public Definition getDefinition(String id);
-	public Definition getDefinitionByName(String id);
-	public List<Definition> getDefinitions();
-	public List<Definition> getDefinitions(int type);
+	public Definition getDefinitionByName(String name);
+	public List<Definition> getAllDefinitions();
+	public List<Definition> getAllDefinitions(Integer type);
+	public List<Definition> getDefinitions(Integer visibility);
+	public List<Definition> getDefinitions(Integer visibility, Integer type);
+	public List<Definition> getBinderDefinitions(Long binderId, boolean includeAncestors);
+	public List<Definition> getBinderDefinitions(Long binderId, boolean includeAncestors, Integer type);
 	public Document getDefinitionConfig();
 	public Document getDefinitionAsXml(Definition def);
 	/**
@@ -89,8 +95,7 @@ public interface DefinitionModule {
 	public Map getEntryDefinitionElements(String id);
 	public Map getWorkflowDefinitionStates(String id);
 
-	public void modifyDefinitionName(String id, String name, String caption) throws AccessControlException;
-	public void modifyDefinitionAttribute(String id, String key, String value) throws AccessControlException;
+	public void modifyVisibility(String id, Integer visibility) throws AccessControlException;
 	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) throws AccessControlException;
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException, AccessControlException;
 	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException, AccessControlException;
@@ -98,7 +103,7 @@ public interface DefinitionModule {
 	public Definition setDefaultEntryDefinition(Entry entry);
 	public void setDefinitionLayout(String id, InputDataAccessor inputData) throws AccessControlException;
 
-  	public boolean testAccess(int type, DefinitionOperation operation);
+  	public boolean testAccess(Integer type, DefinitionOperation operation);
   	/**
   	 * After importing a definition, references to other definitions must be resolved.
   	 * 

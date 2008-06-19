@@ -623,6 +623,7 @@
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.definition.impl.DefinitionModuleImpl">
 				<property name="workflowModule"><ref bean="workflowModule"/></property>
 				<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
+				<property name="binderModule"><ref local="binderModule"/></property>
 			</bean>	
 		</property>
 	</bean>

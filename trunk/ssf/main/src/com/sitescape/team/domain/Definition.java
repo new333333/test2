@@ -49,7 +49,8 @@ import com.sitescape.util.Validator;
 public class Definition extends PersistentTimestampObject  {
     private String name="";
 	private int type=FOLDER_ENTRY;
-	private int visibility=PUBLIC;
+	private Integer visibility=VISIBILITY_PUBLIC;
+	private Boolean shared=false;
     private byte[] xmlencoding;
     private Document doc;
     private String title="";
@@ -84,9 +85,9 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String VIEW_STYLE_TEAM_ROOT="team_root";
 	public static final String VIEW_STYLE_TEAM="team";
 	//visibility values
-	public static final int PUBLIC=1;
-	public static final int LOCAL=2;
-	public static final int PERSONAL=3;
+	public static final Integer VISIBILITY_PUBLIC=1; //globally defined
+	public static final Integer VISIBILITY_LOCAL=2; //defined/managed at binder level, visible down tree
+	public static final Integer VISIBILITY_SHARED=3; //same as binder but shared with site
 	//Values for jsp types
 	public static final String JSP_STYLE_FORM="form";
 	public static final String JSP_STYLE_VIEW="view";
@@ -96,11 +97,20 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String JSP_STYLE_DEFAULT="default"; //used only in definition_config file
 
 	protected static final Log logger = LogFactory.getLog(Definition.class);
-
+	protected Binder binder;
 	public Definition() {
 		
 	}    
-
+	/**
+	 * Binder owner if binder level definition 
+	 * @return
+	 */
+	public Binder getBinder() {
+		return binder;
+	}
+	public void setBinder(Binder binder) {
+		this.binder = binder;
+	}
 
     /**
      * Unique name of definition.
@@ -135,14 +145,23 @@ public class Definition extends PersistentTimestampObject  {
     }
     
     /**
-     * All are currently visible.
+     * 
      * @hibernate.property 
      */
-    public int getVisibility() {
+    public Integer getVisibility() {
     	return visibility;
     }
-    public void setVisibility(int visibility) {
+    public void setVisibility(Integer visibility) {
     	this.visibility = visibility;
+    }    
+    /**
+     * @hibernate.property 
+     */
+    public Boolean isShared() {
+    	return shared;
+    }
+    public void setShared(Boolean shared) {
+    	this.shared = shared;
     }    
     /**
      * @hibernate.property not-null="true"

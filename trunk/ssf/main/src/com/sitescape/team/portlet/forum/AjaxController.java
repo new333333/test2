@@ -933,7 +933,12 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.FILTER_TYPE, op2);
 			Map defaultEntryDefinitions = DefinitionHelper.getEntryDefsAsMap(binder);
 			model.put(WebKeys.ENTRY_DEFINITION_MAP, defaultEntryDefinitions);
-	    	DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
+			List<Definition> wfs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.WORKFLOW);
+			Map definitions = new HashMap();
+			for (Definition def:wfs) {
+				definitions.put(def.getId(), def);
+			}
+			model.put(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, definitions);
 			model.put(WebKeys.WORKFLOW_DEFINITION_MAP, model.get(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS));
 			return new ModelAndView("binder/get_filter_type", model);
 		} else if (op.equals(WebKeys.OPERATION_GET_ENTRY_ELEMENTS)) {

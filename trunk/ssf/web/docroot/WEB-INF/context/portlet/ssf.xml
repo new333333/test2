@@ -56,6 +56,7 @@
 	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.WorkflowReportController" />
 	<bean id="creditsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.CreditsController" />
 	<bean id="clipboardController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.ClipboardController" />
+	<bean id="manageDefinitionsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageDefinitionsController" />
 
 	<bean id="folderAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.AjaxController" />
 	<bean id="dashboardAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.DashboardAjaxController" />
@@ -72,7 +73,6 @@
 	<bean id="adminManageGroupsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageGroupsController" />
 	<bean id="adminManageApplicationsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageApplicationsController" />
 	<bean id="adminManageApplicationGroupsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageApplicationGroupsController" />
-	<bean id="adminExportDefinitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ExportDefinitionController" />
 	<bean id="adminManageZonesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageZonesController" />
 	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureConfigurationController" />
 	<bean id="definitionBuilderXmlController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.definitionBuilder.ViewDefinitionXmlController" />
@@ -140,8 +140,6 @@
 						<entry key="import_definition"><ref bean="importDefinitionController"/></entry>
 						<entry key="import_profiles"><ref bean="importProfilesController"/></entry>
 						<entry key="import_templates"><ref bean="importTemplatesController"/></entry>
-						<entry key="import_template"><ref bean="importDefinitionController"/></entry>
-						<entry key="export_definition"><ref bean="adminExportDefinitionController"/></entry>
 						<entry key="login_report"><ref bean="loginReportController"/></entry>
 						<entry key="license_report"><ref bean="licenseReportController"/></entry>
 						<entry key="manage_license"><ref bean="manageLicenseController"/></entry>
@@ -159,6 +157,7 @@
 						<entry key="manage_application_groups"><ref bean="adminManageApplicationGroupsController"/></entry>
 						<entry key="manage_zones"><ref bean="adminManageZonesController"/></entry>
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
+						<entry key="manage_definitions"><ref bean="manageDefinitionsController"/></entry>
 
 					</map>
 				</entry>

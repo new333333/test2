@@ -27,10 +27,7 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.portlet.administration;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -40,8 +37,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -68,12 +63,9 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.MapInputData;
-import com.sitescape.team.portlet.forum.ListFolderController;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.TempFileUtil;
-import com.sitescape.team.util.XmlFileUtil;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
@@ -87,7 +79,6 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.team.web.util.WebHelper;
-import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 
 public class ConfigureConfigurationController extends  SAbstractController {

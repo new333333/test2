@@ -28,65 +28,58 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 
-<%@ page import="org.dom4j.Document" %>
-<%@ page import="org.dom4j.DocumentHelper" %>
-<%@ page import="org.dom4j.Element" %>
-<%@ page import="com.sitescape.team.domain.DefinitionInvalidOperation" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 
-<jsp:useBean id="definitionTree" type="org.dom4j.Document" scope="request" />
-<jsp:useBean id="data" type="java.util.Map" scope="request" />
-<%@ page import="com.sitescape.team.domain.Entry" %>
-<jsp:useBean id="ss_ajaxStatus" type="java.util.Map" scope="request" />
-<%
-	if (1 == 0) {
-%>
-		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
-		  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
-		  configDocument="${ssConfigDefinition}"
-		  option="<%= (String) data.get("option") %>" 
-		  itemId="<%= (String) data.get("itemId") %>" 
-		  itemName="<%= (String) data.get("itemName") %>" 
-		  refItemId="<%= (String) data.get("refItemId") %>" 
-		/>
-<%
-	} else {
-%>
 <taconite-root xml:space="preserve">
-<%
-  if (ss_ajaxStatus.containsKey("ss_ajaxNotLoggedIn")) {
-%>
-	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
-		<div id="ss_status_message" 
-		 style="visibility:hidden; display:none;">error</div>
-	</taconite-replace>
-<%
-  } else {
-%>
-
-
-	<taconite-replace contextNodeID="ss_status_message" parseInBrowser="true">
-		<div id="ss_status_message" style="visibility:hidden; display:none;">ok</div>
-	</taconite-replace>
+<%@ include file="/WEB-INF/jsp/common/ajax_status.jsp" %>
+<c:if test="${empty ss_ajaxStatus.ss_ajaxNotLoggedIn}">
 
 	<taconite-replace contextNodeID="displaydiv" parseInBrowser="true">
 	  <div id="displaydiv" style="margin:0px; padding:4px;"> 
+	  <c:choose>
+	  <c:when test="${data['option'] == 'copyDefinition'}">
+	  		<span class="ss_titlebold"><ssf:nlt tag="administration.copy.definition.rename"/></span><br/><br/>
+			<span><ssf:nlt tag="definition.name"/></span><br/>
+			<input type="text" class="ss_text" name="propertyId_name" size="40" value="<c:out value="${ssDefinition.name}-2" escapeXml="true"/>"/><br/>
+			<span><ssf:nlt tag="definition.caption"/></span><br/>
+			<input type="text" class="ss_text" name="propertyId_caption" size="40" value="<c:out value="${ssDefinition.title}-2" escapeXml="true"/>"/><br/><br/>
+		</c:when>	  
+	  <c:when test="${data['option'] == 'deleteDefinition'}">
+			<span class="ss_titlebold"><ssf:nlt tag="definition.delete"/></span><span><c:out value="${data.selectedItemTitle}" escapeXml="true"/></span>
+	  </c:when>	  
+	  <c:when test="${data['option'] == 'view_definition_options'}">
+		<span class="ss_titlebold"><c:out value="${data.selectedItemTitle}" escapeXml="true"/></span>
+			
+		<table><tbody>
+		<tr><td><a href="javascript: ;" onClick="return modifyDefinition();"><ssf:nlt tag="definition.modifyProperties"/></a></td></tr>
+		<tr><td><a href="javascript: ;\" onClick="return copyDefinition();"><ssf:nlt tag="definition.copyDefinition"/></a></td></tr>
+		<tr><td><a href="javascript: ;\" onClick="return deleteDefinition();"><ssf:nlt tag="definition.deleteDefinition"/></a></td></tr>
+		<c:if test="${!empty ssDefinition && ssDefinition.visibility == 2}">
+		<tr><td><a href="javascript: ;\" onClick="return setVisibility(3);"><ssf:nlt tag="definition.setShared"/></a></td></tr>
+		</c:if>
+		<c:if test="${!empty ssDefinition && ssDefinition.visibility == 3}">
+		<tr><td><a href="javascript: ;\" onClick="return setVisibility(2);"><ssf:nlt tag="definition.setNotShared"/></a></td></tr>
+		</c:if>
+			
+		<c:if test="${!empty ssDefinition && ssDefinition.visibility != 1 && ssIsAdmin}">
+		<tr><td><a href="javascript: ;\" onClick="return setVisibility(1);"><ssf:nlt tag="definition.setPublic"/></a></td></tr>
+		</c:if>
+		</tbody></table>
+	  </c:when>
+	  <c:otherwise>
 		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
-		  sourceDocument="<%= (Document) data.get("sourceDefinition") %>" 
+		  sourceDocument="${data.sourceDefinition}" 
 		  configDocument="${ssConfigDefinition}"
-		  option="<%= (String) data.get("option") %>" 
-		  itemId="<%= (String) data.get("itemId") %>" 
-		  itemName="<%= (String) data.get("itemName") %>" 
-		  refItemId="<%= (String) data.get("refItemId") %>" 
+		  option="${data.option}" 
+		  itemId="${data.itemId}" 
+		  itemName="${data.itemName}" 
+		  refItemId="${data.refItemId}" 
 		/>
+		</c:otherwise>
+		</c:choose>
 	  </div>
 	</taconite-replace>
-<%
-  }
-%>	
+</c:if>
 </taconite-root>
-<%
-	}
-%>
+

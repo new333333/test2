@@ -36,19 +36,17 @@
 <div id="ss_pseudoAdministrationPortalDiv${renderResponse.namespace}">
 </ssf:ifadapter>
 
-<script type="text/javascript">
-var ssExportURL="<ssf:url action="export_definition" actionUrl="true"/>";
-</script>
-
+<span class="ss_titlebold"><ssf:nlt tag="administration.export.definitions.select"/></span>
 <table class="ss_style" width="100%"><tr><td>
 
 <form class="ss_style ss_form" action="<ssf:url webPath="definitionDownload"/>" 
 	method="post" name="${renderResponse.namespace}fm">
 
-<br>
-<br>
-<span class="ss_bold"><ssf:nlt tag="administration.export.definitions.select"/></span>
 <%@include file="/WEB-INF/jsp/administration/commonSelectTree.jsp" %>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+		  onClick='self.location.href="<ssf:url action="manage_definitions" 
+			actionUrl="false"><ssf:param name="binderId" value="${ssBinderId}"/></ssf:url>";return false;'>
 <script type="text/javascript">
 document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
 </script>

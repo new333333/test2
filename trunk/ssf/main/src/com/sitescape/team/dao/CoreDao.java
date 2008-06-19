@@ -103,7 +103,7 @@ public interface CoreDao {
 	public Definition loadDefinition(String defId, Long zoneId);   
 	public Definition loadDefinitionByName(String name, Long zoneId);
 	public List<Definition> loadDefinitions(Long zoneId);
-    public List<Definition> loadDefinitions(Long zoneId, int type);
+    public List<Definition> loadDefinitions(FilterControls filter, Long zoneId);
 	public EntityDashboard loadEntityDashboard(EntityIdentifier ownerId);
     public List<Tag> loadEntityTags(EntityIdentifier entityIdentifier, EntityIdentifier ownerIdentifier);
 	public NotifyStatus loadNotifyStatus(Binder binder, DefinableEntity entity);

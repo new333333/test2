@@ -1327,24 +1327,15 @@ public class ListFolderHelper {
 					NLT.get("toolbar.menu.report"), url, qualifiers);
 		}
 		
-		//Definition builder - forms (turned off until local definitions supported)
-		/*
-		adminMenuCreated=true;
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_ENTRY));
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.definition_builder.folderEntry"), url);
-		//Definition builder - workflows
-		adminMenuCreated=true;
-		url = response.createActionURL();
-		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-		url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKFLOW));
-		url.setParameter(WebKeys.URL_BINDER_ID, forumId);
-		url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-		folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.definition_builder.workflow"), url);
-		*/
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageDefinitions)) {
+			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("administration.definition_builder_designers"), url, qualifiers);
+		}
 		
 		//Delete binder
 		if (bs.getBinderModule().testAccess(folder, BinderOperation.deleteBinder)) {

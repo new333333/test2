@@ -236,6 +236,7 @@ public class WebKeys {
 	public static final String ACTION_DEFINITION_BUILDER = "definition_builder";
 	public static final String ACTION_DEFINITION_BUILDER_DEFINITION_TYPE = "definition_type";
 	public static final String ACTION_EDIT_ELEMENT = "edit_element";
+	public static final String ACTION_MANAGE_DEFINITIONS = "manage_definitions";
 	public static final String ACTION_MODIFY_DASHBOARD = "modify_dashboard";
 	public static final String ACTION_MODIFY_FOLDER_ENTRY = "modify_folder_entry";
 	public static final String ACTION_LOCK_FOLDER_ENTRY = "lock_folder_entry";
@@ -772,14 +773,18 @@ public class WebKeys {
     public static final String PROFILE_CONFIG_ENTRY="ssProfileConfigEntry";
     public static final String PROFILE_SHOW_BUSINESSCARD_MINE="ssProfileShowBusinessCardMine";
     public static final String PROFILE_SHOW_BUSINESSCARD_OTHER="ssProfileShowBusinessCardOther";
-    public static final String PUBLIC_DEFINITIONS="ssPublicDefinitions";
     public static final String PUBLIC_BINDER_DEFINITIONS="ssPublicBinderDefinitions";
-    public static final String PUBLIC_BINDER_ENTRY_DEFINITIONS="ssPublicBinderEntryDefinitions";
+    public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";
     public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
+    public static final String SHARED_ENTRY_DEFINITIONS="ssSharedEntryDefinitions";
+    public static final String LOCAL_ENTRY_DEFINITIONS="ssLocalEntryDefinitions";
     public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
     public static final String PUBLIC_PROFILE_DEFINITIONS="ssPublicProfileDefinitions";
     public static final String PUBLIC_PROFILE_ENTRY_DEFINITIONS="ssPublicProfileEntryDefinitions";
+    public static final String ALL_WORKFLOW_DEFINITIONS="ssAllWorkflowDefinitions";
     public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";
+    public static final String SHARED_WORKFLOW_DEFINITIONS="ssSharedWorkflowDefinitions";
+    public static final String LOCAL_WORKFLOW_DEFINITIONS="ssLocalWorkflowDefinitions";
     public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";
     public static final String RECORDS_DIV_ID="ss_recordsDivId";
@@ -1017,6 +1022,7 @@ public class WebKeys {
     public static final String VIEW_BUILD_FILTER_SELECT = "binder/build_filter_select";
     public static final String VIEW_CONFIGURE = "binder/configure";
     public static final String VIEW_CONFIRM_DELETE_USER_WORKSPACE="profile/confirm_delete_user_workspace";
+    public static final String VIEW_DEFINITIONS="administration/view_definitions";
     public static final String VIEW_DEFINITION="definition_builder/view_definition_builder";
     public static final String VIEW_DEFINITION_OPTION="definition_builder/view_definition_builder_option";
     public static final String VIEW_DEFINITION_XML="definition_builder/view_definition_xml";

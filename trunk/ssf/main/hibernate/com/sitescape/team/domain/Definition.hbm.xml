@@ -15,6 +15,7 @@
     <property name="type"/>
     <property name="internalId" length="32"/>
     <property name="visibility"/>
+    <many-to-one name="binder"/>
 <!-- use length to force medium blob in mysql -->
     <property name="encoding" length="2000000" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
  <properties name="nameKey" unique="true" update="false" insert="false">

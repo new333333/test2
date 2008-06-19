@@ -41,7 +41,8 @@
 
 <form class="ss_style ss_form" method="post" 
 		  action="<ssf:url action="import_definition" actionUrl="true"><ssf:param 
-		  name="operation" value="reload"/></ssf:url>" 
+		  name="operation" value="reload"/><ssf:param 
+		  name="binderId" value="${ssBinderId}"/></ssf:url>" 
 		  name="${renderResponse.namespace}fm">
 
 <span>
@@ -50,10 +51,9 @@
 <br/>
 <br/>
 
-<input type="submit" class="ss_submit" name="reloadDefinitionsBtn" value="<ssf:nlt tag="button.ok" />">
+<input type="submit" class="ss_submit" name="reloadDefinitionsBtn" value="<ssf:nlt tag="button.ok" />"/>
 &nbsp;&nbsp;&nbsp;
-<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-		  onClick="self.window.close();return false;"/>
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"/>
 
 </form>
 </div>

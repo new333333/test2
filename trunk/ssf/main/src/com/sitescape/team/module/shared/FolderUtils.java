@@ -472,7 +472,7 @@ public class FolderUtils {
 	}
 	
 	private static Definition getZoneWideDefaultFolderEntryDefinition() {
-		List defs = getDefinitionModule().getDefinitions(Definition.FOLDER_ENTRY);
+		List defs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.FOLDER_ENTRY);
 		if(defs != null)
 			return (Definition) defs.get(0);
 		else
@@ -494,7 +494,7 @@ public class FolderUtils {
 	}
 	
 	private static Definition getZoneWideDefaultFolderDefinition() {
-		List defs = getDefinitionModule().getDefinitions(Definition.FOLDER_VIEW);
+		List defs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.FOLDER_VIEW);
 		if(defs != null)
 			return (Definition) defs.get(0);
 		else

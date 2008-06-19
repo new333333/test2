@@ -45,11 +45,16 @@
 </ul>
 </c:if>
 <form class="ss_style ss_form" method="post" enctype="multipart/form-data" 
-		  action="<ssf:url adapter="true" 
-			portletName="ss_administration" 
-			action="import_definition" 
-			actionUrl="true" />">
-<span class="ss_titlebold"><ssf:nlt tag="administration.import.definitions" /></span>
+		  action="<ssf:url action="import_definition" 
+			actionUrl="true"><ssf:param 
+		  name="binderId" value="${ssBinder.id}"/></ssf:url>">
+<c:if test="${empty ssBinder}">
+<span class="ss_titlebold"><ssf:nlt tag="administration.import.definitions.public" /></span>
+</c:if>
+<c:if test="${!empty ssBinder}">
+<span class="ss_titlebold"><ssf:nlt tag="administration.import.definitions.local"><ssf:param
+	name="value" value="${ssBinder.pathName}"/></ssf:nlt></span>
+</c:if>
 <br>
 
 <div class="ss_divider"></div>
@@ -73,8 +78,7 @@
 
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />"/>
 
-<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-  onClick="window.close();return false;"/>
+<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"/>
 
 </div>
 </div>

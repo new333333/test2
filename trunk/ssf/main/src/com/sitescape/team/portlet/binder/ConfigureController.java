@@ -39,6 +39,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.TreeMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -47,6 +48,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.comparator.StringComparator;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
@@ -57,8 +59,10 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.smtp.SMTPManager;
+import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SimpleNameUtil;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
@@ -277,7 +281,7 @@ public class ConfigureController extends AbstractBinderController {
 		{
 			tempEntryDefMap.put(defEntryIds[i], DefinitionHelper.getDefinition(defEntryIds[i]));
 		}
-		Map replyDefMap = DefinitionHelper.getReplyDefinitions(tempEntryDefMap);
+		Map replyDefMap = DefinitionHelper.getReplyDefinitions(tempEntryDefMap.values());
 		Object[] replyIdsArray = replyDefMap.keySet().toArray();
 		
 		if (defEntryIds != null) {
@@ -302,26 +306,69 @@ public class ConfigureController extends AbstractBinderController {
 		}
 	}
 	protected void setupDefinitions(Binder binder, Map model) {
-
+		//get definitions in translated title order
+		StringComparator c = new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale());
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 		EntityType binderType = binder.getEntityType();
 		if (binderType.equals(EntityType.workspace)) {
 			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
-				DefinitionHelper.getDefinitions(Definition.USER_WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+				model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(Definition.USER_WORKSPACE_VIEW),c));
 			} else {
-				DefinitionHelper.getDefinitions(Definition.WORKSPACE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
+				model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(Definition.WORKSPACE_VIEW),c));
 			}
 		} else if (binderType.equals(EntityType.profiles)) {
-			DefinitionHelper.getDefinitions(Definition.PROFILE_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
-			DefinitionHelper.getDefinitions(Definition.PROFILE_ENTRY_VIEW, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);			
+			model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(Definition.PROFILE_VIEW),c));
+			model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(Definition.PROFILE_ENTRY_VIEW),c));	
 		} else {
-			DefinitionHelper.getDefinitions(Definition.FOLDER_VIEW, WebKeys.PUBLIC_BINDER_DEFINITIONS, model);
-			DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY, WebKeys.PUBLIC_BINDER_ENTRY_DEFINITIONS, model);
+			
+			model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(Definition.FOLDER_VIEW),c));
+			//build ordered list of entry definition types
+			Map publicMap = orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.FOLDER_ENTRY),c);
+			List binderDefs = getDefinitionModule().getBinderDefinitions(binder.getId(), true, Definition.FOLDER_ENTRY);
+			Map binderMap = orderDefinitions(binderDefs,c);
+			List sharedDefs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_SHARED, Definition.FOLDER_ENTRY);
+			//remove duplicates
+			Set uniqueDefs = CollectionUtil.differences(sharedDefs, binderDefs);
+			sharedDefs.clear();
+			sharedDefs.addAll(uniqueDefs);
+			Map sharedMap = orderDefinitions(sharedDefs,c);
+			TreeMap allMap = new TreeMap(publicMap);
+			allMap.putAll(binderMap);
+			allMap.putAll(sharedMap);
+			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, allMap);
+			model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, publicMap);
+			model.put(WebKeys.LOCAL_ENTRY_DEFINITIONS, binderMap);
+			model.put(WebKeys.SHARED_ENTRY_DEFINITIONS, sharedMap);
+			
+			//build orders list of workflow definition types
+			publicMap = orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.WORKFLOW),c);
+			binderDefs = getDefinitionModule().getBinderDefinitions(binder.getId(), true, Definition.WORKFLOW);
+			binderMap = orderDefinitions(binderDefs,c);
+			sharedDefs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_SHARED, Definition.WORKFLOW);
+			//remove duplicates
+			uniqueDefs = CollectionUtil.differences(sharedDefs, binderDefs);
+			sharedDefs.clear();
+			sharedDefs.addAll(uniqueDefs);
+			sharedMap = orderDefinitions(sharedDefs,c);	
+			allMap = new TreeMap(publicMap);
+			allMap.putAll(binderMap);
+			allMap.putAll(sharedMap);
+			model.put(WebKeys.ALL_WORKFLOW_DEFINITIONS, allMap);			
+			model.put(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, publicMap);
+			model.put(WebKeys.LOCAL_WORKFLOW_DEFINITIONS, binderMap);
+			model.put(WebKeys.SHARED_WORKFLOW_DEFINITIONS, sharedMap);
+			model.put(WebKeys.ENTRY_REPLY_STYLES, DefinitionHelper.getReplyDefinitions(binder.getEntryDefinitions()));
+
 		}
-		DefinitionHelper.getDefinitions(binder, model);
-		DefinitionHelper.getDefinitions(Definition.WORKFLOW, WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, model);
 		
+	}
+	protected TreeMap orderDefinitions(List<Definition> defs, StringComparator c) {
+		TreeMap definitions = new TreeMap(c);
+		for (Definition def:defs) {
+			definitions.put(NLT.getDef(def.getTitle()), def);
+		}
+		return definitions;
 	}
 
 }

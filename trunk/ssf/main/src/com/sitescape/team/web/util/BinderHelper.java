@@ -2002,7 +2002,7 @@ public class BinderHelper {
 		//save tab options
 		tab.setData(options);
 		SearchFilterToMapConverter searchFilterConverter = 
-			new SearchFilterToMapConverter(query, bs.getDefinitionModule(), bs.getProfileModule(), bs.getBinderModule());
+			new SearchFilterToMapConverter(bs, query);
 		model.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
 		// SearchUtils.filterEntryAttachmentResults(results);

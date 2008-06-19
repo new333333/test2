@@ -108,6 +108,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	
     private ProfileModule profileModule;
 
+    
 	public int doStartTag() throws JspException {
 		profileModule = (ProfileModule)SpringContextUtil.getBean("profileModule");
 	    if(this.title == null)
@@ -148,7 +149,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				buildDivs(root, root, sb, hb, "item");
 				buildDefaultDivs(sb, hb);
 				jspOut.print(hb.toString());
-			} else {
+			} else {	
 				buildDivs(root, root, sb, hb, "item");
 			}
 			jspOut.print(sb.toString());
@@ -240,14 +241,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			//Build the information divs
 			buildInfoDivs(root, sourceRoot, sb, hb, filter);
 
-			//Build the infoDefinitionOptions div
-			buildInfoOptionsDivs(root, sourceRoot, sb, hb, filter);
-
-			//Build the modify_definition div
-			buildModifyDefinitionDiv(root, sourceRoot, sb, hb, filter);
-
-			//Build the delete_definition divs
-			buildDeleteDefinitionDiv(root, sourceRoot, sb, hb, filter);
 
 			//Build the operations divs
 			buildOperationsDivs(root, sourceRoot, sb, hb, filter);
@@ -295,91 +288,7 @@ public class BuildDefinitionDivs extends TagSupport {
 		}
 
 	}
-	
-	private void buildInfoOptionsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		if (Validator.isNull(this.option) && !this.divNames.containsKey("infoDefinitionOptions")) {
-			this.divNames.put("infoDefinitionOptions", "1");
-			sb.append("\n<div id=\"infoDefinitionOptions\" ");
-			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\" id=\"infoDefinitionOptionsDefinitionName\"></span>\n");
-			
-			sb.append("<table><tbody>\n");
-			
-			sb.append("<tr><td>\n");
-			sb.append("<a href=\"javascript: ;\" "); 
-			sb.append("onClick=\"return viewDefinition();\">");
-			sb.append(NLT.get("definition.view_this_definition"));
-			sb.append("</a>\n");
-			sb.append("</td></tr>\n");
-			
-			sb.append("<tr><td>\n");
-			sb.append("<a href=\"javascript: ;\" "); 
-			sb.append("onClick=\"return modifyDefinition();\">");
-			sb.append(NLT.get("definition.modifyProperties"));
-			sb.append("</a>\n");
-			sb.append("</td></tr>\n");
 
-			sb.append("<tr><td>\n");
-			sb.append("<a href=\"javascript: ;\" "); 
-			sb.append("onClick=\"return deleteDefinition();\">");
-			sb.append(NLT.get("definition.deleteDefinition"));
-			sb.append("</a>\n");
-			sb.append("</td></tr>\n");
-
-			sb.append("</tbody></table>\n");
-
-			sb.append("</div>\n");
-			//sb.append("<script type=\"text/javascript\">\n");
-			//sb.append("    self.ss_setDeclaredDiv('infoDefinitionOptions')\n");
-			//sb.append("</script>\n");
-		}
-	}
-
-	private void buildModifyDefinitionDiv(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		//This div is only built and used dynamically
-		if (!this.divNames.containsKey("modify_definition") && this.option.equals("modifyDefinition")) {
-			this.divNames.put("modify_definition", "1");
-			
-			//String definitionType = 
-			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.modifyProperties")+"</span><br/><br/>\n");
-			sb.append("<span>"+NLT.get("definition.name")+"</span><br/>\n");
-			sb.append("<input type=\"text\" class=\"ss_text\" size=\"40\" value=\"");
-			sb.append(sourceRoot.attributeValue("name", ""));
-			sb.append("\" disabled=\"true\"/>\n");
-			sb.append("<input type=\"hidden\" name=\"modifyDefinitionName\" value=\"");
-			sb.append(Html.formatTo(sourceRoot.attributeValue("name", "")));
-			sb.append("\" />\n<br/><br/>\n");
-			sb.append("<span>"+NLT.get("definition.caption")+"</span><br/>\n");
-			sb.append("<input type=\"text\" class=\"ss_text\" name=\"modifyDefinitionCaption\" size=\"40\" value=\"");
-			sb.append(Html.formatTo(sourceRoot.attributeValue("caption", "")));
-			sb.append("\"/><br/><br/>\n");
-
-			//Append the properties form elements
-			this.option = "properties";
-			buildPropertiesDivs(root, sourceRoot, sb, hb, filter);
-		}
-	}
-	
-	private void buildDeleteDefinitionDiv(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
-		if (Validator.isNull(option) && !this.divNames.containsKey("delete_definition")) {
-			this.divNames.put("delete_definition", "1");
-			sb.append("\n<div id=\"delete_definition\" ");
-			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.selectDefinitionToBeDeleted")+"</span>\n");
-			sb.append("</div>\n");
-			//sb.append("<script type=\"text/javascript\">\n");
-			//sb.append("    self.ss_setDeclaredDiv('delete_definition')\n");
-			//sb.append("</script>\n");
-			sb.append("\n<div id=\"delete_definition_confirm\" ");
-			sb.append("class=\"ss_definitionBuilder\">\n");
-			sb.append("<span class=\"ss_titlebold\">"+NLT.get("definition.delete")+" </span><span id=\"deleteDefinitionSelection\"></span>\n");
-			sb.append("<br/>\n");
-			sb.append("</div>\n");
-			//sb.append("<script type=\"text/javascript\">\n");
-			//sb.append("    self.ss_setDeclaredDiv('delete_definition_confirm')\n");
-			//sb.append("</script>\n");
-		}
-	}
 
 	private void buildOperationsDivs(Element root, Element sourceRoot, StringBuffer sb, StringBuffer hb, String filter) {
 		if (this.option.equals("operations") && !this.divNames.containsKey("operations_"+rootElementId)) {
@@ -1153,7 +1062,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("onChange=\"getConditionSelectbox(this, 'get_condition_entry_elements')\" ");
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
-						//GET both entry and file Entry definitions
+						
 						List defs = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
 						for (int i=0; i<defs.size(); ++i) {
 							//Build a list of the entry definitions
@@ -1601,6 +1510,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	public void setRefItemId(String refItemId) {
 	    this.refItemId = refItemId;
 	}
+
 }
 
 

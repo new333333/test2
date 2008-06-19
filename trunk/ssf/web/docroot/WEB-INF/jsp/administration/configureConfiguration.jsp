@@ -158,8 +158,13 @@ var ssExportURL="<ssf:url action="configure_configuration" actionUrl="true"/>";
 <br>
 <span class="ss_bold"><ssf:nlt tag="administration.export.templates.select"/></span>
 <%@include file="/WEB-INF/jsp/administration/commonSelectTree.jsp" %>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
+		  onClick='self.location.href="<ssf:url action="configure_configuration" 
+			actionUrl="false"/>";return false;'>
 <script type="text/javascript">
 document.${renderResponse.namespace}fm.onsubmit=function() { return ss_selectAllIfNoneSelected.call(this,"id_");};
+
 </script>
 
 </form>
