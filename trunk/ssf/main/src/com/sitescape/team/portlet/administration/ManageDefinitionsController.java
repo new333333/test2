@@ -47,6 +47,7 @@ import org.dom4j.Element;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.comparator.StringComparator;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
@@ -111,7 +112,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 			Toolbar toolbar = new Toolbar();
 			toolbar.addToolbarMenu("1_add", NLT.get("administration.definition.toolbar.add"), "");
 			//Build the tree
-			Map designers = new TreeMap();
+			Map designers = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
 			//Definition builders
 			Element element;
 			Element configNode;
@@ -222,6 +223,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 					url = response.createRenderURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+					url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
 					url.setParameter("definitionType", String.valueOf(Definition.FOLDER_ENTRY));
 					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
 				}
@@ -238,6 +240,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 					url = response.createRenderURL();
 					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+					url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
 					url.setParameter("definitionType", String.valueOf(Definition.WORKFLOW));
 					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
 				}
@@ -322,8 +325,9 @@ public class ManageDefinitionsController extends  SAbstractController {
 	}
 	protected void fillChildElements(Element element, Collection<Definition> definitions) {
 		//build sorted map of definitions
+		StringComparator c = new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale());
 		if (definitions.isEmpty()) element.getParent().addAttribute("hasChildren", "false");
-		Map<String, Definition> sortedMap = new TreeMap();
+		Map<String, Definition> sortedMap = new TreeMap(c);
 		for (Definition def:definitions) {
 			if (Validator.isNotNull(def.getTitle()))
 				sortedMap.put(NLT.get(def.getTitle()), def);

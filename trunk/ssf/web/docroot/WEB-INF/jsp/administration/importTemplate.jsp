@@ -30,9 +30,9 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
-<body>
-</ssf:ifadapter>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+
 <div class="ss_style ss_portlet">
 <div class="ss_form" style="margin:6px;">
 <div style="margin:6px;">
@@ -87,8 +87,6 @@
 </div>
 </div>
 </div>
-<ssf:ifadapter>
+</div>
 </body>
 </html>
-</ssf:ifadapter>
-

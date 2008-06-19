@@ -30,6 +30,8 @@
 %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 
 <c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
@@ -87,10 +89,9 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 
 <br/>
 
-<form class="ss_style ss_form" method="post" 
-	action="<ssf:url action="site_administration" actionUrl="false"/>">
+<form class="ss_style ss_form" >
 
-	<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>">
+	<input type="submit" class="ss_submit" name="closeBtn" onClick="self.window.close();return false;" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
 </div>
 
@@ -189,4 +190,6 @@ function ${renderResponse.namespace}_showId(forum, obj) {
 </div>
 </c:if>
 </div>
-
+</div>
+</body>
+</html>
