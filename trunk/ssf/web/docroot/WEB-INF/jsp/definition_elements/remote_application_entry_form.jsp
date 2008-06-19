@@ -30,7 +30,6 @@
 %>
 <% // The remote application form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-fffffffffffffffffffff
 <div class="ss_entryContent">
 <span class="ss_labelAbove">${property_caption}</span>
 <c:if test="${!empty property_remoteApp}">
