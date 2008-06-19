@@ -2408,6 +2408,42 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 	</item>
+	<item name="remoteApp" caption="__remote_app" type="data" category="entryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text"/>
+			<property name="name" caption="__data_name" type="text" 
+			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
+				<help>ihelp.designers.data_name</help>
+			</property>
+			<property name="remoteApp" caption="__remote_app_name" type="remoteApp"/>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option name="title" definitionType="1" caption="__title" />
+			<option_select path="//item[@category='commonEntryData']" />
+			<option_select definitionType="1" path="//item[@category='entryData']"  />
+			<option_select path="//item[@category='generalLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_entry_form.jsp" />
+		</jsps>
+		<help>ihelp.designers.remote_app</help>
+	</item>
+		
+	<item name="remoteAppView" type="dataView" caption="__remote_app" category="entryViewData" display="view">
+		<properties>
+			<property name="remoteApp" caption="__remote_app_name" type="remoteApp"/>
+		</properties>
+		<options optionCaption="__standard_entry_options">
+			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select definitionType="1" path="//item[@category='entryViewData']" />
+			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
+			<option_select definitionType="1" path="//item[@category='entryLayout']" />
+		</options>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_entry_view.jsp" />
+		</jsps>
+	</item>
 		
 <!-- Workflow items -->
 	<item name="workflowProcessType" definitionType="2" caption="__workflow_process">

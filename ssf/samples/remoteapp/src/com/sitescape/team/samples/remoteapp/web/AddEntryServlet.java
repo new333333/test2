@@ -84,6 +84,10 @@ public class AddEntryServlet extends HttpServlet {
 	private static final String PARAMETER_FORM_TITLE = "title";
 	private static final String PARAMETER_FORM_DESCRIPTION = "description";
 	private static final String PARAMETER_FORM_BINDER_ID = "binderId";
+	private static final String PARAMETER_FORM_ENTRY_ID = "entryId";
+	private static final String PARAMETER_FORM_OPERATION = "operation";
+	private static final String PARAMETER_FORM_OPERATION_ENTRY_VIEW = "view";
+	private static final String PARAMETER_FORM_OPERATION_ENTRY_FORM = "form";
 	private static final String PARAMETER_FORM_DEFINITION_ID = "definitionId";
 	private static final String PARAMETER_FORM_RETURN_URL = "returnUrl";
 	private static final String PARAMETER_FORM_BUTTON_OK = "okBtn";
@@ -101,13 +105,18 @@ public class AddEntryServlet extends HttpServlet {
 			String pathInfo = req.getPathInfo();
 			if (pathInfo.equals("/form")) {
 				String binderId = req.getParameter(PARAMETER_FORM_BINDER_ID);
-				String definitionId = ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF;
-				String jsp = "/WEB-INF/jsp/addentry/entry_form.jsp";				
+				String entryId = req.getParameter(PARAMETER_FORM_ENTRY_ID);
+				String operation = req.getParameter(PARAMETER_FORM_OPERATION);
+				String definitionId = req.getParameter(PARAMETER_FORM_DEFINITION_ID);
+				if (definitionId == null) definitionId = ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF;
+				String jsp = "/WEB-INF/jsp/addentry/entry_view.jsp";
+				if (operation.equals(PARAMETER_FORM_OPERATION_ENTRY_FORM)) jsp = "/WEB-INF/jsp/addentry/entry_form.jsp";
 				RequestDispatcher rd = req.getRequestDispatcher(jsp);	
 				StringServletResponse resp2 = new StringServletResponse(resp);	
 				req.setAttribute(PARAMETER_NAME_ACCESS_TOKEN, accessToken);
 				req.setAttribute(PARAMETER_NAME_USER_ID, userId);
 				req.setAttribute(PARAMETER_FORM_BINDER_ID, binderId);
+				req.setAttribute(PARAMETER_FORM_ENTRY_ID, entryId);
 				req.setAttribute(PARAMETER_FORM_DEFINITION_ID, definitionId);
 				rd.include(req, resp2);	
 				resp.getWriter().print(resp2.getString());
