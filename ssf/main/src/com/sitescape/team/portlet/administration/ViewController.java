@@ -132,129 +132,26 @@ public class ViewController extends  SAbstractController {
 		rootElement.addAttribute("id", String.valueOf(nextId++));
 
 		Map elements = new TreeMap();
-		Map designers = new TreeMap();
 		Map reports = new TreeMap();
 		AdaptedPortletURL adapterUrl;
 		
 		//Definition builders
-		Element designerElement;
 		Element element;
-		designerElement = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-		designerElement.addAttribute("title", NLT.get("administration.definition_builder_designers"));
-		designerElement.addAttribute("image", "bullet");
-		designerElement.addAttribute("displayOnly", "true");
-		designerElement.addAttribute("id", String.valueOf(nextId++));
 		//Definition builder - Entry form designer
-		if (getDefinitionModule().testAccess(Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition)) {
+		if (getDefinitionModule().testAccess(Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition) ||
+			getDefinitionModule().testAccess(Definition.WORKFLOW, DefinitionOperation.manageDefinition)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.definition_builder_entry_form_designer"));
+			element.addAttribute("title", NLT.get("administration.definition_builder_designers"));
 			element.addAttribute("image", "bullet");
 			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-			url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_ENTRY));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 			url.setWindowState(WindowState.MAXIMIZED);
 			url.setPortletMode(PortletMode.VIEW);
 			element.addAttribute("url", url.toString());
-			designers.put(element.attributeValue("title"), element);
+			elements.put(element.attributeValue("title"), element);
 		}
 				
-		//Definition builder - Folder view designer
-		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.definition_builder_folder_view_designer"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-			url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.FOLDER_VIEW));
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			designers.put(element.attributeValue("title"), element);
-		}
-				
-		//Definition builder - Workflow designer
-		if (getDefinitionModule().testAccess(Definition.WORKFLOW, DefinitionOperation.manageDefinition)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.definition_builder_workflow_designer"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-			url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKFLOW));
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			designers.put(element.attributeValue("title"), element);
-		}
-		
-		//Definition builder - Profile listing designer
-		if (getDefinitionModule().testAccess(Definition.PROFILE_VIEW, DefinitionOperation.manageDefinition)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.definition_builder_profile_listing_designer"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-			url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.PROFILE_VIEW));
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			designers.put(element.attributeValue("title"), element);
-		}
-		
-		//Definition builder - Profile designer
-		if (getDefinitionModule().testAccess(Definition.PROFILE_ENTRY_VIEW, DefinitionOperation.manageDefinition)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.definition_builder_profile_designer"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-			url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.PROFILE_ENTRY_VIEW));
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			designers.put(element.attributeValue("title"), element);
-		}
-		
-		//Definition builder - Workspace designer
-		if (getDefinitionModule().testAccess(Definition.WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.definition_builder_workspace_designer"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-			url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.WORKSPACE_VIEW));
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			designers.put(element.attributeValue("title"), element);
-		}
-		
-		//Definition builder - User workspace designer
-		if (getDefinitionModule().testAccess(Definition.USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.definition_builder_user_workspace_designer"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_BUILDER);
-			url.setParameter(WebKeys.ACTION_DEFINITION_BUILDER_DEFINITION_TYPE, String.valueOf(Definition.USER_WORKSPACE_VIEW));
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			designers.put(element.attributeValue("title"), element);
-		}
-		if (!designers.isEmpty()) {
-			elements.put(designerElement.attributeValue("title"), designerElement);
-			for (Iterator iter=designers.entrySet().iterator(); iter.hasNext(); ) {
-				Map.Entry me = (Map.Entry)iter.next();
-				designerElement.add((Element)me.getValue());
-			}
-		}
 
 		//Ldap configuration
 		if (getLdapModule().testAccess(LdapOperation.manageLdap)) {
@@ -341,47 +238,7 @@ public class ViewController extends  SAbstractController {
 			elements.put(element.attributeValue("title"), element);
 		}
 	
-		//Definition import
-		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.import.definitions"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			element.addAttribute("target", "_blank");
-			adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_IMPORT);
-			element.addAttribute("url", adapterUrl.toString());
-			elements.put(element.attributeValue("title"), element);
 
-			//Reset all definitions
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.reload.definitions"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createActionURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_IMPORT);
-			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_CONFIRM);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
-
-		}
-
-		//Definition export
-		if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
-			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-			element.addAttribute("title", NLT.get("administration.export.definitions"));
-			element.addAttribute("image", "bullet");
-			element.addAttribute("id", String.valueOf(nextId++));
-			url = response.createRenderURL();
-			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_DEFINITION_EXPORT);
-			url.setWindowState(WindowState.MAXIMIZED);
-			url.setPortletMode(PortletMode.VIEW);
-			element.addAttribute("url", url.toString());
-			elements.put(element.attributeValue("title"), element);
-		}
-		
 		
 		//templates
 		if (getAdminModule().testAccess(AdminOperation.manageTemplate)) {

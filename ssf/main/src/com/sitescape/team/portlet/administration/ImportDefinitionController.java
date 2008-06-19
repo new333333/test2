@@ -49,6 +49,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
@@ -58,6 +59,11 @@ public class ImportDefinitionController extends  SAbstractController {
 	
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
+		Long binderId = null;
+		try {
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			if (binderId != null) response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+		} catch (Exception ex) {};
 		if (formData.containsKey("okBtn") && request instanceof MultipartFileSupport) {
 			int i=0;
 			Map fileMap = ((MultipartFileSupport) request).getFileMap();
@@ -74,11 +80,11 @@ public class ImportDefinitionController extends  SAbstractController {
 							ZipInputStream zipIn = new ZipInputStream(myFile.getInputStream());
 							ZipEntry entry = null;
 							while((entry = zipIn.getNextEntry()) != null) {
-								defs.add(loadDefinitions(entry.getName(), new ZipStreamWrapper(zipIn), errors));
+								defs.add(loadDefinitions(entry.getName(), new ZipStreamWrapper(zipIn), binderId, errors));
 								zipIn.closeEntry();
 							}
 						} else {
-							loadDefinitions(myFile.getOriginalFilename(), myFile.getInputStream(), errors);
+							loadDefinitions(myFile.getOriginalFilename(), myFile.getInputStream(), binderId, errors);
 						}
 						myFile.getInputStream().close();
 					} catch (Exception fe) {
@@ -92,26 +98,30 @@ public class ImportDefinitionController extends  SAbstractController {
 				if (!errors.isEmpty()) response.setRenderParameter(WebKeys.ERROR_LIST, (String[])errors.toArray( new String[0]));
 			}
 		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
-			response.setRenderParameter("redirect", "true");
+			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 		} else {
 			String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 			if (WebKeys.OPERATION_RELOAD_CONFIRM.equals(operation)) {
 				response.setRenderParameters(formData);
 			} else if (WebKeys.OPERATION_RELOAD.equals(operation)) {
 				getAdminModule().updateDefaultDefinitions(RequestContextHolder.getRequestContext().getZoneId());
-				response.setRenderParameter("redirect", "true");
+				response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 			} else {
 				response.setRenderParameters(formData);
 			}
 		}
 	}
 
-	protected String loadDefinitions(String fileName, InputStream fIn, List errors)
+	protected String loadDefinitions(String fileName, InputStream fIn, Long binderId, List errors)
 	{
 		try {
 			SAXReader xIn = new SAXReader();
-			Document doc = xIn.read(fIn);   
-			return getDefinitionModule().addDefinition(doc, true);
+			Document doc = xIn.read(fIn);  
+			if (binderId == null) {
+				return getDefinitionModule().addPublicDefinition(doc, null, null, true).getId();
+			} else {
+				return getDefinitionModule().addBinderDefinition(doc, getBinderModule().getBinder(binderId), null, null, true).getId();				
+			}
 		} catch (Exception fe) {
 			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
 		}
@@ -138,16 +148,17 @@ public class ImportDefinitionController extends  SAbstractController {
 	
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-			
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
-
+		Long binderId = null;
+		Map model = new HashMap();
+		try {
+			binderId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+			model.put(WebKeys.BINDER, getBinderModule().getBinder(binderId));
+		} catch (Exception ex) {};
+		
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION);
 		if (WebKeys.OPERATION_RELOAD_CONFIRM.equals(operation)) {
 			return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM);
 		}
-		Map model = new HashMap();
 		model.put(WebKeys.ERROR_LIST, request.getParameterValues(WebKeys.ERROR_LIST));
 
 		return new ModelAndView(WebKeys.VIEW_ADMIN_IMPORT_DEFINITIONS, model);

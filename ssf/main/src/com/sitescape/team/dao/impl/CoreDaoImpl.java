@@ -866,20 +866,16 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	            }
 	        );
  	}
+	public List loadDefinitions(FilterControls filter, Long zoneId) {
+		return loadObjects(new ObjectControls(Definition.class), filter, zoneId);
+	}
 	public List loadDefinitions(Long zoneId) {
 		OrderBy order = new OrderBy();
 		order.addColumn("type");
 		order.addColumn("name");
 		FilterControls filter = new FilterControls();
 		filter.setOrderBy(order);
-    	return loadObjects(new ObjectControls(Definition.class), filter, zoneId);
-	}
-	public List loadDefinitions(Long zoneId, int type) {
-		OrderBy order = new OrderBy();
-		order.addColumn("name");
-		FilterControls filter = new FilterControls("type", Integer.valueOf(type));
-		filter.setOrderBy(order);
-    	return loadObjectsCacheable(new ObjectControls(Definition.class), filter, zoneId);
+		return loadObjects(new ObjectControls(Definition.class), filter, zoneId);
 	}
 	
 	// return top level configurations
@@ -1304,7 +1300,7 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                   	Query q = session.createQuery(query.toString());
             		List filterValues = myFilter.getFilterValues();
            			for (int i=0; i<filterValues.size(); ++i) {
-           				q.setParameter(i, filterValues.get(i));
+           					q.setParameter(i, filterValues.get(i));
             		}
            			q.setCacheable(cacheable);
  	                return q.list();

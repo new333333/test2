@@ -100,7 +100,7 @@ public class TreeTag extends TagSupport {
 	private String showIdRoutine = "";
 	private String portletName = "ss_forum";
 	private String namespace = "";
-	    
+	private String callbackUrl = null;
 	public int doStartTag() throws JspException {
 	    if(treeName == null)
 	        throw new JspException("Tree name must be specified");
@@ -128,9 +128,15 @@ public class TreeTag extends TagSupport {
 			this.contextPath = req.getContextPath();
 			if (contextPath.endsWith("/")) contextPath = contextPath.substring(0,contextPath.length()-1);
 		    setCommonImg(contextPath + "/i/" + colorTheme);
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(req, this.portletName, Boolean.parseBoolean("true"));
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
-			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_WORKSPACE_TREE);
+			AdaptedPortletURL adapterUrl;
+			if (callbackUrl == null) {
+				adapterUrl = new AdaptedPortletURL(req, this.portletName, Boolean.parseBoolean("true"));
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_AJAX_REQUEST);
+				adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_WORKSPACE_TREE);
+			} else {
+				//caller supplied their own action/operations and whatever else
+				adapterUrl = new AdaptedPortletURL(this.callbackUrl);
+			}
 			if (!namespace.equals("")) adapterUrl.setParameter(WebKeys.URL_NAMESPACE, namespace);
 			if (multiSelect != null) {
 				//This request is displaying the checkboxes. Remember that in the url
@@ -341,6 +347,7 @@ public class TreeTag extends TagSupport {
 	    	noInit=false;
 	    	flat=false;
 	    	className="";
+	    	callbackUrl=null;
 	    }
 	    
 		return SKIP_BODY;
@@ -925,7 +932,11 @@ public class TreeTag extends TagSupport {
 	{
 		this.portletName = portletName;
 	}
-	
+	public void setCallbackUrl(String callbackUrl)
+	{
+		this.callbackUrl = callbackUrl;
+	}
+
 	public void setCommonImg(String commonImg) {
 	    this.commonImg = commonImg;
 	    this.images = new HashMap();

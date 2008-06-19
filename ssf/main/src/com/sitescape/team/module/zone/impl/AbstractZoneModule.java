@@ -663,7 +663,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		team.setZoneId(top.getId());
 		team.setInternalId(ObjectKeys.TEAM_ROOT_INTERNALID);
 		team.setIconName("/icons/team_workspace.gif");
-		List<Definition> defs = getCoreDao().loadDefinitions(top.getId(), Definition.WORKSPACE_VIEW);
+		List<Definition> defs = getCoreDao().loadDefinitions(new FilterControls("type", Definition.WORKSPACE_VIEW), top.getId());
 		//find the definition for a root team space
 		Definition teamDef=null;
 		for (Definition d:defs) {

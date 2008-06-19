@@ -11,7 +11,6 @@
 	<bean id="adminConfigurePostingJobController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigurePostingJobController" />
 	<bean id="adminConfigureSearchIndexController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageSearchIndexController" />
 	<bean id="adminImportDefinitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportDefinitionController" />
-	<bean id="adminExportDefinitionController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ExportDefinitionController" />
 	<bean id="adminLogFileController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.LogFileController" />
 	<bean id="adminConfigureConfigurationController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureConfigurationController" />
 	<bean id="adminImportProfilesController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ImportProfilesController" />
@@ -29,6 +28,7 @@
 	<bean id="quotaReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.QuotaReportController" />
 	<bean id="workflowReportController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.WorkflowReportController" />
 	<bean id="adminCreditsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.CreditsController" />
+	<bean id="manageDefinitionsController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ManageDefinitionsController" />
 
 	<!-- Handlers -->
 
@@ -45,7 +45,6 @@
 						<entry key="configure_index"><ref bean="adminConfigureSearchIndexController"/></entry>
 						<entry key="configure_configuration"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="import_definition"><ref bean="adminImportDefinitionController"/></entry>
-						<entry key="export_definition"><ref bean="adminExportDefinitionController"/></entry>
 						<entry key="get_log_files"><ref bean="adminLogFileController"/></entry>
 						<entry key="import_profiles"><ref bean="adminImportProfilesController"/></entry>
 						<entry key="manage_groups"><ref bean="adminManageGroupsController"/></entry>
@@ -64,6 +63,7 @@
 						<entry key="view_folder_listing"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="view_ws_listing"><ref bean="adminConfigureConfigurationController"/></entry>
 						<entry key="view_credits"><ref bean="adminCreditsController"/></entry>
+						<entry key="manage_definitions"><ref bean="manageDefinitionsController"/></entry>
 					</map>
 				</entry>
 				<entry key="edit">

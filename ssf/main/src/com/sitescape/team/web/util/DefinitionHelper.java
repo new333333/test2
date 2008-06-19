@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import java.util.Collection;
 import javax.portlet.PortletRequest;
 
 import org.dom4j.Document;
@@ -83,19 +83,15 @@ public class DefinitionHelper {
         this.definitionBuilderConfig = definitionBuilderConfig;
     }
 	
-	public static void getDefinitions(int defType, String key, Map model) {
-		List defs = getInstance().getDefinitionModule().getDefinitions(defType);
-		Iterator itDefinitions = defs.listIterator();
-		
-		//if already setup, add to it
-		Map definitions = (Map)model.get(key);
-		if (definitions == null) definitions = new HashMap();
-		while (itDefinitions.hasNext()) {
-			Definition def = (Definition) itDefinitions.next();
-			definitions.put(def.getId(), def);
-		}
-		model.put(key, definitions);
+
+	/**
+	 * Helper to get definitions for other helpers
+	 * @param defType
+	 */	
+	public static List getDefinitions(int defType) {
+		return  getInstance().getDefinitionModule().getDefinitions(defType);
 	}
+
 	/**
 	 * Helper to get definition for other helpers
 	 * @param id
@@ -107,13 +103,6 @@ public class DefinitionHelper {
 			return null;
 		}
 		
-	}
-	/**
-	 * Helper to get definitions for other helpers
-	 * @param defType
-	 */	
-	public static List getDefinitions(int defType) {
-		return  getInstance().getDefinitionModule().getDefinitions(defType);
 	}
 	
 	/**
@@ -227,27 +216,25 @@ public class DefinitionHelper {
 		model.put(WebKeys.FOLDER_DEFINITION_MAP, defaultFolderDefinitions);
 		Map defaultEntryDefinitions = getEntryDefsAsMap(binder);
 		model.put(WebKeys.ENTRY_DEFINITION_MAP, defaultEntryDefinitions);
-		Map replyDefs = getReplyDefinitions(defaultEntryDefinitions);
+		Map replyDefs = getReplyDefinitions(defaultEntryDefinitions.values());
 		model.put(WebKeys.REPLY_DEFINITION_MAP, replyDefs);
 		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, getWorkflowDefsAsMap(binder)); 
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 	}
 	
-	public static Map getReplyDefinitions(Map entryDefinitions) {
+	public static Map getReplyDefinitions(Collection<Definition> entryDefinitions) {
 		Map resultMap = new HashMap<String,Definition>();
-		Iterator iter = entryDefinitions.entrySet().iterator();
-		
-		while(iter.hasNext()) {
-			List temp = getReplyListFromEntry((Definition)((Map.Entry)iter.next()).getValue());
+		for (Definition def:entryDefinitions) {
+			List temp = getReplyListFromEntry(def);
 			if(temp == null)
 				continue;
 			for(int i = 0; i < temp.size(); i++) {
 				String key = (String)temp.get(i);
-				if((resultMap.get(key) == null) && (entryDefinitions.get(key) == null)) {
-			        resultMap.put(key, getDefinition(key));
+				if (resultMap.get(key) == null) {
+					Definition replyDef = getDefinition(key);
+					if (!entryDefinitions.contains(replyDef))
+						resultMap.put(key, replyDef );
 				}
-				else
-					continue;
 			}
 		}
 		return resultMap;

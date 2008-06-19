@@ -88,7 +88,4 @@ function ss_selectAllIfNoneSelected(prefix) {
 <br>
 <br>
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<input type="button" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>"
-		  onClick="self.window.close();return false;"/>
 

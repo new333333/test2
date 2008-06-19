@@ -50,17 +50,9 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
-import com.sitescape.team.module.binder.BinderModule;
-import com.sitescape.team.module.definition.DefinitionModule;
-import com.sitescape.team.module.profile.ProfileModule;
-import com.sitescape.team.search.BasicIndexUtils;
-import com.sitescape.team.search.QueryBuilder;
+import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
-import com.sitescape.team.util.ResolveIds;
 import com.sitescape.team.web.WebKeys;
-import com.sitescape.team.web.util.BinderHelper;
-import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.util.search.Constants;
 
 public class SearchFilterToMapConverter {
@@ -96,19 +88,12 @@ public class SearchFilterToMapConverter {
 	static final String SearchCommunityTag="communityTag";
 		
 	private Document searchQuery;
+	private AllModulesInjected bs;
 	
-	private DefinitionModule definitionModule;
-	
-	private ProfileModule profileModule;
-	
-	private BinderModule binderModule;
-	
-	public SearchFilterToMapConverter(Document query, DefinitionModule definitionModule, ProfileModule profileModule, BinderModule binderModule) {
+	public SearchFilterToMapConverter(AllModulesInjected bs, Document query) {
 		super();
 		this.searchQuery = query;
-		this.definitionModule = definitionModule;
-		this.profileModule = profileModule;
-		this.binderModule = binderModule;
+		this.bs = bs;
 	}
 	
 	/**
@@ -206,12 +191,12 @@ public class SearchFilterToMapConverter {
     			if (blocks.get(SearchBlockTypeEntry) == null) {
     				blocks.put(SearchBlockTypeEntry, new ArrayList());
     			}
-    			((List)blocks.get(SearchBlockTypeEntry)).add(createEntryBlock(filterTerm, definitionModule, profileModule));
+    			((List)blocks.get(SearchBlockTypeEntry)).add(createEntryBlock(filterTerm));
     			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks);
     		} else if (filterType.equals(SearchFilterKeys.FilterTypeEvent)) {
     			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
     			if (blocks.get(SearchBlockTypeEntry) == null) blocks.put(SearchBlockTypeEntry, new ArrayList());
-    			((List)blocks.get(SearchBlockTypeEntry)).add(createEventBlock(filterTerm, definitionModule));
+    			((List)blocks.get(SearchBlockTypeEntry)).add(createEventBlock(filterTerm));
     			convertedQuery.put(SearchFilterKeys.SearchAdditionalFilters, blocks); 			
     		} else if ( filterType.equals(SearchFilterKeys.FilterTypeCreatorById)) {
     			Map blocks = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
@@ -286,7 +271,7 @@ public class SearchFilterToMapConverter {
 		return folderIds;
 	}
 
-	private Map createEntryBlock(Element filterTerm, DefinitionModule definitionModule, ProfileModule profileModule) {
+	private Map createEntryBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
 		String entryTypeId = filterTerm.attributeValue(SearchFilterKeys.FilterEntryDefId, "");
@@ -305,7 +290,7 @@ public class SearchFilterToMapConverter {
 		block.put(SearchEntryElement, entryFieldId);
 		List values = getElementValues(filterTerm);
 		if (values.size() > 0) {
-			Map fieldsMap = definitionModule.getEntryDefinitionElements(entryTypeId);
+			Map fieldsMap = bs.getDefinitionModule().getEntryDefinitionElements(entryTypeId);
 			if (fieldsMap.containsKey(entryFieldId)) {
 				String valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(EntryField.TypeField);
 				block.put(SearchEntryValueType, valueType);
@@ -333,19 +318,19 @@ public class SearchFilterToMapConverter {
 					if (SearchFilterKeys.CurrentUserId.equals(value.toString())) {
 						formattedValue = NLT.get("searchForm.currentUserTitle");
 					} else {
-						Iterator users = profileModule.getUsers(Collections.singleton(Long.parseLong(value))).iterator();
+						Iterator users = bs.getProfileModule().getUsers(Collections.singleton(Long.parseLong(value))).iterator();
 						if (users.hasNext()) {
 							formattedValue = ((User)users.next()).getTitle();
 						}
 					}
 				} else if (valueType.equals("group_list")) {
-					Iterator groups = profileModule.getGroups(Collections.singleton(Long.parseLong(value))).iterator();
+					Iterator groups = bs.getProfileModule().getGroups(Collections.singleton(Long.parseLong(value))).iterator();
 					if (groups.hasNext()) {
 						formattedValue = ((Group)groups.next()).getTitle();
 					}
 				} else if (valueType.equals("team_list")) {
 					try {
-						Binder team = binderModule.getBinder(Long.parseLong(value));
+						Binder team = bs.getBinderModule().getBinder(Long.parseLong(value));
 						if (team != null) {
 							formattedValue = team.getTitle();
 						}
@@ -361,7 +346,7 @@ public class SearchFilterToMapConverter {
 		return block;
 	}
 
-	private Map createEventBlock(Element filterTerm, DefinitionModule definitionModule) {
+	private Map createEventBlock(Element filterTerm) {
 		Map block = new HashMap();
 		block.put(SearchBlockType, filterTerm.attributeValue(SearchFilterKeys.FilterType, ""));
 		String entryTypeId = filterTerm.attributeValue(SearchFilterKeys.FilterEntryDefId, "");
@@ -377,7 +362,7 @@ public class SearchFilterToMapConverter {
 		}
 		
 		if (values.size() > 0) {
-			Map fieldsMap = definitionModule.getEntryDefinitionElements(entryTypeId);
+			Map fieldsMap = bs.getDefinitionModule().getEntryDefinitionElements(entryTypeId);
 			if (fieldsMap.containsKey(entryFieldId)) {
 				String valueType = (String)((Map)fieldsMap.get(entryFieldId)).get(EntryField.TypeField);
 				block.put(SearchEntryValueType, valueType);
@@ -531,7 +516,7 @@ public class SearchFilterToMapConverter {
 					idLs.add(Long.parseLong(ids.trim()));
 				} catch (NumberFormatException e) {}
 			}
-			result.put(WebKeys.FOLDER_LIST, binderModule.getBinders(idLs));
+			result.put(WebKeys.FOLDER_LIST, bs.getBinderModule().getBinders(idLs));
 		}
 		
 		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);
@@ -551,7 +536,7 @@ public class SearchFilterToMapConverter {
 	}
 
 	private Collection prepareEntries(Map convertedQuery) {
-		List entryTypes = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
+		List entryTypes = bs.getDefinitionModule().getDefinitions(Definition.FOLDER_ENTRY);
 		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);		
 		List entriesFromSearch = (List) additionalOptions.get(SearchBlockTypeEntry);
 		if (entryTypes == null || entriesFromSearch == null) {
@@ -570,7 +555,7 @@ public class SearchFilterToMapConverter {
 			String fieldName = (String) entryMap.get(SearchEntryElement);
 			
 			if (entryType != null && !entryType.equals("")) {
-				Map fieldsMap = definitionModule.getEntryDefinitionElements(entryType);
+				Map fieldsMap = bs.getDefinitionModule().getEntryDefinitionElements(entryType);
 				if (fieldName != null && fieldsMap.get(fieldName) != null) {
 					EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
 					((Entry)entriesMap.get(entryType)).addField(entryField);
@@ -611,7 +596,7 @@ public class SearchFilterToMapConverter {
 		}
 	}
 	private Collection prepareWorkflows(Map convertedQuery) {
-		List workflows = DefinitionHelper.getDefinitions(Definition.WORKFLOW);
+		List workflows = bs.getDefinitionModule().getDefinitions(Definition.WORKFLOW);
 		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);		
 		List wfFromSearch = (List) additionalOptions.get(SearchBlockTypeWorkflow);
 		if (workflows == null || wfFromSearch == null) {
@@ -627,7 +612,7 @@ public class SearchFilterToMapConverter {
 		while (it.hasNext()) {
 			Map wfFilter = (Map) it.next();
 			String wfId = (String)wfFilter.get(SearchFilterKeys.SearchWorkflowId);
-			Map steps = definitionModule.getWorkflowDefinitionStates(wfId);
+			Map steps = bs.getDefinitionModule().getWorkflowDefinitionStates(wfId);
 			if (steps.isEmpty()) continue;
 			List selectedStepsNames = (List) wfFilter.get(SearchFilterKeys.FilterWorkflowStateName);
 			Iterator filterSteps = selectedStepsNames.iterator();

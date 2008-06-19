@@ -50,7 +50,7 @@ public class DefinitionServiceImpl extends BaseService implements DefinitionServ
 		return getDefinitionModule().getDefinitionConfig().getRootElement().asXML();
 	}
 	public String definition_getDefinitionsAsXML(String accessToken) {
-		List<Definition> defs = getDefinitionModule().getDefinitions();
+		List<Definition> defs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC);
 		Document doc = DocumentHelper.createDocument();
 		doc.addElement("definitions");
 		Element root = doc.getRootElement();
@@ -67,7 +67,7 @@ public class DefinitionServiceImpl extends BaseService implements DefinitionServ
 	}
 
 	public DefinitionCollection definition_getDefinitions(String accessToken) {
-		List<Definition> defs = getDefinitionModule().getDefinitions();
+		List<Definition> defs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC);
 
 		List<DefinitionBrief> list = new ArrayList<DefinitionBrief>();
 		

@@ -66,6 +66,7 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.profile.ProfileModule.ProfileOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.support.PortletAdapterUtil;
@@ -536,6 +537,15 @@ public class WorkspaceTreeHelper {
 					adapterUrl.toString(), qualifiers);
 		}
 		
+		if (bs.getBinderModule().testAccess(workspace, BinderOperation.manageDefinitions)) {
+			adminMenuCreated=true;
+			qualifiers = new HashMap();
+			qualifiers.put("popup", new Boolean(true));
+			url = response.createRenderURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("administration.definition_builder_designers"), url, qualifiers);
+		}
 		//Delete
 		if (!workspace.isReserved()) {
 			if (bs.getBinderModule().testAccess(workspace, BinderOperation.deleteBinder)) {

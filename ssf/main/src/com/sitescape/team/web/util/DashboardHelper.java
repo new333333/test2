@@ -910,7 +910,7 @@ public class DashboardHelper extends AbstractAllModulesInjected {
 			}
 		}
 		
-		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(searchQuery, getDefinitionModule(), getProfileModule(), getBinderModule());
+		SearchFilterToMapConverter searchFilterConverter = new SearchFilterToMapConverter(this, searchQuery);
 		searchSearchFormData.putAll(searchFilterConverter.convertAndPrepareFormData());
 		
 		Workspace ws = getWorkspaceModule().getTopWorkspace();

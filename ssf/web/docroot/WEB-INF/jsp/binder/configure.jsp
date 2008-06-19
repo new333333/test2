@@ -81,7 +81,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   value="ss_treeShowIdConfig${renderResponse.namespace}" 
   scope="request" />
 <%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-
+<c:set var="allDefinitionsMap" value="${ssBinder.definitionMap}"/>
 <c:if test="${ssBinder.definitionInheritanceSupported}">
 <fieldset class="ss_fieldset">
   <legend class="ss_legend"><ssf:nlt tag="binder.configure.definitions.inheritance" 
@@ -136,17 +136,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
       <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default folder view"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/views_workspaces" /> </legend>
 
       <c:forEach var="item" items="${ssPublicBinderDefinitions}">
-          <c:choose>
-	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
-	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	        </c:when>
-	        <c:otherwise>
-	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	        </c:otherwise>
-          </c:choose>
-      </c:forEach>
+          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:if test="${ssBinder.entryDef.id== item.value.id}"> checked </c:if> <c:out value="${disabled}"/>>
+          ${item.key}<br/>
+     </c:forEach>
       <br>
 <c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
@@ -161,17 +153,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 
     <c:set var="folderViewCount" value=""/>
     <c:forEach var="item" items="${ssPublicBinderDefinitions}">
-      <c:choose>
-        <c:when test="${empty ssFolderDefinitionMap[item.key]}">
-  	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
- 	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
- 	    </c:when>
-	    <c:otherwise>
-	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	      <c:set var="folderViewCount" value="1"/>
-	    </c:otherwise>
-      </c:choose>
+ 	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" 
+	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked <c:set var="folderViewCount" value="1"/></c:if>
+	      <c:out value="${disabled}"/>>${item.key}<br/>
     </c:forEach>
     <br>
 <c:if test="${!ssBinder.definitionsInherited}">
@@ -185,17 +169,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
       <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultView" text="Default view"/> <ssf:inlineHelp jsp="workspaces_folders/misc_tools/views_folders" /> </legend>
 
       <c:forEach var="item" items="${ssPublicBinderDefinitions}">
-        <c:if test="${!empty ssFolderDefinitionMap[item.key]}">
-          <c:choose>
-	        <c:when test="${ssDefaultFolderDefinition.id == item.value.id}">
-	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	        </c:when>
-	        <c:otherwise>
-	          <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	        </c:otherwise>
-          </c:choose>
+        <c:if test="${!empty allDefinitionsMap[item.value.id]}">
+           <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:if test="${ssBinder.entryDef.id == item.value.id}"> checked </c:if> <c:out value="${disabled}"/>>
+          ${item.key}<br/>
         </c:if>
       </c:forEach>
       <br>
@@ -209,19 +185,33 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.defaultEntryTypes" text="Default entry types"/> <ssf:inlineHelp tag="ihelp.other.def_entry_type" /> </legend>
 
-    <c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
-	  <c:choose>
-	    <c:when test="${empty ssEntryDefinitionMap[item.key]}">
-	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	    </c:when>
-	    <c:otherwise>
-	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	    </c:otherwise>
-	  </c:choose>
+    <c:forEach var="item" items="${ssPublicEntryDefinitions}">
+	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" 
+	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
+		      <c:out value="${disabled}"/>> ${item.key}<br/>
+   </c:forEach>
+    <br>
+	<c:if test="${!empty ssLocalEntryDefinitions}">
+    <hr/>
+    <span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/>
+     <c:forEach var="item" items="${ssLocalEntryDefinitions}">
+	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" 
+	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
+		      <c:out value="${disabled}"/>> ${item.key}&nbsp;(${item.value.binder.parentBinder.title}/${item.value.binder.title})<br/>
     </c:forEach>
     <br>
+    </c:if>
+ 	<c:if test="${!empty ssSharedEntryDefinitions}">
+    <hr/>
+    <span class="ss_bold"><ssf:nlt tag="definition.shared"/></span><br/>
+     <c:forEach var="item" items="${ssSharedEntryDefinitions}">
+	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" 
+	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
+		      <c:out value="${disabled}"/>> ${item.key}&nbsp;(${item.value.binder.parentBinder.title}/${item.value.binder.title})<br/>
+    </c:forEach>
+    <br>
+    </c:if>
+    
 <c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
@@ -230,21 +220,21 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 <ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
   
   <% //only display if have workflows - which covers the case where workflow is not supported %>
-<c:if test="${!empty ssPublicWorkflowDefinitions}">
+<c:if test="${!empty ssAllWorkflowDefinitions}">
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.workflowAssociations" text="Workflow associations"/> <ssf:inlineHelp tag="ihelp.other.workflow_association"/> </legend>
 
 	<table>	
     <tr><span class="ss_bold"><ssf:nlt tag="workflow.type.entry"/></span></tr>
     <tr>	
-	<c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
-	  <c:if test="${!empty ssEntryDefinitionMap[item.key]}">
+	<c:forEach var="item" items="${ssAllEntryDefinitions}">
+	  <c:if test="${!empty allDefinitionsMap[item.value.id]}">
 	  <tr>
-	    <td><ssf:nlt tag="${item.value.title}" checkIfTag="true"/></td>
+	    <td>${item.key}</td>
 		<td>
 		  <select name="workflow_<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
 		    <option value=""><ssf:nlt tag="common.select.none" text="--none--"/></option>
-	          <c:forEach var="wfp" items="${ssPublicWorkflowDefinitions}">
+	          <c:forEach var="wfp" items="${ssAllWorkflowDefinitions}">
 	            <c:if test="${ssBinder.workflowAssociations[item.value.id] eq wfp.value}">
 	              <option value="<c:out value="${wfp.value.id}"/>" selected>
 		          <ssf:nlt tag="${wfp.value.title}" checkIfTag="true"/>(${wfp.value.name})</option>
@@ -265,14 +255,14 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	<table>
     <tr><span class="ss_bold"><ssf:nlt tag="workflow.type.reply"/></span></tr>
 	<tr>
-	<c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
-	  <c:if test="${!empty ssReplyDefinitionMap[item.key]}">
+	<c:forEach var="item" items="${ssAllEntryDefinitions}">
+	  <c:if test="${!empty ssReplyDefinitionMap[item.value.id]}">
 	  <tr>
-	    <td><ssf:nlt tag="${item.value.title}" checkIfTag="true"/></td>
+	    <td>${item.key}</td>
 		<td>
 		  <select name="workflow_<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
 		    <option value=""><ssf:nlt tag="common.select.none" text="--none--"/></option>
-	          <c:forEach var="wfp" items="${ssPublicWorkflowDefinitions}">
+	          <c:forEach var="wfp" items="${ssAllWorkflowDefinitions}">
 	            <c:if test="${ssBinder.workflowAssociations[item.value.id] eq wfp.value}">
 	              <option value="<c:out value="${wfp.value.id}"/>" selected>
 		          <ssf:nlt tag="${wfp.value.title}" checkIfTag="true"/>(${wfp.value.name})</option>
@@ -299,18 +289,35 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.allowedWorkflows" text="Allowed workflows"/>  <ssf:inlineHelp tag="ihelp.other.allowed_workflows"/> </legend>
 
     <c:forEach var="item" items="${ssPublicWorkflowDefinitions}">
-	  <c:choose>
-	    <c:when test="${empty ssWorkflowDefinitionMap[item.key]}">
-	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	    </c:when>
-	    <c:otherwise>
-	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	    </c:otherwise>
-	  </c:choose>
-    </c:forEach>
+	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" 
+	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
+	      <c:out value="${disabled}"/>>
+	          ${item.key}<br/>
+   </c:forEach>
     <br>
+    <c:if test="${!empty ssLocalWorkflowDefinitions}">
+    <hr/>
+     <span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/>
+    <c:forEach var="item" items="${ssLocalWorkflowDefinitions}">
+	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" 
+	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
+	      <c:out value="${disabled}"/>>
+	          ${item.key}&nbsp;(${item.value.binder.parentBinder.title}/${item.value.binder.title})<br/>
+   </c:forEach>
+     <br>
+    </c:if>
+    <c:if test="${!empty ssSharedWorkflowDefinitions}">
+    <hr/>
+    <span class="ss_bold"><ssf:nlt tag="definition.shared"/></span><br/>
+    <c:forEach var="item" items="${ssSharedWorkflowDefinitions}">
+	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" 
+	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
+	      <c:out value="${disabled}"/>>
+	          ${item.key}&nbsp;(${item.value.binder.parentBinder.title}/${item.value.binder.title})<br/>
+   </c:forEach>
+     <br>
+    </c:if>
+    
 <c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
@@ -326,17 +333,9 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileView" text="Profile listing"/> <ssf:inlineHelp tag="ihelp.other.profile_view"/> </legend>
 
     <c:forEach var="item" items="${ssPublicBinderDefinitions}">
-      <c:choose>
-        <c:when test="${empty ssFolderDefinitionMap[item.key]}">
-  	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
- 	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
- 	    </c:when>
-	    <c:otherwise>
-	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	    </c:otherwise>
-      </c:choose>
-    </c:forEach>
+ 	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if><c:out value="${disabled}"/>>
+	      ${item.key}<br/>
+	</c:forEach>
     <br>
 <c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
@@ -347,18 +346,11 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   <fieldset class="ss_fieldset">
     <legend class="ss_legend"><ssf:nlt tag="binder.configure.profileEntryType" text="Profile type"/> <ssf:inlineHelp tag="ihelp.other.profile_type"/> </legend>
 
-    <c:forEach var="item" items="${ssPublicBinderEntryDefinitions}">
-	  <c:choose>
-	    <c:when test="${empty ssEntryDefinitionMap[item.key]}">
-	      <input type="radio" name="entryDefinition" value="<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	    </c:when>
-	    <c:otherwise>
-	      <input type="radio" name="entryDefinition" value="<c:out value="${item.value.id}"/>" checked <c:out value="${disabled}"/>>
-	          <ssf:nlt tag="${item.value.title}" checkIfTag="true"/><br/>
-	    </c:otherwise>
-	  </c:choose>
-    </c:forEach>
+    <c:forEach var="item" items="${ssPublicEntryDefinitions}">
+	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" 
+	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
+		      <c:out value="${disabled}"/>> ${item.key}<br/>
+   </c:forEach>
     <br>
 <c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
