@@ -49,8 +49,7 @@ function ${adminTreeName}_showId(id, obj, action, namespace) {
 }
 
 </script>
-<div class="ss_form" style="margin:6px;">
-<div style="margin:6px;">
+
 <c:if test="${empty ssBinderId}">
 <span class="ss_titlebold"><ssf:nlt tag="administration.definition.public.existing" /></span>
 </c:if>
@@ -93,13 +92,12 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 
 	<input type="submit" class="ss_submit" name="closeBtn" onClick="self.window.close();return false;" value="<ssf:nlt tag="button.close" text="Close"/>">
 </form>
-</div>
 
 </c:if>
 
 
 <c:if test="${ssOperation == 'add'}">
-<div class="ss_form" style="margin:6px;">
+
 <table class="ss_style" width="100%"><tr><td>
 <span class="ss_titlebold"><ssf:nlt tag="administratinn.add.definition"/></span>
 <form class="ss_style ss_form" action="<ssf:url action="definition_builder" actionUrl="true"><ssf:param 
@@ -123,10 +121,10 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 </form>
 <br>
 </td></tr></table>
-</div>
+
 </c:if>
 <c:if test="${ssOperation == 'copy'}">
-<div class="ss_form" style="margin:6px;">
+
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssDomTree}">
 <span class="ss_titlebold"><ssf:nlt tag="administration.copy.definition" /></span>
@@ -187,7 +185,7 @@ function ${renderResponse.namespace}_showId(forum, obj) {
 </form>
 </c:if>
 </td></tr></table>
-</div>
+
 </c:if>
 </div>
 </div>
