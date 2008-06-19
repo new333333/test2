@@ -377,22 +377,25 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			PortletURL url;
 
 			Toolbar toolbar = new Toolbar();
+			Map qualifiers = new HashMap();
+			qualifiers.put("onClick", "{return true}");
+
 			toolbar.addToolbarMenu("1_add", NLT.get("administration.toolbar.add"), "");
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
 			url.setParameter("definitionType", String.valueOf(Definition.FOLDER_VIEW));
-			toolbar.addToolbarMenuItem("1_add", "", NLT.get("general.type.folder"), url);
+			toolbar.addToolbarMenuItem("1_add", "", NLT.get("general.type.folder"), url, qualifiers);
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
 			url.setParameter("definitionType", String.valueOf(Definition.WORKSPACE_VIEW));
-			toolbar.addToolbarMenuItem("1_add", "", NLT.get("general.type.workspace"), url);
+			toolbar.addToolbarMenuItem("1_add", "", NLT.get("general.type.workspace"), url, qualifiers);
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
 			url.setParameter("definitionType", "-1");
-			toolbar.addToolbarMenuItem("1_add", "", NLT.get("administration.configure_cfg.clone"), url);
+			toolbar.addToolbarMenuItem("1_add", "", NLT.get("administration.configure_cfg.clone"), url, qualifiers);
 			
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.URL_ACTION, WebKeys.ACTION_CONFIGURATION);
