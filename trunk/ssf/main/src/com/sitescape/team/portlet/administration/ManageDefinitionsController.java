@@ -110,7 +110,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 			Document definitionConfig = getDefinitionModule().getDefinitionConfig();
 			PortletURL url;
 			Toolbar toolbar = new Toolbar();
-			toolbar.addToolbarMenu("1_add", NLT.get("administration.definition.toolbar.add"), "");
+			toolbar.addToolbarMenu("1_add", NLT.get("administration.toolbar.add"), "");
 			//Build the tree
 			Map designers = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
 			//Definition builders
@@ -253,25 +253,25 @@ public class ManageDefinitionsController extends  SAbstractController {
 			}
 
 			url = response.createRenderURL();
-			url.setParameter("action", "manage_definitions");
-			url.setParameter("operation", WebKeys.OPERATION_COPY);
+			url.setParameter(WebKeys.URL_ACTION, "manage_definitions");
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_COPY);
 			if (binderId != null) url.setParameter("binderId", binderId.toString());
-			toolbar.addToolbarMenu("2_copy", NLT.get("administration.definition.toolbar.copy"), url);
+			toolbar.addToolbarMenu("2_copy", NLT.get("administration.toolbar.copy"), url);
 			if (binderId == null) {
 				url = response.createRenderURL();
-				url.setParameter("action", "import_definition");
-				url.setParameter("operation", "reload_confirm");
-				toolbar.addToolbarMenu("3_reload", NLT.get("administration.definition.toolbar.reset"), url);
+				url.setParameter(WebKeys.URL_ACTION, "import_definition");
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_CONFIRM);
+				toolbar.addToolbarMenu("3_reload", NLT.get("administration.toolbar.reset"), url);
 			}
 			url = response.createRenderURL();
-			url.setParameter("action", "import_definition");
+			url.setParameter(WebKeys.URL_ACTION, "import_definition");
 			if (binderId != null) url.setParameter("binderId", binderId.toString());			
-			toolbar.addToolbarMenu("4_import", NLT.get("administration.definition.toolbar.import"), url);
+			toolbar.addToolbarMenu("4_import", NLT.get("administration.toolbar.import"), url);
 			url = response.createRenderURL();
-			url.setParameter("action", "manage_definitions");
-			url.setParameter("operation", WebKeys.OPERATION_EXPORT);
+			url.setParameter(WebKeys.URL_ACTION, "manage_definitions");
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_EXPORT);
 			if (binderId != null) url.setParameter("binderId", binderId.toString());			
-			toolbar.addToolbarMenu("5_export", NLT.get("administration.definition.toolbar.export"), url);
+			toolbar.addToolbarMenu("5_export", NLT.get("administration.toolbar.export"), url);
 			
 			model.put(WebKeys.TOOLBAR, toolbar.getToolbar());
 			model.put(WebKeys.ADMIN_TREE, adminTree);

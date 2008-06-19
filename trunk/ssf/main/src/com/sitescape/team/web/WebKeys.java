@@ -297,6 +297,8 @@ public class WebKeys {
     public static final String OPERATION_VIEW_WORKSPACE = "view_workspace";
     public static final String OPERATION_ADD="add";
     public static final String OPERATION_COPY = "copy";
+    public static final String OPERATION_IMPORT="import";
+    public static final String OPERATION_RESET="reset";
     public static final String OPERATION_EXPORT="export";
     public static final String OPERATION_CLEAR_CLIPBOARD = "clear_clipboard";
  	public static final String OPERATION_REMOVE_FROM_CLIPBOARD = "remove_from_clipboard";
