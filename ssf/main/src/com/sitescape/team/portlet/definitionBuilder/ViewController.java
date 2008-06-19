@@ -84,7 +84,7 @@ public class ViewController extends SAbstractController {
 				response.setRenderParameter(WebKeys.URL_OPERATION, "");
 				return;
 			}
-		} else if (Validator.isNotNull("operation")) {
+		} else if (Validator.isNotNull(operation)) {
 				
 			try {
 				if (operation.equals("addDefinition")) {

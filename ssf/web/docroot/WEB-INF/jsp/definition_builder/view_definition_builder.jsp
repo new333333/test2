@@ -73,7 +73,7 @@ var selectedIdText = null;
 var selectedCaptionText = null;
 
 var sourceDefinitionId = '${data.selectedItem}';
-
+var binderId = '${ssBinderId}'
 function initializeStateMachine() {
 	//ss_hideAllDeclaredDivs()
 	ss_setDivHtml("displaydiv", "")
@@ -252,8 +252,8 @@ function setVisibility(visible) {
 	ss_setupStatusMessageDiv()
 	//alert("load div: " + option + ", " + itemId + ", " + itemName + ", " + refItemId)
 	hideDisplayDiv();
-	var urlParams={operation:'setVisibility', visibility:visible, option:'view_definition_options'};
-	if (sourceDefinitionId != "") urlParams['sourceDefinitionId'] = sourceDefinitionId;
+	var urlParams={operation:'setVisibility', visibility:visible, option:'view_definition_options', 
+		sourceDefinitionId:sourceDefinitionId, binderId:binderId};
 	
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "definition_builder"); 
 	
@@ -310,14 +310,9 @@ function getConditionSelectbox(obj, op, op2) {
 	var formObj = ss_getContainingForm(obj)
 	var nameObj = obj.name
 	if (!obj.name) nameObj = obj.id;
-	var url = "<ssf:url 
-    	adapter="true" 
-    	portletName="ss_forum" 
-    	action="__ajax_request" 
-    	actionUrl="true" >
-    	</ssf:url>"
-    url += "&operation=" + op;
-    if (op2 != null && op2 != "") url += "&operation2=" + op2;
+	var urlParams={operation:op, sourceDefinitionId:sourceDefinitionId, binderId:binderId};
+    if (op2 != null && op2 != "") urlParams['operation']=op2;
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams); 
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
 	ajaxRequest.addFormElements(formObj.name);
 	//ajaxRequest.setEchoDebugInfo();
@@ -510,7 +505,7 @@ function ss_loadNextDiv(option, itemId, itemName, refItemId) {
 	ss_setupStatusMessageDiv()
 	//alert("load div: " + option + ", " + itemId + ", " + itemName + ", " + refItemId)
 	hideDisplayDiv();
-	var urlParams={option:option};
+	var urlParams={option:option, binderId:binderId};
 	if (sourceDefinitionId != "") urlParams['sourceDefinitionId'] = sourceDefinitionId;
 	if (itemId != "")  urlParams['itemId'] = itemId;
 	if (itemName != "") urlParams['itemName'] = itemName;
@@ -593,7 +588,7 @@ function ss_saveUserGroupResults(s) {
 </td>
 <td align="right">
 
-<form action="<ssf:url actionUrl="false" binderId="${binderId}" action="manage_definitions"/>" 
+<form action="<ssf:url actionUrl="false" binderId="${ssBinderId}" action="manage_definitions"/>" 
 				method="post">
 <input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>">
 </form>
@@ -629,7 +624,7 @@ function ss_saveUserGroupResults(s) {
 			<div id="displaydiv_spacer" style="height:1px;">&nbsp;
 			</div>
 			<div id="displaydiv0" style="display:inline; visibility:hidden; z-index:100;">
-			<form class="ss_form" action="<ssf:url actionUrl="true" binderId="${binderId}"><ssf:param 
+			<form class="ss_form" action="<ssf:url actionUrl="true" binderId="${ssBinderId}"><ssf:param 
 				name="action" value="definition_builder" /></ssf:url>" 
 				method="post" name="definitionbuilder" id="definitionbuilder" 
 				onSubmit="setSubmitData(this)" style="display:inline;" >

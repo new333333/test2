@@ -28,12 +28,11 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
-<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
-<body class="ss_style_body">
-<div id="ss_pseudoAdministrationPortalDiv${renderResponse.namespace}">
-</ssf:ifadapter>
 
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<body class="ss_style_body">
+<div class="ss_pseudoPortal">
+<div class="ss_style ss_portlet">
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 <script type="text/javascript">
 function ss_saveChangeLogBinderId(id) {
@@ -52,7 +51,7 @@ function ss_saveChangeLogEntryId(id) {
 
 </script>
 
-<div class="ss_portlet_style ss_portlet">
+<div class="ss_style ss_portlet">
 
 <form class="ss_portlet_style ss_form" 
   id="ss_changeLogForm" 
@@ -158,61 +157,26 @@ function ss_saveChangeLogEntryId(id) {
 var rn = Math.round(Math.random()*999999);
 
 function ${ssNamespace}_getChanges() {
-	var url = "<ssf:url adapter="true" 
-			portletName="ss_administration" 
-			action="view_change_log" 
-			actionUrl="false" />";
 
 	var frame = self.document.getElementById('${ssNamespace}_display');
 	var myForm = self.document.forms['ss_changeLogForm'];
 	if (!myForm.binderId.value && !myForm.entityId.value) {
 		return false;
 	}
-	url += "\&operation=" + myForm.operation.value;
+	var urlParams={operation:myForm.operation.value, rn:rn++};
 	if (myForm.binderId.value) {
-		url += "\&binderId=" + myForm.binderId.value;
+		urlParams['binderId'] = myForm.binderId.value;
 	}
 	if (myForm.entityId.value) {
-		url += "\&entityId=" + myForm.entityId.value;
+		urlParams['entityId'] = myForm.entityId.value;
 	}
-	url += "\&entityType=" + myForm.entityType.value;
-	url += "\&rn=" + rn++;
-	frame.src = url;
+	urlParams['entityType'] = myForm.entityType.value;
+	frame.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "view_change_log"); 
+
 }
 </script>
 
-<ssf:ifadapter>
 </div>
-<script type="text/javascript">
-var ss_parentAdministrationNamespace${renderResponse.namespace} = "";
-function ss_administration_showPseudoPortal${renderResponse.namespace}(obj) {
-	//See if we are in an iframe inside a portlet 
-	var windowName = self.window.name    
-	if (windowName.indexOf("ss_administrationIframe") == 0) {
-		//We are running inside a portlet iframe; set up for layout changes
-		ss_parentAdministrationNamespace${renderResponse.namespace} = windowName.substr("ss_administrationIframe".length)
-		ss_createOnResizeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
-		ss_createOnLayoutChangeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
-	} else {
-		//Show the pseudo portal
-		var divObj = self.document.getElementById('ss_pseudoAdministrationPortalDiv${renderResponse.namespace}');
-		if (divObj != null) {
-			divObj.className = "ss_pseudoPortal"
-		}
-		divObj = self.document.getElementById('ss_upperRightToolbar${renderResponse.namespace}');
-		if (divObj != null) {
-			divObj.style.display = "block"
-			divObj.style.visibility = "visible"
-		}
-		divObj = self.document.getElementById('ss_administrationHeader_${renderResponse.namespace}');
-		if (divObj != null) {
-			divObj.style.display = "block"
-			divObj.style.visibility = "visible"
-		}
-	}
-}
-ss_administration_showPseudoPortal${renderResponse.namespace}();
-</script>
-	</body>
+</div>
+</body>
 </html>
-</ssf:ifadapter>
