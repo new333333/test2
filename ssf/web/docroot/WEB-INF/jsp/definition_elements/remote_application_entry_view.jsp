@@ -30,7 +30,6 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-xxxxxxxx ${property_remoteApp} xxxxxxxx
 <c:if test="${!empty property_remoteApp}">
 <ssf:remoteAccessory applicationId="${property_remoteApp}">
   <ssf:param name="binderId" value="${ssBinder.id}"/>
