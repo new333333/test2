@@ -53,9 +53,7 @@ public class ViewChangeLogController  extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 
-		Map formData = request.getParameterMap();
 		Map model = new HashMap();
-		if (formData.containsKey("closeBtn")) return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT, model);
 		
 		Long binderId = PortletRequestUtils.getLongParameter(request,  WebKeys.URL_BINDER_ID);
 		String entityIdStr = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTITY_ID, "");

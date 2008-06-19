@@ -103,8 +103,6 @@ public class ConfigureLdapController extends  SAbstractController {
 					
 				}
 			}
-		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
 		
@@ -113,9 +111,6 @@ public class ConfigureLdapController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
 		Map model = new HashMap();
 		model.put(WebKeys.EXCEPTION, request.getParameter(WebKeys.EXCEPTION));
 		model.put(WebKeys.LDAP_CONFIG, getLdapModule().getLdapConfig());

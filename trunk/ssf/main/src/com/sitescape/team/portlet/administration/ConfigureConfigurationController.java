@@ -242,10 +242,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		model.put(WebKeys.ERROR_LIST,  request.getParameterValues(WebKeys.ERROR_LIST));
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			model.put(WebKeys.DOWNLOAD_URL, PortletRequestUtils.getStringParameter(request, WebKeys.DOWNLOAD_URL, ""));
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT, model);
-		}
 		Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		
@@ -416,7 +412,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 
 			List<TemplateBinder> configs = getTemplateModule().getTemplates();
 			model.put(WebKeys.BINDER_CONFIGS, configs);
-			model.put(WebKeys.DOWNLOAD_URL, PortletRequestUtils.getStringParameter(request, WebKeys.DOWNLOAD_URL, ""));
 
 		}
 		return new ModelAndView(path, model);
