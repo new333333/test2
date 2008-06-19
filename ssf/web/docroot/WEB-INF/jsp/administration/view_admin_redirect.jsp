@@ -30,23 +30,21 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<ssf:ifadapter>
 <body class="ss_style_body">
-<div id="ss_pseudoAdministrationPortalDiv${renderResponse.namespace}">
-</ssf:ifadapter>
+<div class="ss_pseudoPortal">
+<div class="ss_style ss_portlet">
+
 <c:if test="${empty ssErrorList}">
 <script type="text/javascript">
-var url_str = '<ssf:url action="site_administration" actionUrl="false"/>';
 var timeout = 0;
 <c:if test="${!empty ssDownloadURL}">
 timeout = 200;
 </c:if>
-setTimeout("self.location.replace('"+url_str+"')", timeout);
+setTimeout("self.window.close()", timeout);
 </script>
 </c:if>
 <c:if test="${!empty ssErrorList}">
-<form class="ss_style ss_form" action="<ssf:url action="site_administration" actionUrl="false"/>"
-		 method="post" name="${renderResponse.namespace}fm">
+<form class="ss_style ss_form" >
 <br/>
 <br/>
 <span class="ss_bold"><ssf:nlt tag="administration.errors"/></span>
@@ -57,42 +55,11 @@ setTimeout("self.location.replace('"+url_str+"')", timeout);
 	<li>${err}</li>
 </c:forEach>
 </ul>
-<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.ok" text="OK"/>">
+<input type="submit" class="ss_submit" name="cancelBtn" onClick="self.window.close();return false;" value="<ssf:nlt tag="button.ok" text="OK"/>">
 
 </form>
 </c:if>
-<ssf:ifadapter>
 </div>
-<script type="text/javascript">
-var ss_parentAdministrationNamespace${renderResponse.namespace} = "";
-function ss_administration_showPseudoPortal${renderResponse.namespace}(obj) {
-	//See if we are in an iframe inside a portlet 
-	var windowName = self.window.name    
-	if (windowName.indexOf("ss_administrationIframe") == 0) {
-		//We are running inside a portlet iframe; set up for layout changes
-		ss_parentAdministrationNamespace${renderResponse.namespace} = windowName.substr("ss_administrationIframe".length)
-		//ss_createOnResizeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
-		//ss_createOnLayoutChangeObj('ss_setParentAdministrationIframeSize${renderResponse.namespace}', ss_setParentAdministrationIframeSize${renderResponse.namespace});
-	} else {
-		//Show the pseudo portal
-		var divObj = self.document.getElementById('ss_pseudoAdministrationPortalDiv${renderResponse.namespace}');
-		if (divObj != null) {
-			divObj.className = "ss_pseudoPortal"
-		}
-		divObj = self.document.getElementById('ss_upperRightToolbar${renderResponse.namespace}');
-		if (divObj != null) {
-			divObj.style.display = "block"
-			divObj.style.visibility = "visible"
-		}
-		divObj = self.document.getElementById('ss_administrationHeader_${renderResponse.namespace}');
-		if (divObj != null) {
-			divObj.style.display = "block"
-			divObj.style.visibility = "visible"
-		}
-	}
-}
-ss_administration_showPseudoPortal${renderResponse.namespace}();
-</script>
-	</body>
+</div>
+</body>
 </html>
-</ssf:ifadapter>

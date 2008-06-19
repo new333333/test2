@@ -86,10 +86,6 @@ public class ManageDefinitionsController extends  SAbstractController {
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
 		model.put(WebKeys.ERROR_LIST,  request.getParameterValues(WebKeys.ERROR_LIST));
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			model.put(WebKeys.DOWNLOAD_URL, PortletRequestUtils.getStringParameter(request, WebKeys.DOWNLOAD_URL, ""));
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT, model);
-		}
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if ("getTree".equals(operation)) {
 			//ajax request to expand tree

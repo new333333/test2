@@ -109,9 +109,6 @@ public class ManageSearchIndexController extends  SAbstractController {
 				SimpleProfiler.clearProfiler();
 			}
 			response.setRenderParameters(formData);
-		} else if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn") ||
-				 btnClicked.equals("closeBtn")) {
-			response.setRenderParameter("redirect", "true");
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -119,9 +116,6 @@ public class ManageSearchIndexController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
 		Map formData = request.getParameterMap();
 		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
 		if (formData.containsKey("okBtn") || btnClicked.equals("okBtn")) {

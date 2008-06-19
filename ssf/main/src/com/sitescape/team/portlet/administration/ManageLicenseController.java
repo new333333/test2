@@ -64,9 +64,6 @@ public class ManageLicenseController extends SAbstractController {
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		response.setRenderParameters(request.getParameterMap());
 		Map formData = request.getParameterMap();
-		if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			response.setRenderParameter("redirect", "true");
-		}
 		if(formData.containsKey("updateBtn")) {
 			try {
 				getLicenseModule().updateLicense();
@@ -77,9 +74,6 @@ public class ManageLicenseController extends SAbstractController {
 
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
-		if (!Validator.isNull(request.getParameter("redirect"))) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
 		Map model = new HashMap();
 		try {
 			getLicenseModule().validateLicense();

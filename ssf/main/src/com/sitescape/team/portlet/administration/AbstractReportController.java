@@ -69,10 +69,6 @@ public abstract class AbstractReportController extends  AbstractBinderController
 			RenderResponse response) throws Exception {
 
 		Map formData = request.getParameterMap();
-
-		if (formData.containsKey("closeBtn") || formData.containsKey("cancelBtn")) {
-			return new ModelAndView(WebKeys.VIEW_ADMIN_REDIRECT);
-		}
 		
 		Map model = new HashMap();
 		populateModel(request, model);
