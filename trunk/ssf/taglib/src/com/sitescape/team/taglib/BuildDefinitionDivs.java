@@ -34,6 +34,8 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import com.sitescape.util.search.Constants;
 import com.sitescape.util.servlet.DynamicServletRequest;
 import com.sitescape.util.servlet.StringServletResponse;
 
@@ -41,6 +43,7 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletRequest;
 
 import org.dom4j.Document;
+import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
 import com.sitescape.team.ObjectKeys;
@@ -51,6 +54,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionUtils;
+import com.sitescape.team.module.profile.ProfileModule;
 
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Principal;
@@ -101,9 +105,11 @@ public class BuildDefinitionDivs extends TagSupport {
 	private Element rootConfigElement;
 	private String contextPath;
 	private DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
+	
+    private ProfileModule profileModule;
 
-    
 	public int doStartTag() throws JspException {
+		profileModule = (ProfileModule)SpringContextUtil.getBean("profileModule");
 	    if(this.title == null)
 	        throw new JspException("ssf:buildDefinitionDivs: The title must be specified.");
 	    
@@ -1280,6 +1286,46 @@ public class BuildDefinitionDivs extends TagSupport {
 							sb.append(res.getString().replaceAll("&", "&amp;"));
 						} catch(Exception e) {}
 						
+					} else if (type.equals("remoteApp")) {
+						if (!propertyConfig.attributeValue("caption", "").equals("")) {
+							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
+							sb.append("\n<br/>\n");
+						}
+					
+						Map options = new HashMap();
+						options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
+						options.put(ObjectKeys.SEARCH_SORT_DESCEND, Boolean.FALSE);
+						//get them all
+						options.put(ObjectKeys.SEARCH_MAX_HITS, Integer.MAX_VALUE-1);
+
+						Document searchFilter = DocumentHelper.createDocument();
+						Element field = searchFilter.addElement(Constants.FIELD_ELEMENT);
+				    	field.addAttribute(Constants.FIELD_NAME_ATTRIBUTE,Constants.ENTRY_TYPE_FIELD);
+				    	Element child = field.addElement(Constants.FIELD_TERMS_ELEMENT);
+				    	child.setText(Constants.ENTRY_TYPE_APPLICATION);
+				    	options.put(ObjectKeys.SEARCH_FILTER_AND, searchFilter);
+						Map searchResults = profileModule.getApplications(profileModule.getProfileBinder().getId(), options);
+						List remoteAppList = (List) searchResults.get(ObjectKeys.SEARCH_ENTRIES);
+						int size = remoteAppList.size();
+						if (size <= 0) size = 1;
+						sb.append("<select name=\"propertyId_" + 
+								propertyId + "\">\n");
+						sb.append("<option value=\"\">").append(NLT.get("definition.select_remote_app")).append("</option>\n");
+						for (int i=0; i<remoteAppList.size(); ++i) {
+							//Build a list of the remote apps
+							Map remoteApp = (Map)remoteAppList.get(i);
+							sb.append("<option value=\"").append(remoteApp.get("_docId")).append("\"");
+							Element remoteAppEle = (Element)sourceRoot.selectSingleNode("item[@type='form']/item[@name='"+propertyName+"']/properties/property[@name='remoteApp']");
+							if (remoteAppEle != null) {
+								if (remoteApp.get("_applicationName").equals(remoteAppEle.attributeValue("value", ""))) {
+									sb.append(" selected=\"selected\"");
+								}
+							}
+							sb.append(">").append(((String)remoteApp.get("title")).replaceAll("&", "&amp;"))
+								.append(" (").append(remoteApp.get("_applicationName")).append(")</option>\n");
+						}
+						sb.append("</select>\n<br/><br/>\n");
+
 					} else {
 						if (!propertyConfig.attributeValue("caption", "").equals("")) {
 							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));

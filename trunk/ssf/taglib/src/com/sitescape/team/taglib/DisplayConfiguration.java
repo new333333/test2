@@ -220,9 +220,33 @@ public class DisplayConfiguration extends TagSupport {
 										propertyValuesMap.put("property_"+propertyName, propertyValue);
 									
 									}
-										
 								}
-								
+								//See if this item is a remote app data view item
+								if (formItem.equals("remoteApp")) {
+									//Get the remote app id from the form side of the definition
+									Element entryFormItem = (Element)configDefinition.getRootElement().selectSingleNode("item[@type='form']");
+									if (entryFormItem != null) {
+										//Get the name of the remote app element we are looking for in the form part of the definition
+										String nameValue = DefinitionUtils.getPropertyValue(nextItem, "name");
+										if (Validator.isNotNull(nameValue)) {
+											//Find the actual remoteApp element if the form part of the definition
+											Element itemEle = (Element)entryFormItem.selectSingleNode(".//item/properties/property[@name='name' and @value='" + nameValue + "']");
+											if (itemEle != null) {
+												//Found the form element, get the "properties" element
+												itemEle = itemEle.getParent();
+												//Now get the property where the remote application id is stored
+												Element remoteAppEle = (Element)itemEle.selectSingleNode("./property[@name='remoteApp']");
+												if (remoteAppEle != null) {
+													//Ok, we have the remoteApp property, now get the app id
+													String remoteAppId = remoteAppEle.attributeValue("value", "");
+													//Create a bean for the remote app id
+													if (!remoteAppId.equals("")) 
+														propertyValuesMap.put("property_remoteApp", new Long(remoteAppId));
+												}
+											}
+										}
+									}
+								}
 									
 								//not sure if this is necessary
 //								List<Element> itProperties = nextItem.selectNodes("properties/property");
