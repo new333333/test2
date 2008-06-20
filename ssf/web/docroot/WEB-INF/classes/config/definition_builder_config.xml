@@ -2436,13 +2436,15 @@
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option_select path="//item[@category='commonEntryViewData']" />
+			<option_select definitionType="5" path="//item[@category='folderViewData']" />
+			<option_select definitionType="6" path="//item[@category='profileViewData']" />
+			<option_select definitionType="7" path="//item[@category='profileEntryViewData']"  />
+			<option_select definitionType="8" path="//item[@category='workspaceViewData']"  />
+			<option_select definitionType="12" path="//item[@category='userWorkspaceViewData']" />
 			<option_select definitionType="1" path="//item[@category='entryViewData']" />
 			<option_select path="//item[@category='generalViewLayout']" optionCaption="__layout_options" />
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
-		<jsps>
-			<jsp name="default" value="/WEB-INF/jsp/definition_elements/remote_application_entry_view.jsp" />
-		</jsps>
 	</item>
 		
 <!-- Workflow items -->
