@@ -72,19 +72,10 @@ public class RemoteAccessoryTag extends BodyTagSupport implements ParamAncestorT
 		if(applicationId != null) {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
-	
-			ServletOutputStream out = null;
-			
-			try {
-				out = httpRes.getOutputStream();
-			}
-			catch(IOException e) {
-				throw new JspTagException(e.toString());
-			}
 			
 			try {
 				getRemoteApplicationManager().executeSessionScopedRenderableAction
-				(params, applicationId, httpReq, httpRes);
+				(params, applicationId, httpReq, pageContext.getOut());
 			}
 			catch(Exception e) {
 				if(logger.isDebugEnabled()) {
@@ -94,7 +85,7 @@ public class RemoteAccessoryTag extends BodyTagSupport implements ParamAncestorT
 					logger.error(e.toString());
 				}
 				try {
-					out.print(e.getLocalizedMessage());
+					pageContext.getOut().print(e.getLocalizedMessage());
 				} catch (IOException e2) {
 					throw new JspTagException(e2.getMessage());
 				}
