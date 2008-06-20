@@ -869,7 +869,15 @@ function ss_selectRelevanceTab(obj, type, binderId, namespace) {
 		//If in accessible mode, just jump to the url directly
 		self.location.href = url;
 	} else {
-		ss_fetch_url(url, ss_showRelevanceTab, namespace)
+		if (type == 'profile') {
+			//Special case for the profile tab; always refresh the whole page
+			url = window["ss_relevanceProfileUrl"+namespace];
+			url = ss_replaceSubStr(url, "ss_binderIdPlaceHolder", binderId);
+			url = ss_replaceSubStr(url, "ss_rnPlaceHolder", ss_random++);
+			self.location.href = url;
+		} else {
+			ss_fetch_url(url, ss_showRelevanceTab, namespace)
+		}
 	}
 }
 function ss_showRelevanceTab(s, namespace) {
@@ -2324,6 +2332,7 @@ function setWindowHighWaterMark(divName) {
 //Routines to replace substrings in a string
 function ss_replaceSubStr(str, subStr, newSubStrVal) {
     //ss_debug("ss_replaceSubStr: " + str + ", " + subStr + " ==> " + newSubStrVal)
+    if (typeof str == 'undefined') return str;
     var newStr = str;
 	var i = str.indexOf(subStr);
     var lenS = str.length;
@@ -2335,6 +2344,7 @@ function ss_replaceSubStr(str, subStr, newSubStrVal) {
 	return newStr;
 }
 function ss_replaceSubStrAll(str, subStr, newSubStrVal) {
+    if (typeof str == 'undefined') return str;
     var newStr = str;
     var i = -1
     //Prevent a possible loop by only doing 1000 passes through this loop
