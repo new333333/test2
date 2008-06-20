@@ -28,6 +28,7 @@
  */
 package com.sitescape.team.portletadapter.servlet;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.portlet.Portlet;
@@ -47,7 +48,9 @@ import com.sitescape.team.portletadapter.support.AdaptedPortlets;
 import com.sitescape.team.portletadapter.support.KeyNames;
 import com.sitescape.team.portletadapter.support.PortletInfo;
 import com.sitescape.team.util.SPropsUtil;
+import com.sitescape.team.web.servlet.ParamsWrappedHttpServletRequest;
 import com.sitescape.team.web.servlet.SAbstractController;
+import com.sitescape.util.StringUtil;
 import com.sitescape.util.Validator;
 
 /**
@@ -65,8 +68,8 @@ public class PortletAdapterController extends SAbstractController {
 	// the individual portlet application controller. Therefore we can safely skip the
 	// validation at servlet level in this case.
 	protected ModelAndView handleRequestInternal(HttpServletRequest req, HttpServletResponse res) throws Exception {
-
-		Map data = req.getParameterMap();
+		req = getRequest(req);
+		
 		String portletName = RequestUtils.getRequiredStringParameter(req,
 				KeyNames.PORTLET_URL_PORTLET_NAME);
 
@@ -125,4 +128,30 @@ public class PortletAdapterController extends SAbstractController {
 		return null;
 	}
 
+	protected HttpServletRequest getRequest(HttpServletRequest req) {
+		String pathInfo = req.getPathInfo();
+		if(pathInfo.startsWith("/c/")) { // adapter url for crawler
+			Map pathParams = getPathParams(pathInfo.substring(3));
+			if(pathParams != null && pathParams.size() > 0) {
+				pathParams.putAll(req.getParameterMap());
+				return new ParamsWrappedHttpServletRequest(req, pathParams);
+			}
+		}
+		return req;
+	}
+	
+	protected Map<String, String[]> getPathParams(String pathInfo) {
+		if(pathInfo == null)
+			return null;
+		String[] pathElems = StringUtil.split(pathInfo, "/");
+		if(pathElems == null || pathElems.length < 2)
+			return null;
+		Map map = new HashMap();
+		int count = pathElems.length / 2;
+		for(int i = 0; i < count; i++) {
+			map.put(pathElems[i*2], new String[]{pathElems[i*2+1]});
+		}
+		return map;
+	}
+	
 }
