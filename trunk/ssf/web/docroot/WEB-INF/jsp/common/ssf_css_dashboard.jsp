@@ -626,16 +626,17 @@ div.ss_canvas {
     line-height:normal;
     border-bottom: 1px solid #666;
     border-right: 10px solid #EFEFEF;
+    margin-top:0px;
       }
  #ss_tabsC ul {
-    margin:0;
-    padding:10px 10px 0 20px;
+    margin: 0px!important;
+    padding:10px 10px 0 10px;
     list-style:none;
       }
 #ss_tabsC li {
     display:inline;
-    margin:0;
-   	padding:0;
+    margin-top:0;
+   	padding:0px !important;
       }
  #ss_tabsC a {
     float:left;
@@ -648,6 +649,7 @@ div.ss_canvas {
     display:block;
     background:url("<html:rootPath/>images/pics/tabrightF.gif") no-repeat right top;
     padding:5px 15px 4px 6px;
+    white-space:nowrap !important;
 
       }
  /* Commented Backslash Hack hides rule from IE5-Mac \ */

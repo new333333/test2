@@ -68,7 +68,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	#ss_diss_inset
 	{
-		margin:0% 5%;
+		
 		width:90%;
 		text-align:left;
 
