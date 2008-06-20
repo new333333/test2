@@ -28,13 +28,15 @@
  */
 package com.sitescape.team.remoteapplication.impl;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.httpclient.HostConfiguration;
 import org.apache.commons.httpclient.HttpClient;
@@ -115,12 +117,12 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 	}
 
 	public void executeSessionScopedRenderableAction(Map<String,String> params, Long applicationId, 
-			HttpServletRequest request, HttpServletResponse response) 
+			HttpServletRequest request, Writer out) 
 	throws RemoteApplicationException {
 		AccessToken accessToken = getAccessTokenManager().getSessionScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId(), WebHelper.getTokenInfoId(request));
 		try {
-			executeAction(params, applicationId, accessToken, response.getOutputStream());
+			executeAction(params, applicationId, accessToken, out);
 		}
 		catch(IOException e) {
 			throw new RemoteApplicationException(applicationId, e.toString(), e);
@@ -129,13 +131,13 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 
 	public void executeSessionScopedRenderableAction(Map<String,String> params, Long applicationId, 
 			Long binderId, BinderAccessConstraints binderAccessConstraints, 
-			HttpServletRequest request, HttpServletResponse response) 
+			HttpServletRequest request, Writer out) 
 	throws RemoteApplicationException {
 		AccessToken accessToken = getAccessTokenManager().getSessionScopedToken
 		(applicationId, RequestContextHolder.getRequestContext().getUserId(), 
 				WebHelper.getTokenInfoId(request), binderId, binderAccessConstraints);
 		try {
-			executeAction(params, applicationId, accessToken, response.getOutputStream());
+			executeAction(params, applicationId, accessToken, out);
 		}
 		catch(IOException e) {
 			throw new RemoteApplicationException(applicationId, e.toString(), e);
@@ -143,7 +145,7 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 	}
 
 	private String executeAction(Map<String,String> params, Long applicationId, 
-	AccessToken accessToken, OutputStream out) throws RemoteApplicationException, IOException {
+	AccessToken accessToken, Writer out) throws RemoteApplicationException, IOException {
 		RequestContext rc = RequestContextHolder.getRequestContext();
 		Application application = getProfileDao().loadApplication(applicationId, rc.getZoneId());
 		HttpURL hrl = getHttpUrl(application.getPostUrl());
@@ -180,7 +182,8 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 				throw new RemoteApplicationException(applicationId, statusLine.toString());
 			}
 			if(out != null) {
-				InputStream in = method.getResponseBodyAsStream();
+				Reader in = getReader(method);
+
 				try {
 					copy(in, out); // Do NOT use Spring's FileCopyUtils since it closes both streams.
 				}
@@ -203,6 +206,23 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 		}
 	}
 	
+	private Reader getReader(PostMethod method) throws IOException  {
+		Reader reader;
+		String charset = method.getResponseCharSet();
+		if(charset == null || charset.length() == 0) {
+			reader = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+		}
+		else {
+			try {
+				reader = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream(), charset));
+			} catch (UnsupportedEncodingException e) {
+				logger.warn("Unsupported encoding: " + charset + ". System encoding used.");
+				reader = new BufferedReader(new InputStreamReader(method.getResponseBodyAsStream()));
+			}
+		}
+		return reader;
+	}
+	
 	private HttpURL getHttpUrl(String urlStr) throws URIException  {
 		if(urlStr.startsWith("https"))
 			return new HttpsURL(urlStr);
@@ -210,9 +230,9 @@ public class RemoteApplicationManagerImpl implements RemoteApplicationManager {
 			return new HttpURL(urlStr);
 	}
 
-	public int copy(InputStream in, OutputStream out) throws IOException {
+	public int copy(Reader in, Writer out) throws IOException {
 		int byteCount = 0;
-		byte[] buffer = new byte[BUFFER_SIZE];
+		char[] buffer = new char[BUFFER_SIZE];
 		int bytesRead = -1;
 		while ((bytesRead = in.read(buffer)) != -1) {
 			out.write(buffer, 0, bytesRead);
