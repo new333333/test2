@@ -260,7 +260,7 @@ public class ParamsWrappedHttpServletRequest implements HttpServletRequest {
 	}
 
 	public void setAttribute(String name, Object o) {
-		req.setAttribute(name, 0);
+		req.setAttribute(name, o);
 	}
 
 	public void setCharacterEncoding(String env) throws UnsupportedEncodingException {
