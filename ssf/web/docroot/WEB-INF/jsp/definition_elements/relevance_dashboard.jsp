@@ -69,7 +69,7 @@
 <% //Tabs %>
 
 <div id="ss_wrap" align="center">
-<div id="ss_tabsC" sytle="margin-top:10px;">
+<div id="ss_tabsC">
   <ul>
 	<!-- CSS Tabs -->
 <c:if test="${!empty ssRelevanceDashboardConfigElement}">
@@ -98,20 +98,21 @@
 		><span><ssf:nlt tag="relevance.tab.whatsNew"/></span></a></li>
 </c:if>
 	
-	<li <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">class="ss_tabsCCurrent"</c:if>
-	><a 
+	<li <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">class="ss_tabsCCurrent"</c:if>>
+	<a 
 	  <c:if test="${ssRDCurrentTab == 'tasks_and_calendars'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'tasks_and_calendars', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.tasksAndCalendars"/></span></a></li>
-	
-	<li <c:if test="${ssRDCurrentTab == 'activities'}">class="ss_tabsCCurrent"</c:if>
-	><a 
+		onClick="ss_selectRelevanceTab(this, 'tasks_and_calendars', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
+		<span><ssf:nlt tag="relevance.tab.tasksAndCalendars"/></span></a></li>
+
+
+	<li <c:if test="${ssRDCurrentTab == 'activities'}">class="ss_tabsCCurrent"</c:if>>
+	<a 
 	  <c:if test="${ssRDCurrentTab == 'activities'}">id="ss_relevanceInitialTab${renderResponse.namespace}"</c:if>
 	  href="javascript: ;"
-		onClick="ss_selectRelevanceTab(this, 'activities', '${ssBinder.id}', '${renderResponse.namespace}');return false;"
-		><span><ssf:nlt tag="relevance.tab.activities"/></span></a></li>
-	
+		onClick="ss_selectRelevanceTab(this, 'activities', '${ssBinder.id}', '${renderResponse.namespace}');return false;">
+		<span style="padding-right:10px;"><ssf:nlt tag="relevance.tab.activities"/></span></a></li>
+
   </ul>
 </div>
 <ssf:ifnotaccessible>
