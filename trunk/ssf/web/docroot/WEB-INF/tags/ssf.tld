@@ -1751,14 +1751,13 @@
 	</tag>
 	
 	<tag>
-		<name>remoteAccessory</name>
-		<tag-class>com.sitescape.team.taglib.RemoteAccessoryTag</tag-class>
+		<name>remoteApplication</name>
+		<tag-class>com.sitescape.team.taglib.RemoteApplicationTag</tag-class>
 		<body-content>JSP</body-content>
 		<attribute>
 			<name>applicationId</name>
 			<required>true</required>
 			<rtexprvalue>true</rtexprvalue>
-			<type>java.lang.Long</type>
 		</attribute>		
 	</tag>
 	

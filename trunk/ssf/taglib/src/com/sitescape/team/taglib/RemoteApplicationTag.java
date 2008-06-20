@@ -46,21 +46,21 @@ import com.sitescape.team.remoteapplication.RemoteApplicationManager;
 import com.sitescape.team.util.SpringContextUtil;
 import com.sitescape.team.web.util.WebHelper;
 
-public class RemoteAccessoryTag extends BodyTagSupport implements ParamAncestorTag {
+public class RemoteApplicationTag extends BodyTagSupport implements ParamAncestorTag {
 
-	protected static Log logger = LogFactory.getLog(RemoteAccessoryTag.class);
+	protected static Log logger = LogFactory.getLog(RemoteApplicationTag.class);
 
 	private static final long serialVersionUID = 1L;
 	
-	private Long applicationId;
+	private String applicationId;
 	private Map<String,String> params;
 
-	public Long getApplicationId() {
+	public String getApplicationId() {
 		return applicationId;
 	}
 
-	public void setApplicationId(Long applicationId) {
-		this.applicationId = applicationId;
+	public void setApplicationId(String applicationId) {
+		this.applicationId = applicationId; 
 	}
 	
 	public int doStartTag() throws JspException {
@@ -69,13 +69,13 @@ public class RemoteAccessoryTag extends BodyTagSupport implements ParamAncestorT
 	}
 	
 	public int doEndTag() throws JspException {
-		if(applicationId != null) {
+		if(applicationId != null && !applicationId.equals("")) {
 			HttpServletRequest httpReq = (HttpServletRequest) pageContext.getRequest();
 			HttpServletResponse httpRes = (HttpServletResponse) pageContext.getResponse();
 			
 			try {
 				getRemoteApplicationManager().executeSessionScopedRenderableAction
-				(params, applicationId, httpReq, pageContext.getOut());
+				(params, new Long(applicationId), httpReq, pageContext.getOut());
 			}
 			catch(Exception e) {
 				if(logger.isDebugEnabled()) {

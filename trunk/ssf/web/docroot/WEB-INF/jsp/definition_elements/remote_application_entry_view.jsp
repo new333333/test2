@@ -31,9 +31,9 @@
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <c:if test="${!empty property_remoteApp}">
-<ssf:remoteAccessory applicationId="${property_remoteApp}">
+<ssf:remoteApplication applicationId="${property_remoteApp}">
   <ssf:param name="binderId" value="${ssBinder.id}"/>
   <ssf:param name="entryId" value="${ssDefinitionEntry.id}"/>
   <ssf:param name="operation" value="${ssConfigJspStyle}"/>
-</ssf:remoteAccessory>
+</ssf:remoteApplication>
 </c:if>
