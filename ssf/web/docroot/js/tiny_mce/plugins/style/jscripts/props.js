@@ -167,7 +167,7 @@ function setupFormData() {
 	selectByValue(f, 'block_text_align', ce.style.textAlign, true, true);
 	f.block_text_indent.value = getNum(ce.style.textIndent);
 	selectByValue(f, 'block_text_indent_measurement', getMeasurement(ce.style.textIndent));
-	selectByValue(f, 'block_whitespace', ce.style.whiteSpace, true, true);
+	selectByValue(f, 'block_whitespace', ce.style.whitespace, true, true);
 	selectByValue(f, 'block_display', ce.style.display, true, true);
 
 	// Setup box fields
@@ -426,7 +426,7 @@ function generateCSS() {
 	ce.style.verticalAlign = f.block_vertical_alignment.value;
 	ce.style.textAlign = f.block_text_align.value;
 	ce.style.textIndent = f.block_text_indent.value + (isNum(f.block_text_indent.value) ? f.block_text_indent_measurement.value : "");
-	ce.style.whiteSpace = f.block_whitespace.value;
+	ce.style.whitespace = f.block_whitespace.value;
 	ce.style.display = f.block_display.value;
 
 	// Build box styles
