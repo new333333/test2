@@ -55,9 +55,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 <%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
-<c:if test="${1 == 1 || ss_displayType == 'ss_workarea' || ss_displayType == 'ss_forum'}">
-	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
-</c:if>
+<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
 <div class="ss_actions_bar1_pane" width="100%" style="height: 22px;">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr><td valign="middle">
@@ -79,11 +77,6 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
     <tr>
     <td valign="top" class="${ss_sidebarTdStyle}" id="ss_sidebarTd${renderResponse.namespace}">
     <div id="ss_sidebarDiv${renderResponse.namespace}" style="display:${ss_sidebarVisibility};">
-
-<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-	<% // Navigation bar %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
-</c:if>
 
 	<% // Tabs %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
@@ -107,9 +100,6 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</td>
 	<td valign="top" class="ss_view_info">
 	    <div class="ss_style_color" >
-<c:if test="${0 == 1 && ss_displayType != 'ss_workarea' && ss_displayType != 'ss_forum'}">
-			<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
-</c:if>		
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
 					  configJspStyle="${ssConfigJspStyle}" />
