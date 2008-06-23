@@ -537,7 +537,7 @@ public class WorkspaceTreeHelper {
 					adapterUrl.toString(), qualifiers);
 		}
 		
-		if (bs.getBinderModule().testAccess(workspace, BinderOperation.manageDefinitions)) {
+		if (bs.getBinderModule().testAccess(workspace, BinderOperation.manageConfiguration)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));

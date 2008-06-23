@@ -55,12 +55,6 @@
 		<tr><td><a href="javascript: ;" onClick="return modifyDefinition();"><ssf:nlt tag="definition.modifyProperties"/></a></td></tr>
 		<tr><td><a href="javascript: ;\" onClick="return copyDefinition();"><ssf:nlt tag="definition.copyDefinition"/></a></td></tr>
 		<tr><td><a href="javascript: ;\" onClick="return deleteDefinition();"><ssf:nlt tag="definition.deleteDefinition"/></a></td></tr>
-		<c:if test="${!empty ssDefinition && ssDefinition.visibility == 2}">
-		<tr><td><a href="javascript: ;\" onClick="return setVisibility(3);"><ssf:nlt tag="definition.setShared"/></a></td></tr>
-		</c:if>
-		<c:if test="${!empty ssDefinition && ssDefinition.visibility == 3}">
-		<tr><td><a href="javascript: ;\" onClick="return setVisibility(2);"><ssf:nlt tag="definition.setNotShared"/></a></td></tr>
-		</c:if>
 			
 		<c:if test="${!empty ssDefinition && ssDefinition.visibility != 1 && ssIsAdmin}">
 		<tr><td><a href="javascript: ;\" onClick="return setVisibility(1);"><ssf:nlt tag="definition.setPublic"/></a></td></tr>

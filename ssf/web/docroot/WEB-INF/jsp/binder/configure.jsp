@@ -140,6 +140,17 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
           ${item.key}<br/>
      </c:forEach>
       <br>
+	<c:if test="${!empty ssLocalBinderDefinitions}">
+    <hr/>
+    <span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/>
+     <c:forEach var="item" items="${ssLocalBinderDefinitions}">
+	      <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" 
+	      <c:if test="${ssBinder.entryDef.id== item.value.id}"> checked </c:if>
+		      <c:out value="${disabled}"/>> ${item.key}&nbsp;(${item.value.binder.parentBinder.title}/${item.value.binder.title})<br/>
+    </c:forEach>
+    <br>
+    </c:if>
+      
 <c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
@@ -158,6 +169,17 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	      <c:out value="${disabled}"/>>${item.key}<br/>
     </c:forEach>
     <br>
+	<c:if test="${!empty ssLocalBinderDefinitions}">
+    <hr/>
+    <span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/>
+     <c:forEach var="item" items="${ssLocalBinderDefinitions}">
+	      <input type="checkbox" name="binderDefinition" value="<c:out value="${item.value.id}"/>" 
+	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked <c:set var="folderViewCount" value="1"/></c:if>
+		      <c:out value="${disabled}"/>> ${item.key}&nbsp;(${item.value.binder.parentBinder.title}/${item.value.binder.title})<br/>
+    </c:forEach>
+    <br>
+    </c:if>
+    
 <c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>

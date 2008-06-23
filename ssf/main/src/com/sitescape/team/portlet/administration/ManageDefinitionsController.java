@@ -52,6 +52,7 @@ import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionModule.DefinitionOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -122,48 +123,10 @@ public class ManageDefinitionsController extends  SAbstractController {
 			qualifiers.put("onClick", "{return true}");
 			//Definition builder - Entry form designer
 			if (binder == null) {
-				if (getDefinitionModule().testAccess(Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition)) {
-					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-					fillTypeElement(element, "administration.definition_builder_entry_form_designer", String.valueOf(Definition.FOLDER_ENTRY));
-					designers.put(element.attributeValue("title"), element);
-					configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='entryTypeDefinition']");
-					url = response.createRenderURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
-					url.setParameter("definitionType", String.valueOf(Definition.FOLDER_ENTRY));
-					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
-				}
-						
-				//Definition builder - Folder view designer
-				if (getDefinitionModule().testAccess(Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
-					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-					fillTypeElement(element, "administration.definition_builder_folder_view_designer", String.valueOf(Definition.FOLDER_VIEW));
-					designers.put(element.attributeValue("title"), element);
-					configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='forumViewDefinition']");
-					url = response.createRenderURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
-					url.setParameter("definitionType", String.valueOf(Definition.FOLDER_VIEW));
-					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
-				}
-						
-				//Definition builder - Workflow designer
-				if (getDefinitionModule().testAccess(Definition.WORKFLOW, DefinitionOperation.manageDefinition)) {
-					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-					fillTypeElement(element, "administration.definition_builder_workflow_designer", String.valueOf(Definition.WORKFLOW));
-					designers.put(element.attributeValue("title"), element);
-					configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='workflowProcessDefinition']");
-					url = response.createRenderURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
-					url.setParameter("definitionType", String.valueOf(Definition.WORKFLOW));
-					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
-				}
-				
 				//Definition builder - Profile listing designer
-				if (getDefinitionModule().testAccess(Definition.PROFILE_VIEW, DefinitionOperation.manageDefinition)) {
+				if (getDefinitionModule().testAccess(binder, Definition.PROFILE_VIEW, DefinitionOperation.manageDefinition)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-					fillTypeElement(element, "administration.definition_builder_profile_listing_designer", String.valueOf(Definition.PROFILE_VIEW));
+					fillTypeElement(element, "__profile_views", String.valueOf(Definition.PROFILE_VIEW));
 					designers.put(element.attributeValue("title"), element);
 					configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='profileViewDefinition']");
 					url = response.createRenderURL();
@@ -174,30 +137,18 @@ public class ManageDefinitionsController extends  SAbstractController {
 				}
 				
 				//Definition builder - Profile designer
-				if (getDefinitionModule().testAccess(Definition.PROFILE_ENTRY_VIEW, DefinitionOperation.manageDefinition)) {
+				if (getDefinitionModule().testAccess(binder, Definition.PROFILE_ENTRY_VIEW, DefinitionOperation.manageDefinition)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-					fillTypeElement(element, "administration.definition_builder_profile_designer", String.valueOf(Definition.PROFILE_ENTRY_VIEW));
+					fillTypeElement(element, "__profile_entry_view", String.valueOf(Definition.PROFILE_ENTRY_VIEW));
 					designers.put(element.attributeValue("title"), element);
 					//cannot add new ones
 				}
 				
-				//Definition builder - Workspace designer
-				if (getDefinitionModule().testAccess(Definition.WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
-					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-					fillTypeElement(element, "administration.definition_builder_workspace_designer", String.valueOf(Definition.WORKSPACE_VIEW));
-					designers.put(element.attributeValue("title"), element);
-					configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='workspaceViewDefinition']");
-					url = response.createRenderURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
-					url.setParameter("definitionType", String.valueOf(Definition.WORKSPACE_VIEW));
-					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
-				}
 				
 				//Definition builder - User workspace designer
-				if (getDefinitionModule().testAccess(Definition.USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
+				if (getDefinitionModule().testAccess(binder, Definition.USER_WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-					fillTypeElement(element, "administration.definition_builder_user_workspace_designer", String.valueOf(Definition.USER_WORKSPACE_VIEW));
+					fillTypeElement(element, "__user_workspace_view", String.valueOf(Definition.USER_WORKSPACE_VIEW));
 					designers.put(element.attributeValue("title"), element);
 					configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='userWorkspaceViewDefinition']");
 					url = response.createRenderURL();
@@ -206,41 +157,67 @@ public class ManageDefinitionsController extends  SAbstractController {
 					url.setParameter("definitionType", String.valueOf(Definition.USER_WORKSPACE_VIEW));
 					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
 				}
-			} else {
-				if (getBinderModule().testAccess(binder, BinderOperation.manageDefinitions)) {
-					List defs = getDefinitionModule().getBinderDefinitions(binder.getId(), false, Definition.FOLDER_ENTRY);
-					if (!defs.isEmpty()) {
-						element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-						fillTypeElement(element, "administration.definition_builder_entry_form_designer", String.valueOf(Definition.FOLDER_ENTRY));
-						fillChildElements(element, defs);
-						designers.put(element.attributeValue("title"), element);
-					}
-					configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='entryTypeDefinition']");
-					url = response.createRenderURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
-					url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-					url.setParameter("definitionType", String.valueOf(Definition.FOLDER_ENTRY));
-					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
+			};
+			List defs=null;
+			if (binder != null) defs = getDefinitionModule().getBinderDefinitions(binder.getId(), false);
+			if (getDefinitionModule().testAccess(binder, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition)) {
+				if (hasDefinitionType(defs, Definition.FOLDER_ENTRY)) {
+					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+					fillTypeElement(element, "__entry_definitions", String.valueOf(Definition.FOLDER_ENTRY));
+					fillChildElements(element, defs);
+					designers.put(element.attributeValue("title"), element);
 				}
-				//Definition builder - Workflow designer
-				if (getBinderModule().testAccess(binder, BinderOperation.manageDefinitions)) {
-					List defs = getDefinitionModule().getBinderDefinitions(binder.getId(), false, Definition.WORKFLOW);
-					if (!defs.isEmpty()) {
-						element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
-						fillTypeElement(element, "administration.definition_builder_workflow_designer", String.valueOf(Definition.WORKFLOW));
-						fillChildElements(element, defs);
-						designers.put(element.attributeValue("title"), element);
-					}
-					configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='workflowProcessDefinition']");
-					url = response.createRenderURL();
-					url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-					url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
-					url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
-					url.setParameter("definitionType", String.valueOf(Definition.WORKFLOW));
-					toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
+				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='entryTypeDefinition']");
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+				if (binder != null) url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+				url.setParameter("definitionType", String.valueOf(Definition.FOLDER_ENTRY));
+				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
+			}
+			//Definition builder - Workflow designer
+			if (getDefinitionModule().testAccess(binder, Definition.WORKFLOW, DefinitionOperation.manageDefinition)) {
+				if (hasDefinitionType(defs, Definition.WORKFLOW)) {
+					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+					fillTypeElement(element, "__workflow_processes", String.valueOf(Definition.WORKFLOW));
+					fillChildElements(element, defs);
+					designers.put(element.attributeValue("title"), element);
 				}
-				
+				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='workflowProcessDefinition']");
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+				if (binder != null) url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+				url.setParameter("definitionType", String.valueOf(Definition.WORKFLOW));
+				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
+			}
+			if (getDefinitionModule().testAccess(binder, Definition.FOLDER_VIEW, DefinitionOperation.manageDefinition)) {
+				if (hasDefinitionType(defs, Definition.FOLDER_VIEW)) {
+					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+					fillTypeElement(element, "__folder_views", String.valueOf(Definition.FOLDER_VIEW));
+					designers.put(element.attributeValue("title"), element);
+				}
+				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='forumViewDefinition']");
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+				if (binder != null) url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+				url.setParameter("definitionType", String.valueOf(Definition.FOLDER_VIEW));
+				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
+			}
+			if (((binder == null) || binder instanceof Workspace) && getDefinitionModule().testAccess(binder, Definition.WORKSPACE_VIEW, DefinitionOperation.manageDefinition)) {
+				if (hasDefinitionType(defs, Definition.WORKSPACE_VIEW)) {
+					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
+					fillTypeElement(element, "__workspace_view", String.valueOf(Definition.WORKSPACE_VIEW));
+					designers.put(element.attributeValue("title"), element);
+				}
+				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='workspaceViewDefinition']");
+				url = response.createRenderURL();
+				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD);
+				if (binder != null) url.setParameter(WebKeys.URL_BINDER_ID, binder.getId().toString());
+				url.setParameter("definitionType", String.valueOf(Definition.WORKSPACE_VIEW));
+				toolbar.addToolbarMenuItem("1_add", "", NLT.get(configNode.attributeValue("caption")), url, qualifiers);
 			}
 			//	add sorted elements
 			for (Iterator iter=designers.entrySet().iterator(); iter.hasNext(); ) {
@@ -322,6 +299,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 	protected void fillChildElements(Element element, Collection<Definition> definitions) {
 		//build sorted map of definitions
 		StringComparator c = new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale());
+		if (definitions == null) return;
 		if (definitions.isEmpty()) element.getParent().addAttribute("hasChildren", "false");
 		Map<String, Definition> sortedMap = new TreeMap(c);
 		for (Definition def:definitions) {
@@ -355,7 +333,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 		Iterator definitions = root.elementIterator("definition");
 		while (definitions.hasNext()) {
 			Element defEle = (Element) definitions.next();
-			Element treeEle = dtRoot.addElement("child");
+			Element treeEle = DocumentHelper.createElement("child");
 			treeEle.addAttribute("type", "definition");
 			treeEle.addAttribute("title", NLT.getDef(defEle.attributeValue("caption")));
 			treeEle.addAttribute("id", defEle.attributeValue("name"));	
@@ -377,9 +355,17 @@ public class ManageDefinitionsController extends  SAbstractController {
 					curDefEle.addAttribute("url", "");
 				}
 			}
+			if (treeEle.hasContent()) dtRoot.add(treeEle);
 		}
 		return definitionTree;
 
+	}
+	protected boolean hasDefinitionType(List<Definition>defs, Integer type) {
+		if (defs == null) return true;
+		for (Definition def:defs) {
+			if (type.equals(def.getType())) return true;
+		}
+		return false;
 	}
 	protected ModelAndView getTree(RenderRequest request, RenderResponse response) throws Exception {
 		Map model = new HashMap();

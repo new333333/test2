@@ -267,7 +267,7 @@ public class ViewController extends SAbstractController {
 				String refItemId = PortletRequestUtils.getStringParameter(request, "refItemId", "");		
 				data.put("refItemId", refItemId);
 				if ("view_definition_options".equals(option)) {
-					model.put("ssIsAdmin", Boolean.valueOf(getDefinitionModule().testAccess(def.getType(), DefinitionModule.DefinitionOperation.manageDefinition)));
+					model.put("ssIsAdmin", Boolean.valueOf(getDefinitionModule().testAccess(null, def.getType(), DefinitionModule.DefinitionOperation.manageDefinition)));
 				}
 			}
 			return new ModelAndView("definition_builder/view_definition_builder_option", model);
