@@ -54,6 +54,7 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.SimpleName;
+import com.sitescape.team.domain.TemplateBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
@@ -188,7 +189,10 @@ public class ConfigureController extends AbstractBinderController {
 			getBinderModule().setDefinitionsInherited(binderId, inherit);
 			response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
-			setupViewBinder(response, binderId, binderType);
+			if (binder instanceof TemplateBinder) {
+				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
+			} else setupViewBinder(response, binderId, binderType);
 		} else
 			response.setRenderParameters(formData);
 	}
@@ -327,37 +331,21 @@ public class ConfigureController extends AbstractBinderController {
 			Map publicMap = orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.FOLDER_ENTRY),c);
 			List binderDefs = getDefinitionModule().getBinderDefinitions(binder.getId(), true, Definition.FOLDER_ENTRY);
 			Map binderMap = orderDefinitions(binderDefs,c);
-			List sharedDefs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_SHARED, Definition.FOLDER_ENTRY);
-			//remove duplicates
-			Set uniqueDefs = CollectionUtil.differences(sharedDefs, binderDefs);
-			sharedDefs.clear();
-			sharedDefs.addAll(uniqueDefs);
-			Map sharedMap = orderDefinitions(sharedDefs,c);
 			TreeMap allMap = new TreeMap(publicMap);
 			allMap.putAll(binderMap);
-			allMap.putAll(sharedMap);
 			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, allMap);
 			model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, publicMap);
 			model.put(WebKeys.LOCAL_ENTRY_DEFINITIONS, binderMap);
-			model.put(WebKeys.SHARED_ENTRY_DEFINITIONS, sharedMap);
 			
 			//build orders list of workflow definition types
 			publicMap = orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.WORKFLOW),c);
 			binderDefs = getDefinitionModule().getBinderDefinitions(binder.getId(), true, Definition.WORKFLOW);
 			binderMap = orderDefinitions(binderDefs,c);
-			sharedDefs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_SHARED, Definition.WORKFLOW);
-			//remove duplicates
-			uniqueDefs = CollectionUtil.differences(sharedDefs, binderDefs);
-			sharedDefs.clear();
-			sharedDefs.addAll(uniqueDefs);
-			sharedMap = orderDefinitions(sharedDefs,c);	
 			allMap = new TreeMap(publicMap);
 			allMap.putAll(binderMap);
-			allMap.putAll(sharedMap);
 			model.put(WebKeys.ALL_WORKFLOW_DEFINITIONS, allMap);			
 			model.put(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, publicMap);
 			model.put(WebKeys.LOCAL_WORKFLOW_DEFINITIONS, binderMap);
-			model.put(WebKeys.SHARED_WORKFLOW_DEFINITIONS, sharedMap);
 			model.put(WebKeys.ENTRY_REPLY_STYLES, DefinitionHelper.getReplyDefinitions(binder.getEntryDefinitions()));
 
 		}

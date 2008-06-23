@@ -50,11 +50,11 @@ public class Definition extends PersistentTimestampObject  {
     private String name="";
 	private int type=FOLDER_ENTRY;
 	private Integer visibility=VISIBILITY_PUBLIC;
-	private Boolean shared=false;
     private byte[] xmlencoding;
     private Document doc;
     private String title="";
     private String iId;
+    private Boolean orphaned=false;
     //type values
     //types 5 and 9 are used in naming processorKeys.  Kep model-processor-mappings.xml up to date
     public static final int FOLDER_ENTRY=1;
@@ -87,7 +87,7 @@ public class Definition extends PersistentTimestampObject  {
 	//visibility values
 	public static final Integer VISIBILITY_PUBLIC=1; //globally defined
 	public static final Integer VISIBILITY_LOCAL=2; //defined/managed at binder level, visible down tree
-	public static final Integer VISIBILITY_SHARED=3; //same as binder but shared with site
+//	public static final Integer VISIBILITY_SHARED=3; //same as binder but shared with site
 	//Values for jsp types
 	public static final String JSP_STYLE_FORM="form";
 	public static final String JSP_STYLE_VIEW="view";
@@ -154,14 +154,15 @@ public class Definition extends PersistentTimestampObject  {
     public void setVisibility(Integer visibility) {
     	this.visibility = visibility;
     }    
+
     /**
      * @hibernate.property 
      */
-    public Boolean isShared() {
-    	return shared;
+    public Boolean isOrphaned() {
+    	return orphaned;
     }
-    public void setShared(Boolean shared) {
-    	this.shared = shared;
+    public void setOrphaned(Boolean orphaned) {
+    	this.orphaned = orphaned;
     }    
     /**
      * @hibernate.property not-null="true"

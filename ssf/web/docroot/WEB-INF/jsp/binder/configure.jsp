@@ -201,17 +201,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     </c:forEach>
     <br>
     </c:if>
- 	<c:if test="${!empty ssSharedEntryDefinitions}">
-    <hr/>
-    <span class="ss_bold"><ssf:nlt tag="definition.shared"/></span><br/>
-     <c:forEach var="item" items="${ssSharedEntryDefinitions}">
-	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" 
-	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
-		      <c:out value="${disabled}"/>> ${item.key}&nbsp;(${item.value.binder.parentBinder.title}/${item.value.binder.title})<br/>
-    </c:forEach>
-    <br>
-    </c:if>
-    
+     
 <c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>
@@ -306,18 +296,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
    </c:forEach>
      <br>
     </c:if>
-    <c:if test="${!empty ssSharedWorkflowDefinitions}">
-    <hr/>
-    <span class="ss_bold"><ssf:nlt tag="definition.shared"/></span><br/>
-    <c:forEach var="item" items="${ssSharedWorkflowDefinitions}">
-	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" 
-	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
-	      <c:out value="${disabled}"/>>
-	          ${item.key}&nbsp;(${item.value.binder.parentBinder.title}/${item.value.binder.title})<br/>
-   </c:forEach>
-     <br>
-    </c:if>
-    
+   
 <c:if test="${!ssBinder.definitionsInherited}">
       <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" text="Apply"/>"> 
 </c:if>

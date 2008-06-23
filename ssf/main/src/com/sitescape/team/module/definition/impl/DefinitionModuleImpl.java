@@ -48,15 +48,11 @@ import org.dom4j.Element;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
 
-
-import com.sitescape.team.ConfigurationException;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.team.dao.util.Restrictions;
-
 import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Binder;
@@ -86,8 +82,8 @@ import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.FileUploadItem;
-import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.LongIdUtil;
+import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
@@ -169,7 +165,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    
 	public Definition addBinderDefinition(Document doc, Binder binder, String name, String title, boolean replace) throws AccessControlException {
 	   	getBinderModule().checkAccess(binder, BinderModule.BinderOperation.manageDefinitions);
-    	Definition def = doAddDefinition(doc, name, title, replace);
+    	Definition def = doAddDefinition(doc, binder, name, title, replace);
     	def.setVisibility(Definition.VISIBILITY_LOCAL);
     	def.setBinder(binder);
     	return def;
@@ -213,9 +209,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	Element root = doc.getRootElement();
 		String type = root.attributeValue("type");
 		checkGlobalAccess(Integer.valueOf(type), DefinitionOperation.manageDefinition);
-    	return doAddDefinition(doc, name, title, replace);
+    	return doAddDefinition(doc, null, name, title, replace);
     }
-    protected Definition doAddDefinition(Document doc, String name, String title, boolean replace) {
+    protected Definition doAddDefinition(Document doc, Binder binder, String name, String title, boolean replace) {
     	Element root = doc.getRootElement();
 		if (Validator.isNull(name)) name = root.attributeValue("name");
 		if (Validator.isNull(name)) name = DefinitionUtils.getPropertyValue(root, "name");
@@ -290,7 +286,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		
 		try {
-			def = getCoreDao().loadDefinitionByName(name, zoneId);
+			def = getCoreDao().loadDefinitionByName(binder, name, zoneId);
 			if (!replace) throw new DefinitionInvalidException("definition.error.alreadyExistsByName", new Object[]{name});
 			def.setName(name);
 			def.setTitle(title);
@@ -322,15 +318,31 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	List<Element> replyStyles = doc.getRootElement().selectNodes("//properties/property[@name='replyStyle']");
     	for (Element styleElement:replyStyles) {
     		String styleId = styleElement.attributeValue("value", "");
-   			Definition zoneDef = getCoreDao().loadDefinitionByName(styleId, zoneId);
+    		Definition zoneDef;
+    		try {
+   				zoneDef = getCoreDao().loadDefinitionByName(def.getBinder(), styleId, zoneId);
+   			} catch (NoDefinitionByTheIdException nd) {
+   				if (def.getBinder() != null)
+   					//try a global definition
+   					zoneDef = getCoreDao().loadDefinitionByName(null, styleId, zoneId);
+   				else throw nd;
+   			}
    			styleElement.addAttribute("value", zoneDef.getId().toString());
     	}
 		//not just on workflow types
     	List<Element> conditions = doc.getRootElement().selectNodes("//workflowEntryDataUserList | //workflowCondition");
     	for (Element condition:conditions) {
     		String entryId = condition.attributeValue("definitionId", "");
-   			Definition zoneDef = getCoreDao().loadDefinitionByName(entryId, zoneId);
-   			condition.addAttribute("definitionId", zoneDef.getId().toString());
+   			Definition zoneDef;
+   	   		try {
+   				zoneDef = getCoreDao().loadDefinitionByName(def.getBinder(), entryId, zoneId);
+   			} catch (NoDefinitionByTheIdException nd) {
+   				if (def.getBinder() != null)
+   					//try a global definition
+   					zoneDef = getCoreDao().loadDefinitionByName(null, entryId, zoneId);
+   				else throw nd;
+   			}
+  			condition.addAttribute("definitionId", zoneDef.getId().toString());
 	    }
     	//Write out the new definition file
     	def.setDefinition(doc);
@@ -391,9 +403,9 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		// Controllers need access to definitions.  Allow world read        
  		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
-	public Definition getDefinitionByName(String id) {
+	public Definition getDefinitionByName(Binder binder, String name) {
 		// Controllers need access to definitions.  Allow world read        
- 		return coreDao.loadDefinitionByName(id, RequestContextHolder.getRequestContext().getZoneId());
+ 		return coreDao.loadDefinitionByName(binder, name, RequestContextHolder.getRequestContext().getZoneId());
 	}
 	
 	protected DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
@@ -411,9 +423,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		checkAccess(def, DefinitionOperation.manageDefinition);
 
 	   	if (Definition.VISIBILITY_LOCAL.equals(visibility)) {
-	   		if (def.getBinder() == null) throw new NotSupportedException("Must be a binder definition");
-			def.setVisibility(visibility);
-	   	} else if (Definition.VISIBILITY_SHARED.equals(visibility)) {
 	   		if (def.getBinder() == null) throw new NotSupportedException("Must be a binder definition");
 			def.setVisibility(visibility);
 	   	} else if (Definition.VISIBILITY_PUBLIC.equals(visibility)) {
@@ -643,7 +652,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		Document doc = getInitialDefinition(definitionName, definitionTitle, type, new MapInputData(new HashMap()));
 		doc.getRootElement().addAttribute("internalId", internalId);
-		return doAddDefinition(doc, definitionName, definitionTitle, true);
+		return doAddDefinition(doc, null, definitionName, definitionTitle, true);
 	}
 	
 /*

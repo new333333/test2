@@ -157,7 +157,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				}
 				getBinderModule().modifyBinder(configId, new MapInputData(formData), fileMap, deleteAtts, null);
 				response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
-				response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 			} else if (WebKeys.OPERATION_MODIFY_TEMPLATE.equals(operation)) {
 				Long configId = PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
 				//Get the function id from the form
@@ -207,7 +206,6 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				Long configId = PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
 				if (configId != null) {
 					response.setRenderParameter(WebKeys.URL_BINDER_ID, configId.toString());
-					response.setRenderParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_RELOAD_LISTING);
 				}
 			}
 		} else if (WebKeys.OPERATION_DELETE.equals(operation)) {
@@ -251,14 +249,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		
 			model.put(WebKeys.BINDER_CONFIG, config);
 			model.put(WebKeys.BINDER, config);
-			if (WebKeys.OPERATION_RELOAD_LISTING.equals(operation)) {
-				//An action is asking us to build the url
-				PortletURL reloadUrl = response.createRenderURL();
-				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
-				reloadUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
-				request.setAttribute(WebKeys.RELOAD_URL_FORCED, reloadUrl.toString());			
-				return new ModelAndView("administration/reload_opener");
-			} else if (Validator.isNull(operation)) {
+			if (Validator.isNull(operation)) {
 				//Build a reload url
 				PortletURL reloadUrl = response.createRenderURL();
 				reloadUrl.setParameter(WebKeys.URL_BINDER_ID, configId.toString());
@@ -433,6 +424,8 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		//see if have rights to change anything
 		boolean manager = getBinderModule().testAccess(config, BinderOperation.setProperty);
 		Map qualifiers = new HashMap();
+		Map qualifiersBlock = new HashMap();
+		qualifiersBlock.put("onClick", "{return true}");
 		if (manager) {
 			//Add Folder
 			if (config.getEntityType().equals(EntityType.folder)) {
@@ -440,19 +433,19 @@ public class ConfigureConfigurationController extends  SAbstractController {
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				url.setParameter(WebKeys.URL_BINDER_ID, configId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
-				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url);
+				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url, qualifiersBlock);
 			} else {
 				//	must be workspace
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				url.setParameter(WebKeys.URL_BINDER_ID, configId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_WORKSPACE);
-				toolbar.addToolbarMenuItem("1_administration", "workspace", NLT.get("toolbar.menu.addWorkspaceTemplate"), url);
+				toolbar.addToolbarMenuItem("1_administration", "workspace", NLT.get("toolbar.menu.addWorkspaceTemplate"), url, qualifiersBlock);
 				url = response.createRenderURL();
 				url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 				url.setParameter(WebKeys.URL_BINDER_ID, configId);
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_ADD_FOLDER);
-				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url);			
+				toolbar.addToolbarMenuItem("1_administration", "folders", NLT.get("toolbar.menu.addFolderTemplate"), url, qualifiersBlock);			
 			}
 			//Delete config
 			qualifiers.put("onClick", "return ss_confirmDeleteConfig();");
@@ -467,7 +460,7 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY_TEMPLATE);
 			url.setParameter(WebKeys.URL_BINDER_ID, configId);
-			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_template"), url);		
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_template"), url, qualifiersBlock);		
 			
 		}
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.manageThisTarget"));
@@ -477,23 +470,21 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_ACCESS_CONTROL);
 		url.setParameter(WebKeys.URL_BINDER_ID, configId);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.accessControl"), url, qualifiersBlock);
 		//Configuration
 		url = response.createRenderURL();
 		url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURE_DEFINITIONS);
 		url.setParameter(WebKeys.URL_BINDER_ID, configId);
 		url.setParameter(WebKeys.URL_BINDER_TYPE, config.getEntityType().name());
-		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url);
+		toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.configuration"), url, qualifiersBlock);
 
 		if (manager) {
 			//Modify target
-			qualifiers = new HashMap();
-			qualifiers.put("popup", new Boolean(true));
-			AdaptedPortletURL adapterUrl = new AdaptedPortletURL(request, "ss_administration", true);
-			adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
-			adapterUrl.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
-			adapterUrl.setParameter(WebKeys.URL_BINDER_ID, configId);
-			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_target"), adapterUrl.toString(), qualifiers);
+			url = response.createActionURL();
+			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY);
+			url.setParameter(WebKeys.URL_BINDER_ID, configId);
+			toolbar.addToolbarMenuItem("2_administration", "", NLT.get("toolbar.menu.modify_target"), url, qualifiersBlock);
 
 		}
 		

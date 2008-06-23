@@ -15,12 +15,13 @@
     <property name="type"/>
     <property name="internalId" length="32"/>
     <property name="visibility"/>
-    <many-to-one name="binder"/>
-<!-- use length to force medium blob in mysql -->
-    <property name="encoding" length="2000000" type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
+    <property name="orphaned"/>
+    <property name="encoding"  type="org.springframework.orm.hibernate3.support.BlobByteArrayType"/>
+	<many-to-one name="binder"/>
  <properties name="nameKey" unique="true" update="false" insert="false">
 <property name="zoneId" update="false" insert="false"/>
 <property name="name" update="false" insert="false"/>
+<many-to-one name="binder" update="false" insert="false"/>
 </properties>
    <component name="creation" class="com.sitescape.team.domain.HistoryStamp">
       <property name="date" column="creation_date" type="timestamp"/>
@@ -35,5 +36,4 @@
       </many-to-one>
     </component>
   </class>
-  <query name="find-definition-by-name"><![CDATA[from com.sitescape.team.domain.Definition def where def.name=:name and def.zoneId=:zoneId]]></query>
 </hibernate-mapping>

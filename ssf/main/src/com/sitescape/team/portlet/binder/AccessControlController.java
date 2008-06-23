@@ -84,7 +84,8 @@ public class AccessControlController extends AbstractBinderController {
 		
 		} else if (formData.containsKey("cancelBtn") || formData.containsKey("closeBtn")) {
 			if (binder instanceof TemplateBinder) {
-				setupViewBinder(response, binder);
+				response.setRenderParameter(WebKeys.ACTION, WebKeys.ACTION_CONFIGURATION);
+				response.setRenderParameter(WebKeys.URL_BINDER_ID, binderId.toString());
 			} else {
 				setupCloseWindow(response);
 			}

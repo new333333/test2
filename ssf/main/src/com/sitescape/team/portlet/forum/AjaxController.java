@@ -2060,7 +2060,13 @@ public class AjaxController  extends SAbstractControllerRetry {
 					model.put(WebKeys.AJAX_ERROR_MESSAGE, NLT.get("errorcode.notsupported.duplicateTemplateName", new Object[]{name}));
 					model.put(WebKeys.AJAX_ERROR_DETAIL, "");
 				}
-			} catch (NoBinderByTheNameException nb) {}
+			} catch (org.springframework.dao.IncorrectResultSizeDataAccessException in) {
+				//not enforced by db, but try to keep unique for import/export
+				model.put(WebKeys.AJAX_ERROR_MESSAGE, NLT.get("errorcode.notsupported.duplicateTemplateName", new Object[]{name}));
+				model.put(WebKeys.AJAX_ERROR_DETAIL, "");
+				
+			} catch (NoBinderByTheNameException nb) {
+			}
 		}
 		model.put(WebKeys.URL_AJAX_ID, PortletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_AJAX_ID));
 		model.put(WebKeys.URL_AJAX_VALUE, PortletRequestUtils.getStringParameter(request, WebKeys.URL_AJAX_VALUE,""));
