@@ -116,8 +116,9 @@ public class ViewController extends  SAbstractController {
  		} catch(Exception e) {}
 		
 		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Binder binder=null;
 		if (binderId != null) {
-			Binder binder = getBinderModule().getBinder(binderId);
+			binder = getBinderModule().getBinder(binderId);
 			//Set up the standard beans
 			BinderHelper.setupStandardBeans(this, request, response, model, binderId);
 			if (binder != null) model.put(WebKeys.ENTITY_TYPE_BEAN, binder.getEntityType().name());
@@ -145,8 +146,8 @@ public class ViewController extends  SAbstractController {
 		//Definition builders
 		Element element;
 		//Definition builder - Entry form designer
-		if (getDefinitionModule().testAccess(Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition) ||
-			getDefinitionModule().testAccess(Definition.WORKFLOW, DefinitionOperation.manageDefinition)) {
+		if (getDefinitionModule().testAccess(binder, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition) ||
+			getDefinitionModule().testAccess(binder, Definition.WORKFLOW, DefinitionOperation.manageDefinition)) {
 			element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 			element.addAttribute("title", NLT.get("administration.definition_builder_designers"));
 			element.addAttribute("image", "bullet");

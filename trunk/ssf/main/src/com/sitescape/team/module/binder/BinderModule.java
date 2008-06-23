@@ -63,7 +63,7 @@ public interface BinderModule {
 		deleteBinder,
 		indexBinder,
 		indexTree,
-		manageDefinitions,
+		manageConfiguration,
 		manageMail,
 		manageTag,
 		manageTeamMembers,

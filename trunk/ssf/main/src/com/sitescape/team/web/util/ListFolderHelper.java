@@ -1328,7 +1328,7 @@ public class ListFolderHelper {
 					NLT.get("toolbar.menu.report"), url, qualifiers);
 		}
 		
-		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageDefinitions)) {
+		if (bs.getBinderModule().testAccess(folder, BinderOperation.manageConfiguration)) {
 			adminMenuCreated=true;
 			qualifiers = new HashMap();
 			qualifiers.put("popup", new Boolean(true));

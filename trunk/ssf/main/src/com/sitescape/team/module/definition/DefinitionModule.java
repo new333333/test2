@@ -103,7 +103,7 @@ public interface DefinitionModule {
 	public Definition setDefaultEntryDefinition(Entry entry);
 	public void setDefinitionLayout(String id, InputDataAccessor inputData) throws AccessControlException;
 
-  	public boolean testAccess(Integer type, DefinitionOperation operation);
+  	public boolean testAccess(Binder binder, Integer type, DefinitionOperation operation);
   	/**
   	 * After importing a definition, references to other definitions must be resolved.
   	 * 

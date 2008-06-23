@@ -89,7 +89,7 @@ public class DefinitionHelper {
 	 * @param defType
 	 */	
 	public static List getDefinitions(int defType) {
-		return  getInstance().getDefinitionModule().getDefinitions(defType);
+		return  getInstance().getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, defType);
 	}
 
 	/**

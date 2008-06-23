@@ -129,10 +129,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
  	 * Use operation so we can keep the logic out of application
      * @see com.sitescape.team.module.definition.DefinitionModule#testAccess(java.lang.String)
      */
-   	public boolean testAccess(Integer type, DefinitionOperation operation) {
+   	public boolean testAccess(Binder binder, Integer type, DefinitionOperation operation) {
    		if (type == Definition.WORKFLOW && !hasWorkflow) return false;
    		try {
-   			checkGlobalAccess(type, operation);
+   			checkAccess(binder, type, operation);
    			return true;
    		} catch (AccessControlException ac) {
    			return false;
@@ -141,30 +141,37 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		}
    		
    	}
-   	protected void checkGlobalAccess(Integer type, DefinitionOperation operation) throws AccessControlException {
+   	protected void checkAccess(Binder binder, Integer type, DefinitionOperation operation) throws AccessControlException {
    		Binder top = RequestContextHolder.getRequestContext().getZone();
-   		if (type == Definition.FOLDER_ENTRY) {
-   			if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS)) return;
-   			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
-   		} else if (type == Definition.WORKFLOW) {
+   		if (type.equals(Definition.FOLDER_ENTRY) || type.equals(Definition.FOLDER_VIEW) || type.equals(Definition.WORKSPACE_VIEW)) {
+   			if (binder == null) {
+   				if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS)) return;
+   				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+   			} else {
+  				if (getAccessControlManager().testOperation(binder, WorkAreaOperation.MANAGE_ENTRY_DEFINITIONS)) return;
+  				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 				
+   			}
+   		} else if (type.equals(Definition.WORKFLOW)) {
    			if (!hasWorkflow) throw new NotSupportedException(operation.toString(), "open edition");
-   			if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS)) return;
-   			getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);  			
+   			if (binder ==  null) {
+   				if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS)) return;
+   				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
+   			} else {
+  				if (getAccessControlManager().testOperation(binder, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS)) return;
+   				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION);   				
+   			}
    		} else {
    			accessControlManager.checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
    		}
 
    	}
    	protected void checkAccess(Definition def, DefinitionOperation operation) throws AccessControlException {
-   		if (def.getBinder() == null) {
-   			checkGlobalAccess(def.getType(), operation);
-   		} else {
-   		   	getBinderModule().checkAccess(def.getBinder(), BinderModule.BinderOperation.manageDefinitions);
-   		}
+   		checkAccess(def.getBinder(), def.getType(), operation);
    	}
    
 	public Definition addBinderDefinition(Document doc, Binder binder, String name, String title, boolean replace) throws AccessControlException {
-	   	getBinderModule().checkAccess(binder, BinderModule.BinderOperation.manageDefinitions);
+		String type = doc.getRootElement().attributeValue("type");
+	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
     	Definition def = doAddDefinition(doc, binder, name, title, replace);
     	def.setVisibility(Definition.VISIBILITY_LOCAL);
     	def.setBinder(binder);
@@ -172,7 +179,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		
 	}
 	public Definition addBinderDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException {
-	   	getBinderModule().checkAccess(binder, BinderModule.BinderOperation.manageDefinitions);
+	   	checkAccess(binder, type, DefinitionOperation.manageDefinition);
 
 		Definition newDefinition = new Definition();
 		newDefinition.setName(name);
@@ -191,7 +198,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	}
 
 	public Definition addPublicDefinition(String name, String title, Integer type, InputDataAccessor inputData) {
-		checkGlobalAccess(type, DefinitionOperation.manageDefinition);
+		checkAccess(null, type, DefinitionOperation.manageDefinition);
 
 		Definition newDefinition = new Definition();
 		newDefinition.setName(name);
@@ -208,7 +215,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	public Definition addPublicDefinition(Document doc, String name, String title, boolean replace) {
     	Element root = doc.getRootElement();
 		String type = root.attributeValue("type");
-		checkGlobalAccess(Integer.valueOf(type), DefinitionOperation.manageDefinition);
+		checkAccess(null, Integer.valueOf(type), DefinitionOperation.manageDefinition);
     	return doAddDefinition(doc, null, name, title, replace);
     }
     protected Definition doAddDefinition(Document doc, Binder binder, String name, String title, boolean replace) {
@@ -426,7 +433,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	   		if (def.getBinder() == null) throw new NotSupportedException("Must be a binder definition");
 			def.setVisibility(visibility);
 	   	} else if (Definition.VISIBILITY_PUBLIC.equals(visibility)) {
-			checkGlobalAccess(def.getType(), DefinitionOperation.manageDefinition);
+			checkAccess(null, def.getType(), DefinitionOperation.manageDefinition);
 			def.setVisibility(visibility);
 			def.setBinder(null);
 	   	}
