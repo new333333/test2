@@ -77,6 +77,7 @@
 			Map column = (Map)slidingTableRowColumns.get(i);
 			String width = (String) column.get("width");
 			String text = (String) column.get("text");
+			if (text.trim().equals("")) text = "&nbsp;";
 			String widthAttr = "";
 			if (width != null && !width.equals("")) widthAttr = "width='" + width + "' ";
 			if (slidingTableHeaderRow != null && slidingTableHeaderRow.booleanValue()) {

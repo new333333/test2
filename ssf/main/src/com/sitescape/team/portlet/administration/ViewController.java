@@ -50,6 +50,7 @@ import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
@@ -70,6 +71,7 @@ import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.PortletPreferencesUtil;
+import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.Validator;
 
 
@@ -97,7 +99,9 @@ public class ViewController extends  SAbstractController {
 		model.put(WebKeys.PRODUCT_CONFERENCING_NAME, SPropsUtil.getString("product.conferencing.name", ObjectKeys.PRODUCT_CONFERENCING_NAME_DEFAULT));
 		model.put(WebKeys.PRODUCT_CONFERENCING_TITLE, SPropsUtil.getString("product.conferencing.title", ObjectKeys.PRODUCT_CONFERENCING_TITLE_DEFAULT));
  		model.put(WebKeys.PORTLET_TYPE, WebKeys.PORTLET_TYPE_ADMIN);
- 		try {
+		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		Binder binder = getBinderModule().getBinder(binderId);
+		try {
  			//If running in a portal, see if we should redraw ourselves just after adding the portlet
  			PortletPreferences prefs = request.getPreferences();
 			String ss_initialized = PortletPreferencesUtil.getValue(prefs, WebKeys.PORTLET_PREF_INITIALIZED, null);
@@ -114,7 +118,8 @@ public class ViewController extends  SAbstractController {
  		} catch(Exception e) {}
 		
 		//Set up the standard beans
- 		BinderHelper.setupStandardBeans(this, request, response, model);
+ 		BinderHelper.setupStandardBeans(this, request, response, model, binderId);
+ 		if (binder != null) model.put(WebKeys.ENTITY_TYPE_BEAN, binder.getEntityType().name());
 		
 		if (getAdminModule().testAccess(AdminOperation.manageFunction)) model.put(WebKeys.IS_SITE_ADMIN, true);
 		
