@@ -99,8 +99,6 @@ public class ViewController extends  SAbstractController {
 		model.put(WebKeys.PRODUCT_CONFERENCING_NAME, SPropsUtil.getString("product.conferencing.name", ObjectKeys.PRODUCT_CONFERENCING_NAME_DEFAULT));
 		model.put(WebKeys.PRODUCT_CONFERENCING_TITLE, SPropsUtil.getString("product.conferencing.title", ObjectKeys.PRODUCT_CONFERENCING_TITLE_DEFAULT));
  		model.put(WebKeys.PORTLET_TYPE, WebKeys.PORTLET_TYPE_ADMIN);
-		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
-		Binder binder = getBinderModule().getBinder(binderId);
 		try {
  			//If running in a portal, see if we should redraw ourselves just after adding the portlet
  			PortletPreferences prefs = request.getPreferences();
@@ -117,10 +115,14 @@ public class ViewController extends  SAbstractController {
 			}
  		} catch(Exception e) {}
 		
-		//Set up the standard beans
- 		BinderHelper.setupStandardBeans(this, request, response, model, binderId);
- 		if (binder != null) model.put(WebKeys.ENTITY_TYPE_BEAN, binder.getEntityType().name());
+		Long binderId= PortletRequestUtils.getLongParameter(request, WebKeys.URL_BINDER_ID);
+		if (binderId != null) {
+			Binder binder = getBinderModule().getBinder(binderId);
+			//Set up the standard beans
+			BinderHelper.setupStandardBeans(this, request, response, model, binderId);
+			if (binder != null) model.put(WebKeys.ENTITY_TYPE_BEAN, binder.getEntityType().name());
 		
+		}
 		if (getAdminModule().testAccess(AdminOperation.manageFunction)) model.put(WebKeys.IS_SITE_ADMIN, true);
 		
 		PortletURL url;
