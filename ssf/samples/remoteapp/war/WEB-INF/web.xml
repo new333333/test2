@@ -54,6 +54,17 @@
 		<url-pattern>/wstester/*</url-pattern>
 	</servlet-mapping>
 
+	<servlet>
+		<servlet-name>twitter</servlet-name>
+		<servlet-class>com.sitescape.team.samples.remoteapp.web.TwitterServlet</servlet-class>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	
+	<servlet-mapping>
+		<servlet-name>twitter</servlet-name>
+		<url-pattern>/twitter/*</url-pattern>
+	</servlet-mapping>
+
 	<taglib>
 		<taglib-uri>http://java.sun.com/jsp/jstl/core</taglib-uri>
 		<taglib-location>/WEB-INF/tags/c.tld</taglib-location>

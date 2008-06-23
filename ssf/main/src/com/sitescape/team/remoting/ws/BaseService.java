@@ -46,6 +46,7 @@ import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.definition.DefinitionUtils;
@@ -139,6 +140,15 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));
 		entryElem.addAttribute("reserved", Boolean.toString(entry.isReserved()));
 		entryElem.addAttribute("name", entry.getName());
+		if (entry instanceof User) {
+			entryElem.addAttribute("firstName", ((User)entry).getFirstName());
+			entryElem.addAttribute("middleName", ((User)entry).getMiddleName());
+			entryElem.addAttribute("lastName", ((User)entry).getLastName());
+			entryElem.addAttribute("zonName", ((User)entry).getZonName());
+			entryElem.addAttribute("status", ((User)entry).getStatus());
+			entryElem.addAttribute("skypeId", ((User)entry).getSkypeId());
+			entryElem.addAttribute("twitterId", ((User)entry).getTwitterId());
+		}
 		
 		return entryElem;
 	}
@@ -155,9 +165,15 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryElem.addAttribute("type", (String) user.get(Constants.ENTRY_TYPE_FIELD));
 		entryElem.addAttribute("reserved", Boolean.toString(user.get(Constants.RESERVEDID_FIELD)!=null));
 		String name = getPrincipalName(user);
-		if(name != null)
-			entryElem.addAttribute("name", name);
+		if(name != null) entryElem.addAttribute("name", name);
 		
+		if (user.containsKey(Constants.FIRSTNAME_FIELD)) entryElem.addAttribute("firstName", (String) user.get(Constants.FIRSTNAME_FIELD));
+		if (user.containsKey(Constants.MIDDLENAME_FIELD)) entryElem.addAttribute("middleName", (String) user.get(Constants.MIDDLENAME_FIELD));
+		if (user.containsKey(Constants.LASTNAME_FIELD)) entryElem.addAttribute("lastName", (String) user.get(Constants.LASTNAME_FIELD));
+		if (user.containsKey(Constants.ZONNAME_FIELD)) entryElem.addAttribute("zonName", (String) user.get(Constants.ZONNAME_FIELD));
+		if (user.containsKey(Constants.STATUS_FIELD)) entryElem.addAttribute("status", (String) user.get(Constants.STATUS_FIELD));
+		if (user.containsKey(Constants.SKYPEID_FIELD)) entryElem.addAttribute("skypeId", (String) user.get(Constants.SKYPEID_FIELD));
+		if (user.containsKey(Constants.TWITTERID_FIELD)) entryElem.addAttribute("twitterId", (String) user.get(Constants.TWITTERID_FIELD));
 /*
  * I don't know how to get this from the map
 		entryElem.addAttribute("disabled", Boolean.toString(entry.isDisabled()));

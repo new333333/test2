@@ -140,6 +140,9 @@ public class Constants {
 	public static final String EMAIL_TXT_FIELD = "_emailTxt";
 	public static final String EMAIL_MOBILE_FIELD = "_emailMobile";
 	public static final String ORGANIZATION_FIELD = "_org";
+	public static final String STATUS_FIELD = "_status";
+	public static final String SKYPEID_FIELD = "_skypeId";
+	public static final String TWITTERID_FIELD = "_twitterId";
 	public static final String ZONNAME_FIELD = "_zonName";
 	public static final String RESERVEDID_FIELD = "_reservedId";
 	public static final String WORKSPACE_ID_FIELD = "_workspaceId";

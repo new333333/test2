@@ -374,6 +374,9 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
     		if (inputData.exists(ObjectKeys.FIELD_USER_SKYPEID) && !entryData.containsKey(ObjectKeys.FIELD_USER_SKYPEID)) {
     			entryData.put(ObjectKeys.FIELD_USER_SKYPEID, inputData.getSingleValue(ObjectKeys.FIELD_USER_SKYPEID));
     		}
+    		if (inputData.exists(ObjectKeys.FIELD_USER_TWITTERID) && !entryData.containsKey(ObjectKeys.FIELD_USER_TWITTERID)) {
+    			entryData.put(ObjectKeys.FIELD_USER_TWITTERID, inputData.getSingleValue(ObjectKeys.FIELD_USER_TWITTERID));
+    		}
     	} else if(entry instanceof Application) {
         	if (inputData.exists(ObjectKeys.FIELD_APPLICATION_POST_URL) && !entryData.containsKey(ObjectKeys.FIELD_APPLICATION_POST_URL)) {
     			entryData.put(ObjectKeys.FIELD_APPLICATION_POST_URL, inputData.getSingleValue(ObjectKeys.FIELD_APPLICATION_POST_URL));
@@ -718,6 +721,7 @@ public class DefaultProfileCoreProcessor extends AbstractEntryProcessor
 			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_ORGANIZATION, ObjectKeys.XTAG_TYPE_STRING, user.getOrganization());
 			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_PHONE, ObjectKeys.XTAG_TYPE_STRING, user.getPhone());
 			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_SKYPEID, ObjectKeys.XTAG_TYPE_STRING, user.getSkypeId());
+			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_TWITTERID, ObjectKeys.XTAG_TYPE_STRING, user.getTwitterId());
 			XmlUtils.addCustomAttribute(element, ObjectKeys.XTAG_USER_STATUS, ObjectKeys.XTAG_TYPE_STRING, user.getStatus());
 
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_USER_DISPLAYSTYLE, user.getDisplayStyle());
