@@ -37,6 +37,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
@@ -63,6 +65,7 @@ import com.sitescape.team.domain.UserProperties;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.portlet.administration.ImportDefinitionController.ZipStreamWrapper;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.portletadapter.MultipartFileSupport;
 import com.sitescape.team.util.NLT;
@@ -121,11 +124,18 @@ public class ConfigureConfigurationController extends  SAbstractController {
 								myFile = (MultipartFile)fileMap.get("template" + i);
 								if (myFile == null) break;
 								if (Validator.isNull(myFile.getOriginalFilename())) continue; //not filled in
-								SAXReader xIn = new SAXReader();
-								InputStream fIn = myFile.getInputStream();
-								Document doc = xIn.read(fIn);   
-								fIn.close();
-								getTemplateModule().addTemplate(doc, true);
+								Boolean replace = PortletRequestUtils.getBooleanParameter(request,"template" + i + "ck", false);
+								if(myFile.getOriginalFilename().toLowerCase().endsWith(".zip")) {
+									ZipInputStream zipIn = new ZipInputStream(myFile.getInputStream());
+									ZipEntry entry = null;
+									while((entry = zipIn.getNextEntry()) != null) {
+										loadTemplates(entry.getName(), new ZipStreamWrapper(zipIn), replace, errors);
+										zipIn.closeEntry();
+									}
+								} else {
+									loadTemplates(myFile.getOriginalFilename(), myFile.getInputStream(), replace, errors);
+								}
+								myFile.getInputStream().close();
 							} catch (Exception fe) {
 								errors.add((myFile==null ? "" : myFile.getOriginalFilename()) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
 							}
@@ -235,7 +245,17 @@ public class ConfigureConfigurationController extends  SAbstractController {
 		} else
 			response.setRenderParameters(formData);
 	}
-
+	protected Long loadTemplates(String fileName, InputStream fIn, boolean replace, List errors)
+	{
+		try {
+			SAXReader xIn = new SAXReader();
+			Document doc = xIn.read(fIn);  
+			return getTemplateModule().addTemplate(doc, replace);
+		} catch (Exception fe) {
+			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
+		}
+		return null;
+	}
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();

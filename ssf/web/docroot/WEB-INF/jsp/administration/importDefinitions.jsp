@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<<body class="ss_style_body">
+<body class="ss_style_body">
 <div class="ss_pseudoPortal">
 
 <div class="ss_style ss_portlet">
@@ -58,16 +58,24 @@
 
 <div class="ss_divider"></div>
 <br>
-<span class="ss_bold"><ssf:nlt tag="administration.selectFiles"/></span>
-<br>
-<table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
-<tr><td>
-<input type="file" size="80" class="ss_text" name="definition1" ><br>
-<input type="file" size="80" class="ss_text" name="definition2" ><br>
-<input type="file" size="80" class="ss_text" name="definition3" ><br>
-<input type="file" size="80" class="ss_text" name="definition4" ><br>
-<input type="file" size="80" class="ss_text" name="definition5" ><br>
-</td></tr></table>
+
+
+<table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="50%">
+<thead><th><ssf:nlt tag="administration.import.replace"/></th>
+<th><ssf:nlt tag="administration.selectFiles"/></th>
+</thead>
+<tbody>
+<tr><td><input type="checkbox" name="definition1ck"></td>
+<td><input type="file" size="80" class="ss_text" name="definition1" ></td></tr>
+<tr><td><input type="checkbox" name="definition2ck"></td>
+<td><input type="file" size="80" class="ss_text" name="definition2" ></td></tr>
+<tr><td><input type="checkbox" name="definition3ck"></td>
+<td><input type="file" size="80" class="ss_text" name="definition3" ></td></tr>
+<tr><td><input type="checkbox" name="definition4ck"></td>
+<td><input type="file" size="80" class="ss_text" name="definition4" ></td></tr>
+<tr><td><input type="checkbox" name="definition5ck"></td>
+<td><input type="file" size="80" class="ss_text" name="definition5" ></td></tr>
+</tr></tbody></table>
 <div class="ss_divider"></div>
 
 <br/>

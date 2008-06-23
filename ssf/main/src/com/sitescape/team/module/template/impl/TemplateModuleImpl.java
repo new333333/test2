@@ -299,7 +299,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				 Binder binder = getCoreDao().loadReservedBinder(internalId, RequestContextHolder.getRequestContext().getZoneId());
 				 if (binder instanceof TemplateBinder) {
 					 //if it exists, delete it
-					 getBinderModule().deleteBinder(binder.getId());
+					 if (replace) getBinderModule().deleteBinder(binder.getId());
+					 else throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{internalId});
 				 } else {
 					 throw new ConfigurationException("Reserved binder exists with same internal id");
 				 }

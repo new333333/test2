@@ -76,15 +76,16 @@ public class ImportDefinitionController extends  SAbstractController {
 						myFile = (MultipartFile)fileMap.get("definition" + i);
 						if (myFile == null) break;
 						if (Validator.isNull(myFile.getOriginalFilename())) continue; //not filled in
+						Boolean replace = PortletRequestUtils.getBooleanParameter(request,"definition" + i + "ck", false);
 						if(myFile.getOriginalFilename().toLowerCase().endsWith(".zip")) {
 							ZipInputStream zipIn = new ZipInputStream(myFile.getInputStream());
 							ZipEntry entry = null;
 							while((entry = zipIn.getNextEntry()) != null) {
-								defs.add(loadDefinitions(entry.getName(), new ZipStreamWrapper(zipIn), binderId, errors));
+								defs.add(loadDefinitions(entry.getName(), new ZipStreamWrapper(zipIn), binderId, replace, errors));
 								zipIn.closeEntry();
 							}
 						} else {
-							loadDefinitions(myFile.getOriginalFilename(), myFile.getInputStream(), binderId, errors);
+							loadDefinitions(myFile.getOriginalFilename(), myFile.getInputStream(), binderId, replace, errors);
 						}
 						myFile.getInputStream().close();
 					} catch (Exception fe) {
@@ -112,15 +113,15 @@ public class ImportDefinitionController extends  SAbstractController {
 		}
 	}
 
-	protected String loadDefinitions(String fileName, InputStream fIn, Long binderId, List errors)
+	protected String loadDefinitions(String fileName, InputStream fIn, Long binderId, boolean replace, List errors)
 	{
 		try {
 			SAXReader xIn = new SAXReader();
 			Document doc = xIn.read(fIn);  
 			if (binderId == null) {
-				return getDefinitionModule().addPublicDefinition(doc, null, null, true).getId();
+				return getDefinitionModule().addPublicDefinition(doc, null, null, replace).getId();
 			} else {
-				return getDefinitionModule().addBinderDefinition(doc, getBinderModule().getBinder(binderId), null, null, true).getId();				
+				return getDefinitionModule().addBinderDefinition(doc, getBinderModule().getBinder(binderId), null, null, replace).getId();				
 			}
 		} catch (Exception fe) {
 			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
