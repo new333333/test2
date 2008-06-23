@@ -63,6 +63,7 @@ import com.sitescape.util.servlet.StringServletResponse;
 public class TwitterServlet extends HttpServlet {
 
 	private static final String TWITTER_STATUSES_FRIENDS_URL = "http://twitter.com/statuses/friends/";
+	private static final String TWITTER_TIMELINE_USER_URL = "http://twitter.com/statuses/user_timeline/";
 	
 	private static final String TEAMING_SERVICE_ADDRESS = "http://localhost:8080/ssr/token/ws/TeamingService";
 	
@@ -77,6 +78,53 @@ public class TwitterServlet extends HttpServlet {
 	private static final String PARAMETER_NAME_STATUSES = "ss_statuses";
 	private static final String PARAMETER_NAME_USERS = "ss_users";
 
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) 
+	throws ServletException, IOException {
+		try {
+			String pathInfo = req.getPathInfo();
+			
+			// Get ready for web services calls to the Teaming.
+			TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+			locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS);
+			TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+
+			// To see if access check is working properly
+			//stub.search_getWorkspaceTreeAsXML(accessToken, 1, 1, "");
+			
+			Document result = null;
+			String jsp = "/WEB-INF/jsp/twitter/view_timeline.jsp";
+			if (pathInfo.startsWith("/id")) {
+				// Call twitter to get the friend timeline.
+				result = getTwitterTimeLine(req, resp, pathInfo.substring(4));
+			} else {
+				resp.getWriter().print("Unknown request type: " + pathInfo);
+				return;
+			}
+			if (result == null) {
+				resp.getWriter().print("There is nothing to report.");
+				return;
+			}
+			List statuses = new ArrayList();
+			processTimeline(result, statuses);
+			
+			RequestDispatcher rd = req.getRequestDispatcher(jsp);	
+			StringServletResponse resp2 = new StringServletResponse(resp);	
+			req.setAttribute(PARAMETER_NAME_STATUSES, result);
+			req.setAttribute(PARAMETER_NAME_USERS, statuses);
+			rd.include(req, resp2);	
+			resp.getWriter().print(resp2.getString());
+		}
+		catch(ServletException e) {
+			throw e;
+		}
+		catch(IOException e) {
+			throw e;
+		}
+		catch(Exception e) {
+			throw new ServletException(e);
+		}
+	}
+
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) 
 	throws ServletException, IOException {
 		try {
@@ -87,6 +135,7 @@ public class TwitterServlet extends HttpServlet {
 			String accessToken = req.getParameter(PARAMETER_NAME_ACCESS_TOKEN);
 			String tokenScope = req.getParameter(PARAMETER_NAME_TOKEN_SCOPE);
 			boolean renderable = Boolean.parseBoolean(req.getParameter(PARAMETER_NAME_RENDERABLE));
+			String pathInfo = req.getPathInfo();
 			
 			// Get ready for web services calls to the Teaming.
 			TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
@@ -99,33 +148,27 @@ public class TwitterServlet extends HttpServlet {
 			// Get the title of the user by making a web services call.
 			String twitterId = getUserTwitterId(stub, accessToken, Long.valueOf(userId));
 			
-			// Call twitter to get the friend statuses.
-			Document result = getTwitterStatuses(req, resp, twitterId);
+			Document result = null;
 			List users = new ArrayList();
-			Iterator itUsers = result.getRootElement().selectNodes("user").listIterator();
-			while (itUsers.hasNext()) {
-				//For each <user>, build a map of values from the twitter status xml file
-				Element user = (Element)itUsers.next();
-				Map userMap = new HashMap();
-				Iterator itUserElements = user.elementIterator();
-				while (itUserElements.hasNext()) {
-					Element userElement = (Element)itUserElements.next();
-					if (userElement.isTextOnly()) {
-						userMap.put(userElement.getName(), userElement.getText());
-					} else {
-						Map elementMap = new HashMap();
-						Iterator itElementElements = userElement.elementIterator();
-						while (itElementElements.hasNext()) {
-							Element elementElement = (Element)itElementElements.next();
-							elementMap.put(elementElement.getName(), elementElement.getText());
-						}
-						userMap.put(userElement.getName(), elementMap);
-					}
-				}
-				users.add(userMap);
+			String jsp = "/WEB-INF/jsp/twitter/view_statuses.jsp";
+			if (pathInfo.startsWith("/statuses")) {
+				// Call twitter to get the friend statuses.
+				result = getTwitterStatuses(req, resp, twitterId);
+				processStatuses(result, users);
+			} else if (pathInfo.startsWith("/id")) {
+				// Call twitter to get the friend timeline.
+				result = getTwitterTimeLine(req, resp, pathInfo.substring(4));
+				processTimeline(result, users);
+				jsp = "/WEB-INF/jsp/twitter/view_timeline.jsp";
+			} else {
+				resp.getWriter().print("Unknown request type: " + pathInfo);
+				return;
+			}
+			if (result == null) {
+				resp.getWriter().print("There is nothing to report.");
+				return;
 			}
 			
-			String jsp = "/WEB-INF/jsp/twitter/view_statuses.jsp";
 			RequestDispatcher rd = req.getRequestDispatcher(jsp);	
 			StringServletResponse resp2 = new StringServletResponse(resp);	
 			req.setAttribute(PARAMETER_NAME_ACCESS_TOKEN, accessToken);
@@ -182,4 +225,82 @@ public class TwitterServlet extends HttpServlet {
 		}
 		return result;
 	}
+	
+	private void processStatuses(Document result, List users) {
+		Iterator itUsers = result.getRootElement().selectNodes("user").listIterator();
+		while (itUsers.hasNext()) {
+			//For each <user>, build a map of values from the twitter status xml file
+			Element user = (Element)itUsers.next();
+			Map userMap = new HashMap();
+			Iterator itUserElements = user.elementIterator();
+			while (itUserElements.hasNext()) {
+				Element userElement = (Element)itUserElements.next();
+				if (userElement.isTextOnly()) {
+					userMap.put(userElement.getName(), userElement.getText());
+				} else {
+					Map elementMap = new HashMap();
+					Iterator itElementElements = userElement.elementIterator();
+					while (itElementElements.hasNext()) {
+						Element elementElement = (Element)itElementElements.next();
+						elementMap.put(elementElement.getName(), elementElement.getText());
+					}
+					userMap.put(userElement.getName(), elementMap);
+				}
+			}
+			users.add(userMap);
+		}
+	}
+
+	private Document getTwitterTimeLine(HttpServletRequest req, HttpServletResponse resp, String friendId) 
+			throws IOException, ServletException {
+		Document result = null;
+		if (friendId != null && !friendId.equals("")) {
+			String twitterUrl = TWITTER_TIMELINE_USER_URL + friendId.trim() + ".xml";
+			HttpClient httpClient = new HttpClient();
+			GetMethod getMethod = new GetMethod(twitterUrl);
+			try {
+				int statusCode = httpClient.executeMethod(getMethod);
+				if (statusCode == HttpStatus.SC_OK) {
+					String body = getMethod.getResponseBodyAsString();
+					result = DocumentHelper.parseText(body);
+				} else {
+					throw new ServletException(getMethod.getStatusLine().toString());
+				}
+			}
+			catch(Exception e) {
+				throw new ServletException(e);
+			}
+			finally {
+				getMethod.releaseConnection();
+			}
+		}
+		return result;
+	}
+
+	private void processTimeline(Document result, List statuses) {
+		Iterator itStatus = result.getRootElement().selectNodes("status").listIterator();
+		while (itStatus.hasNext()) {
+			//For each <status>, build a map of values from the twitter status xml file
+			Element status = (Element)itStatus.next();
+			Map statusMap = new HashMap();
+			Iterator itStatusElements = status.elementIterator();
+			while (itStatusElements.hasNext()) {
+				Element statusElement = (Element)itStatusElements.next();
+				if (statusElement.isTextOnly()) {
+					statusMap.put(statusElement.getName(), statusElement.getText());
+				} else {
+					Map elementMap = new HashMap();
+					Iterator itElementElements = statusElement.elementIterator();
+					while (itElementElements.hasNext()) {
+						Element elementElement = (Element)itElementElements.next();
+						elementMap.put(elementElement.getName(), elementElement.getText());
+					}
+					statusMap.put(statusElement.getName(), elementMap);
+				}
+			}
+			statuses.add(statusMap);
+		}
+
+	}
+
 }
