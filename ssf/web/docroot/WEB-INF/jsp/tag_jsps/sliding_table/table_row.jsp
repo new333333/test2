@@ -65,8 +65,8 @@
 	} else {
 %>
 <tr <%= slidingTableRowIdText %>
-<c:if test="${ss_slidingTableRowCount%2 == '0'}">class="${ss_slidingTableRowOddStyle}" </c:if>
-<c:if test="${ss_slidingTableRowCount%2 == '1'}">class="${ss_slidingTableRowEvenStyle}" </c:if>
+<c:if test="${ss_slidingTableRowCount%2 == '0'}">class="${ss_slidingTableRowStyle} ${ss_slidingTableRowOddStyle}" </c:if>
+<c:if test="${ss_slidingTableRowCount%2 == '1'}">class="${ss_slidingTableRowStyle} ${ss_slidingTableRowEvenStyle}" </c:if>
 <c:set var="ss_slidingTableRowCount" value="${ss_slidingTableRowCount + 1}" scope="request"/>
 >
 <%
@@ -77,16 +77,19 @@
 			Map column = (Map)slidingTableRowColumns.get(i);
 			String width = (String) column.get("width");
 			String text = (String) column.get("text");
+			String colStyle = (String) column.get("style");
 			if (text.trim().equals("")) text = "&nbsp;";
 			String widthAttr = "";
 			if (width != null && !width.equals("")) widthAttr = "width='" + width + "' ";
+			if (colStyle == null) colStyle = "";
 			if (slidingTableHeaderRow != null && slidingTableHeaderRow.booleanValue()) {
 %>
-  <th scope="col" class="ss_bold" align="left" <%= widthAttr %> style="padding: 4px 2px 5px 5px; border:1px solid #6799C8; border-collapse: collapse;"><%= text %></th>
+  <th scope="col" class="ss_bold <%= colStyle %>" align="left" <%= widthAttr %> style="padding: 4px 2px 5px 5px; border:1px solid #6799C8; border-collapse: collapse;"><%= text %></th>
 <%
 			} else {
 %>
-  <td valign="top" <%= widthAttr %> style="padding: 4px 2px 5px 5px; border:1px solid #6799C8; border-collapse: collapse;"><%= text %></td>
+  <td valign="top" <%= widthAttr %> class="ss_normal <%= colStyle %>"
+    style="padding: 4px 2px 5px 5px; border:1px solid #6799C8; border-collapse: collapse;"><%= text %></td>
 <%
 			}
 		}

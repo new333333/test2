@@ -59,7 +59,7 @@ public class SlidingTableColumnTag extends BodyTagSupport {
 			//Add this column to the current row
 			if (_style == null) _style = "";
 			if (_width == null) _width = "";
-			slidingTableColumnAncestor.addColumn(_bodyContent, _width);
+			slidingTableColumnAncestor.addColumn(_bodyContent, _width, _style);
 
 			return EVAL_PAGE;
 		}
