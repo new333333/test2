@@ -914,6 +914,7 @@
 			<option name="profileTxtEmailAddress" initial="true" />
 			<option name="profileZonName" initial="true" />
 			<option name="profileSkypeId" initial="false" />
+			<option name="profileTwitterId" initial="false" />
 			<option name="entryFormButtons" initial="true" />
 			<option_select path="//item[@category='profileEntryData']" />
 			<option_select path="//item[@category='commonEntryData']" />
@@ -1114,6 +1115,20 @@
 		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
 	</item>
+	<item name="profileTwitterId" caption="__twitterId" type="data" 
+		canBeDeleted="true" multipleAllowed="false" category="profileEntryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__twitterId"/>
+			<property name="name" caption="__data_name" type="text" value="twitterId" 
+			  readonly="true" unique="//item[@type='data']"/>
+			<property name="width" caption="__textboxWidth" type="text" default="60"/>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/profile_form_element.jsp" />
+		</jsps>
+		<index apply="true" fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderProfileElement" />
+		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderProfileElement" />
+	</item>
 	<item name="profileEntryPicture" caption="__profile_entry_picture" type="data" multipleAllowed="false"
 		category="profileEntryData" display="form">
 		<properties>
@@ -1230,6 +1245,7 @@
 				<option name="txtEmailAddress" caption="__txtEmailAddress" />
 				<option name="zonName" caption="__zonName" />
 				<option name="skypeId" caption="__skypeId" />
+				<option name="twitterId" caption="__twitterId" />
 		    </property>
 			<property name="maxWidth" caption="__max_profile_picture_width" type="text"
 				characterMask="^[0-9]*$" default="200">
@@ -1264,6 +1280,7 @@
 				<option name="txtEmailAddress" caption="__txtEmailAddress" initial="true"/>
 				<option name="zonName" caption="__zonName" initial="true"/>
 				<option name="skypeId" caption="__skypeId" initial="true"/>
+				<option name="twitterId" caption="__twitterId"/>
 		    </property>
 		</properties>
 

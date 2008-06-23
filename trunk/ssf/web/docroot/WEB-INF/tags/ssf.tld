@@ -1181,6 +1181,11 @@
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
 		</attribute>
+		<attribute>
+			<name>tableStyle</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 	</tag>
 	
 	<tag>
@@ -1199,6 +1204,11 @@
 			<type>java.lang.Boolean</type>
 		</attribute>
 		<attribute>
+			<name>style</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
 			<name>oddStyle</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
@@ -1214,6 +1224,11 @@
 		<name>slidingTableColumn</name>
 		<tag-class>com.sitescape.team.taglib.SlidingTableColumnTag</tag-class>
 		<body-content>JSP</body-content>
+		<attribute>
+			<name>style</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
 		<attribute>
 			<name>width</name>
 			<required>false</required>
@@ -1736,6 +1751,12 @@
 			<name>windowState</name>
 			<required>false</required>
 			<rtexprvalue>true</rtexprvalue>
+		</attribute>		
+		<attribute>
+			<name>crawlable</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+			<type>boolean</type>
 		</attribute>		
 	</tag>
 

@@ -96,6 +96,7 @@
 	      <property name="phone" length="128"/>
 	      <property name="zonName" length="100"/>
 	      <property name="skypeId" length="64"/>
+	      <property name="twitterId" length="64"/>
 	      <property name="status" length="256"/>
 	      <property name="password" access="field" length="64"/>
 		  <property name="timeZone" access="field" length="80"/>

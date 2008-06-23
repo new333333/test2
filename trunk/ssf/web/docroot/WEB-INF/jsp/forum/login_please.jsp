@@ -72,7 +72,10 @@
   </fieldset>
   </form>
 </div>
-
+<script type="text/javascript">
+	var formObj = self.document.getElementById('loginForm');
+	formObj.username.focus();
+</script>
 <ssf:ifadapter>
 </div>
 </div>

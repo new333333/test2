@@ -40,6 +40,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 
 public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableColumnAncestorTag {
 	private String _id = "";
+	private String _style = "";
 	private String _oddStyle = "";
 	private String _evenStyle = "";
 	private Boolean _headerRow;
@@ -76,6 +77,7 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 		finally {
 			_columns = null;
 			_id = "";
+			_style = "";
 			_oddStyle = "";
 			_evenStyle = "";
 			_headerRow = null;
@@ -87,6 +89,7 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 			_columns = new ArrayList();
 		}
 		if (text == null) text = "";
+		if (_style == null) _style = "";
 		if (width == null) width = "";
 		Map column = new HashMap();
 		column.put("text", text);
@@ -96,6 +99,9 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 
 	public void setId(String id) {
 		_id = id;
+	}
+	public void setStyle(String style) {
+		_style = style;
 	}
 	public void setOddStyle(String style) {
 		_oddStyle = style;

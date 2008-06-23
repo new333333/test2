@@ -33,6 +33,7 @@ import javax.servlet.jsp.tagext.BodyTagSupport;
 
 public class SlidingTableColumnTag extends BodyTagSupport {
 	private String _width;
+	private String _style;
 	private String _bodyContent;
 
 	public int doStartTag() {
@@ -56,6 +57,7 @@ public class SlidingTableColumnTag extends BodyTagSupport {
 			}
 
 			//Add this column to the current row
+			if (_style == null) _style = "";
 			if (_width == null) _width = "";
 			slidingTableColumnAncestor.addColumn(_bodyContent, _width);
 
@@ -65,8 +67,12 @@ public class SlidingTableColumnTag extends BodyTagSupport {
 			throw new JspTagException(e.getLocalizedMessage());
 		}
 		finally {
+			_style = "";
 			_width = null;
 		}
+	}
+	public void setStyle(String style) {
+		_style = style;
 	}
 	public void setWidth(String width) {
 		_width = width;
