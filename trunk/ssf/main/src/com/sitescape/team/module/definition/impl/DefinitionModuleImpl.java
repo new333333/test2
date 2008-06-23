@@ -190,8 +190,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		newDefinition.setVisibility(Definition.VISIBILITY_LOCAL);
 		getCoreDao().save(newDefinition);
 		Document doc = getInitialDefinition(name, title, type, inputData);
-		Element root = doc.getRootElement();
-		root.addAttribute("databaseId", newDefinition.getId());
 		setDefinition(newDefinition, doc);
 		return newDefinition;
 		
@@ -207,8 +205,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		newDefinition.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
 		getCoreDao().save(newDefinition);
 		Document doc = getInitialDefinition(name, title, type, inputData);
-		Element root = doc.getRootElement();
-		root.addAttribute("databaseId", newDefinition.getId());
 		setDefinition(newDefinition, doc);
 		return newDefinition;
 	}
@@ -227,27 +223,25 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (Validator.isNull(name)) {
 			name=title;
 		}
-		String type = root.attributeValue("type");
+		Integer type = Integer.valueOf(root.attributeValue("type"));
+		
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String id = root.attributeValue("databaseId", "");
 		String internalId = root.attributeValue("internalId", null);
+		if (binder != null) internalId = null; //reserved only at system level
 		Definition def=null;
-		if (!Validator.isNull(internalId)) {
+		if (Validator.isNotNull(internalId)) {
 			//make sure doesn't exist
 			try {
 				def = getCoreDao().loadReservedDefinition(internalId, zoneId);
-				if (replace) {
-					def.setName(name);
-					def.setTitle(title);
-					def.setType(Integer.parseInt(type));
-					def.setInternalId(internalId);
-					//make sure databaseId reflects current copy
-					root.addAttribute("databaseId", def.getId().toString());
-					setDefinition(def, doc);
-					return def;
-				}
 				//already exists
-				throw new DefinitionInvalidException("definition.error.internalAlreadyExists", new Object[]{internalId});
+				if (!replace || !type.equals(def.getType()) ) throw new DefinitionInvalidException("definition.error.internalAlreadyExists", new Object[]{internalId});
+				def.setName(name);
+				def.setTitle(title);
+				def.setVisibility(Definition.VISIBILITY_PUBLIC);
+				setDefinition(def, doc);
+				return def;
+				
 			} catch (NoDefinitionByTheIdException nd) {}
 			
 		}
@@ -256,65 +250,54 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		if (Validator.isNotNull(id)) {
 			try {
 				def = getCoreDao().loadDefinition(id, null);
-				//see if from this zone
-				if (def.getZoneId().equals(zoneId)) {
-					if (!replace) throw new DefinitionInvalidException("definition.error.alreadyExists", new Object[]{id});
-					//	update it
-					def.setName(name);
-					def.setTitle(title);
-					def.setType(Integer.parseInt(type));
-					def.setInternalId(internalId);	
-					setDefinition(def, doc);
-				} else {
-					//try to create in this zone using new GUID
-					def = new Definition();
-					def.setZoneId(zoneId);
-					def.setName(name);
-					def.setTitle(title);
-					def.setType(Integer.parseInt(type));
-					def.setInternalId(internalId);	
-					getCoreDao().save(def);
-					root.addAttribute("databaseId", def.getId());
-					setDefinition(def,doc);
+				//see if belong to this binder and zone
+				if (def.getZoneId().equals(zoneId) &&
+						((binder == null && def.getBinder() == null) ||
+								(binder != null && binder.equals(def.getBinder())))) {
+						if (!replace || !type.equals(def.getType())) throw new DefinitionInvalidException("definition.error.alreadyExists", new Object[]{id});
+						//	update it
+						def.setName(name);
+						def.setTitle(title);
+						def.setInternalId(internalId);	
+						setDefinition(def, doc);
+						return def;
 				}
+				id = null;				
 			} catch (NoDefinitionByTheIdException nd) {
-				//try to create in this zone using existing GUID
-				def = new Definition();
-				def.setId(id);
-				def.setZoneId(zoneId);
-				def.setName(name);
-				def.setTitle(title);
-				def.setType(Integer.parseInt(type));
-				def.setInternalId(internalId);	
-				setDefinition(def,doc);
-				getCoreDao().replicate(def);				
-			};
-			return def;
+			}
 		}
 		
 		try {
 			def = getCoreDao().loadDefinitionByName(binder, name, zoneId);
-			if (!replace) throw new DefinitionInvalidException("definition.error.alreadyExistsByName", new Object[]{name});
-			def.setName(name);
+			//found a definition using the name for this binder and zone
+			if (!replace || !type.equals(def.getType())) throw new DefinitionInvalidException("definition.error.alreadyExistsByName", new Object[]{name});
 			def.setTitle(title);
-			def.setType(Integer.parseInt(type));
 			def.setInternalId(internalId);	
-			root.addAttribute("databaseId", def.getId());
 			setDefinition(def,doc);
-			
+			return def;
+
 		} catch (NoDefinitionByTheIdException nd) {
-			//try with new id
-			def = new Definition();
-			def.setZoneId(zoneId);
-			def.setName(name);
-			def.setTitle(title);
-			def.setType(Integer.parseInt(type));
-			def.setInternalId(internalId);	
-			getCoreDao().save(def);
-			root.addAttribute("databaseId", def.getId());
-			setDefinition(def,doc);
 		}
-		
+
+		//doesn't exist at all
+		//try to create in this zone using new GUID
+		def = new Definition();
+		def.setZoneId(zoneId);
+		def.setName(name);
+		def.setTitle(title);
+		def.setType(type);
+		def.setInternalId(internalId);	
+		def.setBinder(binder);
+		if (binder != null) def.setVisibility(Definition.VISIBILITY_LOCAL);
+		else def.setVisibility(Definition.VISIBILITY_PUBLIC);
+		if (Validator.isNull(id))
+			getCoreDao().save(def);
+		else {
+			def.setId(id);
+			getCoreDao().replicate(def);
+		}
+		setDefinition(def,doc);
+				
 		return def;
 	}
     public void updateDefinitionReferences(String defId) {
@@ -358,6 +341,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     protected void setDefinition(Definition def, Document doc) {
  
    		//Make sure the definition name and caption remain consistent
+    	doc.getRootElement().addAttribute("internalId", def.getInternalId());
+    	doc.getRootElement().addAttribute("databaseId", def.getId());
     	doc.getRootElement().addAttribute("name", def.getName());
    		Element newPropertiesEle = (Element)doc.getRootElement().selectSingleNode("./properties/property[@name='name']");
    		if (newPropertiesEle != null) newPropertiesEle.addAttribute("value", def.getName());

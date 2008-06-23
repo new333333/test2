@@ -52,16 +52,23 @@
 <br>
 <div class="ss_divider"></div>
 <br>
-<span class="ss_bold"><ssf:nlt tag="administration.selectFiles"/></span>
-<br>
-<table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="95%">
-<tr><td>
-<input type="file" size="80" class="ss_text" name="template1" ><br>
-<input type="file" size="80" class="ss_text" name="template2" ><br>
-<input type="file" size="80" class="ss_text" name="template3" ><br>
-<input type="file" size="80" class="ss_text" name="template4" ><br>
-<input type="file" size="80" class="ss_text" name="template5" ><br>
-</td></tr></table>
+
+<table class="ss_style" border="0" cellpadding="5" cellspacing="0" width="50%">
+<thead><th><ssf:nlt tag="administration.import.replace"/></th>
+<th><ssf:nlt tag="administration.selectFiles"/></th>
+</thead>
+<tbody>
+<tr><td><input type="checkbox" name="template1ck"></td>
+<td><input type="file" size="80" class="ss_text" name="template1" ></td></tr>
+<tr><td><input type="checkbox" name="template2ck"></td>
+<td><input type="file" size="80" class="ss_text" name="template2" ></td></tr>
+<tr><td><input type="checkbox" name="template3ck"></td>
+<td><input type="file" size="80" class="ss_text" name="template3" ></td></tr>
+<tr><td><input type="checkbox" name="template4ck"></td>
+<td><input type="file" size="80" class="ss_text" name="template4" ></td></tr>
+<tr><td><input type="checkbox" name="template5ck"></td>
+<td><input type="file" size="80" class="ss_text" name="template5ck" ></td></tr>
+</tr></tbody></table>
 <div class="ss_divider"></div>
 
 <br/>

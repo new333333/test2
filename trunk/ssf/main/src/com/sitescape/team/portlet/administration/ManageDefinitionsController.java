@@ -304,7 +304,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 		Map<String, Definition> sortedMap = new TreeMap(c);
 		for (Definition def:definitions) {
 			if (Validator.isNotNull(def.getTitle()))
-				sortedMap.put(NLT.get(def.getTitle()), def);
+				sortedMap.put(NLT.getDef(def.getTitle()), def);
 			else
 				sortedMap.put(def.getName(), def);
 		}
@@ -404,25 +404,25 @@ public class ManageDefinitionsController extends  SAbstractController {
 		Element rootElement = adminTree.addElement("root");
 		switch (definitionType) {
 		case Definition.FOLDER_ENTRY: 
-			fillTypeElement(rootElement, "administration.definition_builder_entry_form_designer", String.valueOf(Definition.FOLDER_ENTRY));
+			fillTypeElement(rootElement, "__entry_definitions", String.valueOf(Definition.FOLDER_ENTRY));
 			break;
 		case Definition.WORKFLOW:
-			fillTypeElement(rootElement, "administration.definition_builder_workflow_designer", String.valueOf(Definition.WORKFLOW));
+			fillTypeElement(rootElement, "__workflow_processes", String.valueOf(Definition.WORKFLOW));
 			break;
 		case Definition.FOLDER_VIEW:
-			fillTypeElement(rootElement, "administration.definition_builder_folder_view_designer", String.valueOf(Definition.FOLDER_VIEW));
+			fillTypeElement(rootElement, "__folder_view", String.valueOf(Definition.FOLDER_VIEW));
 			break;
 		case Definition.WORKSPACE_VIEW:
-			fillTypeElement(rootElement, "administration.definition_builder_workspace_designer", String.valueOf(Definition.WORKSPACE_VIEW));
+			fillTypeElement(rootElement, "__workspace_view", String.valueOf(Definition.WORKSPACE_VIEW));
 			break;
 		case Definition.PROFILE_ENTRY_VIEW:
-			fillTypeElement(rootElement, "administration.definition_builder_profile_designer", String.valueOf(Definition.PROFILE_ENTRY_VIEW));
+			fillTypeElement(rootElement, "__profile_entry_view", String.valueOf(Definition.PROFILE_ENTRY_VIEW));
 			break;
 		case Definition.USER_WORKSPACE_VIEW:
-			fillTypeElement(rootElement, "administration.definition_builder_user_workspace_designer", String.valueOf(Definition.USER_WORKSPACE_VIEW));
+			fillTypeElement(rootElement, "__user_workspace_view", String.valueOf(Definition.USER_WORKSPACE_VIEW));
 			break;
 		case Definition.PROFILE_VIEW:
-			fillTypeElement(rootElement, "administration.definition_builder_profile_listing_designer", String.valueOf(Definition.PROFILE_VIEW));
+			fillTypeElement(rootElement, "__profile_views", String.valueOf(Definition.PROFILE_VIEW));
 			break;		
 		}
 		fillChildElements(rootElement, definitions);
