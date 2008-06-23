@@ -184,8 +184,7 @@ ss_addValidator("ss_nameCheck", ss_ajax_result_validator);
 <input type="hidden" name="definitionType" value="${definitionType}"/>
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.add"/>" onClick="ss_buttonSelect('okBtn');">
-<input type="button" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close" text="Close"/>"
-		  onClick="self.window.close();return false;"/>
+<input type="submit" class="ss_submit" name="cancelBtn" value="<ssf:nlt tag="button.cancel"/>" onClick="ss_buttonSelect('cancelBtn');">
 </div>
 <h2><span class="ss_labelLeft"><ssf:nlt tag="administration.configure_cfg.add"/></span></h2>
 

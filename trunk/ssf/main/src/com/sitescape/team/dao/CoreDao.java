@@ -101,7 +101,7 @@ public interface CoreDao {
     public List<TemplateBinder> loadTemplates(Long zoneId, int type);
 	public Dashboard loadDashboard(String id, Long zoneId);
 	public Definition loadDefinition(String defId, Long zoneId);   
-	public Definition loadDefinitionByName(String name, Long zoneId);
+	public Definition loadDefinitionByName(Binder binder, String name, Long zoneId);
 	public List<Definition> loadDefinitions(Long zoneId);
     public List<Definition> loadDefinitions(FilterControls filter, Long zoneId);
 	public EntityDashboard loadEntityDashboard(EntityIdentifier ownerId);

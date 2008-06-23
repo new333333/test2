@@ -779,14 +779,12 @@ public class WebKeys {
     public static final String PUBLIC_BINDER_DEFINITIONS="ssPublicBinderDefinitions";
     public static final String ALL_ENTRY_DEFINITIONS="ssAllEntryDefinitions";
     public static final String PUBLIC_ENTRY_DEFINITIONS="ssPublicEntryDefinitions";
-    public static final String SHARED_ENTRY_DEFINITIONS="ssSharedEntryDefinitions";
     public static final String LOCAL_ENTRY_DEFINITIONS="ssLocalEntryDefinitions";
     public static final String PUBLIC_FOLDER_DEFINITIONS="ssPublicFolderDefinitions";
     public static final String PUBLIC_PROFILE_DEFINITIONS="ssPublicProfileDefinitions";
     public static final String PUBLIC_PROFILE_ENTRY_DEFINITIONS="ssPublicProfileEntryDefinitions";
     public static final String ALL_WORKFLOW_DEFINITIONS="ssAllWorkflowDefinitions";
     public static final String PUBLIC_WORKFLOW_DEFINITIONS="ssPublicWorkflowDefinitions";
-    public static final String SHARED_WORKFLOW_DEFINITIONS="ssSharedWorkflowDefinitions";
     public static final String LOCAL_WORKFLOW_DEFINITIONS="ssLocalWorkflowDefinitions";
     public static final String PUBLIC_WORKSPACE_DEFINITIONS="ssPublicWorkspaceDefinitions";
     public static final String RATING_DIV_ID="ss_ratingDivId";

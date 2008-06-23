@@ -62,7 +62,9 @@ import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.StatusTicket;
+import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.DashboardHelper;
+import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.util.GetterUtil;
 import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
@@ -263,7 +265,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			 }
 		 }
 		template.setName(name);
-		if (!validateTemplateName(name)) throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
+		if (!validateTemplateName(null, name)) throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
 		Definition entryDef = getDefinitionModule().addDefaultDefinition(type);
 		template.setEntryDef(entryDef);
 		if (type == Definition.FOLDER_VIEW) template.setLibrary(true);
@@ -412,13 +414,15 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 }
 		 return config.getId();
 	 }
-	 protected boolean validateTemplateName(String name) {
+	 protected boolean validateTemplateName(Long binderId, String name) {
 		 if (Validator.isNull(name)) return false;
-		 List<TemplateBinder> binders = getCoreDao().loadObjects(TemplateBinder.class, new FilterControls(ObjectKeys.FIELD_BINDER_NAME, name), RequestContextHolder.getRequestContext().getZoneId());
-		 if (!binders.isEmpty()) {
-			 return false;
-		 }
-		 return true;
+			try {
+				TemplateBinder binder = getTemplateByName(name);
+				if (binderId != null && binder.getId().equals(binderId)) return true;
+			} catch (NoBinderByTheNameException nb) {
+				return true;
+			} catch (Exception ex) {};
+		 return false;
 	 }
 	   public Long addTemplateFromBinder(Long binderId) throws AccessControlException, WriteFilesException {
 		   checkAccess(TemplateOperation.manageTemplate);
@@ -438,7 +442,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				String name = config.getName();
 				if (Validator.isNull(name)) name = config.getTemplateTitle();
 				int next=1;
-				while (!validateTemplateName(name)) {
+				while (!validateTemplateName(null, name)) {
 					name = name + next++;
 				}
 				config.setName(name);
@@ -479,9 +483,13 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			String name = (String)updates.get(ObjectKeys.FIELD_BINDER_NAME);
 			if (Validator.isNull(name)) {
 				throw new IllegalArgumentException(NLT.get("general.required.name"));
-			} else if (!name.equals(config.getName())) {
-				List<TemplateBinder> binders = getCoreDao().loadObjects(TemplateBinder.class, new FilterControls(ObjectKeys.FIELD_BINDER_NAME, name), RequestContextHolder.getRequestContext().getZoneId());
-				if (!binders.isEmpty()) {
+			} else if (!validateTemplateName(id, name)) {
+				try {
+					TemplateBinder binder = getTemplateByName(name);
+					if (!binder.getId().equals(id)) {
+						throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
+					}
+				} catch (org.springframework.dao.IncorrectResultSizeDataAccessException in) {
 					throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
 				}
 			}

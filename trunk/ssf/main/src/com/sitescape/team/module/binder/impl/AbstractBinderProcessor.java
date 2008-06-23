@@ -54,6 +54,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 import com.sitescape.team.NotSupportedException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.docconverter.ITextConverterManager;
 import com.sitescape.team.docconverter.TextConverter;
 import com.sitescape.team.domain.Attachment;
@@ -856,7 +857,16 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
      	//remove postings to this binder handled in coreDao
     	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
     			RequestContextHolder.getRequestContext().getZoneId(), binder);
-
+	    
+    	List<Definition> defs = getDefinitionModule().getBinderDefinitions(binder.getId(), false);
+    	//add to orphaned list
+    	for (Definition def:defs) {
+    		//make name unique
+    		def.setName(def.getId());
+    		//pass off to top level
+    		def.setBinder(null);
+    		def.setOrphaned(true);
+    	}
     }
   
     
