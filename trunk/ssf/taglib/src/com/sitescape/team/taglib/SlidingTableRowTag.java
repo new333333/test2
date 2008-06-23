@@ -84,7 +84,7 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 		}
 	}
 	
-	public void addColumn (String text, String width) {
+	public void addColumn (String text, String width, String style) {
 		if (_columns == null) {
 			_columns = new ArrayList();
 		}
@@ -94,6 +94,7 @@ public class SlidingTableRowTag extends BodyTagSupport implements SlidingTableCo
 		Map column = new HashMap();
 		column.put("text", text);
 		column.put("width", width);
+		column.put("style", style);
 		_columns.add(column);
 	}
 

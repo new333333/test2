@@ -23,6 +23,6 @@
 package com.sitescape.team.taglib;
 
 public interface SlidingTableColumnAncestorTag {
-	public void addColumn(String text, String width);
+	public void addColumn(String text, String width, String style);
 
 }
