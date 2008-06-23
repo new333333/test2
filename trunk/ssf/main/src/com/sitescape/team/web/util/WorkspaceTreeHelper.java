@@ -607,6 +607,7 @@ public class WorkspaceTreeHelper {
 			adminMenuCreated=true;
 			url = response.createRenderURL();
 			url.setParameter(WebKeys.ACTION, WebKeys.ACTION_SITE_ADMINISTRATION);
+			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			toolbar.addToolbarMenuItem("1_administration", "", 
 					NLT.get("toolbar.menu.siteAdministration"), url);
 		}

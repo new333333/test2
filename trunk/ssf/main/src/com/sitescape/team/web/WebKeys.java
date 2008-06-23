@@ -583,6 +583,7 @@ public class WebKeys {
     public static final String EMAIL_ALIASES="ssEmailAliases";
 	public static final String ENTITY_ID = "ss_entityId";
 	public static final String ENTITY_TYPE="_entityType";
+	public static final String ENTITY_TYPE_BEAN="ss_entityType";
     public static final String ENTRIES_VIEWED="ssEntriesViewed";
     public static final String ENTRIES_VIEWED_PAGE="ssEntriesViewedPage";
     public static final String ENTRY="ssEntry";

@@ -278,7 +278,7 @@ String operatingSystem = BrowserSniffer.getOSInfo(request);
         <tr><td style="height:10px;" class="ss_att_title" colspan="8"><hr class="ss_att_divider" noshade="noshade" /></td></tr>
 		<tr>
 		  <td class="ss_att_title ss_subhead2" colspan="8">
-		    <c:set var="previousVersionsText" value="<%= NLT.get("entry.PreviousVersions") %>"/>
+		    <c:set var="previousVersionsText" value="<%= NLT.get("entry.PreviousVersions", new String[] {String.valueOf(selection.getFileVersions().size()-1)}) %>"/>
 		    <ssf:expandableArea title="${previousVersionsText}">
 			  <table>
 			  <c:forEach var="fileVersion" items="${selection.fileVersions}" begin="1" varStatus="status">

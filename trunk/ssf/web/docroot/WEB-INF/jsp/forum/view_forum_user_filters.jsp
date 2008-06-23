@@ -34,7 +34,7 @@
 <%@ page import="com.sitescape.team.domain.UserProperties" %>
 <%
 	UserProperties userFolderProperties = (UserProperties) request.getAttribute("ssUserFolderProperties");
-	String filterName = NLT.get("Select");
+	String filterName = "";
 	if (userFolderProperties != null) {
 		Map searchFilters = (Map) userFolderProperties.getProperty("searchFilters");
 		if (searchFilters == null) searchFilters = new java.util.HashMap();
@@ -55,7 +55,7 @@
   </div>
 </td>
 <td>
-		<div id="ss_navbar_inline" "class="ss_style ss_fineprint">
+		<div id="ss_navbar_inline" class="ss_style ss_fineprint ss_normal">
 			
 					<ul>
 					<li>
@@ -63,8 +63,11 @@
 				name="binderId" value="${ssFolder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
 				name="select_filter" value=""/></ssf:url>">
-					<span <c:if test="${select_filter == currentFilter}"> class="ss_largeprint"</c:if>>
-						<ssf:nlt tag="none" text="none"/>
+					<span 
+					<c:if test="${currentFilter == ''}"> class="ss_largeprint ss_bold"</c:if>
+					<c:if test="${currentFilter != ''}"> class="ss_fineprint ss_normal"</c:if>
+					>
+						<ssf:nlt tag="None"/>
 					</a></li>
 					
 					<c:forEach var="filter" items="${ss_searchFilters}">
@@ -72,7 +75,10 @@
 				name="binderId" value="${ssFolder.id}"/><ssf:param 
 				name="operation" value="select_filter"/><ssf:param 
 				name="select_filter" value="${filter.key}"/></ssf:url>">
-					<span <c:if test="${filter.key == currentFilter}"> class="ss_largeprint"</c:if>>				
+					<span 
+					<c:if test="${filter.key == currentFilter}"> class="ss_largeprint ss_bold"</c:if>
+					<c:if test="${filter.key != currentFilter}"> class="ss_fineprint ss_normal"</c:if>
+					>				
 					<c:out value="${filter.key}"/></span>
 					</a></li>
 					</c:forEach>

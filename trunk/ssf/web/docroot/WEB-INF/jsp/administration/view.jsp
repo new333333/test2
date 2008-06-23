@@ -138,6 +138,26 @@ function ss_showAdminMenuOption${renderResponse.namespace}(id, obj, action) {
 	return false;
 }
 
+function ss_returnToBinder${renderResponse.namespace}(binderId, entityType) {
+	if (typeof binderId != 'undefined' && typeof entityType != 'undefined') {
+		var action = "";
+		if (entityType == 'workspace') {
+			action = "view_ws_listing"
+		} else if (entityType == 'folder') {
+			action = "view_folder_listing"
+		} else if (entityType == 'profiles') {
+			action = "view_profiles_listing"
+		}
+		if (action != '') {
+			var url = "<ssf:url action="ssActionPlaceHolder"><ssf:param 
+			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
+			url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+			url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
+			self.location.href = url;
+		}
+	}
+}
+
 ss_createOnResizeObj('ss_setAdministrationIframeSize${renderResponse.namespace}', ss_setAdministrationIframeSize${renderResponse.namespace});
 ss_createOnLayoutChangeObj('ss_setAdministrationIframeSize${renderResponse.namespace}', ss_setAdministrationIframeSize${renderResponse.namespace});
 //If this is the first definition of ss_setAdministrationIframeSize, remember its name in case we need to find it later
@@ -162,6 +182,15 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 </ssf:ifnotadapter>
 
 <c:if test="${showAdministrationPage}">
+<c:if test="${!empty ssBinderId && !empty ss_entityType}">
+<div class="ss_buttonBarRight">
+<input type="button" class="ss_submit" name="closeBtn" 
+  onClick="ss_returnToBinder${renderResponse.namespace}('${ssBinderId}', '${ss_entityType}');return false;"
+  value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
+<br/>
+</c:if>
+
 	<table border="0" width="100%">
 	<tr>
 	  <td>
@@ -202,13 +231,18 @@ if (typeof ss_setAdministrationIframeSize == "undefined")
 			</tr>
 			</table>
 		</td>
-		<td align="right" width="30" valign="top">
-		<a href="javascript:;" onClick="ss_helpSystem.run();return false;"><img border="0" 
-  		  src="<html:imagesPath/>icons/help.png" 
-  		  alt="<ssf:nlt tag="navigation.help" text="Help"/>" /></a>
-		</td>
 	</tr>
 	</table>
+
+<c:if test="${!empty ssBinderId && !empty ss_entityType}">
+<br/>
+<div class="ss_buttonBarLeft">
+<input type="button" class="ss_submit" name="closeBtn" 
+  onClick="ss_returnToBinder${renderResponse.namespace}('${ssBinderId}', '${ss_entityType}');return false;"
+  value="<ssf:nlt tag="button.close" text="Close"/>">
+</div>
+</c:if>
+
   </div>
   </div>
   </div>
