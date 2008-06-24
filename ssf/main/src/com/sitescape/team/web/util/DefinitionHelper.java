@@ -85,11 +85,16 @@ public class DefinitionHelper {
 	
 
 	/**
-	 * Helper to get definitions for other helpers
+	 * Helper to get definitions available to a definition for cross reference
 	 * @param defType
 	 */	
-	public static List getDefinitions(int defType) {
-		return  getInstance().getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, defType);
+	public static List getAvailableDefinitions(Definition definition, Integer defType) {
+		List definitions = getInstance().getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, defType);
+		if (!Definition.VISIBILITY_PUBLIC.equals(definition.getVisibility())) {
+			//only get definitions defined at same level
+			definitions.addAll(getInstance().getDefinitionModule().getBinderDefinitions(definition.getBinder().getId(), false, Definition.FOLDER_ENTRY));			
+		}
+		return definitions;
 	}
 
 	/**

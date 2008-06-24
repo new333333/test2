@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/snippet.include.jsp" %>
 
 <%@ page import="com.sitescape.team.util.NLT" %>
 
@@ -69,6 +70,7 @@
 		  itemId="${data.itemId}" 
 		  itemName="${data.itemName}" 
 		  refItemId="${data.refItemId}" 
+		  definition="${ssDefinition}"
 		/>
 		</c:otherwise>
 		</c:choose>
