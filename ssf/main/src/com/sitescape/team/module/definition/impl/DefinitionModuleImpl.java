@@ -308,31 +308,27 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	List<Element> replyStyles = doc.getRootElement().selectNodes("//properties/property[@name='replyStyle']");
     	for (Element styleElement:replyStyles) {
     		String styleId = styleElement.attributeValue("value", "");
-    		Definition zoneDef;
+    		Definition namedDef;
     		try {
-   				zoneDef = getCoreDao().loadDefinitionByName(def.getBinder(), styleId, zoneId);
+    			namedDef = getDefinitionByName(def.getBinder(), true, styleId);
+   				styleId = namedDef.getId();
    			} catch (NoDefinitionByTheIdException nd) {
-   				if (def.getBinder() != null)
-   					//try a global definition
-   					zoneDef = getCoreDao().loadDefinitionByName(null, styleId, zoneId);
-   				else throw nd;
+   				styleId = "";
    			}
-   			styleElement.addAttribute("value", zoneDef.getId().toString());
+   			styleElement.addAttribute("value", styleId);
     	}
 		//not just on workflow types
     	List<Element> conditions = doc.getRootElement().selectNodes("//workflowEntryDataUserList | //workflowCondition");
     	for (Element condition:conditions) {
     		String entryId = condition.attributeValue("definitionId", "");
-   			Definition zoneDef;
+   			Definition namedDef;
    	   		try {
-   				zoneDef = getCoreDao().loadDefinitionByName(def.getBinder(), entryId, zoneId);
+   	   			namedDef = getDefinitionByName(def.getBinder(), true, entryId);
+   	   			entryId = namedDef.getId();
    			} catch (NoDefinitionByTheIdException nd) {
-   				if (def.getBinder() != null)
-   					//try a global definition
-   					zoneDef = getCoreDao().loadDefinitionByName(null, entryId, zoneId);
-   				else throw nd;
+   				entryId = "";
    			}
-  			condition.addAttribute("definitionId", zoneDef.getId().toString());
+  			condition.addAttribute("definitionId", entryId);
 	    }
     	//Write out the new definition file
     	def.setDefinition(doc);
@@ -395,9 +391,39 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		// Controllers need access to definitions.  Allow world read        
  		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
-	public Definition getDefinitionByName(Binder binder, String name) {
-		// Controllers need access to definitions.  Allow world read        
- 		return coreDao.loadDefinitionByName(binder, name, RequestContextHolder.getRequestContext().getZoneId());
+	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name) {
+		List<Definition> defs;
+		if (binder == null) {
+  	    	Map params = new HashMap();
+   	    	params.put("name", name);    
+   	    	params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());  //need zone without binder
+  	    	defs = coreDao.loadObjects("from com.sitescape.team.domain.Definition where binder is null and zoneId=:zoneId and name=:name", params);
+  	    	 			
+		} else if (includeAncestors.equals(Boolean.TRUE)) {
+   	    	Map params = new HashMap();
+   	    	params.put("binder", getAncestors(binder));    
+   	    	params.put("name", name);    
+  	    	params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());  //need zone without binder
+  	    	defs = coreDao.loadObjects("from com.sitescape.team.domain.Definition where (binder in (:binder) or binder is null) and zoneId=:zoneId and name=:name", params);
+  	 	} else {
+  	    	FilterControls filter = new FilterControls();
+  	 		filter.add("binder", binder);     	 		
+ 	 		filter.add("name", name);     	 		
+  	 		defs =  coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+ 	 	}
+   	 	//find the first one
+		if (defs.size() == 0) throw new NoDefinitionByTheIdException(name);
+		//should only be 1 if binder is null
+		if (binder == null || defs.size() == 1) return defs.get(0);
+		//find the one matching the binder the closest to this one
+		while (binder != null) {
+			for (Definition def:defs) {
+				if (binder.getId().equals(def.getBinder().getId())) return def;
+			}
+			binder = binder.getParentBinder();
+		}
+		//if the definition was the top level, should have already found it with defs ==1
+		throw new NoDefinitionByTheIdException(name); //shouldn't get here
 	}
 	
 	protected DefinitionConfigurationBuilder getDefinitionBuilderConfig() {
@@ -1726,10 +1752,10 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	filter.add("type", type);
     	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
      }
-    public List<Definition> getBinderDefinitions(Long binderId, boolean includeAncestors) {
+    public List<Definition> getBinderDefinitions(Long binderId, Boolean includeAncestors) {
 		// Controllers need access to definitions.  Allow world read    
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
-   	 	if (includeAncestors == true) {
+   	 	if (includeAncestors.equals(Boolean.TRUE)) {
    	    	Map params = new HashMap();
    	    	params.put("binder", getAncestors(binder));    
    	    	return coreDao.loadObjects("from com.sitescape.team.domain.Definition where binder in (:binder)", params);
@@ -1740,11 +1766,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
  	 	}
     }
     
-    public List<Definition> getBinderDefinitions(Long binderId, boolean includeAncestors, Integer type) {
+    public List<Definition> getBinderDefinitions(Long binderId, Boolean includeAncestors, Integer type) {
 		// Controllers need access to definitions.  Allow world read  
     	//return local and shared that are in this tree
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
-  	 	if (includeAncestors == true) {
+   	 	if (includeAncestors.equals(Boolean.TRUE)) {
   	       	Map params = new HashMap();
   	    	params.put("type", type);
    	 		params.put("binder", getAncestors(binder));    
