@@ -1391,7 +1391,18 @@ public class ListFolderHelper {
 				url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SYNCHRONIZE_MIRRORED_FOLDER);
 				url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 				url.setParameter(WebKeys.URL_BINDER_TYPE, folder.getEntityType().name());
-				folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.synchronize_mirrored_folder"), url, qualifiers);
+				folderToolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.synchronize_mirrored_folder.manual"), url, qualifiers);
+			}
+			if(folder.isMirrored() &&
+					bs.getFolderModule().testAccess(folder, FolderOperation.scheduleSynchronization)) {
+				qualifiers = new HashMap();
+				qualifiers.put("popup", new Boolean(true));
+
+				adapterUrl = new AdaptedPortletURL(request, "ss_forum", true);
+				adapterUrl.setParameter(WebKeys.ACTION, WebKeys.ACTION_SCHEDULE_SYNCHRONIZATION);
+				adapterUrl.setParameter(WebKeys.URL_BINDER_ID, forumId);
+				folderToolbar.addToolbarMenuItem("1_administration", "", 
+						NLT.get("toolbar.menu.synchronize_mirrored_folder.scheduled"), adapterUrl.toString(), qualifiers);
 			}
 		}
 

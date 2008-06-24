@@ -63,6 +63,8 @@
 	<bean id="typeToFindAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.TypeToFindAjaxController" />
 	<bean id="mobileAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.MobileAjaxController" />
 	<bean id="relevanceAjaxController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.forum.RelevanceAjaxController" />
+	
+	<bean id="mirroredFolderSynchronizationController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.binder.MirroredFolderSynchronizationController" />
 
 	<bean id="adminViewChangeLogController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ViewChangeLogController" />
 	<bean id="adminConfigureLdapController" parent="dependOnAllModulesTemplate" class="com.sitescape.team.portlet.administration.ConfigureLdapController" />
@@ -126,6 +128,7 @@
 						<entry key="send_entry_email"><ref bean="sendEntryEmailController"/></entry>
 						<entry key="view_editable_history"><ref bean="entryVersionController"/></entry>
 						<entry key="view_credits"><ref bean="creditsController"/></entry>
+						<entry key="schedule_synchronization"><ref bean="mirroredFolderSynchronizationController"/></entry>
 
 						<!-- Keys starting with "__" can handle the user not being logged in -->
 						<entry key="__view_presence"><ref bean="updatePresenceController"/></entry>

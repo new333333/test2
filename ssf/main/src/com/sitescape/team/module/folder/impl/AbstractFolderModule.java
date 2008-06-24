@@ -220,6 +220,9 @@ implements FolderModule, AbstractFolderModuleMBean, ZoneSchedule {
 			case synchronize:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.CREATE_ENTRIES);
 				break;
+			case scheduleSynchronization:
+				getAccessControlManager().checkOperation(folder, WorkAreaOperation.BINDER_ADMINISTRATION);
+				break;				
 			case changeEntryTimestamps:
 				getAccessControlManager().checkOperation(folder, WorkAreaOperation.SITE_ADMINISTRATION);
 				break;
