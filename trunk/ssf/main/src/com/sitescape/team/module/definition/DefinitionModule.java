@@ -75,13 +75,13 @@ public interface DefinitionModule {
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException, AccessControlException;
 
 	public Definition getDefinition(String id);
-	public Definition getDefinitionByName(Binder binder, String name);
+	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name);
 	public List<Definition> getAllDefinitions();
 	public List<Definition> getAllDefinitions(Integer type);
 	public List<Definition> getDefinitions(Integer visibility);
 	public List<Definition> getDefinitions(Integer visibility, Integer type);
-	public List<Definition> getBinderDefinitions(Long binderId, boolean includeAncestors);
-	public List<Definition> getBinderDefinitions(Long binderId, boolean includeAncestors, Integer type);
+	public List<Definition> getBinderDefinitions(Long binderId, Boolean includeAncestors);
+	public List<Definition> getBinderDefinitions(Long binderId, Boolean includeAncestors, Integer type);
 	public Document getDefinitionConfig();
 	public Document getDefinitionAsXml(Definition def);
 	/**

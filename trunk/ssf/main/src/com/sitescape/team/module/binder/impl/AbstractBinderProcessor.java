@@ -865,8 +865,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     		def.setName(def.getId());
     		//pass off to top level
     		def.setBinder(null);
-    		def.setVisibility(Definition.VISIBILITY_PUBLIC);
-    		def.setOrphaned(true);
+    		def.setVisibility(Definition.VISIBILITY_ORHPAN);
     	}
     }
   
