@@ -81,6 +81,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.SortedMap;
 
 
 /**
@@ -827,15 +828,17 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("replyStyle")) {
 						sb.append(propertyConfigCaption);
-						List<Definition> definitions = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
-						int size = definitions.size();
+
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
+						int size = defs.size();
 						if (size <= 0) size = 1;
 						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + 
 								propertyId + "\" size=\"" + String.valueOf(size+1) + "\">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
 						List<Element> replyStyles = sourceRoot.selectNodes("properties/property[@name='replyStyle']");
-						for (Definition entryDef:definitions) {
+						for (Map.Entry<String, Definition> me:defs.entrySet()) {
 							//Build a list of the entry definitions
+							Definition entryDef = me.getValue();
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
 							for (Element reply:replyStyles) {
 								if (entryDef.getId().equals(reply.attributeValue("value", ""))) {
@@ -843,7 +846,7 @@ public class BuildDefinitionDivs extends TagSupport {
 									break;
 								}
 							}
-							sb.append(">").append(NLT.getDef(entryDef.getTitle()).replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
 						sb.append("</select>\n<br/><br/>\n");
 					
@@ -1039,12 +1042,12 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
 						
-						List defs = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
-						for (int i=0; i<defs.size(); ++i) {
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
+						for (Map.Entry<String, Definition> me:defs.entrySet()) {
 							//Build a list of the entry definitions
-							Definition entryDef = (Definition)defs.get(i);
+							Definition entryDef = me.getValue();
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							sb.append(">").append(NLT.getDef(entryDef.getTitle()).replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
@@ -1106,12 +1109,12 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
 						//GET both entry and file Entry definitions
-						List defs = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
-						for (int i=0; i<defs.size(); ++i) {
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
+						for (Map.Entry<String, Definition> me:defs.entrySet()) {
 							//Build a list of the entry definitions
-							Definition entryDef = (Definition)defs.get(i);
+							Definition entryDef = me.getValue();
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							sb.append(">").append(NLT.getDef(entryDef.getTitle()).replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");

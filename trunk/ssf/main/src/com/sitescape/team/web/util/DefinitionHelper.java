@@ -35,6 +35,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Collection;
+import java.util.TreeMap;
+import java.util.SortedMap;
+
 import javax.portlet.PortletRequest;
 
 import org.dom4j.Document;
@@ -42,6 +45,8 @@ import org.dom4j.Element;
 import org.dom4j.Node;
 
 import com.sitescape.team.SingletonViolationException;
+import com.sitescape.team.comparator.StringComparator;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Entry;
@@ -88,13 +93,18 @@ public class DefinitionHelper {
 	 * Helper to get definitions available to a definition for cross reference
 	 * @param defType
 	 */	
-	public static List getAvailableDefinitions(Definition definition, Integer defType) {
-		List definitions = getInstance().getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, defType);
+	public static SortedMap<String, Definition> getAvailableDefinitions(Definition definition, Integer defType) {
+		List<Definition> definitions = getInstance().getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, defType);
 		if (!Definition.VISIBILITY_PUBLIC.equals(definition.getVisibility())) {
 			//only get definitions defined at same level
-			definitions.addAll(getInstance().getDefinitionModule().getBinderDefinitions(definition.getBinder().getId(), false, Definition.FOLDER_ENTRY));			
+			definitions.addAll(getInstance().getDefinitionModule().getBinderDefinitions(definition.getBinder().getId(), true, Definition.FOLDER_ENTRY));			
 		}
-		return definitions;
+		TreeMap<String, Definition> orderedDefinitions = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
+		for (Definition def:definitions) {
+			orderedDefinitions.put(NLT.getDef(def.getTitle()), def);
+		}
+		return orderedDefinitions;
+
 	}
 
 	/**
