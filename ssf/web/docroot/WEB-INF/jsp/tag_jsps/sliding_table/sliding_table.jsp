@@ -125,7 +125,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 <%		
 		for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
 %>
-<tr><td class="ss_sliding_table_row0" nowrap width="2000">&nbsp;</td></tr>
+<tr><td class="ss_sliding_table_row0" nowrap width="100%">&nbsp;</td></tr>
 <%
 		}		
 %>
@@ -200,7 +200,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <%
 					} else {
 %>
-<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="2000"
+<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="100%"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
   >&nbsp;<%= columnText %></td>
@@ -242,7 +242,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <%
 					} else {
 %>
-<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="2000"
+<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="100%"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
  >&nbsp;<%= columnText %></td>
@@ -269,7 +269,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <%
 					} else {
 %>
-<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="2000"
+<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="100%"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
  >&nbsp;<%= columnText %></td>
