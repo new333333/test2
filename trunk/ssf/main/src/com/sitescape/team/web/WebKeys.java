@@ -275,6 +275,7 @@ public class WebKeys {
 	public static final String ACTION_QUOTA_REPORT="quota_report";
 	public static final String ACTION_SEND_EMAIL="send_email";
 	public static final String ACTION_SEND_ENTRY_EMAIL="send_entry_email";
+	public static final String ACTION_SCHEDULE_SYNCHRONIZATION="schedule_synchronization";
 	public static final String ACTION_SITE_ADMINISTRATION="site_administration";
 	public static final String ACTION_START_WORKFLOW="start_workflow";
 	public static final String ACTION_STOP_WORKFLOW="stop_workflow";
@@ -1076,6 +1077,7 @@ public class WebKeys {
     public static final String VIEW_RELEVANCE_DASHBOARD = "relevance_dashboard/view";
     public static final String VIEW_RELEVANCE_DASHBOARD_EDIT = "relevance_dashboard/edit";
     public static final String VIEW_REPORT="administration/report";
+    public static final String VIEW_SCHEDULE_SYNCHRONIZATION="administration/schedule_synchronization";
     public static final String VIEW_SEARCH="search/view";
     public static final String VIEW_SEARCH_EDIT="search/edit";
     public static final String VIEW_TEMPLATE="administration/configureConfiguration";

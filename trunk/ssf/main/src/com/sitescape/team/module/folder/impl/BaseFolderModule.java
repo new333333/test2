@@ -33,6 +33,7 @@ import java.util.HashMap;
 import com.sitescape.team.UncheckedIOException;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.fi.FIException;
+import com.sitescape.team.jobs.ScheduleInfo;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.util.StatusTicket;
@@ -42,6 +43,14 @@ public class BaseFolderModule extends AbstractFolderModule implements BaseFolder
 	public boolean synchronize(Long folderId, StatusTicket statusTicket) throws FIException, UncheckedIOException {
 		throw new UnsupportedOperationException("synchronize operation is not supported in the base edition");
 	}
+	
+	public ScheduleInfo getSynchronizationSchedule(Long zoneId, Long folderId) {
+		throw new UnsupportedOperationException("getSynchronizationSchedule operation is not supported in the base edition");
+	}
+	
+	public void setSynchronizationSchedule(ScheduleInfo config, Long folderId) {
+		throw new UnsupportedOperationException("setSynchronizationSchedule operation is not supported in the base edition");
+    }  
 
 	public boolean testAccess(FolderEntry entry, FolderOperation operation) {
 		switch (operation) {
