@@ -8,7 +8,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <div style="border:1px solid black;margin:6px;padding:6px;">
-<h3>Remote application demonstration - Twitter statuses</h3>
+<h3>Twitterings</h3>
 
 <table cellspacing="5" cellpadding="3">
 <c:set var="userImageShown" value="false"/>
