@@ -164,7 +164,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 				if (hasDefinitionType(defs, Definition.FOLDER_ENTRY)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__entry_definitions", String.valueOf(Definition.FOLDER_ENTRY));
-					fillChildElements(element, defs);
+					fillChildElements(element, Definition.FOLDER_ENTRY, defs);
 					designers.put(element.attributeValue("title"), element);
 				}
 				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='entryTypeDefinition']");
@@ -180,7 +180,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 				if (hasDefinitionType(defs, Definition.WORKFLOW)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__workflow_processes", String.valueOf(Definition.WORKFLOW));
-					fillChildElements(element, defs);
+					fillChildElements(element, Definition.WORKFLOW, defs);
 					designers.put(element.attributeValue("title"), element);
 				}
 				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='workflowProcessDefinition']");
@@ -195,6 +195,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 				if (hasDefinitionType(defs, Definition.FOLDER_VIEW)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__folder_views", String.valueOf(Definition.FOLDER_VIEW));
+					fillChildElements(element, Definition.FOLDER_VIEW, defs);
 					designers.put(element.attributeValue("title"), element);
 				}
 				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='forumViewDefinition']");
@@ -209,6 +210,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 				if (hasDefinitionType(defs, Definition.WORKSPACE_VIEW)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
 					fillTypeElement(element, "__workspace_view", String.valueOf(Definition.WORKSPACE_VIEW));
+					fillChildElements(element, Definition.WORKSPACE_VIEW, defs);
 					designers.put(element.attributeValue("title"), element);
 				}
 				configNode = (Element)definitionConfig.selectSingleNode("/definitions/definition[@name='workspaceViewDefinition']");
@@ -296,13 +298,14 @@ public class ManageDefinitionsController extends  SAbstractController {
 		element.addAttribute("displayOnly", "true");
 
 	}
-	protected void fillChildElements(Element element, Collection<Definition> definitions) {
+	protected void fillChildElements(Element element, Integer type, Collection<Definition> definitions) {
 		//build sorted map of definitions
 		StringComparator c = new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale());
 		if (definitions == null) return;
 		if (definitions.isEmpty()) element.getParent().addAttribute("hasChildren", "false");
 		Map<String, Definition> sortedMap = new TreeMap(c);
 		for (Definition def:definitions) {
+			if (!type.equals(def.getType())) continue;
 			if (Validator.isNotNull(def.getTitle()))
 				sortedMap.put(NLT.getDef(def.getTitle()), def);
 			else
@@ -425,7 +428,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 			fillTypeElement(rootElement, "__profile_views", String.valueOf(Definition.PROFILE_VIEW));
 			break;		
 		}
-		fillChildElements(rootElement, definitions);
+		fillChildElements(rootElement, definitionType, definitions);
 		//now add sorted entries to dom tree
 		model.put("ss_tree_binderId", definitionType.toString());
 		model.put("ss_tree_id", definitionType.toString());

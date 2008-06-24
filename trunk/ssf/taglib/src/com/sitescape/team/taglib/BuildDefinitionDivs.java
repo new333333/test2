@@ -57,6 +57,7 @@ import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.profile.ProfileModule;
 
 import com.sitescape.team.domain.Binder;
+import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
@@ -105,9 +106,8 @@ public class BuildDefinitionDivs extends TagSupport {
 	private Element rootConfigElement;
 	private String contextPath;
 	private DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
-	
+	private Definition definition;
     private ProfileModule profileModule;
-
     
 	public int doStartTag() throws JspException {
 		profileModule = (ProfileModule)SpringContextUtil.getBean("profileModule");
@@ -162,6 +162,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	        itemId = "";
 	        itemName = "";
 	        refItemId="";
+	        definition = null;
 	    }
 	    
 		return SKIP_BODY;
@@ -591,7 +592,7 @@ public class BuildDefinitionDivs extends TagSupport {
 				Element refItem = (Element)sourceRoot.selectSingleNode("//item[@id='"+this.refItemId+"'] ");
 				if (refItem != null) properties = refItem.element("properties");
 			}	 
-				
+
 			if (properties == null) properties = rootElement.element("properties");
 			Iterator itProperties = propertiesConfig.elementIterator("property");
 				while (itProperties.hasNext()) {
@@ -614,6 +615,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					if(propertyId.equalsIgnoreCase("name")){
 						readonly = "";
 						}
+					String propertyConfigCaption = NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;");
 					List propertyValues = new ArrayList();
 					if (properties != null) {
 						//See if there are already values for this property in the actual definition file
@@ -644,10 +646,8 @@ public class BuildDefinitionDivs extends TagSupport {
 					String propertyValueDefault = propertyConfig.attributeValue("default", "");
 					String type = propertyConfig.attributeValue("type", "text");
 					if (type.equals("textarea")) {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "").replaceAll("&", "&amp;")));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
+						sb.append("\n<br/>\n");
 						sb.append("<textarea name=\"propertyId_" + propertyId + "\" rows=\"6\" cols=\"45\" "+readonly+">"+Html.formatTo(propertyValue0)+"</textarea>\n<br/>\n");
 					
 					} else if (type.equals("boolean") || type.equals("checkbox")) {
@@ -664,10 +664,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("selectbox") || type.equals("radio")) {
 						int optionCount = 0;
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "").replaceAll("&", "&amp;")));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
 						if (type.equals("selectbox")) {
 							//See if multiple selections are allowed
 							String multipleText = "";
@@ -790,10 +787,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 					
 					} else if (type.equals("itemSelect")) {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
 						//Get the list of items in this definition
 						String itemSelectPath = propertyConfig.attributeValue("path", "");
 						if (!itemSelectPath.equals("")) {
@@ -832,31 +826,19 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 					
 					} else if (type.equals("replyStyle")) {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
-						}
-					
-						String eType = rootConfigElement.attributeValue("definitionType");
-						List definitions;
-						if (!Validator.isNull(eType)) {
-							int t = Integer.parseInt(eType);
-							definitions = DefinitionHelper.getDefinitions(t);
-						} else {
-							definitions = new ArrayList();
-						}
+						sb.append(propertyConfigCaption);
+						List<Definition> definitions = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
 						int size = definitions.size();
 						if (size <= 0) size = 1;
 						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + 
 								propertyId + "\" size=\"" + String.valueOf(size+1) + "\">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
-						for (int i=0; i<definitions.size(); ++i) {
+						List<Element> replyStyles = sourceRoot.selectNodes("properties/property[@name='replyStyle']");
+						for (Definition entryDef:definitions) {
 							//Build a list of the entry definitions
-							Definition entryDef = (Definition)definitions.get(i);
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							Iterator itReplyStyles = sourceRoot.selectNodes("properties/property[@name='replyStyle']").iterator();
-							while (itReplyStyles.hasNext()) {
-								if (entryDef.getId().equals(((Element)itReplyStyles.next()).attributeValue("value", ""))) {
+							for (Element reply:replyStyles) {
+								if (entryDef.getId().equals(reply.attributeValue("value", ""))) {
 									sb.append(" selected=\"selected\"");
 									break;
 								}
@@ -866,10 +848,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("</select>\n<br/><br/>\n");
 					
 					} else if (type.equals("iconList")) {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
 						String iconListPath = propertyConfig.attributeValue("path", "");
 						String[] iconList = SPropsUtil.getCombinedPropertyList(iconListPath, ObjectKeys.CUSTOM_PROPERTY_PREFIX);
 						Element iconValueEle = (Element)sourceRoot.selectSingleNode("properties/property[@name='icon']");
@@ -891,10 +870,7 @@ public class BuildDefinitionDivs extends TagSupport {
 					
 					} else if (type.equals("repositoryList")) {
 						int optionCount = 0;
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
 						//See if multiple selections are allowed
 						String multipleText = "";
 						if (propertyConfig.attributeValue("multipleAllowed", "").equals("true")) multipleText = "multiple=\"multiple\"";
@@ -1063,7 +1039,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
 						
-						List defs = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
+						List defs = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
 						for (int i=0; i<defs.size(); ++i) {
 							//Build a list of the entry definitions
 							Definition entryDef = (Definition)defs.get(i);
@@ -1130,7 +1106,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
 						//GET both entry and file Entry definitions
-						List defs = DefinitionHelper.getDefinitions(Definition.FOLDER_ENTRY);
+						List defs = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
 						for (int i=0; i<defs.size(); ++i) {
 							//Build a list of the entry definitions
 							Definition entryDef = (Definition)defs.get(i);
@@ -1196,10 +1172,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						} catch(Exception e) {}
 						
 					} else if (type.equals("remoteApp")) {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
 					
 						Map options = new HashMap();
 						options.put(ObjectKeys.SEARCH_SORT_BY, Constants.SORT_TITLE_FIELD);
@@ -1236,10 +1209,7 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append("</select>\n<br/><br/>\n");
 
 					} else {
-						if (!propertyConfig.attributeValue("caption", "").equals("")) {
-							sb.append(NLT.getDef(propertyConfig.attributeValue("caption", "")).replaceAll("&", "&amp;"));
-							sb.append("\n<br/>\n");
-						}
+						sb.append(propertyConfigCaption);
 						sb.append("<input type=\"text\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" size=\"40\" ");
 						sb.append("value=\""+Html.formatTo(propertyValue0)+"\" "+readonly+"/>\n");
 					}
@@ -1473,7 +1443,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 		}
 	}
-
 	public int doEndTag() throws JspException {
 		return EVAL_PAGE;
 	}
@@ -1510,7 +1479,9 @@ public class BuildDefinitionDivs extends TagSupport {
 	public void setRefItemId(String refItemId) {
 	    this.refItemId = refItemId;
 	}
-
+	public void setDefinition(Definition definition) {
+	    this.definition = definition;
+	}
 }
 
 

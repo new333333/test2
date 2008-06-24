@@ -365,7 +365,7 @@ function showOptions(id, name, item) {
 }
 
 function showProperties(name, refItem) {
-	alert('showProperties: ' + name + ', ' + refItem)
+	//alert('showProperties: ' + name + ', ' + refItem)
 	//User selected an option, show the properties
 	operationSelection = "addItem";
 	operationSelectedItem = name;
