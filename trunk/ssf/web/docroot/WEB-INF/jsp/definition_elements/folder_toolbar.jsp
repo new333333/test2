@@ -30,7 +30,7 @@
 %>
 <% // Folder level toolbar %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<div class="ss_actions_bar1_pane" align="right">
+<div class="ss_actions_bar1_pane ss_sidebarImage" align="right">
 <table cellspacing="0" cellpadding="0" border="0"><tbody><tr>
 <td class="ss_actions_bar1" style="white-space:nowrap;">
 <c:if test="${!empty ssFolderToolbar}">
