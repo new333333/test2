@@ -172,7 +172,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
   <c:set var="ss_sidebarVisibilityHide" value="block"/>
   <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 </c:if>
-<div class="ss_actions_bar1_pane" width="100%" style="height: 22px;">
+<div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr>
 <ssf:ifnotaccessible>
@@ -181,12 +181,17 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
 ><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
-  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.show"/>]</span><span 
+  class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
   style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.hide"/>]</span></a>
+  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> www</span></a>
 </td>
 </ssf:ifnotaccessible>
+<td>
+	<button value="track" class="ss_toolbar_submitBtn ss_sidebarImage"><span>Track</span></button>
+	<button value="share" class="ss_toolbar_submitBtn ss_sidebarImage"><span>Share</span></button>
+	<button value="mail" class="ss_toolbar_submitBtn ss_sidebarImage"><span>Mail</span></button>
+</td>
 <td valign="top">
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 </td></tr>

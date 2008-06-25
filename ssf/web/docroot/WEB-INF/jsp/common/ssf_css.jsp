@@ -2152,6 +2152,73 @@ div.ss_sidebar_panel_featured {
   text-decoration:none;
 }
 
+/* TOOLBAR STYLES */
+
+.ss_sidebarImage {
+	background-image: url("<html:rootPath/>images/pics/navbar/bg_toolbar.gif");  
+	background-repeat: repeat-x;
+}
+.ss_sidebarSlide {
+	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_lg.png"); 
+	background-position:top left;
+	background-repeat: no-repeat;
+	height:22px;
+	color:#FFF;
+	}
+.ss_sidebarSlidesm {
+	background-image: url("<html:rootPath/>images/pics/navbar/toolbar_slide_sm.png"); 
+	background-position:top left;
+	background-repeat: no-repeat;
+	height:22px;
+	color:#FFF;
+	}
+button { 
+  border:0; 
+  cursor:pointer; 
+  padding:0 20px 0 0; 
+  text-align:center; 
+}
+button span {
+	position:relative;
+	display:block;
+	white-space:nowrap;
+	padding:0 0 0 25px;
+}
+
+/*AQUA buttons*/
+.ss_toolbar_submitBtn {
+	font-size:.8em;
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right.png");
+	background-repeat: no-repeat;
+	background-position: right;
+	 <c:if test="<%= isIE %>">
+  		background-position: top right!important;
+ 	</c:if>
+	
+}
+.ss_toolbar_submitBtn span {
+	line-height:20px;
+	height: 20px;
+	color:#fff;
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left.png");
+	background-repeat: no-repeat;
+	background-position: left;
+		 <c:if test="<%= isIE %>">
+  		background-position: top left!important;
+ 	</c:if>
+}
+.ss_toolbar_submitBtn:hover {
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right_hover.png");
+	background-repeat: no-repeat;
+	background-position: right;
+}
+.ss_toolbar_submitBtn:hover span {
+	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left_hover.png");
+	background-repeat: no-repeat;
+	background-position: left;
+}
+	
+	
 /* actions: */
 
 .ss_actions_bar1 {
@@ -2167,11 +2234,11 @@ div.ss_actions_bar1_pane {
 	height: 22px;
 	white-space: nowrap;
 }
-
+	
 table.ss_actions_bar2_pane, table.ss_actions_bar2_pane td {
 	background-color: ${ss_toolbar2_background_color};
 	width: 100%;
-	height: 22px;
+	height: 24px;
 	padding: 0px;
 	margin: 0px;
 	border-collapse: collapse;

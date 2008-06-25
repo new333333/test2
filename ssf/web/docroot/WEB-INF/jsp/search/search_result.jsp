@@ -75,17 +75,17 @@
   <c:set var="ss_sidebarVisibilityHide" value="block"/>
   <c:set var="ss_sidebarTdStyle" value="ss_view_sidebar"/>
 </c:if>
-<div class="ss_actions_bar1_pane" width="100%" style="height: 22px;">
+<div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr><td valign="middle">
 <a href="javascript: ;" 
   onClick="ss_showHideSidebar('${renderResponse.namespace}');return false;"
-><span style="padding-left:20px; display:${ss_sidebarVisibilityShow};"
+><span style="padding-left:9px; display:${ss_sidebarVisibilityShow};"
   id="ss_sidebarHide${renderResponse.namespace}" 
-  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.show"/>]</span><span 
-  style="padding-left:20px; display:${ss_sidebarVisibilityHide};"
+  class="ss_fineprint ss_sidebarSlidesm"><ssf:nlt tag="toolbar.sidebar.show"/></span><span 
+  style="padding-left:9px; display:${ss_sidebarVisibilityHide};"
   id="ss_sidebarShow${renderResponse.namespace}" 
-  class="ss_fineprint">[<ssf:nlt tag="toolbar.sidebar.hide"/>]</span></a>
+  class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> sss</span></a>
 </td><td valign="top">
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 </td></tr>
