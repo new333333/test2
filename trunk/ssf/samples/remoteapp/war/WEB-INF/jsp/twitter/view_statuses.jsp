@@ -8,6 +8,11 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
 <div style="border:1px solid black;margin:6px;padding:6px;">
+<c:if test="${empty ss_twitterId}">
+  <h4>Do you twitter? Add your Twitter name to your profile and see what your friends are saying.</h4>
+</c:if>
+<c:if test="${!empty ss_twitterId}">
+
 <h3>My Friends are Twittering</h3>
 
 <table cellpadding="3">
@@ -28,12 +33,15 @@
     </c:if>
   </td>
   <td valign="top" nowrap><a href="/remoteapp/twitter/id/${user['id']}" target="_blank" >${user['name']}</a></td>
-  <td valign="top" nowrap><fmt:formatDate value="<%= createdAtDate %>" type="both" 
-	 timeStyle="short" dateStyle="short"/></td>
+  <td valign="top" nowrap><fmt:formatDate value="<%= createdAtDate %>" pattern="EEE, hh:mm a"/><br/>
+    <fmt:formatDate value="<%= createdAtDate %>" dateStyle="long"/></td>
   <td valign="top">${user.status.text}</td>
   </tr>
 </c:forEach>
 </table>
+<br/>
+[Twitterer: ${ss_twitterId}]
+</c:if>
 
 </div>
 <br/>

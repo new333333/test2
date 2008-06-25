@@ -75,6 +75,7 @@ public class TwitterServlet extends HttpServlet {
 	private static final String PARAMETER_NAME_ACCESS_TOKEN = "ss_access_token";
 	private static final String PARAMETER_NAME_TOKEN_SCOPE = "ss_token_scope";
 	private static final String PARAMETER_NAME_RENDERABLE = "ss_renderable";
+	private static final String PARAMETER_NAME_TWITTER_ID = "ss_twitterId";
 	private static final String PARAMETER_NAME_STATUSES = "ss_statuses";
 	private static final String PARAMETER_NAME_USERS = "ss_users";
 
@@ -175,6 +176,7 @@ public class TwitterServlet extends HttpServlet {
 			req.setAttribute(PARAMETER_NAME_USER_ID, userId);
 			req.setAttribute(PARAMETER_NAME_STATUSES, result);
 			req.setAttribute(PARAMETER_NAME_USERS, users);
+			req.setAttribute(PARAMETER_NAME_TWITTER_ID, twitterId);
 			rd.include(req, resp2);	
 			resp.getWriter().print(resp2.getString());
 		}
