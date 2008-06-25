@@ -53,7 +53,7 @@
 			    <ssf:ifaccessible>
 			    	<span class="ss_go_to_page"><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
-			    <input name="entry" id="entry" size="1" type="text" class="form-text" />
+			    <input name="entry" id="entry" size="6" type="text" class="form-text" />
 				<a class="ss_linkButton" href="javascript: ;" 
 				<ssf:title tag="Go To Entry" />
 				onClick=""><ssf:nlt tag="button.go"/></a>

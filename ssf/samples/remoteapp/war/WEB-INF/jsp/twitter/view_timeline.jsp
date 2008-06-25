@@ -22,8 +22,8 @@
   <tr>
   <td valign="top"><c:if test="${!userImageShown && !empty status.user['profile_image_url']}"><img src="${status.user['profile_image_url']}" /></c:if></td>
   <td valign="top" nowrap><c:if test="${!userImageShown}">${status.user['name']}</c:if></td>
-  <td valign="top" nowrap><fmt:formatDate value="<%= createdAtDate %>" type="both" 
-	 timeStyle="short" dateStyle="short"/></td>
+  <td valign="top" nowrap><fmt:formatDate value="<%= createdAtDate %>" pattern="EEE,hh:mm a"/><br/>
+    <fmt:formatDate value="<%= createdAtDate %>" dateStyle="long"/></td>
   <td valign="top">${status.text}</td>
   </tr>
 <c:set var="userImageShown" value="true"/>
