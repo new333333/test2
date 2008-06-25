@@ -62,8 +62,8 @@ dojo.widget.defineWidget(
 				if (this.startDateWidget && this.endDateWidget) {
 					diff = dojo.date.compare(this.startDateWidget.getDate(), this.endDateWidget.getDate(), dojo.date.compareTypes.DATE);
 					if (this.startTimeWidget && this.endTimeWidget && diff == 0) {
-						if (dojo.date.compare(dojo.widget.TimePicker.util.fromRfcDateTime(this.startTimeWidget.getTime()), dojo.widget.TimePicker.util.fromRfcDateTime(this.endTimeWidget.getTime()), dojo.date.compareTypes.TIME) > 0) {
-							this.endTimeWidget.setTime(dojo.date.add(dojo.widget.TimePicker.util.fromRfcDateTime(this.startTimeWidget.getTime()), dojo.date.dateParts.MINUTE, 30));
+						if (dojo.date.compare(sitescape.widget.TimePickerSf.util.fromRfcDateTime(this.startTimeWidget.getTime()), sitescape.widget.TimePickerSf.util.fromRfcDateTime(this.endTimeWidget.getTime()), dojo.date.compareTypes.TIME) > 0) {
+							this.endTimeWidget.setTime(dojo.date.add(sitescape.widget.TimePickerSf.util.fromRfcDateTime(this.startTimeWidget.getTime()), dojo.date.dateParts.MINUTE, 30));
 						}
 					}
 				}

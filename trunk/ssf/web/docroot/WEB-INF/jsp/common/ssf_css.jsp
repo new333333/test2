@@ -3215,6 +3215,10 @@ div.ss_cal_monthGridDayBadgeCurrent a, div.ss_cal_monthGridDayBadge a {
   top: -2px;
 }
 
+div.ss_cal_monthGridDayBadgeOverHighlight {
+  background-color: #E8EFF7;
+}
+
 /* Highlight for today */
 div.ss_cal_monthGridDayBadgeToday {
   background-color: #E8EFF7;
