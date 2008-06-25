@@ -58,7 +58,7 @@ var <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter>
 <tr>
 <td valign="top">
 <input type="checkbox" class="ss_style" id="enabled" name="enabled" <c:if test="${ssScheduleInfo.enabled}">checked</c:if> />
-<span class="ss_labelRight"><ssf:nlt tag="synchronization.schedule.enable"/> </span><ssf:inlineHelp tag="ihelp.email.enableCheckBox"/>
+<span class="ss_labelRight"><ssf:nlt tag="synchronization.schedule.enable"/> </span><ssf:inlineHelp tag="ihelp.synchronization.schedule.enableCheckBox"/>
 <br/>
 <c:set var="schedule" value="${ssScheduleInfo.schedule}"/>
 <c:set var="schedPrefix" value="sync"/>
