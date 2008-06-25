@@ -30,8 +30,7 @@
 %>
 <c:if test="${ssDefinitionEntry.entityType == 'folder'}">
 
-<ssf:sidebarPanel title="sidebar.tags.tools" id="ss_placetags_sidebar" divClass="ss_place_tags"
-    initOpen="false" sticky="true">
+<ssf:sidebarPanel title="sidebar.tags.tools" id="ss_tooltags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
 
 <em>Add a Filter, Show Entries, Folder View, and Folder Action to go here</em>
 <hr>
@@ -154,15 +153,14 @@
 			    </div>
 			</form>
 </ssf:sidebarPanel>
-<ssf:sidebarPanel title="sidebar.tags.folder" id="ss_placetags_sidebar" divClass="ss_place_tags"
-    initOpen="false" sticky="true">
+<ssf:sidebarPanel title="sidebar.tags.folder" id="ss_placetags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
 
   <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
   <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 </ssf:sidebarPanel>
 </c:if>
 <c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
-<ssf:sidebarPanel title="relevance.userStatus" id="ss_placetags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
+<ssf:sidebarPanel title="relevance.userStatus" id="ss_status_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
 <ssf:ifLoggedIn>
 <script type="text/javascript">
 ss_statusCurrent = "${ssUser.status}";
@@ -179,8 +177,7 @@ ss_statusCurrent = "${ssUser.status}";
 
 </ssf:ifLoggedIn> 
 </ssf:sidebarPanel>
-<ssf:sidebarPanel title="sidebar.tags.workspace" id="ss_placetags_sidebar" divClass="ss_place_tags"
-    initOpen="false" sticky="true">
+<ssf:sidebarPanel title="sidebar.tags.workspace" id="ss_workspace_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
   <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
   <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 </ssf:sidebarPanel>
