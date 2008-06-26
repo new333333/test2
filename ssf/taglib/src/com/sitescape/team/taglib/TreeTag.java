@@ -280,10 +280,6 @@ public class TreeTag extends TagSupport {
 					if (this.nowrap) sb.append(" ss_nowrap");
 					sb.append("\">\n");
 					
-					// hope it's not in use here because type attribute is now unknown
-//					if (mPrefix.startsWith("$type")) {
-//						mPrefix = mPrefix.replaceFirst("\\$type", e.attributeValue("type", "$type"));
-//					}
 					
 					String idChoices = "";
 					if (this.multiSelect != null && !this.multiSelect.isEmpty()) {
@@ -440,9 +436,6 @@ public class TreeTag extends TagSupport {
 			boolean ino = (e.attributeValue("treeOpen") == "1") ? true : false;
 			String action = e.attributeValue("action", "");
 			String mPrefix=this.multiSelectPrefix;
-			if (mPrefix.startsWith("$type")) {
-				mPrefix = mPrefix.replaceFirst("\\$type", e.attributeValue("type", "$type"));
-			}
 				
 
 			//Show the tree 
