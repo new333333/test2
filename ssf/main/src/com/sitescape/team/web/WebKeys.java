@@ -984,9 +984,12 @@ public class WebKeys {
     public static final String PAGE_DISPLAY_VALUE = "ssPageDisplayValue";
 	public static final String PAGE_INTERNAL_VALUE = "ssPageInternalValue";
 	public static final String PAGE_NO_LINK = "ssPageNoLink";
+	public static final String PAGE_CURRENT = "ssPageCurrent";
 	public static final String PAGE_IS_CURRENT = "ssPageIsCurrent";
 	public static final String PAGE_PREVIOUS = "ssPagePrevious";
 	public static final String PAGE_NEXT = "ssPageNext";
+	public static final String PAGE_LAST = "ssPageLast";
+	public static final String PAGE_LAST_STARTING_INDEX = "ssPageLastStartingIndex";
 	public static final String PAGE_NUMBERS = "ssPageNumbers";
 	public static final String PAGE_COUNT = "ssPageCount";
 	public static final String PAGE_ENTRIES_PER_PAGE = "ssEntriesPerPage";
