@@ -1173,7 +1173,9 @@ a.ss_displaytag {
 /* Sliding tables */
 div.ss_sliding_table_column0 {
   display: block; 
-  border: ${ss_sliding_table_border_color} 1px solid;
+  border-left: ${ss_sliding_table_border_color} 1px solid;
+  border-right: ${ss_sliding_table_border_color} 1px solid;
+  border-bottom: ${ss_sliding_table_border_color} 1px solid;
   margin: 0px;
 }
 .ss_sliding_table_column0 * {
@@ -1208,8 +1210,8 @@ div.ss_sliding_table_column {
   position: absolute; 
   visibility: hidden;
   display:block; 
-  border-left: ${ss_sliding_table_border_color} solid 1px;
-  margin: 0px;
+  margin-left: 0px;
+  padding-left:1px;
 }
 .ss_sliding_table_row0 {
   background-color: ${ss_sliding_table_row0_background_color}; 

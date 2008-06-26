@@ -1493,25 +1493,29 @@ function ss_getDivLeft(divName) {
 function ss_getDivScrollTop(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return parseInt(obj.scrollTop);
+    return dojo.html.getAbsolutePosition(obj, true).y;
+    //return parseInt(obj.scrollTop);
 }
 
 function ss_getDivScrollLeft(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return parseInt(obj.scrollLeft);
+    return dojo.html.getAbsolutePosition(obj, true).x;
+    //return parseInt(obj.scrollLeft);
 }
 
 function ss_getDivHeight(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return parseInt(obj.offsetHeight);
+    return parseInt(dojo.html.getContentBox(obj).height);
+    //return parseInt(obj.offsetHeight);
 }
 
 function ss_getDivWidth(divName) {
     var obj = self.document.getElementById(divName)
     if (!obj) return 0;
-    return parseInt(obj.offsetWidth);
+    return parseInt(dojo.html.getContentBox(obj).width);
+    //return parseInt(obj.offsetWidth);
 }
 
 function ss_getAnchorTop(anchorName) {
