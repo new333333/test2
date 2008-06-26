@@ -33,5 +33,6 @@
 <%
 boolean isIE = BrowserSniffer.is_ie(request);
 %>
+
 <%@ include file="/WEB-INF/jsp/sidebars/folder_tags.jsp" %>
 

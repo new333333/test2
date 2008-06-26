@@ -33,6 +33,85 @@
 <%@ page import="com.sitescape.team.util.SPropsUtil" %>
 <%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
+<ssf:sidebarPanel title="relevance.userStatus" id="ss_status_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
+<ssf:ifLoggedIn>
+<script type="text/javascript">
+ss_statusCurrent = "${ssUser.status}";
+</script>
+
+<input type="text" size="42" style="font-size:9px; background-color:#e6e6e6;" value="${ssUser.status}"
+  onFocus="ss_setStatusBackground(this, 'focus');"
+  onKeyPress="ss_updateStatusSoon(this, event);"
+  onChange="ss_updateStatusNow(this);"
+  onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
+  onMouseover="ss_setStatusBackground(this, 'mouseOver');"
+  onMouseout="ss_setStatusBackgroundCheck(this);"
+  />
+
+</ssf:ifLoggedIn> 
+</ssf:sidebarPanel>
+<ssf:sidebarPanel title="relevance.shareTrack" id="ss_share_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
+<ssf:ifLoggedIn>
+
+<!-- Beginning of  Share/Track Buttons -->
+<div>
+	<ul style="padding-top: 2px; padding-left: 5px;">
+	<li>
+<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+<a style="display:inline;" 
+  href="<ssf:url adapter="true" portletName="ss_forum" 
+		action="__ajax_relevance" actionUrl="false"><ssf:param 
+		name="operation" value="share_this_binder" /><ssf:param 
+		name="binderId" value="${ssBinder.id}" /></ssf:url>" 
+  onClick="ss_openUrlInWindow(this, '_blank', '450px', '600px');return false;"
+<c:if test="${ssBinder.entityType == 'workspace'}"> 
+	title="<ssf:nlt tag="relevance.shareThisWorkspace"/>" >
+	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justShare"/></span></c:if>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <c:if test="${ssDefinitionFamily != 'calendar'}">
+  	title="<ssf:nlt tag="relevance.shareThisFolder"/>" >
+  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justShare"/></span></c:if>
+  <c:if test="${ssDefinitionFamily == 'calendar'}">
+  	title="<ssf:nlt tag="relevance.shareThisCalendar"/>" >
+  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justShare"/></span></c:if>
+</c:if>
+</a>
+</c:if>
+</li>
+
+<li>
+<c:if test="${!empty ssBinder && ssBinder.entityType != 'profiles'}">
+<a href="javascript: ;" 
+  onClick="ss_trackThisBinder('${ssBinder.id}', '${renderResponse.namespace}');return false;"
+<c:if test="${ssBinder.entityType == 'workspace'}">
+  <c:if test="${ssBinder.definitionType != 12}">
+  title="<ssf:nlt tag="relevance.trackThisWorkspace"/>" >
+  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+  <c:if test="${ssBinder.definitionType == 12}">
+  	title="<ssf:nlt tag="relevance.trackThisPerson"/>" >
+  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+</c:if>
+<c:if test="${ssBinder.entityType == 'folder'}">
+  <c:if test="${ssDefinitionFamily != 'calendar'}">
+  	title="<ssf:nlt tag="relevance.trackThisFolder"/>" >
+  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+  <c:if test="${ssDefinitionFamily == 'calendar'}">
+  	title="<ssf:nlt tag="relevance.trackThisCalendar"/>" >
+  	<span class="ss_tabs_title"><ssf:nlt tag="relevance.justTrack"/></span></c:if>
+</c:if>
+</a>
+</c:if>
+</li>
+
+
+
+<!-- end of share and track buttons div -->
+<div id="ss_track_this_ok${renderResponse.namespace}" 
+  style="position:relative; display:none; visibility:hidden; top:-15px; left:10px; z-index:500;
+         border:1px solid black; padding:10px; background-color:#ffffff; margin-bottom:10px;"></div>
+</div>
+</ssf:ifLoggedIn> 
+</ssf:sidebarPanel>
 <c:set var="ss_urlWindowState" value="maximized"/>
 <c:set var="ss_urlWindowState" value=""/>
 <c:set var="numTabs" value="0"/>
