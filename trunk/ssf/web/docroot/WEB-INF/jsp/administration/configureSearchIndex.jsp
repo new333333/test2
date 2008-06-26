@@ -37,7 +37,7 @@
 <div class="ss_style ss_portlet">
 
 <%
-String wsTreeName = "search_" + renderResponse.getNamespace();
+String wsTreeName = "" + renderResponse.getNamespace();
 %>
 <table class="ss_style" width="100%"><tr><td>
 
@@ -127,7 +127,7 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 </script>
 <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
   rootOpen="true" topId="${ssWsDomTreeBinderId}" 
-  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type" />
+  multiSelect="<%= new ArrayList() %>" multiSelectPrefix="search" />
 
 <br>
 <br>

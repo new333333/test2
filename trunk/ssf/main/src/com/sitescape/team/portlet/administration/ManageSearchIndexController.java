@@ -61,32 +61,23 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebStatusTicket;
 import com.sitescape.util.Validator;
 public class ManageSearchIndexController extends  SAbstractController {
-	
+	private final String usersAndGroups = "zzzzzzzzzzzzzzzzzzz";
 	public void handleActionRequestAfterValidation(ActionRequest request, ActionResponse response) throws Exception {
 		Map formData = request.getParameterMap();
 		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
 		if (formData.containsKey("okBtn") || btnClicked.equals("okBtn")) {
 			//Get the list of binders to be indexed
 			List<Long> ids = new ArrayList();
-			Long profileId = null;
+			Boolean usersandgroups = false;
 			//Get the binders to be indexed
 			String[] values = (String[])formData.get(WebKeys.URL_ID_CHOICES);
 			for (int i = 0; i < values.length; i++) {
 				String[] valueSplited = values[i].split("\\s");
 				for (int j = 0; j < valueSplited.length; j++) {
 					if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-						if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_FOLDER + WebKeys.URL_ID_CHOICES_SEPARATOR)) {
-							String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-							ids.add(Long.valueOf(binderId));
-						} else if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE + WebKeys.URL_ID_CHOICES_SEPARATOR)) {
-							String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-							ids.add(Long.valueOf(binderId));
-						} else if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_PEOPLE + WebKeys.URL_ID_CHOICES_SEPARATOR)) {
-							//people are handled separetly, so we can reindex users without reindex their
-							//the entire workspace tree.
-							String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_PEOPLE + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-							profileId = Long.valueOf(binderId);
-						}								
+						String binderId = valueSplited[j].replaceFirst("search" + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
+						if (!usersAndGroups.equals(binderId)) ids.add(Long.valueOf(binderId));
+						else usersandgroups=true;
 					}
 				}
 			}
@@ -101,9 +92,11 @@ public class ManageSearchIndexController extends  SAbstractController {
 			}
 			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket);
 			//if people selected and not yet index; index content only, not the whole ws tree
-			if ((profileId != null) && !idsIndexed.contains(profileId))
-				getBinderModule().indexBinder(profileId, true);
-			
+			if (usersandgroups) {
+				ProfileBinder pf = getProfileModule().getProfileBinder();
+				if (!idsIndexed.contains(pf.getId()))
+					getBinderModule().indexBinder(pf.getId(), true);
+			}
 			if (logger.isDebugEnabled()) {
 				logger.debug(SimpleProfiler.toStr());
 				SimpleProfiler.clearProfiler();
@@ -127,9 +120,9 @@ public class ManageSearchIndexController extends  SAbstractController {
     	Element rootElement = pTree.addElement(DomTreeBuilder.NODE_ROOT);
     	Element users = rootElement.addElement(DomTreeBuilder.NODE_CHILD);
     	ProfileBinder p = getProfileModule().getProfileBinder();
-    	users.addAttribute("type", DomTreeBuilder.NODE_TYPE_PEOPLE);
-    	users.addAttribute("title", NLT.get("administration.profile.content"));
-    	users.addAttribute("id", p.getId().toString());
+       	users.addAttribute("action", "search");
+       	users.addAttribute("title", NLT.get("administration.profile.content"));
+    	users.addAttribute("id", usersAndGroups);
 		String icon = p.getIconName();
 		String imageBrand = SPropsUtil.getString("branding.prefix");
 		if (Validator.isNull(icon)) {
