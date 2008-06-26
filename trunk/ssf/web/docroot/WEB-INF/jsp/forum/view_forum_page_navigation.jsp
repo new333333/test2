@@ -65,19 +65,23 @@
 
 			<td valign="top" align="right">
 			<div id="ss_pagination">
-				<c:set var="ssCurrentPage" value="0"/>
-				<c:forEach var="currentEntryPage" items="${ssPageNumbers}" >
-				    <jsp:useBean id="currentEntryPage" type="java.util.HashMap" />
-					<c:if test="${!empty currentEntryPage.ssPageIsCurrent && currentEntryPage.ssPageIsCurrent == 'true'}">
-					  <c:set var="ssCurrentPage" value="${currentEntryPage.ssPageDisplayValue}"/>
-					</c:if>
-				</c:forEach>
-				
-				<c:choose>
-				  <c:when test="${ssPagePrevious.ssPageNoLink == 'true'}">
-					<span class="ss_disabled_tnt_pagination">&lt;&lt;</span>&nbsp;&nbsp;
-				  </c:when>
-				  <c:otherwise>
+
+						<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+							name="operation" value="save_folder_page_info"/><ssf:param 
+							name="binderId" value="${ssFolder.id}"/><ssf:param 
+							name="ssPageStartIndex" value="0"/><c:if test="${!empty cTag}"><ssf:param 
+							name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+							name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+							name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+							name="endDate" value="${endDate}"/></c:if></ssf:url>" 
+						  title="<ssf:nlt tag="title.goto.first.page"/>"
+						  onClick="ss_showFolderPage(this, '${ssFolder.id}', '1', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
+						  class="ssPageNumber" <ssf:title tag="title.goto.page.number"
+						  ><ssf:param name="value" value="1" /></ssf:title> 
+						>
+						<span>|&lt;&lt;</span><%--
+						--%></a>&nbsp;&nbsp;
+
 					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 						name="operation" value="save_folder_page_info"/><ssf:param 
 						name="binderId" value="${ssFolder.id}"/><ssf:param 
@@ -90,40 +94,12 @@
 						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPagePrevious.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
 						> &lt;&lt;
 					</a>&nbsp;&nbsp;
-				  </c:otherwise>
-				</c:choose>
-				
-				
-
-				<c:forEach var="entryPage" items="${ssPageNumbers}" >
-				<jsp:useBean id="entryPage" type="java.util.HashMap" />
-					<c:if test="${!empty entryPage.ssPageIsCurrent && entryPage.ssPageIsCurrent == 'true'}">
-						<span class="ssCurrentPage">
-							<c:if test="${ssPageCount > '1.0'}">
-							<span class="ss_active_tnt_link">
-							<c:out value="${entryPage.ssPageDisplayValue}"/></span>
-							</c:if>
-						</span>
-					</c:if>
 					
-					<c:if test="${empty entryPage.ssPageIsCurrent}">
-						<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
-							name="operation" value="save_folder_page_info"/><ssf:param 
-							name="binderId" value="${ssFolder.id}"/><ssf:param 
-							name="ssPageStartIndex" value="${entryPage.ssPageInternalValue}"/><c:if test="${!empty cTag}"><ssf:param 
-							name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
-							name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
-							name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
-							name="endDate" value="${endDate}"/></c:if></ssf:url>" 
-						  onClick="ss_showFolderPage(this, '${ssFolder.id}', '${entryPage.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
-						  class="ssPageNumber" <ssf:title tag="title.goto.page.number"
-						  ><ssf:param name="value" value="${entryPage.ssPageDisplayValue}" /></ssf:title> 
-						>
-						<span><c:out value="${entryPage.ssPageDisplayValue}"/></span><%--
-						--%></a>
-					</c:if>
-				</c:forEach>
-
+					<ssf:nlt tag="title.page.n_of_m">
+					  <ssf:param name="value" value="${ssPageCurrent}"/>
+					  <ssf:param name="value" value="${ssPageLast}"/>
+					</ssf:nlt>
+				
 				<c:choose>
 				  <c:when test="${ssPageNext.ssPageNoLink == 'true'}">
 					<span class="ss_disabled_tnt_pagination">&gt;&gt;</span>
@@ -141,9 +117,23 @@
 						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPageNext.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
 						> 
 						&gt;&gt;
-					</a>
+					</a>&nbsp;&nbsp;
 				  </c:otherwise>
 				</c:choose>
+
+					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+						name="operation" value="save_folder_page_info"/><ssf:param 
+						name="binderId" value="${ssFolder.id}"/><ssf:param 
+						name="ssPageStartIndex" value="${ssPageLastStartingIndex}"/><c:if test="${!empty cTag}"><ssf:param 
+						name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+						name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+						name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+						name="endDate" value="${endDate}"/></c:if></ssf:url>" 
+						title="<ssf:nlt tag="title.goto.last.page"/>"
+						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPageLast}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
+						> 
+						&gt;&gt;|
+					</a>
 			</div>	
 			</td>
 			<% // goto page option %>

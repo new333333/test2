@@ -831,6 +831,7 @@ public class ListFolderHelper {
 		String pageStartIndex = (String) pagingInfo.get(WebKeys.PAGE_START_INDEX);
 		String pageEndIndex = (String) pagingInfo.get(WebKeys.PAGE_END_INDEX);
 
+		model.put(WebKeys.PAGE_CURRENT, pagingInfo.get(WebKeys.PAGE_CURRENT));
 		model.put(WebKeys.PAGE_PREVIOUS, prevPage);
 		model.put(WebKeys.PAGE_NUMBERS, pageNumbers);
 		model.put(WebKeys.PAGE_NEXT, nextPage);
@@ -841,6 +842,8 @@ public class ListFolderHelper {
 		double dblNoOfPages = Math.ceil((double)totalRecordsFound/searchPageIncrement);
 		
 		model.put(WebKeys.PAGE_COUNT, ""+dblNoOfPages);
+		model.put(WebKeys.PAGE_LAST, String.valueOf(Math.round(dblNoOfPages)));
+		model.put(WebKeys.PAGE_LAST_STARTING_INDEX, String.valueOf((Math.round(dblNoOfPages) -1) * searchPageIncrement));
 		model.put(WebKeys.SEARCH_TOTAL_HITS, folderEntries.get(ObjectKeys.SEARCH_COUNT_TOTAL));
 		
 		return model;
@@ -1120,7 +1123,8 @@ public class ListFolderHelper {
 		
 		HashMap<String, Object> hmRet = new HashMap<String, Object>();
 		ArrayList<HashMap> pagingInfo = new ArrayList<HashMap>(); 
-		int currentDisplayValue = ( intSearchOffset + intSearchPageIncrement) / intSearchPageIncrement;		
+		int currentDisplayValue = ( intSearchOffset + intSearchPageIncrement) / intSearchPageIncrement;
+		hmRet.put(WebKeys.PAGE_CURRENT, String.valueOf(currentDisplayValue));
 
 		//Adding Prev Page Link
 		int prevInternalValue = intSearchOffset - intSearchPageIncrement;
