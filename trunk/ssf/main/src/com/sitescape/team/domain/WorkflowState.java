@@ -188,8 +188,7 @@ public class WorkflowState extends ZonedObject {
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_DATABASEID, getId().toString());
 		element.addAttribute(ObjectKeys.XTAG_ATTRIBUTE_NAME, getState());
 		
-		if (getDefinition() != null)  //will be null on cleanup after delete folder
-			XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_DEFINITION, getDefinition().getId());
+		XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_DEFINITION, getDefinition().getId());
 		if (getTimerId() != null)
 			XmlUtils.addProperty(element, ObjectKeys.XTAG_WFS_TIMER, getTimerId());
 		if (!Validator.isNull(getThreadName())) 
