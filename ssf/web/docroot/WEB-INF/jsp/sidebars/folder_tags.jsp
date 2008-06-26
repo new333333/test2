@@ -32,7 +32,7 @@
 
 <ssf:sidebarPanel title="sidebar.tags.tools" id="ss_tooltags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
 
-<em>Add a Filter, Show Entries, Folder View, and Folder Action to go here</em>
+<em>Folder View, and Folder Action to go here</em>
 <hr>
 <div>
 	<ul style="padding-top: 2px; padding-left: 5px;">
@@ -86,67 +86,35 @@
 				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
 				    titleClass="ss_compact" menuClass="ss_actions_bar4 ss_actions_bar_submenu" menuImage="pics/menudown.gif">
 				
-				    <ssf:ifnotaccessible>
-				
 					<ul class="ss_actions_bar4 ss_actions_bar_submenu" style="width:150px;">
 					<li>
 						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;">
-							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
+							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="5"/></ssf:nlt>
 						</a>
 					</li>
 					<li>	
 						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;">
-							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
+							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="10"/></ssf:nlt>
 						</a>
 					</li>
 					<li>
 						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;">
-							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
+							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="25"/></ssf:nlt>
 						</a>
 					</li>
 					<li>
 						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;">
-							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
+							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="50"/></ssf:nlt>
 						</a>
 					</li>
 					<li>
 						<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;">
-							<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
+							<ssf:nlt tag="entry.shown"><ssf:param name="value" value="100"/></ssf:nlt>
 						</a>
 					</li>
 					</ul>
 					
-				    </ssf:ifnotaccessible>	
-				
-				    <ssf:ifaccessible>
-
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '5');return false;"
-					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>">
-						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="5"/></ssf:nlt>
-					</a><br/>
-
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '10');return false;"
-					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>">
-						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="10"/></ssf:nlt>
-					</a><br/>
-
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '25');return false;"
-					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>">
-						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="25"/></ssf:nlt>
-					</a><br/>
-
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '50');return false;"
-					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>">
-						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="50"/></ssf:nlt>
-					</a><br/>
-
-					<a href="javascript: ;" onClick="ss_changePageEntriesCount_${renderResponse.namespace}('ss_recordsPerPage_${renderResponse.namespace}', '100');return false;"
-					title="<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>">
-						<ssf:nlt tag="folder.Page"><ssf:param name="value" value="100"/></ssf:nlt>
-					</a><br/>
-
-				    </ssf:ifaccessible>
-					
+				   				
 				  </ssf:menu>
 
 			    </span>
@@ -160,24 +128,8 @@
 </ssf:sidebarPanel>
 </c:if>
 <c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
-<ssf:sidebarPanel title="relevance.userStatus" id="ss_status_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
-<ssf:ifLoggedIn>
-<script type="text/javascript">
-ss_statusCurrent = "${ssUser.status}";
-</script>
 
-<input type="text" size="42" style="font-size:9px; background-color:#e6e6e6;" value="${ssUser.status}"
-  onFocus="ss_setStatusBackground(this, 'focus');"
-  onKeyPress="ss_updateStatusSoon(this, event);"
-  onChange="ss_updateStatusNow(this);"
-  onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
-  onMouseover="ss_setStatusBackground(this, 'mouseOver');"
-  onMouseout="ss_setStatusBackgroundCheck(this);"
-  />
-
-</ssf:ifLoggedIn> 
-</ssf:sidebarPanel>
-<ssf:sidebarPanel title="sidebar.tags.workspace" id="ss_workspace_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
+<ssf:sidebarPanel title="sidebar.tags.workspace" id="ss_workspace_tags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
   <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
   <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
 </ssf:sidebarPanel>
