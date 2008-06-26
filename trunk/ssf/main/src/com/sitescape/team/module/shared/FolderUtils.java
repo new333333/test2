@@ -158,9 +158,10 @@ public class FolderUtils {
 		data.put(ObjectKeys.FIELD_BINDER_RESOURCE_DRIVER_NAME, resourceDriverName);
 		data.put(ObjectKeys.FIELD_BINDER_RESOURCE_PATH, resourcePath);
 		data.put(ObjectKeys.PI_SYNCH_TO_SOURCE, Boolean.toString(synchToSource));
-		
+		Map params = new HashMap();
+		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
 		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), null, null);
+					new MapInputData(data), null, params);
 	}
 
 	/**
@@ -185,9 +186,11 @@ public class FolderUtils {
 		data.put(ObjectKeys.FIELD_ENTITY_TITLE, folderName); 
 		//data.put("description", "This folder was created through WebDAV");
 		data.put(ObjectKeys.FIELD_BINDER_LIBRARY, Boolean.TRUE.toString());
-		
+		Map params = new HashMap();
+		params.put(ObjectKeys.INPUT_OPTION_FORCE_LOCK, Boolean.TRUE);
+
 		return getBinderModule().addBinder(parentBinder.getId(), def.getId(), 
-					new MapInputData(data), null, null);
+					new MapInputData(data), null, params);
 	}
 	
 	public static void deleteMirroredFolder(Folder folder, boolean deleteMirroredSource)
