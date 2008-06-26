@@ -74,8 +74,8 @@ function ss_showSlidingTableCols200() {
 
 function ss_showSlidingTableCols() {
     if (typeof ss_slidingTableId_2 == "undefined") return;
-	ss_sTableMarginLeft = parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginRight)
-	ss_sTableMarginRight =  parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginLeft)
+	ss_sTableMarginLeft = parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginLeft)
+	ss_sTableMarginRight =  parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginRight)
 	ss_sTableMarginTop = parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginTop)
 	ss_sTableMarginBottom =  parseInt(self.document.getElementById(ss_slidingTableId_2).style.marginBottom)
 	
