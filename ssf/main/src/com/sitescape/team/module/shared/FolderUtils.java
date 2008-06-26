@@ -472,11 +472,14 @@ public class FolderUtils {
 	}
 	
 	private static Definition getZoneWideDefaultFolderEntryDefinition() {
-		List defs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.FOLDER_ENTRY);
-		if(defs != null)
-			return (Definition) defs.get(0);
-		else
-			return null;
+		List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_ENTRY);
+		for (Definition def:defs) {
+			if (ObjectKeys.DEFAULT_FOLDER_ENTRY_DEF.equals(def.getInternalId())) return def;
+		}
+		for (Definition def:defs) {
+			if (!Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) return def;
+		}
+		return null;
 	}
 	
 	private static Definition getFolderDefinition(Binder parentBinder) {
@@ -494,11 +497,14 @@ public class FolderUtils {
 	}
 	
 	private static Definition getZoneWideDefaultFolderDefinition() {
-		List defs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.FOLDER_VIEW);
-		if(defs != null)
-			return (Definition) defs.get(0);
-		else
-			return null;
+		List<Definition> defs = getDefinitionModule().getDefinitions(null, Boolean.FALSE, Definition.FOLDER_ENTRY);
+		for (Definition def:defs) {
+			if (ObjectKeys.DEFAULT_FOLDER_DEF.equals(def.getInternalId())) return def;
+		}
+		for (Definition def:defs) {
+			if (!Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) return def;
+		}
+		return null;
 	}
 
 	private static FolderModule getFolderModule() {

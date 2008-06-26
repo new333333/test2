@@ -319,7 +319,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 		List workflows = new ArrayList();
 		if (WebHelper.isUserLoggedIn(request)) {
-			workflows = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.WORKFLOW);
+			workflows = getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.WORKFLOW);
 		}
 		
 		Map model = new HashMap();
@@ -346,7 +346,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Map model = new HashMap();
 		SortedMap<String, Definition> entries = new TreeMap<String, Definition>();
 		if (WebHelper.isUserLoggedIn(request)) {
-			Iterator<Definition> it = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.FOLDER_ENTRY).iterator();
+			Iterator<Definition> it = getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY).iterator();
 			while (it.hasNext()) {
 				Definition entry = it.next();
 				String title = NLT.getDef(entry.getTitle());

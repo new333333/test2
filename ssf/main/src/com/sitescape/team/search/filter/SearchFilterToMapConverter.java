@@ -536,7 +536,7 @@ public class SearchFilterToMapConverter {
 	}
 
 	private Collection prepareEntries(Map convertedQuery) {
-		List entryTypes = bs.getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.FOLDER_ENTRY);
+		List entryTypes = bs.getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY);
 		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);		
 		List entriesFromSearch = (List) additionalOptions.get(SearchBlockTypeEntry);
 		if (entryTypes == null || entriesFromSearch == null) {
@@ -596,7 +596,7 @@ public class SearchFilterToMapConverter {
 		}
 	}
 	private Collection prepareWorkflows(Map convertedQuery) {
-		List workflows = bs.getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.WORKFLOW);
+		List workflows = bs.getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.WORKFLOW);
 		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);		
 		List wfFromSearch = (List) additionalOptions.get(SearchBlockTypeWorkflow);
 		if (workflows == null || wfFromSearch == null) {

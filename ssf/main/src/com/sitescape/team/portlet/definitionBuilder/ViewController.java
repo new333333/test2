@@ -95,10 +95,10 @@ public class ViewController extends SAbstractController {
 					Integer type = PortletRequestUtils.getIntParameter(request, "definitionType_"+operationItem);
 					if (Validator.isNotNull(name) && type != null) {
 						if (binderId == null) {
-							Definition def = getDefinitionModule().addPublicDefinition(name, caption, type, new MapInputData(formData));			
+							Definition def = getDefinitionModule().addDefinition(null, name, caption, type, new MapInputData(formData));			
 							selectedItem = def.getId();
 						} else {
-							Definition def = getDefinitionModule().addBinderDefinition(getBinderModule().getBinder(binderId), name, caption, type, new MapInputData(formData));			
+							Definition def = getDefinitionModule().addDefinition(getBinderModule().getBinder(binderId), name, caption, type, new MapInputData(formData));			
 							selectedItem = def.getId();
 							
 						}
@@ -110,8 +110,9 @@ public class ViewController extends SAbstractController {
 					
 				} else if (operation.equals("setVisibility")) {
 					//Modify the name of the selected item
+					Long targetBinderId = PortletRequestUtils.getLongParameter(request, "targetId");
 					Integer visibility = PortletRequestUtils.getIntParameter(request, "visibility");
-					getDefinitionModule().modifyVisibility(selectedItem, visibility);
+					getDefinitionModule().modifyVisibility(selectedItem, visibility, targetBinderId);
 
 				} else if (operation.equals("copyDefinition")) {
 					//Add a new definition type
@@ -124,10 +125,10 @@ public class ViewController extends SAbstractController {
 					doc.getRootElement().addAttribute("databaseId", "");
 					if (Validator.isNotNull(name)) {
 						if (binderId == null) {
-							def = getDefinitionModule().addPublicDefinition(doc, name, caption, false);			
+							def = getDefinitionModule().addDefinition(doc, null, name, caption, false);			
 							selectedItem = def.getId();
 						} else {
-							def = getDefinitionModule().addBinderDefinition(doc, getBinderModule().getBinder(binderId), name, caption, false);			
+							def = getDefinitionModule().addDefinition(doc, getBinderModule().getBinder(binderId), name, caption, false);			
 							selectedItem = def.getId();
 								
 						}

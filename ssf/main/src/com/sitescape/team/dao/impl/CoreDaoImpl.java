@@ -331,6 +331,19 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 		   			if (!binder.isRoot()) {
 		   				session.getSessionFactory().evictCollection("com.sitescape.team.domain.Binder.binders", binder.getParentBinder().getId());
 		   			}
+		   			//find definitions owned by this binder
+		   			List<Definition> defs = session.createCriteria(Definition.class)
+		   				.add(Expression.eq("binderId", binder.getId())).list();
+		   			for (Definition definition:defs) {
+		   				try {
+		   					delete(definition);
+		   				} catch (Exception ex) {
+		   					//assume in use
+		   					definition.setVisibility(Definition.VISIBILITY_DEPRECATED);
+		   					definition.setBinderId(null);
+		   					definition.setName(definition.getId());//need a unique name
+		   				}
+		   			}
 		   			session.evict(binder);
 		   			
 		   			return null;
@@ -857,8 +870,8 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
 	                 	Criteria crit =session.createCriteria(Definition.class)
                  		.add(Expression.eq("zoneId", zoneId))
                  		.add(Expression.eq("name", name));
-                 		if (binder != null) crit.add(Expression.eq("binder", binder));
-                 		else crit.add(Expression.isNull("binder"));
+                 		if (binder != null) crit.add(Expression.eq("binderId", binder.getId()));
+                 		else crit.add(Expression.isNull("binderId"));
                 		Definition def = (Definition)crit.uniqueResult();
 	                    if (def == null) {throw new NoDefinitionByTheIdException(name);}
 	                    return def;

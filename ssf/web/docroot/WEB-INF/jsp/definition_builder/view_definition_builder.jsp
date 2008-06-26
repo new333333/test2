@@ -246,7 +246,7 @@ function deleteDefinition() {
 	setStateMachine("deleteDefinition")
 	return false;
 }
-function setVisibility(visible) {
+function setVisibility(visible, toId) {
 	operationSelection = "view_definition_options"
 	operationSelectedItem = selectedId
 	ss_setupStatusMessageDiv()
@@ -254,11 +254,12 @@ function setVisibility(visible) {
 	hideDisplayDiv();
 	var urlParams={operation:'setVisibility', visibility:visible, option:'view_definition_options', 
 		sourceDefinitionId:sourceDefinitionId, binderId:binderId};
-	
+
+	if (toId != "") {urlParams['targetId'] = toId;}
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "definition_builder"); 
 	
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	//ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo()
 	ajaxRequest.setPostRequest(ss_postVisibilityChange);
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
@@ -266,6 +267,7 @@ function setVisibility(visible) {
 }
 function ss_postVisibilityChange(obj) {
 	// get trimmed content 
+
 	if (self.document.getElementById("ss_status_message").innerHTML == "error") {
 		alert(ss_not_logged_in);
 	} else {

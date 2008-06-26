@@ -14,8 +14,8 @@
     <property name="operationDate" type="timestamp"/>
     <property name="operation" length="32"/>
     <property name="version"/>
-<!-- use length to force medium text in mysql -->
-    <property name="xmlString" length="2000000" type="org.springframework.orm.hibernate3.support.ClobStringType"/>   
+
+    <property name="xmlString" type="org.springframework.orm.hibernate3.support.ClobStringType"/>   
 	<property name="entityId" index="entityOwner_clog"/>
    	<property name="entityType" length="16" index="entityOwner_clog"/>
     <property name="owningBinderId" index="owningBinder_clog"/>

@@ -54,11 +54,20 @@
 			
 		<table><tbody>
 		<tr><td><a href="javascript: ;" onClick="return modifyDefinition();"><ssf:nlt tag="definition.modifyProperties"/></a></td></tr>
-		<tr><td><a href="javascript: ;\" onClick="return copyDefinition();"><ssf:nlt tag="definition.copyDefinition"/></a></td></tr>
-		<tr><td><a href="javascript: ;\" onClick="return deleteDefinition();"><ssf:nlt tag="definition.deleteDefinition"/></a></td></tr>
-			
-		<c:if test="${!empty ssDefinition && ssDefinition.visibility != 1 && ssIsAdmin}">
-		<tr><td><a href="javascript: ;\" onClick="return setVisibility(1);"><ssf:nlt tag="definition.setPublic"/></a></td></tr>
+		<tr><td><a href="javascript: ;" onClick="return copyDefinition();"><ssf:nlt tag="definition.copyDefinition"/></a></td></tr>
+		<tr><td><a href="javascript: ;" onClick="return deleteDefinition();"><ssf:nlt tag="definition.deleteDefinition"/></a></td></tr>
+		<c:set var="defBinderId" value=""/>
+		<c:if test="${!empty ssDefinition.binderId}">
+			<c:set var="defBinderId" value="${ssDefinition.binderId}"/>
+		</c:if>
+		<c:if test="${!empty ssDefinition.binderId  && ssIsAdmin}">
+		<tr><td><a href="javascript: ;" onClick="return setVisibility(1, '');"><ssf:nlt tag="definition.setGlobal"/></a></td></tr>
+		</c:if>
+		<c:if test="${ssDefinition.visibility == 1}">
+		<tr><td><a href="javascript: ;" onClick="return setVisibility(3, '${defBinderId}');"><ssf:nlt tag="definition.setDeprecated"/></a></td></tr>
+		</c:if>
+		<c:if test="${ssDefinition.visibility == 3}">
+		<tr><td><a href="javascript: ;" onClick="return setVisibility(1, '${defBinderId}');"><ssf:nlt tag="definition.setNotDeprecated"/></a></td></tr>
 		</c:if>
 		</tbody></table>
 	  </c:when>
@@ -70,7 +79,7 @@
 		  itemId="${data.itemId}" 
 		  itemName="${data.itemName}" 
 		  refItemId="${data.refItemId}" 
-		  definition="${ssDefinition}"
+		  owningBinderId="${ssDefinition.binderId}"
 		/>
 		</c:otherwise>
 		</c:choose>

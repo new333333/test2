@@ -95,6 +95,18 @@ public class Restrictions {
 		}
 	}
 	
+	static class IsNullCriterion extends SingleFieldCriterion
+	{
+		public IsNullCriterion(String name)
+		{
+			super(name);
+		}
+		public String toSQLString(String alias)
+		{
+			return getFieldName(alias) + " is null";
+		}
+	}
+	
 	public static Criterion eq(String name, Object value)
 	{
 		return new EqCriterion(name, value);
@@ -104,4 +116,8 @@ public class Restrictions {
 	{
 		return new NotNullCriterion(name);
 	}
+	public static Criterion isNull(String name)
+	{
+		return new IsNullCriterion(name);
+	}	
 }

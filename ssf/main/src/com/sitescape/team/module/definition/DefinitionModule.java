@@ -35,6 +35,7 @@ import java.util.NoSuchElementException;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
+import com.sitescape.team.ObjectExistsException;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
@@ -51,10 +52,8 @@ public interface DefinitionModule {
 	public enum DefinitionOperation {
 		manageDefinition,
 	}
-	public Definition addPublicDefinition(Document doc, String name, String title, boolean replace) throws AccessControlException;
-	public Definition addPublicDefinition(String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException;
-	public Definition addBinderDefinition(Document doc, Binder binder, String name, String title, boolean replace) throws AccessControlException;
-	public Definition addBinderDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException;
+	public Definition addDefinition(Document doc, Binder binder, String name, String title, boolean replace) throws AccessControlException;
+	public Definition addDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException;
 	/**
 	 * Adds an item to an item in a definition tree.
 	 *
@@ -78,10 +77,8 @@ public interface DefinitionModule {
 	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name);
 	public List<Definition> getAllDefinitions();
 	public List<Definition> getAllDefinitions(Integer type);
-	public List<Definition> getDefinitions(Integer visibility);
-	public List<Definition> getDefinitions(Integer visibility, Integer type);
-	public List<Definition> getBinderDefinitions(Long binderId, Boolean includeAncestors);
-	public List<Definition> getBinderDefinitions(Long binderId, Boolean includeAncestors, Integer type);
+	public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors);
+	public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors, Integer type);
 	public Document getDefinitionConfig();
 	public Document getDefinitionAsXml(Definition def);
 	/**
@@ -95,7 +92,7 @@ public interface DefinitionModule {
 	public Map getEntryDefinitionElements(String id);
 	public Map getWorkflowDefinitionStates(String id);
 
-	public void modifyVisibility(String id, Integer visibility) throws AccessControlException;
+	public void modifyVisibility(String id, Integer visibility, Long binderId) throws AccessControlException,ObjectExistsException;
 	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) throws AccessControlException;
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException, AccessControlException;
 	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException, AccessControlException;

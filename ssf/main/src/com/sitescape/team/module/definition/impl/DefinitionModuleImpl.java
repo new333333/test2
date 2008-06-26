@@ -49,10 +49,12 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.NotSupportedException;
+import com.sitescape.team.ObjectExistsException;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.dao.util.Restrictions;
 import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.ApplicationGroup;
 import com.sitescape.team.domain.Binder;
@@ -166,19 +168,18 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 
    	}
    	protected void checkAccess(Definition def, DefinitionOperation operation) throws AccessControlException {
-   		checkAccess(def.getBinder(), def.getType(), operation);
+   		if (def.getBinderId() == null) checkAccess(null, def.getType(), operation);
+   		else checkAccess(getCoreDao().loadBinder(def.getBinderId(), def.getZoneId()), def.getType(), operation);
    	}
    
-	public Definition addBinderDefinition(Document doc, Binder binder, String name, String title, boolean replace) throws AccessControlException {
+	public Definition addDefinition(Document doc, Binder binder, String name, String title, boolean replace) throws AccessControlException {
 		String type = doc.getRootElement().attributeValue("type");
 	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
     	Definition def = doAddDefinition(doc, binder, name, title, replace);
-    	def.setVisibility(Definition.VISIBILITY_LOCAL);
-    	def.setBinder(binder);
     	return def;
 		
 	}
-	public Definition addBinderDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException {
+	public Definition addDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException {
 	   	checkAccess(binder, type, DefinitionOperation.manageDefinition);
 
 		Definition newDefinition = new Definition();
@@ -186,8 +187,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		newDefinition.setTitle(title);
 		newDefinition.setType(type);
 		newDefinition.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
-		newDefinition.setBinder(binder);
-		newDefinition.setVisibility(Definition.VISIBILITY_LOCAL);
+		if (binder != null) newDefinition.setBinderId(binder.getId());
 		getCoreDao().save(newDefinition);
 		Document doc = getInitialDefinition(name, title, type, inputData);
 		setDefinition(newDefinition, doc);
@@ -195,25 +195,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		
 	}
 
-	public Definition addPublicDefinition(String name, String title, Integer type, InputDataAccessor inputData) {
-		checkAccess(null, type, DefinitionOperation.manageDefinition);
-
-		Definition newDefinition = new Definition();
-		newDefinition.setName(name);
-		newDefinition.setTitle(title);
-		newDefinition.setType(type);
-		newDefinition.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
-		getCoreDao().save(newDefinition);
-		Document doc = getInitialDefinition(name, title, type, inputData);
-		setDefinition(newDefinition, doc);
-		return newDefinition;
-	}
-	public Definition addPublicDefinition(Document doc, String name, String title, boolean replace) {
-    	Element root = doc.getRootElement();
-		String type = root.attributeValue("type");
-		checkAccess(null, Integer.valueOf(type), DefinitionOperation.manageDefinition);
-    	return doAddDefinition(doc, null, name, title, replace);
-    }
     protected Definition doAddDefinition(Document doc, Binder binder, String name, String title, boolean replace) {
     	Element root = doc.getRootElement();
 		if (Validator.isNull(name)) name = root.attributeValue("name");
@@ -252,8 +233,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				def = getCoreDao().loadDefinition(id, null);
 				//see if belong to this binder and zone
 				if (def.getZoneId().equals(zoneId) &&
-						((binder == null && def.getBinder() == null) ||
-								(binder != null && binder.equals(def.getBinder())))) {
+						((binder == null && def.getBinderId() == null) ||
+								(binder != null && binder.getId().equals(def.getBinderId())))) {
 						if (!replace || !type.equals(def.getType())) throw new DefinitionInvalidException("definition.error.alreadyExists", new Object[]{id});
 						//	update it
 						def.setName(name);
@@ -287,9 +268,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		def.setTitle(title);
 		def.setType(type);
 		def.setInternalId(internalId);	
-		def.setBinder(binder);
-		if (binder != null) def.setVisibility(Definition.VISIBILITY_LOCAL);
-		else def.setVisibility(Definition.VISIBILITY_PUBLIC);
+		if (binder != null) def.setBinderId(binder.getId());
 		if (Validator.isNull(id))
 			getCoreDao().save(def);
 		else {
@@ -303,6 +282,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     public void updateDefinitionReferences(String defId) {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
     	Definition def = getCoreDao().loadDefinition(defId, zoneId);
+    	Binder binder = null;
+    	if (def.getBinderId() != null) binder = getCoreDao().loadBinder(def.getBinderId(), zoneId);
     	Document doc = def.getDefinition();
     	if (doc == null) return;
     	List<Element> replyStyles = doc.getRootElement().selectNodes("//properties/property[@name='replyStyle']");
@@ -310,7 +291,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     		String styleId = styleElement.attributeValue("value", "");
     		Definition namedDef;
     		try {
-    			namedDef = getDefinitionByName(def.getBinder(), true, styleId);
+    			namedDef = getDefinitionByName(binder, true, styleId);
    				styleId = namedDef.getId();
    			} catch (NoDefinitionByTheIdException nd) {
    				styleId = "";
@@ -323,7 +304,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     		String entryId = condition.attributeValue("definitionId", "");
    			Definition namedDef;
    	   		try {
-   	   			namedDef = getDefinitionByName(def.getBinder(), true, entryId);
+   	   			namedDef = getDefinitionByName(binder, true, entryId);
    	   			entryId = namedDef.getId();
    			} catch (NoDefinitionByTheIdException nd) {
    				entryId = "";
@@ -391,23 +372,24 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		// Controllers need access to definitions.  Allow world read        
  		return coreDao.loadDefinition(id, RequestContextHolder.getRequestContext().getZoneId());
 	}
+    //lookup definition by name going up tree including public
 	public Definition getDefinitionByName(Binder binder, Boolean includeAncestors, String name) {
 		List<Definition> defs;
 		if (binder == null) {
   	    	Map params = new HashMap();
    	    	params.put("name", name);    
    	    	params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());  //need zone without binder
-  	    	defs = coreDao.loadObjects("from com.sitescape.team.domain.Definition where binder is null and zoneId=:zoneId and name=:name", params);
+  	    	defs = coreDao.loadObjects("from com.sitescape.team.domain.Definition where binderId is null and zoneId=:zoneId and name=:name", params);
   	    	 			
 		} else if (includeAncestors.equals(Boolean.TRUE)) {
    	    	Map params = new HashMap();
-   	    	params.put("binder", getAncestors(binder));    
+   	    	params.put("binderId", getAncestorIds(binder));    
    	    	params.put("name", name);    
   	    	params.put("zoneId", RequestContextHolder.getRequestContext().getZoneId());  //need zone without binder
-  	    	defs = coreDao.loadObjects("from com.sitescape.team.domain.Definition where (binder in (:binder) or binder is null) and zoneId=:zoneId and name=:name", params);
+  	    	defs = coreDao.loadObjects("from com.sitescape.team.domain.Definition where (binderId in (:binderId) or binderId is null) and zoneId=:zoneId and name=:name", params);
   	 	} else {
   	    	FilterControls filter = new FilterControls();
-  	 		filter.add("binder", binder);     	 		
+  	 		filter.add("binderId", binder.getId());     	 		
  	 		filter.add("name", name);     	 		
   	 		defs =  coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
  	 	}
@@ -418,7 +400,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		//find the one matching the binder the closest to this one
 		while (binder != null) {
 			for (Definition def:defs) {
-				if (binder.getId().equals(def.getBinder().getId())) return def;
+				if (binder.getId().equals(def.getBinderId())) return def;
 			}
 			binder = binder.getParentBinder();
 		}
@@ -434,19 +416,46 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     }
     
 	
-	public void modifyVisibility(String id, Integer visibility) {
+	public void modifyVisibility(String id, Integer visibility, Long binderId) {
 		if (visibility == null) return;
 		Definition def = getDefinition(id);
-		if (visibility.equals(def.getVisibility())) return;
    		checkAccess(def, DefinitionOperation.manageDefinition);
 
-	   	if (Definition.VISIBILITY_LOCAL.equals(visibility)) {
-	   		if (def.getBinder() == null) throw new NotSupportedException("Must be a binder definition");
-			def.setVisibility(visibility);
-	   	} else if (Definition.VISIBILITY_PUBLIC.equals(visibility)) {
-			checkAccess(null, def.getType(), DefinitionOperation.manageDefinition);
-			def.setVisibility(visibility);
-			def.setBinder(null);
+   		if (binderId == null) {
+   			if (def.getBinderId() == null) 	{
+	   			//already global
+   				def.setVisibility(visibility);
+   			} else {
+   				//want to move to global
+   		   		checkAccess(null, def.getType(), DefinitionOperation.manageDefinition);
+   		   		//see if name will be unique
+   		   		try {
+   		   			getCoreDao().loadDefinitionByName(null, def.getName(), def.getZoneId());
+   		   			//already exists
+   		   			throw new ObjectExistsException("errorcode.name.exists");
+   		   		} catch (NoDefinitionByTheIdException nd) {
+   		   			def.setVisibility(visibility);
+   					def.setBinderId(null);
+	   			}
+   			}
+	   	} else {
+	   		if (binderId.equals(def.getBinderId())) {
+		   		//just changing visibility
+	   			def.setVisibility(visibility);		   		 	   			
+	   		} else {
+	   			//moving
+	   			Binder binder = getCoreDao().loadBinder(binderId, def.getZoneId());
+	   			//check access at destination
+	   			checkAccess(binder, def.getType(), DefinitionOperation.manageDefinition);
+   		   		try {
+   		   			getCoreDao().loadDefinitionByName(binder, def.getName(), def.getZoneId());
+   		   			//already exists
+   		   			throw new ObjectExistsException("errorcode.name.exists");
+   		   		} catch (NoDefinitionByTheIdException nd) {
+   		   			def.setVisibility(visibility);
+   					def.setBinderId(binderId);
+	   			}	   			
+	   		}
 	   	}
 	   	
 	}
@@ -1740,53 +1749,52 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	filter.add("type", type);
     	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
      }
-   public List<Definition> getDefinitions(Integer visibility) {
+     
+    public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors) {
 		// Controllers need access to definitions.  Allow world read    
-    	return coreDao.loadDefinitions(new FilterControls("visibility", visibility), RequestContextHolder.getRequestContext().getZoneId());
-    }
-    
-    public List<Definition> getDefinitions(Integer visibility, Integer type) {
-		// Controllers need access to definitions.  Allow world read 
-    	FilterControls filter = new FilterControls();
-    	filter.add("visibility", visibility);
-    	filter.add("type", type);
-    	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
-     }
-    public List<Definition> getBinderDefinitions(Long binderId, Boolean includeAncestors) {
-		// Controllers need access to definitions.  Allow world read    
+       	if (binderId == null) {
+        	FilterControls filter = new FilterControls()
+        		.add(Restrictions.isNull("binderId"));
+        	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());  		
+    	}
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
    	 	if (includeAncestors.equals(Boolean.TRUE)) {
    	    	Map params = new HashMap();
-   	    	params.put("binder", getAncestors(binder));    
-   	    	return coreDao.loadObjects("from com.sitescape.team.domain.Definition where binder in (:binder)", params);
+   	    	params.put("binderId", getAncestorIds(binder));    
+   	    	return coreDao.loadObjects("from com.sitescape.team.domain.Definition where binderId is null or binderId in (:binderId)", params);
   	 	} else {
-  	    	FilterControls filter = new FilterControls();
-  	 		filter.add("binder", binder);     	 		
+  	    	FilterControls filter = new FilterControls()
+	      		.add(Restrictions.eq("binderId", binder.getId()));
   	    	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
  	 	}
     }
     
-    public List<Definition> getBinderDefinitions(Long binderId, Boolean includeAncestors, Integer type) {
+    public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors, Integer type) {
 		// Controllers need access to definitions.  Allow world read  
-    	//return local and shared that are in this tree
+    	if (binderId == null) {
+        	FilterControls filter = new FilterControls()
+         		.add(Restrictions.eq("type", type))
+        		.add(Restrictions.isNull("binderId"));
+        	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());  		
+    	}
     	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
    	 	if (includeAncestors.equals(Boolean.TRUE)) {
   	       	Map params = new HashMap();
   	    	params.put("type", type);
-   	 		params.put("binder", getAncestors(binder));    
-   	    	return coreDao.loadObjects("from com.sitescape.team.domain.Definition where type=:type and binder in (:binder)", params);
+   	 		params.put("binderId", getAncestorIds(binder));    
+   	    	return coreDao.loadObjects("from com.sitescape.team.domain.Definition where (binderId is null or binderId in (:binderId)) and type=:type", params);
   	 	} else {
- 	    	FilterControls filter = new FilterControls();
-  	 		filter.add("binder", binder);    
-  	 		filter.add("type", Integer.valueOf(type));
+  	      	FilterControls filter = new FilterControls()
+  	      		.add(Restrictions.eq("type", type))
+  	      		.add(Restrictions.eq("binderId", binder.getId()));
  	    	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());	 		
   	 	}
  
     }
-    private List<Binder> getAncestors(Binder binder) {
-    	ArrayList<Binder> bs = new ArrayList();
+    private List<Long> getAncestorIds(Binder binder) {
+    	ArrayList<Long> bs = new ArrayList();
     	while (binder != null) {
-    	   	bs.add(binder);
+    	   	bs.add(binder.getId());
     	   	binder = binder.getParentBinder();
     	}
     	return bs;

@@ -87,12 +87,12 @@
     </component>
     <property name="popularity" optimistic-lock="false"/>
     <component name="description">
- <!-- use length to force medium blog in mysql -->
-      <property name="HDescription" length="2000000" column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
+ 
+      <property name="HDescription"  column="description_text" type="com.sitescape.team.dao.util.SSClobStringType"/>
       <property name="HFormat" column="description_format"/>
     </component>
- <!-- use length to force medium blog in mysql -->
-   	<property name="branding" length="2000000" type="org.springframework.orm.hibernate3.support.ClobStringType"/>
+
+   	<property name="branding"  type="org.springframework.orm.hibernate3.support.ClobStringType"/>
     <property name="title" length="255" access="field"/>
     <property name="normalTitle" length="255"/>
     <property name="iconName" length="64"/>    

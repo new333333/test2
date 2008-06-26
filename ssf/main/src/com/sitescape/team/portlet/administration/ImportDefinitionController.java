@@ -119,9 +119,9 @@ public class ImportDefinitionController extends  SAbstractController {
 			SAXReader xIn = new SAXReader();
 			Document doc = xIn.read(fIn);  
 			if (binderId == null) {
-				return getDefinitionModule().addPublicDefinition(doc, null, null, replace).getId();
+				return getDefinitionModule().addDefinition(doc, null, null, null, replace).getId();
 			} else {
-				return getDefinitionModule().addBinderDefinition(doc, getBinderModule().getBinder(binderId), null, null, replace).getId();				
+				return getDefinitionModule().addDefinition(doc, getBinderModule().getBinder(binderId), null, null, replace).getId();				
 			}
 		} catch (Exception fe) {
 			errors.add((fileName==null ? "" : fileName) + " : " + (fe.getLocalizedMessage()==null ? fe.getMessage() : fe.getLocalizedMessage()));
