@@ -933,7 +933,7 @@ public class AjaxController  extends SAbstractControllerRetry {
 			model.put(WebKeys.FILTER_TYPE, op2);
 			Map defaultEntryDefinitions = DefinitionHelper.getEntryDefsAsMap(binder);
 			model.put(WebKeys.ENTRY_DEFINITION_MAP, defaultEntryDefinitions);
-			List<Definition> wfs = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.WORKFLOW);
+			List<Definition> wfs = getDefinitionModule().getDefinitions(binderId, Boolean.TRUE, Definition.WORKFLOW);
 			Map definitions = new HashMap();
 			for (Definition def:wfs) {
 				definitions.put(def.getId(), def);

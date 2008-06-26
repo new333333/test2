@@ -858,15 +858,7 @@ public abstract class AbstractBinderProcessor extends CommonDependencyInjection
     	getWorkAreaFunctionMembershipManager().deleteWorkAreaFunctionMemberships(
     			RequestContextHolder.getRequestContext().getZoneId(), binder);
 	    
-    	List<Definition> defs = getDefinitionModule().getBinderDefinitions(binder.getId(), false);
-    	//add to orphaned list
-    	for (Definition def:defs) {
-    		//make name unique
-    		def.setName(def.getId());
-    		//pass off to top level
-    		def.setBinder(null);
-    		def.setVisibility(Definition.VISIBILITY_ORHPAN);
-    	}
+
     }
   
     

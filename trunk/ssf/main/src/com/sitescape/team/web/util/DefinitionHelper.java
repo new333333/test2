@@ -93,20 +93,20 @@ public class DefinitionHelper {
 	 * Helper to get definitions available to a definition for cross reference
 	 * @param defType
 	 */	
-	public static SortedMap<String, Definition> getAvailableDefinitions(Definition definition, Integer defType) {
-		List<Definition> definitions = getInstance().getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, defType);
-		if (!Definition.VISIBILITY_PUBLIC.equals(definition.getVisibility())) {
-			//only get definitions defined at same level
-			definitions.addAll(getInstance().getDefinitionModule().getBinderDefinitions(definition.getBinder().getId(), true, Definition.FOLDER_ENTRY));			
-		}
+	public static SortedMap<String, Definition> getAvailableDefinitions(Long binderId, Integer defType) {
+		List<Definition> definitions = getInstance().getDefinitionModule().getDefinitions(binderId, Boolean.TRUE, defType);
 		TreeMap<String, Definition> orderedDefinitions = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
 		for (Definition def:definitions) {
-			orderedDefinitions.put(NLT.getDef(def.getTitle()), def);
+			if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
+				orderedDefinitions.put(NLT.getDef(def.getTitle()) + " (" + def.getName() + ") **" + NLT.get("__definition_deprecated"), def);
+			} else {
+				orderedDefinitions.put(NLT.getDef(def.getTitle()) + " (" + def.getName() + ")", def);
+				
+			}
 		}
 		return orderedDefinitions;
 
 	}
-
 	/**
 	 * Helper to get definition for other helpers
 	 * @param id

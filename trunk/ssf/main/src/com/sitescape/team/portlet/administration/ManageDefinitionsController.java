@@ -159,7 +159,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 				}
 			};
 			List defs=null;
-			if (binder != null) defs = getDefinitionModule().getBinderDefinitions(binder.getId(), false);
+			if (binder != null) defs = getDefinitionModule().getDefinitions(binder.getId(), Boolean.FALSE);
 			if (getDefinitionModule().testAccess(binder, Definition.FOLDER_ENTRY, DefinitionOperation.manageDefinition)) {
 				if (hasDefinitionType(defs, Definition.FOLDER_ENTRY)) {
 					element = DocumentHelper.createElement(DomTreeBuilder.NODE_CHILD);
@@ -307,23 +307,26 @@ public class ManageDefinitionsController extends  SAbstractController {
 		for (Definition def:definitions) {
 			if (!type.equals(def.getType())) continue;
 			if (Validator.isNotNull(def.getTitle()))
-				sortedMap.put(NLT.getDef(def.getTitle()), def);
+				sortedMap.put(NLT.getDef(def.getTitle())+ " (" + def.getName()+ ")", def);
 			else
-				sortedMap.put(def.getName(), def);
+				sortedMap.put(def.getName() + " (" + def.getName()+ ")", def);
 		}
-		for (Map.Entry me: sortedMap.entrySet()) {
-			Definition def = (Definition)me.getValue();
+		for (Map.Entry<String,Definition> me: sortedMap.entrySet()) {
+			Definition def = me.getValue();
 			Element curDefEle = element.addElement("child");
-			curDefEle.addAttribute("title", me.getKey() + " (" + def.getName()+ ")");
+			if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
+				curDefEle.addAttribute("image", "/pics/delete.gif");
+			} 
+			curDefEle.addAttribute("title", me.getKey());
 			curDefEle.addAttribute("id", def.getId());
 			curDefEle.addAttribute("url", "");
+
 		}
 
 	}
 	protected Document getDefinitionTree(Long binderId) {
 		List currentDefinitions;
-		if (binderId == null) currentDefinitions = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC);
-		else currentDefinitions = getDefinitionModule().getBinderDefinitions(binderId, false);
+		currentDefinitions = getDefinitionModule().getDefinitions(binderId, Boolean.FALSE);
 		//Build the definition tree
 		Document definitionTree = DocumentHelper.createDocument();
 		Element dtRoot = definitionTree.addElement(DomTreeBuilder.NODE_ROOT);
@@ -353,7 +356,12 @@ public class ManageDefinitionsController extends  SAbstractController {
 					curDefEle.addAttribute("type", defEle.attributeValue("name"));
 					String title = NLT.getDef(curDef.getTitle());
 					if (Validator.isNull(title)) title = curDef.getName();
-					curDefEle.addAttribute("title", title + "  (" + curDef.getName() + ")");
+					title += "  (" + curDef.getName() + ")";
+					if (Definition.VISIBILITY_DEPRECATED.equals(curDef.getVisibility())) {
+						curDefEle.addAttribute("image", "/pics/delete.gif");
+					} 
+					curDefEle.addAttribute("title", title);
+					
 					curDefEle.addAttribute("id", curDef.getId());
 					curDefEle.addAttribute("url", "");
 				}
@@ -396,11 +404,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 		//in this case binderId is the definitionType
 		Integer definitionType = PortletRequestUtils.getIntParameter(request, "binderId");
 		Long binderId = PortletRequestUtils.getLongParameter(request, "binderId2");
-		List<Definition> definitions;
-		if (binderId == null)
-			definitions = getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, definitionType);
-		else
-			definitions = getDefinitionModule().getBinderDefinitions(binderId, false, definitionType);
+		List<Definition> definitions = getDefinitionModule().getDefinitions(binderId, Boolean.FALSE, definitionType);
 			
 		Document adminTree = DocumentHelper.createDocument();
 		model.put(WebKeys.WORKSPACE_DOM_TREE, adminTree);

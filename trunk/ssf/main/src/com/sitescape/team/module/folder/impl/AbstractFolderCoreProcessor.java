@@ -535,6 +535,7 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
    public void deleteBinder(Binder binder, boolean deleteMirroredSource, Map options) {
     	if(logger.isDebugEnabled())
     		logger.debug("Deleting binder [" + binder.getPathName() + "]");
+    	//mark deleted first, saving real work for later
     	if (!binder.isDeleted()) super.deleteBinder(binder, deleteMirroredSource, options);
     	else {
     		//if binder is marked deleted, we are called from cleanup code without a transaction 
@@ -625,6 +626,10 @@ public abstract class AbstractFolderCoreProcessor extends AbstractEntryProcessor
     		getCoreDao().delete(binder.getPosting());
     		binder.setPosting(null);
     	}
+    	// 	clear out so definitions can be deleted; especially if defined in parent binder that is being deleted
+    	binder.setEntryDef(null);  
+    	getCoreDao().executeUpdate("update com.sitescape.team.domain.FolderEntry set entryDef=null where parentBinder=" + binder.getId());
+    	getCoreDao().executeUpdate("update com.sitescape.team.domain.WorkflowState set definition=null where owningBinderId=" + binder.getId());
     }
 
  

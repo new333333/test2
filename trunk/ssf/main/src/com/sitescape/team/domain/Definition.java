@@ -84,10 +84,8 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String VIEW_STYLE_TEAM_ROOT="team_root";
 	public static final String VIEW_STYLE_TEAM="team";
 	//visibility values
-	public static final Integer VISIBILITY_PUBLIC=1; //globally defined
-	public static final Integer VISIBILITY_LOCAL=2; //defined/managed at binder level, visible down tree
-	public static final Integer VISIBILITY_ORHPAN=3; //owning binder deleted
-//	public static final Integer VISIBILITY_SHARED=4; //same as binder but shared with site
+	public static final Integer VISIBILITY_PUBLIC=1; 
+	public static final Integer VISIBILITY_DEPRECATED=3; //owning binder deleted; or marked obsolete
 	//Values for jsp types
 	public static final String JSP_STYLE_FORM="form";
 	public static final String JSP_STYLE_VIEW="view";
@@ -97,7 +95,7 @@ public class Definition extends PersistentTimestampObject  {
 	public static final String JSP_STYLE_DEFAULT="default"; //used only in definition_config file
 
 	protected static final Log logger = LogFactory.getLog(Definition.class);
-	protected Binder binder;
+	protected Long binderId;
 	public Definition() {
 		
 	}    
@@ -105,11 +103,11 @@ public class Definition extends PersistentTimestampObject  {
 	 * Binder owner if binder level definition 
 	 * @return
 	 */
-	public Binder getBinder() {
-		return binder;
+	public Long getBinderId() {
+		return binderId;
 	}
-	public void setBinder(Binder binder) {
-		this.binder = binder;
+	public void setBinderId(Long binderId) {
+		this.binderId = binderId;
 	}
 
     /**

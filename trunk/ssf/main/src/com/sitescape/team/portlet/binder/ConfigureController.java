@@ -317,50 +317,26 @@ public class ConfigureController extends AbstractBinderController {
 		EntityType binderType = binder.getEntityType();
 		if (binderType.equals(EntityType.workspace)) {
 			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
-				model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.USER_WORKSPACE_VIEW),c));
+				model.put(WebKeys.ALL_BINDER_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.USER_WORKSPACE_VIEW),c));
 			} else {
-				Map publicMap = orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.WORKSPACE_VIEW),c);
-				List binderDefs = getDefinitionModule().getBinderDefinitions(binder.getId(), true, Definition.WORKSPACE_VIEW);
-				Map binderMap = orderDefinitions(binderDefs,c);
-				TreeMap allMap = new TreeMap(publicMap);
-				allMap.putAll(binderMap);
-				model.put(WebKeys.ALL_BINDER_DEFINITIONS, allMap);
-				model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, publicMap);
-				model.put(WebKeys.LOCAL_BINDER_DEFINITIONS, binderMap);
+				Map binderMap = orderDefinitions(getDefinitionModule().getDefinitions(binder.getId(), Boolean.TRUE, Definition.WORKSPACE_VIEW),c);
+				model.put(WebKeys.ALL_BINDER_DEFINITIONS, binderMap);
 			}
 		} else if (binderType.equals(EntityType.profiles)) {
-			model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.PROFILE_VIEW),c));
-			model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.PROFILE_ENTRY_VIEW),c));	
+			model.put(WebKeys.ALL_BINDER_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.PROFILE_VIEW),c));
+			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.PROFILE_ENTRY_VIEW),c));	
 		} else {
 			
-			Map publicMap = orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.FOLDER_VIEW),c);
-			List binderDefs = getDefinitionModule().getBinderDefinitions(binder.getId(), true, Definition.FOLDER_VIEW);
-			Map binderMap = orderDefinitions(binderDefs,c);
-			TreeMap allMap = new TreeMap(publicMap);
-			allMap.putAll(binderMap);
-			model.put(WebKeys.ALL_BINDER_DEFINITIONS, allMap);
-			model.put(WebKeys.PUBLIC_BINDER_DEFINITIONS, publicMap);
-			model.put(WebKeys.LOCAL_BINDER_DEFINITIONS, binderMap);
+			Map binderMap = orderDefinitions(getDefinitionModule().getDefinitions(binder.getId(), Boolean.TRUE, Definition.FOLDER_VIEW),c);
+			model.put(WebKeys.ALL_BINDER_DEFINITIONS, binderMap);
 
 			//build ordered list of entry definition types
-			publicMap = orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.FOLDER_ENTRY),c);
-			binderDefs = getDefinitionModule().getBinderDefinitions(binder.getId(), true, Definition.FOLDER_ENTRY);
-			binderMap = orderDefinitions(binderDefs,c);
-			allMap = new TreeMap(publicMap);
-			allMap.putAll(binderMap);
-			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, allMap);
-			model.put(WebKeys.PUBLIC_ENTRY_DEFINITIONS, publicMap);
-			model.put(WebKeys.LOCAL_ENTRY_DEFINITIONS, binderMap);
+			binderMap = orderDefinitions(getDefinitionModule().getDefinitions(binder.getId(), Boolean.TRUE, Definition.FOLDER_ENTRY),c);
+			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, binderMap);
 			
 			//build orders list of workflow definition types
-			publicMap = orderDefinitions(getDefinitionModule().getDefinitions(Definition.VISIBILITY_PUBLIC, Definition.WORKFLOW),c);
-			binderDefs = getDefinitionModule().getBinderDefinitions(binder.getId(), true, Definition.WORKFLOW);
-			binderMap = orderDefinitions(binderDefs,c);
-			allMap = new TreeMap(publicMap);
-			allMap.putAll(binderMap);
-			model.put(WebKeys.ALL_WORKFLOW_DEFINITIONS, allMap);			
-			model.put(WebKeys.PUBLIC_WORKFLOW_DEFINITIONS, publicMap);
-			model.put(WebKeys.LOCAL_WORKFLOW_DEFINITIONS, binderMap);
+			binderMap = orderDefinitions(getDefinitionModule().getDefinitions(binder.getId(), Boolean.TRUE, Definition.WORKFLOW),c);
+			model.put(WebKeys.ALL_WORKFLOW_DEFINITIONS, binderMap);			
 			model.put(WebKeys.ENTRY_REPLY_STYLES, DefinitionHelper.getReplyDefinitions(binder.getEntryDefinitions()));
 
 		}
@@ -369,7 +345,12 @@ public class ConfigureController extends AbstractBinderController {
 	protected TreeMap orderDefinitions(List<Definition> defs, StringComparator c) {
 		TreeMap definitions = new TreeMap(c);
 		for (Definition def:defs) {
-			definitions.put(NLT.getDef(def.getTitle()), def);
+			if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
+				definitions.put("<del>" + NLT.getDef(def.getTitle()) + "</del>", def);
+			} else {
+				definitions.put(NLT.getDef(def.getTitle()), def);
+				
+			}
 		}
 		return definitions;
 	}

@@ -107,7 +107,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	private Element rootConfigElement;
 	private String contextPath;
 	private DefinitionConfigurationBuilder configBuilder=DefinitionHelper.getDefinitionBuilderConfig();
-	private Definition definition;
+	private Long binderId;
     private ProfileModule profileModule;
     
 	public int doStartTag() throws JspException {
@@ -163,7 +163,7 @@ public class BuildDefinitionDivs extends TagSupport {
 	        itemId = "";
 	        itemName = "";
 	        refItemId="";
-	        definition = null;
+	        binderId = null;
 	    }
 	    
 		return SKIP_BODY;
@@ -829,25 +829,29 @@ public class BuildDefinitionDivs extends TagSupport {
 					} else if (type.equals("replyStyle")) {
 						sb.append(propertyConfigCaption);
 
-						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(binderId, Definition.FOLDER_ENTRY);
 						int size = defs.size();
 						if (size <= 0) size = 1;
 						sb.append("<select multiple=\"multiple\" name=\"propertyId_" + 
 								propertyId + "\" size=\"" + String.valueOf(size+1) + "\">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_reply_styles")).append("</option>\n");
 						List<Element> replyStyles = sourceRoot.selectNodes("properties/property[@name='replyStyle']");
+						List<String>replyIds = new ArrayList();
+						for (Element reply:replyStyles) {
+							String id = reply.attributeValue("value");
+							if (Validator.isNotNull(id)) replyIds.add(id);
+						}
+						
 						for (Map.Entry<String, Definition> me:defs.entrySet()) {
 							//Build a list of the entry definitions
 							Definition entryDef = me.getValue();
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							for (Element reply:replyStyles) {
-								if (entryDef.getId().equals(reply.attributeValue("value", ""))) {
-									sb.append(" selected=\"selected\"");
-									break;
-								}
+							if (replyIds.contains(entryDef.getId())) {
+								sb.append(" selected=\"selected\"");
 							}
-							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append("</option>\n");								
 						}
+
 						sb.append("</select>\n<br/><br/>\n");
 					
 					} else if (type.equals("iconList")) {
@@ -934,7 +938,8 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span><br/>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\">");
-									sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
+									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")).append("</del>");
+									else sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
 									sb.append("</td>");
 									sb.append("</tr>");
 									
@@ -1042,12 +1047,12 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
 						
-						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(this.binderId, Definition.FOLDER_ENTRY);
 						for (Map.Entry<String, Definition> me:defs.entrySet()) {
 							//Build a list of the entry definitions
 							Definition entryDef = me.getValue();
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append("</option>\n");								
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
@@ -1078,7 +1083,8 @@ public class BuildDefinitionDivs extends TagSupport {
 									sb.append("</span><br/>");
 									sb.append("</td>");
 									sb.append("<td valign=\"top\">");
-									sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
+									if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) sb.append("<del>").append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;")).append("</del>");
+									else sb.append(NLT.getDef(def.getTitle()).replaceAll("&", "&amp;"));
 									sb.append("</td>");
 									sb.append("</tr>");
 									
@@ -1109,12 +1115,12 @@ public class BuildDefinitionDivs extends TagSupport {
 						sb.append(">\n");
 						sb.append("<option value=\"\">").append(NLT.get("definition.select_conditionDefinition")).append("</option>\n");
 						//GET both entry and file Entry definitions
-						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(definition, Definition.FOLDER_ENTRY);
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(this.binderId, Definition.FOLDER_ENTRY);
 						for (Map.Entry<String, Definition> me:defs.entrySet()) {
 							//Build a list of the entry definitions
 							Definition entryDef = me.getValue();
 							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
-							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append(" (").append(entryDef.getName()).append(")</option>\n");
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append("</option>\n");								
 						}
 						sb.append("</select>\n<br/><br/>\n");
 						sb.append("<div id=\"conditionEntryElements\"></div><br/>\n");
@@ -1274,7 +1280,6 @@ public class BuildDefinitionDivs extends TagSupport {
 			}
 		}
 	}
-
 	private void buildDefaultDivs(StringBuffer sb, StringBuffer hb) {
 		if (!this.divNames.containsKey("delete_item")) {
 			this.divNames.put("delete_item", "1");
@@ -1482,8 +1487,8 @@ public class BuildDefinitionDivs extends TagSupport {
 	public void setRefItemId(String refItemId) {
 	    this.refItemId = refItemId;
 	}
-	public void setDefinition(Definition definition) {
-	    this.definition = definition;
+	public void setOwningBinderId(Long binderId) {
+	    this.binderId = binderId;
 	}
 }
 

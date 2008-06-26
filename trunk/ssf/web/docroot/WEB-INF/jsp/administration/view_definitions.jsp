@@ -111,7 +111,8 @@ name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 		  sourceDocument="${ssConfigDefinition}"
 		  configDocument="${ssConfigDefinition}"
 		  option="properties" 
-		  itemName="${itemName}" 
+		  itemName="${itemName}"
+		  owningBinderId="${ssBinderId}" 
 		/>
 <br>		
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.ok" />">
