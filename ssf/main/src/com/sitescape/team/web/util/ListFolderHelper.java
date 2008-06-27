@@ -1242,6 +1242,8 @@ public class ListFolderHelper {
 		//Build the toolbar arrays
 		Toolbar folderToolbar = new Toolbar();
 		Toolbar entryToolbar = new Toolbar();
+		Toolbar folderActionsToolbar = new Toolbar();
+		Toolbar folderViewsToolbar = new Toolbar();
 		Toolbar dashboardToolbar = new Toolbar();
 		Toolbar footerToolbar = new Toolbar();
 		AdaptedPortletURL adapterUrl;
@@ -1620,7 +1622,7 @@ public class ListFolderHelper {
 		}
 		
 		//	The "Display styles" menu
-		entryToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_views"));
+		folderViewsToolbar.addToolbarMenu("3_display_styles", NLT.get("toolbar.folder_views"));
 		//Get the definitions available for use in this folder
 		List<Definition> folderViewDefs = folder.getViewDefinitions();
 		Definition currentDef = (Definition)model.get(WebKeys.DEFAULT_FOLDER_DEFINITION);  //current definition in use
@@ -1633,7 +1635,7 @@ public class ListFolderHelper {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_DEFINITION);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, def.getId());
-			entryToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.getDef(def.getTitle()), url, qualifiers);
+			folderViewsToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.getDef(def.getTitle()), url, qualifiers);
 		}
 		//WebDav folder view
 		String webdavUrl = "";
@@ -1642,7 +1644,7 @@ public class ListFolderHelper {
 			qualifiers = new HashMap();
 			qualifiers.put("webdavUrl", webdavUrl);
 			qualifiers.put("folder", webdavUrl);
-			entryToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
+			folderViewsToolbar.addToolbarMenuItem("3_display_styles", "folderviews", NLT.get("toolbar.menu.viewASWebDav"), webdavUrl, qualifiers);
 		}
 		
 		//WebDav Permalink
@@ -1666,7 +1668,7 @@ public class ListFolderHelper {
 				|| viewType.equals(Definition.VIEW_STYLE_FILE)
 				|| viewType.equals(""))) {
 			//Only show these options if in the folder table style and not in accessible mode
-			entryToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
+			folderActionsToolbar.addToolbarMenu("4_display_styles", NLT.get("toolbar.folder_actions"));
 			
 			/** Vertical mode has been removed
 			//Hemanth: Display Show entries at bottom folder action option only for the Table view
@@ -1694,7 +1696,7 @@ public class ListFolderHelper {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_IFRAME);
-			entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 					NLT.get("toolbar.menu.display_style_iframe"), url, qualifiers);
 			//popup
 			qualifiers = new HashMap();
@@ -1705,7 +1707,7 @@ public class ListFolderHelper {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_SET_DISPLAY_STYLE);
 			url.setParameter(WebKeys.URL_BINDER_ID, forumId);
 			url.setParameter(WebKeys.URL_VALUE, ObjectKeys.USER_DISPLAY_STYLE_POPUP);
-			entryToolbar.addToolbarMenuItem("4_display_styles", "styles", 
+			folderActionsToolbar.addToolbarMenuItem("4_display_styles", "styles", 
 					NLT.get("toolbar.menu.display_style_popup"), url, qualifiers);
 		}
 		
@@ -1738,17 +1740,17 @@ public class ListFolderHelper {
 			}
 			
 			
-			entryToolbar.addToolbarMenu("5_calendar", optionTitle);	
+			folderActionsToolbar.addToolbarMenu("5_calendar", optionTitle);	
 			
 			Map qualifiersByFile = new HashMap();
 			qualifiersByFile.put("onClick", "ss_calendar_import.importFormFromFile({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
 					titleFromFile + "', legend: '" + legendFromFile + "', btn: '" + btnFromFile + "'});return false;");
-			entryToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
+			folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importFromFile, "#", qualifiersByFile);
 			
 			Map qualifiersByURL = new HashMap();
 			qualifiersByURL.put("onClick", "ss_calendar_import.importFormByURL({forumId: '" + forumId + "', namespace: '" + response.getNamespace() + "', title: '" + 
 					titleByURL + "', legend: '" + legendByURL + "', btn: '" + btnByURL + "'});return false;");
-			entryToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
+			folderActionsToolbar.addToolbarMenuItem("5_calendar", "calendar", importByURL, "#", qualifiersByURL);
 		}
 		
 		//Build the "Manage dashboard" toolbar
@@ -1859,6 +1861,8 @@ public class ListFolderHelper {
 		model.put(WebKeys.DASHBOARD_TOOLBAR, dashboardToolbar.getToolbar());
 		model.put(WebKeys.FOLDER_TOOLBAR,  folderToolbar.getToolbar());
 		model.put(WebKeys.ENTRY_TOOLBAR,  entryToolbar.getToolbar());
+		model.put(WebKeys.FOLDER_VIEWS_TOOLBAR,  folderViewsToolbar.getToolbar());
+		model.put(WebKeys.FOLDER_ACTIONS_TOOLBAR,  folderActionsToolbar.getToolbar());
 		model.put(WebKeys.FOOTER_TOOLBAR,  footerToolbar.getToolbar());
 	}
 	
