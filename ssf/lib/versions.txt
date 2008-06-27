@@ -30,9 +30,9 @@ Ehcache 1.3.0 (needed by Hibernate)
 ezmorph 1.0.1
 Hibernate 3.2.6.ga
 iCal4j 1.0-beta2
-Jackrabbit API 1.3.1
-Jackrabbit JCR Commons 1.3.1
-Jackrabbit Core 1.3.1
+Jackrabbit API 1.4
+Jackrabbit JCR Commons 1.4.2
+Jackrabbit Core 1.4.5
 Jakarta Taglibs Standard 1.1
 Jaxen 1.1-beta-7
 JAXRPC 1.1
