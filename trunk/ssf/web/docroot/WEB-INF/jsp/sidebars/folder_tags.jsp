@@ -32,10 +32,14 @@
 
 <ssf:sidebarPanel title="sidebar.tags.tools" id="ss_tooltags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
 
-<em>Folder View, and Folder Action to go here</em>
-<hr>
 <div>
 	<ul style="padding-top: 2px; padding-left: 5px;">
+	<li>
+	  <ssf:toolbar toolbar="${ssFolderViewsToolbar}" style="ss_actions_bar2 ss_actions_bar" />
+	</li>
+	<li>
+	  <ssf:toolbar toolbar="${ssFolderActionsToolbar}" style="ss_actions_bar2 ss_actions_bar" />
+	</li>
 	<li>
 		<c:if test="${ssConfigJspStyle != 'template'}">
 		<a href="<ssf:url ><ssf:param 
