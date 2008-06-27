@@ -2190,6 +2190,7 @@ button span {
 /*AQUA buttons*/
 .ss_toolbar_submitBtn {
 	font-size:.8em;
+	background-color: transparent !important;
 	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right.png");
 	background-repeat: no-repeat;
 	background-position: right;
@@ -2202,6 +2203,7 @@ button span {
 	line-height:20px;
 	height: 20px;
 	color:#fff;
+	background-color: transparent !important;
 	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left.png");
 	background-repeat: no-repeat;
 	background-position: left;
@@ -2210,11 +2212,13 @@ button span {
  	</c:if>
 }
 .ss_toolbar_submitBtn:hover {
+	background-color: transparent !important;
 	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_right_hover.png");
 	background-repeat: no-repeat;
 	background-position: right;
 }
 .ss_toolbar_submitBtn:hover span {
+	background-color: transparent !important;
 	background-image: url("<html:rootPath/>images/pics/navbar/btn_aqua_left_hover.png");
 	background-repeat: no-repeat;
 	background-position: left;
