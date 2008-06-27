@@ -3980,9 +3980,11 @@ function ssFavorites(namespace) {
 		//fObj.style.display = "none";
 		fObj.style.display = "block";
 		var w = ss_getObjectWidth(fObj)
-		ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_favorites" + namespace) + ss_favoritesPaneTopOffset))
-		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_favorites" + "namespace")))
-		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
+		var navbarFavDivObj = document.getElementById("ss_navbar_favorites" + namespace);
+		var parentTrObj = navbarFavDivObj.parentNode.parentNode;
+		var parentTrObjHeight = parseInt(dojo.html.getContentBox(parentTrObj).height);
+		ss_setObjectTop(fObj, parseInt(dojo.html.getAbsolutePosition(parentTrObj, true).y + parentTrObjHeight))
+		ss_setObjectLeft(fObj, parseInt(dojo.html.getAbsolutePosition(navbarFavDivObj, true).x))
 		dojo.html.hide("ss_favorites_editor" + namespace);
     	dojo.html.show(fObj);
 	    dojo.html.setVisibility(fObj, "visible");
@@ -4176,7 +4178,10 @@ function ssTeams(namespace) {
 		//fObj.style.display = "none";
 		fObj.style.display = "block";
 		var w = ss_getObjectWidth(fObj)
-		ss_setObjectTop(fObj, parseInt(ss_getDivTop("ss_navbar_myteams" + namespace) + ss_favoritesPaneTopOffset))
+		var navbarTeamsDivObj = document.getElementById("ss_navbar_myteams" + namespace);
+		var parentTrObj = navbarTeamsDivObj.parentNode.parentNode;
+		var parentTrObjHeight = parseInt(dojo.html.getContentBox(parentTrObj).height);
+		ss_setObjectTop(fObj, parseInt(dojo.html.getAbsolutePosition(parentTrObj, true).y + parentTrObjHeight))
 		ss_setObjectLeft(fObj, parseInt(ss_getDivLeft("ss_navbar_myteams" + namespace)))
 		var leftEnd = parseInt(ss_getDivLeft("ss_navbar_bottom" + namespace) + ss_favoritesPaneLeftOffset);
 	    dojo.html.show(fObj);

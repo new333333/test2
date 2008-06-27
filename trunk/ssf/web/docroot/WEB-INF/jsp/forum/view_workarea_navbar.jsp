@@ -231,6 +231,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
       <tr>
         <td width="24%" height="19" class="ss_mastheadtoplinks ss_masthead_favorites">
         	<!-- Begin Favorites -->  
+        	<div id="ss_navbar_favorites${renderResponse.namespace}" style="display:inline;"></div>
         	<a title="<ssf:nlt tag="navigation.favorites"/>"
 	  			href="javascript: ;" 
 	  			onClick="ssMyTeams${renderResponse.namespace}.hide();ssMyFavorites${renderResponse.namespace}.showFavoritesPane();"
@@ -239,11 +240,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		      <ssHelpSpot helpId="navigation_bar/favorites_button" offsetX="-15" offsetY="1"  
 		          title="<ssf:nlt tag="helpSpot.favoritesButton"/>">
 			  </ssHelpSpot>
-		      <span class="ss_navbar_favorites${renderResponse.namespace}" 
-		      style="visibility:hidden;margin:20px 0px 0px 0px;padding:0px;"
-		      ></span> &nbsp;|
+		      &nbsp;|
 		      
 		    <!-- Begin Teams -->   
+        	<div id="ss_navbar_myteams${renderResponse.namespace}"style="display:inline;"></div>
         	<a title="<ssf:nlt tag="navigation.myTeams"/>"
 			  href="javascript:;" onClick="ssMyFavorites${renderResponse.namespace}.hideFavoritesPane();ssMyTeams${renderResponse.namespace}.show();"
 				    ><ssf:nlt tag="navigation.myTeams"/><img border="0" 
@@ -253,13 +253,8 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		      </ssHelpSpot>  
 		      </a>  
 			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}" style="display:none;">
-			      	
 			    </div>
-			  		<span class="ss_navbar_myteams${renderResponse.namespace}"
-      				style="visibility:hidden;margin:20px 0px 0px 0px;padding:0px;">
-  					</span>
-				
-						</td>
+		</td>
         <td height="19" colspan="4" valign="top" align="right"><span class="ss_mastheadName">${ssUser.title}</span></td>
 	    </tr>
       <tr>
