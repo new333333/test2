@@ -34,6 +34,6 @@
 <% // This is JSON type AJAX response  %>
 {
 <c:forEach var="entry" items="${ssEntry}" varStatus="status">
-	"<ssf:escapeJavaScript value="${entry.value.id}"/>":"<ssf:escapeJavaScript value="${fn:substringBefore(entry.key, '|')}"/>"<c:if test="${!status.last}">,</c:if>
+	"<ssf:escapeJavaScript value="${entry.value.id}"/>":"<ssf:escapeJavaScript value="${entry.key}"/>"<c:if test="${!status.last}">,</c:if>
 </c:forEach>
 }

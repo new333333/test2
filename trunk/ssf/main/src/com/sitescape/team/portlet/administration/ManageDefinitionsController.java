@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.TreeMap;
@@ -53,7 +54,6 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
-import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.module.definition.DefinitionModule.DefinitionOperation;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
 import com.sitescape.team.util.NLT;
@@ -61,6 +61,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
+import com.sitescape.team.web.util.DefinitionHelper;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.team.web.util.WebHelper;
@@ -300,17 +301,14 @@ public class ManageDefinitionsController extends  SAbstractController {
 	}
 	protected void fillChildElements(Element element, Integer type, Collection<Definition> definitions) {
 		//build sorted map of definitions
-		StringComparator c = new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale());
 		if (definitions == null) return;
 		if (definitions.isEmpty()) element.getParent().addAttribute("hasChildren", "false");
-		Map<String, Definition> sortedMap = new TreeMap(c);
+		List prunedDefs = new ArrayList();
 		for (Definition def:definitions) {
 			if (!type.equals(def.getType())) continue;
-			if (Validator.isNotNull(def.getTitle()))
-				sortedMap.put(NLT.getDef(def.getTitle())+ " (" + def.getName()+ ")", def);
-			else
-				sortedMap.put(def.getName() + " (" + def.getName()+ ")", def);
+			prunedDefs.add(def);
 		}
+		Map<String, Definition> sortedMap = DefinitionHelper.orderDefinitions(prunedDefs);
 		for (Map.Entry<String,Definition> me: sortedMap.entrySet()) {
 			Definition def = me.getValue();
 			Element curDefEle = element.addElement("child");
