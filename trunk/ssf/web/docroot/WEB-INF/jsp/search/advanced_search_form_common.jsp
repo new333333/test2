@@ -28,6 +28,9 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="com.sitescape.team.util.CalendarHelper" %>
 <c:set var="ssNamespace" value="${renderResponse.namespace}"/>
 	<script type="text/javascript">
 		var ss_user_locale = "${ssUser.locale.language}";

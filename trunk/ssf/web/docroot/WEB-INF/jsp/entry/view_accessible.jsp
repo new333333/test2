@@ -44,10 +44,10 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
   style="display:block; margin:2px;">
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 
-	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-	<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 	    <div class="ss_style_color">
-			<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+			<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 
 					  configElement="${ssConfigElement}" 
 					  configJspStyle="${ssConfigJspStyle}" />

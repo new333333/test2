@@ -48,8 +48,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <a name="ss_top_of_folder"></a>
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 
-	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-	<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 
 	<script type="text/javascript">
 		//Set up variables needed by the javascript routines
@@ -85,7 +85,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 	<% // Folder Sidebar %>
 
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
 	<% // Workspace Tree %>
 
@@ -95,7 +95,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	</td>
 	<td valign="top" class="ss_view_info">
 
-		<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 		<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
 
 		<div id="ss_folder">

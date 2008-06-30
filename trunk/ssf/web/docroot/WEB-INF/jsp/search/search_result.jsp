@@ -29,12 +29,12 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <div class="ss_style ss_portlet_style">
 	
 
-	<%@ include file="/WEB-INF/jsp/search/search_js.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/search_js.jsp" />
 
 	<script type="text/javascript">
 	
@@ -87,7 +87,7 @@
   id="ss_sidebarShow${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> sss</span></a>
 </td><td valign="top">
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
 </table>
 </div>
@@ -102,16 +102,16 @@
 	<div class="ss_clear"></div>
 
 	<!-- Saved searches -->
-	<%@ include file="/WEB-INF/jsp/search/save_search.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/save_search.jsp" />
 								
 	<!-- Places rating - Moved to the new file -->
-	<%@ include file="/WEB-INF/jsp/search/rating_places.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/rating_places.jsp" />
 
 	<!-- People rating - Moved to the new file -->
-	<%@ include file="/WEB-INF/jsp/search/rating_people.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/rating_people.jsp" />
 
 	<!-- Tags -->
-	<%@ include file="/WEB-INF/jsp/search/tags.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/tags.jsp" />
 
 	</div>
 	</td>
@@ -167,6 +167,6 @@
 </div>
 
 <script type="text/javascript">
-	<%@ include file="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/search/advanced_search_form_data_init.jsp" />
 </script>
 

@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${empty ss_ratingSupportLoaded}">
 <script type="text/javascript">
 var ss_ratingImages = new Array();

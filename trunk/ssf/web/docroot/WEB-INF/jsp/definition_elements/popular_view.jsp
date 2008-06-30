@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <c:if test="${empty ss_ratingSupportLoaded}">
 <div id="ss_rating_info_div${renderResponse.namespace}" 
   style="position:absolute; display:none; visibility:hidden;
