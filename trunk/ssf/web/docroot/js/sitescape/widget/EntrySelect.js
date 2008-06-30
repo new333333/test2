@@ -73,8 +73,7 @@ dojo.widget.defineWidget(
 				// forces full population of results, if they click
 				// on the arrow it means they want to see more options
 				var idChoices = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');
-				if (!idChoices)	this.startSearch("");
-				else this.startSearch("");
+				this.startSearch(idChoices.value);
 			}
 		}
 		

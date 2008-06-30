@@ -337,6 +337,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 					}
 				}
 			}
+			if (workflows.isEmpty()) workflows.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.WORKFLOW));
 		}
 		
 		Map model = new HashMap();
@@ -373,6 +374,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 					}
 				}
 			}
+			if (entries.isEmpty()) entries.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY));
 		}
 		model.put(WebKeys.ENTRY, DefinitionHelper.orderDefinitions(entries));
 		response.setContentType("text/json");
