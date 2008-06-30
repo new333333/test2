@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 
 <% // History and entry navigation bar %>
 <c:if test="${empty ss_history_bar_loaded}">

@@ -57,7 +57,7 @@
 			<% // Add the toolbars with the navigation widgets, commands and filter %>
 				<div align="left" class="ssPageNavi">
 				<ssf:toolbar style="ss_actions_bar2 ss_actions_bar" item="true" >
-					<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+					<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 				</ssf:toolbar>
 				</div>
 			
