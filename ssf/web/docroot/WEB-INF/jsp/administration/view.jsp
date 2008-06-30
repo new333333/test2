@@ -43,7 +43,7 @@
 	<div class="ss_style ss_portlet" style="border:1px solid #CCC;">
 	<div style="border:1px solid #CCC;">
 	<div id="ss_administrationHeader_${renderResponse.namespace}" style="display:none;">
-	  <%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+		<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 	</div>
 	
 

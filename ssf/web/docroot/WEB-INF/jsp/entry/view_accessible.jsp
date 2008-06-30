@@ -42,7 +42,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
   style="display:block; margin:2px;">
-<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 	<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>

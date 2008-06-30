@@ -173,7 +173,7 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 
 <c:if test="${ss_viewEntryNavbar}">
 <div id="ss_portlet_content" class="ss_style ss_portlet">
-<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 
 <ssf:ifnotaccessible>
     <table cellpadding="0" cellspacing="0" border="0" width="100%">

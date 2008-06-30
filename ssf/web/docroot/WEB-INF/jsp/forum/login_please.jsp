@@ -33,7 +33,7 @@
 <body class="ss_style_body">
 <div id="ss_pseudoPortalDiv${renderResponse.namespace}">
 <div class="ss_style ss_portlet">
-<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <div class="ss_clear_float"></div>
 </ssf:ifadapter>
 <div style="padding:30px;">
