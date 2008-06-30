@@ -61,7 +61,7 @@
 			<c:set var="defBinderId" value="${ssDefinition.binderId}"/>
 		</c:if>
 		<c:if test="${!empty ssDefinition.binderId  && ssIsAdmin}">
-		<tr><td><a href="javascript: ;" onClick="return setVisibility(1, '');"><ssf:nlt tag="definition.setGlobal"/></a></td></tr>
+		<tr><td><a href="javascript: ;" onClick="return setVisibility(${ssDefinition.visibility}, '');"><ssf:nlt tag="definition.setGlobal"/></a></td></tr>
 		</c:if>
 		<c:if test="${ssDefinition.visibility == 1}">
 		<tr><td><a href="javascript: ;" onClick="return setVisibility(3, '${defBinderId}');"><ssf:nlt tag="definition.setDeprecated"/></a></td></tr>

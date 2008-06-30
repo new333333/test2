@@ -28,6 +28,16 @@
  */
 package com.sitescape.team.portlet.binder;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
@@ -35,23 +45,9 @@ import javax.portlet.RenderResponse;
 
 import org.springframework.web.portlet.ModelAndView;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.TreeMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.sitescape.team.context.request.RequestContextHolder;
-import com.sitescape.team.comparator.StringComparator;
 import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
-import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.TemplateBinder;
@@ -60,10 +56,7 @@ import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.admin.AdminModule.AdminOperation;
 import com.sitescape.team.module.binder.BinderModule.BinderOperation;
 import com.sitescape.team.smtp.SMTPManager;
-import com.sitescape.team.util.CollectionUtil;
 import com.sitescape.team.util.SPropsUtil;
-import com.sitescape.team.util.SimpleNameUtil;
-import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.DefinitionHelper;
@@ -311,48 +304,31 @@ public class ConfigureController extends AbstractBinderController {
 	}
 	protected void setupDefinitions(Binder binder, Map model) {
 		//get definitions in translated title order
-		StringComparator c = new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale());
 		model.put(WebKeys.BINDER, binder);
 		model.put(WebKeys.CONFIG_JSP_STYLE, Definition.JSP_STYLE_VIEW);
 		EntityType binderType = binder.getEntityType();
 		if (binderType.equals(EntityType.workspace)) {
 			if ((binder.getDefinitionType() != null) && (binder.getDefinitionType().intValue() == Definition.USER_WORKSPACE_VIEW)) {
-				model.put(WebKeys.ALL_BINDER_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.USER_WORKSPACE_VIEW),c));
+				model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(null, Definition.USER_WORKSPACE_VIEW));
 			} else {
-				Map binderMap = orderDefinitions(getDefinitionModule().getDefinitions(binder.getId(), Boolean.TRUE, Definition.WORKSPACE_VIEW),c);
-				model.put(WebKeys.ALL_BINDER_DEFINITIONS, binderMap);
+				model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(), Definition.WORKSPACE_VIEW));
 			}
 		} else if (binderType.equals(EntityType.profiles)) {
-			model.put(WebKeys.ALL_BINDER_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.PROFILE_VIEW),c));
-			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, orderDefinitions(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.PROFILE_ENTRY_VIEW),c));	
+			model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(null, Definition.PROFILE_VIEW));
+			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(null, Definition.PROFILE_ENTRY_VIEW));	
 		} else {
-			
-			Map binderMap = orderDefinitions(getDefinitionModule().getDefinitions(binder.getId(), Boolean.TRUE, Definition.FOLDER_VIEW),c);
-			model.put(WebKeys.ALL_BINDER_DEFINITIONS, binderMap);
+			model.put(WebKeys.ALL_BINDER_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(), Definition.FOLDER_VIEW));
 
 			//build ordered list of entry definition types
-			binderMap = orderDefinitions(getDefinitionModule().getDefinitions(binder.getId(), Boolean.TRUE, Definition.FOLDER_ENTRY),c);
-			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, binderMap);
+			model.put(WebKeys.ALL_ENTRY_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(), Definition.FOLDER_ENTRY));
 			
 			//build orders list of workflow definition types
-			binderMap = orderDefinitions(getDefinitionModule().getDefinitions(binder.getId(), Boolean.TRUE, Definition.WORKFLOW),c);
-			model.put(WebKeys.ALL_WORKFLOW_DEFINITIONS, binderMap);			
+			model.put(WebKeys.ALL_WORKFLOW_DEFINITIONS, DefinitionHelper.getAvailableDefinitions(binder.getId(),  Definition.WORKFLOW));			
 			model.put(WebKeys.ENTRY_REPLY_STYLES, DefinitionHelper.getReplyDefinitions(binder.getEntryDefinitions()));
 
 		}
 		
 	}
-	protected TreeMap orderDefinitions(List<Definition> defs, StringComparator c) {
-		TreeMap definitions = new TreeMap(c);
-		for (Definition def:defs) {
-			if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
-				definitions.put("<del>" + NLT.getDef(def.getTitle()) + "</del>", def);
-			} else {
-				definitions.put(NLT.getDef(def.getTitle()), def);
-				
-			}
-		}
-		return definitions;
-	}
+
 
 }

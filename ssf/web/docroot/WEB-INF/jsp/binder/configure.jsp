@@ -138,7 +138,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
       <c:forEach var="item" items="${ssAllBinderDefinitions}" >
       <c:if test="${empty item.value.binderId}">
           <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:if test="${ssBinder.entryDef.id== item.value.id}"> checked </c:if> <c:out value="${disabled}"/>>
-          ${item.key}<br/>
+          <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
          </c:if>
      </c:forEach>
       <br>
@@ -147,7 +147,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
    	   <c:if test="${!empty item.value.binderId}">
   	    <c:if test="${empty headerOut}"><c:set var="headerOut" value="1"/><hr/><span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>
 	    <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:if test="${ssBinder.entryDef.id== item.value.id}"> checked </c:if><c:out value="${disabled}"/>>
-	     ${item.key}<br/>
+	     <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
         </c:if>
     </c:forEach>
     <br>
@@ -168,7 +168,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
        <c:if test="${empty item.value.binderId}">
  	      <input type="checkbox" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked <c:set var="folderViewCount" value="1"/></c:if>
-	      <c:out value="${disabled}"/>>${item.key}<br/>
+	      <c:out value="${disabled}"/>><c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 		</c:if>
     </c:forEach>
     <br>
@@ -178,7 +178,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   	    <c:if test="${headerOut == '0'}"><c:set var="headerOut" value="1"/><hr/><span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>
 	      <input type="checkbox" name="binderDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked <c:set var="folderViewCount" value="1"/></c:if>
-		      <c:out value="${disabled}"/>> ${item.key}<br/>
+		      <c:out value="${disabled}"/>> <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 		</c:if>
      </c:forEach>
     <br>
@@ -196,7 +196,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
       <c:forEach var="item" items="${ssAllBinderDefinitions}">
         <c:if test="${!empty allDefinitionsMap[item.value.id]}">
            <input type="radio" name="binderDefinition" value="<c:out value="${item.value.id}"/>" <c:if test="${ssBinder.entryDef.id == item.value.id}"> checked </c:if> <c:out value="${disabled}"/>>
-          ${item.key}<br/>
+          <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
         </c:if>
       </c:forEach>
       <br>
@@ -214,7 +214,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
    	   <c:if test="${empty item.value.binderId}">
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
-		      <c:out value="${disabled}"/>> ${item.key}<br/>
+		      <c:out value="${disabled}"/>> <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 	  </c:if>
    </c:forEach>
     <br>
@@ -224,7 +224,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   	    <c:if test="${empty headerOut}"><c:set var="headerOut" value="1"/><hr/><span class="ss_bold"><ssf:nlt tag="definition.local"/></span><br/></c:if>
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
-		      <c:out value="${disabled}"/>> ${item.key}<br/>
+		      <c:out value="${disabled}"/>> <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 	 </c:if>
     </c:forEach>
     <br>
@@ -247,7 +247,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	<c:forEach var="item" items="${ssAllEntryDefinitions}">
 	  <c:if test="${!empty allDefinitionsMap[item.value.id]}">
 	  <tr>
-	    <td>${item.key}</td>
+	    <td><c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if></td>
 		<td>
 		  <select name="workflow_<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
 		    <option value=""><ssf:nlt tag="common.select.none" text="--none--"/></option>
@@ -275,7 +275,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	<c:forEach var="item" items="${ssAllEntryDefinitions}">
 	  <c:if test="${!empty ssReplyDefinitionMap[item.value.id]}">
 	  <tr>
-	    <td>${item.key}</td>
+	    <td><c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if></td>
 		<td>
 		  <select name="workflow_<c:out value="${item.value.id}"/>" <c:out value="${disabled}"/>>
 		    <option value=""><ssf:nlt tag="common.select.none" text="--none--"/></option>
@@ -310,7 +310,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
 	      <c:out value="${disabled}"/>>
-	          ${item.key}<br/>
+	          <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 	   </c:if>
    </c:forEach>
     <br>
@@ -321,7 +321,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 	      <input type="checkbox" name="workflowDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
 	      <c:out value="${disabled}"/>>
-	          ${item.key}<br/>
+	          <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 	   </c:if>
    </c:forEach>
      <br>
@@ -343,7 +343,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 
     <c:forEach var="item" items="${ssAllBinderDefinitions}">
  	      <input type="radio" name="binderDefinitions" value="<c:out value="${item.value.id}"/>" <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if><c:out value="${disabled}"/>>
-	      ${item.key}<br/>
+	      <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
 	</c:forEach>
     <br>
 <c:if test="${!ssBinder.definitionsInherited}">
@@ -358,7 +358,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
     <c:forEach var="item" items="${ssAllEntryDefinitions}">
 	      <input type="checkbox" name="entryDefinition" value="<c:out value="${item.value.id}"/>" 
 	      <c:if test="${!empty allDefinitionsMap[item.value.id]}"> checked </c:if>
-		      <c:out value="${disabled}"/>> ${item.key}<br/>
+		      <c:out value="${disabled}"/>> <c:if test="${item.value.visibility == 3}"><del></c:if>${item.key}<c:if test="${item.value.visibility == 3}"></del></c:if><br/>
    </c:forEach>
     <br>
 <c:if test="${!ssBinder.definitionsInherited}">

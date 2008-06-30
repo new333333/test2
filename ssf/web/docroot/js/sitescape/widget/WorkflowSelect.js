@@ -56,6 +56,18 @@ dojo.widget.defineWidget(
 			}
 			this.loadWorkflowSteps(wfId, stepIds);
 		},
+		handleArrowClick: function(){
+			this._handleBlurTimer(true, 0);
+			this.tryFocus();
+			if(this.popupWidget.isShowingNow){
+				this.hideResultList();
+			}else{
+				// forces full population of results, if they click
+				// on the arrow it means they want to see more options
+				var idChoices = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
+				this.startSearch(idChoices.value);
+			}
+		},
 		loadWorkflowSteps: function(workflowId, stepsIds) {
 			stepsIds = stepsIds||[];
 			var stepsS = "|" + stepsIds.join("|") + "|";

@@ -283,6 +283,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 		<a 
 			href="<ssf:url windowState="maximized" actionUrl="true"><ssf:param 
 			name="action" value="advanced_search"/><ssf:param 
+			name="binderId" value="${ssBinder.id}"/><ssf:param 
 			name="tabTitle" value="SEARCH FORM"/><ssf:param 
 			name="newTab" value="0"/></ssf:url>"
 			><ssf:nlt tag="navigation.search.advanced"/>

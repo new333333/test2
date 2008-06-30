@@ -117,8 +117,9 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 		String strBinderId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_BINDER_ID, "");
 		model.put(WebKeys.BINDER_ID, strBinderId);
+		Long binderId = null;
 		if (!strBinderId.equals("")) {
-			Long binderId = Long.valueOf(strBinderId);
+			binderId = Long.valueOf(strBinderId);
 			Binder binder = getBinderModule().getBinder(binderId);
 			model.put(WebKeys.BINDER, binder);
 		}
@@ -179,6 +180,13 @@ public class AdvancedSearchController extends AbstractBinderController {
         	return new ModelAndView(BinderHelper.getViewListingJsp(this, ObjectKeys.SEARCH_RESULTS_DISPLAY), model);
         } else {
         	model.putAll(BinderHelper.prepareSearchFormData(this, request));
+        	if (binderId != null) {
+        		Map options = new HashMap();
+        		options.put("search_currentAndSubfolders", Boolean.TRUE);
+        		options.put("search_subfolders", Boolean.TRUE);
+        		options.put("searchFolders", Collections.singletonList(binderId));
+        		model.put(WebKeys.SEARCH_FILTER_MAP, options);
+        	}
         	
     		//Build a reload url
     		PortletURL reloadUrl = response.createRenderURL();
@@ -317,13 +325,22 @@ public class AdvancedSearchController extends AbstractBinderController {
 
 	private ModelAndView ajaxGetWorkflows(RenderRequest request, RenderResponse response) {
 		
-		List workflows = new ArrayList();
+		Set workflows = new HashSet();
 		if (WebHelper.isUserLoggedIn(request)) {
-			workflows = getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.WORKFLOW);
+			String[] values = (PortletRequestUtils.getStringParameters(request, WebKeys.URL_ID_CHOICES));
+			for (int i = 0; i < values.length; i++) {
+				String[] valueSplited = values[i].split("\\s");
+				for (int j = 0; j < valueSplited.length; j++) {
+					if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
+						String binderId = valueSplited[j].replaceFirst("searchFolders" + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
+						workflows.addAll(getDefinitionModule().getDefinitions(Long.valueOf(binderId), Boolean.TRUE, Definition.WORKFLOW));
+					}
+				}
+			}
 		}
 		
 		Map model = new HashMap();
-		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, workflows);
+		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, DefinitionHelper.orderDefinitions(workflows));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_workflows_widget", model);
 	}
@@ -344,16 +361,20 @@ public class AdvancedSearchController extends AbstractBinderController {
 	private ModelAndView ajaxGetEntryTypes(RenderRequest request, RenderResponse response) {
 		
 		Map model = new HashMap();
-		SortedMap<String, Definition> entries = new TreeMap<String, Definition>();
+		Set entries = new HashSet();
 		if (WebHelper.isUserLoggedIn(request)) {
-			Iterator<Definition> it = getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY).iterator();
-			while (it.hasNext()) {
-				Definition entry = it.next();
-				String title = NLT.getDef(entry.getTitle());
-				entries.put(title + "|" + entry.getId(), entry);
+			String[] values = (PortletRequestUtils.getStringParameters(request, WebKeys.URL_ID_CHOICES));
+			for (int i = 0; i < values.length; i++) {
+				String[] valueSplited = values[i].split("\\s");
+				for (int j = 0; j < valueSplited.length; j++) {
+					if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
+						String binderId = valueSplited[j].replaceFirst("searchFolders" + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
+						entries.addAll(getDefinitionModule().getDefinitions(Long.valueOf(binderId), Boolean.TRUE, Definition.FOLDER_ENTRY));
+					}
+				}
 			}
 		}
-		model.put(WebKeys.ENTRY, entries);
+		model.put(WebKeys.ENTRY, DefinitionHelper.orderDefinitions(entries));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_entry_types_widget", model);
 	}

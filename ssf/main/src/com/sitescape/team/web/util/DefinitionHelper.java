@@ -95,17 +95,30 @@ public class DefinitionHelper {
 	 */	
 	public static SortedMap<String, Definition> getAvailableDefinitions(Long binderId, Integer defType) {
 		List<Definition> definitions = getInstance().getDefinitionModule().getDefinitions(binderId, Boolean.TRUE, defType);
+		return orderDefinitions(definitions);
+	}
+	public static TreeMap orderDefinitions(Collection<Definition> defs) {
 		TreeMap<String, Definition> orderedDefinitions = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
-		for (Definition def:definitions) {
+		for (Definition def:defs) {
+			if (def.getBinderId() != null) continue;  //do global defs first
+			String title = NLT.getDef(def.getTitle()) + " (" + def.getName()  + ")";
 			if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
-				orderedDefinitions.put(NLT.getDef(def.getTitle()) + " (" + def.getName() + ") **" + NLT.get("__definition_deprecated"), def);
-			} else {
-				orderedDefinitions.put(NLT.getDef(def.getTitle()) + " (" + def.getName() + ")", def);
-				
+				title += " **" + NLT.get("__definition_deprecated");
 			}
+			orderedDefinitions.put(title, def);
+		}
+		for (Definition def:defs) {
+			if (def.getBinderId() == null) continue;  //now do binder level defs
+			String title = NLT.getDef(def.getTitle()) + " (" + def.getName()  + ")";
+			if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
+				title += " **" + NLT.get("__definition_deprecated");
+			}
+			if (orderedDefinitions.containsKey(title)) {
+				title += " | id:" + def.getId();
+			}
+			orderedDefinitions.put(title, def);
 		}
 		return orderedDefinitions;
-
 	}
 	/**
 	 * Helper to get definition for other helpers

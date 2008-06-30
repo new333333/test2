@@ -246,6 +246,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 			  ><ssf:nlt tag="navigation.search"/></label></span>
 			<span class="ss_global_toolbar_quick_advanced"><a class="ss_advanced ss_fineprint" 
 				  href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+					name="binderId" value="${ssBinder.id}"/><ssf:param 
 				  name="tabTitle" value="SEARCH FORM"/><ssf:param 
 				  name="newTab" value="0"/></ssf:url>"
 				><ssf:nlt tag="navigation.search.advanced"/></a></span>
@@ -494,6 +495,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
     </span>
 		<a class="ss_advanced ss_fineprint" style="margin-left: 15px;" 
 			href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+			name="binderId" value="${ssBinder.id}"/><ssf:param 
 			name="tabTitle" value="SEARCH FORM"/><ssf:param 
 			name="newTab" value="0"/></ssf:url>"
 		><ssf:nlt tag="navigation.search.advanced"/></a>
@@ -572,6 +574,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		<a class="ss_advanced ss_fineprint" 
 			href="<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
 			name="tabTitle" value="SEARCH FORM"/><ssf:param 
+			name="binderId" value="${ssBinder.id}"/><ssf:param 
 			name="newTab" value="0"/></ssf:url>"
 			><ssf:nlt tag="navigation.search.advanced"/></a>
  	</div>

@@ -23,13 +23,8 @@ public class StringComparator implements Comparator {
 		if (s2 == null) return 1;
 		String l1 = s1.toLowerCase(locale);
 		String l2 = s2.toLowerCase(locale);
-		int result=0;
-		result = c.compare(l1, l2);
-		//strings compare the same, but represent different objects
-		if (result != 0) return result;
-		return breakTie(s1, s2);
+		return c.compare(l1, l2);
 	}
-	protected int breakTie(String s1, String s2) {
-		return -1;
-	}
+	
+
 }
