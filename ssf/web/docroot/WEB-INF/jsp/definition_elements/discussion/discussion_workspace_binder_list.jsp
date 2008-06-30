@@ -30,7 +30,7 @@
 %>
 <% // Discussion Workspace binder listing %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <div id="ss_dashboard_content" class="ss_doublecolumn">
 <div id="ss_folder_inset">
 <div id="ss_column_L" class="ss_colleft">

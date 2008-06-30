@@ -150,7 +150,7 @@ function ss_confirmDeleteConfig() {
 
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 
     <table cellpadding="0" cellspacing="0" border="0" width="100%">
     <tbody>
@@ -169,7 +169,7 @@ function ss_confirmDeleteConfig() {
 
 	<% // Folder Sidebar %>
 
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">

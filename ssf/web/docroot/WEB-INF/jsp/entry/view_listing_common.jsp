@@ -29,7 +29,7 @@
  */
 %>
 <% // The main forum view - for viewing folder listings and for viewing entries %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <%
 String op = (String) renderRequest.getAttribute(WebKeys.ACTION);
 String displayStyle = ssUser.getDisplayStyle();
@@ -152,7 +152,7 @@ function ss_loadEntryUrl(url,id) {
 <c:if test="<%= !reloadCaller %>">
   <c:if test="<%= isViewEntry %>">
 <div id="ss_entryTop_${renderResponse.namespace}"></div>
-<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 <script type="text/javascript">
 
 if (self.parent && self.parent.ss_highlightLineById) {
@@ -186,7 +186,7 @@ var ss_reloadUrl${ssBinder.id} = ss_reloadUrl;
 
 	<% // Folder Sidebar %>
 
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
 
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"

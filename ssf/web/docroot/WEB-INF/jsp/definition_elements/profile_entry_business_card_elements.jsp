@@ -31,7 +31,7 @@
 <% //Business card elements %>
 <%@ page import="java.lang.reflect.Method" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <%
 		//Get the form item being displayed
 		Element item = (Element) request.getAttribute("item");

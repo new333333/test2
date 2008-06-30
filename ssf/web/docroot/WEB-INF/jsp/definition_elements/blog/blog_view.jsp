@@ -30,7 +30,7 @@
 %>
 <% //View a blog entry %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 
 <div class="ss_style ss_portlet">
 <ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

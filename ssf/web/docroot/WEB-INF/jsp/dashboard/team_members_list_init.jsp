@@ -29,4 +29,4 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />

@@ -41,7 +41,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <c:set var="ss_folderViewStyle" value="<%= folderViewStyle %>" scope="request" />
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
 
-	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 
 	<script type="text/javascript">
 		//Define the variables needed by the javascript routines
@@ -83,7 +83,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 	<% // Folder Sidebar %>
 
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
 	</div>
 

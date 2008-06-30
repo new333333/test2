@@ -54,8 +54,8 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 <div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer" 
   style="display:block;">
 
-	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
-	<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
+	<jsp:include page="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" />
 	<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
 <table cellspacing="0" cellpadding="0" width="100%">
@@ -69,7 +69,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
   id="ss_sidebarShow${renderResponse.namespace}" 
   class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> ppp</span></a>
 </td><td valign="top">
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
 </table>
 </div>
@@ -84,7 +84,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 	<% // Folder Sidebar %>
 
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">

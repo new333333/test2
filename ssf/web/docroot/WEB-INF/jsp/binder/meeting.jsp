@@ -29,7 +29,7 @@
  */
 %>
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <%@ page import="com.sitescape.team.util.NLT" %>
 
 

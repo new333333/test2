@@ -32,7 +32,7 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 <c:set var="showWorkspacePage" value="true"/>
 <ssf:ifnotadapter>
   <c:set var="showWorkspacePage" value="false"/>
@@ -189,7 +189,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 </ssf:ifnotaccessible>
 
 <td valign="top">
-<%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
 </td></tr>
 </table>
 </div>
@@ -205,7 +205,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 
 	<% // Folder Sidebar %>
 
-    <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
+    <jsp:include page="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" />
 
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">

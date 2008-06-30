@@ -35,7 +35,7 @@
 
 <ssf:ifnotadapter>
 <% //setup for templates and dashboard %>
-<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
+<jsp:include page="/WEB-INF/jsp/common/presence_support.jsp" />
 </ssf:ifnotadapter>
 
 
