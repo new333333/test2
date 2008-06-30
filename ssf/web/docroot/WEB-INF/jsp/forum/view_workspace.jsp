@@ -187,11 +187,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
   class="ss_fineprint ss_sidebarSlide"><ssf:nlt tag="toolbar.sidebar.hide"/> www</span></a>
 </td>
 </ssf:ifnotaccessible>
-<td>
-	<button value="track" class="ss_toolbar_submitBtn ss_sidebarImage"><span>Track</span></button>
-	<button value="share" class="ss_toolbar_submitBtn ss_sidebarImage"><span>Share</span></button>
-	<button value="mail" class="ss_toolbar_submitBtn ss_sidebarImage"><span>Mail</span></button>
-</td>
+
 <td valign="top">
 <%@ include file="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" %>
 </td></tr>
