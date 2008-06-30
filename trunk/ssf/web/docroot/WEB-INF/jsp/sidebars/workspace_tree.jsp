@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.     
  */
 %>
+<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
     <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
         initOpen="true" sticky="true">
