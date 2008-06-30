@@ -84,7 +84,7 @@ function <%= wsTreeName %>_showId(id, obj, action) {
 <c:set var="ss_breadcrumbsShowIdRoutine" value="<%= wsTreeName + "_showId"%>" scope="request" />
 <c:set var="ss_breadcrumbsTreeName" value="<%= wsTreeName %>" scope="request" />
 
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
   onSubmit="return ss_onSubmit(this);"
 

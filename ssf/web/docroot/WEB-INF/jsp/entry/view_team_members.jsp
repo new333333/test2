@@ -93,7 +93,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 		<div class="ss_style_color">	
 			<div class="ss_content_inner">
 				<% // Navigation links %>
-				<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+				<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 				<br/>
 				<%@ include file="/WEB-INF/jsp/forum/list_team_members.jsp" %>
 

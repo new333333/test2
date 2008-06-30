@@ -80,7 +80,7 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 <c:set var="ss_breadcrumbsShowIdRoutine" 
   value="ss_treeShowIdConfig${renderResponse.namespace}" 
   scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <c:set var="allDefinitionsMap" value="${ssBinder.definitionMap}"/>
 <c:if test="${ssBinder.definitionInheritanceSupported}">
 <fieldset class="ss_fieldset">

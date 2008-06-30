@@ -30,6 +30,7 @@
 %>
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ page import="com.sitescape.team.util.NLT" %>
 <script type="text/javascript" src="<html:rootPath />js/binder/ss_access.js"></script>
 <script type="text/javascript">
 function ss_treeShowIdAccessControl${renderResponse.namespace}(id, obj, action) {
@@ -134,7 +135,7 @@ var ss_operationFailed = "<ssf:nlt tag="general.request.failed" text="Request fa
 <c:set var="ss_breadcrumbsShowIdRoutine" 
   value="ss_treeShowIdAccessControl${renderResponse.namespace}" 
   scope="request" />
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 
 <c:if test="${ssBinder.functionMembershipInheritanceSupported}">
   <ssf:box style="rounded">
