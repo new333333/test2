@@ -51,10 +51,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <div id="ss_diss_inset">
 <div align="left" class="ssPageNavi">
 <% // filter toolbar %>
-<%@ include file="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 </div><br/>
 <div align="left" class="ssPageNavi">
-<%@ include file="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
 </div><br/>
 <br/>
 <c:set var="actionVar" value="view_ws_listing"/>

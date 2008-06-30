@@ -28,6 +28,7 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
 <% // Common folder page number navigation %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 

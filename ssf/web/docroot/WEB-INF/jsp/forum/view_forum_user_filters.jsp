@@ -29,6 +29,8 @@
  */
 %>
 <% // User filters %>
+<%@ include file="/WEB-INF/jsp/common/include.jsp" %>
+<%@ include file="/WEB-INF/jsp/forum/init.jsp" %>
 <%@ page import="java.util.List" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 <%@ page import="com.sitescape.team.domain.UserProperties" %>

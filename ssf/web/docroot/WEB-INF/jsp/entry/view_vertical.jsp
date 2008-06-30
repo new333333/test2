@@ -133,7 +133,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 			    <ssf:param name="box_width" value="0" />
 			      <div style="position:relative;">
 			      <c:set var="ss_history_bar_table_class" value="ss_title_bar_history_bar" scope="request"/>
-			      <%@ include file="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" %>
+			      <jsp:include page="/WEB-INF/jsp/forum/view_forum_history_bar.jsp" />
 			      </div>
 			    </ssf:param>
 			  <iframe id="ss_showentryframe" name="ss_showentryframe" style="width:100%; 

@@ -64,7 +64,7 @@
 </ssf:toolbar>
 <div class="ss_clear"></div>
 </div>
-<%@ include file="/WEB-INF/jsp/forum/page_navigation_bar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/page_navigation_bar.jsp" />
 <ssf:slidingTable id="ss_folder_table" type="<%= slidingTableStyle %>" 
  height="<%= ssFolderTableHeight %>" folderId="${ssBinder.id}">
 
