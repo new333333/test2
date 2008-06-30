@@ -41,10 +41,10 @@
 <br>
 <script type="text/javascript">
 function t_${renderResponse.namespace}_tree_showId(forum, obj) {
-	if (self.document.${renderResponse.namespace}fm["id_"+forum] && self.document.${renderResponse.namespace}fm["id_"+forum].checked) {
-		self.document.${renderResponse.namespace}fm["id_"+forum].checked=false
+	if (self.document.${renderResponse.namespace}fm["id_%"+forum] && self.document.${renderResponse.namespace}fm["id_%"+forum].checked) {
+		self.document.${renderResponse.namespace}fm["id_%"+forum].checked=false
 	} else {
-		self.document.${renderResponse.namespace}fm["id_"+forum].checked=true
+		self.document.${renderResponse.namespace}fm["id_%"+forum].checked=true
 	}
 	return false
 }
