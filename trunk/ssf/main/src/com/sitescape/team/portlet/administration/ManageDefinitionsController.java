@@ -87,7 +87,11 @@ public class ManageDefinitionsController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		Map model = new HashMap();
-		model.put(WebKeys.ERROR_LIST,  request.getParameterValues(WebKeys.ERROR_LIST));
+		Map formData = request.getParameterMap();
+		if (formData.containsKey("ss_configErrorMessage")) {
+			model.put("ss_configErrorMessage", ((String[]) formData.get("ss_configErrorMessage"))[0]);
+		}
+
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if ("getTree".equals(operation)) {
 			//ajax request to expand tree

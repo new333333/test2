@@ -251,7 +251,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		try {
 			def = getCoreDao().loadDefinitionByName(binder, name, zoneId);
 			//found a definition using the name for this binder and zone
-			if (!replace || !type.equals(def.getType())) throw new DefinitionInvalidException("definition.error.alreadyExistsByName", new Object[]{name});
+			if (!replace || !type.equals(def.getType())) throw new DefinitionInvalidException("definition.error.alreadyExistsByName");
 			def.setTitle(title);
 			def.setInternalId(internalId);	
 			setDefinition(def,doc);
