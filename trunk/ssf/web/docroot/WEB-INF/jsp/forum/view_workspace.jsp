@@ -159,7 +159,7 @@ var ss_portal_view_window_state${renderResponse.namespace} = "${ss_windowState}"
 	</script>
 
 	<div id="ss_showfolder${renderResponse.namespace}" class="ss_style ss_portlet ss_content_outer">
-<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
 <c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block"/></c:if>
 <c:if test="${ss_sidebarVisibility == 'none'}">

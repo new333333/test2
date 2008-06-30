@@ -206,10 +206,10 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   					<a href="${ss_logoutUrl}"><span><ssf:nlt tag="logout"/></span></a>
 			 </ssf:ifLoggedIn>
 			 <ssf:ifNotLoggedIn>
-				  <form method="post" id="ss_loginForm$renderResponse.namespace}" 
-				    style="display:inline;"><a href="${ss_loginUrl}"
+				  <form method="post" id="ss_loginForm${renderResponse.namespace}" 
+				    action="" style="display:inline;"><a href="${ss_loginUrl}"
 				    onClick="return(ss_requestLogin(this, '${ssBinder.id}', '${ssUser.workspaceId}', '${ssUser.name}'));"
-				  ><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url"/></form>
+				  ><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url" /></form>
 			</ssf:ifNotLoggedIn></td>
         <td width="6%" height="24" class="ss_workspace">&nbsp;</span></span></td>
         <td width="3%" height="24" class="ss_workspace" colspan="2">

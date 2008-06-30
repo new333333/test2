@@ -56,7 +56,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 
 	<%@ include file="/WEB-INF/jsp/common/presence_support.jsp" %>
 	<%@ include file="/WEB-INF/jsp/definition_elements/popular_view_init.jsp" %>
-	<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+	<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <div class="ss_actions_bar1_pane ss_sidebarImage" width="100%">
 <table cellspacing="0" cellpadding="0" width="100%">
 <tr><td valign="middle">

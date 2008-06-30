@@ -62,7 +62,7 @@
 	</c:if>
 	</script>
 
-<%@ include file="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" %>
+<jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>
 <c:if test="${empty ss_sidebarVisibility}"><c:set var="ss_sidebarVisibility" value="block"/></c:if>
 <c:if test="${ss_sidebarVisibility == 'none'}">

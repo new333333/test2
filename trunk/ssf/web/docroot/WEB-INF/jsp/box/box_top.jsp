@@ -112,7 +112,7 @@ if (Validator.isNotNull(title) || (showCloseIcon == true)) {
 		    background-position:center left;
             background-image:url(<html:imagesPath/><%= showResizeGif %>);
             background-repeat:no-repeat;" onMouseDown="<%= showResizeRoutine %>"
-		  ><span class="ss_box_small_icon" align="left" 
+		  ><span class="ss_box_small_icon" 
 		  style="cursor:w-resize; width:20px;"><img border="0" <ssf:alt/> src="<html:imagesPath/>pics/1pix.gif" 
 		  style="width: 20px; height: 12px;"></span></div></td>
 	  </c:if>
