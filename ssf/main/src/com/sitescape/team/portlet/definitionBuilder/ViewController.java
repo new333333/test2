@@ -43,6 +43,7 @@ import javax.portlet.WindowState;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.web.portlet.ModelAndView;
 
 import com.sitescape.team.domain.Definition;
@@ -139,10 +140,6 @@ public class ViewController extends SAbstractController {
 					} catch(NoDefinitionByTheIdException e) {
 							//If the id is already deleted, ignore the error
 					}
-					//return to manage
-					response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
-					response.setRenderParameter(WebKeys.URL_OPERATION, "");
-					return;
 					
 				} else if (operation.equals("addItem")) {
 					//Add the new item
@@ -178,9 +175,17 @@ public class ViewController extends SAbstractController {
 				//The selected id must be non-existant. Give an error message
 				response.setRenderParameter("ss_configErrorMessage", e.getLocalizedMessage());
 				selectedItem = "";
+			} catch (DataIntegrityViolationException de) {
+				response.setRenderParameter("ss_configErrorMessage", NLT.get("definition.error.alreadyExistsByName"));
 			}
 		}
 		
+		if (Validator.isNull(selectedItem)) {
+			//return to manage
+			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
+			response.setRenderParameter(WebKeys.URL_OPERATION, "");
+
+		}
 		//Pass the selection id to be shown on to the rendering phase
 		response.setRenderParameter("selectedItem", selectedItem);
 	}

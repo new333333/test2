@@ -36,7 +36,13 @@
 
 <c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
 
-
+<c:if test="${!empty ss_configErrorMessage}">
+<div class="ss_labelLeftError">
+<span><c:out value="${ss_configErrorMessage}"/></span>
+</div>
+<br/>
+<br/>
+</c:if>
 <c:if test="${empty ssOperation}">
 
 <script type="text/javascript">
