@@ -35,7 +35,7 @@
 
 <script type="text/javascript">
 
-function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(obj) {
+function ${renderResponse.namespace}_onsub(obj) {
 	if (obj.name.value == '') {
 		alert('<ssf:nlt tag="general.required.name"/>');
 		return false;

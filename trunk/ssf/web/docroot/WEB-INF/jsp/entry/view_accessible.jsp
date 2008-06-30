@@ -79,15 +79,17 @@ function ss_showForumEntryInIframe(url) {
 
 <c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 <script type="text/javascript">
-function ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
+function ss_showEntryToBeShown${renderResponse.namespace}() {
     var url = "<ssf:url     
 		folderId="${ssBinder.id}" 
 		action="view_folder_entry" 
 		entryId="${ssEntryIdToBeShown}" 
-		actionUrl="true" />" 
+		actionUrl="true" >
+		<ssf:param name="entryViewStyle" value="full"/>
+		</ssf:url>" 
 	self.location.href = url;
 }
-ss_createOnLoadObj('ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
+ss_createOnLoadObj('ss_showEntryToBeShown${renderResponse.namespace}', ss_showEntryToBeShown${renderResponse.namespace});
 </script>
 </c:if>
 

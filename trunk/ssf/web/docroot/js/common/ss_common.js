@@ -3754,7 +3754,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
 	//Draw Iframe for discussion thread
-	/**
+	/** No longer using an iframe
 	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
 		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
     	' src="'+obj.href+'"' +
@@ -3770,7 +3770,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	tbodyObj.replaceChild(iframeRow, trObj)
 	ss_loadEntryInPlaceLastRowObj = iframeRow;
 	
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:id, entityType:entityType, entryViewType:"entryBlogView", namespace:namespace}, "view_folder_entry");
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:id, entityType:entityType, entryViewType:"entryBlogView", entryViewStyle:"inline", namespace:namespace}, "view_folder_entry");
 	ss_fetch_url(url, ss_loadEntryInPlaceUrlFetchReturn, entryInlineDivId);
 
 	ss_highlightLine(id, namespace);
@@ -3808,6 +3808,8 @@ function ss_showForumEntry(url, isDashboard) {
 	if (isDashboard == "yes") {
 		if (ss_userDisplayStyle == 'popup') {
 			return ss_showForumEntryInIframe_Popup(url);	
+		} else if (ss_userDisplayStyle == 'newpage') {
+			return ss_showForumEntryInIframe_Newpage(url);	
 		} else {
 			return ss_showForumEntryInIframe_Overlay(url);
 		}
@@ -3871,6 +3873,11 @@ function ss_showForumEntryInIframe_Popup(url) {
 	}
 	
     self.window.open(url, '_blank', 'width='+ss_viewEntryPopupWidth+',height='+ss_viewEntryPopupHeight+',resizable,scrollbars');
+    return false;
+}
+
+function ss_showForumEntryInIframe_Newpage(url) {
+	self.location.href = url;
     return false;
 }
 

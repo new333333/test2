@@ -34,7 +34,7 @@
 //treename must start with editForum
 String wsTreeName = "editForum_" + renderResponse.getNamespace();
 %>
-<form class="ss_style ss_form" action="<portlet:actionURL windowState="maximized"/>" method="post" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+<form class="ss_style ss_form" action="<portlet:actionURL windowState="maximized"/>" method="post" name="${renderResponse.namespace}fm">
 
 <table class="ss_style" width="100%"><tr><td>
 <c:if test="${!empty ssFolderList}">
@@ -43,8 +43,8 @@ String wsTreeName = "editForum_" + renderResponse.getNamespace();
 <c:forEach var="folder" items="${ssFolderList}">
 <tr>
   <td>
-    <input type="checkbox" name="del_${folder.id}" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>del_${folder.id}" />
-    <label for="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>del_${folder.id}"><c:if test="${!empty folder.parentBinder}">
+    <input type="checkbox" name="del_${folder.id}" id="${renderResponse.namespace}del_${folder.id}" />
+    <label for="${renderResponse.namespace}del_${folder.id}"><c:if test="${!empty folder.parentBinder}">
     	${folder.parentBinder.title} // 
     </c:if>
     ${folder.title}</label>

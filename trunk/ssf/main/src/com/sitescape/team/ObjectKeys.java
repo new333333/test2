@@ -243,6 +243,7 @@ public interface ObjectKeys {
     //User properties
     public static final String USER_DISPLAY_STYLE_ACCESSIBLE = "accessible";
     public static final String USER_DISPLAY_STYLE_IFRAME = "iframe";
+    public static final String USER_DISPLAY_STYLE_NEWPAGE = "newpage";
     public static final String USER_DISPLAY_STYLE_POPUP = "popup";
     public static final String USER_DISPLAY_STYLE_VERTICAL = "vertical";
     public static final String USER_PROPERTY_CALENDAR_VIEWMODE = "calendarViewMode";

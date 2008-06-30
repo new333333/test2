@@ -37,7 +37,7 @@
 var ss_columnCount = 0;
 function ss_loadWikiEntry(obj,id) {
 	ss_highlightLineById('folderLine_' + id);
-	var iframeDiv = document.getElementById('ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
+	var iframeDiv = document.getElementById('ss_wikiIframe${renderResponse.namespace}')
 	iframeDiv.src = obj.href;
 	return false;
 }
@@ -48,8 +48,8 @@ function ss_loadWikiEntryInParent(obj,id) {
 
 //Routine called when "find wiki page" is clicked
 function ss_loadWikiEntryId${renderResponse.namespace}(id) {
-	var urlParams = {binderId:'${ssBinder.id}', entryId:id, namespace:'${renderResponse.namespace}'};
-	var iframeDiv = document.getElementById('ss_wikiIframe<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>')
+	var urlParams = {binderId:'${ssBinder.id}', entryId:id, namespace:'${renderResponse.namespace}', entryViewStyle:'popup'};
+	var iframeDiv = document.getElementById('ss_wikiIframe${renderResponse.namespace}')
 	iframeDiv.src = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "view_folder_entry");
 }
 

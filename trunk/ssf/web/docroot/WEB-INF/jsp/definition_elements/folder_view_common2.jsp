@@ -31,6 +31,8 @@
 <% // Folder listing %>
 <jsp:useBean id="ssUser" type="com.sitescape.team.domain.User" scope="request" />
 <jsp:useBean id="ssSeenMap" type="com.sitescape.team.domain.SeenMap" scope="request" />
+<c:set var="ss_entryViewStyle" value=""/>
+<c:if test="${ssUser.displayStyle == 'newpage' && slidingTableStyle != 'fixed'}"><c:set var="ss_entryViewStyle" value="full"/></c:if>
 <%
 boolean useAdaptor = true;
 if (ObjectKeys.USER_DISPLAY_STYLE_ACCESSIBLE.equals(ssUser.getDisplayStyle()) &&
@@ -401,7 +403,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     portletName="ss_forum" 
     binderId="${ssFolder.id}" 
     action="view_folder_entry" 
-    entryId="${entry1._docId}" actionUrl="true" />" 
+    entryId="${entry1._docId}" actionUrl="true">
+    <ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/></ssf:url>" 
 <c:if test="${slidingTableStyle != 'fixed'}">
     onClick="ss_loadEntry(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>
@@ -424,7 +427,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     portletName="ss_forum" 
     binderId="${ssFolder.id}" 
     action="view_folder_entry" 
-    entryId="${entry1._docId}" actionUrl="true" />" 
+    entryId="${entry1._docId}" actionUrl="true" 
+    ><ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/></ssf:url>" 
     
 	<c:if test="${slidingTableStyle != 'fixed'}">
     	onClick="ss_loadEntry(this,'${entry1._docId}', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
@@ -534,7 +538,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
     portletName="ss_forum" 
     binderId="${ssFolder.id}" 
     action="view_folder_entry" 
-    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" />" 
+    entryId="<%= entry1.get("_docId").toString() %>" actionUrl="true" >
+    <ssf:param name="entryViewStyle" value="${ss_entryViewStyle}"/></ssf:url>" 
 <c:if test="${slidingTableStyle == 'fixed'}">
     onClick="ss_loadEntry(this,'<c:out value="${entry1._docId}"/>', '${ssFolder.id}', '${entry1._entityType}', '${renderResponse.namespace}', 'no');return false;" 
 </c:if>

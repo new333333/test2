@@ -35,7 +35,7 @@
 
 <script type="text/javascript">
 
-function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(obj) {
+function ${renderResponse.namespace}_onsub(obj) {
 	if (obj.name.value == '') {
 		alert('<ssf:nlt tag="general.required.name"/>');
 		return false;
@@ -62,7 +62,7 @@ function ss_confirmDeleteZone() {
 <ssf:expandableArea title="<%= NLT.get("administration.add.zone") %>">
 <form class="ss_style ss_form" method="post" 
 	action="<ssf:url action="manage_zones" actionUrl="true"/>" 
-	onSubmit="return(<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_onsub(this))">
+	onSubmit="return(${renderResponse.namespace}_onsub(this))">
 		
 	<span class="ss_bold"><ssf:nlt tag="administration.zoneName"/></span><br/>
 	<input type="text" class="ss_text" size="50" name="zoneName"><br/><br/>

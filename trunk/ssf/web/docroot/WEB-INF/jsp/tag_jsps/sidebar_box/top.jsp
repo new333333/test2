@@ -50,11 +50,11 @@ Boolean sticky = ParamUtil.getBoolean(request, "sticky", true);
         --%><img <ssf:alt tag="alt.expand"/> src="<%--
         --%><c:if test="${initOpen}"><html:imagesPath/>pics/flip_down16H.gif</c:if><%--
         --%><c:if test="${!initOpen}"><html:imagesPath/>pics/flip_up16H.gif</c:if><%--
-        --%>" onClick="ss_showHideSidebarBox('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${divId}', this, ${sticky}, '${divId}');" class="ss_toggler"/><%--
+        --%>" onClick="ss_showHideSidebarBox('${renderResponse.namespace}_${divId}', this, ${sticky}, '${divId}');" class="ss_toggler"/><%--
         --%><%= title %><%--
         --%><div><img alt="" src="<html:imagesPath/>pics/1pix.gif" height="1" width="200"/></div><%--
     --%></div><%--
---%><div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_${divId}" style="overflow: hidden; <%--
+--%><div id="${renderResponse.namespace}_${divId}" style="overflow: hidden; <%--
 --%><c:if test="${initOpen}">visibility: visible; display: block;</c:if><%--
 --%><c:if test="${!initOpen}">visibility: hidden; display: none;</c:if><%--
 --%>"<%--

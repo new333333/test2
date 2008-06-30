@@ -62,7 +62,7 @@ String isAccessible = ParamUtil.get(request, "isAccessible", "false");
 <c:if test="${isAccessible == 'true'}">
 
 	<div align="center" style="margin:10px 0px 0px 0px;">
-		<a href="javascript: ;" <ssf:title tag="title.closeMenu"/> onClick="ss_hideAccessibleMenu('<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');">
+		<a href="javascript: ;" <ssf:title tag="title.closeMenu"/> onClick="ss_hideAccessibleMenu('<%= menuTagDivId %>${renderResponse.namespace}');">
 		<span><ssf:nlt tag="button.close"/></span></a>
 	</div>
 	
@@ -70,16 +70,16 @@ String isAccessible = ParamUtil.get(request, "isAccessible", "false");
 	
 </div>
 
-<span id="parent_<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>" style="display:inline;"
+<span id="parent_<%= menuTagDivId %>${renderResponse.namespace}" style="display:inline;"
    ><a class="<%= titleClass %>"
 id="<%= titleId %>" href="javascript: ;" <ssf:title tag="title.showMenu" />
 
 <c:if test="${isAccessible == 'false'}">
-	onClick="ss_activateMenuLayerClone('<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', 'parent_<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', '<%= offsetLeft %>', '<%= offsetTop %>', '<%= openStyle %>');"
+	onClick="ss_activateMenuLayerClone('<%= menuTagDivId %>${renderResponse.namespace}', 'parent_<%= menuTagDivId %>${renderResponse.namespace}', '<%= offsetLeft %>', '<%= offsetTop %>', '<%= openStyle %>');"
 </c:if>
 
 <c:if test="${isAccessible == 'true'}">
-	onClick="ss_showAccessibleMenu('<%= menuTagDivId %><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');"
+	onClick="ss_showAccessibleMenu('<%= menuTagDivId %>${renderResponse.namespace}');"
 </c:if>
 	  
 ><%= title %>

@@ -98,7 +98,7 @@
 		
 			<div class="ss_buttonBarLeft">
 				<form class="ss_style ss_form" method="post" 
-				  onSubmit="return ss_onSubmit(this);" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm">
+				  onSubmit="return ss_onSubmit(this);" name="${renderResponse.namespace}fm">
 					<input type="submit" class="ss_submit" name="closeBtn" value="<ssf:nlt tag="button.close"/>" onClick="self.window.close();return false;">
 				</form>
 			</div>

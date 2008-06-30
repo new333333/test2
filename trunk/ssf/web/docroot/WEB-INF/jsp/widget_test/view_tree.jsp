@@ -43,12 +43,12 @@
 
 <script type="text/javascript">
 
-function t_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_wsTree_showId(id, obj) {
+function t_${renderResponse.namespace}_wsTree_showId(id, obj) {
 	alert('You selected "'+obj.innerText+' (id: '+id+') from the first widget.')
 	return false
 }
 
-function t_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_ws2Tree_showId(id, obj) {
+function t_${renderResponse.namespace}_ws2Tree_showId(id, obj) {
 	alert('You selected "'+obj.innerText+' (id: '+id+') from the second widget.')
 	return false
 }

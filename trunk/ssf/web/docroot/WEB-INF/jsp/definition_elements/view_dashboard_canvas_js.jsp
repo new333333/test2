@@ -51,9 +51,9 @@ if (!ss_dbrn) {
 
 
 }
-var <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_count = 0;
-var <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_count = 0;
-var <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_classNames = new Array();
-var <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_toolbar_count = 0;
+var ${renderResponse.namespace}_dashboard_control_count = 0;
+var ${renderResponse.namespace}_dashboard_border_count = 0;
+var ${renderResponse.namespace}_dashboard_border_classNames = new Array();
+var ${renderResponse.namespace}_toolbar_count = 0;
 
 </script>

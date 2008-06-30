@@ -36,27 +36,27 @@
 <div class="ss_style ss_portlet">
 
 <script type="text/javascript">
-var <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex;
+var ${renderResponse.namespace}_savedIndex;
 
-function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_showAliasDiv(index) {
+function ${renderResponse.namespace}_showAliasDiv(index) {
 	
-	self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm.alias.value=eval('self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.alias' + index + '.value');
-	<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex=index;
-	ss_showPopupDivCentered('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv');	
+	self.document.${renderResponse.namespace}_modifyAliasFm.alias.value=eval('self.document.${renderResponse.namespace}fm.alias' + index + '.value');
+	${renderResponse.namespace}_savedIndex=index;
+	ss_showPopupDivCentered('${renderResponse.namespace}_modifyAliasDiv');	
 }
-function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAlias() {
-	var param = eval('self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.alias' + <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex);
-	param.value = self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm.alias.value;
+function ${renderResponse.namespace}_modifyAlias() {
+	var param = eval('self.document.${renderResponse.namespace}fm.alias' + ${renderResponse.namespace}_savedIndex);
+	param.value = self.document.${renderResponse.namespace}_modifyAliasFm.alias.value;
 <c:if test="${mail_posting_use_aliases == 'false'}">
-	var param = eval('self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm.password' + <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex);
-	param.value = self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm.password.value;
+	var param = eval('self.document.${renderResponse.namespace}fm.password' + ${renderResponse.namespace}_savedIndex);
+	param.value = self.document.${renderResponse.namespace}_modifyAliasFm.password.value;
 </c:if>
-	var param = document.getElementById('aliasSpan' + <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex);
-	param.innerHTML = self.document.<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm.alias.value;
+	var param = document.getElementById('aliasSpan' + ${renderResponse.namespace}_savedIndex);
+	param.innerHTML = self.document.${renderResponse.namespace}_modifyAliasFm.alias.value;
 }
 </script>
 
-<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
+<form class="ss_style ss_form" name="${renderResponse.namespace}fm" id="${renderResponse.namespace}fm" method="post" 
 	action="<ssf:url action="configure_posting_job" actionUrl="true"/>">
 <div class="ss_buttonBarRight">
 <input type="submit" class="ss_submit" name="okBtn" value="<ssf:nlt tag="button.apply" />">
@@ -111,7 +111,7 @@ function <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotada
 </td><td>
 <span class="ss_normal" id="aliasSpan${status.index}" name="aliasSpan${status.index}">${alias.emailAddress}</span>
 </td><td>
-<input type="button" value="Edit" onClick="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_showAliasDiv('${status.index}'); return false"/>
+<input type="button" value="Edit" onClick="${renderResponse.namespace}_showAliasDiv('${status.index}'); return false"/>
 </td><td>
 <c:if test="${!empty alias.binder}">
 <a href="<ssf:url adapter="true" portletName="ss_forum" 
@@ -137,11 +137,11 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
 		  onClick="self.window.close();return false;"/>
 </div>
 </form>
-<div class="ss_style ss_popupMenu" style="visibility:hidden; display:block" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv" id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv">
+<div class="ss_style ss_popupMenu" style="visibility:hidden; display:block" name="${renderResponse.namespace}_modifyAliasDiv" id="${renderResponse.namespace}_modifyAliasDiv">
 <form class="ss_style ss_form" 
-  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm" 
-  id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasFm"
-  onSubmit="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAlias(); ss_cancelPopupDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv'); return false;">
+  name="${renderResponse.namespace}_modifyAliasFm" 
+  id="${renderResponse.namespace}_modifyAliasFm"
+  onSubmit="${renderResponse.namespace}_modifyAlias(); ss_cancelPopupDiv('${renderResponse.namespace}_modifyAliasDiv'); return false;">
 <br/><br/>
 <span class="ss_labelRight"><ssf:nlt tag="incoming.modifyAlias"/></span>
  <input type="text" name="alias" id="alias" value="" size="32"/> 
@@ -153,9 +153,9 @@ ${alias.binder.title}&nbsp;&nbsp<span  class="ss_smallprint ss_light">(${alias.b
 <br/><br/>
 <div class="ss_buttonBarLeft">
   <input type="submit" value="<ssf:nlt tag="button.ok"/>" 
-  onClick="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAlias(); ss_cancelPopupDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv'); return false;">
+  onClick="${renderResponse.namespace}_modifyAlias(); ss_cancelPopupDiv('${renderResponse.namespace}_modifyAliasDiv'); return false;">
   <input type="submit" value="<ssf:nlt tag="button.cancel"/>"
-  onClick="ss_cancelPopupDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_modifyAliasDiv');return false;">  
+  onClick="ss_cancelPopupDiv('${renderResponse.namespace}_modifyAliasDiv');return false;">  
 </div>
 </form>
 </div>

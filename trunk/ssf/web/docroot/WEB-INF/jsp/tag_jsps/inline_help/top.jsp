@@ -45,10 +45,10 @@
   <c:set var="ss_inlineHelpDivIdNumber" value="0" scope="request"/>
 </c:if>
 <c:set var="ss_inlineHelpDivIdNumber" value="${ss_inlineHelpDivIdNumber + 1}" scope="request"/>
-<a href="javascript:;" onClick="ss_showDiv('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"
+<a href="javascript:;" onClick="ss_showDiv('${renderResponse.namespace}ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"
 ><img border="0" alt="${alt}" src="<html:imagesPath/>pics/sym_s_help.gif"></a>
-<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}" class="ss_inlineHelp">
+<div id="${renderResponse.namespace}ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}" class="ss_inlineHelp">
 <div align="right"><a href="javascript:;" 
-  onClick="ss_hideDivNone('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"><img 
+  onClick="ss_hideDivNone('${renderResponse.namespace}ss_inlineHelpDiv${ss_inlineHelpDivIdNumber}');return false;"><img 
   border="0" alt="<ssf:nlt tag="button.close"/>" 
   src="<html:imagesPath/>pics/sym_s_delete.gif"></a></div>

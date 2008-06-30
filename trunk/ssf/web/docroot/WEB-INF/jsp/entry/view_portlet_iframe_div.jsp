@@ -46,7 +46,7 @@
 <script type="text/javascript">
 	//Define the variables needed by the javascript routines
 	//var ss_iframe_box_div_name = 'ss_iframe_box_div';
-	//var ss_box_iframe_name = '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_box_iframe';	
+	//var ss_box_iframe_name = '${renderResponse.namespace}_box_iframe';	
 	
 	<c:if test="${!empty ss_entryWindowTop && !empty ss_entryWindowLeft}">
 		var ss_entryWindowTopOriginal = ${ss_entryWindowTop};

@@ -36,7 +36,7 @@
   <c:set var="hideDashboardControls" value="true"/>
 </c:if>
 <!-- Start of component -->
-<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_component_${ss_component_count}"
+<div id="${renderResponse.namespace}_component_${ss_component_count}"
   <c:if test="${hideDashboardControls}">
     class="ss_content_window_compact" 
   </c:if>
@@ -50,7 +50,7 @@
 <td valign="top" class="ss_dashboard_dragHandle">
   <div class="ss_base_title_bar ss_dashboard_component_dragger"
   <c:if test="${hideDashboardControls}">
-	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_control_${ss_dashboard_control_count}"
+	id="${renderResponse.namespace}_dashboard_control_${ss_dashboard_control_count}"
     style="visibility:hidden; display:none;"
     <c:set var="ss_dashboard_control_count" scope="request" 
        value="${ss_dashboard_control_count + 1}"/>
@@ -120,7 +120,7 @@
 <td>
 	<div 
       <c:if test="${hideDashboardControls}">
-	    id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_border_${ss_dashboard_border_count}"
+	    id="${renderResponse.namespace}_dashboard_border_${ss_dashboard_border_count}"
 	      <c:set var="ss_dashboard_border_count" scope="request" 
 	         value="${ss_dashboard_border_count + 1}"/>
       </c:if>
@@ -133,7 +133,7 @@
 			   type="viewData" configuration="${ssDashboard}"
 			   initOnly="true" />
 <% // this is the div that will be replaced, don't remove setup from init phase %>
-		<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_dashboard_component_${ss_component_count}" 
+		<div id="${renderResponse.namespace}_dashboard_component_${ss_component_count}" 
 		    align="left" style="margin:0px; 
 		    <c:if test="${!ss_dashboard_visible}">
 		      visibility:hidden; display:none;

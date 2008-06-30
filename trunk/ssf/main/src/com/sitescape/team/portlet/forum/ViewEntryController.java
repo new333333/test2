@@ -143,16 +143,28 @@ public class ViewEntryController extends  SAbstractController {
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
 			RenderResponse response) throws Exception {
 		User user = RequestContextHolder.getRequestContext().getUser();
+		String displayStyle = user.getDisplayStyle();
 		if (request.getWindowState().equals(WindowState.NORMAL)) 
 			return BinderHelper.CommonPortletDispatch(this, request, response);
+		
+		Map<String,Object> model = new HashMap();
 		
 		Long folderId = new Long(PortletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID));				
 		String entryId = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_ID, "");
 		String entryViewType = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_TYPE, "entryView");
+		String entryViewStyle = PortletRequestUtils.getStringParameter(request, WebKeys.URL_ENTRY_VIEW_STYLE, "");
+		String displayType = BinderHelper.getDisplayType(request);
+		if (entryViewStyle.equals("")) {
+			if (displayStyle.equals(ObjectKeys.USER_DISPLAY_STYLE_NEWPAGE) &&
+					!displayType.equals(ViewController.WIKI_PORTLET)) entryViewStyle = "full";
+		}
+		
 		Map formData = request.getParameterMap();
 		Map userProperties = getProfileModule().getUserProperties(null).getProperties();
 		
-		Map<String,Object> model = new HashMap();
+		//Let the jsp know what style to show the entry in 
+		//  (popup has no navbar header, inline has no navbar and no script tags, full has a navbar header)
+		model.put(WebKeys.ENTRY_VIEW_STYLE, entryViewStyle);
 		
 		String operation = PortletRequestUtils.getStringParameter(request, WebKeys.URL_OPERATION, "");
 		if (!operation.equals("")) {
@@ -281,7 +293,8 @@ public class ViewEntryController extends  SAbstractController {
 		if(fe == null) {
 			return new ModelAndView("entry/deleted_entry", model);		
 		} else {
-			if (entryViewType.equals("entryBlogView") && PortletAdapterUtil.isRunByAdapter(request)) {
+			if (entryViewStyle.equals(WebKeys.ENTRY_VIEW_STYLE_INLINE) || 
+					entryViewType.equals("entryBlogView") && PortletAdapterUtil.isRunByAdapter(request)) {
 				model.put(WebKeys.SNIPPET, true);
 				viewPath = "entry/view_entry_snippet";
 			}

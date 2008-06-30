@@ -49,9 +49,9 @@
 
 
 	--%><div align="right" class="ss_editableTab"><a href="javascript:;"<%--
-    --%> onMouseOver="ss_editableHighlight('over', this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
-    --%> onMouseOut="ss_editableHighlight('out', this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
-    --%> onClick="ss_editablePopUp('${editUrl}', '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
+    --%> onMouseOver="ss_editableHighlight('over', this, '${renderResponse.namespace}ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
+    --%> onMouseOut="ss_editableHighlight('out', this, '${renderResponse.namespace}ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
+    --%> onClick="ss_editablePopUp('${editUrl}', '${renderResponse.namespace}ss_editableDiv${ss_editableDivIdNumber}');return false;"<%--
     --%> <ssf:title tag="title.edit.description" /><%--
     --%>><span class="ss_fineprint"><%--
     --%><ssHelpSpot helpId="workspaces_folders/entries/more_entry_tools" offsetX="-15"<%--
