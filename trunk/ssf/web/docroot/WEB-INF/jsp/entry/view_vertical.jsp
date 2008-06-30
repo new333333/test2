@@ -96,7 +96,7 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	<td valign="top" class="ss_view_info">
 
 		<jsp:include page="/WEB-INF/jsp/definition_elements/folder_toolbar.jsp" />
-		<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+		<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 
 		<div id="ss_folder">
 			<ssf:displayConfiguration configDefinition="${ssConfigDefinition}" 

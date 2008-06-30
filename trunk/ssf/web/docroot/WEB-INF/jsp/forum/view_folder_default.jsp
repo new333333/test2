@@ -48,7 +48,7 @@
 <div class="ss_clear"></div>
 
 <% // Navigation links %>
-<%@ include file="/WEB-INF/jsp/definition_elements/navigation_links.jsp" %>
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 
 <% // Toolbar %>
 <ssf:toolbar toolbar="${ssFolderToolbar}" style="ss_actions_bar1 ss_actions_bar" />
