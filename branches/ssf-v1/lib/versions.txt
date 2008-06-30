@@ -27,6 +27,8 @@ iCal4j 1.0-beta2
 Jackrabbit API 1.4
 Jackrabbit JCR Commons 1.4.2
 Jackrabbit Core 1.4.5
+Jackrabbit SPI 1.4
+Jackrabbit SPI Commons 1.4
 Jakarta Taglibs Standard 1.1
 Jaxen 1.1-beta-7
 JAXRPC 1.1
