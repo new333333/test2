@@ -74,25 +74,23 @@ if (folderViewStyle == null || folderViewStyle.equals("")) folderViewStyle = "fo
 	<% // Navigation bar %>
 	<jsp:include page="/WEB-INF/jsp/definition_elements/navbar.jsp" />
 
-	<% // Tabs %>
-	<jsp:include page="/WEB-INF/jsp/definition_elements/tabbar.jsp" />
+	<% // Status %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/status.jsp" />	
+	
+	<% // Share and Track %>
+	<jsp:include page="/WEB-INF/jsp/sidebars/share_track.jsp" />
+	
+	<% // Recent Places %>
+	<jsp:include page="/WEB-INF/jspsidebars/recent_places.jsp" />
 
 	<% // Folder Sidebar %>
 
     <%@ include file="/WEB-INF/jsp/sidebars/sidebar_dispatch.jsp" %>
 
-    <ssf:sidebarPanel title="__definition_default_workspace" id="ss_workspace_sidebar"
-        initOpen="true" sticky="true">
-		<c:if test="${!empty ssSidebarWsTree}">
-		<ssf:tree treeName="sidebarWsTree${renderResponse.namespace}" 
-		  treeDocument="${ssSidebarWsTree}" 
-		  highlightNode="${ssBinder.id}" 
-		  showIdRoutine="ss_treeShowId"
-		  namespace="${renderResponse.namespace}"
-		  rootOpen="true"
-		  nowrap="true"/>
-		</c:if>
-	</ssf:sidebarPanel>
+	<% // Workspace Tree %>
+
+    <%@ include file="/WEB-INF/jsp/sidebars/workspace_tree.jsp" %>
+
 
 	</td>
 	<td valign="top" class="ss_view_info">

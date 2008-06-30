@@ -25,17 +25,14 @@
  * 
  * 
  * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
- * are trademarks of SiteScape, Inc.
+ * are trademarks of SiteScape, Inc.     
  */
 %>
-<%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%
-boolean isIE = BrowserSniffer.is_ie(request);
-%>
 
-<%@ include file="/WEB-INF/jsp/sidebars/folder_tools.jsp" %>
+<c:if test="${ssDefinitionEntry.entityType == 'workspace'}">
 
-<%@ include file="/WEB-INF/jsp/sidebars/folder_tags.jsp" %>
-
-<%@ include file="/WEB-INF/jsp/sidebars/workspace_tags.jsp" %>
+<ssf:sidebarPanel title="sidebar.tags.workspace" id="ss_workspace_tags_sidebar" divClass="ss_place_tags" initOpen="false" sticky="true">
+  <c:set var="ss_tagObject" value="${ssDefinitionEntry}" scope="request"/>
+  <%@ include file="/WEB-INF/jsp/definition_elements/tag_view.jsp" %>
+</ssf:sidebarPanel>
+</c:if>

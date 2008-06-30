@@ -28,14 +28,26 @@
  * are trademarks of SiteScape, Inc.
  */
 %>
+<% // Tabs %>
+<%@ page import="com.sitescape.team.util.NLT" %>
+<%@ page import="com.sitescape.team.util.SPropsUtil" %>
+<%@ page import="com.sitescape.util.PropertyNotFoundException" %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
-<%@ page import="com.sitescape.util.BrowserSniffer" %>
-<%
-boolean isIE = BrowserSniffer.is_ie(request);
-%>
+<ssf:sidebarPanel title="relevance.userStatus" id="ss_status_sidebar" divClass="ss_place_tags" initOpen="true" sticky="true">
+<ssf:ifLoggedIn>
+<script type="text/javascript">
+ss_statusCurrent = "${ssUser.status}";
+</script>
 
-<%@ include file="/WEB-INF/jsp/sidebars/folder_tools.jsp" %>
+<input type="text" size="42" style="font-size:9px; background-color:#e6e6e6;" value="${ssUser.status}"
+  onFocus="ss_setStatusBackground(this, 'focus');"
+  onKeyPress="ss_updateStatusSoon(this, event);"
+  onChange="ss_updateStatusNow(this);"
+  onBlur="ss_updateStatusNow(this);ss_setStatusBackground(this, 'blur')"
+  onMouseover="ss_setStatusBackground(this, 'mouseOver');"
+  onMouseout="ss_setStatusBackgroundCheck(this);"
+  />
 
-<%@ include file="/WEB-INF/jsp/sidebars/folder_tags.jsp" %>
+</ssf:ifLoggedIn> 
+</ssf:sidebarPanel>
 
-<%@ include file="/WEB-INF/jsp/sidebars/workspace_tags.jsp" %>
