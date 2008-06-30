@@ -163,7 +163,7 @@ function ss_loadJsFile(rootPath, jsFile) {
 		if (scripts[i].src && scripts[i].src == spath) return;
 	}
 	try {
-		document.writeln("<scr"+"ipt type='text/javascript' src='"+spath+"'></scr"+"ipt>");
+		document.writeln("<scr"+"ipt type='text/javascript' src='"+spath+"'><"+"/scr"+"ipt>");
 	} catch (e) {
 		var script = document.createElement("script");
 		script.src = spath;

@@ -34,7 +34,7 @@
 <body class="ss_style_body">
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
-<c:set var="formName"><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm</c:set>
+<c:set var="formName">${renderResponse.namespace}fm</c:set>
 
 <table class="ss_style" width="100%"><tr><td>
 <form class="ss_style ss_form" 

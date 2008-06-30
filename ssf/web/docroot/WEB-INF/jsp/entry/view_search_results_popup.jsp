@@ -69,7 +69,7 @@ function ss_showForumEntryInIframe(url) {
 
 <c:if test="${!empty ssEntryIdToBeShown && !empty ss_useDefaultViewEntryPopup}">
 <script type="text/javascript">
-function ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
+function ss_showEntryToBeShown${renderResponse.namespace}() {
     var url = "<ssf:url     
 		adapter="true" 
 		portletName="ss_forum" 
@@ -79,7 +79,7 @@ function ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:if
 		actionUrl="true" />" 
 	ss_showForumEntryInIframe(url);
 }
-ss_createOnLoadObj('ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>', ss_showEntryToBeShown<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>);
+ss_createOnLoadObj('ss_showEntryToBeShown${renderResponse.namespace}', ss_showEntryToBeShown${renderResponse.namespace});
 </script>
 </c:if>
 

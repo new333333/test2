@@ -44,8 +44,8 @@ String wsTreeName = "" + renderResponse.getNamespace();
 <form class="ss_style ss_form" 
 	action="<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>" 
 	method="post" 
-	name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm"
-	id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm"
+	name="${renderResponse.namespace}fm"
+	id="${renderResponse.namespace}fm"
 	onSubmit="return ss_submitIndexingForm();" >
 
 <div class="ss_buttonBarRight">
@@ -82,11 +82,11 @@ function ss_getOperationStatus()
 }
 
 function ss_submitIndexingForm() {
-	var formObj = document.forms['<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm'];
+	var formObj = document.forms['${renderResponse.namespace}fm'];
 	formObj.btnClicked.value = ss_buttonSelected;
 	if (ss_buttonSelected == 'okBtn') {
 		formObj.action = '<ssf:url adapter="true" portletName="ss_administration" action="configure_index" actionUrl="true"></ssf:url>&ss_statusId='+ss_indexStatusTicket
-		ss_submitFormViaAjax('<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm', 'ss_indexingDone');
+		ss_submitFormViaAjax('${renderResponse.namespace}fm', 'ss_indexingDone');
 		ss_indexTimeout = setTimeout(ss_getOperationStatus, 1000);
 		return false;
 	} else {

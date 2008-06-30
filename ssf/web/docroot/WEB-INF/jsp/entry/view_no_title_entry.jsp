@@ -51,10 +51,10 @@
 </c:forEach>
 
 <script type="text/javascript">
-function ss_setPageFormActionUrl<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>(url) {
+function ss_setPageFormActionUrl${renderResponse.namespace}(url) {
 	document.forms['ss_createPageForm'].action = url;
 }
-function ss_setPageFormActionUrl2<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>() {
+function ss_setPageFormActionUrl2${renderResponse.namespace}() {
 	var formObj = document.forms['ss_createPageForm']
 	for (var i = 0; i < formObj.url.length; i++) {
 		if (formObj.url[i].checked) url = formObj.url[i].value;
@@ -68,7 +68,7 @@ function ss_setPageFormActionUrl2<ssf:ifadapter><portletadapter:namespace/></ssf
 <c:if test="${count == 1}">
   <c:forEach var="title" items="${ssAddEntryTitles}">
     <input type="submit" class="ss_linkButton" name="addBtn" value="<ssf:nlt tag="entry.createPage"/>"
-      onClick="ss_setPageFormActionUrl<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>('${ssAddEntryUrls[title.value]}');"/>
+      onClick="ss_setPageFormActionUrl${renderResponse.namespace}('${ssAddEntryUrls[title.value]}');"/>
   </c:forEach>
   <a href="javascript:;" style="padding-left: 10px;" class="ss_linkButton"
     onClick="self.history.back();return false;"><ssf:nlt tag="button.cancel"/></a>
@@ -87,7 +87,7 @@ function ss_setPageFormActionUrl2<ssf:ifadapter><portletadapter:namespace/></ssf
   </td>
   <td valign="top">
     <input type="submit" class="ss_linkButton" name="addBtn" value="<ssf:nlt tag="entry.createPage"/>"
-      onClick="ss_setPageFormActionUrl2<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>();"/>
+      onClick="ss_setPageFormActionUrl2${renderResponse.namespace}();"/>
   </td></tr></table>
   <br/>
   <br/>

@@ -48,7 +48,7 @@ String menuTagDivId = "ss_menuTagDiv" + nameCount.toString();
 %>
 	<div align="center" style="margin:10px 0px 0px 0px;">
 	      <a href="javascript: ;" <ssf:title tag="title.closeMenu"/> 
-	      onClick="ss_hideAccessibleMenu('<%= menuTagDivId %>_<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>');">
+	      onClick="ss_hideAccessibleMenu('<%= menuTagDivId %>_${renderResponse.namespace}');">
 	      <span><ssf:nlt tag="button.close"/></span></a>
 	</div>
 

@@ -32,7 +32,7 @@
 
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <script type="text/javascript">
-var <ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>_savedIndex;
+var ${renderResponse.namespace}_savedIndex;
 </script>
 <div class="ss_style ss_portlet">
 

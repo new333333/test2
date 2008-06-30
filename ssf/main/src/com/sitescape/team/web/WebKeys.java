@@ -133,6 +133,7 @@ public class WebKeys {
     public static final String URL_ENTRY_PAGE_TITLE="page_title";
     public static final String URL_ENTRY_TITLE="title";
     public static final String URL_ENTRY_TYPE="entryType";
+    public static final String URL_ENTRY_VIEW_STYLE="entryViewStyle";
     public static final String URL_ENTRY_VIEW_TYPE="entryViewType";
 	public static final String URL_FILE = "file";
 	public static final String URL_FILE_ID = "fileId";
@@ -598,6 +599,10 @@ public class WebKeys {
     public static final String ENTRY_ATTACHMENT_EDITOR_TYPE="ssEntryAttachmentEditorType";
     public static final String ENTRY_TITLE="ssEntryTitle";
     public static final String ENTRY_USER_LIST="assignedUsers";
+    public static final String ENTRY_VIEW_STYLE="ss_entryViewStyle";
+    public static final String ENTRY_VIEW_STYLE_POPUP="entryViewStylePopup";
+    public static final String ENTRY_VIEW_STYLE_INLINE="entryViewStyleInline";
+    public static final String ENTRY_VIEW_STYLE_FULL="entryViewStyleFull";
     public static final String ENTRY_DUE_DATE="dueDate";
     public static final String MEETING_TOKEN="ssMeetingToken";
     public static final String MEETING_ERROR="ssMeetingError";
@@ -1049,10 +1054,12 @@ public class WebKeys {
     public static final String VIEW_TASK_EDIT="task_summary/edit";
     public static final String VIEW_LICENSE_REPORT="administration/license_report";
     public static final String VIEW_LISTING_IFRAME="entry/view_listing_iframe";
+    public static final String VIEW_LISTING_NEWPAGE="entry/view_listing_newpage";
     public static final String VIEW_LISTING_POPUP="entry/view_listing_popup";
     public static final String VIEW_LISTING_ACCESSIBLE="entry/view_listing_accessible";
     public static final String VIEW_LISTING_SEARCH_RESULTS_ACCESSIBLE="entry/view_listing_search_results_accessible";
     public static final String VIEW_LISTING_SEARCH_RESULTS_IFRAME="entry/view_listing_search_results_iframe";
+    public static final String VIEW_LISTING_SEARCH_RESULTS_NEWPAGE="entry/view_listing_search_results_newpage";
     public static final String VIEW_LISTING_SEARCH_RESULTS_POPUP="entry/view_listing_search_results_popup";
     public static final String VIEW_LISTING_SEARCH_RESULTS_VERTICAL="entry/view_listing_search_results_vertical";
     public static final String VIEW_LISTING_VERTICAL="entry/view_listing_vertical";

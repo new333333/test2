@@ -40,7 +40,7 @@
 <span class="ss_largerprint"><ssf:nlt tag="administration.errors"/> (<c:out value="${ssException}"/>)</span></br>
 </c:if>
 
-<form class="ss_style ss_form" name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm" method="post" 
+<form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
   action="<ssf:url action="configure_ldap" actionUrl="true"/>">
 <div class="ss_buttonBarRight">
 <br/>

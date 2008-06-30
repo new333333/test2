@@ -44,7 +44,7 @@ function ss_numbers_only(evt)
      return true;
   }
 </script>
-<c:set var="formName"><ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>fm</c:set>
+<c:set var="formName">${renderResponse.namespace}fm</c:set>
 <script type="text/javascript">
 var ssReportURL="<ssf:url action="quota_report" actionUrl="true"><ssf:param 
 	name="binderId" value="${ssBinder.id}"/><ssf:param 

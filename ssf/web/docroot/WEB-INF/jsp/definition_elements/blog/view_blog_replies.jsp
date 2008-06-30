@@ -57,7 +57,7 @@
 </ssf:title>
 >
 <div class="ss_iconed_label ss_view_something">
-<ssf:nlt tag="blog.viewComments"/> [<span id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>]
+<ssf:nlt tag="blog.viewComments"/> [<span id="${renderResponse.namespace}ss_blog_reply_count_${ssDefinitionEntry.id}">${ssDefinitionEntry.totalReplyCount}</span>]
 </div>
 </a>
 </td>
@@ -74,7 +74,7 @@ offsetX="-25" offsetY="-15"
 title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry.sendtofriend"/></div></a>
 </td>
 <td valign="top" style="white-space: nowrap;">
-<a onclick=" ss_createPopupDiv(this, '<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_subscription_entry${ssDefinitionEntry.id}');return false;" 
+<a onclick=" ss_createPopupDiv(this, '${renderResponse.namespace}ss_subscription_entry${ssDefinitionEntry.id}');return false;" 
 	href="<ssf:url
 			adapter="true" 
 			portletName="ss_forum" 
@@ -97,13 +97,13 @@ title="<ssf:nlt tag="helpSpot.moreBlogTools"/>"></ssHelpSpot><ssf:nlt tag="entry
 </div>
 
 
-<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_replies_${ssDefinitionEntry.id}" 
+<div id="${renderResponse.namespace}ss_blog_replies_${ssDefinitionEntry.id}" 
   style="display:none; visibility:hidden;"></div>
-<div id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_${ssDefinitionEntry.id}" 
+<div id="${renderResponse.namespace}ss_blog_add_reply_${ssDefinitionEntry.id}" 
   style="display:none; visibility:hidden;">
 <iframe <ssf:title tag="title.add.reply" />
-  id="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
-  name="<ssf:ifadapter><portletadapter:namespace/></ssf:ifadapter><ssf:ifnotadapter><portlet:namespace/></ssf:ifnotadapter>ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
+  id="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
+  name="${renderResponse.namespace}ss_blog_add_reply_iframe_${ssDefinitionEntry.id}"
   src="<html:rootPath/>js/forum/null.html" 
   onLoad="if (parent.ss_showBlogReplyIframe) parent.ss_showBlogReplyIframe(this, '${renderResponse.namespace}', '${ssBinder.id}','${ssDefinitionEntry.id}');" 
   width="100%" frameBorder="0">xxx</iframe>
