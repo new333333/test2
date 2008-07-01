@@ -50,5 +50,5 @@
 
 <div style="margin:0px 0px 0px 0px;">
 <table border="1" cellpadding="0" cellspacing="0" 
-  class="ss_style ss_borderTable ${ss_slidingTableStyle}">
+  class="ss_style ${ss_slidingTableStyle}">
 

@@ -100,6 +100,10 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 
 
 <%@ include file="/WEB-INF/jsp/definition_elements/description_view.jsp" %>
+<c:set var="slidingTableTableStyle" value=""/>
+<c:if test="${slidingTableStyle == 'fixed'}">
+  <c:set var="slidingTableTableStyle" value="ss_borderTable"/>
+</c:if>
 <ssf:slidingTable id="ss_folder_table" parentId="ss_folder_table_parent" type="${slidingTableStyle}" 
  height="<%= ssFolderTableHeight %>" folderId="${ssFolder.id}" tableStyle="${slidingTableTableStyle}">
 
@@ -370,11 +374,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 	String seenStyleTitle = seenStyle;
 	String seenStyleTitle2 = "class=\"ss_noUnderlinePlus\"";
 %>
-<c:set var="slidingTableTableStyle" value=""/>
 <c:set var="slidingTableRowStyle" value=""/>
 <c:set var="slidingTableColStyle" value=""/>
 <c:if test="${slidingTableStyle == 'fixed'}">
-  <c:set var="slidingTableTableStyle" value=""/>
   <c:set var="slidingTableRowStyle" value=""/>
   <c:set var="slidingTableColStyle" value=""/>
 <%
