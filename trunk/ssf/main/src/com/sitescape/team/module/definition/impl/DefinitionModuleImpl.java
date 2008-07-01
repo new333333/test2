@@ -70,6 +70,7 @@ import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.module.binder.BinderModule;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
@@ -1757,16 +1758,25 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
         		.add(Restrictions.isNull("binderId"));
         	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());  		
     	}
-    	Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
-   	 	if (includeAncestors.equals(Boolean.TRUE)) {
-   	    	Map params = new HashMap();
-   	    	params.put("binderId", getAncestorIds(binder));    
-   	    	return coreDao.loadObjects("from com.sitescape.team.domain.Definition where binderId is null or binderId in (:binderId)", params);
-  	 	} else {
-  	    	FilterControls filter = new FilterControls()
-	      		.add(Restrictions.eq("binderId", binder.getId()));
-  	    	return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
- 	 	}
+    	try {
+    		Binder binder = getCoreDao().loadBinder(binderId, RequestContextHolder.getRequestContext().getZoneId());
+   	 		if (includeAncestors.equals(Boolean.TRUE)) {
+   	 			Map params = new HashMap();
+   	 			params.put("binderId", getAncestorIds(binder));    
+   	 			return coreDao.loadObjects("from com.sitescape.team.domain.Definition where binderId is null or binderId in (:binderId)", params);
+   	 		} else {
+   	 			FilterControls filter = new FilterControls()
+   	 			.add(Restrictions.eq("binderId", binder.getId()));
+   	 			return coreDao.loadDefinitions(filter, RequestContextHolder.getRequestContext().getZoneId());
+   	 		}
+    	} catch (NoBinderByTheIdException nb) {
+  	 		if (includeAncestors.equals(Boolean.TRUE)) {
+   	 	       	return getDefinitions(null, Boolean.TRUE);  		
+  	 		} else {
+    	 		return new ArrayList();
+   	 		}
+   		
+    	}
     }
     
     public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors, Integer type) {
