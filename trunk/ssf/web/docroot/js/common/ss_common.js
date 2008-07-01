@@ -3802,7 +3802,7 @@ function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 
 function ss_showForumEntry(url, isDashboard) {	
 	if (ss_userDisplayStyle == "accessible") {
-		self.location.href = obj.href;
+		self.location.href = url;
 		return false;
 	}
 	if (isDashboard == "yes") {
@@ -3815,7 +3815,12 @@ function ss_showForumEntry(url, isDashboard) {
 		}
 	} else {
 		//redefined for displayType
-		return ss_showForumEntryInIframe(url);
+		if (typeof self.ss_showForumEntryInIframe != "undefined") {
+			return ss_showForumEntryInIframe(url);
+		} else {
+			self.location.href = url;
+			return false;
+		}
 	}
 }
 

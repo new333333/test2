@@ -64,6 +64,11 @@ function ss_showEntryToBeShown${renderResponse.namespace}() {
 		</ssf:url>" 
 	ss_showForumEntryInIframe(url);
 }
+
+function ss_showForumEntryInIframe(url) {
+	return true;
+}
+
 ss_createOnLoadObj('ss_showEntryToBeShown${renderResponse.namespace}', ss_showEntryToBeShown${renderResponse.namespace});
 </script>
 </c:if>
