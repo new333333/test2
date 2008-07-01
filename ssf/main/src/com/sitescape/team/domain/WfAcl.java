@@ -27,16 +27,14 @@
  * are trademarks of SiteScape, Inc.
  */
 package com.sitescape.team.domain;
-import java.util.Set;
 import java.util.HashSet;
-
-import com.sitescape.util.StringUtil;
+import java.util.Set;
 
 /**
  * Helper class for workflow Acl descriptions
  */
 public class WfAcl {
-	private boolean useDefault=true;
+	private boolean useDefault=false;
 	private Set ids;
 	private AccessType type;
     public enum AccessType {

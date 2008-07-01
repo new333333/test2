@@ -72,6 +72,17 @@
 		</tbody></table>
 	  </c:when>
 	  <c:otherwise>
+	  <c:if test="${empty ssDefinition.binderId}">
+		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
+		  sourceDocument="${data.sourceDefinition}" 
+		  configDocument="${ssConfigDefinition}"
+		  option="${data.option}" 
+		  itemId="${data.itemId}" 
+		  itemName="${data.itemName}" 
+		  refItemId="${data.refItemId}" 
+		/>
+		</c:if>
+	  <c:if test="${!empty ssDefinition.binderId}">
 		<ssf:buildDefinitionDivs title="<%= NLT.get("definition.select_item") %>"
 		  sourceDocument="${data.sourceDefinition}" 
 		  configDocument="${ssConfigDefinition}"
@@ -81,6 +92,8 @@
 		  refItemId="${data.refItemId}" 
 		  owningBinderId="${ssDefinition.binderId}"
 		/>
+		</c:if>
+		
 		</c:otherwise>
 		</c:choose>
 	  </div>

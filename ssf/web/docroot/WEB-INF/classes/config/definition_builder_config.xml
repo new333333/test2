@@ -2486,6 +2486,7 @@
 		<options>
 			<option name="state" caption="__state" multipleAllowed="true" />
 			<option name="parallelThread" caption="__parallelThread" multipleAllowed="true" />
+			<option name="accessControls"/>
 		</options>
 	</item>
 	
@@ -2671,10 +2672,11 @@
 		</properties>
 	</item>
 	
-	<item name="accessControls" caption="__accessControls" canBeDeleted="true" 
+	<item name="accessControls" caption="__accessControls" 
 		  unique="./item[@name='accessControls']" multipleAllowedInParent="false">
 		<operations>
 			<operation name="addOption" caption="__add" />
+			<operation name="deleteItem" caption="__delete" />
 		</operations>
 		<options>
 			<option_select path="//item[@category='accessControlsLayout']" />
@@ -2684,7 +2686,7 @@
 	<item name="readAccess" caption="__readAccess" category="accessControlsLayout" 
 		  multipleAllowedInParent="false">
 		<properties>
-			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="team" caption="__team" type="checkbox" /> 
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
@@ -2695,7 +2697,7 @@
 	<item name="modifyAccess" caption="__modifyAccess" category="accessControlsLayout" 
 		  multipleAllowedInParent="false">
 		<properties>
-			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
@@ -2706,7 +2708,7 @@
 	<item name="deleteAccess" caption="__deleteAccess" category="accessControlsLayout" 
 		  multipleAllowedInParent="false">
 		<properties>
-			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
@@ -2717,7 +2719,7 @@
 	<item name="transitionOutAccess" caption="__transitionOutAccess" category="accessControlsLayout" 
 		  multipleAllowedInParent="false">
 		<properties>
-			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
@@ -2728,7 +2730,7 @@
 	<item name="transitionInAccess" caption="__transitionInAccess" category="accessControlsLayout" 
 		  multipleAllowedInParent="false">
 		<properties>
-			<property name="folderDefault" caption="__folderDefault" type="checkbox" default="true" />
+			<property name="folderDefault" caption="__folderDefault" type="checkbox"/>
 			<property name="entryCreator" caption="__entryCreator" type="checkbox" />
 			<property name="team" caption="__team" type="checkbox" />
 			<property name="userGroupAccess" caption="__userGroup" type="userGroupSelect" />
