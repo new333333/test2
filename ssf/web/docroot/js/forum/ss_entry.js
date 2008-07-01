@@ -69,6 +69,7 @@ function ss_showRating(rating, id, namespace) {
 	ss_moveDivToBody("ss_rating_info_div" + namespace)
 	var infoDiv = document.getElementById("ss_rating_info_div" + namespace)
 	var infoSpan = document.getElementById("ss_rating_info" + namespace)
+	if (infoDiv == null || infoSpan == null) return;
 	infoSpan.innerHTML = ss_ratings_info[rating];
     infoDiv.style.left = parseInt(parseInt(ss_getImageLeft(imgId)) + 20) + "px";
     infoDiv.style.top = parseInt(parseInt(ss_getImageTop(imgId)) - 30) + "px";
