@@ -263,7 +263,7 @@ public class MobileAjaxController  extends SAbstractControllerRetry {
 		model.put(WebKeys.BINDER, binder);
 
       	Integer pageNumber = PortletRequestUtils.getIntParameter(request, WebKeys.URL_PAGE_NUMBER);
-      	if (pageNumber == null) pageNumber = 0;
+      	if (pageNumber == null || pageNumber < 0) pageNumber = 0;
       	int pageSize = Integer.valueOf(WebKeys.MOBILE_PAGE_SIZE).intValue();
       	int pageStart = pageNumber.intValue() * pageSize;
       	int pageEnd = pageStart + pageSize;

@@ -432,7 +432,7 @@ public class ListFolderHelper {
 		
 		//Determine the Folder Start Index
 		Integer tabPageNumber = (Integer) tabOptions.get(Tabs.PAGE);
-		if (tabPageNumber == null) tabPageNumber = Integer.valueOf(0);
+		if (tabPageNumber == null || tabPageNumber < 0) tabPageNumber = Integer.valueOf(0);
 		options.put(ObjectKeys.SEARCH_OFFSET, tabPageNumber);
 		tab.setData(tabOptions); //use synchronzied method
 		
