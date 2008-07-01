@@ -226,5 +226,5 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	</c:if>
 		
 </ssf:sidebarPanel>
-<jsp:include page="/WEB-INF/jsp/sidebars/folder_tags.jsp" />
+<jsp:include page="/WEB-INF/jsp/sidebars/folder_tools.jsp" />
    

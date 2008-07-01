@@ -126,5 +126,6 @@
 			    </div>
 			</form>
 </ssf:sidebarPanel>
-
 </c:if>
+
+<jsp:include page="/WEB-INF/jsp/sidebars/folder_tags.jsp" />
