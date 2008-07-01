@@ -84,6 +84,7 @@ import org.joda.time.YearMonthDay;
 
 import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.dao.util.EnumUserType;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.module.ical.impl.IcalModuleImpl;
 import com.sitescape.team.module.shared.XmlUtils;
@@ -293,7 +294,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	
 	protected String uid;
 	
-	protected FreeBusyType freeBusy;
+	protected FreeBusyType freeBusy;  //access=field set by hibernate, so we can deal with nulls
 	
 	/* Constructors */
 
@@ -2859,7 +2860,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 	
 	/**
-	 * @hibernate.property length="255"
+	 * @hibernate.property length="128"
 	 * @return
 	 */
 	public String getUid() {
@@ -2871,7 +2872,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 	
 	/**
-	 * @hibernate.property
+	 * @hibernate.property length="32"
 	 * @return
 	 */
 	public FreeBusyType getFreeBusy() {
