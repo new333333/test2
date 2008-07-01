@@ -40,7 +40,7 @@
 		    <ssf:nlt tag="calendar.end" text="End"/>: ${endString}<br />			
 		</c:otherwise>
 	</c:choose>
-    <c:if test="$!empty repeatString}"><ssf:nlt tag="calendar.frequency" text="Frequency"/>: ${repeatString}</c:if>
+    <c:if test="${!empty repeatString}"><ssf:nlt tag="calendar.frequency" text="Frequency"/>: ${repeatString}</c:if>
 </span>
 
 
