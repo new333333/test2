@@ -1044,6 +1044,7 @@ public abstract class AbstractEntryProcessor extends AbstractBinderProcessor
         	if (options.containsKey(ObjectKeys.SEARCH_OFFSET)) 
     			searchOffset = (Integer) options.get(ObjectKeys.SEARCH_OFFSET);       
         }
+        if (searchOffset < 0) searchOffset = 0;
     	maxResults = getBinderEntries_maxEntries(maxResults); 
        	Hits hits = null;
        	org.dom4j.Document queryTree = null;
