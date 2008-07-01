@@ -2055,6 +2055,10 @@ span.ss_tabs_title {
 a.ss_breadcrumb {
 	font-size: ${ss_style_font_smallprint};
 }
+.ss_bc {					/* used with a span to try to fix entry breadcrumb (put span where ss_bold is???)  */
+	font-weight:bold;
+	margin-top:15px !important; 
+}  
 
 div.ss_sidebar_panel {
 	padding-bottom: 1px;

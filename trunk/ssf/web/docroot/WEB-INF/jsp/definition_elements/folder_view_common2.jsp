@@ -53,9 +53,9 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <% // filter toolbar %>
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 </div><br/>
-<div align="left" class="ssPageNavi">
+
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
-</div><br/>
+<br/>
 <br/>
 <c:set var="actionVar" value="view_ws_listing"/>
 <c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">

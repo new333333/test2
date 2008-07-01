@@ -66,8 +66,8 @@
 				name="operation" value="select_filter"/><ssf:param 
 				name="select_filter" value=""/></ssf:url>">
 					<span 
-					<c:if test="${currentFilter == ''}"> class="ss_largeprint ss_bold"</c:if>
-					<c:if test="${currentFilter != ''}"> class="ss_fineprint ss_normal"</c:if>
+					<c:if test="${currentFilter == ''}"> class="ss_navbar_current"</c:if>
+					<c:if test="${currentFilter != ''}"> class="ss_normal"</c:if>
 					>
 						<ssf:nlt tag="None"/>
 					</a></li>
@@ -78,8 +78,8 @@
 				name="operation" value="select_filter"/><ssf:param 
 				name="select_filter" value="${filter.key}"/></ssf:url>">
 					<span 
-					<c:if test="${filter.key == currentFilter}"> class="ss_largeprint ss_bold"</c:if>
-					<c:if test="${filter.key != currentFilter}"> class="ss_fineprint ss_normal"</c:if>
+					<c:if test="${filter.key == currentFilter}"> class="ss_navbar_current"</c:if>
+					<c:if test="${filter.key != currentFilter}"> class="ss_normal"</c:if>
 					>				
 					<c:out value="${filter.key}"/></span>
 					</a></li>

@@ -318,7 +318,6 @@ a.ss_new_thread:hover {
 	}
 #ss_navbar_inline ul a{
 	color:#666666;
-	text-decoration: underline;
 	}	
 #ss_navbar_inline ul a:hover{
 	color:#0C9;
@@ -328,10 +327,130 @@ a.ss_new_thread:hover {
 	font-weight:bold;
 	color:#C00000;
 	}	
+.ss_navbar_current {
+	font-weight: bold !important;
+	text-decoration: underline;
+	}	
 
 /******* PAGINATION STYLES *************/
 
+.ss_paginationFont {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px !important;
+	padding-left: 5px;
+	border: 0.5px none #698F8E;
+	padding-right: 2px;
+	white-space: nowrap;
+	padding-top: 3px;
+}
+
+.ss_paginationFont a{
+	border:solid 1px #DDDDDD !important;
+	margin-right:2px;
+}
+.ss_pageActive{
+	color:#408080!important;
+	font-weight:normal;
+	padding:6px 4px 0px 6px;
+}
+.ss_paginationFont a:link,
+.ss_paginationFont a:visited {
+	color:#333333;
+	display:block;
+	padding:3px 6px;
+	text-decoration:none;
+	background-color:#E9F1F1 !important;
+	background:transparent !important;	
+}
+.ss_paginationFont a:hover{
+	border:solid 1px #666666 !important;
+	background-color: #CCDFDE !important;
+}
+.ss_paginationTextBox {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 9px;
+	line-height: 10px;
+	height: 10px;
+	width: 22px;
+	border-top-width: 0.4px;
+	border-right-width: 0.4px;
+	border-bottom-width: 0.4px;
+	border-left-width: 0.4px;
+	border-top-style: solid;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: solid;
+	border-top-color: #698F8E;
+	border-right-color: #698F8E;
+	border-bottom-color: #698F8E;
+	border-left-color: #698F8E;
+	padding-top: 1px;
+}
+.ss_pagination {
+	background-color: #CCDFDE !important;
+	font-size: ${ss_style_font_fineprint};
+}
+.ss_paginationTDLite {				/* should be able to delete; extra code not used */
+	background-color: #E9F1F1 !important;
+	border-width: thin !important;
+	border-color: #698F8E;
+	border-style: solid;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	height:12px;
+}
+.ss_firstimg {					/* should be able to delete; extra code not used */
+	background-color: #E9F1F1;
+	padding-left: 10px;
+	display: inline;
+}
+.ss_paginationTD img {			/* should be able to delete; extra code not used */
+	padding-top: 2px;
+	padding-bottom: 2px;
+}
+.ss_goButton {
+	background-image:url("<html:rootPath/>images/pics/page/go.png");
+	background-repeat: no-repeat;
+	background-position: 1% 1%;
+	}
+	
+
 #ss_pagination {
+	font-family: Arial, Helvetica, sans-serif;
+	border:0;
+	margin:0;
+	padding:0;
+	vertical-align:middle;
+	font-size: ${ss_style_font_smallprint} !important;
+	background-color:#E9F1F1 !important;
+	background:transparent !important;
+}
+#ss_pagination img{
+	background-color:#E9F1F1 !important;
+	background:transparent !important;
+}
+
+#ss_pagination .ss_previous a {
+	font-weight:bold;
+	border:solid 1px #698F8E;
+	}
+#ss_pagination .ss_previous-off,
+#ss_pagination .ss_next-off {
+	color:#666666;
+	display:block;
+	font-weight:bold;
+	padding:3px 4px;
+}
+#ss_pagination .ss_pageNext a,
+#ss_pagination .ss_previous a {
+	font-weight:bold;
+	border:solid 1px #698F8E;
+}
+
+
+/******* OLD PAGINATION STYLES *************/
+
+#ss_paginationOLD {
 	height:22px;
 	line-height:21px;
 	clear:both;
@@ -341,7 +460,7 @@ a.ss_new_thread:hover {
 	font-weight:normal;
 }
 
-#ss_pagination a:link, #ss_pagination a:visited{
+#ss_paginationOLD a:link, #ss_pagination a:visited{
 	padding:7px;
 	padding-top:2px;
 	padding-bottom:2px;
@@ -354,13 +473,13 @@ a.ss_new_thread:hover {
 	font-weight:normal;
 }
 
-#ss_pagination a:hover {
+#ss_paginationOLD a:hover {
 	background-color:#DDEEFF;
 	border:1px solid #BBDDFF;
 	color:#0072BC;	
 }
 
-#ss_pagination .ss_active_tnt_link {
+#ss_paginationOLD .ss_active_tnt_link {
 	padding:7px;
 	padding-top:2px;
 	padding-bottom:2px;
@@ -372,7 +491,7 @@ a.ss_new_thread:hover {
 	cursor:default;
 }
 
-#ss_pagination .ss_disabled_tnt_pagination {
+#ss_paginationOLD .ss_disabled_tnt_pagination {
 	padding:7px;
 	padding-top:2px;
 	padding-bottom:2px;
