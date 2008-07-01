@@ -78,7 +78,9 @@
 			String width = (String) column.get("width");
 			String text = (String) column.get("text");
 			String colStyle = (String) column.get("style");
-			if (text.trim().equals("")) text = "&nbsp;";
+			//Make sure the column text field has more than just white space
+	    	String testText = text.replaceAll("[\\s]", "");
+	    	if (testText.equals("") || testText.toLowerCase().equals("<span></span>")) text = "&nbsp;";
 			String widthAttr = "";
 			if (width != null && !width.equals("")) widthAttr = "width='" + width + "' ";
 			if (colStyle == null) colStyle = "";
