@@ -339,6 +339,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 		Element root = 	getDefinitionModule().getDefinitionConfig().getRootElement();
 		
 		Iterator definitions = root.elementIterator("definition");
+		Map designers = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
 		while (definitions.hasNext()) {
 			Element defEle = (Element) definitions.next();
 			Element treeEle = DocumentHelper.createElement("child");
@@ -368,8 +369,14 @@ public class ManageDefinitionsController extends  SAbstractController {
 					curDefEle.addAttribute("url", "");
 				}
 			}
-			if (treeEle.hasContent()) dtRoot.add(treeEle);
+			if (treeEle.hasContent()) designers.put(treeEle.attributeValue("title"), treeEle);
 		}
+		//	add sorted elements
+		for (Iterator iter=designers.entrySet().iterator(); iter.hasNext(); ) {
+				Map.Entry me = (Map.Entry)iter.next();
+				dtRoot.add((Element)me.getValue());
+		}
+		
 		return definitionTree;
 
 	}
