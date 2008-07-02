@@ -3779,7 +3779,6 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
     	' src="'+url+'"' +
     	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:10px 10px 10px 16px; padding:0px;" frameBorder="1"' +
     	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
-    	' onResize="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
     	'>xxx</iframe>' +
     	'</div>';
 	tbodyObj.replaceChild(iframeRow, trObj)
@@ -3792,9 +3791,9 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 var ss_entryInPlaceIframeOffset = 50;
 function ss_setIframeHeight(divId, iframeId, hoverOverId) {
 	var targetDiv = document.getElementById(divId);
-	var iframeDiv = document.getElementById(iframeId);
+	var iframeDiv = document.getElementById(iframeId);	
 	if (window.frames[iframeId] != null) {
-		eval("var iframeHeight = parseInt(window." + iframeId + ".document.body.scrollHeight);")
+		var iframeHeight = parseInt(window.frames[iframeId].document.body.scrollHeight);
 		if (iframeHeight > 0) {
 			iframeDiv.style.height = parseInt(iframeHeight + ss_entryInPlaceIframeOffset) + "px"
 			iframeDiv.style.width= parseInt(ss_getObjectWidth(targetDiv) - 6) + "px";
