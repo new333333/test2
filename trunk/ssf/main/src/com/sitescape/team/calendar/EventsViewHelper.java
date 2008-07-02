@@ -539,7 +539,7 @@ public class EventsViewHelper {
 		String onStringSeparator = "";
 		if (freqString == null) {
 			// freqString = "does not repeat";
-			freqString = NLT.get("event.no_repeat", locale);
+			// freqString = NLT.get("event.no_repeat", locale);
 		} else {
 			freqString = freqString.toLowerCase();
 			if (event.getInterval() > 1) {
@@ -630,7 +630,13 @@ public class EventsViewHelper {
 			}
 		}
 		
-		return freqString + " " + onString + " " + untilString;
+		if ((freqString != null && !"".equals(freqString)) ||
+				(onString != null && !"".equals(onString)) ||
+				(untilString != null && !"".equals(untilString))) {
+			return freqString + " " + onString + " " + untilString;	
+		}
+		
+		return null;
 	}
 	
 	private static String getNumberSuffix(int i) {
