@@ -2860,7 +2860,7 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 	}
 	
 	/**
-	 * @hibernate.property length="128"
+	 * @hibernate.property length="255"
 	 * @return
 	 */
 	public String getUid() {
