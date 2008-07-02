@@ -163,7 +163,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 }
 #ss_topic_title span
 {
-	color:#333333;!important;
+	color:#333333 !important;
 	font-size:14px;
 	font-weight:bold;
 }
