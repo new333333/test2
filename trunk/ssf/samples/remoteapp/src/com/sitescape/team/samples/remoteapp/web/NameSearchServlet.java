@@ -32,8 +32,6 @@ import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,7 +39,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
-import org.apache.axis.client.Call;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -177,6 +174,6 @@ public class NameSearchServlet extends HttpServlet {
 		// binder ID and enry ID, etc. Useful only for one-off testing.
 		File file = new File("C:/junk/junk1/chinese-application.doc");
 		WebServiceClientUtil.attachFile(stub, file);
-		stub.folder_uploadFolderFile(accessToken, 33, 9, "upload", "chinese-application.doc");
+		stub.folder_uploadFile(accessToken, 33, 9, "upload", "chinese-application.doc");
 	}
 }

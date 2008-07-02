@@ -103,10 +103,15 @@ public class WSTesterServlet extends HttpServlet {
 						String binderId = req.getParameter("binderId");
 						String entryId = req.getParameter("entryId");
 						String includeAttachments = req.getParameter("includeAttachments");
-						FolderEntry entry = stub.folder_getFolderEntry(accessToken, new Long(binderId), 
+						FolderEntry entry = stub.folder_getEntry(accessToken, new Long(binderId), 
 								new Long(entryId), Boolean.valueOf(includeAttachments));
 						result = entry.toString();
 					
+					/*
+					 * folder_getFolderEntryAsXML and folder_addFolderEntry operations that use XML
+					 * string as input/output are removed from the new Teaming web services interface.
+					 * Use instead the new folder_addEntry opetation taking FolderEntry object as input.
+					 *  
 					} else if (operation.equals("folder_getFolderEntryAsXML")) {
 						String binderId = req.getParameter("binderId_getFolderEntry");
 						String entryId = req.getParameter("entryId_getFolderEntry");
@@ -122,7 +127,7 @@ public class WSTesterServlet extends HttpServlet {
 						Long entryId = stub.folder_addFolderEntry(accessToken, new Long(binderId), 
 								definitionId, entryXml, "");
 						result = entryId.toString();
-					
+					*/
 					} else if (operation.equals("search_search")) {
 						String query = req.getParameter("query");
 						String start = req.getParameter("startCount");

@@ -6,6 +6,7 @@
 		<ant dir="portlet" target="clean" />
 		<ant dir="remoteapp" target="clean" />
 		<ant dir="wsclient" target="clean" />
+		<ant dir="backgroundjob" target="clean" />
 	</target>
 
 	<target name="compile">
@@ -13,5 +14,6 @@
 		<ant dir="portlet" target="compile" />
 		<ant dir="remoteapp" target="compile" />
 		<ant dir="wsclient" target="compile" />
+		<ant dir="backgroundjob" target="compile" />
 	</target>
 </project>

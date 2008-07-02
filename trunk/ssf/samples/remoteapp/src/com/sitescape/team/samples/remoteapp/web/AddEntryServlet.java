@@ -62,6 +62,8 @@ import org.dom4j.Element;
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
+import com.sitescape.team.client.ws.model.Description;
+import com.sitescape.team.client.ws.model.FolderEntry;
 import com.sitescape.team.module.shared.EntityIndexUtils;
 import com.sitescape.team.search.BasicIndexUtils;
 import com.sitescape.util.search.Constants;
@@ -136,6 +138,15 @@ public class AddEntryServlet extends HttpServlet {
 					TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator
 							.getTeamingService();
 
+					FolderEntry entry = new FolderEntry();
+					entry.setTitle(title);
+					Description desc = new Description();
+					desc.setFormat(1);					
+					desc.setText(description);					
+					entry.setDescription(desc);
+					Long entryId = stub.folder_addEntry(accessToken, entry, null);
+					
+					/*
 					Document entryDoc = DocumentHelper.createDocument();
 					Element rootElement = entryDoc.addElement("entry");
 					Element titleElement = rootElement.addElement("attribute");
@@ -148,6 +159,8 @@ public class AddEntryServlet extends HttpServlet {
 					descriptionElement.setText(description);
 					Long entryId = stub.folder_addFolderEntry(accessToken, new Long(binderId), 
 							definitionId, entryDoc.asXML(), null);
+					*/
+					
 					String jsp = "/WEB-INF/jsp/addentry/entry_return.jsp";				
 					RequestDispatcher rd = req.getRequestDispatcher(jsp);	
 					StringServletResponse resp2 = new StringServletResponse(resp);	
