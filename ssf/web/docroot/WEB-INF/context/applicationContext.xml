@@ -908,7 +908,10 @@ text/calendar											  ics
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.template.TemplateService</value>
+			<list>
+				<value>com.sitescape.team.remoting.ws.service.template.TemplateService</value>
+				<value>com.sitescape.team.remoting.ws.service.template.TemplateServiceInternal</value>
+			</list>
 		</property>
 	</bean>
 	
@@ -918,7 +921,10 @@ text/calendar											  ics
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.search.SearchService</value>
+			<list>
+				<value>com.sitescape.team.remoting.ws.service.search.SearchService</value>
+				<value>com.sitescape.team.remoting.ws.service.search.SearchServiceInternal</value>
+			</list>
 		</property>
 	</bean>
 	
@@ -941,7 +947,10 @@ text/calendar											  ics
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.folder.FolderService</value>
+			<list>
+				<value>com.sitescape.team.remoting.ws.service.folder.FolderService</value>
+				<value>com.sitescape.team.remoting.ws.service.folder.FolderServiceInternal</value>
+			</list>
 		</property>
 	</bean>
 	
@@ -961,7 +970,10 @@ text/calendar											  ics
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.binder.BinderService</value>
+			<list>
+				<value>com.sitescape.team.remoting.ws.service.binder.BinderService</value>
+				<value>com.sitescape.team.remoting.ws.service.binder.BinderServiceInternal</value>
+			</list>
 		</property>
 	</bean>
 	
