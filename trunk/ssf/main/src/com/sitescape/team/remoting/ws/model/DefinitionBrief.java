@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class DefinitionBrief {
+import java.io.Serializable;
+
+public class DefinitionBrief implements Serializable {
 
 	/*
 	 *   <definition name="_user" internalId="402883b90cc53079010cc539bf260007" id="402883b90cc53079010cc539bf260007" type="7">

@@ -29,6 +29,7 @@
 package com.sitescape.team.remoting.ws;
 
 import java.util.Calendar;
+import java.util.Locale;
 import java.util.Map;
 
 import org.dom4j.Branch;
@@ -43,6 +44,7 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HKey;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.Principal;
@@ -221,13 +223,43 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		}
 	}
 	
+	protected void fillUserModel(com.sitescape.team.remoting.ws.model.User userModel, User user) {
+		// Principal common
+		fillPrincipalModel(userModel, user);
+		
+		// Note: With this implementation, most of the statically-known attributes (eg. first name)
+		// are also duplicated as definable attributes, due to the way our system works. 
+		// At the moment, we'll not make an effort to eliminate this duplicate from the model
+		// object returned from this method, since they are harmless.  
+		
+		// User specific
+		userModel.setFirstName(user.getFirstName());
+		userModel.setMiddleName(user.getMiddleName());
+		userModel.setLastName(user.getLastName());
+		userModel.setOrganization(user.getOrganization());
+		userModel.setPhone(user.getPhone());
+		userModel.setZonName(user.getZonName());
+		Locale locale = user.getLocale();
+		if(locale != null) {
+			userModel.setLocaleLanguage(locale.getLanguage());
+			userModel.setLocaleCountry(locale.getCountry());
+		}
+		if(user.getTimeZone() != null) {
+			userModel.setTimeZone(user.getTimeZone().getID());
+		}
+		userModel.setSkypeId(user.getSkypeId());
+	}
+	
+	protected void fillGroupModel(com.sitescape.team.remoting.ws.model.Group groupModel, Group group) {
+		fillPrincipalModel(groupModel, group);
+	}
+	
 	protected void fillPrincipalModel(com.sitescape.team.remoting.ws.model.Principal principalModel, Principal entry) {
 		// Entry common
 		fillEntryModel(principalModel, entry);
 
 		// Principal specific
 		principalModel.setEmailAddress(entry.getEmailAddress());
-		principalModel.setType(entry.getEntityType().toString());
 		principalModel.setDisabled(entry.isDeleted());
 		principalModel.setReserved(entry.isReserved());
 		principalModel.setName(entry.getName());
@@ -251,7 +283,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 	protected void fillDefinableEntityModelStatic(com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity) {
 		entityModel.setId(entity.getId());
 		
-		entityModel.setBinderId(entity.getParentBinder().getId());
+		entityModel.setParentBinderId(entity.getParentBinder().getId());
 		
 		if(entity.getEntryDef() != null)
 			entityModel.setDefinitionId(entity.getEntryDef().getId());

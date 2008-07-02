@@ -34,13 +34,16 @@ import org.springframework.remoting.jaxrpc.ServletEndpointSupport;
 
 import com.sitescape.team.remoting.Facade;
 import com.sitescape.team.remoting.ws.service.binder.BinderService;
+import com.sitescape.team.remoting.ws.service.binder.BinderServiceInternal;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionService;
 import com.sitescape.team.remoting.ws.service.definition.DefinitionServiceInternal;
 import com.sitescape.team.remoting.ws.service.folder.FolderService;
+import com.sitescape.team.remoting.ws.service.folder.FolderServiceInternal;
 import com.sitescape.team.remoting.ws.service.folder.MigrationService;
 import com.sitescape.team.remoting.ws.service.ical.IcalService;
 import com.sitescape.team.remoting.ws.service.profile.ProfileService;
 import com.sitescape.team.remoting.ws.service.search.SearchService;
+import com.sitescape.team.remoting.ws.service.search.SearchServiceInternal;
 import com.sitescape.team.remoting.ws.service.template.TemplateService;
 
 /**
@@ -111,7 +114,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#setFunctionMembership}.
 	 */
 	public void setFunctionMembership(long binderId, String inputDataAsXml) {
-		this.binderService.binder_setFunctionMembership(null, binderId, inputDataAsXml);
+		((BinderServiceInternal) this.binderService).binder_setFunctionMembershipWithXML(null, binderId, inputDataAsXml);
 	}
 	/**
 	 * @deprecated As of ICEcore version 1.1,
@@ -140,7 +143,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#getFolderEntriesAsXML}.
 	 */
 	public String getFolderEntriesAsXML(long binderId) {
-		return this.folderService.folder_getFolderEntriesAsXML(null, binderId);
+		return ((FolderServiceInternal) this.folderService).folder_getEntriesAsXML(null, binderId);
 	}
 
 	/**
@@ -148,7 +151,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#getFolderEntriesAsXML}.
 	 */
 	public String getFolderEntryAsXML(long binderId, long entryId, boolean includeAttachments) {
-		return this.folderService.folder_getFolderEntryAsXML(null, binderId, entryId, includeAttachments);
+		return ((FolderServiceInternal) this.folderService).folder_getEntryAsXML(null, binderId, entryId, includeAttachments);
 	}
 	
 	/**
@@ -156,7 +159,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#addFolderEntry}.
 	 */
 	public long addFolderEntry(long binderId, String definitionId, String inputDataAsXML, String attachedFileName) {
-		return this.folderService.folder_addFolderEntry(null, binderId, definitionId, inputDataAsXML, attachedFileName);
+		return ((FolderServiceInternal) this.folderService).folder_addEntryWithXML(null, binderId, definitionId, inputDataAsXML, attachedFileName);
 	}
 
 	/**
@@ -164,14 +167,14 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#addReply}.
 	 */
 	public long addReply(long binderId, long parentEntryId, String definitionId, String inputDataAsXML, String attachedFileName) {
-		return this.folderService.folder_addReply(null, binderId, parentEntryId, definitionId, inputDataAsXML, attachedFileName);
+		return ((FolderServiceInternal) this.folderService).folder_addReplyWithXML(null, binderId, parentEntryId, definitionId, inputDataAsXML, attachedFileName);
 	}
 	/**
 	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.folder#modifyFolderEntry}.
 	 */
 	public void modifyFolderEntry(long binderId, long entryId, String inputDataAsXML) {
-		this.folderService.folder_modifyFolderEntry(null, binderId, entryId, inputDataAsXML);
+		((FolderServiceInternal) this.folderService).folder_modifyEntryWithXML(null, binderId, entryId, inputDataAsXML);
 	}
 
 	/**
@@ -187,7 +190,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 */
 	public void uploadFolderFile(long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
-		this.folderService.folder_uploadFolderFile(null, binderId, entryId, fileUploadDataItemName, fileName);
+		this.folderService.folder_uploadFile(null, binderId, entryId, fileUploadDataItemName, fileName);
 	}
 	
 	/**
@@ -196,7 +199,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 */
 	public void uploadCalendarEntries(long folderId, String iCalDataAsXML)
 	{
-		this.icalService.ical_uploadCalendarEntries(null, folderId, iCalDataAsXML);
+		this.icalService.ical_uploadCalendarEntriesWithXML(null, folderId, iCalDataAsXML);
 	}
 
 	/**
@@ -262,7 +265,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.binder#getTeamMembersAsXML}.
 	 */
 	public String getTeamMembersAsXML(long binderId) {
-		return this.binderService.binder_getTeamMembersAsXML(null, binderId);
+		return ((BinderServiceInternal) this.binderService).binder_getTeamMembersAsXML(null, binderId);
 	}
 
 	/**
@@ -270,7 +273,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.search#getTeamsAsXML}.
 	 */
 	public String getTeamsAsXML() {
-		return this.searchService.search_getTeamsAsXML(null);
+		return ((SearchServiceInternal) this.searchService).search_getTeamsAsXML(null);
 	}
 	
 	public void setTeamMembers(long binderId, String[] memberNames) {
@@ -291,7 +294,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 */
 	public long migrateBinder(long parentId, String definitionId, String inputDataAsXML,
 			String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		return this.migrationService.migration_addBinder(null, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+		return this.migrationService.migration_addBinderWithXML(null, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
 	}
 	
 	/**
@@ -300,7 +303,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 */
 	public long migrateFolderEntry(long binderId, String definitionId, String inputDataAsXML, 
 							   String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		return this.migrationService.migration_addFolderEntry(null, binderId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+		return this.migrationService.migration_addFolderEntryWithXML(null, binderId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
 	}
 		
 	/**
@@ -309,7 +312,7 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 */
 	public long migrateReply(long binderId, long parentId, String definitionId,
 					     String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate) {
-		return this.migrationService.migration_addReply(null, binderId, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
+		return this.migrationService.migration_addReplyWithXML(null, binderId, parentId, definitionId, inputDataAsXML, creator, creationDate, modifier, modificationDate);
 	}
 	/**
 	 * @deprecated As of ICEcore version 1.1,

@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class TemplateCollection {
+import java.io.Serializable;
+
+public class TemplateCollection implements Serializable {
 
 	private TemplateBrief[] templates;
 

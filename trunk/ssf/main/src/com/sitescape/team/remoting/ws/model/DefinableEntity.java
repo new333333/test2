@@ -29,14 +29,13 @@
 package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-public class DefinableEntity implements Serializable {
+public abstract class DefinableEntity implements Serializable {
 	
 	private Long id;
-	private Long binderId;
+	private Long parentBinderId;
 	private String definitionId;
 	private String title;
 	private Description description;
@@ -44,20 +43,20 @@ public class DefinableEntity implements Serializable {
 	private Timestamp creation;
 	private Timestamp modification;
 	private AttachmentsField attachmentsField;
-	// Using Lists as internal representation to make it a bit easier to build them.
+	// Using Map as internal representation for convenience and efficiency.
 	// But the public getter/setter must use array representation.
-	private List<BooleanField> booleanFieldList = new ArrayList<BooleanField>();
-	private List<DateField> dateFieldList = new ArrayList<DateField>();
-	private List<LongArrayField> longArrayFieldList = new ArrayList<LongArrayField>();
-	private List<StringArrayField> stringArrayFieldList = new ArrayList<StringArrayField>();
-	private List<StringField> stringFieldList = new ArrayList<StringField>();
+	private Map<String,CustomBooleanField> booleanFieldMap = new HashMap<String,CustomBooleanField>();
+	private Map<String,CustomDateField> dateFieldMap = new HashMap<String,CustomDateField>();
+	private Map<String,CustomLongArrayField> longArrayFieldMap = new HashMap<String,CustomLongArrayField>();
+	private Map<String,CustomStringArrayField> stringArrayFieldMap = new HashMap<String,CustomStringArrayField>();
+	private Map<String,CustomStringField> stringFieldMap = new HashMap<String,CustomStringField>();
 
-	public Long getBinderId() {
-		return binderId;
+	public Long getParentBinderId() {
+		return parentBinderId;
 	}
 
-	public void setBinderId(Long binderId) {
-		this.binderId = binderId;
+	public void setParentBinderId(Long binderId) {
+		this.parentBinderId = binderId;
 	}
 
 	public String getDefinitionId() {
@@ -124,88 +123,114 @@ public class DefinableEntity implements Serializable {
 		this.attachmentsField = attachmentsField;
 	}
 
-	public BooleanField[] getBooleanFields() {
-		BooleanField[] array = new BooleanField[booleanFieldList.size()];
-		return booleanFieldList.toArray(array);
+	public CustomBooleanField[] getCustomBooleanFields() {
+		CustomBooleanField[] array = new CustomBooleanField[booleanFieldMap.size()];
+		return booleanFieldMap.values().toArray(array);
 	}
 
-	public void setBooleanFields(BooleanField[] booleanFields) {
-		if(booleanFields != null)
-			this.booleanFieldList = Arrays.asList(booleanFields); 
-		else
-			this.booleanFieldList = new ArrayList<BooleanField>();
+	public void setCustomBooleanFields(CustomBooleanField[] booleanFields) {
+		this.booleanFieldMap = new HashMap<String,CustomBooleanField>();
+		if(booleanFields != null) {
+			for(int i = 0; i < booleanFields.length; i++)
+				this.booleanFieldMap.put(booleanFields[i].getName(), booleanFields[i]);
+		}
 	}
 
-	// Convenience method. Not part of the API. 
-	public void addBooleanField(BooleanField booleanField) {
-		this.booleanFieldList.add(booleanField);
+	// Convenience method. Not part of the API exposed through the web services.
+	public void addCustomBooleanField(CustomBooleanField booleanField) {
+		this.booleanFieldMap.put(booleanField.getName(), booleanField);
 	}
 	
-	public DateField[] getDateFields() {
-		DateField[] array = new DateField[dateFieldList.size()];
-		return dateFieldList.toArray(array);
-	}
-
-	public void setDateFields(DateField[] dateFields) {
-		if(dateFields != null)
-			this.dateFieldList = Arrays.asList(dateFields); 
-		else
-			this.dateFieldList = new ArrayList<DateField>();
+	public CustomBooleanField findCustomBooleanField(String name) {
+		return this.booleanFieldMap.get(name);
 	}
 	
-	// Convenience method. Not part of the API. 
-	public void addDateField(DateField dateField) {
-		this.dateFieldList.add(dateField);
+	public CustomDateField[] getCustomDateFields() {
+		CustomDateField[] array = new CustomDateField[dateFieldMap.size()];
+		return dateFieldMap.values().toArray(array);
 	}
 
-	public LongArrayField[] getLongArrayFields() {
-		LongArrayField[] array = new LongArrayField[longArrayFieldList.size()];
-		return longArrayFieldList.toArray(array);
-	}
-
-	public void setLongArrayFields(LongArrayField[] longArrayFields) {
-		if(longArrayFields != null)
-			this.longArrayFieldList = Arrays.asList(longArrayFields); 
-		else
-			this.longArrayFieldList = new ArrayList<LongArrayField>();
+	public void setCustomDateFields(CustomDateField[] dateFields) {
+		this.dateFieldMap = new HashMap<String,CustomDateField>();
+		if(dateFields != null) {
+			for(int i = 0; i < dateFields.length; i++)
+				this.dateFieldMap.put(dateFields[i].getName(), dateFields[i]);
+		}
 	}
 	
 	// Convenience method. Not part of the API. 
-	public void addLongArrayField(LongArrayField longArrayField) {
-		this.longArrayFieldList.add(longArrayField);
+	public void addCustomDateField(CustomDateField dateField) {
+		this.dateFieldMap.put(dateField.getName(), dateField);
 	}
 
-	public StringArrayField[] getStringArrayFields() {
-		StringArrayField[] array = new StringArrayField[stringArrayFieldList.size()];
-		return stringArrayFieldList.toArray(array);
+	public CustomDateField findCustomDateField(String name) {
+		return this.dateFieldMap.get(name);
+	}
+	
+	public CustomLongArrayField[] getCustomLongArrayFields() {
+		CustomLongArrayField[] array = new CustomLongArrayField[longArrayFieldMap.size()];
+		return longArrayFieldMap.values().toArray(array);
 	}
 
-	public void setStringArrayFields(StringArrayField[] stringArrayFields) {
-		if(stringArrayFields != null)
-			this.stringArrayFieldList = Arrays.asList(stringArrayFields); 
-		else
-			this.stringArrayFieldList = new ArrayList<StringArrayField>();
+	public void setCustomLongArrayFields(CustomLongArrayField[] longArrayFields) {
+		this.longArrayFieldMap = new HashMap<String,CustomLongArrayField>();
+		if(longArrayFields != null) {
+			for(int i = 0; i < longArrayFields.length; i++)
+				this.longArrayFieldMap.put(longArrayFields[i].getName(), longArrayFields[i]);
+		}
 	}
 	
 	// Convenience method. Not part of the API. 
-	public void addStringArrayField(StringArrayField stringArrayField) {
-		this.stringArrayFieldList.add(stringArrayField);
+	public void addCustomLongArrayField(CustomLongArrayField longArrayField) {
+		this.longArrayFieldMap.put(longArrayField.getName(), longArrayField);
 	}
 
-	public StringField[] getStringFields() {
-		StringField[] array = new StringField[stringFieldList.size()];
-		return stringFieldList.toArray(array);
+	public CustomLongArrayField findCustomLongArrayField(String name) {
+		return this.longArrayFieldMap.get(name);
+	}
+	
+	public CustomStringArrayField[] getCustomStringArrayFields() {
+		CustomStringArrayField[] array = new CustomStringArrayField[stringArrayFieldMap.size()];
+		return stringArrayFieldMap.values().toArray(array);
 	}
 
-	public void setStringFields(StringField[] stringFields) {
-		if(stringFields != null)
-			this.stringFieldList = Arrays.asList(stringFields); 
-		else
-			this.stringFieldList = new ArrayList<StringField>();
+	public void setCustomStringArrayFields(CustomStringArrayField[] stringArrayFields) {
+		this.stringArrayFieldMap = new HashMap<String,CustomStringArrayField>();
+		if(stringArrayFields != null) {
+			for(int i = 0; i < stringArrayFields.length; i++)
+				this.stringArrayFieldMap.put(stringArrayFields[i].getName(), stringArrayFields[i]);
+		}
 	}
 	
 	// Convenience method. Not part of the API. 
-	public void addStringField(StringField stringField) {
-		this.stringFieldList.add(stringField);
+	public void addCustomStringArrayField(CustomStringArrayField stringArrayField) {
+		this.stringArrayFieldMap.put(stringArrayField.getName(), stringArrayField);
 	}
+
+	public CustomStringArrayField findCustomStringArrayField(String name) {
+		return this.stringArrayFieldMap.get(name);
+	}
+	
+	public CustomStringField[] getCustomStringFields() {
+		CustomStringField[] array = new CustomStringField[stringFieldMap.size()];
+		return stringFieldMap.values().toArray(array);
+	}
+
+	public void setCustomStringFields(CustomStringField[] stringFields) {
+		this.stringFieldMap = new HashMap<String,CustomStringField>();
+		if(stringFields != null) {
+			for(int i = 0; i < stringFields.length; i++)
+				this.stringFieldMap.put(stringFields[i].getName(), stringFields[i]);
+		}
+	}
+	
+	// Convenience method. Not part of the API. 
+	public void addCustomStringField(CustomStringField stringField) {
+		this.stringFieldMap.put(stringField.getName(), stringField);
+	}
+
+	public CustomStringField findCustomStringField(String name) {
+		return this.stringFieldMap.get(name);
+	}
+	
 }

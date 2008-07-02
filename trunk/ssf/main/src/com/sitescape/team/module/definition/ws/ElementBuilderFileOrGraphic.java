@@ -37,7 +37,7 @@ import org.dom4j.Element;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.remoting.ws.model.StringArrayField;
+import com.sitescape.team.remoting.ws.model.CustomStringArrayField;
 
 public class ElementBuilderFileOrGraphic extends AbstractElementBuilder {
 	protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, DefinableEntity entity, String dataElemType, String dataElemName, CustomAttribute attribute) {
@@ -57,7 +57,7 @@ public class ElementBuilderFileOrGraphic extends AbstractElementBuilder {
 			}
 		}
 		if(values != null)
-			entityModel.addStringArrayField(new StringArrayField(dataElemName, dataElemType, values.toArray(new String[]{})));
+			entityModel.addCustomStringArrayField(new CustomStringArrayField(dataElemName, dataElemType, values.toArray(new String[]{})));
 		return true;
 	}
 

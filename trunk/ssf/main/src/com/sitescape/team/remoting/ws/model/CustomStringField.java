@@ -30,21 +30,22 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 
-public class BooleanField extends Field implements Serializable {
-	private Boolean value;
-	
-	public BooleanField() {}
-	
-	public BooleanField(String name, String type, Boolean value) {
+public class CustomStringField extends Field implements Serializable {
+
+	private String value;
+
+	public CustomStringField() {
+	}
+	public CustomStringField(String name, String type, String value) {
 		super(name, type);
 		setValue(value);
 	}
-
-	public Boolean getValue() {
+	
+	public String getValue() {
 		return value;
 	}
 
-	public void setValue(Boolean value) {
+	public void setValue(String value) {
 		this.value = value;
 	}
 	

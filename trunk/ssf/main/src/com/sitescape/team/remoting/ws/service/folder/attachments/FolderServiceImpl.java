@@ -33,7 +33,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringBufferInputStream;
 import java.io.StringWriter;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.activation.DataHandler;
@@ -58,7 +57,7 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 
 	AttachmentUtilities attachmentUtilities = new AttachmentUtilities(this);
 	
-	public void folder_uploadFolderFile(String accessToken, long binderId, long entryId, 
+	public void folder_uploadFile(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName) {
 		attachmentUtilities.uploadFolderFile(binderId, entryId, fileUploadDataItemName, fileName);
 	}
@@ -97,20 +96,20 @@ public class FolderServiceImpl extends com.sitescape.team.remoting.ws.service.fo
 		}
 	}
 
-	public String folder_getFolderEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+	public String folder_getEntryAsXML(String accessToken, long binderId, long entryId, boolean includeAttachments) {
 		handleAttachments(includeAttachments);
 		
-		String xml = super.folder_getFolderEntryAsXML(accessToken, binderId, entryId, includeAttachments);
+		String xml = super.folder_getEntryAsXML(accessToken, binderId, entryId, includeAttachments);
 
 		handleEvents(binderId, entryId);
 		
 		return xml;
 	}
 
-	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getFolderEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
+	public com.sitescape.team.remoting.ws.model.FolderEntry folder_getEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
 		handleAttachments(includeAttachments);
 		
-		com.sitescape.team.remoting.ws.model.FolderEntry entryModel = super.folder_getFolderEntry(accessToken, binderId, entryId, includeAttachments);
+		com.sitescape.team.remoting.ws.model.FolderEntry entryModel = super.folder_getEntry(accessToken, binderId, entryId, includeAttachments);
 
 		handleEvents(binderId, entryId);
 		

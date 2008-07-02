@@ -30,10 +30,9 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 
-public class Principal extends Entry implements Serializable {
+public abstract class Principal extends Entry implements Serializable {
 
 	private String emailAddress;
-	private String type;
 	private boolean disabled;
 	private boolean reserved;
 	private String name;
@@ -61,12 +60,6 @@ public class Principal extends Entry implements Serializable {
 	}
 	public void setReserved(boolean reserved) {
 		this.reserved = reserved;
-	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
 	}
 	
 }

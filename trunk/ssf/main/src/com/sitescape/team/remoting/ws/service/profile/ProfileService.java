@@ -28,8 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.service.profile;
 
-import com.sitescape.team.remoting.ws.model.Principal;
+import com.sitescape.team.remoting.ws.model.Group;
 import com.sitescape.team.remoting.ws.model.PrincipalCollection;
+import com.sitescape.team.remoting.ws.model.User;
 
 public interface ProfileService {
 
@@ -39,18 +40,28 @@ public interface ProfileService {
 
 	public String profile_getPrincipalAsXML(String accessToken, long binderId, long principalId);
 	
-	public Principal profile_getPrincipal(String accessToken, long binderId, long principalId);
+	public User profile_getUser(String accessToken, long binderId, long userId);
 	
-	public long profile_addUser(String accessToken, long binderId, String definitionId, String inputDataAsXML);
+	public Group profile_getGroup(String accessToken, long binderId, long groupId);
 	
-	public long profile_addGroup(String accessToken, long binderId, String definitionId, String inputDataAsXML);
+	public long profile_addUserWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML);
+	
+	public long profile_addGroupWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML);
 	
 	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId);
 	
-	public void profile_modifyPrincipal(String accessToken, long binderId, long principalId, String inputDataAsXML);
+	public void profile_modifyPrincipalWithXML(String accessToken, long binderId, long principalId, String inputDataAsXML);
 	
 	public void profile_deletePrincipal(String accessToken, long binderId, long principalId);
 	
 	public long profile_addUserWorkspace(String accessToken, long userId);
 	
+	public long profile_addUser(String accessToken, User user);
+	
+	public long profile_addGroup(String accessToken, Group group);
+		
+	public void profile_modifyUser(String accessToken, User user);
+	
+	public void profile_modifyGroup(String accessToken, Group group);
+		
 }
