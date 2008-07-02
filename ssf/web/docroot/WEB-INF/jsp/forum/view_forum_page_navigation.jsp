@@ -37,20 +37,19 @@
 <c:if test="${ssConfigJspStyle != 'template'}">
 	  <ssHelpSpot helpId="workspaces_folders/menus_toolbars/more_folder_navigation" offsetX="-5" offsetY="3" 
 	    title="<ssf:nlt tag="helpSpot.moreFolderNavigation"/>"></ssHelpSpot>
-
-<table border="0" cellspacing="0px" cellpadding="0px" width="100%" class="ss_pagination">
+<div class="ss_pagination">
+<table border="0" cellspacing="0px" cellpadding="0px" width="100%">
 		<tbody>
-		<tr valign="middle">
+		<tr>
 			<td valign="top" align="right">
 			<% // this should be view entry %>
-			<table border="0" cellpadding="0" cellspacing="0">
+			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
 				<td class="ss_paginationFont">
 			    	<ssf:nlt tag="entry.goTo"/>&nbsp
 			  	</td><td>		
 			    <input name="entry" id="entry" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 			
-				</td><td>
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
 				onClick=""><img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
@@ -58,10 +57,11 @@
 			</td></tr></tbody></table>	
 		
 			</td>
-			<td valign="top" align="center">
-			<table valign="top" border="0" cellpadding="0" cellspacing="0" width="100%">
+			<td width="50%" valign="top" align="center">
+			<div width="100%" class="ss_paginationDiv">
+			<table valign="top" border="0" cellpadding="1" cellspacing="0" class="ss_pagination_table">
 				<tbody><tr>
-					<td valign="middle" class="ss_paginationFont" bgcolor="#E9F1F1">
+					<td bgcolor="#E9F1F1">
 
 						<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 							name="operation" value="save_folder_page_info"/><ssf:param 
@@ -78,7 +78,7 @@
 						>
 						<img src="<html:rootPath/>images/pics/page/back.gif" width="15" height="10" border="0" id="back" <ssf:alt tag="title.goto.first.page"/> align="absmiddle" /></a>&nbsp;&nbsp;
 					</td>
-					<td valign="middle" bgcolor="#E9F1F1" class="ss_paginationFont">
+					<td bgcolor="#E9F1F1" class="ss_paginationFont" style="padding-top:5px;">
 					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 						name="operation" value="save_folder_page_info"/><ssf:param 
 						name="binderId" value="${ssFolder.id}"/><ssf:param 
@@ -92,13 +92,13 @@
 						><ssf:nlt tag="general.Previous"/>&nbsp;
 					</a>&nbsp;&nbsp;
 					</td>
-					<td valign="top" class="ss_paginationFont ss_pageActive" bgcolor="#E9F1F1">
+					<td class="ss_paginationFont ss_pageActive" bgcolor="#E9F1F1" valign="top">
 					<ssf:nlt tag="title.page.n_of_m">
 					  <ssf:param name="value" value="${ssPageCurrent}"/>
 					  <ssf:param name="value" value="${ssPageLast}"/>
 					</ssf:nlt>&nbsp;&nbsp;
 					</td>
-					<td valign="middle" class="ss_paginationFont" bgcolor="#E9F1F1">
+					<td class="ss_paginationFont" bgcolor="#E9F1F1" style="padding-top:5px;">
 						<c:choose>
 				  			<c:when test="${ssPageNext.ssPageNoLink == 'true'}">
 							<ssf:nlt tag="general.Next"/>
@@ -119,7 +119,7 @@
 				  		</c:otherwise>
 						</c:choose>
 					</td>
-					<td valign="top" class="ss_paginationFont" bgcolor="#E9F1F1" align="right">
+					<td bgcolor="#E9F1F1" valign="middle">
 					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 						name="operation" value="save_folder_page_info"/><ssf:param 
 						name="binderId" value="${ssFolder.id}"/><ssf:param 
@@ -132,10 +132,13 @@
 						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPageLast}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
 						><img src="<html:rootPath/>images/pics/page/next.gif" width="15" height="10" border="0" id="next" <ssf:alt tag="title.goto.last.page"/> align="absmiddle" />&nbsp;&nbsp;
 					</a>
-			</td></tr></tbody></table>	
+			</td></tr></tbody></table>	</div>
 			</td>
 			<% // goto page option %>
-			<td valign="middle" class="ss_paginationFont">
+			<td valign="top">
+			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
+				<tbody><tr>
+				<td class="ss_paginationFont">
 			<form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
@@ -154,11 +157,13 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
+			    </td><td>
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
 				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
 				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
+				</td></tr></tbody></table>
 			</c:if>
 			</form>&nbsp;&nbsp;
 			
@@ -168,7 +173,7 @@
 		
 		</tbody>
 		</table>
-	
+</div>
 		
 </c:if>
 
