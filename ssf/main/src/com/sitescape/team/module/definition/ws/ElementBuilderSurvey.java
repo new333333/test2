@@ -31,7 +31,7 @@ package com.sitescape.team.module.definition.ws;
 import org.dom4j.Document;
 import org.dom4j.Element;
 
-import com.sitescape.team.remoting.ws.model.StringField;
+import com.sitescape.team.remoting.ws.model.CustomStringField;
 
 public class ElementBuilderSurvey extends AbstractElementBuilder {
 	   protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object val, String dataElemType, String dataElemName) {
@@ -39,12 +39,12 @@ public class ElementBuilderSurvey extends AbstractElementBuilder {
 			   if(element != null)
 				   element.add((Document)val);
 			   if(entityModel != null)
-				   entityModel.addStringField(new StringField(dataElemName, dataElemType, ((Document)val).getRootElement().asXML()));
+				   entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, ((Document)val).getRootElement().asXML()));
 		   } else if (val != null) {
 			   if(element != null)
 				   element.setText(val.toString());
 			   if(entityModel != null)
-				   entityModel.addStringField(new StringField(dataElemName, dataElemType, val.toString()));
+				   entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, val.toString()));
 		   }
 		   return true;
 	    }

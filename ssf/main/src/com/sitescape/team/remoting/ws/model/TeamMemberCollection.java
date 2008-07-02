@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class TeamMemberCollection {
+import java.io.Serializable;
+
+public class TeamMemberCollection implements Serializable {
 
 	private boolean inherited;
 	private PrincipalBrief[] principals;

@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class TemplateBrief {
+import java.io.Serializable;
+
+public class TemplateBrief implements Serializable {
 
 	private Long id;
 	private String internalId;

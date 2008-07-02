@@ -32,7 +32,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.DefinableEntity;
-import com.sitescape.team.remoting.ws.model.BooleanField;
+import com.sitescape.team.remoting.ws.model.CustomBooleanField;
 
 /**
  *
@@ -45,12 +45,12 @@ public class ElementBuilderCheck extends AbstractElementBuilder {
 			if(element != null)
 				element.setText(val.toString());
 			if(entityModel != null)
-				entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, (Boolean) val));
+				entityModel.addCustomBooleanField(new CustomBooleanField(dataElemName, dataElemType, (Boolean) val));
 		} else {
 			if(element != null)
 				element.setText(Boolean.FALSE.toString());
 			if(entityModel != null)
-				entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, Boolean.FALSE));
+				entityModel.addCustomBooleanField(new CustomBooleanField(dataElemName, dataElemType, Boolean.FALSE));
 		}
 		return true;
 	}
@@ -59,7 +59,7 @@ public class ElementBuilderCheck extends AbstractElementBuilder {
 		if(element != null)
 			element.setText(Boolean.FALSE.toString());
 		if(entityModel != null)
-			entityModel.addBooleanField(new BooleanField(dataElemName, dataElemType, Boolean.FALSE));
+			entityModel.addCustomBooleanField(new CustomBooleanField(dataElemName, dataElemType, Boolean.FALSE));
 		return true;
 	}
 }

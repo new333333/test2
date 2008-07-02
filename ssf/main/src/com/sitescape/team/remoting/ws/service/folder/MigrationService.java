@@ -30,16 +30,19 @@ package com.sitescape.team.remoting.ws.service.folder;
 
 import java.util.Calendar;
 
+import com.sitescape.team.remoting.ws.model.Binder;
+import com.sitescape.team.remoting.ws.model.FolderEntry;
+
 public interface MigrationService {
 
-	public long migration_addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML,
+	public long migration_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML,
 			String creator, Calendar creationDate, String modifier, Calendar modificationDate);
 	
-	public long migration_addFolderEntry(String accessToken, long binderId, String definitionId,
+	public long migration_addFolderEntryWithXML(String accessToken, long binderId, String definitionId,
 							   String inputDataAsXML, 
 							   String creator, Calendar creationDate, String modifier, Calendar modificationDate);
 		
-	public long migration_addReply(String accessToken, long binderId, long parentId, String definitionId,
+	public long migration_addReplyWithXML(String accessToken, long binderId, long parentId, String definitionId,
 					     String inputDataAsXML, String creator, Calendar creationDate, String modifier, Calendar modificationDate);
 
 	public void migration_uploadFolderFile(String accessToken, long binderId, long entryId, String fileUploadDataItemName,
@@ -48,6 +51,13 @@ public interface MigrationService {
 	public void migration_uploadFolderFileStaged(String accessToken, long binderId, long entryId, 
 			String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate);
 	public void migration_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId, String startState, String modifier, Calendar modificationDate);
+
+	public long migration_addBinder(String accessToken, Binder binder);
+	
+	public long migration_addFolderEntry(String accessToken, FolderEntry entry);
+		
+	public long migration_addReply(String accessToken, long parentEntryId, FolderEntry reply);
+
 
 	public static class Timestamps implements java.io.Serializable
 	{

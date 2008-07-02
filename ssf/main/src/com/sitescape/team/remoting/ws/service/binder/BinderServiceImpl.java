@@ -1,3 +1,31 @@
+/**
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
+ * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
+ * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
+ * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+ * either express or implied. See the CPAL for the specific language governing rights and limitations
+ * under the CPAL.
+ * 
+ * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
+ * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * 
+ * 
+ * Attribution Information
+ * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
+ * Attribution URL: [www.icecore.com]
+ * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
+ * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+ * 
+ * 
+ * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
+ * are trademarks of SiteScape, Inc.
+ */
 package com.sitescape.team.remoting.ws.service.binder;
 
 import java.util.ArrayList;
@@ -21,15 +49,17 @@ import com.sitescape.team.module.file.WriteFilesException;
 import com.sitescape.team.module.shared.XmlUtils;
 import com.sitescape.team.remoting.RemotingException;
 import com.sitescape.team.remoting.ws.BaseService;
+import com.sitescape.team.remoting.ws.model.FunctionMembership;
 import com.sitescape.team.remoting.ws.model.PrincipalBrief;
 import com.sitescape.team.remoting.ws.model.TeamMemberCollection;
 import com.sitescape.team.remoting.ws.util.DomInputData;
+import com.sitescape.team.remoting.ws.util.ModelInputData;
 import com.sitescape.team.security.function.Function;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
-public class BinderServiceImpl extends BaseService implements BinderService {
-	public long binder_addBinder(String accessToken, long parentId, String definitionId, String inputDataAsXML)
+public class BinderServiceImpl extends BaseService implements BinderService, BinderServiceInternal {
+	public long binder_addBinderWithXML(String accessToken, long parentId, String definitionId, String inputDataAsXML)
 	{
 		inputDataAsXML = StringCheckUtil.check(inputDataAsXML);
 		
@@ -71,7 +101,7 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		
 		getBinderModule().setTeamMembers(binderId, ids);
 	}
-	public void binder_setFunctionMembership(String accessToken, long binderId, String inputDataAsXml) {
+	public void binder_setFunctionMembershipWithXML(String accessToken, long binderId, String inputDataAsXml) {
 		Binder binder = getBinderModule().getBinder(binderId);
 		List<Function> functions = getAdminModule().getFunctions();
 		Document doc = getDocument(inputDataAsXml);
@@ -129,5 +159,49 @@ public class BinderServiceImpl extends BaseService implements BinderService {
 		PrincipalBrief[] array = new PrincipalBrief[principalList.size()];
 		return new TeamMemberCollection(binder.isTeamMembershipInherited(),
 				principalList.toArray(array));
+	}
+	
+	public long binder_addBinder(String accessToken, com.sitescape.team.remoting.ws.model.Binder binder) {
+		try {
+			return getBinderModule().addBinder(binder.getParentBinderId(), binder.getDefinitionId(), 
+					new ModelInputData(binder), new HashMap(), null).longValue();
+		} catch(WriteFilesException e) {
+			throw new RemotingException(e);
+		}
+	}
+	
+	public void binder_setFunctionMemberships(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
+		if(functionMemberships == null) return;
+		Binder binder = getBinderModule().getBinder(binderId);
+		List<Function> functions = getAdminModule().getFunctions();
+		Map wfms = new HashMap();
+		FunctionMembership functionMembership;
+		for(int i = 0; i < functionMemberships.length; i++) {
+			functionMembership = functionMemberships[i];
+			 Function func = null;
+			 for (Function f:functions) {
+				 if (f.getName().equals(functionMembership.getFunctionName())) {
+					 func = f;
+					 break;
+				 }
+			 }
+			 if (func == null) continue;
+			 Set<Long>ids = new HashSet();
+			 String[] memberNames = functionMembership.getMemberNames();
+			 if(memberNames != null) {
+				 Collection<Principal> principals = getProfileModule().getPrincipalsByName(Arrays.asList(memberNames));
+				 for (Principal p:principals) {
+					 ids.add(p.getId());
+				 }
+			 }
+			 Long[] memberIds = functionMembership.getMemberIds();
+			 if(memberIds != null) {
+				 ids.addAll(Arrays.asList(memberIds));
+			 }
+			 if (ids.isEmpty()) continue;
+			 wfms.put(func.getId(), ids);
+		}
+		getAdminModule().setWorkAreaFunctionMembershipInherited(binder, false); 
+		getAdminModule().setWorkAreaFunctionMemberships(binder, wfms);
 	}
 }

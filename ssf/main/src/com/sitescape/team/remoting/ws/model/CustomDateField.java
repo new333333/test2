@@ -29,24 +29,33 @@
 package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
+import java.util.Calendar;
+import java.util.Date;
 
-public class StringArrayField extends Field implements Serializable {
+public class CustomDateField extends Field implements Serializable {
 
-	private String[] values;
+	private Calendar value;
 	
-	public StringArrayField() {}
+	public CustomDateField() {}
 	
-	public StringArrayField(String name, String type, String[] values) {
+	public CustomDateField(String name, String type, Date date) {
 		super(name, type);
-		setValues(values);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		setValue(cal);
 	}
 
-	public String[] getValues() {
-		return values;
+	public CustomDateField(String name, String type, Calendar date) {
+		super(name, type);
+		setValue(date);
 	}
 
-	public void setValues(String[] values) {
-		this.values = values;
+	public Calendar getValue() {
+		return value;
 	}
-	
+
+	public void setValue(Calendar value) {
+		this.value = value;
+	}
+
 }

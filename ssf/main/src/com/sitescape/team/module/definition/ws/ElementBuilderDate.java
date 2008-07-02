@@ -33,8 +33,8 @@ import java.util.Date;
 
 import org.dom4j.Element;
 
-import com.sitescape.team.remoting.ws.model.DateField;
-import com.sitescape.team.remoting.ws.model.StringField;
+import com.sitescape.team.remoting.ws.model.CustomDateField;
+import com.sitescape.team.remoting.ws.model.CustomStringField;
 
 /**
  *
@@ -49,12 +49,12 @@ public class ElementBuilderDate extends AbstractElementBuilder {
 	            	element.setText(sdf.format(date));
 	            }
 	            if(entityModel != null)
-	            	entityModel.addDateField(new DateField(dataElemName, dataElemType, date));
+	            	entityModel.addCustomDateField(new CustomDateField(dataElemName, dataElemType, date));
 	    	} else if (obj != null) {
 	    		if(element != null)
 	    			element.setText(obj.toString());
 	    		if(entityModel != null)
-	    			entityModel.addStringField(new StringField(dataElemName, dataElemType, obj.toString()));
+	    			entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, obj.toString()));
 	    	}
 	    	return true;
 	    }

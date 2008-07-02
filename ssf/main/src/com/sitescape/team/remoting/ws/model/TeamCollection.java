@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class TeamCollection {
+import java.io.Serializable;
+
+public class TeamCollection implements Serializable {
 
 	private Long principalId;
 	private String principalName;

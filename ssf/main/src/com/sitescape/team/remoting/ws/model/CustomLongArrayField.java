@@ -30,13 +30,13 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 
-public class LongArrayField extends Field implements Serializable {
+public class CustomLongArrayField extends Field implements Serializable {
 
 	private Long[] values;
 	
-	public LongArrayField() {}
+	public CustomLongArrayField() {}
 	
-	public LongArrayField(String name, String type, Long[] values) {
+	public CustomLongArrayField(String name, String type, Long[] values) {
 		super(name, type);
 		setValues(values);
 	}

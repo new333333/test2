@@ -28,7 +28,9 @@
  */
 package com.sitescape.team.remoting.ws.model;
 
-public class DefinitionCollection {
+import java.io.Serializable;
+
+public class DefinitionCollection implements Serializable {
 
 	private DefinitionBrief[] definitions;
 

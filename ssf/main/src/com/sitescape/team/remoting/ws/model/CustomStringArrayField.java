@@ -30,23 +30,23 @@ package com.sitescape.team.remoting.ws.model;
 
 import java.io.Serializable;
 
-public class StringField extends Field implements Serializable {
+public class CustomStringArrayField extends Field implements Serializable {
 
-	private String value;
-
-	public StringField() {
-	}
-	public StringField(String name, String type, String value) {
-		super(name, type);
-		setValue(value);
-	}
+	private String[] values;
 	
-	public String getValue() {
-		return value;
+	public CustomStringArrayField() {}
+	
+	public CustomStringArrayField(String name, String type, String[] values) {
+		super(name, type);
+		setValues(values);
 	}
 
-	public void setValue(String value) {
-		this.value = value;
+	public String[] getValues() {
+		return values;
+	}
+
+	public void setValues(String[] values) {
+		this.values = values;
 	}
 	
 }
