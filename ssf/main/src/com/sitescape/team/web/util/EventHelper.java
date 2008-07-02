@@ -35,10 +35,14 @@ package com.sitescape.team.web.util;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import org.joda.time.DateTime;
 
+import com.sitescape.team.calendar.TimeZoneHelper;
+import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.util.cal.DayAndPosition;
 
@@ -96,9 +100,9 @@ public class EventHelper {
         }
         
         if (!isAllDayEvent(inputData, id)) {
-        	event.setAllDaysEvent(false);
+        	event.setTimeZone(getTimeZone(inputData, id));
         } else {
-        	event.setAllDaysEvent(true);
+        	event.allDaysEvent();
         	if (event.getDtStart() != null) {
         		DateTime startEvent = new DateTime(event.getDtStart());
         		event.setDtStart(startEvent.withMillisOfDay(0).toGregorianCalendar());
@@ -183,7 +187,14 @@ public class EventHelper {
 	private static boolean isAllDayEvent(InputDataAccessor inputData, String id) {
 		return inputData.exists("allDayEvent_" + id);
 	}
-
+	
+	private static TimeZone getTimeZone(InputDataAccessor inputData, String id) {
+		if (inputData.exists("timeZone_" + id)) {
+			return TimeZoneHelper.getTimeZone(inputData.getSingleValue("timeZone_" + id));
+		}
+      	User user = RequestContextHolder.getRequestContext().getUser();
+		return user.getTimeZone();
+	}
 
 	private static void parseDaysOfWeekWithPositions(Event e, InputDataAccessor inputData, String prefix) {
         String onDayCard = inputData.getSingleValue(prefix+"onDayCard");

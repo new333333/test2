@@ -3183,7 +3183,8 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		if (!isAllDayEvent()) {
 			net.fortuna.ical4j.model.DateTime start = new net.fortuna.ical4j.model.DateTime(getDtStart().getTime());
 			if (timeZone != null) {
-				// it's enough to set always GMT
+				// it's NOT enough to set always GMT - recurrences depends on given time zone
+				// f.e. recurrences on week days
 				start.setTimeZone(IcalModuleImpl.getTimeZone(getTimeZone(), "GMT"));
 			}
 
@@ -3280,13 +3281,9 @@ public class Event extends PersistentTimestampObject implements Cloneable, Updat
 		
 		return result;
 	}
-
-	public void setAllDaysEvent(boolean allDaysEvent) {
-		if (!allDaysEvent) {
-			setTimeZone(TimeZoneHelper.getTimeZone("GMT"));
-		} else {
-			setTimeZone(null);
-		}
+	
+	public void allDaysEvent() {
+		setTimeZone(null);
 	}
 	
 	/**

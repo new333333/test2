@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TimeZone;
 
+import org.joda.time.DateTimeZone;
+
 /**
  * Fixes wrong time zone definitions: converts all deprecated 3-characters time
  * zone IDs to Olson database IDs. Java above Java SE v1.3.x to Java SE 1.5.0_13
@@ -78,33 +80,53 @@ public class TimeZoneHelper {
 
 	private static TimeZone defaultTimeZone;
 	static {
-		defaultTimeZone = TimeZone.getTimeZone(getConvertedId(TimeZone
-				.getDefault().getID()));
-	}
-
-	public static TimeZone getTimeZone(String ID) {
-		return TimeZone.getTimeZone(getConvertedId(ID));
-	}
-	
-	public static TimeZone fixTimeZone(TimeZone timeZone) {
-		if (timeZone == null) {
-			return null;
-		}
-		return TimeZone.getTimeZone(getConvertedId(timeZone.getID()));
+		defaultTimeZone = fixTimeZone(TimeZone.getDefault());
 	}
 
 	public static TimeZone getDefault() {
 		return defaultTimeZone;
 	}
+	
+	public static TimeZone getTimeZone(String ID) {
+		return TimeZone.getTimeZone(fixTimeZoneId(ID));
+	}
 
-	private static String getConvertedId(String id) {
+	public static TimeZone fixTimeZone(TimeZone timeZone) {
+		if (timeZone == null) {
+			return null;
+		}
+				
+		String fixedId = fixTimeZoneId(timeZone.getID());
+		try {
+			DateTimeZone dateTimeZone = DateTimeZone.forID(fixedId);
+			if (dateTimeZone != null) {
+				return dateTimeZone.toTimeZone();
+			}
+		} catch (IllegalArgumentException e) {
+			// The datetime zone id is not recognised
+		}
+		return timeZone;
+	}	
+
+	private static String fixTimeZoneId(String id) {
 		if (id == null) {
 			return null;
 		}
-		if (!cZoneIdConversion.containsKey(id)) {
-			return id;
+		
+		if (cZoneIdConversion.containsKey(id)) {
+			return (String) cZoneIdConversion.get(id);
 		}
-		return (String) cZoneIdConversion.get(id);
+		
+		try {
+			DateTimeZone dateTimeZone = DateTimeZone.forID(id);
+			if (dateTimeZone != null) {
+				return dateTimeZone.toTimeZone().getID();
+			}
+		} catch (IllegalArgumentException e) {
+			// The datetime zone id is not recognised
+		}
+		
+		return id;
 	}
 
 }
