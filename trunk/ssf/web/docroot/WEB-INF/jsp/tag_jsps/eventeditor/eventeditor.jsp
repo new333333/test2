@@ -33,6 +33,7 @@
 
 
 <c:set var="allDayEventId" value="allDayEvent_${evid}" />
+<c:set var="timeZoneFieldName" value="timeZone_${evid}" />
 <c:set var="dateId" value="dp_${evid}" />
 <c:set var="dateId2" value="dp2_${evid}" />
 <c:set var="endrangeId" value="endRange_${evid}" />
@@ -519,6 +520,9 @@
 	</c:if>
 	
 	<input type="hidden" name="${prefix}_event_uid" value="${initEvent.uid}" />
+	<c:if test="${!empty initEvent.timeZone}">
+		<input type="hidden" name="${timeZoneFieldName}" value="${initEvent.timeZone.ID}" />
+	</c:if>
 	
 	<script type="text/javascript">
 	
