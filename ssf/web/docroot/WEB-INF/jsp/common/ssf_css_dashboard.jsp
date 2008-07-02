@@ -83,8 +83,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	width:18%;				/* Width of right column content (column width minus padding on either side) */
 	left:44%;				/* (100% - left column width) plus (center column left and right padding) plus (left column left and right padding) plus (right column left padding) */
 	}
-	
-	}
 
 div.ss_canvas {
 	border-left: solid 1px ${ss_toolbar1_background_color};
@@ -581,7 +579,7 @@ div.ss_canvas {
 	text-decoration: underline!important;
 	color:#4AAA42!important;
 	font-size:10px!important;
-	font-height:14px;
+	line-height:14px;
 	}			
 /* ============ End link styles =========================== */		
 

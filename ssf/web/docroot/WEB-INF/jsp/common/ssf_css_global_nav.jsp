@@ -94,7 +94,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 }
 .ss_search_title {
 	font-family: Arial, Helvetica, sans-serif !important;
-	font-size: 1.em !important;
+	font-size: 1.0em !important;
 	font-weight: 100;
 	color: #FFFFFF !important;
 	background-color: #5A9A98;
@@ -215,7 +215,7 @@ ss_masthead_favorites a:hover{
 	
 	/* SHARE AND TRACK BUTTONS */		
 	
-a.ss_STButton:focus,{
+a.ss_STButton:focus {
   	font-family: ${ss_style_folder_view_font_family};
   	font-size: ${ss_style_font_fineprint};
 	}
