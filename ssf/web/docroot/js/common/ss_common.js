@@ -3708,6 +3708,23 @@ function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
 	ss_showForumEntry(obj.href, isDashboard);
 	return false;
 }
+
+var ss_accordianTableRowIncr = 60;
+function ss_accordionTableRow(rowId, divId) {
+	var rowObj = self.document.getElementById(rowId);
+	var divObj = self.document.getElementById(divId);
+	if (typeof rowObj == 'undefined' || typeof divObj == 'undefined') return;
+	if (divObj.visibility != 'hidden') {
+		dojo.lfx.html.fadeHide(divId, 400, null, function(divId) {
+			var divObj = self.document.getElementById(divId);
+			var rowObj = ss_findOwningElement(divObj, "tr");
+			var tbodyObj = ss_findOwningElement(rowObj, "tbody");
+			tbodyObj.removeChild(rowObj);
+		}).play();
+		return;
+	}
+}
+
 var ss_loadEntryInPlaceLastRowObj = null;
 var ss_loadEntryInPlaceLastId = null;
 function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboard, hoverOverId) {
@@ -3715,6 +3732,7 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 		self.location.href = obj.href;
 		return false;
 	}
+	var random = ++ss_random;
 	if (hoverOverId != "") ss_hideHoverOver(hoverOverId);
 	
 	trObj = ss_findOwningElement(obj, "tr")
@@ -3722,13 +3740,14 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	tableObj = ss_findOwningElement(trObj, "table")
 	tableDivObj = ss_findOwningElement(trObj, "div")
 	if (ss_loadEntryInPlaceLastRowObj != null) {
+		var divId = 'ss_entry_iframeDiv'+ ss_loadEntryInPlaceLastId.substr(ss_loadEntryInPlaceLastId.indexOf(",")+1) + parseInt(random - 1);
 		if (ss_loadEntryInPlaceLastId == binderId + ',' + id) {
-			tbodyObj.removeChild(ss_loadEntryInPlaceLastRowObj);
+			ss_accordionTableRow(ss_loadEntryInPlaceLastRowObj.id, divId);
 			ss_loadEntryInPlaceLastRowObj = null;
 			ss_loadEntryInPlaceLastId = null;
 			return;
 		} else {
-			tbodyObj.removeChild(ss_loadEntryInPlaceLastRowObj);
+			ss_accordionTableRow(ss_loadEntryInPlaceLastRowObj.id, divId);
 			ss_loadEntryInPlaceLastRowObj = null;
 			ss_loadEntryInPlaceLastId = null;
 		}
@@ -3748,40 +3767,26 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 		if (childObj == trObj.lastChild) break;
 		childObj = childObj.nextSibling
 	}
-	var random = ++ss_random;
 	var iframeRow = document.createElement("tr");
+	iframeRow.setAttribute("id", "ss_entry_rowId"+id+random);
 	var iframeCol = document.createElement("td");
 	iframeCol.setAttribute("colSpan", count);
 	iframeRow.appendChild(iframeCol);
 	//Draw Iframe for discussion thread
-	/** No longer using an iframe
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:id, entityType:entityType, entryViewType:"entryView", entryViewStyle:"inline", namespace:namespace}, "view_folder_entry");
 	iframeCol.innerHTML = '<div id="ss_entry_iframeDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
 		'<iframe id="ss_entry_iframe'+id+random+'" name="ss_entry_iframe'+id+random+'"' +
-    	' src="'+obj.href+'"' +
-    	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:0px; padding:0px;" frameBorder="1"' +
+    	' src="'+url+'"' +
+    	' style="height:300px;width:'+(ss_getObjectWidth(tableDivObj)-50)+'px; margin:10px 10px 10px 16px; padding:0px;" frameBorder="1"' +
     	' onLoad="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
+    	' onResize="ss_setIframeHeight(\'ss_entry_iframeDiv'+id+random+'\', \'ss_entry_iframe'+id+random+'\', \''+hoverOverId+'\')"' +
     	'>xxx</iframe>' +
     	'</div>';
-    */
-    var entryInlineDivId = 'ss_entry_inlineDiv'+id+random;
-    iframeCol.innerHTML = '<div id="ss_entry_inlineDiv'+id+random+'" style="width:'+(ss_getObjectWidth(tableDivObj)-50)+'px;">' +
-    	'</div>';
-	
 	tbodyObj.replaceChild(iframeRow, trObj)
 	ss_loadEntryInPlaceLastRowObj = iframeRow;
 	
-	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, {binderId:binderId, entryId:id, entityType:entityType, entryViewType:"entryBlogView", entryViewStyle:"inline", namespace:namespace}, "view_folder_entry");
-	ss_fetch_url(url, ss_loadEntryInPlaceUrlFetchReturn, entryInlineDivId);
-
 	ss_highlightLine(id, namespace);
 	return false;
-}
-
-function ss_loadEntryInPlaceUrlFetchReturn(s, divId) {
-	var divObj = self.document.getElementById(divId)
-	if (divObj != null) {
-		divObj.innerHTML = s;
-	}
 }
 
 var ss_entryInPlaceIframeOffset = 50;
