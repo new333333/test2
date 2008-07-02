@@ -85,8 +85,10 @@ function ss_clearRating(rating, id, namespace) {
 		if (ss_ratingImages[imgId] != null) imgObj.src = ss_ratingImages[imgId];
 	}
 	var infoDiv = document.getElementById("ss_rating_info_div" + namespace)
-    infoDiv.style.display = "none"
-    infoDiv.style.visibility = "hidden"
+    if (typeof infoDiv != 'undefined') {
+	    infoDiv.style.display = "none"
+	    infoDiv.style.visibility = "hidden"
+	}
     ss_currentRatingInfoId = "";
 }
 
