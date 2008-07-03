@@ -36,7 +36,6 @@ import org.apache.axis.EngineConfiguration;
 import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
 import com.sitescape.team.client.ws.WebServiceClientUtil;
-import com.sitescape.team.client.ws.model.CustomBooleanField;
 import com.sitescape.team.client.ws.model.FolderEntry;
 import com.sitescape.team.client.ws.model.FolderEntryBrief;
 import com.sitescape.team.client.ws.model.FolderEntryCollection;
@@ -66,11 +65,19 @@ public class WSClientWithStubs {
 		
 		//getFolderEntryWSSecurity(85, 47, true);
 		
+		// Test add
 		//entry = getFolderEntry(85, 80, false);
 		//addFolderEntryByCopying(entry);
 		
-		entry = getFolderEntry(85, 85, false);
-		modifyFolderEntry(entry);
+		// Test modify
+		//entry = getFolderEntry(85, 85, false);
+		//modifyFolderEntry(entry);
+		
+		// Test delete
+		//deleteFolderEntry(85, 47);
+		
+		// Upload files
+		uploadFolderEntryFiles(85, 85);
 		
 		//getFolderEntries(33);
 		
@@ -150,6 +157,23 @@ public class WSClientWithStubs {
 		System.out.println("ID of the newly added entry: " + entryId);
 	}
 
+	public static void uploadFolderEntryFiles(long binderId, long entryId) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		File file = new File("C:/junk/junk1/Water lilies.jpg");		
+		WebServiceClientUtil.attachFile(stub, file);
+		stub.folder_uploadFile(null, binderId, entryId, "myPicture", "Jong Image.jpg");
+		
+		file = new File("C:/junk/junk1/Book1.xls");		
+		WebServiceClientUtil.attachFile(stub, file);
+		stub.folder_uploadFile(null, binderId, entryId, "myFile", "Jong Book.xls");
+				
+		System.out.println("Files uploaded for the entry : " + entryId);
+	}
+
 	public static void modifyFolderEntry(FolderEntry entry) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
@@ -196,6 +220,17 @@ public class WSClientWithStubs {
 		stub.folder_modifyEntry(null, entry);
 		
 		System.out.println("ID of the modified entry: " + entry.getId());
+	}
+
+	public static void deleteFolderEntry(long binderId, long entryId) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		// TODO add the code that deletes it 
+		
+		System.out.println("ID of the deleted entry: " + entryId);
 	}
 
 	public static void getUser(long binderId, long principalId) throws Exception {

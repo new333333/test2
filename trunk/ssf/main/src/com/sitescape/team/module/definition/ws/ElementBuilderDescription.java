@@ -33,6 +33,7 @@ import java.util.List;
 import org.dom4j.Element;
 
 import com.sitescape.team.domain.Description;
+import com.sitescape.team.remoting.ws.model.CustomStringField;
 import com.sitescape.team.remoting.ws.model.Field;
 
 /**
@@ -41,18 +42,26 @@ import com.sitescape.team.remoting.ws.model.Field;
  */
 public class ElementBuilderDescription extends AbstractElementBuilder {
 	protected boolean build(Element element, com.sitescape.team.remoting.ws.model.DefinableEntity entityModel, Object obj, String dataElemType, String dataElemName) {
-		if(element != null) {
-			if (obj instanceof Description) {
-				Description desc = (Description) obj;
+		if (obj instanceof Description) {
+			Description desc = (Description) obj;
+			if(element != null) {
 				element.setText(desc.getText());
 				element.addAttribute("format", String.valueOf(desc.getFormat()));
-			} else if (obj != null) {
+			}
+			if(entityModel != null && !dataElemType.equals("description")) {
+				// Skip custom field processing for description type field, since it is treated as a static field.
+				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, desc.getText()));				
+			}
+		} else if (obj != null) {
+			if(element != null) {
 				element.setText(obj.toString());
 				element.addAttribute("format", String
 						.valueOf(Description.FORMAT_NONE));
 			}
+			if(entityModel != null) {
+				entityModel.addCustomStringField(new CustomStringField(dataElemName, dataElemType, obj.toString()));
+			}
 		}
-		// Skip fields processing for description, since it is treated as a static field.
 		return true;
 	}
 

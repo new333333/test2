@@ -61,6 +61,7 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		BinderService,
 		DefinitionService, 
 		FolderService, 
+		MigrationService,
 		IcalService, 
 		LdapService,
 		LicenseService, 
@@ -218,12 +219,13 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void migration_uploadFolderFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath, String modifier, Calendar modificationDate) {
 		getMigrationService().migration_uploadFolderFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath, modifier, modificationDate);
 	}
+	/*
 	public long profile_addGroupWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
 		return getProfileService().profile_addGroupWithXML(accessToken, binderId, definitionId, inputDataAsXML);
 	}
 	public long profile_addUserWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML) {
 		return getProfileService().profile_addUserWithXML(accessToken, binderId, definitionId, inputDataAsXML);
-	}
+	}*/
 	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId) {
 		getProfileService().profile_addUserToGroup(accessToken, userId, username, groupId);
 	}
@@ -233,6 +235,7 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void profile_deletePrincipal(String accessToken, long binderId, long principalId) {
 		getProfileService().profile_deletePrincipal(accessToken, binderId, principalId);
 	}
+	/*
 	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
 		return getProfileService().profile_getPrincipalsAsXML(accessToken, firstRecord, maxRecords);
 	}
@@ -241,7 +244,7 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	}
 	public void profile_modifyPrincipalWithXML(String accessToken, long binderId, long principalId, String inputDataAsXML) {
 		getProfileService().profile_modifyPrincipalWithXML(accessToken, binderId, principalId, inputDataAsXML);
-	}
+	}*/
 	public String search_getHotContent(String accessToken, String limitType, Long binderId) {
 		return getSearchService().search_getHotContent(accessToken, limitType, binderId);
 	}
