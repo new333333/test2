@@ -29,8 +29,10 @@
 package com.sitescape.team.security.authentication.impl;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.reset;
 import static org.easymock.classextension.EasyMock.verify;
 import static org.junit.Assert.assertEquals;
 
@@ -41,8 +43,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.ProfileDao;
+import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FileItem;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoUserByTheNameException;
 import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.security.authentication.UserDoesNotExistException;
 import com.sitescape.team.support.AbstractTestBase;
 
@@ -75,10 +82,9 @@ public class AuthenticationManagerImplTests extends AbstractTestBase {
 		replay(mProfileDao);
 		
 		user.setPassword("testPassword");
-		RequestContext mRequestContext = createMock(RequestContext.class);
+		RequestContext mRequestContext = fakeRequestContext();
 		expect(mRequestContext.getZoneName()).andReturn(zone);
 		replay(mRequestContext);
-		RequestContextHolder.setRequestContext(mRequestContext);
 
 		try {
 		User authenticatedUser = authenticationManager.authenticate(zone, "testUser", "testPassword", false, false, null);
@@ -95,10 +101,9 @@ public class AuthenticationManagerImplTests extends AbstractTestBase {
 		expect(mProfileDao.findUserByName("testUser", zone)).andThrow(
 				new NoUserByTheNameException("mock expection"));
 		replay(mProfileDao);
-		RequestContext mRequestContext = createMock(RequestContext.class);
+		RequestContext mRequestContext = fakeRequestContext();
 		expect(mRequestContext.getZoneName()).andReturn(zone);
 		replay(mRequestContext);
-		RequestContextHolder.setRequestContext(mRequestContext);
 		
 		authenticationManager.authenticate(zone, "testUser", "testPassword", false, false, "test");
 	}

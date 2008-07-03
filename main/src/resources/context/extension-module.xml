@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans            
+						http://www.springframework.org/schema/beans/spring-beans-2.5.xsd	
+			        	http://www.springframework.org/schema/context 
+			        	http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+	<description>
+		Beans to support the extension module and extension hot-deploy.
+		This file requires beans from applicationContext.xml.
+	</description>
+	
+	<context:annotation-config />
+
+	<!-- Actual file-change event source, typically called as a timer task -->
+	<bean id="extFileChangePoller" class="com.sitescape.util.FileChangePoller">
+		<property name="target">
+			<bean class="java.io.File">
+				<constructor-arg value="${extension.dir}" />
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- Extension deployment event source wrapper -->
+	<bean id="extDeployEventSource"
+		class="com.sitescape.team.module.extension.impl.WrappingExtensionDeployNotifier">
+		<property name="eventSource" ref="extFileChangePoller" />
+	</bean>
+	
+	<!-- Extension deployer -->
+	<bean id="extDeployer" class="com.sitescape.team.module.extension.impl.WarExtensionDeployer" />
+
+</beans>

@@ -14,7 +14,7 @@
 		     from SpropsUtil, NOT from the properties file specified below.
 		     In other words, the following 'location' property is ignored,
 		     but nevertheless present here to satisfy initialization requirement. -->
-		<property name="location" value="/com/sitescape/team/ssf.properties" />								
+		<property name="location" value="/ssf.properties" />								
 	</bean>
 	
 	<!-- This bean enforces the @Required annotation on bean properties -->
@@ -214,8 +214,8 @@
 			<bean class="com.sitescape.team.util.PropertiesClassPathConfigFiles">
 				<property name="configFiles">
 					<list>
-						<value>com/sitescape/team/ssf.properties</value>
-						<value>com/sitescape/team/ssf-additional.properties</value>
+						<value>ssf.properties</value>
+						<value>ssf-additional.properties</value>
 						<value>optional:config/ssf-ext.properties</value>
 					</list>		
 				</property>
@@ -1064,6 +1064,30 @@ text/calendar											  ics
 	        </entry>
 	      </map>
 	    </property>
+	</bean>
+
+	<!-- Extension Module -->
+	<import resource="classpath:/context/extension-module.xml" />
+	
+	<!-- Scheduler for non-stateful jobs -->
+	<bean id="timer" class="org.springframework.scheduling.timer.TimerFactoryBean">
+		<property name="scheduledTimerTasks">
+			<list>
+				<!-- Extension hot-deploy listener -->
+				<bean class="org.springframework.scheduling.timer.ScheduledTimerTask">	
+					<!-- delay before first invocation (ms) -->
+					<property name="delay" value="120000" />
+					<!-- period between invocations (ms) -->
+					<property name="period" value="30000" />
+					<property name="timerTask">
+						<bean class="org.springframework.scheduling.timer.MethodInvokingTimerTaskFactoryBean">
+							<property name="targetObject" ref="extFileChangePoller" />
+							<property name="targetMethod" value="check" />
+						</bean>
+					</property>
+				</bean>
+			</list>
+		</property>
 	</bean>
 	
 </beans>

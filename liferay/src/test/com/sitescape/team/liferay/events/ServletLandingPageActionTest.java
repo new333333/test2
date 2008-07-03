@@ -1,5 +1,9 @@
 package com.sitescape.team.liferay.events;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.reset;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
@@ -21,6 +25,12 @@ import com.liferay.portal.struts.LastPath;
 import com.liferay.portal.util.PropsUtil;
 import com.liferay.portal.util.RoleNames;
 import com.liferay.portal.util.WebKeys;
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FileItem;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.support.AbstractTestBase;
 import com.sitescape.util.Pair;
 

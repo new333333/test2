@@ -88,6 +88,7 @@ import com.sitescape.team.domain.NoBinderByTheNameException;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.NotifyStatus;
+import com.sitescape.team.domain.PersistentLongIdObject;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.Subscription;
@@ -1566,5 +1567,15 @@ public class CoreDaoImpl extends HibernateDaoSupport implements CoreDao {
                 }
             );
 
+	}
+
+	public <T extends PersistentLongIdObject> T findById(final Class<T> type, final Long id) {
+		return (T) getHibernateTemplate().execute(new HibernateCallback() {
+			public Object doInHibernate(Session session)
+					throws HibernateException, SQLException {
+				return session.createCriteria(type)
+					.add(Restrictions.idEq(id))
+					.uniqueResult();
+			}});
 	}
  }

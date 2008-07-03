@@ -28,6 +28,10 @@
  */
 package com.sitescape.team.modelprocessor;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
+import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.reset;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -37,6 +41,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.xml.sax.EntityResolver;
 
+import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FileItem;
+import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.User;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.support.AbstractTestBase;
 import com.sitescape.team.util.DefaultMergeableXmlClassPathConfigFiles;
 
@@ -82,7 +93,7 @@ public class ProcessorManagerTests extends AbstractTestBase {
 		assertNotNull(processor3);
 		assertEquals(processor3.getClass(), MyTestProcessor3.class);
 	}
-	
+
 	public class TestModel {/* empty */}
 	
 	public interface TestProcessor1 {

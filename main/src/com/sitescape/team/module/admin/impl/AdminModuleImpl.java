@@ -336,8 +336,9 @@ public class AdminModuleImpl extends CommonDependencyInjection implements AdminM
 			in = new ClassPathResource(startupConfig).getInputStream();
 			Document cfg = reader.read(in);
 			in.close();
+			@SuppressWarnings("unchecked")
 			List<Element> elements = cfg.getRootElement().selectNodes("definitionFile");
-			List<String> defs = new ArrayList();
+			List<String> defs = new ArrayList<String>();
 			for (Element element:elements) {
 				String file = element.getTextTrim();
 				reader = new SAXReader(false);  

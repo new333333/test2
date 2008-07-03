@@ -140,8 +140,17 @@
 			webxml="${web.dir}/WEB-INF/${generic.web.xml}"
 		>
 			<classes dir="${ssf.dir}/src" />
-			<classes dir="${ssf.resources.dir}" />
+			<classes dir="${ssf.resources.dir}" excludes="${ssf.resources.dir}/*" />
 		</war>
+		
+		<!-- Process top-level resources -->
+		<copy todir="temp/WEB-INF/classes" overwrite="true" filtering="true">
+			<fileset dir="${ssf.resources.dir}" includes="*.properties context/**" />
+			<filterset>
+				<filter token="app.server.ssf.extension.dir" value="${app.server.liferay.tomcat.ssf.extension.dir}" />
+			</filterset>
+		</copy>
+		<war basedir="temp"	destfile="${war.file}" update="true" />
 	
 		<antcall target="add-image-themes"/>
 	
@@ -184,8 +193,8 @@
 	</target>
 	
 	<target name="deploy-light">
-		<copy todir="${app.server.ssf.dir}" overwrite="true">
-			<fileset dir="${ssf.resources.dir}/com/sitescape/team" includes="applicationContext.xml,additionalContext.xml" />
+		<copy todir="${app.server.ssf.dir}" overwrite="true" filtering="true">
+			<fileset dir="${ssf.resources.dir}/context" includes="applicationContext.xml,additionalContext.xml" />
 		</copy>
 		<copy todir="${app.server.ssf.dir}">
 			<fileset dir="${web.dir}"

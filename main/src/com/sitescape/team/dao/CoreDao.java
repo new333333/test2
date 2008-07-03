@@ -30,9 +30,9 @@ package com.sitescape.team.dao;
 
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
 
 import org.springframework.dao.DataAccessException;
 
@@ -45,7 +45,9 @@ import com.sitescape.team.domain.DefinableEntity;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.EntityDashboard;
 import com.sitescape.team.domain.EntityIdentifier;
+import com.sitescape.team.domain.NoBinderByTheIdException;
 import com.sitescape.team.domain.NotifyStatus;
+import com.sitescape.team.domain.PersistentLongIdObject;
 import com.sitescape.team.domain.PostingDef;
 import com.sitescape.team.domain.SimpleName;
 import com.sitescape.team.domain.Subscription;
@@ -177,4 +179,15 @@ public interface CoreDao {
     public SimpleName loadSimpleNameByEmailAddress(String emailAddress, Long zoneId);
     
     public List<SimpleName> loadSimpleNames(Long binderId, Long zoneId);
+    
+    /**
+	 * Type-safe method for loading a {@link PersistentLongIdObject} from
+	 * storage.
+	 * 
+	 * @param <T> - the type of object to be returned
+	 * @param type - the {@link Class} of the desired result
+	 * @param id - the unique id of the object 
+	 * @return the persistent object with the specified id and type
+	 */
+    public <T extends PersistentLongIdObject> T findById(Class<T> type, Long id);
 }

@@ -83,5 +83,114 @@ public class CollectionUtil {
     	return coll;
 		
 	}
+	
+	/**
+	 * 
+	 * An interface specifying a function to take an <code>S</code> to a
+	 * <code>T</code>
+	 * 
+	 * @param <S> -
+	 *            the source type
+	 * @param <T> -
+	 *            the target type
+	 */
+	public interface Func1<S, T> {
+		<Source extends S> T apply(Source x);
+	}
+	
+	/**
+	 * An interface specifying a {@link Func1} which maps <code>T</code>s to
+	 * {@link Boolean}s.
+	 * 
+	 * @param <T>
+	 */
+	public interface Predicate<T> extends Func1<T, Boolean> {}
+	
+	/**
+	 * An interface specifying a method which takes two arguments.
+	 *
+	 * @param <A> - the base type of the first argument
+	 * @param <B> - the base type of the second argument
+	 * @param <C> - the type of the result
+	 */
+	public interface Func2<A, B, C> {
+		<First extends A, Second extends B> C apply(First a, Second b);
+	}
+	
+	/**
+	 * Applies the specified {@link Func1} to all elements of the
+	 * {@link Collection} <code>xs</code>, returning the new list formed by
+	 * the results.
+	 * 
+	 * @param <S> -
+	 *            the source <code>Collection</code>'s element type
+	 * @param <T> -
+	 *            the target <code>Collection</code>'s element type
+	 * @param t -
+	 *            the <code>Transform</code> to be applied
+	 * @param xs -
+	 *            the <code>Collection</code> to transform
+	 * @return the new
+	 *         <code>Collection<code> formed by the application of the <code>
+	 * Transform<code> to all elements of the source.
+	 */
+	public static <S, T> List<T> map(Func1<S, T> t, Collection<S> xs) {
+		ArrayList<T> result = new ArrayList<T>(xs.size());
+		for (S x : xs) {
+			result.add(t.apply(x));
+		}
+		return result;
+	}
+	
+	/**
+	 * Applies <code>f</code> successively to all elements of the
+	 * {@link Collection} and accumulates the result, starting with the seed
+	 * value <code>init</code>
+	 * 
+	 * @param <B> -
+	 *            the type of the elements of <code>xs</code>
+	 * @param <A> -
+	 *            the type to be returned
+	 * @param f -
+	 *            the accumulation {@link Func2}
+	 * @param init -
+	 *            the seed value
+	 * @param xs -
+	 *            the <code>Collection</code> to be accumulated over
+	 * @return the <code>T</code> value of accumulating all elements of
+	 *         <code>xs</code> with <code>init</code>
+	 */
+	public static <B, A> A foldl(Func2<A, B, A> f, A init, Collection<B> xs) {
+		A result = init;
+		for (B x : xs) {
+			result = f.apply(result, x);
+		}
+		return result;
+	}
+	
+	/**
+	 * Returns the list of <code>E</code>s which are true under the
+	 * {@link Predicate} <code>p</code>
+	 * 
+	 * @param <E> -
+	 *            the type of elements to be filtered
+	 * @param p -
+	 *            the result membership functions
+	 * @param xs -
+	 *            the {@link Collection} to be filtered
+	 * @return - all elements of <code>xs</code> for which p.apply(x) is
+	 *         <code>true</code>
+	 */
+	public static <E> List<E> filter(final Predicate<E> p, final List<E> xs) {
+		List<E> result = new ArrayList<E>(xs.size());
+		return foldl(new Func2<List<E>, E, List<E>>() {
+			public <First extends List<E>, Second extends E> List<E> apply(
+					First a, Second b) {
+				if (p.apply(b)) {
+					a.add(b);
+				}
+				return a;
+			}}, result, xs);
+	}
 
 }
