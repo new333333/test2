@@ -2487,6 +2487,7 @@
 			<option name="state" caption="__state" multipleAllowed="true" />
 			<option name="parallelThread" caption="__parallelThread" multipleAllowed="true" />
 			<option name="accessControls"/>
+			<option name="subProcess" caption="__subProcess" multipleAllowed="true" />
 		</options>
 	</item>
 	
@@ -2519,10 +2520,7 @@
 		</properties>
 	</item>
 
-	<item name="transitions" caption="__transitions" canBeDeleted="true" unique="./item[@name='transitions']">
-		<operations>
-			<operation name="addOption" caption="__add" />
-		</operations>
+	<item name="transitions" caption="__transitions" unique="./item[@name='transitions']">
 		<options>
 			<option name="transitionManual" />
 			<option name="transitionOnModify" />
@@ -2674,10 +2672,6 @@
 	
 	<item name="accessControls" caption="__accessControls" 
 		  unique="./item[@name='accessControls']" multipleAllowedInParent="false">
-		<operations>
-			<operation name="addOption" caption="__add" />
-			<operation name="deleteItem" caption="__delete" />
-		</operations>
 		<options>
 			<option_select path="//item[@category='accessControlsLayout']" />
 		</options>
@@ -2742,10 +2736,6 @@
 	
 	<item name="onEntry" caption="__onEntry" unique="./item[@name='onEntry']"
 		  multipleAllowedInParent="false">
-		<operations>
-			<operation name="addOption" caption="__add" />
-			<operation name="deleteItem" caption="__delete" />
-		</operations>
 		<options>
 			<option name="variable" caption="__workflow_variable_set" />
 			<option name="startParallelThread" />
@@ -2760,10 +2750,6 @@
 	
 	<item name="onExit" caption="__onExit" unique="./item[@name='onExit']"
 		  multipleAllowedInParent="false">
-		<operations>
-			<operation name="addOption" caption="__add" />
-			<operation name="deleteItem" caption="__delete" />
-		</operations>
 		<options>
 			<option name="variable" caption="__workflow_variable_set" />
 			<option name="startParallelThread" />

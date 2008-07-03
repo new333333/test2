@@ -60,6 +60,9 @@
 		<c:if test="${!empty ssDefinition.binderId}">
 			<c:set var="defBinderId" value="${ssDefinition.binderId}"/>
 		</c:if>
+		<c:if test="${!empty ssDefinition.binderId}">
+		<tr><td><a href="javascript: ;" onClick="return moveDefinition();"><ssf:nlt tag="definition.moveDefinition"/></a></td></tr>
+		</c:if>
 		<c:if test="${!empty ssDefinition.binderId  && ssIsAdmin}">
 		<tr><td><a href="javascript: ;" onClick="return setVisibility(${ssDefinition.visibility}, '');"><ssf:nlt tag="definition.setGlobal"/></a></td></tr>
 		</c:if>

@@ -34,8 +34,6 @@
 <div class="ss_pseudoPortal">
 <div class="ss_style ss_portlet">
 
-<c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
-
 <c:if test="${!empty ss_configErrorMessage}">
 <div class="ss_labelLeftError">
 <span><c:out value="${ss_configErrorMessage}"/></span>
@@ -44,8 +42,26 @@
 <br/>
 </c:if>
 <c:if test="${empty ssOperation}">
-
+<c:set var="adminTreeName" value="${renderResponse.namespace}_adminDomTree"/>
 <script type="text/javascript">
+function ss_treeBreadCrumb${renderResponse.namespace}(id, obj, action) {
+	var binderId = id;
+	//See if the id is formatted (e.g., "ss_favorites_xxx")
+	if (binderId.indexOf("_") >= 0) {
+		var binderData = id.substr(13).split("_");
+		binderId = binderData[binderData.length - 1];
+	}
+
+	//Build a url to go to
+	var url = "<ssf:url ><ssf:param 
+		name="action" value="manage_definitions"/><ssf:param 
+		name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>";
+	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", binderId);
+	self.location.href = url;
+	return false;
+}
+
+
 function ${adminTreeName}_showId(id, obj, action, namespace) {
 	//Build a url to go to
 	var params = {binderId:"${ssBinderId}", sourceDefinitionId:id};
@@ -56,6 +72,7 @@ function ${adminTreeName}_showId(id, obj, action, namespace) {
 
 </script>
 
+
 <c:if test="${empty ssBinderId}">
 <span class="ss_titlebold"><ssf:nlt tag="administration.definition.public.existing" /></span>
 </c:if>
@@ -63,7 +80,12 @@ function ${adminTreeName}_showId(id, obj, action, namespace) {
 <span class="ss_titlebold"><ssf:nlt tag="administration.definition.binder.existing"><ssf:param 
 name="value" value="${ssBinder.title}"/></ssf:nlt></span>
 </c:if>
-<br/><br/>
+<br/>
+<c:set var="ss_breadcrumbsShowIdRoutine" 
+  value="ss_treeBreadCrumb${renderResponse.namespace}" 
+  scope="request" />
+<jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
+<br/>
 <ssf:toolbar toolbar="${ss_toolbar}" style="ss_actions_bar2 ss_actions_bar" />
 <br/>
 

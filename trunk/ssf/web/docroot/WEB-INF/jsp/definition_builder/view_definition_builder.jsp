@@ -173,7 +173,7 @@ function definitionTree_showId(id, obj) {
 	}
 	
 	//See if waiting for an item to be selected
-	if (state == "moveItem" || state == "cloneItem") {
+	if (state == "moveItem" || state == "copyItem") {
 		//Make sure we aren't going back to the definition itself
 		if (sourceDefinitionId != id) {
 			setStateMachine(state + "Confirm")
@@ -194,7 +194,7 @@ function definitionTree_showId(id, obj) {
 	}
 		
 	//See if in the confirmation state
-	if (state == "deleteDefinition" || state == "moveItemConfirm" || state == "cloneItemConfirm") {
+	if (state == "deleteDefinition" || state == "moveItemConfirm" || state == "copyItemConfirm") {
 		//The user selected something else while in the confirmation step.
 		//Go back to square 1
 		setStateMachine("definition_selected")
@@ -244,6 +244,12 @@ function deleteDefinition() {
 	operationSelection = "deleteDefinition"
 	operationSelectedItem = selectedId
 	setStateMachine("deleteDefinition")
+	return false;
+}
+function moveDefinition() {
+	var urlParams={option:'moveDefinition', sourceDefinitionId:sourceDefinitionId, binderId:binderId};
+	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "definition_builder"); 
+	self.location.href =url;
 	return false;
 }
 function setVisibility(visible, toId) {
@@ -304,7 +310,11 @@ function modifyItem(id, name, item) {
 	return false;
 }
 
-function cloneItem(id, name, item) {
+function copyItem(id, name, item) {
+	operationSelection = id;
+	operationSelectedItem = selectedId;
+	setStateMachine("copyItem")
+	return false;
 }
 
 function getConditionSelectbox(obj, op, op2) {
@@ -473,8 +483,15 @@ function setStateMachine(newState) {
 		ss_addToDiv("displaydiv", "move_item_confirm")
 		showDisplayButtons()
 		showDisplayDiv();
-	} else if (state == "cloneItemConfirm") {
-		ss_addToDiv("displaydiv", "clone_item_confirm")
+	} else if (state == "copyItem") {
+		ss_setDivHtml("displaydiv", "")
+		//ss_addToDiv("displaydiv", "info_"+selectedId)
+		ss_addToDiv("displaydiv", "copy_item")
+		//loadDiv('info', '', 'copyItem')
+		hideDisplayButtons()
+		showDisplayDiv();
+	} else if (state == "copyItemConfirm") {
+//		ss_addToDiv("displaydiv", "copy_item_confirm")
 		showDisplayButtons()
 		showDisplayDiv();
 	} else {
@@ -516,7 +533,7 @@ function ss_loadNextDiv(option, itemId, itemName, refItemId) {
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "definition_builder"); 
 	
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	//ajaxRequest.setEchoDebugInfo();
+	ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postLoadNextDivRequest);
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
@@ -583,7 +600,7 @@ function ss_saveUserGroupResults(s) {
 <table cellpadding="0" cellspacing="0" width="100%">
 <tr>
 <td><span class="ss_titlebold">
-
+<c:if test="${!empty ssBinder}">${ssBinder.title}<br/></c:if>
 <ssf:nlt tag="definition.builder" text="Definition builder" />
 >> <c:out value="${data.selectedItemTitle}" />
 </span>

@@ -70,6 +70,7 @@ public interface DefinitionModule {
 	 */
 	public Element addItem(String defId, String itemId, String itemName, InputDataAccessor inputData) throws DefinitionInvalidException, AccessControlException;
 	public Definition addDefaultDefinition(Integer type);
+	public void copyItem(String defId, String sourceItemId, String targetItemId) throws DefinitionInvalidException, AccessControlException;
 	public void deleteDefinition(String id) throws AccessControlException;
 	public void deleteItem(String defId, String itemId) throws DefinitionInvalidException, AccessControlException;
 
@@ -95,7 +96,7 @@ public interface DefinitionModule {
 	public void modifyVisibility(String id, Integer visibility, Long binderId) throws AccessControlException,ObjectExistsException;
 	public void modifyDefinitionProperties(String id, InputDataAccessor inputData) throws AccessControlException;
 	public void modifyItem(String defId, String itemId, InputDataAccessor inputData) throws DefinitionInvalidException, AccessControlException;
-	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException, AccessControlException;
+	public void moveItem(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException, AccessControlException;
 	public Definition setDefaultBinderDefinition(Binder binder);
 	public Definition setDefaultEntryDefinition(Entry entry);
 	public void setDefinitionLayout(String id, InputDataAccessor inputData) throws AccessControlException;

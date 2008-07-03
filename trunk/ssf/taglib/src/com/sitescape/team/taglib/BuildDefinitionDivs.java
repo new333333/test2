@@ -308,29 +308,27 @@ public class BuildDefinitionDivs extends TagSupport {
 					operationElement.addAttribute("name", "addOption");
 					operationElement.addAttribute("caption", "__add");
 				}
-				if (rootConfigElement.element("properties") != null) {
+				//if view element or no name properties(which are most likely unique
+				if ("view".equals(rootElement.attributeValue("display","")) ||
+						rootElement.selectNodes(".//properties/property[@name='name']").isEmpty()) {
 					operationElement = operations.addElement("operation");
-					operationElement.addAttribute("name", "modifyItem");
-					operationElement.addAttribute("caption", "__modify");
+					operationElement.addAttribute("name", "copyItem");
+					operationElement.addAttribute("caption", "__copy");
 				}
 				if (rootConfigElement.attributeValue("canBeDeleted", "true").equalsIgnoreCase("true")) {
 					operationElement = operations.addElement("operation");
 					operationElement.addAttribute("name", "deleteItem");
 					operationElement.addAttribute("caption", "__delete");
 				}
+				if (rootConfigElement.element("properties") != null) {
+					operationElement = operations.addElement("operation");
+					operationElement.addAttribute("name", "modifyItem");
+					operationElement.addAttribute("caption", "__modify");
+				}
 				
 				operationElement = operations.addElement("operation");
 				operationElement.addAttribute("name", "moveItem");
 				operationElement.addAttribute("caption", "__move");
-				
-				/**
-				 if (rootElement.attributeValue("multipleAllowed", "").equalsIgnoreCase("true") || 
-						sourceRoot.selectSingleNode("//item[@name='"+rootElementName+"']") == null) {
-					operationElement = operations.addElement("operation");
-					operationElement.addAttribute("name", "cloneItem");
-					operationElement.addAttribute("caption", "__clone");
-					}
-				 **/
 				
 			} 
 			
@@ -1319,6 +1317,14 @@ public class BuildDefinitionDivs extends TagSupport {
 			//sb.append("<script type=\"text/javascript\">\n");
 			//sb.append("    self.ss_setDeclaredDiv('move_item_confirm')\n");
 			//sb.append("</script>\n");
+		}
+		//Build the copy_item divs
+		if (!this.divNames.containsKey("copy_item")) {
+			this.divNames.put("copy_item", "1");
+			sb.append("\n<div id=\"copy_item\" ");
+			sb.append("class=\"ss_definitionBuilder\">\n");
+			sb.append("<span class=\"ss_bold\">"+NLT.get("definition.selectNewLocation")+"</span><br/>\n");
+			sb.append("</div>\n");
 		}
 		hb.append("<div align=\"left\" id=\"help_div_customFormJsp");
 		hb.append("\" class=\"ss_helpPopUp\" style=\"visibility:hidden;\">\n");

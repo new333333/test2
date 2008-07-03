@@ -1012,6 +1012,7 @@ public class WebKeys {
     public static final String VIEW_ADMIN_IMPORT_ALL_DEFINITIONS_CONFIRM ="administration/importAllDefinitionsConfirm"; 
     public static final String VIEW_ADMIN_IMPORT_DEFINITIONS ="administration/importDefinitions"; 
     public static final String VIEW_ADMIN_EXPORT_DEFINITIONS ="administration/exportDefinitions"; 
+    public static final String VIEW_ADMIN_MOVE_DEFINITION="administration/moveDefinition";
     public static final String VIEW_ADMIN_MANAGE_APPLICATIONS="administration/manage_applications";
     public static final String VIEW_ADMIN_MANAGE_APPLICATION_GROUPS="administration/manage_application_groups";
     public static final String VIEW_ADMIN_MANAGE_GROUPS="administration/manage_groups";
