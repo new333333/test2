@@ -79,7 +79,7 @@ public interface IcalModule {
 		 *  if they are absent from the VTODO.
 		 * 
 		 */
-		void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List attendee);		
+		void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location);		
 	}
 	
 	/**
