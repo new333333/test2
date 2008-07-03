@@ -46,7 +46,7 @@
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
 				<td class="ss_paginationFont">
-			    	<ssf:nlt tag="entry.goTo"/>&nbsp
+			    	<ssf:nlt tag="entry.goTo"/>
 			  	</td><td>		
 			    <input name="entry" id="entry" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 			
@@ -114,7 +114,7 @@
 							name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 							title="<ssf:nlt tag="title.goto.next.page"/>"
 							onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPageNext.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
-							><ssf:nlt tag="general.Next"/>
+							><ssf:nlt tag="general.Next"/>&nbsp;
 						</a>&nbsp;&nbsp;
 				  		</c:otherwise>
 						</c:choose>
@@ -138,7 +138,7 @@
 			<td valign="top">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
-				<td class="ss_paginationFont">
+				<td class="ss_paginationFont" valign="middle">
 			<form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
@@ -157,16 +157,32 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
-			    </td><td>
+			    </td><td valign="middle">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
 				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
 				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
-				</td></tr></tbody></table>
+				
+			</c:if>
+			<c:if test="${ssPageCount <= '1.0'}">
+				<ssf:ifnotaccessible>
+			    	<ssf:nlt tag="folder.GoToPage"/>
+			    </ssf:ifnotaccessible>
+			    
+			    <ssf:ifaccessible>
+			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
+			    </ssf:ifaccessible>
+			    </td><td valign="middle">
+			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_pTB_no" />&nbsp;
+				<a href="" 
+				<ssf:title tag="title.goto.page" />
+				>
+				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
+				
 			</c:if>
 			</form>&nbsp;&nbsp;
-			
+			</td></tr></tbody></table>
 
 			</td>
 		</tr>

@@ -336,11 +336,16 @@ a.ss_new_thread:hover {
 
 .ss_paginationFont {
 	font-family: Arial, Helvetica, sans-serif;
-	font-size: 10px !important;
+	font-size: ${ss_style_font_fineprint} !important;
 	padding-left: 5px;
 	padding-right: 2px;
 	white-space: nowrap;
-	padding-top: 3px;
+	padding-top: 2px;
+	height:26px !important;
+	<c:if test="<%= isIE %>">
+  		vertical-align:top;
+  		padding-top: 4px;
+ 	</c:if>
 }
 
 .ss_paginationFont a{
@@ -367,21 +372,45 @@ a.ss_new_thread:hover {
 .ss_paginationTextBox {
 	font-family: Arial, Helvetica, sans-serif;
 	line-height: 10px;
-	font-size: 9px !important;
+	font-size: ${ss_style_font_finestprint} !important;
 	width: 22px;
-	border-top-width: 0.4px;
+	border-top-width: 0.8px !important;
 	border-right-width: 0.4px;
 	border-bottom-width: 0.4px;
-	border-left-width: 0.4px;
-	border-top-style: solid;
+	border-left-width: 0.4px !important;
+	border-top-style: solid !important;
 	border-right-style: none;
 	border-bottom-style: none;
-	border-left-style: solid;
-	border-top-color: #698F8E;
+	border-left-style: solid !important;
+	border-top-color: #698F8E !important;
 	border-right-color: #698F8E;
 	border-bottom-color: #698F8E;
-	border-left-color: #698F8E;
+	border-left-color: #698F8E !important;
 	padding-top: 1px;
+	margin-top: 2px;
+	margin-left: 5px;
+}
+.ss_pTB_no {
+	font-family: Arial, Helvetica, sans-serif;
+	line-height: 10px;
+	font-size: ${ss_style_font_finestprint} !important;
+	width: 22px;
+	border-top-width: 0.8px !important;
+	border-right-width: 0.4px;
+	border-bottom-width: 0.4px;
+	border-left-width: 0.4px !important;
+	border-top-style: solid !important;
+	border-right-style: none;
+	border-bottom-style: none;
+	border-left-style: solid !important;
+	border-top-color: #698F8E !important;
+	border-right-color: #698F8E;
+	border-bottom-color: #698F8E;
+	border-left-color: #698F8E !important;
+	padding-top: 1px;
+	margin-top: 2px;
+	margin-left: 5px;
+	background-color:#D9D9D9 !important;
 }
 .ss_pagination {
 	background-color: #CCDFDE !important;
