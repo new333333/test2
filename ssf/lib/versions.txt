@@ -43,7 +43,7 @@ JBoss Common 1.2.0.GA
 JBoss Portal 2.6.1.GA portal-identity-lib.jar
 JCR 1.0
 JDOM 1.0
-Joda-Time 1.4
+Joda-Time 1.5.2
 Json-lib 1.1 for jdk15
 JSTL 1.0.5
 JSTL Implementation (from Apache) 1.0.6
