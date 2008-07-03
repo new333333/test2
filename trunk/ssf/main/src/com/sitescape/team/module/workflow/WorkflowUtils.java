@@ -162,7 +162,7 @@ public class WorkflowUtils {
 		} 
 		acl = new WfAcl(type);
 		acl.setUseDefault(true);
-		return new WfAcl(type);
+		return acl;
     }
 
     private static WfAcl getAcl(Element aclElement, DefinableEntity entity, WfAcl.AccessType type) {
