@@ -2042,7 +2042,7 @@
    <String `Validation Report for icecorecustomizationguide.book'>
    <Char Tab> 
    <Char Tab> 
-   <String `5/1/2008 5:05:55 PM'>
+   <String `7/3/2008 3:32:05 PM'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2060,37 +2060,13 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `novell front customization.fm has no structural validation errors'>
+   <String `novell front web services.fm has no structural validation errors'>
   > # end of ParaLine
  > # end of Para
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `novell preface customization.fm has no structural validation errors'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `architecture.fm has no structural validation errors'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `jsps.fm has no structural validation errors'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `dedicated apps.fm has no structural validation errors'>
-  > # end of ParaLine
- > # end of Para
- <Para 
-  <PgfTag `ReportHead'>
-  <ParaLine 
-   <String `portal customizations.fm has no structural validation errors'>
+   <String `novell preface web services.fm has no structural validation errors'>
   > # end of ParaLine
  > # end of Para
  <Para 
@@ -2102,7 +2078,13 @@
  <Para 
   <PgfTag `ReportHead'>
   <ParaLine 
-   <String `reference pages part.fm has no structural validation errors'>
+   <String `reference pages NO part.fm has no structural validation errors'>
+  > # end of ParaLine
+ > # end of Para
+ <Para 
+  <PgfTag `ReportHead'>
+  <ParaLine 
+   <String `webservicesnewchangedfeatures.fm has no structural validation errors'>
   > # end of ParaLine
  > # end of Para
 > # end of TextFlow
