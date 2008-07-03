@@ -157,9 +157,6 @@ function ss_loadEntryUrl(url,id) {
 
 if (self.parent && self.parent.ss_highlightLineById) {
 	self.parent.ss_highlightLineById("folderLine_<c:out value="${ssEntry.id}"/>");
- 	
-	dojo.html.scrollIntoView(self.document.getElementById("ss_entryTop_${renderResponse.namespace}"))
-	//self.parent.ss_scrollOuter();
 }
 //Define the url of this page in case the entry needs to reload this page
 var ss_reloadUrl = "${ss_reloadUrl}";
