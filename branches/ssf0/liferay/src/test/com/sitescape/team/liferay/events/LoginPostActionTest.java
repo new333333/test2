@@ -8,6 +8,7 @@ import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.createNiceMock;
 import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.reset;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +32,10 @@ import com.liferay.portal.model.Company;
 import com.liferay.portal.model.impl.UserImpl;
 import com.sitescape.team.asmodule.bridge.BridgeUtil;
 import com.sitescape.team.context.request.RequestContext;
+import com.sitescape.team.dao.util.FilterControls;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FileItem;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.support.AbstractTestBase;
@@ -55,7 +60,7 @@ public class LoginPostActionTest extends AbstractTestBase implements BeanClassLo
 	@Ignore("Doesn't actually perform tests, just sets up necessary mock infrastructure")
 	public void runRedirectNonAdminFullScreen() throws Exception {
 		String zone = "zone";
-		Workspace z = createZone(zone);
+		Workspace z = setupWorkspace(zone).getSecond();
 		User user = profileDao.findUserByName(adminUser, z.getId());
 		UserImpl u0 = new UserImpl();
 		u0.setScreenName(user.getName());

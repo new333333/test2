@@ -7,10 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.lucene.index.Term;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
@@ -56,7 +58,6 @@ import com.sitescape.team.module.workspace.WorkspaceModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
-import com.sitescape.team.security.function.WorkArea;
 import com.sitescape.team.security.function.WorkAreaFunctionMembership;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.NLT;
@@ -176,7 +177,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			logger.error("Cannot read startup configuration:", ex);
 		}
 	}
-    //These should be created when the zone is created, but just incase provide minimum backup
+    //These should be created when the zone is created, but just in case provide minimum backup
 	public TemplateBinder addDefaultTemplate(int type) {
 	   	//This is called as a side effect to bootstrap
 		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
@@ -267,7 +268,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		Definition entryDef = getDefinitionModule().addDefaultDefinition(type);
 		template.setEntryDef(entryDef);
 		if (type == Definition.FOLDER_VIEW) template.setLibrary(true);
-		List definitions = new ArrayList();
+		List<Definition> definitions = new ArrayList<Definition>();
 		definitions.add(entryDef);
 		template.setDefinitionsInherited(false);
 		template.setDefinitions(definitions);
@@ -278,19 +279,27 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 	    return template.getId();
 	 }
 	 
-		//add top level template
+	 //add top level template
 	 public Long addTemplate(Document doc, boolean replace) {
 		 checkAccess(TemplateOperation.manageTemplate);
 		 Element config = doc.getRootElement();
 		 //check name
-		 String name = (String)XmlUtils.getCustomAttribute(config, ObjectKeys.XTAG_BINDER_NAME);
+		 String prefix = "";
+		 if (StringUtils.isNotBlank(config.getNamespaceURI())) {
+			 // namespace URI has been declared, associate a prefix
+			 config.addNamespace("_ns", config.getNamespaceURI());
+			 prefix = "_ns:";
+		 }
+		String name = config.selectSingleNode(
+				prefix + ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE + "[@name='"
+						+ ObjectKeys.XTAG_BINDER_NAME + "']").getText();
 		 if (Validator.isNull(name)) {
 			 name = (String)XmlUtils.getCustomAttribute(config, ObjectKeys.XTAG_TEMPLATE_TITLE);
 			 if (Validator.isNull(name)) {
 				 throw new IllegalArgumentException(NLT.get("general.required.name"));
 			 }
 		 }
-		 String internalId = config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID);
+		 String internalId = config.attributeValue(new QName(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, config.getNamespace()));
 		 if (Validator.isNotNull(internalId)) {
 			 try {
 			 //	see if it exists
@@ -305,6 +314,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 				 //	okay doesn't exists
 			 }; 
 		 } else {
+			 @SuppressWarnings("unchecked")
 			 List<TemplateBinder> binders = getCoreDao().loadObjects(TemplateBinder.class, new FilterControls(ObjectKeys.FIELD_BINDER_NAME, name), RequestContextHolder.getRequestContext().getZoneId());
 			 if (!binders.isEmpty()) {
 				 if (replace) getBinderModule().deleteBinder(binders.get(0).getId());
@@ -317,9 +327,10 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 template.setInternalId((internalId));
 		 doTemplate(template, config);
 		 //see if any child configs need to be copied
-		 List nodes = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
+		 @SuppressWarnings("unchecked")
+		 List<Element> nodes = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
 		 for (int i=0; i<nodes.size(); ++i) {
-			 Element element = (Element)nodes.get(i);
+			 Element element = nodes.get(i);
 			 TemplateBinder child = new TemplateBinder();
 			 template.addBinder(child);
 			 doTemplate(child, element);
@@ -329,6 +340,8 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 getCoreDao().flush();
 		 return template.getId();
 	 }
+	 
+	 
 	 protected void doTemplate(TemplateBinder template, Element config) {
 		 Integer type = Integer.valueOf(config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_TYPE));
 		 template.setLibrary(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_LIBRARY), false));

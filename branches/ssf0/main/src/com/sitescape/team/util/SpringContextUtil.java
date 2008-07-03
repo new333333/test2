@@ -52,7 +52,6 @@ import com.sitescape.team.SingletonViolationException;
  * @author Jong Kim
  *
  */
-@Deprecated
 public class SpringContextUtil implements ApplicationContextAware, ServletContextAware, InitializingBean {
 	// This is a singleton class.
 	

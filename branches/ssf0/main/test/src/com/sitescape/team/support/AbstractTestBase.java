@@ -33,7 +33,6 @@ import static org.easymock.EasyMock.expect;
 import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.reset;
 import static org.junit.Assert.assertEquals;
 
 import javax.annotation.Resource;
@@ -51,19 +50,20 @@ import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.impl.CoreDaoImpl;
 import com.sitescape.team.dao.impl.ProfileDaoImpl;
-import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FileItem;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.ProfileBinder;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.module.profile.ProfileModule;
+import com.sitescape.team.module.zone.ZoneModule;
+import com.sitescape.team.util.SZoneConfig;
+import com.sitescape.util.Pair;
 
 
 // XXX Not desirable to load mock-liferay-context.xml at this level but ugly singletons require it (for now)
-@ContextConfiguration(	locations= {	"/com/sitescape/team/applicationContext.xml", 
-														"/com/sitescape/team/additionalContext.xml","/com/sitescape/team/liferay/mock-liferay-context.xml" })
+@ContextConfiguration(	locations= {	"/context/applicationContext.xml", 
+														"/context/additionalContext.xml","/com/sitescape/team/liferay/mock-liferay-context.xml" })
 public abstract class AbstractTestBase extends AbstractTransactionalJUnit4SpringContextTests {
 	protected static final String adminGroup = "administrators";
 	protected static final String adminUser = "admin";
@@ -95,6 +95,10 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 	protected CoreDaoImpl coreDao;
 	@Autowired(required = true)
 	protected ProfileDaoImpl profileDao;
+	@Autowired
+	protected ProfileModule profiles;
+	@Autowired
+	protected ZoneModule zones;
 
 	/* (non-Javadoc)
 	 * @see org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests#setDataSource(javax.sql.DataSource)
@@ -105,7 +109,7 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 		super.setDataSource(dataSource);
 	}
 
-	protected Workspace createZone(String name) {
+	protected Pair<User, Workspace> setupWorkspace(String zoneName) {
 		Workspace top;
 		Long topId = new Long(-1);
 		RequestContext mrc = fakeRequestContext();
@@ -113,11 +117,13 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 		RequestContextHolder.setRequestContext(mrc);
 		expectLastCall().times(3);
 		replay(mrc);
+		User user;
 		try { 
-			top = coreDao.findTopWorkspace(name);
+			top = coreDao.findTopWorkspace(zoneName);
+			user = profiles.findUserByName(SZoneConfig.getAdminUserName(zoneName));
 		} catch (NoWorkspaceByTheNameException nw) {
 			top = new Workspace();
-			top.setName(name);
+			top.setName(zoneName);
 			//temporary until have read id
 			top.setZoneId(topId);
 			top.setTitle("administration.initial.workspace.title");
@@ -149,7 +155,7 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 			global.setInternalId(ObjectKeys.GLOBAL_ROOT_INTERNALID);
 			top.addBinder(global);
 			
-			//generate id globa
+			//generate id global
 			coreDao.save(global);
 			coreDao.updateFileName(top, global, null, global.getTitle());
 
@@ -172,51 +178,33 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 			group.setParentBinder(profiles);
 			coreDao.save(group);
 			
-			User user = new User();
+			Group allUsers = new Group();
+			allUsers.setName("allUsers");
+			allUsers.setZoneId(top.getId());
+			allUsers.setParentBinder(profiles);
+			allUsers.setInternalId(ObjectKeys.ALL_USERS_GROUP_INTERNALID);
+			coreDao.save(allUsers);
+			
+			user = new User();
 			user.setName(adminUser);
 			user.setForeignName(adminUser);
 			user.setZoneId(top.getId());
+			user.setWorkspaceId(top.getId());
 			user.setParentBinder(profiles);
 			coreDao.save(user);
 			group.addMember(user);
 			coreDao.flush();
 			
-			top = coreDao.findTopWorkspace(name);
-			assertEquals(top.getName(), name);
+			top = coreDao.findTopWorkspace(zoneName);
+			assertEquals(top.getName(), zoneName);
 		}
-		return top;
+		return new Pair<User, Workspace>(user, top);
 		
 	}
-
-	protected User createBaseUser(Workspace top, String name) {
-		RequestContext mRequestContext = fakeRequestContext();
-		reset(mRequestContext);
-		expect(mRequestContext.getZoneId()).andReturn(top.getId());
-		expectLastCall().times(7);
-		replay(mRequestContext);
-		
-		User user = new User();
-		user.setZoneId(top.getZoneId());
-		user.setName(name);
-		user.setForeignName(name);
-		user.setParentBinder(profileDao.getProfileBinder(top.getZoneId()));
-		//add some attributes
-		user.addCustomAttribute("aString", "I am a string");
-		String vals[] = new String[] {"red", "white", "blue"};
-		user.addCustomAttribute("aList", vals);
-		FileAttachment att = new FileAttachment("aFile");
-		FileItem fi = new FileItem();
-		fi.setName("dummy.txt");
-		att.setFileItem(fi);
-		coreDao.save(att);
-		user.addCustomAttribute("aFile", att);
-		coreDao.save(user);
-		//add user to a group
-		Group group = (Group)profileDao.loadGroups(new FilterControls("name", adminGroup), top.getZoneId()).get(0);
-		group.addMember(user);
-		user = profileDao.findUserByName(name, top.getName());
-		return user;
-		
+	
+	protected void makeOwner(User u, Workspace w) {
+		w.setOwner(u);
+		coreDao.save(w);		
 	}
 	
 	protected RequestContext fakeRequestContext() {

@@ -25,9 +25,9 @@
       <xsd:element name="item" type="itemType" minOccurs="0" maxOccurs="unbounded"/>
       <xsd:element name="operations" type="operationsType" minOccurs="0" maxOccurs="1"/>
    </xsd:sequence>
-    <xsd:attribute name="name" type="xsd:string"/>
-    <xsd:attribute name="caption" type="xsd:string"/>
-    <xsd:attribute name="type" type="xsd:string"/>
+    <xsd:attribute name="name" type="xsd:string" />
+    <xsd:attribute name="caption" type="xsd:string"  use="required" />
+    <xsd:attribute name="type" type="xsd:string" />
     <xsd:attribute name="nextId" type="xsd:unsignedInt"/>
     <xsd:attribute name="canBeDeleted" type="xsd:string"/>
     <xsd:attribute name="definitionType" type="xsd:unsignedInt"/>

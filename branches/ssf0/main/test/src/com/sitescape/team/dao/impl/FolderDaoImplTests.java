@@ -29,7 +29,9 @@
 package com.sitescape.team.dao.impl;
 
 import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.expectLastCall;
 import static org.easymock.classextension.EasyMock.replay;
+import static org.easymock.classextension.EasyMock.reset;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
@@ -50,10 +52,14 @@ import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.Attachment;
 import com.sitescape.team.domain.CustomAttribute;
 import com.sitescape.team.domain.Event;
+import com.sitescape.team.domain.FileAttachment;
+import com.sitescape.team.domain.FileItem;
 import com.sitescape.team.domain.Folder;
 import com.sitescape.team.domain.FolderEntry;
+import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.HistoryStamp;
 import com.sitescape.team.domain.NoFolderByTheIdException;
+import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.support.AbstractTestBase;
@@ -78,7 +84,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	}
 	@Test
 	public void testAddFolder() {
-		Workspace top = createZone(zoneName);
+		Workspace top = setupWorkspace(zoneName).getSecond();
 		Folder folder = createFolder(top, "testFolder");
 		assertNull(folder.getTopFolder());
 		assertNull(folder.getParentFolder());
@@ -88,7 +94,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	}
 	@Test
 	public void testAddSubFolder() {
-		Workspace top = createZone(zoneName);
+		Workspace top = setupWorkspace(zoneName).getSecond();
 		Folder folder = createFolder(top, "testFolder");
  		Folder sub = createFolder(folder, "subFolder1");
 		assertEquals(sub.getTopFolder(), folder);
@@ -125,7 +131,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	}
 	@Test
 	public void testFindFolderById() {
-		Workspace top = createZone(zoneName);
+		Workspace top = setupWorkspace(zoneName).getSecond();
 		Folder folder = createFolder(top, "testFolder");
 		coreDao.clear();
 		Folder f = folderDao.loadFolder(folder.getId(), top.getZoneId());
@@ -138,7 +144,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 		// Test three slightly different cases: It throws the same exception
 		// for all cases. Throwing different exception for each case will make
 		// the database lookup more expensive, so it's not worth it. 
-		Workspace top = createZone(zoneName);
+		Workspace top = setupWorkspace(zoneName).getSecond();
 		Folder folder = createFolder(top, "testFolder");
 		
 		// Test the situation where zone exists but folder does not. 
@@ -176,7 +182,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	 */
 	@Test
 	public void testAddEntry() {
-		Workspace top = createZone(zoneName);
+		Workspace top = setupWorkspace(zoneName).getSecond();
 		Folder folder = createFolder(top, "testFolder");
 		int oldCount = folder.getNextEntryNumber();
  		FolderEntry entry = createBaseEntry(folder);
@@ -198,7 +204,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	@Test
 	public void testLoadFolderEntryAndLazyLoading() {
 		// phase1: Load it. 
-		Workspace top = createZone(zoneName);
+		Workspace top = setupWorkspace(zoneName).getSecond();
 		Folder folder = createFolder(top, "testFolder");
 		FolderEntry entry = createBaseEntry(folder);
 		//clear session
@@ -214,7 +220,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	 */
 	@Test
 	public void testDeleteEntry() {
-		Workspace top = createZone("testZone");
+		Workspace top = setupWorkspace("testZone").getSecond();
 		Folder folder = createFolder(top, "testFolder");
 		FolderEntry entry = createBaseEntry(folder);
 		
@@ -230,7 +236,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	 */
 	@Test
 	public void testDeleteEntries() {
-		Workspace top = createZone("testZone");
+		Workspace top = setupWorkspace("testZone").getSecond();
 		Folder folder = createFolder(top, "testFolder");
 		List entries = fillFolderEntries(folder);
 		
@@ -249,7 +255,7 @@ public class FolderDaoImplTests extends AbstractTestBase {
 	 */
 	@Test
 	public void testDeleteFolder() {
-		Workspace top = createZone("testZone");
+		Workspace top = setupWorkspace("testZone").getSecond();
 		Folder folder = createFolder(top, "testFolder");
 		List entries = fillFolderEntries(folder);
 		profileDao.loadUserProperties(Long.valueOf(0), folder.getId());

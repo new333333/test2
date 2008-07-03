@@ -176,8 +176,12 @@ public class AccessControlManagerImpl implements AccessControlManager {
 			}
 			membersToLookup = getProfileDao().getPrincipalIds(user);
 			//if current user is the workArea owner, add special Id to is membership
-			if (user.getId().equals(workAreaStart.getOwnerId())) membersToLookup.add(ObjectKeys.OWNER_USER_ID);
-			if (!Collections.disjoint(workAreaStart.getTeamMemberIds(), membersToLookup)) membersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
+			if (user.getId().equals(workAreaStart.getOwnerId())) {
+				membersToLookup.add(ObjectKeys.OWNER_USER_ID);
+			}
+			if (!Collections.disjoint(workAreaStart.getTeamMemberIds(), membersToLookup)) {
+				membersToLookup.add(ObjectKeys.TEAM_MEMBER_ID);
+			}
 			return getWorkAreaFunctionMembershipManager()
 					.checkWorkAreaFunctionMembership(user.getZoneId(),
 							workArea, workAreaOperation, membersToLookup);
