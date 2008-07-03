@@ -175,7 +175,7 @@ public class WorkflowUtils {
 			name = prop.attributeValue("name","");
 			value = prop.attributeValue("value","");
 			if ("folderDefault".equals(name)) {
-				result.setUseDefault(GetterUtil.getBoolean(value, true));
+				result.setUseDefault(GetterUtil.getBoolean(value, false));
 			} else if ("userGroupAccess".equals(name)) {
 				result.addPrincipalIds(LongIdUtil.getIdsAsLongSet(value));
 			} else if ("team".equals(name) &&  GetterUtil.getBoolean(value, false)) {
