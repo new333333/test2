@@ -28,15 +28,20 @@
  */
 package com.sitescape.team.samples.wsclient;
 
+import java.io.File;
+import java.util.Calendar;
+
 import org.apache.axis.EngineConfiguration;
 
 import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
 import com.sitescape.team.client.ws.WebServiceClientUtil;
+import com.sitescape.team.client.ws.model.CustomBooleanField;
 import com.sitescape.team.client.ws.model.FolderEntry;
 import com.sitescape.team.client.ws.model.FolderEntryBrief;
 import com.sitescape.team.client.ws.model.FolderEntryCollection;
-import com.sitescape.team.client.ws.model.Principal;
+import com.sitescape.team.client.ws.model.User;
+import com.sitescape.team.client.ws.model.Group;
 import com.sitescape.team.client.ws.model.PrincipalBrief;
 import com.sitescape.team.client.ws.model.PrincipalCollection;
 
@@ -50,24 +55,31 @@ import com.sitescape.team.client.ws.model.PrincipalCollection;
 public class WSClientWithStubs {
 
 	private static final String TEAMING_SERVICE_ADDRESS_WSS 	= "http://localhost:8080/ssf/ws/TeamingService";
-	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingService";
+	//private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingService";
+	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8079/ssr/secure/ws/TeamingService";
 	
 	private static final String USERNAME = "admin";
-	private static final String PASSWORD = "test";
+	private static final String PASSWORD = "admin";
 	
 	public static void main(String[] args) throws Exception {
+		FolderEntry entry;
+		
 		//getFolderEntryWSSecurity(85, 47, true);
 		
-		//getFolderEntry(85, 47, false);
+		//entry = getFolderEntry(85, 80, false);
+		//addFolderEntryByCopying(entry);
 		
-		//getFolderEntries(85);
+		entry = getFolderEntry(85, 85, false);
+		modifyFolderEntry(entry);
+		
+		//getFolderEntries(33);
 		
 		//getPrincipal(2, 1);
 		
-		getPrincipals(2, 5);
+		//getPrincipals(2, 5);
 	}
 	
-	public static void getFolderEntryWSSecurity(long binderId, long entryId, boolean includeAttachments) throws Exception {
+	public static FolderEntry getFolderEntryWSSecurity(long binderId, long entryId, boolean includeAttachments) throws Exception {
 		// Use WS-Security
 		
 		EngineConfiguration config = WebServiceClientUtil.getMinimumEngineConfigurationWSSecurity();
@@ -76,24 +88,29 @@ public class WSClientWithStubs {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialWSSecurity(stub, USERNAME, PASSWORD, true);
 
-		FolderEntry entry = stub.folder_getFolderEntry(null, binderId, entryId, includeAttachments);
+		FolderEntry entry = stub.folder_getEntry(null, binderId, entryId, includeAttachments);
 		
 		System.out.println("(WSS) Entry title: " + entry.getTitle());
 		
 		System.out.println("(WSS) Number of attachments downloaded = " + WebServiceClientUtil.extractFiles(stub, null));
+		
+		return entry;
 	}
 
-	public static void getFolderEntry(long binderId, long entryId, boolean includeAttachments) throws Exception {
+	public static FolderEntry getFolderEntry(long binderId, long entryId, boolean includeAttachments) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
-		FolderEntry entry = stub.folder_getFolderEntry(null, binderId, entryId, includeAttachments);
+		FolderEntry entry = stub.folder_getEntry(null, binderId, entryId, includeAttachments);
 		
 		System.out.println("Entry title: " + entry.getTitle());
+		System.out.println("Entry description: " + entry.getDescription().getText());
 		
 		System.out.println("Number of attachments downloaded = " + WebServiceClientUtil.extractFiles(stub, null));
+		
+		return entry;
 	}
 
 	public static void getFolderEntries(long binderId) throws Exception {
@@ -102,7 +119,7 @@ public class WSClientWithStubs {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
-		FolderEntryCollection result = stub.folder_getFolderEntries(null, binderId);
+		FolderEntryCollection result = stub.folder_getEntries(null, binderId);
 		FolderEntryBrief[] entries = result.getEntries();
 				
 		System.out.println("Number of entries = " + entries.length);
@@ -111,15 +128,96 @@ public class WSClientWithStubs {
 		}
 	}
 
-	public static void getPrincipal(long binderId, long principalId) throws Exception {
+	public static void addFolderEntryByCopying(FolderEntry entry) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		// We don't have to bother writing the code that copies the entry. 
+		// All we have to do is to nullify the id field of the persistent entry
+		// (actually we don't even have to do this), then simply re-use it
+		// for add operation.
+		
+		entry.setTitle(entry.getTitle() + " (Copied)");
+		entry.getDescription().setText(entry.getDescription().getText() + " (Copied)");
+		
+		File file = new File("C:/junk/junk1/debug.txt");
+		WebServiceClientUtil.attachFile(stub, file);
+		long entryId = stub.folder_addEntry(null, entry, "debug.txt");
+		//long entryId = stub.folder_addEntry(null, entry, null);
+		
+		System.out.println("ID of the newly added entry: " + entryId);
+	}
+
+	public static void modifyFolderEntry(FolderEntry entry) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+
+		entry.setTitle(entry.getTitle() + " (Modified)");
+		entry.getDescription().setText(entry.getDescription().getText() + " (Modified)");
+		// Set all boolean fields to true
+		for(int i=0; i<entry.getCustomBooleanFields().length; i++) {
+			entry.getCustomBooleanFields()[i].setValue(Boolean.TRUE);			
+		}
+		// Set all date fields to current date/time
+		for(int i=0; i<entry.getCustomDateFields().length; i++) {
+			entry.getCustomDateFields()[i].setValue(Calendar.getInstance());			
+		}
+		// Append "(Modified)" to all string fields
+		for(int i=0; i<entry.getCustomStringFields().length; i++) {
+			entry.getCustomStringFields()[i].setValue(entry.getCustomStringFields()[i].getValue() + " (Modified)");			
+		}
+		// Shrink all long-array fields by one element (cut the last one).
+		for(int i=0; i<entry.getCustomLongArrayFields().length; i++) {
+			Long[] array = entry.getCustomLongArrayFields()[i].getValues();
+			if(array.length > 0) {
+				Long[] newArray = new Long[array.length-1];
+				for(int j=0; j<newArray.length; j++)
+					newArray[j] = array[j];
+				
+				entry.getCustomLongArrayFields()[i].setValues(newArray);							
+			}
+		}
+		// Shrink all string-array fields by one element (cut the last one).
+		for(int i=0; i<entry.getCustomStringArrayFields().length; i++) {
+			String[] array = entry.getCustomStringArrayFields()[i].getValues();
+			if(array.length > 0) {
+				String[] newArray = new String[array.length-1];
+				for(int j=0; j<newArray.length; j++)
+					newArray[j] = array[j];
+				
+				entry.getCustomStringArrayFields()[i].setValues(newArray);							
+			}
+		}
+
+		stub.folder_modifyEntry(null, entry);
+		
+		System.out.println("ID of the modified entry: " + entry.getId());
+	}
+
+	public static void getUser(long binderId, long principalId) throws Exception {
 		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
 		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 		
-		Principal principal = stub.profile_getPrincipal(null, binderId, principalId);
+		User user = stub.profile_getUser(null, binderId, principalId);
 		
-		System.out.println("Principal title: " + principal.getTitle());
+		System.out.println("User title: " + user.getTitle());
+	}
+
+	public static void getGroup(long binderId, long principalId) throws Exception {
+		TeamingServiceSoapServiceLocator locator = new TeamingServiceSoapServiceLocator();
+		locator.setTeamingServiceEndpointAddress(TEAMING_SERVICE_ADDRESS_BASIC);
+		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
+		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
+		
+		Group group = stub.profile_getGroup(null, binderId, principalId);
+		
+		System.out.println("Group title: " + group.getTitle());
 	}
 
 	public static void getPrincipals(int first, int max) throws Exception {
