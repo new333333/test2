@@ -34,23 +34,13 @@ import com.sitescape.team.remoting.ws.model.User;
 
 public interface ProfileService {
 
-	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords);
-	
 	public PrincipalCollection profile_getPrincipals(String accessToken, int firstRecord, int maxRecords);
 
-	public String profile_getPrincipalAsXML(String accessToken, long binderId, long principalId);
-	
 	public User profile_getUser(String accessToken, long binderId, long userId);
 	
 	public Group profile_getGroup(String accessToken, long binderId, long groupId);
 	
-	public long profile_addUserWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML);
-	
-	public long profile_addGroupWithXML(String accessToken, long binderId, String definitionId, String inputDataAsXML);
-	
 	public void profile_addUserToGroup(String accessToken, long userId, String username, long groupId);
-	
-	public void profile_modifyPrincipalWithXML(String accessToken, long binderId, long principalId, String inputDataAsXML);
 	
 	public void profile_deletePrincipal(String accessToken, long binderId, long principalId);
 	

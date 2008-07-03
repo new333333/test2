@@ -1013,7 +1013,10 @@ text/calendar											  ics
 			</bean>
 		</property>
 		<property name="proxyInterfaces">
-			<value>com.sitescape.team.remoting.ws.service.profile.ProfileService</value>
+			<list>
+				<value>com.sitescape.team.remoting.ws.service.profile.ProfileService</value>
+				<value>com.sitescape.team.remoting.ws.service.profile.ProfileServiceInternal</value>
+			</list>
 		</property>
 	</bean>
 	

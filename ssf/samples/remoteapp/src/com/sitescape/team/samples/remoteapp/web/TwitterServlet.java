@@ -28,7 +28,6 @@
  */
 package com.sitescape.team.samples.remoteapp.web;
 
-import java.io.File;
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -37,8 +36,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import javax.activation.DataHandler;
-import javax.activation.FileDataSource;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -46,7 +43,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.xml.rpc.ServiceException;
 
-import org.apache.axis.client.Call;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpStatus;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -57,7 +53,7 @@ import org.dom4j.Element;
 
 import com.sitescape.team.client.ws.TeamingServiceSoapBindingStub;
 import com.sitescape.team.client.ws.TeamingServiceSoapServiceLocator;
-import com.sitescape.team.client.ws.WebServiceClientUtil;
+import com.sitescape.team.client.ws.model.User;
 import com.sitescape.util.servlet.StringServletResponse;
 
 public class TwitterServlet extends HttpServlet {
@@ -192,14 +188,9 @@ public class TwitterServlet extends HttpServlet {
 	}
 
 	private String getUserTwitterId(TeamingServiceSoapBindingStub stub, String accessToken, Long userId) throws ServiceException, DocumentException, RemoteException {
-		String principalAsXML = stub.profile_getPrincipalAsXML(accessToken, PROFILE_BINDER_ID, userId);
+		User user = stub.profile_getUser(accessToken, PROFILE_BINDER_ID, userId);
 		
-		Document doc = DocumentHelper.parseText(principalAsXML);
-		Element rootElem = doc.getRootElement();
-		Element elm = (Element) rootElem.selectSingleNode("/principal");
-		String userTwitterId = elm.attributeValue("twitterId");
-		
-		return userTwitterId;
+		return user.getTwitterId();
 	}
 	
 	private Document getTwitterStatuses(HttpServletRequest req, HttpServletResponse resp, String userTwitterId) 

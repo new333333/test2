@@ -42,6 +42,7 @@ public class User extends Principal implements Serializable {
 	private String localeCountry;
 	private String timeZone;
 	private String skypeId;
+	private String twitterId;
 	
 	public String getFirstName() {
 		return firstName;
@@ -103,4 +104,11 @@ public class User extends Principal implements Serializable {
 	public void setZonName(String zonName) {
 		this.zonName = zonName;
 	}
+	public String getTwitterId() {
+		return twitterId;
+	}
+	public void setTwitterId(String twitterId) {
+		this.twitterId = twitterId;
+	}
+	
 }

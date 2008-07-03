@@ -248,6 +248,7 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 			userModel.setTimeZone(user.getTimeZone().getID());
 		}
 		userModel.setSkypeId(user.getSkypeId());
+		userModel.setTwitterId(user.getTwitterId());
 	}
 	
 	protected void fillGroupModel(com.sitescape.team.remoting.ws.model.Group groupModel, Group group) {

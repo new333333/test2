@@ -42,6 +42,7 @@ import com.sitescape.team.remoting.ws.service.folder.FolderServiceInternal;
 import com.sitescape.team.remoting.ws.service.folder.MigrationService;
 import com.sitescape.team.remoting.ws.service.ical.IcalService;
 import com.sitescape.team.remoting.ws.service.profile.ProfileService;
+import com.sitescape.team.remoting.ws.service.profile.ProfileServiceInternal;
 import com.sitescape.team.remoting.ws.service.search.SearchService;
 import com.sitescape.team.remoting.ws.service.search.SearchServiceInternal;
 import com.sitescape.team.remoting.ws.service.template.TemplateService;
@@ -226,14 +227,14 @@ public class JaxRpcFacade extends ServletEndpointSupport implements Facade {
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#getAllPrincipalsAsXML}.
 	 */
 	public String getAllPrincipalsAsXML(int firstRecord, int maxRecords) {
-		return this.profileService.profile_getPrincipalsAsXML(null, firstRecord, maxRecords);
+		return ((ProfileServiceInternal)this.profileService).profile_getPrincipalsAsXML(null, firstRecord, maxRecords);
 	}
 	/**
 	 * @deprecated As of ICEcore version 1.1,
 	 * replaced by {@link com.sitescape.team.remoting.ws.service.profile#getPrincipalAsXML}.
 	 */
 	public String getPrincipalAsXML(long binderId, long principalId) {
-		return this.profileService.profile_getPrincipalAsXML(null, binderId, principalId);
+		return ((ProfileServiceInternal)this.profileService).profile_getPrincipalAsXML(null, binderId, principalId);
 	}
 	
 	/**

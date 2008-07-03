@@ -50,7 +50,7 @@ import com.sitescape.team.remoting.ws.util.DomInputData;
 import com.sitescape.team.remoting.ws.util.ModelInputData;
 import com.sitescape.team.util.stringcheck.StringCheckUtil;
 
-public class ProfileServiceImpl extends BaseService implements ProfileService {
+public class ProfileServiceImpl extends BaseService implements ProfileService, ProfileServiceInternal {
 
 	public String profile_getPrincipalsAsXML(String accessToken, int firstRecord, int maxRecords) {
 		Document doc = DocumentHelper.createDocument();
