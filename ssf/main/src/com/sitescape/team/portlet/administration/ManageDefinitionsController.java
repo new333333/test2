@@ -109,6 +109,12 @@ public class ManageDefinitionsController extends  SAbstractController {
  		BinderHelper.setupStandardBeans(this, request, response, model);
 		String path = WebKeys.VIEW_DEFINITIONS;
 		if (Validator.isNull(operation)) {
+			
+			if (binder != null) {
+				model.put(WebKeys.DEFINITION_ENTRY, binder);
+				//Build the navigation beans
+				BinderHelper.buildNavigationLinkBeans(this, binder, model);
+			}
 			Document definitionConfig = getDefinitionModule().getDefinitionConfig();
 			PortletURL url;
 			Toolbar toolbar = new Toolbar();

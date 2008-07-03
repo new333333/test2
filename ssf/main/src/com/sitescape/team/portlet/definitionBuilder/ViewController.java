@@ -30,15 +30,12 @@ package com.sitescape.team.portlet.definitionBuilder;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 
 import javax.portlet.ActionRequest;
 import javax.portlet.ActionResponse;
 import javax.portlet.RenderRequest;
 import javax.portlet.RenderResponse;
-import javax.portlet.WindowState;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
@@ -50,12 +47,13 @@ import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.DefinitionInvalidException;
 import com.sitescape.team.domain.DefinitionInvalidOperation;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
-import com.sitescape.team.domain.EntityIdentifier.EntityType;
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
+import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebHelper;
 import com.sitescape.util.Validator;
@@ -115,6 +113,13 @@ public class ViewController extends SAbstractController {
 					Integer visibility = PortletRequestUtils.getIntParameter(request, "visibility");
 					getDefinitionModule().modifyVisibility(selectedItem, visibility, targetBinderId);
 
+				} else if (operation.equals("moveDefinition")) {
+					//Modify the name of the selected item
+					Long targetBinderId = PortletRequestUtils.getLongParameter(request, "targetId");
+					Definition def = getDefinitionModule().getDefinition(selectedItem);
+					getDefinitionModule().modifyVisibility(selectedItem, def.getVisibility(), targetBinderId);
+					response.setRenderParameter("binderId", targetBinderId.toString());
+
 				} else if (operation.equals("copyDefinition")) {
 					//Add a new definition type
 					String name = PortletRequestUtils.getStringParameter(request,"propertyId_name", "");
@@ -158,11 +163,17 @@ public class ViewController extends SAbstractController {
 					getDefinitionModule().deleteItem(selectedItem, itemId);
 					
 				} else if (operation.equals("moveItem")) {
-					//Delete the item
+					//Move the item
 					String itemId = PortletRequestUtils.getStringParameter(request, "operationItem", "");
 					String targetItemId = PortletRequestUtils.getStringParameter(request, "selectedId", "");
 					String location = PortletRequestUtils.getStringParameter(request, "moveTo", "");
-					getDefinitionModule().modifyItemLocation(selectedItem, itemId, targetItemId, location);
+					getDefinitionModule().moveItem(selectedItem, itemId, targetItemId, location);
+					
+				} else if (operation.equals("copyItem")) {
+					//Copy the item
+					String itemId = PortletRequestUtils.getStringParameter(request, "operationItem", "");
+					String targetItemId = PortletRequestUtils.getStringParameter(request, "selectedId", "");
+					getDefinitionModule().copyItem(selectedItem, itemId, targetItemId);
 					
 				}
 			} catch (DefinitionInvalidOperation e) {
@@ -218,7 +229,8 @@ public class ViewController extends SAbstractController {
 		data.put("selectedItemTitle", title);
 			
 		if (Validator.isNull(option)) {
-						
+			if (binderId != null) model.put(WebKeys.BINDER, getBinderModule().getBinder(binderId));
+
 			//Open the item that was selected
 			String nodeOpen = PortletRequestUtils.getStringParameter(request, "selectedId", "");
 			data.put("nodeOpen", nodeOpen);
@@ -253,6 +265,13 @@ public class ViewController extends SAbstractController {
 			}
 			return new ModelAndView(WebKeys.VIEW_DEFINITION, model);
 
+			
+		} else if ("moveDefinition".equals(option) && binderId != null) {
+			Workspace ws = getWorkspaceModule().getTopWorkspace();
+			Document wsTree = getBinderModule().getDomBinderTree(ws.getId(), new WsDomTreeBuilder(ws, true, this),1);
+			model.put(WebKeys.WORKSPACE_DOM_TREE, wsTree);
+			model.put(WebKeys.BINDER, getBinderModule().getBinder(binderId));
+			return new ModelAndView(WebKeys.VIEW_ADMIN_MOVE_DEFINITION, model);
 			
 		} else {
 			response.setContentType("text/xml");			

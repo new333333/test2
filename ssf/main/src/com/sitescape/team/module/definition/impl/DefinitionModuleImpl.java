@@ -1199,75 +1199,113 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 	}
 
-	public void modifyItemLocation(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException {
+	public void moveItem(String defId, String sourceItemId, String targetItemId, String position) throws DefinitionInvalidException {
 		Definition def = getDefinition(defId);
 	   	checkAccess(def, DefinitionOperation.manageDefinition);
-		if (!sourceItemId.equals(targetItemId.toString())) {
-			Document definitionTree = def.getDefinition();
-			if (definitionTree != null) {
-				Element root = definitionTree.getRootElement();
-				//Find the element to move
-				Element sourceItem = (Element) root.selectSingleNode("//item[@id='"+sourceItemId+"']");
-				if (sourceItem != null) {
-					Element targetItem = (Element) root.selectSingleNode("//item[@id='"+targetItemId+"']");
-					if (targetItem != null) {
-						//We have found both the source and the target ids; do the move
-						if (position.equals("into")) {
-							//Check that the target area is allowed to receive one of these types
-							String sourceItemType = sourceItem.attributeValue("name", "");
-							//See if this is a dataView mirroring another element
-							if (sourceItem.attributeValue("type", "").equals("dataView")) {
-								//Get the actual element type being tracked
-								sourceItemType = sourceItem.attributeValue("formItem", "");
-							}
-							if (!sourceItemType.equals("") && checkTargetOptions(definitionTree, targetItem.attributeValue("name"), sourceItemType)) {
-								//Detach the source item
-								sourceItem.detach();
-								//Add it to the target element
-								targetItem.add(sourceItem);
-							} else {
-								//The target item is not designed to accept this item as a child
-								throw new DefinitionInvalidException("definition.error.illegalMoveInto", new Object[] {defId});
-							}
-						} else if (position.equals("above")) {
-							//Get the parent of the target item
-							Element sourceParent = (Element) sourceItem.getParent();
-							//Detach the source item
-							sourceItem.detach();
-							List sourceParentContent = sourceParent.content();
-							int i = sourceParentContent.indexOf(targetItem);
-							if (i < 0) {i = 0;}
-							sourceParentContent.add(i,sourceItem);
-						} else if (position.equals("below")) {
-							//Get the parent of the target item
-							Element sourceParent = (Element) sourceItem.getParent();
-							//Detach the source item
-							sourceItem.detach();
-							List sourceParentContent = sourceParent.content();
-							int i = sourceParentContent.indexOf(targetItem);
-							sourceParentContent.add(i+1,sourceItem);
-						}
-						//Write the new document back into the definition
-						setDefinition(def, definitionTree);
-					} else {
-						//Target item is no longer defined as a valid item
-						throw new DefinitionInvalidException("definition.error.noElement", new Object[] {defId});
-					}
-				} else {
-					//The item to be moved is no longer defined as a valid item
-					throw new DefinitionInvalidException("definition.error.noElement", new Object[] {defId});
-				}
+		if (sourceItemId.equals(targetItemId)) return;
+		Document definitionTree = def.getDefinition();
+		if (definitionTree == null) return;
+		Element root = definitionTree.getRootElement();
+		//Find the element to move
+		Element sourceItem = (Element) root.selectSingleNode("//item[@id='"+sourceItemId+"']");
+		if (sourceItem == null) //The item to be moved is no longer defined as a valid item
+			throw new DefinitionInvalidException("definition.error.noElement", new Object[] {defId});
+
+		Element targetItem = (Element) root.selectSingleNode("//item[@id='"+targetItemId+"']");
+		if (targetItem == null) 	//Target item is no longer defined as a valid item
+			throw new DefinitionInvalidException("definition.error.noElement", new Object[] {defId});
+		//We have found both the source and the target ids; do the move
+		if (position.equals("into")) {
+			if (checkTargetOptions(definitionTree, targetItem, sourceItem)) {
+				//Detach the source item
+				sourceItem.detach();
+				//Add it to the target element
+				targetItem.add(sourceItem);
+			} else {
+				//The target item is not designed to accept this item as a child
+				throw new DefinitionInvalidException("definition.error.illegalMoveInto", new Object[] {defId});
+			}
+		} else if (position.equals("above")) {
+			//Get the parent of the target item
+			Element targetParent = (Element) targetItem.getParent();
+			if (checkTargetOptions(definitionTree, targetParent, sourceItem)) {
+				//Detach the source item
+				sourceItem.detach();
+				List targetParentContent = targetParent.content();
+				int i = targetParentContent.indexOf(targetItem);
+				if (i < 0) {i = 0;}
+				targetParentContent.add(i,sourceItem);
+			} else {
+				//The target item is not designed to accept this item as a child
+				throw new DefinitionInvalidException("definition.error.illegalMoveInto", new Object[] {defId});
+			}
+		} else if (position.equals("below")) {
+			//Get the parent of the target item
+			Element targetParent = (Element) targetItem.getParent();
+			if (checkTargetOptions(definitionTree, targetParent, sourceItem)) {
+				//Detach the source item
+				sourceItem.detach();
+				List targetParentContent = targetParent.content();
+				int i = targetParentContent.indexOf(targetItem);
+				targetParentContent.add(i+1,sourceItem);
+			} else {
+				//The target item is not designed to accept this item as a child
+				throw new DefinitionInvalidException("definition.error.illegalMoveInto", new Object[] {defId});
 			}
 		}
+		//Write the new document back into the definition
+		setDefinition(def, definitionTree);
 	}
-	
+
+	public void copyItem(String defId, String sourceItemId, String targetItemId) throws DefinitionInvalidException {
+		Definition def = getDefinition(defId);
+	   	checkAccess(def, DefinitionOperation.manageDefinition);
+		if (sourceItemId.equals(targetItemId)) return;
+		Document definitionTree = def.getDefinition();
+		if (definitionTree == null) return;
+		Element root = definitionTree.getRootElement();
+		//Find the element to move
+		Element sourceItem = (Element) root.selectSingleNode("//item[@id='"+sourceItemId+"']");
+		if (sourceItem == null) //The item to be moved is no longer defined as a valid item
+			throw new DefinitionInvalidException("definition.error.noElement", new Object[] {defId});
+
+		Element targetItem = (Element) root.selectSingleNode("//item[@id='"+targetItemId+"']");
+		if (targetItem == null) 	//Target item is no longer defined as a valid item
+			throw new DefinitionInvalidException("definition.error.noElement", new Object[] {defId});
+
+		//We have found both the source and the target ids; do the move
+		//Check that the target area is allowed to receive one of these types
+		if (checkTargetOptions(definitionTree, targetItem, sourceItem)) {
+			//Detach the source item
+			Element newItem = (Element)sourceItem.clone();
+			int nextId = Integer.valueOf(root.attributeValue("nextId")).intValue();
+			newItem.addAttribute("id", (String) Integer.toString(nextId++));
+			List<Element> subItems = newItem.selectNodes(".//item");
+			for (Element sub:subItems) {
+				sub.addAttribute("id", (String) Integer.toString(nextId++));				
+			}
+			root.addAttribute("nextId", (String) Integer.toString(nextId));
+
+			//Add it to the target element
+			targetItem.add(newItem);
+			//Write the new document back into the definition
+			setDefinition(def, definitionTree);
+		} else {
+			//The target item is not designed to accept this item as a child
+			throw new DefinitionInvalidException("definition.error.illegalMoveInto", new Object[] {defId});
+		}
+	}
+		
 	//Routine to check that the source item is allowed to be added to the target item type
-	private boolean checkTargetOptions(Document definitionTree, String targetItemType, String sourceItemType) {
+	private boolean checkTargetOptions(Document definitionTree, Element target, Element source) {
+		String targetItemType = target.attributeValue("name");
+		String sourceItemType = source.attributeValue("name");
+		
 		//check against base config document
 		Element targetItem = (Element) this.configRoot.selectSingleNode("item[@name='"+targetItemType+"']");
 		Element sourceItem = (Element) this.configRoot.selectSingleNode("item[@name='"+sourceItemType+"']");
 		if (targetItem == null || sourceItem == null) {return false;}
-		
+		Boolean found=false;
 		//Check the list of options (types: "option" and "option_select")
 		Element options = targetItem.element("options");
 		if (options != null) {
@@ -1275,25 +1313,42 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			while (itOptions.hasNext()) {
 				Element option = (Element) itOptions.next();
 				if (option.attributeValue("name").equals(sourceItemType)) {
-					return true;
+					found= true;
+					break;
 				}
 			}
-			
-			itOptions = options.elementIterator("option_select");
-			while (itOptions.hasNext()) {
-				Element option = (Element) itOptions.next();
-				String optionPath = option.attributeValue("path", "");
-				Iterator itOptionsSelect = this.configRoot.selectNodes(optionPath).iterator();
-				while (itOptionsSelect.hasNext()) {
-					Element optionSelect = (Element) itOptionsSelect.next();
-					if (optionSelect.attributeValue("name").equals(sourceItemType)) {
-						return true;
+			if (!found) {
+				itOptions = options.elementIterator("option_select");
+				while (itOptions.hasNext()) {
+					Element option = (Element) itOptions.next();
+					String optionPath = option.attributeValue("path", "");
+					Iterator itOptionsSelect = this.configRoot.selectNodes(optionPath).iterator();
+					while (itOptionsSelect.hasNext()) {
+						Element optionSelect = (Element) itOptionsSelect.next();
+						if (optionSelect.attributeValue("name").equals(sourceItemType)) {
+							found= true;
+							break;
+						}
 					}
 				}
 			}
 		}
 		//None found, this isn't allowed
+		if (!found) return false;
+		if ("false".equals(sourceItem.attributeValue("multipleAllowed")) && 
+				target.getDocument().getRootElement().selectSingleNode("//item[@name='"+sourceItemType+"']") != null) return false;
+
+		if ("false".equals(sourceItem.attributeValue("multipleAllowedInParent")) && 
+				target.selectSingleNode("item[@name='"+sourceItemType+"']") != null) return false;
+
+		//now check unique constraints
+		String uniquePath = sourceItem.attributeValue("unique");
+		if (Validator.isNull(uniquePath)) return true;
+		//There is a request for uniqueness, so get the list from the definition file
+		List<Element> items = target.selectNodes(uniquePath);
+		if (items.isEmpty()) return true;
 		return false;
+
 	}
 
 	private int populateNewDefinitionTree(Element source, Element target, final Element configRoot, int id, boolean includeDefault) {
