@@ -94,6 +94,7 @@ import org.joda.time.DateTimeZone;
 import org.joda.time.YearMonthDay;
 
 import com.sitescape.team.ObjectKeys;
+import com.sitescape.team.calendar.TimeZoneHelper;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.util.FilterControls;
 import com.sitescape.team.domain.CustomAttribute;
@@ -193,6 +194,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				if(eventComponent.getSummary() != null) {
 					summary = eventComponent.getSummary().getValue();
 				}
+								
 				handler.handleEvent(event, description, summary);
 			}
 			for(Object comp : cal.getComponents("VTODO")) {
@@ -220,21 +222,11 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				if(todoComponent.getLocation() != null) {
 					location = todoComponent.getLocation().getValue();
 				}	
-				
-				// TODO: it's not implemented!
-				List attendees = new ArrayList();
-				Iterator it = todoComponent.getProperties(Property.ATTENDEE).iterator();
-				while (it.hasNext()) {
-					Attendee attendee = (Attendee)it.next();
-					if (attendee.getParameter(Parameter.CN) != null) {
-						attendees.add(attendee.getParameter(Parameter.CN).getValue());
-					}
-				}
-				
+							
 				handler.handleTodo(event, description, summary, 
 						priority!=null?priority.name():null, 
 						status!=null?status.name():null, 
-						percentComplete!=null?percentComplete.name():null, location, attendees);
+						percentComplete!=null?percentComplete.name():null, location);
 			}
 		} catch(IOException e) {
 			logger.debug("IOException while parsing iCal stream", e);
@@ -372,7 +364,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				events.add(e);
 			}
 
-			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List attendee) {
+			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location) {
 				events.add(event);
 			}
 		};
@@ -422,7 +414,7 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				addOrModifyEntry(event, new MapInputData(formData));
 			}
 
-			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location, List attendee) {
+			public void handleTodo(Event event, String description, String summary, String priority, String status, String completed, String location) {
 				Map<String, Object> formData = new HashMap<String, Object>();
 				
 				shorterSummary(formData, description, summary);
@@ -432,7 +424,6 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 				formData.put("completed", new String[] {completed});
 				formData.put("location", new String[] {location});
 				
-				// TODO: how to find attendee? by email?
 				// TODO: add attachments support
 				// TODO: alert's support
 				
@@ -904,20 +895,22 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 	public static TimeZone getTimeZone(java.util.TimeZone timeZone, String defaultTimeZone) {
 		TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
 		
-		TimeZone iCalTimeZone= null;
-		
-		// get current user time zone
-		User user = RequestContextHolder.getRequestContext().getUser();
-		// use jodatime to convert 3-characters zone ids to ical names 
-		DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(user.getTimeZone());
-		if (dateTimeZone != null) {
-			iCalTimeZone = registry.getTimeZone(dateTimeZone.getID());
-		}
-		
+		TimeZone iCalTimeZone = null;
 		
 		if (timeZone != null) {
+			java.util.TimeZone fixedTimeZone = TimeZoneHelper.fixTimeZone(timeZone);
 			// use jodatime to convert 3-characters zone ids to ical names 
-			dateTimeZone = DateTimeZone.forTimeZone(timeZone);
+			DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(fixedTimeZone);
+			if (dateTimeZone != null) {
+				iCalTimeZone = registry.getTimeZone(dateTimeZone.getID());
+			}
+		}
+		
+		if (iCalTimeZone == null) {
+			// get current user time zone
+			User user = RequestContextHolder.getRequestContext().getUser();
+			// use jodatime to convert 3-characters zone ids to ical names 
+			DateTimeZone dateTimeZone = DateTimeZone.forTimeZone(user.getTimeZone());
 			if (dateTimeZone != null) {
 				iCalTimeZone = registry.getTimeZone(dateTimeZone.getID());
 			}
