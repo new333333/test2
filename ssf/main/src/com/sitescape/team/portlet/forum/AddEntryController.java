@@ -435,6 +435,10 @@ public class AddEntryController extends SAbstractController {
 			}
 		} else {
 			startDate = new DateTime(EventsViewHelper.getCalendarCurrentDate(request.getPortletSession()));
+			startDate = startDate.plusMinutes(startDate
+					.getMinuteOfHour() > 30 ? 60 - startDate
+					.getMinuteOfHour() : 30 - startDate
+					.getMinuteOfHour());
 		}
 		
 		if (startDate != null) {
