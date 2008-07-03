@@ -2,7 +2,7 @@
 
 <targets>
 
- <target id="bck33nb" pid="bck33nb" name="Chapter" level="0" number="2"> <text>Message Reference</text> </target>
+ <target id="bck33nb" pid="bck33nb" name="Chapter" level="0" number="2"> <text>Web Services Message Reference</text> </target>
 
  <target name="InformalTable" level="1"> <text>What you see</text> </target>
 
@@ -24,7 +24,7 @@
 
  <target id="bcuwp0t" pid="bck33nb" name="row" level="2"> <text>..., paramSyntax1  |  paramSyntax2,...</text> </target>
 
- <target id="bck6g0href" pid="bck33nb" name="row" level="2"> <text>(V1+)</text> </target>
+ <target id="bck6g0href" pid="bck33nb" name="row" level="2"> <text>(V1-V1.0.3)</text> </target>
 
  <target name="InformalTable" level="1"> <text>wsclient.bat command</text> </target>
 
@@ -33,6 +33,26 @@
  <target id="bckkumu" pid="bck33nb" name="row" level="2"> <text>addEntry</text> </target>
 
  <target id="bckkumv" pid="bck33nb" name="row" level="2"> <text>addFolder</text> </target>
+
+ <target id="bfk6cfy" pid="bck33nb" name="row" level="2"> <text>addReply</text> </target>
+
+ <target id="bfk6cfz" pid="bck33nb" name="row" level="2"> <text>[none]</text> </target>
+
+ <target id="bfk6cg0" pid="bck33nb" name="row" level="2"> <text>indexBinder</text> </target>
+
+ <target id="bfk6cg1" pid="bck33nb" name="row" level="2"> <text>listDefinitions</text> </target>
+
+ <target id="bfk6cg2" pid="bck33nb" name="row" level="2"> <text>migrateBinder</text> </target>
+
+ <target id="bfk6cg3" pid="bck33nb" name="row" level="2"> <text>migrateEntry</text> </target>
+
+ <target id="bfk6cg4" pid="bck33nb" name="row" level="2"> <text>migrateReply</text> </target>
+
+ <target id="bfk6cg5" pid="bck33nb" name="row" level="2"> <text>migrateFile</text> </target>
+
+ <target id="bfk6cg6" pid="bck33nb" name="row" level="2"> <text>migrateFileStaged</text> </target>
+
+ <target id="bfk6cg7" pid="bck33nb" name="row" level="2"> <text>migrateWorkflow</text> </target>
 
  <target id="bckkumx" pid="bck33nb" name="row" level="2"> <text>modifyEntry</text> </target>
 
@@ -53,6 +73,18 @@
  <target id="bckkun5" pid="bck33nb" name="row" level="2"> <text>printTeams</text> </target>
 
  <target id="bckkun6" pid="bck33nb" name="row" level="2"> <text>printWorkspaceTree</text> </target>
+
+ <target id="bfk6cg8" pid="bck33nb" name="row" level="2"> <text>setDefinitions</text> </target>
+
+ <target id="bfk6cg9" pid="bck33nb" name="row" level="2"> <text>setFunctionMembership</text> </target>
+
+ <target id="bfk6cga" pid="bck33nb" name="row" level="2"> <text>setFunctionMembershipInherited</text> </target>
+
+ <target id="bfk6cgb" pid="bck33nb" name="row" level="2"> <text>setOwner</text> </target>
+
+ <target id="bfk6cgc" pid="bck33nb" name="row" level="2"> <text>setTeamMembers</text> </target>
+
+ <target id="bfk6cgd" pid="bck33nb" name="row" level="2"> <text>synchronize</text> </target>
 
  <target id="bckkun7" pid="bck33nb" name="row" level="2"> <text>uploadCalendar</text> </target>
 
@@ -92,30 +124,6 @@
 
  <target id="bck356y" pid="bck356s2" name="VarListEntry" level="3"> <text>definitionId  </text> </target>
 
- <target name="InformalTable" level="4"> <text>Entry type</text> </target>
-
- <target id="bcuwwrb" pid="bck356s2" name="row" level="5"> <text>Entry type</text> </target>
-
- <target id="bcuwwrc" pid="bck356s2" name="row" level="5"> <text>Blog</text> </target>
-
- <target id="bcuwwrd" pid="bck356s2" name="row" level="5"> <text>Calendar</text> </target>
-
- <target id="bcuwwre" pid="bck356s2" name="row" level="5"> <text>Discussion </text> </target>
-
- <target id="bcuwwrf" pid="bck356s2" name="row" level="5"> <text>File folder</text> </target>
-
- <target id="bcuwwrg" pid="bck356s2" name="row" level="5"> <text>Guestbook</text> </target>
-
- <target id="bcuwwrh" pid="bck356s2" name="row" level="5"> <text>Milestone</text> </target>
-
- <target id="bcuwwri" pid="bck356s2" name="row" level="5"> <text>Photo album</text> </target>
-
- <target id="bcuwwrj" pid="bck356s2" name="row" level="5"> <text>Survey</text> </target>
-
- <target id="bcuwwrk" pid="bck356s2" name="row" level="5"> <text>Task</text> </target>
-
- <target id="bcuwwrl" pid="bck356s2" name="row" level="5"> <text>Wiki</text> </target>
-
  <target id="bck356z" pid="bck356s2" name="VarListEntry" level="3"> <text>inputDataAsXML  </text> </target>
 
  <target id="bcqa5ge" pid="bck356s2" name="VarListEntry" level="3"> <text>attachedFileName  </text> </target>
@@ -126,9 +134,53 @@
 
  <target id="bcmodwf" pid="bck356s2" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("addFolderEntry"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new String("402883b90cc53079010cc539bf260002"), s, filename}, filename);  </text> </target>
 
- <target id="bcuwsws" pid="bck356s2" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("addFolderEntry"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new String("402883b90cc53079010cc539bf260002"), null});  </text> </target>
+ <target id="bcuwsws" pid="bck356s2" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("addFolderEntry"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new String("402883b90cc53079010cc539bf260002"), s, null});  </text> </target>
 
  <target id="bck357d" pid="bck356s2" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bffijfj" pid="bffijfj" name="RefEntry" level="1"> <text>addReply</text> </target>
+
+ <target id="bffijfk" pid="bffijfj" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bffijfl" pid="bffijfj" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bffijfm" pid="bffijfj" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bffijfn" pid="bffijfj" name="VarListEntry" level="3"> <text>folderId  </text> </target>
+
+ <target id="bffijfo" pid="bffijfj" name="VarListEntry" level="3"> <text>parentEntryId  </text> </target>
+
+ <target id="bffijfp" pid="bffijfj" name="VarListEntry" level="3"> <text>definitionId  </text> </target>
+
+ <target id="bffijfq" pid="bffijfj" name="VarListEntry" level="3"> <text>inputDataAsXML  </text> </target>
+
+ <target id="bffijfr" pid="bffijfj" name="VarListEntry" level="3"> <text>attachedFileName  </text> </target>
+
+ <target id="bffijfs" pid="bffijfj" name="VarListEntry" level="3"> <text>return_value  </text> </target>
+
+ <target id="bffijft" pid="bffijfj" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bffjml4" pid="bffijfj" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("addReply"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new Long(45), null, s, null});  </text> </target>
+
+ <target id="bffijfv" pid="bffijfj" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfgilv5" pid="bfgilv5" name="RefEntry" level="1"> <text>addUserWorkspace</text> </target>
+
+ <target id="bfgilv6" pid="bfgilv5" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfgilv7" pid="bfgilv5" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfgilv8" pid="bfgilv5" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfgilv9" pid="bfgilv5" name="VarListEntry" level="3"> <text>userId  </text> </target>
+
+ <target id="bfgilva" pid="bfgilv5" name="VarListEntry" level="3"> <text>return_value  </text> </target>
+
+ <target id="bfgilvb" pid="bfgilv5" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfgilvc" pid="bfgilv5" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("addUserWorkspace"));                                                                         Object result = call.invoke(new Object[] {new Long(21)});  </text> </target>
+
+ <target id="bfgilvd" pid="bfgilv5" name="RefSect1" level="2"> <text>See Also</text> </target>
 
  <target id="bcqal1e" pid="bcqal1e" name="RefEntry" level="1"> <text>getAllPrincipalsAsXML</text> </target>
 
@@ -158,7 +210,7 @@
 
  <target id="bcvd8vv" pid="bcvd8vs" name="RefSect1" level="2"> <text>Parameter and Return Value</text> </target>
 
- <target id="bcvd8vw" pid="bcvd8vs" name="VarListEntry" level="3"> <text>definitionID  </text> </target>
+ <target id="bcvd8vw" pid="bcvd8vs" name="VarListEntry" level="3"> <text>definitionId  </text> </target>
 
  <target id="bcvd8vx" pid="bcvd8vs" name="VarListEntry" level="3"> <text>return_value  </text> </target>
 
@@ -183,6 +235,22 @@
  <target id="bcqal20" pid="bcqal1q" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("getDefinitionConfigAsXML"));                                                                         Object result = call.invoke();  </text> </target>
 
  <target id="bcqal21" pid="bcqal1q" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfgkwfg" pid="bfgkwfg" name="RefEntry" level="1"> <text>getDefinitionListAsXML</text> </target>
+
+ <target id="bfgkwfh" pid="bfgkwfg" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfgkwfi" pid="bfgkwfg" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfgkwfj" pid="bfgkwfg" name="RefSect1" level="2"> <text>Return Value</text> </target>
+
+ <target id="bfgkwfk" pid="bfgkwfg" name="VarListEntry" level="3"> <text>return_value  </text> </target>
+
+ <target id="bfgkwfl" pid="bfgkwfg" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfgkwfm" pid="bfgkwfg" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("getDefinitionListAsXML"));                                                                         Object result = call.invoke();  </text> </target>
+
+ <target id="bfgkwfn" pid="bfgkwfg" name="RefSect1" level="2"> <text>See Also</text> </target>
 
  <target id="bcqa5gf" pid="bcqa5gf" name="RefEntry" level="1"> <text>getFolderEntriesAsXML</text> </target>
 
@@ -296,9 +364,197 @@
 
  <target id="bcmnz78" pid="bcmnz71" name="RefSect1" level="2"> <text>Example</text> </target>
 
- <target id="bcmnz79" pid="bcmnz71" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("getWorkspaceTreeAsXML"));                                                                         Object result = call.invoke(new Object[] {new Long(1), new Integer(3)});  </text> </target>
+ <target id="bcmnz79" pid="bcmnz71" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("getWorkspaceTreeAsXML"));                                                                         Object result = call.invoke(new Object[] {new Long(1), new Integer(3), null});  </text> </target>
 
  <target id="bcmnz7a" pid="bcmnz71" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfgkwfo" pid="bfgkwfo" name="RefEntry" level="1"> <text>indexFolder</text> </target>
+
+ <target id="bfgkwfp" pid="bfgkwfo" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfgkwfq" pid="bfgkwfo" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfgkwfr" pid="bfgkwfo" name="RefSect1" level="2"> <text>Parameter</text> </target>
+
+ <target id="bfgkwfs" pid="bfgkwfo" name="VarListEntry" level="3"> <text>folderId  </text> </target>
+
+ <target id="bfgkwft" pid="bfgkwfo" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfgkwfu" pid="bfgkwfo" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("indexFolder"));                                                                         Object result = call.invoke(new Object[] {new Long(21)});  </text> </target>
+
+ <target id="bfgkwfv" pid="bfgkwfo" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfgkwfw" pid="bfgkwfw" name="RefEntry" level="1"> <text>migrateBinder</text> </target>
+
+ <target id="bfgkwfx" pid="bfgkwfw" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfgkwfy" pid="bfgkwfw" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfgkwfz" pid="bfgkwfw" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfgkwg0" pid="bfgkwfw" name="VarListEntry" level="3"> <text>parentId  </text> </target>
+
+ <target id="bfgkwg1" pid="bfgkwfw" name="VarListEntry" level="3"> <text>definitionId  </text> </target>
+
+ <target id="bfgkwg2" pid="bfgkwfw" name="VarListEntry" level="3"> <text>inputDataAsXML  </text> </target>
+
+ <target id="bfgkwg3" pid="bfgkwfw" name="VarListEntry" level="3"> <text>creator  </text> </target>
+
+ <target id="bfgkwg4" pid="bfgkwfw" name="VarListEntry" level="3"> <text>creationDate  </text> </target>
+
+ <target id="bfgkwg5" pid="bfgkwfw" name="VarListEntry" level="3"> <text>modifier  </text> </target>
+
+ <target id="bfgkwg6" pid="bfgkwfw" name="VarListEntry" level="3"> <text>modificationDate  </text> </target>
+
+ <target id="bfgkwg7" pid="bfgkwfw" name="VarListEntry" level="3"> <text>return_value  </text> </target>
+
+ <target id="bfgkwg8" pid="bfgkwfw" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfgkwg9" pid="bfgkwfw" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("migrateBinder"));                                                                         Object result = call.invoke(new Object[] {new Long(21), def, input, new String("JSmith"), createcal, new String("JGarces"), modcal});  </text> </target>
+
+ <target id="bfgkwga" pid="bfgkwfw" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfgz9au" pid="bfgz9au" name="RefEntry" level="1"> <text>migrateEntryWorkflow</text> </target>
+
+ <target id="bfgz9av" pid="bfgz9au" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfgz9aw" pid="bfgz9au" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfgz9ax" pid="bfgz9au" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfgz9ay" pid="bfgz9au" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfgz9az" pid="bfgz9au" name="VarListEntry" level="3"> <text>entryId  </text> </target>
+
+ <target id="bfgz9b0" pid="bfgz9au" name="VarListEntry" level="3"> <text>definitionId  </text> </target>
+
+ <target id="bfgz9b1" pid="bfgz9au" name="VarListEntry" level="3"> <text>startState  </text> </target>
+
+ <target id="bfgz9b2" pid="bfgz9au" name="VarListEntry" level="3"> <text>modifier  </text> </target>
+
+ <target id="bfgz9b3" pid="bfgz9au" name="VarListEntry" level="3"> <text>modificationDate  </text> </target>
+
+ <target id="bfgz9b4" pid="bfgz9au" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfgz9b5" pid="bfgz9au" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("migrateEntryWorkflow"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new Long(45), String("ptoProcess"), String("PTO Request"), new String("JGarces"), modcal});  </text> </target>
+
+ <target id="bfgz9b6" pid="bfgz9au" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfgkwgb" pid="bfgkwgb" name="RefEntry" level="1"> <text>migrateFolderEntry</text> </target>
+
+ <target id="bfgkwgc" pid="bfgkwgb" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfgkwgd" pid="bfgkwgb" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfgkwge" pid="bfgkwgb" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfgkwgf" pid="bfgkwgb" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfgkwgg" pid="bfgkwgb" name="VarListEntry" level="3"> <text>definitionId  </text> </target>
+
+ <target id="bfgkwgh" pid="bfgkwgb" name="VarListEntry" level="3"> <text>inputDataAsXML  </text> </target>
+
+ <target id="bfgkwgi" pid="bfgkwgb" name="VarListEntry" level="3"> <text>creator  </text> </target>
+
+ <target id="bfgkwgj" pid="bfgkwgb" name="VarListEntry" level="3"> <text>creationDate  </text> </target>
+
+ <target id="bfgkwgk" pid="bfgkwgb" name="VarListEntry" level="3"> <text>modifier  </text> </target>
+
+ <target id="bfgkwgl" pid="bfgkwgb" name="VarListEntry" level="3"> <text>modificationDate  </text> </target>
+
+ <target id="bfgkwgm" pid="bfgkwgb" name="VarListEntry" level="3"> <text>return_value  </text> </target>
+
+ <target id="bfgkwgn" pid="bfgkwgb" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfgkwgo" pid="bfgkwgb" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("migrateFolderEntry"));                                                                         Object result = call.invoke(new Object[] {new Long(21), def, input, new String("JSmith"), createcal, new String("JGarces"), modcal});  </text> </target>
+
+ <target id="bfgkwgp" pid="bfgkwgb" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfgygou" pid="bfgygou" name="RefEntry" level="1"> <text>migrateFolderFile</text> </target>
+
+ <target id="bfgygov" pid="bfgygou" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfgygow" pid="bfgygou" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfgygox" pid="bfgygou" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfgygoz" pid="bfgygou" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfgz9af" pid="bfgygou" name="VarListEntry" level="3"> <text>entryId  </text> </target>
+
+ <target id="bfgz9ag" pid="bfgygou" name="VarListEntry" level="3"> <text>fileUploadDataItemName  </text> </target>
+
+ <target id="bfgz9ah" pid="bfgygou" name="VarListEntry" level="3"> <text>filename  </text> </target>
+
+ <target id="bfgygp4" pid="bfgygou" name="VarListEntry" level="3"> <text>modifier  </text> </target>
+
+ <target id="bfgygp5" pid="bfgygou" name="VarListEntry" level="3"> <text>modificationDate  </text> </target>
+
+ <target id="bfgygp7" pid="bfgygou" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfgygp8" pid="bfgygou" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("migrateFolderFile"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new Long(45), String("_budgetReport"), String("budget-report.xls"), new String("JGarces"), modcal});  </text> </target>
+
+ <target id="bfgygp9" pid="bfgygou" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfgz9ai" pid="bfgz9ai" name="RefEntry" level="1"> <text>migrateFolderFileStaged</text> </target>
+
+ <target id="bfgz9aj" pid="bfgz9ai" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfgz9ak" pid="bfgz9ai" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfgz9al" pid="bfgz9ai" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfgz9am" pid="bfgz9ai" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfgz9an" pid="bfgz9ai" name="VarListEntry" level="3"> <text>entryId  </text> </target>
+
+ <target id="bfgz9ao" pid="bfgz9ai" name="VarListEntry" level="3"> <text>fileUploadDataItemName  </text> </target>
+
+ <target id="bfgz9ap" pid="bfgz9ai" name="VarListEntry" level="3"> <text>filename  </text> </target>
+
+ <target id="bfgz9aq" pid="bfgz9ai" name="VarListEntry" level="3"> <text>stagedFileRelativePath  </text> </target>
+
+ <target id="bfgz68i" pid="bfgz9ai" name="VarListEntry" level="3"> <text>modifier  </text> </target>
+
+ <target id="bfgz68j" pid="bfgz9ai" name="VarListEntry" level="3"> <text>modificationDate  </text> </target>
+
+ <target id="bfgz9ar" pid="bfgz9ai" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfgz9as" pid="bfgz9ai" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("migrateFolderFileStaged"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new Long(45), String("_budgetReport"), String("budget-report.xls"), String("hidden/ssf/myworkspace/myforum/4567849"), new String("JGarces"), modcal});  </text> </target>
+
+ <target id="bfgz9at" pid="bfgz9ai" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfgkwgq" pid="bfgkwgq" name="RefEntry" level="1"> <text>migrateReply</text> </target>
+
+ <target id="bfgkwgr" pid="bfgkwgq" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfgkwgs" pid="bfgkwgq" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfgkwgt" pid="bfgkwgq" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfgkwgu" pid="bfgkwgq" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfgygot" pid="bfgkwgq" name="VarListEntry" level="3"> <text>parentId  </text> </target>
+
+ <target id="bfgkwgv" pid="bfgkwgq" name="VarListEntry" level="3"> <text>definitionId  </text> </target>
+
+ <target id="bfgkwgw" pid="bfgkwgq" name="VarListEntry" level="3"> <text>inputDataAsXML  </text> </target>
+
+ <target id="bfgkwgx" pid="bfgkwgq" name="VarListEntry" level="3"> <text>creator  </text> </target>
+
+ <target id="bfgkwgy" pid="bfgkwgq" name="VarListEntry" level="3"> <text>creationDate  </text> </target>
+
+ <target id="bfgkwgz" pid="bfgkwgq" name="VarListEntry" level="3"> <text>modifier  </text> </target>
+
+ <target id="bfgkwh0" pid="bfgkwgq" name="VarListEntry" level="3"> <text>modificationDate  </text> </target>
+
+ <target id="bfgkwh1" pid="bfgkwgq" name="VarListEntry" level="3"> <text>return_value  </text> </target>
+
+ <target id="bfgkwh2" pid="bfgkwgq" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfgkwh3" pid="bfgkwgq" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("migrateReply"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new Long(45), def, input, new String("JSmith"), createcal, new String("JGarces"), modcal});  </text> </target>
+
+ <target id="bfgkwh4" pid="bfgkwgq" name="RefSect1" level="2"> <text>See Also</text> </target>
 
  <target id="bcqal3e" pid="bcqal3e" name="RefEntry" level="1"> <text>modifyFolderEntry</text> </target>
 
@@ -322,6 +578,114 @@
 
  <target id="bcqal3p" pid="bcqal3e" name="RefSect1" level="2"> <text>See Also</text> </target>
 
+ <target id="bfj5gyt" pid="bfj5gyt" name="RefEntry" level="1"> <text>setDefinitions</text> </target>
+
+ <target id="bfj5gyu" pid="bfj5gyt" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfj5gyv" pid="bfj5gyt" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfj5gyw" pid="bfj5gyt" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfj5gyx" pid="bfj5gyt" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfj5gyy" pid="bfj5gyt" name="VarListEntry" level="3"> <text>definitionIds  </text> </target>
+
+ <target id="bfj5gyz" pid="bfj5gyt" name="VarListEntry" level="3"> <text>workflowAssociations  </text> </target>
+
+ <target id="bfj5gz0" pid="bfj5gyt" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfj5gz1" pid="bfj5gyt" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("setDefinitions"));                                                                         Object result = call.invoke(new Object[] {new Long(21), entries, workflows});  </text> </target>
+
+ <target id="bfj5gz2" pid="bfj5gyt" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfj5gz3" pid="bfj5gz3" name="RefEntry" level="1"> <text>setFunctionMembership</text> </target>
+
+ <target id="bfj5gz4" pid="bfj5gz3" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfj5gz5" pid="bfj5gz3" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfj5gz6" pid="bfj5gz3" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfj5gz7" pid="bfj5gz3" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfj5gz8" pid="bfj5gz3" name="VarListEntry" level="3"> <text>inputDataAsXML  </text> </target>
+
+ <target id="bfj5gz9" pid="bfj5gz3" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfj5gza" pid="bfj5gz3" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("setFunctionMembership"));                                                                         Object result = call.invoke(new Object[] {new Long(21), s});  </text> </target>
+
+ <target id="bfj5gzb" pid="bfj5gz3" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfj5gzc" pid="bfj5gzc" name="RefEntry" level="1"> <text>setFunctionMembershipInherited</text> </target>
+
+ <target id="bfj5gzd" pid="bfj5gzc" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfj5gze" pid="bfj5gzc" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfj5gzf" pid="bfj5gzc" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfj5gzg" pid="bfj5gzc" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfj5gzh" pid="bfj5gzc" name="VarListEntry" level="3"> <text>inherit  </text> </target>
+
+ <target id="bfj5gzi" pid="bfj5gzc" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfj5gzj" pid="bfj5gzc" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("setFunctionMembershipInherited"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new Boolean.TRUE});  </text> </target>
+
+ <target id="bfj5gzk" pid="bfj5gzc" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfj5gzl" pid="bfj5gzl" name="RefEntry" level="1"> <text>setOwner</text> </target>
+
+ <target id="bfj5gzm" pid="bfj5gzl" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfj5gzn" pid="bfj5gzl" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfj5gzo" pid="bfj5gzl" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfj5gzp" pid="bfj5gzl" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfj5gzq" pid="bfj5gzl" name="VarListEntry" level="3"> <text>userId  </text> </target>
+
+ <target id="bfj5gzr" pid="bfj5gzl" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfj5gzs" pid="bfj5gzl" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("setOwner"));                                                                         Object result = call.invoke(new Object[] {new Long(21), new Long(345)});  </text> </target>
+
+ <target id="bfj5gzt" pid="bfj5gzl" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfj5gzu" pid="bfj5gzu" name="RefEntry" level="1"> <text>setTeamMembers</text> </target>
+
+ <target id="bfj5gzv" pid="bfj5gzu" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfj5gzw" pid="bfj5gzu" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfj5gzx" pid="bfj5gzu" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfj5gzy" pid="bfj5gzu" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfj5gzz" pid="bfj5gzu" name="VarListEntry" level="3"> <text>memberNames  </text> </target>
+
+ <target id="bfj5h00" pid="bfj5gzu" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfj5h01" pid="bfj5gzu" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("setTeamMembers"));                                                                         Object result = call.invoke(new Object[] {new Long(21), users});  </text> </target>
+
+ <target id="bfj5h02" pid="bfj5gzu" name="RefSect1" level="2"> <text>See Also</text> </target>
+
+ <target id="bfj5h03" pid="bfj5h03" name="RefEntry" level="1"> <text>synchronizeMirroredFolder</text> </target>
+
+ <target id="bfj5h04" pid="bfj5h03" name="RefSect1" level="2"> <text>Syntax</text> </target>
+
+ <target id="bfj5h05" pid="bfj5h03" name="RefSect1" level="2"> <text>Description</text> </target>
+
+ <target id="bfj5h06" pid="bfj5h03" name="RefSect1" level="2"> <text>Parameters and Return Value</text> </target>
+
+ <target id="bfj5h07" pid="bfj5h03" name="VarListEntry" level="3"> <text>binderId  </text> </target>
+
+ <target id="bfj5h08" pid="bfj5h03" name="RefSect1" level="2"> <text>Example</text> </target>
+
+ <target id="bfj5h09" pid="bfj5h03" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("synchronizedMirroredFolder"));                                                                         Object result = call.invoke(new Object[] {new Long(21)});  </text> </target>
+
+ <target id="bfj5h0a" pid="bfj5h03" name="RefSect1" level="2"> <text>See Also</text> </target>
+
  <target id="bcqal3q" pid="bcqal3q" name="RefEntry" level="1"> <text>uploadCalendarEntries</text> </target>
 
  <target id="bcqal3r" pid="bcqal3q" name="RefSect1" level="2"> <text>Syntax</text> </target>
@@ -332,15 +696,13 @@
 
  <target id="bcqal3u" pid="bcqal3q" name="VarListEntry" level="3"> <text>folderId  </text> </target>
 
- <target id="bcqal3x" pid="bcqal3q" name="VarListEntry" level="3"> <text>iCalDataFileName  </text> </target>
-
  <target id="bcuytne" pid="bcqal3q" name="VarListEntry" level="3"> <text>XMLCalendarData  </text> </target>
 
  <target id="bcqal3y" pid="bcqal3q" name="VarListEntry" level="3"> <text>return_value  </text> </target>
 
  <target id="bcqal3z" pid="bcqal3q" name="RefSect1" level="2"> <text>Example</text> </target>
 
- <target id="bcqal40" pid="bcqal3q" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("uploadCalendarEntries"));                                                                         Object result = call.invoke(new Object[] {new Long(21), filename), filename});  </text> </target>
+ <target id="bcqal40" pid="bcqal3q" name="VarListEntry" level="3"> <text>call.setOperationName(new QName("uploadCalendarEntries"));                                                                         Object result = call.invoke(new Object[] {new Long(21), s});  </text> </target>
 
  <target id="bcqal41" pid="bcqal3q" name="RefSect1" level="2"> <text>See Also</text> </target>
 
