@@ -3709,20 +3709,40 @@ function ss_loadEntry(obj, id, binderId, entityType, namespace, isDashboard) {
 	return false;
 }
 
-var ss_accordianTableRowIncr = 60;
-function ss_accordionTableRow(rowId, divId) {
+function ss_fadeOutTableRow(rowId, divId) {
 	var rowObj = self.document.getElementById(rowId);
 	var divObj = self.document.getElementById(divId);
 	if (typeof rowObj == 'undefined' || typeof divObj == 'undefined') return;
 	if (divObj.visibility != 'hidden') {
-		dojo.lfx.html.fadeHide(divId, 400, null, function(divId) {
+		dojo.lfx.html.fadeHide(divId, 600, null, function(divId) {
 			var divObj = self.document.getElementById(divId);
 			var rowObj = ss_findOwningElement(divObj, "tr");
 			var tbodyObj = ss_findOwningElement(rowObj, "tbody");
 			tbodyObj.removeChild(rowObj);
+			if (ss_loadEntryInPlaceLastRowObj != null) {
+				var rowTop = parseInt(ss_getObjectTopAbs(ss_loadEntryInPlaceLastRowObj));
+				var scrollTop = dojo.html.getScroll().top;
+				var screenBottom = parseInt(scrollTop + ss_getWindowHeight());
+				if (parseInt(rowTop + 200) > screenBottom || parseInt(rowTop - 100) < scrollTop) {
+					window.scroll(0, rowTop - 100);
+				}
+			}
 		}).play();
 		return;
 	}
+}
+
+function ss_setWindowHighWaterMark(height) {
+	var bodyObj = document.getElementsByTagName("body").item(0);
+	var divObj = document.getElementById("ss_highwatermarkDiv");
+	if (divObj == null) {
+		divObj = document.createElement("div")
+		divObj.setAttribute("id", "ss_highwatermarkDiv");
+		bodyObj.appendChild(divObj);
+		ss_setObjectHeight(divObj, height);
+	}
+	var divHeight = ss_getObjectHeight(divObj);
+	if (divHeight < height) ss_setObjectHeight(divObj, height);
 }
 
 var ss_loadEntryInPlaceLastRowObj = null;
@@ -3740,14 +3760,15 @@ function ss_loadEntryInPlace(obj, id, binderId, entityType, namespace, isDashboa
 	tableObj = ss_findOwningElement(trObj, "table")
 	tableDivObj = ss_findOwningElement(trObj, "div")
 	if (ss_loadEntryInPlaceLastRowObj != null) {
+		ss_setWindowHighWaterMark(ss_getObjectHeight(ss_loadEntryInPlaceLastRowObj))
 		var divId = 'ss_entry_iframeDiv'+ ss_loadEntryInPlaceLastId.substr(ss_loadEntryInPlaceLastId.indexOf(",")+1) + parseInt(random - 1);
 		if (ss_loadEntryInPlaceLastId == binderId + ',' + id) {
-			ss_accordionTableRow(ss_loadEntryInPlaceLastRowObj.id, divId);
+			ss_fadeOutTableRow(ss_loadEntryInPlaceLastRowObj.id, divId);
 			ss_loadEntryInPlaceLastRowObj = null;
 			ss_loadEntryInPlaceLastId = null;
 			return;
 		} else {
-			ss_accordionTableRow(ss_loadEntryInPlaceLastRowObj.id, divId);
+			ss_fadeOutTableRow(ss_loadEntryInPlaceLastRowObj.id, divId);
 			ss_loadEntryInPlaceLastRowObj = null;
 			ss_loadEntryInPlaceLastId = null;
 		}
