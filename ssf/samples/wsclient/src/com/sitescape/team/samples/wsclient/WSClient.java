@@ -67,7 +67,7 @@ public class WSClient extends WSClientBase
 			} else if(args[0].equals("printTeams")) {
 				wsClient.fetchAndPrintXML("TeamingService", "search_getTeamsAsXML", new Object[] {null});
 			} else if(args[0].equals("printFolderEntry")) {
-				wsClient.fetchAndPrintXML("TeamingService", "folder_getFolderEntryAsXML", new Object[] {null, Long.parseLong(args[1]),Long.parseLong(args[2]), Boolean.parseBoolean(args[3])});			
+				wsClient.fetchAndPrintXML("TeamingService", "getFolderEntryAsXML", new Object[] {null, Long.parseLong(args[1]),Long.parseLong(args[2]), Boolean.parseBoolean(args[3])});			
 			} else if(args[0].equals("printDefinition")) {
 				wsClient.fetchAndPrintXML("TeamingService", "definition_getDefinitionAsXML", new Object[] {null, args[1]});
 			} else if(args[0].equals("printDefinitionConfig")) {
@@ -273,8 +273,8 @@ public class WSClient extends WSClientBase
 		System.out.println("listTemplates");
 		System.out.println("setDefinitions <binder id> <comma separated definitionIds> <comma separated definitionId,workflowId>");
 		System.out.println("setTeamMembers <binder id> <comma separated names>");
-		System.out.println("addEntry <folder id> <definition id> <entryDataXMLString> [<attachmentFileName>]");
-		System.out.println("addReply <folder id> <entry id> <definition id> <entryDataXMLString>");
+		System.out.println("addEntry <folder id> <definition id> <fileNameContainingEntryDataXMLString> [<attachmentFileName>]");
+		System.out.println("addReply <folder id> <entry id> <definition id> <fileNameContainingEntryDataXMLString>");
 		System.out.println("addWorkflow <folder id> <entry id> <definition id>");
 		System.out.println("modifyWorkflow <folder id> <entry id> <state id> <toState");
 		System.out.println("modifyEntry <folder id> <entry id> <entryDataXMLString>");
