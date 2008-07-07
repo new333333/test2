@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9uab8e" pid="b9uab8e" name="Chapter" level="0" number="1"> <text>System Overview</text> </target>
+
+ <target id="b9uaf9s" pid="b9uaf9s" name="Sect1" level="1" number="1.1"> <text>System Components</text> </target>
+
+ <target id="b9uai16" pid="b9uai16" name="Sect1" level="1" number="1.2"> <text>System Architecture</text> </target>
+
+ <target id="bf99kg3" pid="b9uai16" name="Figure" level="2" number="Figure 1-1"> <text>Conferencing System Architecture</text> </target>
+
+</targets>

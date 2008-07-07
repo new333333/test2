@@ -1,0 +1,32 @@
+BODY {
+  font-size:10px; 
+  font-family: Lucida Sans Unicode, Arial, sans-serif; 
+  background-color: #FFFFFF;
+}
+TD {
+  font-family: Arial, sans-serif;
+}
+.ss_mobile, .ss_mobile td, .ss_mobile th {
+	font-size:10px;
+}
+.ss_mobile_small, .ss_mobile_small a, .ss_mobile_small table td {
+	font-size:9px;
+}
+.ss_mobile_large, .ss_mobile_large a, .ss_mobile_large table td {
+	font-size:11px;
+}
+.ss_mobile_light, .ss_mobile_light a, .ss_mobile_light table td {
+	color:#999999;
+}
+.ss_bold, .ss_bold a, .ss_bold table td {
+	font-weight: bold;
+}
+.ss_mobile_breadcrumbs, .ss_mobile_breadcrumbs a a:visited, .mobile_ss_breadcrumbs table td {
+	color:gray;
+}
+.ss_mobile_description {
+	background-color:#CECECE;
+}
+.ss_mobile_workflow {
+	border: solid 1px #CCCCCC;
+}

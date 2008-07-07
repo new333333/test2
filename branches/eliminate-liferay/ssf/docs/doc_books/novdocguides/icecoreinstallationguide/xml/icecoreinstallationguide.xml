@@ -1,0 +1,4656 @@
+<?xml version="1.0"?>
+<!DOCTYPE book PUBLIC "-//Novell//DTD NovDoc XML V1.0//EN" "novdocx.dtd">
+
+<!--========================================================================
+ "Novell Teaming 1.0.3 Installation Guide"
+
+ Copyright © 2006 Novell, Inc. All rights reserved. No part of this publication
+ may be reproduced, photocopied, stored on a retrieval system, or transmitted
+ without the express written consent of the publisher.
+
+ Novell, Inc.
+ 404 Wyman Street, Suite 500
+ Waltham, MA 02451
+ U.S.A.
+ www.novell.com
+
+
+ ESTIMATED PAGE COUNT (based on 200 words per page): 61
+ ESTIMATED HTML PAGE COUNT (number of html pages for novell.com): 17
+
+
+ WORD COUNT
+
+       Count    Doctype    Title
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         414    bookinfo   Novell Teaming 1.0.3 Installation Guide
+         371    preface    About This Guide
+        7816    chapter    Installing Novell Teaming
+        2115    appendix   A Sample installer.xml File
+        1503    glossary   Glossary
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       12219    book       Novell Teaming 1.0.3 Installation Guide
+
+
+ GRAPHICS REFERENCED IN BOOK
+
+       Count       Filename
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+           2       installer_10_a.png
+           4       installer_02_a.png
+           2       installer_14_a.png
+           2       installer_06_a.png
+           4       installer_01_a.png
+           2       installer_13_a.png
+           2       installer_05_a.png
+           2       installer_17_a.png
+           2       installer_09_a.png
+           2       icecorediagram_a.png
+           2       installer_12_a.png
+           2       installer_04_a.png
+           2       luc-installer_02_a.png
+           2       installer_16_a.png
+           2       installer_08_a.png
+           2       installer_11_a.png
+           2       installer_03_a.png
+           2       luc-installer_01_a.png
+           2       installer_15_a.png
+           2       installer_07_a.png
+
+
+ CROSS-REFERENCES
+
+       Count       Type
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          54       xref
+          54       link
+           0       ulink-xrefext
+           0       ulink-xrefexttext
+          13       ulink
+
+
+ URLS REFERENCED IN ULINKS
+
+       URL
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       http://tomcat.apache.org/tomcat-5.5-doc/config/valve.html
+       http://www.mysql.com/
+       http://wiki.liferay.com/index.php/High_Availability_Guide
+       http://www.novell.com/documentation
+       http://www.novell.com/documentation/team_plus_conf
+       http://www.novell.com/documentation/feedback.html
+       http://www.novell.com/company/legal/trademarks/tmlist.html
+       http://www.novell.com/company/legal/patents/
+       http://wiki.liferay.com/index.php/Clustering
+       http://java.sun.com/products/archive
+       http://java.sun.com/j2se/1.5.0/docs/relnotes/version-5.0.html
+       http://www.novell.com/info/exports/
+       http://wiki.liferay.com/index.php/Liferay_FAQ
+
+========================================================================-->
+
+<!-- Begin Profiling Information -->
+<?profile name = "Novell" condition = "Novell"?>
+<?profile name = "OpenSource" condition = "OpenSource"?>
+<!-- End Profiling Information -->
+<book revision="01/01/03" conformance="none,doc,yes,,80" lang="en" id="icecoreinstallationguide">
+
+<bookinfo id="bookinfo" xml:base="front.xml">
+ <title>Novell Teaming 1.0.3 Installation Guide</title> <productname>Teaming</productname>
+ <productnumber>1.0.3</productnumber>
+ <date>May 1, 2008</date>
+ <titleabbrev>Installation Guide</titleabbrev>
+ <legalnotice id="legalnotices">
+  <title>Legal Notices</title>
+  <para>Novell, Inc., makes no representations or warranties with respect to the contents or use of this documentation, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, Novell, Inc., reserves the right to revise this publication and to make changes to its content, at any time, without obligation to notify any person or entity of such revisions or changes.</para>
+  <para>Further, Novell, Inc., makes no representations or warranties with respect to any software, and specifically disclaims any express or implied warranties of merchantability or fitness for any particular purpose. Further, Novell, Inc., reserves the right to make changes to any and all parts of Novell software, at any time, without any obligation to notify any person or entity of such changes.</para>
+  <para>Any products or technical information provided under this Agreement may be subject to U.S. export controls and the trade laws of other countries. You agree to comply with all export control regulations and to obtain any required licenses or classification to export, re-export or import deliverables. You agree not to export or re-export to entities on the current U.S. export exclusion lists or to any embargoed or terrorist countries as specified in the U.S. export laws. You agree to not use deliverables for prohibited nuclear, missile, or chemical biological weaponry end uses. See the <ulink url="http://www.novell.com/info/exports/">Novell International Trade Services Web page</ulink> for more information on exporting Novell software. Novell assumes no responsibility for your failure to obtain any necessary export approvals.</para>
+  <para>Copyright © 2008 Novell, Inc. All rights reserved. No part of this publication may be reproduced, photocopied, stored on a retrieval system, or transmitted without the express written consent of the publisher.</para>
+  <para>Novell, Inc., has intellectual property rights relating to technology embodied in the product that is described in this document. In particular, and without limitation, these intellectual property rights may include one or more of the U.S. patents listed on the <ulink url="http://www.novell.com/company/legal/patents/">Novell Legal Patents Web page</ulink> and one or more additional patents or pending patent applications in the U.S. and in other countries.</para>
+  <simplelist>
+   <member>Novell, Inc.</member>
+   <member>404 Wyman Street, Suite 500</member>
+   <member>Waltham, MA 02451</member>
+   <member>U.S.A.</member>
+   <member>www.novell.com</member>
+  </simplelist>
+  <simplelist>
+   <member><emphasis>Online Documentation:</emphasis> To access the latest online documentation for this and other Novell products, see the <ulink url="http://www.novell.com/documentation">Novell Documentation Web page</ulink>.</member>
+   <member/>
+  </simplelist>
+ </legalnotice>
+ <legalnotice id="trademarks">
+  <title>Novell Trademarks</title>
+  <para>For Novell trademarks, see <ulink url="http://www.novell.com/company/legal/trademarks/tmlist.html">the Novell Trademark and Service Mark list</ulink>.</para>
+ </legalnotice>
+ <legalnotice id="thirdparty">
+  <title>Third-Party Materials</title>
+  <simplelist>
+   <member>All third-party trademarks are the property of their respective owners.</member>
+  </simplelist>
+ </legalnotice>
+</bookinfo>
+
+<preface id="preface" xml:base="preface.xml">
+ <title>About This Guide</title>
+ <para condition="Novell">This guide covers the installation of Novell® Teaming. The term “ICEcore” appears in some file and directory names and refers to the application technology that enables the Novell Teaming software. In this guide, the term “Novell Teaming” applies to all versions of the Novell Teaming software unless otherwise noted.</para>
+ <para condition="OpenSource">This guide covers the installation of ICEcore. In this guide, the term “Novell Teaming” applies to all versions of the Novell Teaming software unless otherwise noted.</para>
+ <bridgehead id="audience">Audience</bridgehead>
+ <para>This guide is intended for Novell Teaming administrators.</para>
+ <bridgehead id="bdgyzut">Software and Documentation Version</bridgehead>
+ <para>This guide describes features in Novell Teaming Version 1.0.3. This is the first version of this guide.</para>
+ <bridgehead id="usercomments">Feedback</bridgehead>
+ <para>We want to hear your comments and suggestions about this guide and the other documentation included with this product. Please use the User Comments feature at the bottom of each page of the online documentation, or go to <ulink url="http://www.novell.com/documentation/feedback.html">www.novell.com</ulink> and enter your comments there.</para>
+ <bridgehead id="ban8e22">Additional Documentation</bridgehead>
+ <para>You can find more information in the Novell Teaming documentation, which is accessible from links within Novell Teaming:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para>Novell Teaming Help system</para>
+  </listitem>
+  <listitem>
+   <para><guimenu>Novell Teaming Quick Start Guide</guimenu></para>
+  </listitem>
+  <listitem>
+   <para><guimenu>Novell Teaming User Guide</guimenu></para>
+  </listitem>
+  <listitem>
+   <para><guimenu>Novell Teaming Administration Guide</guimenu></para>
+  </listitem>
+ </itemizedlist>
+ <para>The Novell Teaming online documents can be found within the Novell Teaming Help system. To access the Novell Teaming Help system, log in, then click the <guimenu>Help</guimenu> link.</para>
+ <para>In the Novell Teaming Help system, click the <guimenu>Getting Started Manuals</guimenu> link to access copies of the online documents listed above.</para>
+ <bridgehead id="bdggczj">Change History</bridgehead>
+ <para>This table documents changes for recent revisions to this guide:</para>
+ <informaltable frame="topbot" rowsep="1" pgwide="0">
+  <tgroup cols="2">
+  <colspec colnum="1" colname="1" colwidth="27*"/>
+  <colspec colnum="2" colname="2" colwidth="73*"/>
+   <thead>
+    <row rowsep="1" id="bcnmsed">
+     <entry colname="1">
+      <para>Guide Revision</para>
+     </entry>
+     <entry colname="2">
+      <para>Changes</para>
+     </entry>
+    </row>
+   </thead>
+   <tbody>
+    <row rowsep="0" id="bcnmsee">
+     <entry colname="1">
+      <para>0 (First Version)</para>
+     </entry>
+     <entry colname="2">
+      <para/>
+     </entry>
+    </row>
+   </tbody>
+  </tgroup>
+ </informaltable>
+ <bridgehead id="docupdates">Documentation Updates</bridgehead>
+ <para>For the most recent version of the <guimenu>Novell Teaming Installation Guide</guimenu> and other documentation, visit the <ulink url="http://www.novell.com/documentation/team_plus_conf">Novell Teaming Web site</ulink>.</para>
+ <bridgehead id="b9yxnfv">Conventions</bridgehead>
+ <para>This guide uses the following conventions:</para>
+ <para>A greater-than symbol (&gt;) is used to separate actions within a step and items in a cross-reference path.</para>
+ <para>A trademark symbol (®, ™, etc.) denotes a Novell trademark. An asterisk (*) denotes a third-party trademark.</para>
+ <para>When a single pathname can be written with a backslash for some platforms or a forward slash for other platforms, the pathname is presented with a backslash. Users of platforms that require a forward slash, such as Linux* or UNIX*, should use forward slashes as required by your software.</para>
+</preface>
+
+<chapter conformance="none,doc,no,,80" id="b9vcafr" revision="01/01/03" lang="en" xml:base="01_installingicecore.xml">
+ <title>Installing Novell Teaming</title>
+ <para>This section describes how to initially install and configure Novell Teaming:</para>
+ <itemizedlist mark="bullet" spacing="normal">
+  <listitem>
+   <para><xref linkend="b9vchn5" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn6" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn7" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchn8" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="bbn8hra" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchnf" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="bbn5klr" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="bbnqb4c" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="installer" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="bbijvt7" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="b9vchnb" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+  <listitem>
+   <para><xref linkend="bcghun2" xrefstyle="SectTitleOnPage"/></para>
+  </listitem>
+ </itemizedlist>
+ <sect1 id="b9vchn5">
+  <title>Prerequisites</title>
+  <para>You need a few things before you install Novell Teaming: </para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <para>Computer:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Minimum 2 GHz processor</para>
+     </listitem>
+     <listitem>
+      <para>Multi-CPU systems preferred</para>
+     </listitem>
+     <listitem>
+      <para>Minimum 2 GB RAM</para>
+      <note>
+       <para>You can potentially run with less RAM for specific development and testing configurations without simultaneous users, lots of database traffic, etc.</para>
+      </note>
+     </listitem>
+     <listitem>
+      <para>Linux systems need to have a minimum open file limit of 4096.</para>
+      <para>For SUSE® Linux Enterprise Sever (SLES), check <literal>/etc/security/limits.conf</literal>:</para>
+
+<screen>
+* hard nofile 65535
+</screen>
+
+
+<screen>
+* soft nofile 4096
+</screen>
+
+     </listitem>
+    </itemizedlist>
+    <para>See <xref linkend="b9vchnf" xrefstyle="HeadingOnPage"/> for details.</para>
+   </listitem>
+   <listitem>
+    <para>Sun* JDK 1.5.0_011 or higher or the IBM JDK 1.5 installed (NOTE: Java* 1.6 is not yet supported).</para>
+    <note>
+     <para>Sun* has changed the name of JDK 1.5 to 5.0. In this manual, any reference to the JDK 1.5 refers to JDK 5.0, see <ulink url="http://java.sun.com/j2se/1.5.0/docs/relnotes/version-5.0.html">http://java.sun.com</ulink> for more information.</para>
+    </note>
+   </listitem>
+   <listitem>
+    <para>A database server:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>MySQL* 5.0.26 (or higher) Server and Client for Linux or MySQL 5.0.26 (or higher) Server and Client for Windows. MySql 5.0.26 ships with SUSE® Linux Enterprise Sever (SLES) 10 SP1.</para>
+      <note>
+       <para>MySQL 5.1 is not yet supported.</para>
+      </note>
+     </listitem>
+     <listitem>
+      <para>SQL Server* for Windows* (2000 or 2005)</para>
+     </listitem>
+     <listitem>
+      <para>Oracle* 9, 10</para>
+     </listitem>
+     <listitem>
+      <para>Enough disk space for the software and for the data files:</para>
+      <para>This depends on how much data you plan to put into the system. See sections <xref linkend="b9vchn7" xrefstyle="HeadingOnPage"/> and <xref linkend="b9vchn8" xrefstyle="HeadingOnPage"/>. </para>
+      <para>The software takes about 250 MB.</para>
+     </listitem>
+    </itemizedlist>
+    <para>See <xref linkend="b9vchn7" xrefstyle="HeadingOnPage"/> for details.</para>
+   </listitem>
+  </orderedlist>
+ </sect1>
+ <sect1 id="b9vchn6">
+  <title>Steps for Installing Novell Teaming</title>
+  <procedure id="b9ptkcb">
+   <step id="b9ptkcc" performance="required">
+    <para>Install the JDK.</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>The Sun JDK 1.5.0_011 (or higher) or the IBM JDK version 1.5 is supported. </para>
+     </listitem>
+     <listitem>
+      <para>Java 1.6 is currently not supported.</para>
+     </listitem>
+    </itemizedlist>
+    <para>You can download the Sun JDK from <ulink url="http://java.sun.com/products/archive">java.sun.com</ulink>. Select the “JDK/JRE - 5.0” product line and download the JDK. </para>
+    <para>The IBM JDK 1.5 is available on the SLES 10 distribution. Use YAST to select and install the IBM JDK. Larger deployments with 64-bit hardware should seriously consider using the 64-bit JDK, because it allows increased memory allocation and better performance.</para>
+    <para>On the Sun site, you can ignore the notes in the 64-bit JDK about “Java Web Start” and “applets,” because Novell Teaming is neither of those.)</para>
+   </step>
+   <step id="bbevhpb" performance="required">
+    <para>Set the <literal>JAVA_HOME</literal> environment variable on your computer to the correct JDK path and name on your system.</para>
+    <para>For example:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>On Linux: <literal>export JAVA_HOME=/usr/java/jdk_1.5.0_11</literal></para>
+     </listitem>
+     <listitem>
+      <para>On Windows: <literal>JAVA_HOME=C:\Program Files\Java\jdk1.5.0_11</literal></para>
+     </listitem>
+    </itemizedlist>
+    <warning>
+     <para>In Windows, you must set the JAVA_HOME environment variable. Also, close and re-open any command prompt windows after setting this variable.</para>
+    </warning>
+   </step>
+   <step id="b9ptl7r" performance="required">
+    <para>Install and Configure the Database Server. See <xref linkend="b9vchn7" xrefstyle="HeadingOnPage"/>.</para>
+   </step>
+   <step id="b9ptld7" performance="required">
+    <para>Download the appropriate Novell Teaming kit and unzip it.</para>
+   </step>
+   <step id="bbijs99" performance="required">
+    <para>If you want to run the indexing service in Novell Teaming on a different machine from Novell Teaming, install the Lucene Index Server on the other machine. See <xref linkend="bbijvt7" xrefstyle="HeadingOnPage"/>.</para>
+   </step>
+   <step id="b9ptlgi" performance="required">
+    <para>Run the installer from where you unzipped the Novell Teaming kit. See <xref linkend="installer" xrefstyle="HeadingOnPage"/>.</para>
+    <para>The installer is named one of the following, according to your operating system:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para><literal>installer-liferay.exe</literal></para>
+     </listitem>
+     <listitem>
+      <para><literal>installer-liferay.linux</literal></para>
+     </listitem>
+    </itemizedlist>
+    <para>If you are doing an upgrade, use your existing <literal>license-key.xml </literal>and <literal>installer.xml</literal> files by placing them in the same directory as the installer program. If you are doing a new installation, use your <literal>license-key.xml</literal> by placing it in the same directory as the installer program. The<literal> license-key.xml </literal>file required to install the product is provided with the software kit (but is not included in the kit).</para>
+   </step>
+   <step id="b9ptlgm" performance="required">
+    <para><link linkend="b9vchnb"/>Start and stop Novell Teaming. See <xref linkend="b9vchnb" xrefstyle="HeadingOnPage"/>.</para>
+    <informalfigure pgwide="1">
+     <mediaobject>
+      <textobject role="description"><phrase>System diagram</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="icecorediagram_a.png" width="100%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="icecorediagram_a.png" width="100%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+  </procedure>
+ </sect1>
+ <sect1 id="b9vchn7">
+  <title>Database Planning</title>
+  <para>Novell Teaming and Liferay* use separate dedicated databases within your database server. A set of SQL configuration scripts are used to initialize the databases (creating the necessary tables, etc.).</para>
+  <para>Novell Teaming’s default database for Linux and Windows is MySQL. Novell Teaming also supports SQL Server on Windows, and Oracle on Linux and Windows.</para>
+  <para>Novell Teaming’s database requirements are relatively modest. The bulk of the data uploaded to Novell Teaming is stored in a file repository (see <xref linkend="b9vchn8" xrefstyle="HeadingOnPage"/>). The database is primarily used for storing metadata and descriptive text.</para>
+  <para>Because the amount of data stored in the database is highly sensitive to the usage patterns of Novell Teaming (which are highly variable) there is no reliable formula for determining disk space usage, but the following can be used as a guideline:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para> numberAttachments x averageAttachmentSize = totalAttachmentSpace</para>
+   </listitem>
+   <listitem>
+    <para>totalAttachmentSpace * .04 = sqlDataSpace</para>
+   </listitem>
+   <listitem>
+    <para> sqlDataSpace x 5 = sqlStorageSpace</para>
+   </listitem>
+  </itemizedlist>
+  <note>
+   <para>The installer generates your database scripts for you, but if your DBA wants to create the databases by hand, the necessary scripts are provided in the kit. See <xref linkend="bf0m3jb" xrefstyle="HeadingOnPage"/>.</para>
+  </note>
+  <para>See the following subsections:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para><xref linkend="bf0m2pc" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+   <listitem>
+    <para><xref linkend="bf0m37q" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+   <listitem>
+    <para><xref linkend="bf0m3cs" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+   <listitem>
+    <para><xref linkend="bf0m3jb" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+  </itemizedlist>
+  <sect2 id="bf0m2pc">
+   <title>MySQL</title>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para> MySQL 5.0.26 (or higher) Server and Client for Linux or MySQL 5.0.26 (or higher) Server and Client for Windows are required with <literal>innodb support</literal> enabled.</para>
+     <note>
+      <para>MySQL 5.1 is not yet supported. You can get the MySQL Community Server at: <ulink url="http://www.mysql.com/">http://www.mysql.com/</ulink>.</para>
+     </note>
+    </listitem>
+    <listitem>
+     <para>Specify <filename>root</filename> for the administrator password when you run the installer.</para>
+     <note>
+      <para>The installer generates your database scripts for you, but if your DBA wants to create the databases by hand, the necessary scripts are provided in the kit. See <xref linkend="bf0m3jb" xrefstyle="HeadingOnPage"/>.</para>
+     </note>
+    </listitem>
+    <listitem>
+     <para> Set the default character set to UTF-8 by selecting <guimenu>Best support for Multilingualism</guimenu> in the Windows Configuration window, or edit the<literal/><literal>my.cnf </literal>configuration file to the following:</para>
+
+<screen>
+[mysqld]
+</screen>
+
+
+<screen>
+character_set_server = utf8
+</screen>
+
+
+<screen>
+[client]
+</screen>
+
+
+<screen>
+default_character_set = utf8
+</screen>
+
+     <note>
+      <para>This file is usually located in<literal> /etc/my.cnf </literal>for Linux and in<literal> c:\my.cnf </literal>for Windows. See the MySQL documentation for details.</para>
+     </note>
+    </listitem>
+   </itemizedlist>
+  </sect2>
+  <sect2 id="bf0m37q">
+   <title>Microsoft SQL Server </title>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para> You can use SQL Server 2000 or SQL Server 2005</para>
+    </listitem>
+    <listitem>
+     <para>Make sure to select SQL Server and Windows for authentication (the default is Windows only)</para>
+    </listitem>
+    <listitem>
+     <para>Set the administrator password to<literal> sa </literal>when you run the installer.</para>
+     <note>
+      <para>The installer generates your database scripts for you, but if your DBA wants to create the databases by hand, the necessary scripts are provided in the kit. See <xref linkend="bf0m3jb" xrefstyle="HeadingOnPage"/>.</para>
+     </note>
+    </listitem>
+   </itemizedlist>
+  </sect2>
+  <sect2 id="bf0m3cs">
+   <title>Oracle Database</title>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para>Supported versions: Oracle 9, Oracle 10.</para>
+     <para>Oracle’s default database name is<literal> orcl</literal>. We use this name in our examples. If you have chosen a different name, replace<literal> orcl </literal>with your database name.</para>
+    </listitem>
+    <listitem>
+     <para>Novell Teaming is enabled for Unicode and requires you to set up the Oracle Database Character Set to support Unicode character encodings. Novell Teaming requires either the UTF8 or AL32UTF8 character set for proper operation. Oracle recommends the use of AL32UTF8, because it has increased support for certain Asian languages. Consult your Oracle documentation for the choice that makes sense for your database.</para>
+    </listitem>
+    <listitem>
+     <para>To check your database character set, execute the following command with SQL*Plus:</para>
+
+<screen>
+select value from SYS.NLS_DATABASE_PARAMETERS where PARAMETER = 'NLS_CHARACTERSET';
+</screen>
+
+    </listitem>
+    <listitem>
+     <para>Before you install the Novell Teaming application software, run the two Oracle database scripts. These are provided in the kit:</para>
+
+<screen>
+\database\oracle\create-database-oracle.sql
+</screen>
+
+
+<screen>
+\database\oracle\create-oracle.sql
+</screen>
+
+     <orderedlist spacing="normal">
+      <listitem>
+       <para>These two scripts need to be accessible to the SQL*Plus utility and your database, so copy them to a location on your system path.</para>
+      </listitem>
+      <listitem>
+       <para>Edit the supplied database scripts to set the passwords for the users (these are defined in the top few lines of each script).</para>
+       <para>For example, in<literal> create-database-oracle.sql</literal>, you see:</para>
+
+<screen>
+drop user sitescape cascade;
+</screen>
+
+
+<screen>
+create user sitescape identified by sitescape;
+</screen>
+
+
+<screen>
+grant connect, resource to sitescape;
+</screen>
+
+
+<screen>
+connect sitescape/sitescape; 
+</screen>
+
+       <itemizedlist mark="bullet" spacing="normal">
+        <listitem>
+         <para><literal>user sitescape</literal> indicates that<literal> sitescape </literal>is the name of the database created. Do not change this.</para>
+        </listitem>
+        <listitem>
+         <para><literal>identified by sitescape </literal>declares that<literal> sitescape </literal>is the password for this database. Change this to the password you intend to use, such as <literal>identified by <replaceable>yourpassword</replaceable></literal> and change the <literal>connect sitescape/sitescape</literal> to <literal>connect sitescape/<replaceable>yourpassword</replaceable></literal>.</para>
+        </listitem>
+       </itemizedlist>
+      </listitem>
+      <listitem>
+       <para>Use the SQL*Plus utility with the SYSTEM account to run the scripts:</para>
+
+<screen>
+sqlplus SYSTEM/systemPassword @create-oracle.sql
+</screen>
+
+
+<screen>
+sqlplus SYSTEM/systemPassword @create-database-oracle.sql 
+</screen>
+
+
+<screen>
+sqlplus&gt; quit
+</screen>
+
+      </listitem>
+     </orderedlist>
+    </listitem>
+   </itemizedlist>
+  </sect2>
+  <sect2 id="bf0m3jb">
+   <title>Non-Local Database Setup</title>
+   <para>When installing the Novell Teaming software for the first time, one of the steps involves creating two databases: one for the portal and one for the Novell Teaming application. If your DBA wants to create the databases by hand, the necessary scripts are provided in the kit. This is required for Oracle. For more information, see <xref linkend="bf0m3cs" xrefstyle="HeadingOnPage"/>.</para>
+   <para>The database scripts are in a <literal>database</literal> directory next to the installer:</para>
+
+<screen>
+
+\database\mysql\create-database-mysql.sql
+\database\mysql\create-mysql.sql
+
+
+
+</screen>
+
+
+<screen>
+\database\sqlserver\create-database-sqlserver.sql
+\database\sqlserver\create-sql-server.sql
+
+</screen>
+
+
+<screen>
+\database\oracle\create-database-oracle.sql
+\database\oracle\create-oracle.sql
+</screen>
+
+   <para>When you run the installer, select the <guimenu>My DBA has already created the databases</guimenu> option in the <guimenu>Database selection</guimenu> window.</para>
+  </sect2>
+ </sect1>
+ <sect1 id="b9vchn8">
+  <title>File System Planning</title>
+  <para>Novell Teaming software and configuration files are stored in a tree shared with Liferay, Tomcat, etc. There are some temporary files also located here, but it is used mainly for locks and similar files.</para>
+  <para>Novell Teaming data is stored in the database (see <xref linkend="b9vchn7" xrefstyle="HeadingOnPage"/>) and on the file system. The file system usage is divided up into several functional areas:</para>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para><filename> filerepository</filename>: This is where all attachment files are located, so it is a large consumer of disk space. The tree is roughly organized by site, binder (folder/workspace), and entry.</para>
+   </listitem>
+   <listitem>
+    <para> <filename>archiveStore</filename>: Only activated in the Enterprise version of Novell Teaming. This is where previous file versions are stored to meet compliance and archival goals.</para>
+   </listitem>
+   <listitem>
+    <para><filename>cachefilestore</filename>: This tree holds information derived from the attachments, such as thumbnails, scaled images, text, and HTML renderings. Depending on the nature of the attachments this tree consumes somewhat less space than the file repository (but it can, conceivably, store more).</para>
+   </listitem>
+   <listitem>
+    <para><filename>lucene</filename>: This tree holds the search index for the data. It tends to be a fraction of the space consumed by the file repository, but it is also sensitive to the type of information stored.</para>
+   </listitem>
+   <listitem>
+    <para>Other trees: These are other trees that you cannot configure, which typically only consume a small amount of space.</para>
+   </listitem>
+   <listitem>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para><filename>rss</filename>: Caches of RSS feeds for folders</para>
+     </listitem>
+     <listitem>
+      <para> <filename>temp</filename>: Temporary files</para>
+     </listitem>
+    </itemizedlist>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="bbn8hra">
+  <title>Network Planning</title>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para><xref linkend="bf0mllj" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+   <listitem>
+    <para><xref linkend="bbpnq0t" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+   <listitem>
+    <para><xref linkend="bbpnnvh" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+  </itemizedlist>
+  <sect2 id="bf0mllj">
+   <title>Planning Firewalls, Ports, and Session Timeouts</title>
+   <para>Novell Teaming is a complete Java/J2EE Web application and includes a Web server (Tomcat). Because the Web server listens on ports and processes network connections, you should consider the following as part of the installation process:</para>
+   <formalpara id="bbpth5e">
+    <title>Firewall Setup:</title>
+    <para>The default installation uses port 8080/8443 for the Web server. Some local firewalls (such as the Windows Security Center’s firewall) might restrict traffic to port 8080/8443 and thus require proper configuration for access by other systems.</para>
+   </formalpara>
+   <para>If you can access Novell Teaming on the local server, but cannot access it from another system, examine your firewall settings.</para>
+   <note>
+    <para>When utilizing an Oracle database, you may need to reconfigure Novell Teaming to run on port 8081.</para>
+   </note>
+   <formalpara id="bbpthno">
+    <title>Port Conflicts:</title>
+    <para>The Tomcat software uses a number of TCP/IP ports for both Web traffic and management messages. If you have other Web servers (Apache, IIS, or Tomcat) or other software installed that uses the same port numbers, your Novell Teaming software does not function properly.</para>
+   </formalpara>
+   <note>
+    <para>Novell Open Enterprise Server 2 (OES 2) systems have another Tomcat application running by default.</para>
+   </note>
+   <para>The<literal> netstat -anp tcp </literal>command on Windows and the<literal> netstat -tan </literal>command on Linux can help find which ports are currently being used. For more information on network ports, consult your operating system networking guide.</para>
+   <para>When you are in this situation, make sure that in addition to the http/https ports (8080/8443) you also assign free port numbers to the <guimenu>AJP Port</guimenu> and <guimenu>Shutdown Port</guimenu> settings in the <guimenu>Network information</guimenu> window when you run the installer.</para>
+   <formalpara id="bbxf650">
+    <title>Port Mapping:</title>
+    <para>For instances where the port number on which Tomcat listens for connections is different than what the end user sees in his or her browser, change the <guimenu>Listen Port</guimenu> and <guimenu>Secure listen Port</guimenu> settings to the local server ports and set the <guimenu>Port</guimenu> and <guimenu>Secure Port </guimenu>settings to the port numbers that the browsers are using in the <guimenu>Network information</guimenu> window when you run the installer. See <xref linkend="bbpnq0t" xrefstyle="HeadingOnPage"/> and <xref linkend="bbpnnvh" xrefstyle="HeadingOnPage"/> for details.</para>
+   </formalpara>
+   <para>The host, port, and securePort settings are used to generate URLs within the product and so must match what the user’s browser sees. Unless they are overridden by the <guimenu>Listen Port</guimenu> and <guimenu>Secure listen Port</guimenu> settings, the <guimenu>Port</guimenu> and <guimenu>Secure Port</guimenu> settings are used as the server’s listen ports.</para>
+   <formalpara id="bbxfb1i">
+    <title>Liferay Session Timeout:</title>
+    <para>You can configure Novell Teaming to log out of a session after a certain number of minutes. The default is 2 hours (240 minutes). You can change this by altering the <guimenu>Liferay session timeout </guimenu>setting in the <guimenu>Network information</guimenu> window when you run the installer.</para>
+   </formalpara>
+  </sect2>
+  <sect2 id="bbpnq0t">
+   <title>Port 80/443 configuration on Linux</title>
+   <para>The default installation of Novell Teaming uses the Tomcat Web server. Although the Tomcat server is part of the Apache project, it is not the same thing as the Apache Web server. Tomcat is written in Java and can not perform some of the special privilege behaviors that Apache can.</para>
+   <para>In particular, Linux does not allow non-root processes from allocating TCP/IP ports less than 1024. For this reason, the default configuration for Tomcat (and Novell Teaming) uses ports 8080 for http and 8443 for https (SSL). Unfortunately, this requires specifying the port number in the browser's URL for Novell Teaming (such as http://icecore.mycompany.com:8080).</para>
+   <warning>
+    <para>Although running Tomcat as<literal> root </literal>solves this problem, it creates many (far worse) problems. Do not run Tomcat as<literal> root</literal>.</para>
+   </warning>
+   <para>If you want Novell Teaming to be available on the default http/https ports, use an operating system feature called “kernel space port forwarding.” With this, the<literal> iptables </literal>command is used to map requests from port 80 to port 8080 (or whatever port you specify). For example:</para>
+
+<screen>
+iptables -t nat -A OUTPUT     -d localhost    -p tcp --dport 80 -j REDIRECT --to-ports 8080
+</screen>
+
+
+<screen>
+iptables -t nat -A OUTPUT     -d yourHostname -p tcp --dport 80 -j REDIRECT --to-ports 8080
+</screen>
+
+
+<screen>
+iptables -t nat -A PREROUTING -d yourHostname -p tcp --dport 80 -j REDIRECT --to-ports 8080
+</screen>
+
+
+<screen>
+iptables -t nat -A OUTPUT     -d localhost    -p tcp --dport 443 -j REDIRECT --to-ports 8443
+</screen>
+
+
+<screen>
+iptables -t nat -A OUTPUT     -d yourHostname -p tcp --dport 443 -j REDIRECT --to-ports 8443
+</screen>
+
+
+<screen>
+iptables -t nat -A PREROUTING -d yourHostname -p tcp --dport 443 -j REDIRECT --to-ports 8443
+</screen>
+
+   <para>These changes only affect the running system. You need to add them to your startup sequence. See the<literal> *iptables* </literal>and<literal> *iptables_save* </literal>man pages for more information about setting up port forwarding.</para>
+   <para>When you use this type of configuration, you must specify the ports the Tomcat server listens to and the ports that the browsers see in the <guimenu>Network information</guimenu> window when you run the installer. </para>
+   <para>For example:</para>
+   <itemizedlist mark="bullet" spacing="normal">
+    <listitem>
+     <para><guimenu>Port</guimenu> = 80 </para>
+    </listitem>
+    <listitem>
+     <para><guimenu>Listen Port</guimenu> = 8080</para>
+    </listitem>
+    <listitem>
+     <para><guimenu>Secure Port</guimenu> = 443 </para>
+    </listitem>
+    <listitem>
+     <para><guimenu>Secure listen Port</guimenu> = 8443</para>
+    </listitem>
+   </itemizedlist>
+  </sect2>
+  <sect2 id="bbpnnvh">
+   <title>Integrating with iChain</title>
+   <note>
+    <para>This feature is only available in the Enterprise version.</para>
+   </note>
+   <para>Liferay/Novell Teaming contains support for single sign-on (SSO) based on iChain®. When Novell Teaming is running in this mode, the iChain server performs user authentication tasks and passes a token representing the authenticated user’s login name to Liferay/Novell Teaming in each request to indicate who made the request. </para>
+   <para>You must configure Liferay/Novell Teaming with the same LDAP that iChain is using so that it can obtain and copy the user information into the portal. However, this configuration differs from the regular portal/LDAP integration in that no password checking is performed against LDAP when logging into the portal (because credential checking is only performed by the iChain server). This technique is safe only if all access to the portal is routed through the iChain proxy. </para>
+   <para>The SSO configuration sets up a valve that only permits access from the local server and the iChain proxy server. For more information about Tomcat’s valve configuration, see <ulink url="http://tomcat.apache.org/tomcat-5.5-doc/config/valve.html">tomcat.apache.org</ulink>.</para>
+   <para/>
+   <important>
+    <para>You have to options available for WebDAV support:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>To use a two-accelerator configuration for WebDAV support, you must select the<guimenu> Use iChain proxy for WebDAV </guimenu>option and specify the iChain WebDAV accelerator in the <guimenu>iChain WebDAV Proxy</guimenu> field during installation.</para>
+     </listitem>
+     <listitem>
+      <para>If you do not use a a two-accelerator configuration for WebDAV support, you must use basic authorization headers to support WebDAV. With basic authorization headers, the WebDAV URLs are made public with iChain and the authentication work is delegated to Novell Teaming, which stores the passwords locally so that the Teaming WebDAV server can use them for WebDAV client authentication. In this case, the value of <guimenu>iChain WebDAV Proxy</guimenu> field in the installer is ignored and Novell Teaming does not perform hostname re-write for the WebDAV URLs.</para>
+     </listitem>
+    </itemizedlist>
+    <para>See <xref linkend="installer" xrefstyle="HeadingOnPage"/>. </para>
+   </important>
+   <para>To set up an iChain proxy:</para>
+   <procedure id="bbn8j9e">
+    <step id="bbn8j9f" performance="required">
+     <para>Assure that the iChain proxy’s host name and port number match the Novell Teaming/Liferay port number. If you have configured Novell Teaming to run on port 8080, the iChain proxy should also use port 8080. If the port numbers differ, you must set the <guimenu>Listen Port</guimenu> setting in the <guimenu>Network information</guimenu> window when you run the installer.</para>
+     <para>For example, if iChain is set to provide access on the default ports (80/443) while Tomcat is listening on ports 8080/8443, use the following setting values in the <guimenu>Network information</guimenu> window when you run the installer:</para>
+     <itemizedlist mark="bullet" spacing="normal">
+      <listitem>
+       <para><guimenu>Host </guimenu>= your.server.host.name</para>
+      </listitem>
+      <listitem>
+       <para><guimenu>Port</guimenu> = 80 </para>
+      </listitem>
+      <listitem>
+       <para><guimenu>Listen Port</guimenu> = 8080</para>
+      </listitem>
+      <listitem>
+       <para><guimenu>Secure Port</guimenu> = 443 </para>
+      </listitem>
+      <listitem>
+       <para><guimenu>Secure listen Port</guimenu> = 8443</para>
+      </listitem>
+     </itemizedlist>
+     <important>
+      <para>If the iChain proxy and Novell Teaming host names/ports are not set up identically, you might experience page layout issues and other Novell Teaming features might not function properly.</para>
+     </important>
+    </step>
+    <step id="bbn8jfu" performance="required">
+     <para>In <guimenu>iChain configuration</guimenu> window of the installer, select the <guimenu>Enable iChain</guimenu> option, set the <guimenu>Logoff URL</guimenu> setting to the log-off URL provided by the iChain proxy server, and set the <guimenu>iChain Proxy</guimenu> setting to the IP address of the iChain proxy server.</para>
+    </step>
+    <step id="bf44f08" performance="required">
+     <para>Finish running the installer’s New Installation or Reconfiguration. See <xref linkend="installer" xrefstyle="HeadingOnPage"/>.</para>
+    </step>
+    <step id="bbn8jfy" performance="required">
+     <para>After enabling the iChain SSO, log into Liferay by using a direct login URL: <literal> http://localhost:8080/c/portal/login </literal>and log in as <literal>admin</literal>. </para>
+     <para>Because the SSO configuration removes the <guimenu>Sign In</guimenu> link, you must type the URL manually.</para>
+    </step>
+    <step id="bbn8jg1" performance="required">
+     <para>If you have not already done so, use Liferay’s<guimenu> Admin </guimenu>portlet to enable LDAP-based authentication.</para>
+     <para>This setup is necessary because Liferay has to copy user data from the LDAP into the portal database upon user login.</para>
+    </step>
+    <step id="bbn8jg5" performance="required">
+     <para>To prevent users from logging into the portal directly through the portal’s login form, remove or rename the following file from Novell Teaming’s<literal> liferay-portal-tomcat </literal>directory:</para>
+
+<screen>
+webapps/ROOT/html/portal/login.jsp
+</screen>
+
+     <para>You might also need to remove:</para>
+
+<screen>
+work/Catalina/localhost/_/org/apache/jsp/html/portal/login_jsp.*
+</screen>
+
+    </step>
+    <step id="bbn8nqy" performance="required">
+     <para>Liferay/Novell Teaming is now ready to be put behind the proxy. Consult your iChain documentation on how to do this.</para>
+    </step>
+    <step id="bf0mw5e" performance="required">
+     <para>To enable iChain integration-related debug log messages, modify Liferay’s<literal> portal-log4j-ext.xml </literal>to add the following category:</para>
+
+<screen>
+ &lt;category name="com.sitescape.team.liferay.security.auth"&gt;
+</screen>
+
+
+<screen>
+  &lt;priority value="DEBUG" /&gt; 
+</screen>
+
+
+<screen>
+ &lt;/category&gt;
+</screen>
+
+     <para>Use this only for testing or troubleshooting purposes. It is not recommended to have debug logging enabled on a production system.</para>
+    </step>
+   </procedure>
+  </sect2>
+ </sect1>
+ <sect1 id="b9vchnf">
+  <title>Memory Guidelines</title>
+  <para>Novell Teaming is a Java/J2EE application and therefore executes within a Java Virtual Machine (JVM*). The JVM exists as a process on your system and all of the Novell Teaming and portal software runs within it. Consequently, the amount of memory available to the JVM process is a critical aspect of overall Novell Teaming performance.</para>
+  <para>The key JVM memory setting is the Java heap size, which roughly corresponds to the amount of memory available to the Java applications (such as Novell Teaming).</para>
+  <para>The <guimenu>JVN heap size</guimenu> setting in the <guimenu>Java JDK location</guimenu> window of the installer allows you to set the amount of physical memory you want to devote to the Java Virtual Machine.</para>
+  <para>The default configuration assumes that the JVM uses 1 GB (one gigabyte) of memory. It is possible to run Novell Teaming with less than 1 GB of assigned memory, but this is only applicable to very small test configurations, and is not suitable for production use. (In such a test configuration, 512 MB is the minimum amount of memory required to produce a functioning Novell Teaming application.)</para>
+  <para>A general rule is that no more than 75% of the available physical memory should be allocated to the JVM. This means that you need to account for other processes (including the operating system itself) that use memory. Databases, in particular, tend to be memory-intensive, so take special care when co-locating a database server with the Novell Teaming application server.</para>
+  <para>Java and Novell Teaming make heavy use of available memory to provide good performance. Larger deployments (large numbers of users and/or large numbers of documents) often need memory settings in excess of 2 GB to provide adequate performance. For these conditions, 64-bit hardware coupled with a 64-bit JVM are required.</para>
+  <warning>
+   <para>A JVM on a 32-bit system should never be configured to take more than 1.5 GB (1500 MB) of memory. Larger memory allocations require 64-bit servers.</para>
+  </warning>
+  <para>Novell Teaming memory usage is driven by a number of factors:</para>
+  <orderedlist spacing="normal">
+   <listitem>
+    <formalpara id="bf0n98b">
+     <title>Number of sessions (users logged in):</title>
+     <para> Does not represent a significant amount of memory.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="bf0n9k4">
+     <title>Number of active/concurrent sessions:</title>
+     <para> Does not represent a significant amount of memory.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="bf0n9l2">
+     <title>Novell Teaming internal database caches:</title>
+     <para>Can be a significant fraction of memory use. These caches are separate from any caching or memory use by the database server itself, which might or might not be on the same server). Internal tuning settings have been set to handle a wide range of deployment sizes.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="bf0n9my">
+     <title>Lucene index cache:</title>
+     <para> Can also be a significant consumer of memory. Large data stores (particularly with large files or a high number of files) can create a very large index. Installations with this type of demand should consider separating the Lucene Index Server to a dedicated standalone server for optimum performance (see <xref linkend="bbijvt7" xrefstyle="HeadingOnPage"/>).</para>
+    </formalpara>
+   </listitem>
+  </orderedlist>
+ </sect1>
+ <sect1 id="bbn5klr">
+  <title>Security Guidelines</title>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <formalpara id="bbxfle4">
+     <title>Liferay Session Timeout:</title>
+     <para>The default session timeout is 2 hours (240 minutes). You can lengthen or shorten this by changing the <guimenu>Liferay session timeout</guimenu> setting in the <guimenu>Network information</guimenu> window of the installer.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqoqlx">
+     <title>Role-Based Access Control:</title>
+     <para>Novell Teaming controls all access to folders and entries by using role-based access controls. See “Adjusting Access Control for the Site” in the Novell Teaming Administration Guide to learn more about the default roles and access settings. Keep in mind that Novell Teaming is intended to be used primarily for the sharing of information, so many default access rights lean toward allowing at least universal read access.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqor09">
+     <title>Inbound E-mail:</title>
+     <para>You can configure Novell Teaming to read e-mail and post those e-mail messages as entries in a folder. Because e-mail is inherently insecure, there is no way to be sure that the sender is who they claim to be. Novell Teaming marks the entries posted by e-mail to alert users about their origin.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqor9h">
+     <title>Web Services are enabled by default:</title>
+     <para>The default Novell Teaming installation allows authenticated access via Web services. If you are not using Web services, you can disable them by deselecting the Enable Web Services option in the <guimenu>Network information</guimenu> window of the installer.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqs5fs">
+     <title>WebDAV Authentication:</title>
+     <para>Authenticated access via WebDAV is via the Basic Authentication mechanism. Because of the weaknesses of Basic Authentication, secure (SSL) connections are recommended.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqorhu">
+     <title>RSS feed URLs:</title>
+     <para>Because RSS readers are outside of the authentication system, the URL provided by Novell Teaming for an RSS feed embeds some authentication information about the user. This means that the RSS URL must be protected and not shared between users. </para>
+    </formalpara>
+    <para>For this reason, RSS is not recommended for use on highly sensitive data. </para>
+    <para>To disable RSS feeds, deselect the <guimenu>Enable RSS</guimenu> option in the <guimenu>RSS configuration</guimenu> window of the installer during initial installation, or run a reconfiguration with the installer to disable RSS feeds after installation.</para>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqorud">
+     <title>LDAP (directory service) Proxy User:</title>
+     <para>You can configure Novell Teaming (and the portal) to utilize information in the LDAP directory service to provide basic user account information (and group memberships). Access to the LDAP server is done via a configuration page that requires you to specify a username and password for access to the LDAP directory. This user should be created in the LDAP directory service with the minimum number of privileges needed to perform the job. In particular, all LDAP synchronization activities are one-way, so the proxy user only requires read access to the directory. We highly advise that you configure LDAP with a secure SSL connection.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqosre">
+     <title>LDAP Directory access is unencrypted by default:</title>
+     <para>See “Secure LDAP/eDirectory Setup” in the Novell Teaming Administration Guide for information about configuring Novell Teaming to use SSL when communicating with the LDAP directory.</para>
+    </formalpara>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqospn">
+     <title>File System Repositories contains unencrypted data:</title>
+     <para>See <xref linkend="b9vchn8" xrefstyle="HeadingOnPage"/> for details about how Novell Teaming uses the local file system for data storage. These directories contain uploaded information in various formats (both native file formats and potentially a number of rendered formats (such as cached HTML versions of files, thumbnails, and RSS feeds) as well as archived data.</para>
+    </formalpara>
+    <para>These files are managed exclusively by the Novell Teaming application software and the file system protections should be set to protect those directories from unauthorized access.</para>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqosj1">
+     <title>Database access is unencrypted by default:</title>
+     <para>Depending on your local security guidelines, you might want to encrypt the database connections between the Novell Teaming and Portal software and their respective databases. SSL encrypted data between the applications and database servers imposes a performance penalty because of the increased overhead of encrypting and decrypting the retrieved data.</para>
+    </formalpara>
+    <para>Support for this is highly dependent on the database client drivers and JDBC connector support and how you are configuring your client and server certificates. You should check with the database vendors on how to set up SSL connections on both the client and server sides of the connection. You need to at least update the <guimenu>JDBC URL</guimenu> selections in the Database selection window of the installer. For example, for MySQL you might add <literal>useSSL=true&amp;requireSSL=true</literal> to the options part of the URL.</para>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqos1s">
+     <title>Mirrored Folder Proxy User:</title>
+     <para>See “Configuring Mirrored Folders” in the Novell Teaming Administration Guide for more information about the mirrored folder feature of the Enterprise version of Novell Teaming.</para>
+    </formalpara>
+    <para>You can configure Novell Teaming to use server directories (either in the local file system or via file sharing) as repositories for Novell Teaming folders. Because the Novell Teaming application server is accessing those directories, the user ID that the application server runs as acts as a proxy user for all file system access (that is, the file system only sees one user accessing the files on behalf of all Novell Teaming users who have access to the Novell Teaming folder). This proxy user should be used to configure any local file system access (or shared file access) appropriately.</para>
+    <para>If you configure a mirrored folder to a WebDAV or Microsoft SharePoint* directory, the resource driver is configured to use a proxy username and password. The same access control practices should be applied to these resources as are used with the file system resource driver.</para>
+   </listitem>
+   <listitem>
+    <formalpara id="bbqs5h6">
+     <title>Conferencing account password is stored in configuration file:</title>
+     <para>If you are using Conferencing, the password to a Conferencing account is stored in: </para>
+    </formalpara>
+
+<screen>
+WEB-INF/classes/config/ssf.properties
+</screen>
+
+   </listitem>
+   <listitem>
+    <formalpara id="bbqosan">
+     <title>Password Storage in the Server File System:</title>
+     <para>A number of application accounts and passwords are stored in the file system. These files should be protected against unauthorized access on the server.</para>
+    </formalpara>
+    <para>The<literal> installer.xml </literal>file contains a majority of the account and password information. You should protect this file accordingly. The installer’s <guimenu>Reconfigure</guimenu> option uses this information to create and update a number of configuration files within the application software directory tree. These files are outlined below:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Database user IDs and passwords for the portal and Novell Teaming software are stored in XML files in the following directories: </para>
+
+<screen>
+conf/Catalina/localhost/ssf.xml (Novell Teaming)
+</screen>
+
+
+<screen>
+conf/Catalina/localhost/ROOT.xml (Liferay Portal)
+</screen>
+
+     </listitem>
+     <listitem>
+      <para>Mirrored folder resource drivers to WebDAV/Sharepoint shares store the proxy user and passwords in:</para>
+
+<screen>
+WEB-INF/classes/config/ssf.properties
+</screen>
+
+     </listitem>
+     <listitem>
+      <para>The e-mail access (both inbound and outbound) might contain usernames and passwords for authentication (such as, authenticated SMTP). These are stored in:</para>
+
+<screen>
+conf/Catalina/localhost/ssf.xml (Novell Teaming) 
+</screen>
+
+
+<screen>
+conf/Catalina/localhost/ROOT.xml (Liferay Portal)
+</screen>
+
+     </listitem>
+    </itemizedlist>
+    <para>Some application accounts and passwords are stored in the database. These are protected by application access controls, but are available if access to the database is obtained through other means, such as an LDAP proxy user and password.</para>
+   </listitem>
+  </itemizedlist>
+ </sect1>
+ <sect1 id="bbnqb4c">
+  <title>Load-Balancing and Clustering Novell Teaming</title>
+  <note>
+   <para>In this release, Novell Teaming does not support session replication across cluster nodes. </para>
+  </note>
+  <important>
+   <para>If you have more than one clustered installation of Novell Teaming in your network, each cluster group needs a unique multicast group IP address to prevent them from interfering with each other.</para>
+  </important>
+  <para>To set up a scalable, clustered Novell Teaming configuration, use the following steps as a guideline:</para>
+  <procedure id="bbnqei6">
+   <step id="bbnqei7" performance="required">
+    <para>Set up a shared file storage that is accessible to all nodes.</para>
+    <para>Novell Teaming’s Simple File Repository is safe for use in a clustered environment with shared storage that is accessible to all nodes. Setting up shared storage is a platform-specific task.</para>
+   </step>
+   <step id="bbnqewc" performance="required">
+    <para>Install and configure the Lucene Index Server.</para>
+    <para>See <xref linkend="bbijvt7" xrefstyle="HeadingOnPage"/> for how to place the Lucene Index Server on a dedicated server system. All cluster nodes share this index server.</para>
+   </step>
+   <step id="bbnqewf" performance="required">
+    <para>Make sure that the time is the same on all nodes in the cluster (using synchronized time services for your cluster is highly advised).</para>
+   </step>
+   <step id="bbnqewh" performance="required">
+    <para>Install the Novell Teaming/portal bundle kit on each cluster node.</para>
+    <important>
+     <para>Because all the nodes share the same database server, it is important not to execute the database-initialization SQL scripts more than once (that is, use the installer’s <guimenu>Reconfigure</guimenu> option rather than the <guimenu>New installation</guimenu> option on all but the first cluster node).</para>
+    </important>
+    <para>Each node in the cluster can use the same<literal> installer.xml </literal>file (generated by the installer during initial installation). This assures that cluster nodes are configured uniformly.</para>
+    <para>The following settings must be uniform across the cluster:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>Configure the database connection settings on each node to use the same database. </para>
+     </listitem>
+     <listitem>
+      <para>Set the file system settings to all point to the same shared file storage server.</para>
+     </listitem>
+     <listitem>
+      <para>Set the Network settings (name, port, etc.) to the name of the LOAD BALANCER system.</para>
+     </listitem>
+     <listitem>
+      <para>In the <guimenu>Lucene configuration</guimenu> window of the installer, select <guimenu>server</guimenu> in the <guimenu>Lucene configuration type</guimenu> drop-down list and set the <guimenu>Host</guimenu> selection to the hostname of the machine on which you installed the Lucene Index Server. See <xref linkend="bbijvt7" xrefstyle="HeadingOnPage"/>.</para>
+     </listitem>
+    </itemizedlist>
+   </step>
+   <step id="bbo3q8t" performance="required">
+    <para>Set the portal up to work in a clustered environment.</para>
+    <para>If you need to set more advanced configurations, use <literal>cache.cluster.properties</literal> instead of <literal>cache.cluster.multicast.ip</literal> in the steps below. For more information, refer to Liferay's documentation at <ulink url="http://wiki.liferay.com/index.php/Clustering">wiki.liferay.com</ulink> and <ulink url="http://wiki.liferay.com/index.php/Liferay_FAQ">http://wiki.liferay.com</ulink>. Liferay provides additional high availability information at <ulink url="http://wiki.liferay.com/index.php/High_Availability_Guide">wiki.liferay.com</ulink>. </para>
+    <substeps performance="required">
+     <step id="bdh0t3r" performance="required">
+      <para>Edit the<literal> /webapps/ROOT/WEB-INF/classes/portal-ext.properties </literal>file by uncommenting the following two lines: </para>
+
+<screen>
+cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener
+</screen>
+
+
+<screen>
+cache.cluster.multicast.ip=231.12.21.100
+</screen>
+
+     </step>
+     <step id="bdh0tyq" performance="required">
+      <para>Edit the /webapps/ROOT/WEB-INF/classes/cache-multi-vm-ext.properties file by uncommenting the following two lines:</para>
+
+<screen>
+cache.event.listeners=com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener
+</screen>
+
+
+<screen>
+cache.cluster.multicast.ip=231.12.21.101
+</screen>
+
+     </step>
+    </substeps>
+   </step>
+   <step id="bbo3q8v" performance="required">
+    <para>Configure the load balancer.</para>
+    <para>There are a variety of load balancing solutions that work with J2EE deployments. The following example configuration uses the balancer module built into the newer Apache (version 2.2.4), and is based on a widely used sticky session technique. Novell Teaming does not support session sharing/replication among Tomcat instances.</para>
+    <substeps performance="required">
+     <step id="bbo3xrk" performance="required">
+      <para>Edit Tomcat’s<literal> server.xml</literal>.<literal/></para>
+      <para>Add<literal> jvmRoute="jvm&lt;n&gt;" </literal>to the<literal>&lt;Engine name="Catalina" ...&gt; </literal>element, where<literal>&lt;n&gt; </literal>should be an integer unique to each Tomcat instance. For example, assuming you have two Tomcat instances in a cluster, the Catalina engine element should look like the following in each<literal> server.xml </literal>respectively (<literal>jvm&lt;n&gt; </literal>is the name of the worker as declared in the load balancer):</para>
+
+<screen>
+&lt;Engine name="Catalina" defaultHost="localhost" jvmRoute="jvm1"&gt;
+</screen>
+
+
+<screen>
+&lt;Engine name="Catalina" defaultHost="localhost" jvmRoute="jvm2"&gt;
+</screen>
+
+     </step>
+     <step id="bbo4598" performance="required">
+      <para>Edit Apache’s<literal> httpd.conf file </literal>(in the<literal>&lt;apache installation&gt;/conf </literal>directory).</para>
+      <orderedlist spacing="normal">
+       <listitem>
+        <para>Uncomment the following three lines:</para>
+
+<screen>
+LoadModule proxy_module modules/mod_proxy.so
+</screen>
+
+
+<screen>
+LoadModule proxy_ajp_module modules/mod_proxy_ajp.so
+</screen>
+
+
+<screen>
+LoadModule proxy_balancer_module modules/mod_proxy_balancer.so
+</screen>
+
+       </listitem>
+       <listitem>
+        <para>Append the following section to the end of the file:</para>
+
+<screen>
+&lt;Location /balancer-manager&gt;
+</screen>
+
+
+<screen>
+SetHandler balancer-manager
+</screen>
+
+
+<screen>
+Order deny,allow
+</screen>
+
+
+<screen>
+Deny from all
+</screen>
+
+
+<screen>
+Allow from 127.0.0.1
+</screen>
+
+
+<screen>
+&lt;/Location&gt;
+</screen>
+
+
+<screen>
+&lt;Proxy balancer://aspenCluster&gt;
+</screen>
+
+
+<screen>
+BalancerMember ajp://&lt;tomcat host name 1&gt;:8009 route=jvm1
+</screen>
+
+
+<screen>
+BalancerMember ajp://&lt;tomcat host name 2&gt;:8009 route=jvm2
+</screen>
+
+
+<screen>
+&lt;/Proxy&gt;
+</screen>
+
+
+<screen>
+&lt;Location /&gt;
+</screen>
+
+
+<screen>
+ProxyPass balancer://aspenCluster/ stickysession=JSESSIONID    
+</screen>
+
+
+<screen>
+&lt;/Location&gt;
+</screen>
+
+        <para>Substitute the real Tomcat hostnames for<literal>&lt;tomcat host name 1&gt; </literal>and<literal>&lt;tomcat host name 2&gt;</literal>. If you have more than two Tomcat instances in the cluster, make an additional line for each.</para>
+       </listitem>
+      </orderedlist>
+     </step>
+    </substeps>
+   </step>
+   <step id="bbo3q8x" performance="required">
+    <para>Configure Hibernate second-level cache to use cluster-safe distributed cache. To do this, rename the<literal> ehcache-hibernate.xml </literal>file in the<literal> webapps/ssf/WEB-INF/classes/config </literal>directory to something else, say,<literal> ehcache-hibernate-non-clustered.xml</literal>. Then, rename the<literal> ehcache-hibernate-clustered.xml </literal>file in the same directory to<literal> ehcache-hibernate.xml</literal>.</para>
+   </step>
+   <step id="bbo3q8y" performance="required">
+    <para>Start the Lucene Index Server, and then start the application cluster nodes.</para>
+   </step>
+  </procedure>
+ </sect1>
+ <sect1 id="installer">
+  <title>Running the Installer</title>
+  <para>If you are doing an upgrade, use your existing <literal>license-key.xml </literal>and <literal>installer.xml</literal> files by placing them in the same directory as the installer program (the unzipped Novell Teaming kit). If you are doing a new installation, use your <literal>license-key.xml</literal> by placing it in the same directory as the installer program. The<literal> license-key.xml </literal>file required to install the product is provided with the software kit (but is not included in the kit).</para>
+  <note>
+   <para>You can edit the<literal> installer.xml </literal>file directly and run the installer’s Reconfigure option to reconfigure Novell Teaming. See <xref linkend="bbevpqp" xrefstyle="AppTitleOnPage"/>.</para>
+  </note>
+  <procedure id="bbikzkn">
+   <step id="bbil5vv" performance="required">
+    <para>Run the installer (on Linux, do a <literal>chmod +x installer-liferay.linux</literal> to make the installer executable).</para>
+    <para>The installer is named one of the following according to your operating system:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para><literal>installer-liferay.exe</literal></para>
+     </listitem>
+     <listitem>
+      <para><literal>installer-liferay.linux</literal></para>
+     </listitem>
+    </itemizedlist>
+    <note>
+     <para>On Linux, you can run a console-based version of the installer (has all the same options as the GUI-based installer) using the following command:</para>
+
+<screen>
+installer-liferay.linux -console
+</screen>
+
+    </note>
+   </step>
+   <step id="bbikzko" performance="required">
+    <para>In the <guimenu>Welcome</guimenu> window, select the procedure you want to perform, then click <guimenu>Next</guimenu>:</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Installer Welcome window options</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_01_a.png" width="41%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_01_a.png" width="41%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para><guimenu>New installation</guimenu></para>
+      <para>Use this option to perform an initial installation of Novell Teaming. The rest of this procedure walks you through an advanced initial installation to show you all the available options.</para>
+     </listitem>
+     <listitem>
+      <para><guimenu>Upgrade</guimenu></para>
+      <para>Use this option to perform an upgrade of an existing Novell Teaming application.</para>
+     </listitem>
+     <listitem>
+      <para><guimenu>Reconfigure</guimenu></para>
+      <para>Use this option to reconfigure an existing Novell Teaming application.</para>
+     </listitem>
+    </itemizedlist>
+   </step>
+   <step id="bf46m4m" performance="required">
+    <para>Read the license agreement, select the<guimenu> I accept the license agreement </guimenu>option to indicate your acceptance of this agreement, then click <guimenu>Next</guimenu>.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Installer License agreement window options</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_02_a.png" width="36%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_02_a.png" width="36%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf46nqt" performance="required">
+    <para>In the <guimenu>Choose installation type </guimenu>window, select the type of installation you want to perform, then click <guimenu>Next</guimenu>:</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Installer installation type options</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_03_a.png" width="85%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_03_a.png" width="85%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para><guimenu>Basic</guimenu>: Use this option if you are do not need to configure any optional features.</para>
+     </listitem>
+     <listitem>
+      <para><guimenu>Advanced</guimenu>: Use this option if you need to configure any of the optional features.</para>
+     </listitem>
+    </itemizedlist>
+   </step>
+   <step id="bf46ssi" performance="required">
+    <para>In the <guimenu>Install location</guimenu> window, use the associated <guimenu>Browse</guimenu> buttons to change the default location for the installation or file system:</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Install location window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_04_a.png" width="65%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_04_a.png" width="65%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf46w1x" performance="required">
+    <para>If you need to change the locations of any of the file system components, select <guimenu>advanced</guimenu> from the <guimenu>File system setup type</guimenu> drop-down list to activate the <guimenu>Browse</guimenu> buttons for these components, make the necessary changes, then click <guimenu>Next</guimenu>.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Install location window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_05_a.png" width="83%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_05_a.png" width="83%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf46xc3" performance="required">
+    <para>In the <guimenu>Liferay data location</guimenu> window, click <guimenu>Browse</guimenu> if you need to change the default <guimenu>Root location</guimenu> for this data, then click <guimenu>Next</guimenu>.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Liferay data location window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_06_a.png" width="84%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_06_a.png" width="84%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf47075" performance="required">
+    <para>In the <guimenu>Network information</guimenu> window, specify the network values for how you want Novell Teaming to appear on the network. See <xref linkend="bbn8hra" xrefstyle="HeadingOnPage"/>.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Network information window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_07_a.png" width="54%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_07_a.png" width="54%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf471tj" performance="required">
+    <para>In the <guimenu>Database selection</guimenu> window, configure your databases and select whether or not to create the databases during install. The database server you select must already be installed.</para>
+    <para>If your DBA created the databases by hand (required for Oracle), select the <guimenu>My DBA has already created the databases </guimenu>option. For more information, see <xref linkend="b9vchn7" xrefstyle="HeadingOnPage"/>.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Database setup</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_08_a.png" width="62%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_08_a.png" width="62%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <para>To configure your databases:</para>
+    <substeps performance="required">
+     <step id="bf478nz" performance="required">
+      <para>Select the database from the <guimenu>Database type</guimenu> drop-down list.</para>
+     </step>
+     <step id="bf4794l" performance="required">
+      <para>Enter your <guimenu>Username</guimenu>, <guimenu>Password</guimenu>, and <guimenu>JDBC URL</guimenu> for the icecore and Liferay databases, then click <guimenu>Next</guimenu>.</para>
+     </step>
+    </substeps>
+   </step>
+   <step id="bf47d3p" performance="required">
+    <para>In the <guimenu>Java JDK location</guimenu> window, click <guimenu>Browse</guimenu> to select the <guimenu>Java Home </guimenu>directory location (if not detected automatically), type in the <guimenu>JVM heap size</guimenu> value if you require more than the default 1 G (use a small “g” with no spaces), then click <guimenu>Next</guimenu>.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase> Java JDK location window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_09_a.png" width="84%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_09_a.png" width="84%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf47nqf" performance="required">
+    <para>In the <guimenu>Lucene configuration</guimenu> window, edit the fields to configure the Lucene index. </para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Lucene configuration window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_10_a.png" width="50%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_10_a.png" width="50%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <para>To run the Lucene index as a server, select <guimenu>server</guimenu> from the <guimenu>Lucene configuration type </guimenu>drop-down list, type in the <guimenu>Host</guimenu>, and edit <guimenu>RMI Port</guimenu> value if the default port cannot be used.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Lucene configuration window server selection</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_11_a.png" width="52%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_11_a.png" width="52%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <para>You can run the Lucene as a server from the same system as Novell Teaming or from a remote system. You need to install the Standalone Lucene Index Server before running Novell Teaming. See <xref linkend="bbijvt7" xrefstyle="HeadingOnPage"/>.</para>
+   </step>
+   <step id="bf47ugd" performance="required">
+    <para>In the <guimenu>RSS configuration </guimenu>window, edit the fields to configure the Novell Teaming RSS feeds, or deselect the <guimenu>Enable RSS</guimenu> option to disable RSS feeds, then click <guimenu>Next</guimenu>.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>RSS configuration window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_12_a.png" width="43%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_12_a.png" width="43%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <formalpara id="bf47ynk">
+     <title>RSS feed URLs:</title>
+     <para>Because RSS readers are outside of the authentication system, the URL provided by Novell Teaming for an RSS feed embeds some authentication information about the user. This means that the RSS URL must be protected and not shared between users. </para>
+    </formalpara>
+    <para>For this reason, RSS is not recommended for use on highly sensitive data. </para>
+   </step>
+   <step id="bf47x7h" performance="required">
+    <para>In the <guimenu>Outbound email configuration</guimenu> window, edit the fields to configure your outbound e-mail settings. Outbound configuration requires the basic information for generating SMTP mail messages: server, port, and optional authentication information. </para>
+    <para>The <guimenu>Username</guimenu> field is the address used for any e-mail notifications generated by the system. This name is also used for authenticated access to the SMTP server. To support e-mail sent by users, either the Novell Teaming server or the authenticated user must be authorized to use different <guimenu>From</guimenu> addresses.</para>
+    <para>For more information, see the “Mail Setup” section of the <guimenu>Novell Teaming Administration Guide</guimenu>.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Outbound email configuration window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_13_a.png" width="42%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_13_a.png" width="42%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf47zxs" performance="required">
+    <para>In the <guimenu>Inbound email configuration</guimenu> window, edit the following fields to configure your inbound e-mail settings, then click <guimenu>Next</guimenu>. </para>
+    <para>For inbound mail (postings) you need to specify either <guimenu>pop3</guimenu> or <guimenu>imap</guimenu> (<guimenu>pop3s</guimenu> or <guimenu>imaps</guimenu> for SSL connections to mail servers) from the <guimenu>Email protocol</guimenu> drop-down list. These settings are not used until you enable incoming e-mail in Novell Teaming.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Inbound email configuration window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_14_a.png" width="45%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_14_a.png" width="45%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <para>Novell Teaming posting uses real or alias e-mail addresses in your folders, according to whether you select the <guimenu>Use aliases</guimenu> option:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>When you use aliases for posting, the system accesses a single e-mail account (posting account). Novell Teaming routes e-mail from this account to individual folders based on unique e-mail addresses (aliases) which are assigned to individual folders and mapped to the posting account.</para>
+     </listitem>
+     <listitem>
+      <para>When you use real e-mail addresses for each folder, you need to create multiple posting accounts using your normal e-mail system management tools. Each posting e-mail address is used for a single folder.</para>
+     </listitem>
+    </itemizedlist>
+    <para>Create the posting accounts using your normal e-mail system management tools. Novell Teaming needs a host, port, e-mail account ID, and password for the posting feature to work.</para>
+   </step>
+   <step id="bf48geg" performance="required">
+    <para>In the <guimenu>Presence configuration</guimenu> window, select the <guimenu>Enable presence</guimenu> option to link your Novell Teaming and Conferencing servers together. You need to obtain the values for the following fields from an installed and configured Conferencing server. If you do not know these values now, you can run the installer’s <guimenu>Reconfigure</guimenu> option to add this information later. Click <guimenu>Next</guimenu> to continue.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Presence configuration window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_15_a.png" width="71%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_15_a.png" width="71%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf48jzg" performance="required">
+    <para>In the <guimenu>iChain configuration</guimenu> window, select <guimenu>Enable iChain</guimenu> to use the iChain Single Sign-on Support (SSO), set the Logoff URL to the address used to trigger an iChain logoff, set the IP address of the iChain Proxy server. </para>
+    <para>Only transactions from that address and the localhost are allowed. For more information, see <xref linkend="bbpnnvh" xrefstyle="HeadingOnPage"/>.</para>
+    <para>You have to options available for WebDAV support:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>To use a two-accelerator configuration for WebDAV support, you must select the<guimenu> Use iChain proxy for WebDAV </guimenu>option and specify the iChain WebDAV accelerator in the <guimenu>iChain WebDAV Proxy</guimenu> field during installation.</para>
+     </listitem>
+     <listitem>
+      <para>If you do not use a a two-accelerator configuration for WebDAV support, you must use basic authorization headers to support WebDAV. With basic authorization headers, the WebDAV URLs are made public with iChain and the authentication work is delegated to Novell Teaming, which stores the passwords locally so that the Teaming WebDAV server can use them for WebDAV client authentication. In this case, the value of <guimenu>iChain WebDAV Proxy</guimenu> field in the installer is ignored and Novell Teaming does not perform hostname re-write for the WebDAV URLs.</para>
+     </listitem>
+    </itemizedlist>
+    <para>For more information, see <xref linkend="installer" xrefstyle="HeadingOnPage"/>. </para>
+    <para>Click <guimenu>Next</guimenu> to continue. </para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>iChain configuration window</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_16_a.png" width="67%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_16_a.png" width="67%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf48mn3" performance="required">
+    <para>Mirrored folders are local/shared directories that are exposed within Novell Teaming. You must configure the directories here before they are available in Novell Teaming. For security reasons the set of people who can map Novell Teaming folders to these shared directories should be limited.</para>
+    <para>There are three mirrored folder types: </para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>file - for normal file systems</para>
+     </listitem>
+     <listitem>
+      <para>webdav - for WebDAV servers that support basic authentication</para>
+     </listitem>
+     <listitem>
+      <para>sharepoint - for Microsoft Sharepoint WebDAV access</para>
+     </listitem>
+    </itemizedlist>
+    <note>
+     <para>Mirrored Folders are available only in the Enterprise Edition.</para>
+    </note>
+    <para>A mirrored folder is a Novell Teaming folder that uses a server file system directory as its file storage area instead of the normal Novell Teaming repository. Typically the directory is a file share, accessed via normal file sharing mechanisms. Novell Teaming attempts to keep its knowledge about the folder contents in sync with whatever is in the directory.</para>
+    <para>Because of the way mirrored folders are configured, they are intended to bring common (relatively static) file shares into the Novell Teaming environment. They are not appropriate for individual file shares. You can use Novell Teaming to add additional metadata around these files, including Novell Teaming-specific access controls.</para>
+    <para>The following fields specify the mirrored folder resource drivers. These drivers then make the files in the specified directory available to the Novell Teaming folders. It is important to note that the Novell Teaming process accesses the directories and that the user ID for Novell Teaming acts as a proxy for all Novell Teaming users.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Configure mirrored folders</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_17_a.png" width="81%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_17_a.png" width="81%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <para>If you need more than three mirrored folders, you need to edit the<literal> installer.xml </literal>file directly and run the installer’s <guimenu>Reconfigure</guimenu> option. For more information, see the “Configuring Mirrored Folders” section in the Novell Teaming Administration Guide.</para>
+    <para>Click <guimenu>Next</guimenu> to continue.</para>
+   </step>
+   <step id="bf48siq" performance="required">
+    <para>In the <guimenu>Ready to install </guimenu>window, click <guimenu>Next</guimenu> to begin the installation or use the <guimenu>Back</guimenu> button to review the current configuration of the installer. </para>
+   </step>
+  </procedure>
+ </sect1>
+ <sect1 id="bbijvt7">
+  <title>Installing a Standalone Lucene Index Server</title>
+  <para>This section covers how to install the Lucene Index Server as a standalone server.</para>
+  <note>
+   <para>You need to install JDK (Sun JDK 1.5.0_011 or higher) before installing the Lucene Index Server. Linux systems need to have a minimum open file limit of 4096.</para>
+  </note>
+  <para>To install a Standalone Lucene Index Server for a new Novell Teaming application:</para>
+  <procedure id="bbijw1t">
+   <step id="bbiks4e" performance="required">
+    <para>Copy the Lucene installer to the system on which you want to install the standalone Lucene Index Server.</para>
+    <para>The Lucene installers are in the Novell Teaming kit you unzipped:</para>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para>lucene-installer.exe</para>
+     </listitem>
+     <listitem>
+      <para>lucene-installer.linux</para>
+     </listitem>
+    </itemizedlist>
+   </step>
+   <step id="bf493be" performance="required">
+    <para>Run the Lucene installer.</para>
+   </step>
+   <step id="bf49evs" performance="required">
+    <para>In the <guimenu>Welcome</guimenu> window, select the procedure you want to perform, then click <guimenu>Next</guimenu>:</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Installer Welcome window options</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_01_a.png" width="41%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_01_a.png" width="41%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <itemizedlist mark="bullet" spacing="normal">
+     <listitem>
+      <para><guimenu>New installation</guimenu></para>
+      <para>Use this option to perform an initial installation of the Standalone Lucene Index Server.</para>
+     </listitem>
+     <listitem>
+      <para><guimenu>Upgrade</guimenu></para>
+      <para>Use this option to perform an upgrade of an existing Standalone Lucene Index Server.</para>
+     </listitem>
+     <listitem>
+      <para><guimenu>Reconfigure</guimenu></para>
+      <para>Use this option to reconfigure an existing Standalone Lucene Index Server.</para>
+     </listitem>
+    </itemizedlist>
+   </step>
+   <step id="bf49evt" performance="required">
+    <para>Read the license agreement, select the<guimenu> I accept the license agreement </guimenu>option to indicate your acceptance of this agreement, then click <guimenu>Next</guimenu>.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <textobject role="description"><phrase>Installer License agreement window options</phrase></textobject>
+      <imageobject role="fo">
+      <imagedata fileref="installer_02_a.png" width="36%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="installer_02_a.png" width="36%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf49evu" performance="required">
+    <para>In the <guimenu>Install location</guimenu> window, click <guimenu>Browse</guimenu> if you need to change the default <guimenu>Install location</guimenu> for the <literal>luceneserver</literal>, then click <guimenu>Next</guimenu>.</para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <imageobject role="fo">
+      <imagedata fileref="luc-installer_01_a.png" width="76%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="luc-installer_01_a.png" width="76%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+   </step>
+   <step id="bf49evv" performance="required">
+    <para>In the <guimenu>Lucene configuration</guimenu> window, edit the fields to configure the Lucene index. </para>
+    <informalfigure pgwide="0">
+     <mediaobject>
+      <imageobject role="fo">
+      <imagedata fileref="luc-installer_02_a.png" width="47%" format="PNG"/></imageobject>
+      <imageobject role="html">
+      <imagedata fileref="luc-installer_02_a.png" width="47%" format="png"/></imageobject>
+     </mediaobject>
+    </informalfigure>
+    <para>Type in the <guimenu>Host</guimenu>, and edit <guimenu>RMI Port</guimenu> value if the default port cannot be used. Click <guimenu>Next</guimenu> to continue.</para>
+    <para>You can run the Lucene as a server from the same system as Novell Teaming or from a remote system. You need to install the Standalone Lucene Index Server before running Novell Teaming. See <xref linkend="bbijvt7" xrefstyle="HeadingOnPage"/>.</para>
+   </step>
+   <step id="bf49evw" performance="required">
+    <para>In the <guimenu>Ready to install </guimenu>window, click <guimenu>Next</guimenu> to begin the installation or use the <guimenu>Back</guimenu> button to review the current configuration of the installer. </para>
+   </step>
+  </procedure>
+  <para>To install a Standalone Lucene Index Server for an Existing Novell Teaming Application:</para>
+  <procedure id="bbikxce">
+   <step id="bbo5ce8" performance="required">
+    <para>Shut down Novell Teaming on the Novell Teaming server (see <xref linkend="b9vchnb" xrefstyle="HeadingOnPage"/>).</para>
+   </step>
+   <step id="bf49eib" performance="required">
+    <para>Run the Lucene installer (see above procedure).</para>
+   </step>
+   <step id="bbo5co3" performance="required">
+    <para>On the standalone server, check the<literal> lucene-server.properties </literal>file and find the setting for<literal> index.root.dir </literal>(you can edit this setting to change the location of the root directory).</para>
+   </step>
+   <step id="bbo5ixl" performance="required">
+    <para>Create a <literal>liferay.com</literal> subdirectory in the<literal> index.root.dir </literal>directory.</para>
+   </step>
+   <step id="bbo5jtu" performance="required">
+    <para>On the Novell Teaming server, look at the<literal> ssf.properties </literal>file and find the<literal> data.root.dir </literal>setting. </para>
+   </step>
+   <step id="bbo5kd5" performance="required">
+    <para>Copy all the files from the<literal> <replaceable>data.root.dir</replaceable>/lucene/liferay.com </literal>directory on the Novell Teaming server to the<literal> <replaceable>index.root.dir</replaceable>/liferay.com </literal>directory you just created on the standalone machine.</para>
+    <important>
+     <para>If you are using FTP, make sure to copy in binary mode.</para>
+    </important>
+   </step>
+   <step id="bbn3gww" performance="required">
+    <para>For UNIX systems, make sure permissions are set so that the Novell Teaming user has full access to these files and the<literal> liferay.com </literal>directory.</para>
+   </step>
+   <step id="bbikvyz" performance="required">
+    <para>Start the server at the end of the installation (if it is not already started):</para>
+    <substeps performance="required">
+     <step id="bbikvz0" performance="required">
+      <para>Change directories to <literal>lucene-server-installation-dir</literal></para>
+     </step>
+     <step id="bbikvz1" performance="required">
+      <para>Run the <literal>rmiregistry-startup</literal> script in the <literal>bin</literal> directory</para>
+     </step>
+     <step id="bbikvz2" performance="required">
+      <para>Run the <literal>indexserver-startup</literal> script in the<literal> bin </literal>directory</para>
+     </step>
+    </substeps>
+   </step>
+   <step id="bbikwk1" performance="required">
+    <para>Restart Novell Teaming (see <xref linkend="b9vchnb" xrefstyle="HeadingOnPage"/>).</para>
+   </step>
+  </procedure>
+ </sect1>
+ <sect1 id="b9vchnb">
+  <title>Starting and Stopping Novell Teaming</title>
+  <itemizedlist mark="bullet" spacing="normal">
+   <listitem>
+    <para><xref linkend="bf0n18k" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+   <listitem>
+    <para><xref linkend="bf0n3pf" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+   <listitem>
+    <para><xref linkend="bf0n4j3" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+   <listitem>
+    <para><xref linkend="bf0n5ay" xrefstyle="SectTitleOnPage"/></para>
+   </listitem>
+  </itemizedlist>
+  <sect2 id="bf0n18k">
+   <title>Starting Novell Teaming/Liferay</title>
+   <note>
+    <para>These are Liferay-only instructions.</para>
+   </note>
+   <para>On Windows: </para>
+   <para>From the command prompt, change directories to the Liferay bin directory, and then run the startup command:</para>
+
+<screen>
+&gt; cd C:\yourinstall\liferay-portal-tomcat-5.5-jdk5-4.3.0\bin\
+</screen>
+
+
+<screen>
+&gt; startup.bat 
+</screen>
+
+   <warning>
+    <para>On Windows, you need to run the<literal> startup.bat </literal>command from the<literal> bin </literal>directory.</para>
+   </warning>
+   <para>On Linux:</para>
+   <para><literal>/yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore start</literal></para>
+   <note>
+    <para>Depending on your system configuration, it can take more than of 60 seconds before Novell Teaming/Liferay starts accepting Web transactions. Initial transactions also tend to be slower as various caches load into RAM. These delays are amplified somewhat when working with a new installation or updated software because the JSPs are recompiled as they are referenced. </para>
+    <para>In Windows, startup is complete when the Tomcat window displays the following message: </para>
+
+<screen>
+INFO:Server Startup in ##### ms
+</screen>
+
+    <para>In Linux, the system does not automatically open a monitor window. You can start one by navigating to your<literal> <replaceable>your-installation</replaceable>/life-ray-portal-tomcat-5.5-jdk-4.30/logs </literal>directory and executing<literal> tail --f catalina.out</literal>. Startup is complete when this window displays:</para>
+
+<screen>
+INFO:Server Startup in ##### ms
+</screen>
+
+   </note>
+  </sect2>
+  <sect2 id="bf0n3pf">
+   <title>Setting up Novell Teaming to Start on System Startup</title>
+   <para>On Windows:</para>
+   <procedure id="bant5c0">
+    <step id="bant5c1" performance="required">
+     <para>Enter <literal>C:\yourinstall\liferay-portal-tomcat-5.5-jdk5-4.3.0\bin\service.bat install icecore</literal></para>
+    </step>
+    <step id="bant6f3" performance="required">
+     <para>Use the Services Control Panel to configure the service to your needs.</para>
+     <substeps performance="required">
+      <step id="bbo72yz" performance="required">
+       <para>Select <guimenu>Control Panel &gt; Administration Tools &gt; Services</guimenu>.</para>
+      </step>
+      <step id="bbo73bh" performance="required">
+       <para>Right-click the <guimenu>ApacheTomcat icecore</guimenu> service and select <guimenu>Properties</guimenu>.</para>
+      </step>
+      <step id="bbo73vc" performance="required">
+       <para>Change the <guimenu>Startup Type</guimenu> to <guimenu>Automatic</guimenu> and click <guimenu>OK</guimenu>.</para>
+      </step>
+      <step id="bbptbit" performance="required">
+       <para>Set your firewall to allow port 8080.</para>
+      </step>
+     </substeps>
+    </step>
+   </procedure>
+   <para>On Linux, from the root account:</para>
+   <procedure id="bant6o3">
+    <step id="bant6vx" performance="required">
+     <para>Enter <literal>cp /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore</literal><literal/><literal> /etc/init.d</literal></para>
+    </step>
+    <step id="bant6wo" performance="required">
+     <para>Enter <literal>chkconfig --add icecore </literal></para>
+    </step>
+   </procedure>
+  </sect2>
+  <sect2 id="bf0n4j3">
+   <title>Log Files and Monitoring</title>
+   <para>On Windows:</para>
+   <para>A Tomcat window appears when you issue the <literal>startup.bat </literal>command. System messages and error messages appear here.</para>
+   <para>On Linux: </para>
+   <para>Unlike Windows, the Tomcat process starts as a background process and no window appears. To monitor the messages in real time, enter:</para>
+
+<screen>
+tail -f /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/logs/catalina.out
+</screen>
+
+  </sect2>
+  <sect2 id="bf0n5ay">
+   <title>Stopping Novell Teaming</title>
+   <para>On Windows:</para>
+   <para>Enter<literal> C:\yourinstall\liferay-portal-tomcat-5.5-jdk5-4.3.0\bin\shutdown.bat</literal></para>
+   <para>On Linux:</para>
+   <para>Enter<literal> /yourinstall/liferay-portal-tomcat-5.5-jdk5-4.3.0/bin/icecore stop</literal></para>
+  </sect2>
+ </sect1>
+ <sect1 id="bcghun2">
+  <title>Novell Teaming Backup and Restore Procedures</title>
+  <para>If your system has a period of minimal activity (such as at 1:00 AM) you can do the backups without taking the system offline. If you perform this step every night, it is usually possible to restore without problems. The worst case scenario would be that the Lucene directory was caught adding an entry when the snapshot was taken. This can be remedied by re-building the search index from the <guimenu>Teaming Administration</guimenu> portlet.</para>
+  <bridgehead id="bcgi04o">Method 1:</bridgehead>
+  <procedure id="bcghwri">
+   <step id="bcghwrj" performance="required">
+    <para>Take the system down on a scheduled basis. </para>
+   </step>
+   <step id="bcghwvo" performance="required">
+    <para>During the down period:</para>
+    <substeps performance="required">
+     <step id="bcghx2p" performance="required">
+      <para>Take a snapshot of the database</para>
+     </step>
+     <step id="bcghx47" performance="required">
+      <para>Make a backup copy of the Lucene index, default location is:</para>
+
+<screen>
+/opt/icecore/luceneserver/liferay.com
+</screen>
+
+     </step>
+     <step id="bcghx5q" performance="required">
+      <para>Make a backup of the file repositories that are in use, for example:</para>
+
+<screen>
+/home/icecoredata/filerepository
+</screen>
+
+     </step>
+    </substeps>
+   </step>
+   <step id="bcghww0" performance="required">
+    <para>Restart your ICEcore system.</para>
+   </step>
+  </procedure>
+  <note>
+   <para>This approach is the most conservative. It guarantees a consistent snapshot of your whole system. However, doing a backup of the file repository can take a long time depending on your backup approach.</para>
+  </note>
+  <bridgehead id="bcghxe1">Method 2:</bridgehead>
+  <procedure id="bcghyie">
+   <step id="bcgi04p" performance="required">
+    <para>Take the system down on a scheduled basis. </para>
+   </step>
+   <step id="bcgi04q" performance="required">
+    <para>During the down period:</para>
+    <substeps performance="required">
+     <step id="bcgi04r" performance="required">
+      <para>Take a snapshot of the database</para>
+     </step>
+     <step id="bcgi04s" performance="required">
+      <para>Make a backup copy of the Lucene index</para>
+     </step>
+    </substeps>
+   </step>
+   <step id="bcghyza" performance="required">
+    <para>Bring the system back online.</para>
+   </step>
+   <step id="bcghz42" performance="required">
+    <para> After the system is running again, start the backup of the file repositories. </para>
+   </step>
+  </procedure>
+  <note>
+   <para>This approach minimizes the down time. However, it is possible that during a restore after a catastrophic failure the files may be out of synchronization with the metadata. This does cause any problems when running the system, but users may find that slightly newer versions of the files exist in the restored system than were present at the time of the database snapshot. This is usually a good thing.</para>
+  </note>
+ </sect1>
+</chapter>
+
+<appendix id="bbevpqp" xml:base="a1_installer-xml.xml">
+ <title>A Sample installer.xml File</title>
+ <para>A sample<literal> installer.xml </literal>file is shown below:</para>
+ <note>
+  <para>For Windows, use forward slashes for all directory paths in the <literal> installer.xml </literal>file.</para>
+ </note>
+ <para/>
+
+<screen>
+&lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+&lt;!--           ICEcore Installation Configuration File         --&gt;
+</screen>
+
+
+<screen>
+&lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+&lt;ICEcoreConfig version="4"&gt;
+</screen>
+
+
+<screen>
+	&lt;Install type="0"/&gt;
+</screen>
+
+
+<screen>
+	&lt;Environment&gt;
+</screen>
+
+
+<screen>
+	    &lt;!--  The path to JAVA_HOME --&gt;
+</screen>
+
+
+<screen>
+		&lt;JDK JAVA_HOME="" type="Sun" /&gt;		
+</screen>
+
+
+<screen>
+		&lt;!--  What userid to run as (Linux-only)  --&gt;
+</screen>
+
+
+<screen>
+		&lt;!--  Also what userId and groupId to use --&gt;
+</screen>
+
+
+<screen>
+		&lt;!--  as owner of the data directories.   --&gt;
+</screen>
+
+
+<screen>
+		&lt;Ids userId="" groupId="" /&gt;		
+</screen>
+
+
+<screen>
+		&lt;!--  Where does the ICEcore software reside?  --&gt;
+</screen>
+
+
+<screen>
+		&lt;SoftwareLocation path="" /&gt;		
+</screen>
+
+
+<screen>
+	&lt;/Environment&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                   Network Settings                        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  The host name or IP address of the server must be        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  specified here.  The default, localhost, is only         --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  appropriate for test configurations with no remote       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  access.                                                  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  If you have a dedicated server, setting the port         --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  to "80" and/or securePort to "443" avoids having         --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  to specify a port number in browser URLs.                --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  NOTE: On Linux/UNIX based systems, it is very dangerous  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  to run this server on any port number less than 1024,    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  since that would require the web server to run as the    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  root user.  If you must run on a port lower than 1024,   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  please see the ICEcore documentation referring to port   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  forwarding via iptables.                                 --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  If you use some sort of port forwarding or proxying      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  (e.g., iptables or iChain), use the listenPort and       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  secureListenPort settings to specify the port numbers    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  to use on the SERVER. The port and securePort settings   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  should refer to what external users use to access        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  the system.  (If not specified, the listen ports use     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  the corresponding port/securePort setttings.)            --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  A default certificate is supplied for SSL connections.   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  You should replace this with your certificate.           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  This can be placed in the conf/.keystore file or         --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  change the keystoreFile attribute to point to the        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  certificate.                                             --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  OES2 servers will need to reassign the ajpPort and       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  shutdownPorts as they will collide with other software.  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  ajpPort="8010" and shutdownPort="8011" seem to work      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  well.  See the Install Guide Network Planning section    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  for more details on port conflicts.                      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;Network&gt;
+</screen>
+
+
+<screen>
+        &lt;Host name="localhost" 
+</screen>
+
+
+<screen>
+              port="8080"         listenPort=""
+</screen>
+
+
+<screen>
+              securePort="8443"   secureListenPort=""
+</screen>
+
+
+<screen>
+              shutdownPort="8005" 
+</screen>
+
+
+<screen>
+              ajpPort="8009" 
+</screen>
+
+
+<screen>
+              keystoreFile=""
+</screen>
+
+
+<screen>
+              /&gt;
+</screen>
+
+
+<screen>
+        &lt;WebServices enable="true" /&gt;
+</screen>
+
+
+<screen>
+        &lt;Liferay sessionTimeoutMinutes="240" /&gt;
+</screen>
+
+
+<screen>
+        &lt;TomcatAccessLog enable="false" /&gt;
+</screen>
+
+
+<screen>
+    &lt;/Network&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Memory (RAM) Settings                        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  ICEcore requires a minimum of 512m to operate.           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  1g is recommended for basic production operation.        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Generally do not allocate more than 75% of available     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  physical memory to ICEcore.                              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Specify amounts as  Nm for N megabytes (e.g., 1500m) or  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Ng for N gigabytes (e.g., 3g).                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;Memory&gt;
+</screen>
+
+
+<screen>
+        &lt;JavaVirtualMachine mx="1g" /&gt;
+</screen>
+
+
+<screen>
+    &lt;/Memory&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              File System Configuration                    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- Modify the configName to your desired configuration       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- in the FileSystem element below. You must set the         --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- configName to the exact configuration in the file:        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     basic      - Simple one-directory setup               --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     advanced   - Advanced multiple-directory setup        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- WARNING!  Changing a directory path does NOT relocate     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- data after the product has been installed.  You must      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- coordinate any changes here with appropriate file system  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- modifications (including directory protections and        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- ownership where applicable).                              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;    
+</screen>
+
+
+<screen>
+    &lt;FileSystem configName="basic"&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- The basic configuration only requires that you  --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- specify a root directory for the data and       --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- ICEcore takes care of the rest.                 --&gt;
+</screen>
+
+
+<screen>
+      &lt;!--                                                 --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- IMPORTANT NOTE FOR WINDOWS USERS: Use forward   --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- slash as directory separator!                   --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+      &lt;Config id="basic"&gt;
+</screen>
+
+
+<screen>
+        &lt;RootDirectory path="/home/icecoredata"  /&gt;
+</screen>
+
+
+<screen>
+      &lt;/Config&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+      &lt;!-- With the advanced configuration you can specify     --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- individual directory locations.                     --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- Add path attributes for those directories you       --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- want to locate elsewhere. For example,              --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- &lt;SimpleFileRepository path="/share/icecoredata" /&gt;  --&gt;
+</screen>
+
+
+<screen>
+      &lt;!--                                                     --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- IMPORTANT NOTE FOR WINDOWS USERS: Use forward slash --&gt;
+</screen>
+
+
+<screen>
+      &lt;!-- as directory separator!                             --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+      &lt;Config id="advanced"&gt;
+</screen>
+
+
+<screen>
+        &lt;RootDirectory path="/home/icecoredata"  /&gt;
+</screen>
+
+
+<screen>
+        &lt;SimpleFileRepository /&gt;
+</screen>
+
+
+<screen>
+        &lt;JackrabbitRepository /&gt;
+</screen>
+
+
+<screen>
+        &lt;ArchiveStore   /&gt;
+</screen>
+
+
+<screen>
+        &lt;CacheStore     /&gt;
+</screen>
+
+
+<screen>
+        &lt;LuceneIndex    /&gt;
+</screen>
+
+
+<screen>
+      &lt;/Config&gt;         
+</screen>
+
+
+<screen>
+		&lt;!-- The liferay data dirs configuration allows you to     --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- change the directories that liferay uses for          --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- its internal data directories.  The value typically   --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- is a subdirectory where the other ICEcore data        --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- resides.                                              --&gt;
+</screen>
+
+
+<screen>
+		&lt;!--                                                       --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- Early beta sites may want to use a different setting  --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- called "default", which means the *default directory* --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- of whatever user id the server runs as.  Generally    --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- speaking this is not a great idea, and the option     --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- is there solely to accomodate beta sites who predate  --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- the ability to explicitly set where Liferay stored    --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- its files.                                            --&gt;
+</screen>
+
+
+<screen>
+		&lt;!--                                                       --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- NOTE: If you change the use setting after you have    --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- already started using liferay, you need to copy       --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- all the data from the default dirs to the new dirs    --&gt;
+</screen>
+
+
+<screen>
+		&lt;!-- BEFORE you restart the server!                        --&gt;
+</screen>
+
+
+<screen>
+        &lt;!--                                                       --&gt;
+</screen>
+
+
+<screen>
+        &lt;!-- IMPORTANT NOTE FOR WINDOWS USERS: Use forward slash   --&gt;
+</screen>
+
+
+<screen>
+        &lt;!-- as directory separator!                               --&gt;		
+</screen>
+
+
+<screen>
+		&lt;LiferayDataDirs use="custom"&gt;
+</screen>
+
+
+<screen>
+		  &lt;RootDirectory path="/home/icecoredata/liferay"  /&gt;
+</screen>
+
+
+<screen>
+		  &lt;DocumentLibraryRoot dir="documentlibrary/root" /&gt;
+</screen>
+
+
+<screen>
+		  &lt;DocumentVersionLibrary dir="documentlibrary/vroot" /&gt;
+</screen>
+
+
+<screen>
+		  &lt;JackRabbit dir="jackrabbit" /&gt;
+</screen>
+
+
+<screen>
+		  &lt;AutoDeploy dir="deploy" /&gt;
+</screen>
+
+
+<screen>
+		  &lt;Lucene dir="lucene" /&gt;
+</screen>
+
+
+<screen>
+		&lt;/LiferayDataDirs&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;/FileSystem&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Database Configuration                       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- Modify the configName to your desired configuration       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- in the Datatabase element below.  You must set the        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- configName to the exact configuration in the file:        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     MySQL_Default      - For MySQL                        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     SQLServer_Default  - For Microsoft SQL Server         --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- Change the Resources for the configuration you chose      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- (the defaults are pretty good for a simple configuration  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- with the database running locally, but you will probably  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!-- have different passwords!).                               --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;Database configName="MySQL_Default"&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;!--                                                       --&gt;
+</screen>
+
+
+<screen>
+        &lt;!--                  MySQL_Default                        --&gt;
+</screen>
+
+
+<screen>
+        &lt;!--                                                       --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;Config id="MySQL_Default" type="MySql"&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="liferay"
+</screen>
+
+
+<screen>
+                driverClassName="com.mysql.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:mysql://localhost:3306/lportal?useUnicode=true&amp;amp;characterEncoding=UTF-8"
+</screen>
+
+
+<screen>
+                username="root"
+</screen>
+
+
+<screen>
+                password="root"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="jboss"
+</screen>
+
+
+<screen>
+                driverClassName="com.mysql.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:mysql://localhost:3306/jbossportal?useUnicode=true&amp;amp;characterEncoding=UTF-8"
+</screen>
+
+
+<screen>
+                username="root"
+</screen>
+
+
+<screen>
+                password="root"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="icecore"
+</screen>
+
+
+<screen>
+                driverClassName="com.mysql.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:mysql://localhost:3306/sitescape?useUnicode=true&amp;amp;characterEncoding=UTF-8"
+</screen>
+
+
+<screen>
+                username="root"
+</screen>
+
+
+<screen>
+                password="root"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+        &lt;/Config&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;!--                                                       --&gt;
+</screen>
+
+
+<screen>
+        &lt;!--                 SQLServer_Default                     --&gt;
+</screen>
+
+
+<screen>
+        &lt;!--                                                       --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;Config id="SQLServer_Default" type="SQLServer"&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="liferay"
+</screen>
+
+
+<screen>
+                driverClassName="net.sourceforge.jtds.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:jtds:sqlserver://localhost/lportal;SelectMethod=cursor"
+</screen>
+
+
+<screen>
+                username="sa"
+</screen>
+
+
+<screen>
+                password="sa"
+</screen>
+
+
+<screen>
+             /&gt; 
+</screen>
+
+
+<screen>
+            &lt;Resource for="jboss"
+</screen>
+
+
+<screen>
+                driverClassName="net.sourceforge.jtds.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:jtds:sqlserver://localhost/jbossportal;SelectMethod=cursor"
+</screen>
+
+
+<screen>
+                username="sa"
+</screen>
+
+
+<screen>
+                password="sa"
+</screen>
+
+
+<screen>
+             /&gt; 
+</screen>
+
+
+<screen>
+            &lt;Resource for="icecore"
+</screen>
+
+
+<screen>
+                driverClassName="net.sourceforge.jtds.jdbc.Driver"
+</screen>
+
+
+<screen>
+                url="jdbc:jtds:sqlserver://localhost/sitescape;SelectMethod=cursor"
+</screen>
+
+
+<screen>
+                username="sa"
+</screen>
+
+
+<screen>
+                password="sa"
+</screen>
+
+
+<screen>
+             /&gt; 
+</screen>
+
+
+<screen>
+        &lt;/Config&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;!--                                                       --&gt;
+</screen>
+
+
+<screen>
+        &lt;!--                 Oracle_Default                        --&gt;
+</screen>
+
+
+<screen>
+        &lt;!--                                                       --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;Config id="Oracle_Default" type="Oracle"&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource for="liferay"
+</screen>
+
+
+<screen>
+                driverClassName="oracle.jdbc.driver.OracleDriver"
+</screen>
+
+
+<screen>
+                url="jdbc:oracle:thin:@//localhost:1521/orcl"
+</screen>
+
+
+<screen>
+                username="lportal"
+</screen>
+
+
+<screen>
+                password="pw"
+</screen>
+
+
+<screen>
+             /&gt; 
+</screen>
+
+
+<screen>
+            &lt;Resource for="icecore"
+</screen>
+
+
+<screen>
+                driverClassName="oracle.jdbc.driver.OracleDriver"
+</screen>
+
+
+<screen>
+                url="jdbc:oracle:thin:@//localhost:1521/orcl"
+</screen>
+
+
+<screen>
+                username="sitescape"
+</screen>
+
+
+<screen>
+                password="pw"
+</screen>
+
+
+<screen>
+             /&gt; 
+</screen>
+
+
+<screen>
+        &lt;/Config&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;/Database&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Lucene Configuration Settings                --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     The Lucene index can be run "local" (within           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     the context of this application) or "server"          --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     (run as its own server).  Additionally it             --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     can be run as its own server on this system           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     or on a remote system.                                --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     Note: The rmi port need only be set if running        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     in server mode. (And then, only if the default        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--     port cannot be used.                                  --&gt;    
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;Lucene luceneLocation="local"&gt;
+</screen>
+
+
+<screen>
+        &lt;Resource 
+</screen>
+
+
+<screen>
+            lucene.index.hostname="localhost"
+</screen>
+
+
+<screen>
+			lucene.flush.threshhold="100"
+</screen>
+
+
+<screen>
+			lucene.max.booleans="10000"
+</screen>
+
+
+<screen>
+			lucene.max.merge.docs="1000"
+</screen>
+
+
+<screen>
+			lucene.merge.factor="10"
+</screen>
+
+
+<screen>
+			lucene.rmi.port="1199"
+</screen>
+
+
+<screen>
+        /&gt;
+</screen>
+
+
+<screen>
+    &lt;/Lucene&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              RSS Configuration Settings                   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  RSS feeds are inherently insecure as they do not         --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  use the standard authentication mechanism.  If you       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  do not want to have users create RSS subscriptions,      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  set the enable property to "false".                      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  If you have RSS feeds enabled, you can tune the maximum  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  number of days to keep in the feed and the maximum       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  number of days to keep updating a feed when there are    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  no clients reading it.                                   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+	&lt;RSS enable="true"&gt;
+</screen>
+
+
+<screen>
+		&lt;Feed max.elapseddays="31" max.inactivedays="7" /&gt;
+</screen>
+
+
+<screen>
+	&lt;/RSS&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Email Configuration Settings                 --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Edit the Outbound and Inbound settings as required.      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  For inbound mail (postings) you need to specify either   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  pop3 or imap (or pop3s/imaps for SSL connections to      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  mail servers), and fill out the settings for which one   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  you choose.  These settings are not used until you       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  enable incoming email within the product.  If you do     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  not plan on using inbound email, you can ignore these    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  settings.                                                --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;EmailSettings&gt;
+</screen>
+
+
+<screen>
+        &lt;Outbound&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource
+</screen>
+
+
+<screen>
+				mail.transport.protocol="smtp"
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+                mail.smtp.host="mailhost.yourcompany.com"
+</screen>
+
+
+<screen>
+                mail.smtp.user="icecore@yourcompany.com"
+</screen>
+
+
+<screen>
+                mail.smtp.password=""
+</screen>
+
+
+<screen>
+                mail.smtp.auth="false"
+</screen>
+
+
+<screen>
+                mail.smtp.port="25"    	        
+</screen>
+
+
+<screen>
+                mail.smtps.host="mailhost.yourcompany.com"
+</screen>
+
+
+<screen>
+                mail.smtps.user="icecore@yourcompany.com"
+</screen>
+
+
+<screen>
+                mail.smtps.password=""
+</screen>
+
+
+<screen>
+                mail.smtps.auth="false"
+</screen>
+
+
+<screen>
+                mail.smtps.port="465" 
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+         &lt;/Outbound&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+        &lt;Inbound useAliases="false"&gt;
+</screen>
+
+
+<screen>
+            &lt;Resource 
+</screen>
+
+
+<screen>
+                mail.store.protocol="pop3"
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+                mail.pop3.host="localhost"
+</screen>
+
+
+<screen>
+                mail.pop3.auth="true"
+</screen>
+
+
+<screen>
+                mail.pop3.user="popEmailUserId"
+</screen>
+
+
+<screen>
+                mail.pop3.password="passwordHere"
+</screen>
+
+
+<screen>
+                mail.pop3.port="110"
+</screen>
+
+
+<screen>
+                mail.pop3s.host="localhost"
+</screen>
+
+
+<screen>
+                mail.pop3s.auth="true"
+</screen>
+
+
+<screen>
+                mail.pop3s.user="popEmailUserId"
+</screen>
+
+
+<screen>
+                mail.pop3s.password="passwordHere"
+</screen>
+
+
+<screen>
+                mail.pop3s.port="995"
+</screen>
+
+
+<screen>
+                mail.imap.host="localhost"
+</screen>
+
+
+<screen>
+                mail.imap.auth="true"
+</screen>
+
+
+<screen>
+                mail.imap.user="imapEmailUserId"
+</screen>
+
+
+<screen>
+                mail.imap.password="passwordHere"
+</screen>
+
+
+<screen>
+                mail.imap.port="143"
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+                mail.imaps.host="localhost"
+</screen>
+
+
+<screen>
+                mail.imaps.auth="true"
+</screen>
+
+
+<screen>
+                mail.imaps.user="imapEmailUserId"
+</screen>
+
+
+<screen>
+                mail.imaps.password="passwordHere"
+</screen>
+
+
+<screen>
+                mail.imaps.port="993"
+</screen>
+
+
+<screen>
+            /&gt;
+</screen>
+
+
+<screen>
+        &lt;/Inbound&gt;
+</screen>
+
+
+<screen>
+    &lt;/EmailSettings&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--              Presence Configuration Settings              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Use those settings to link your ICEcore and Conferencing --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  servers together.   Leave the presence.service.enable    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  setting at false if you do not use the conferencing      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  real time software.                                      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  The values to fill in this section are obtained when     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  ICEcore Conference has been installed and configured.    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  If you do not know them now, you can update this         --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  configuration later and apply the settings.              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  The jabber.server is the IP or host of the ICEcore       --&gt;   
+</screen>
+
+
+<screen>
+    &lt;!--  Conference  XML Router.                                  --&gt;    
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  The default ICEcore Conference admin.id is admin, and    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  default password is also admin. Change the admin.passwd  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  to match the ICEcore Conference administrator password   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  you have set.                                            --&gt;    
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;    
+</screen>
+
+
+<screen>
+    &lt;!--  The jabber.domain is the host name of the XML router     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;    
+</screen>
+
+
+<screen>
+    &lt;!--  The community.id is the name of the community you        --&gt; 
+</screen>
+
+
+<screen>
+    &lt;!--  created with the ICEcore Conference console.             --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;    
+</screen>
+
+
+<screen>
+    &lt;!--  Change the hostname part of the conferencing.url to      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  the ip or host of the ICEcore Conference Web Portal      --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  (do not change the port or the rest the URL).            --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;    
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;Presence&gt;
+</screen>
+
+
+<screen>
+        &lt;Resource 
+</screen>
+
+
+<screen>
+            presence.service.enable="false"
+</screen>
+
+
+<screen>
+            presence.service.jabber.server="zon-server.yourcompany.com"
+</screen>
+
+
+<screen>
+            presence.broker.admin.id="admin"
+</screen>
+
+
+<screen>
+            presence.broker.admin.passwd="admin"
+</screen>
+
+
+<screen>
+            presence.broker.jabber.domain="newzon"
+</screen>
+
+
+<screen>
+            presence.broker.default.community.id="yourcommunity"
+</screen>
+
+
+<screen>
+            presence.broker.zon.url="http://zon-server.yourcompany.com:8000/imidio_api/"
+</screen>
+
+
+<screen>
+        /&gt;
+</screen>
+
+
+<screen>
+    &lt;/Presence&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--         Mirrored Folders Configuration Settings           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Mirrored folders are local/shared directories that       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  are exposed within ICEcore.  The directories must be     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  configured here first before they are available to       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  the folder configuration interface within ICEcore (see   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Modify a Folder).                                        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  For security reasons the set of people who can map       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  ICEcore folders to these shared directories is limited   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Specify the specific ICEcore users or groups that are    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  allowed to map each folder (separated by semi-colons).   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Each mirrored folder configuration must have a unique    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  id (use a-z,0-9), and a title to be used in the user     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  interface.  Set enabled to true to make the mirrored     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  folder configuration active.   The examples below show   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  how to set up both file system and Sharepoint mirrors.   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  By default the mirrored folder is set to readonly.       --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  This means that ICEcore users can access the files, but  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  cannot modify them. Set the readonly attribute to false  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  to allow read/write access to the folder (based on both  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  this server's access to the directory and the ICEcore    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  user's access).                                          --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  There are three mirrored folder types: file (for         --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  normal file systems), webdav (for WebdDAV servers) that  --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  support basic authentication, and sharepoint (for        --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Microsoft Sharepoint WebDAV access).                     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+	&lt;MirroredFolders&gt;	
+</screen>
+
+
+<screen>
+		&lt;MirroredFolder enabled="false" type="file" 
+</screen>
+
+
+<screen>
+		                id="fs1" title="Shared Files 1"
+</screen>
+
+
+<screen>
+		                rootPath="k:/somedir" readonly="true"&gt;
+</screen>
+
+
+<screen>
+			&lt;AllowedUsers idList="admin;u1;u2;u3" /&gt;
+</screen>
+
+
+<screen>
+			&lt;AllowedGroups idList="g1;g2;g3" /&gt;
+</screen>
+
+
+<screen>
+		&lt;/MirroredFolder&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+		&lt;MirroredFolder enabled="false" type="file" 
+</screen>
+
+
+<screen>
+		                id="fs2" title="Shared Files 2"
+</screen>
+
+
+<screen>
+		                rootPath="/sharedFiles/someDirectory" readonly="true"&gt;
+</screen>
+
+
+<screen>
+			&lt;AllowedUsers idList="admin;u1;u2;u3" /&gt;
+</screen>
+
+
+<screen>
+			&lt;AllowedGroups idList="g1;g2;g3" /&gt;
+</screen>
+
+
+<screen>
+		&lt;/MirroredFolder&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+		&lt;MirroredFolder enabled="false" type="sharepoint"
+</screen>
+
+
+<screen>
+		                id="sp1" title="Sharepoint 1" 
+</screen>
+
+
+<screen>
+		                rootPath="/Shared Documents/cool-dir" readonly="true"&gt;
+</screen>
+
+
+<screen>
+		    &lt;WebDAVContext hostUrl="http://hostname" user="accessId" password="pass" /&gt;
+</screen>
+
+
+<screen>
+			&lt;AllowedUsers idList="admin;u1;u2;u3" /&gt;
+</screen>
+
+
+<screen>
+			&lt;AllowedGroups idList="g1;g2;g3" /&gt;
+</screen>
+
+
+<screen>
+		&lt;/MirroredFolder&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+	&lt;/MirroredFolders&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                iChain Single Sign-On Support              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  To use iChain SSO, set the enable attribute to true.     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Set the Logoff URL to the address used to trigger an     --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  iChain logoff.  Also set the ip address of the iChain    --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  proxy server.  Only transactions from that address and   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  localhost are allowed.                                   --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;SSO&gt;
+</screen>
+
+
+<screen>
+        &lt;iChain type="1" enable="false"&gt;
+</screen>
+
+
+<screen>
+            &lt;Logoff url="http://something" /&gt;
+</screen>
+
+
+<screen>
+            &lt;Proxy  ipaddr="ipaddr" /&gt;
+</screen>
+
+
+<screen>
+        &lt;/iChain&gt;
+</screen>
+
+
+<screen>
+    &lt;/SSO&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                Custom Configuration Settings              --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  Custom properties set here are placed in the             --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--  ssf-ext.properties file.                                 --&gt;
+</screen>
+
+
+<screen>
+    &lt;!--                                                           --&gt;
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+    &lt;CustomProperties&gt;
+</screen>
+
+
+<screen>
+        &lt;Resource 
+</screen>
+
+
+<screen>
+        /&gt;
+</screen>
+
+
+<screen>
+    &lt;/CustomProperties&gt;    
+</screen>
+
+
+<screen>
+
+</screen>
+
+
+<screen>
+&lt;/ICEcoreConfig&gt;
+</screen>
+
+</appendix>
+
+<glossary id="b9rtisc" xml:base="glossary.xml">
+ <title>Glossary</title>
+ <glossentry id="basbaeb">
+  <glossterm>access control</glossterm>
+  <glossdef>
+   <para>The tool that determines who has the right to perform which tasks in which places. See also<link linkend="basbb5e"> role-based access control</link>.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascb1c">
+  <glossterm>accessibility mode</glossterm>
+  <glossdef>
+   <para>An optimized user interface that facilitates use by assistive devices, such as auditory readers.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbo2i">
+  <glossterm>accessory</glossterm>
+  <glossdef>
+   <para>A section located at the top of a workspace or folder page that provides a summary view, most likely of the information contained within the item. For example, an accessory can show all of the entries within a folder that are authored by someone designated as a subject-matter expert.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc69b">
+  <glossterm>advanced search</glossterm>
+  <glossdef>
+   <para>Extra search tools that allow you to specify more specific criteria (such as the author of an item, or restricting the search to a portion of the workspace tree).</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basce9u">
+  <glossterm>alias</glossterm>
+  <glossdef>
+   <para>See <link linkend="basccz5">e-mail alias</link>.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbdpv">
+  <glossterm>attachment</glossterm>
+  <glossdef>
+   <para>A file attached to an <link linkend="b9rtisd">entry</link>.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbfl6">
+  <glossterm>author</glossterm>
+  <glossdef>
+   <para>The person who created an entry.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbgb5">
+  <glossterm>blog</glossterm>
+  <glossdef>
+   <para>A folder that contains a chronological listing of journal entries.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbgn2">
+  <glossterm>blog archive</glossterm>
+  <glossdef>
+   <para>A feature of blog folders that allows you to see entries authored in a specific month.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rth09">
+  <glossterm>buddy list</glossterm>
+  <glossdef>
+   <para>A list of people whose <link linkend="basb1o0">presence</link> you want to check and whom you contact frequently.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbh7z">
+  <glossterm>calendar</glossterm>
+  <glossdef>
+   <para>A folder containing entries for scheduled appointments. </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbjg8">
+  <glossterm>clipboard</glossterm>
+  <glossdef>
+   <para>A tool that gathers people’s names. Later, when using a tool that requires names, you can take them from your clipboard.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbk2c">
+  <glossterm>comment</glossterm>
+  <glossdef>
+   <para>A reply to an <link linkend="b9rtisd">entry</link>.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basb1xw">
+  <glossterm>community tag</glossterm>
+  <glossdef>
+   <para>A keyword <link linkend="b9rtisg">tag</link> applied to an item by the owner of a workspace or folder. Other users of the workspace or folder can perform searches based on community tags.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbkja">
+  <glossterm>configuration</glossterm>
+  <glossdef>
+   <para>A set of tools that alter the way item content is presented. There are many types of configuration, ranging from setting allowable <link linkend="basbhw5">views</link> for an item, selecting a color scheme, creating custom entries, and enabling workflow processes.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbp07">
+  <glossterm>default view</glossterm>
+  <glossdef>
+   <para>The <link linkend="basbkja">configuration</link> of the information you see when you first view a workspace or folder. Some items might be configured to allow alternate <link linkend="basbhw5">views</link>, which you can select.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbq2d">
+  <glossterm>definition</glossterm>
+  <glossdef>
+   <para>A set of elements for both the <link linkend="basbqw8">form</link> and <link linkend="basbhw5">view</link> of a workspace, folder, or entry.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbtgj">
+  <glossterm>designer</glossterm>
+  <glossdef>
+   <para>A tool used to create <link linkend="basbq2d">definitions</link> or <link linkend="basbm6t">workflow processes</link>.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbtzu">
+  <glossterm>discussion</glossterm>
+  <glossdef>
+   <para>A folder whose entries are discussion topics and comments about those topics.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basccz5">
+  <glossterm>e-mail alias</glossterm>
+  <glossdef>
+   <para>An alternative e-mail address for an e-mail account. To enable e-mail posting into a folder, you must provide an e-mail alias for the one account used to post into all folders in your Novell Teaming installation. Consult with your Novell Teaming site administrator for further assistance; site administrators, consult with the IT person responsible for creating e-mail accounts to create new aliases.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascc56">
+  <glossterm>e-mail notification</glossterm>
+  <glossdef>
+   <para>An e-mail message that Novell Teaming sends indicating new or changed entries in a folder or subfolder.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtisd">
+  <glossterm>entry</glossterm>
+  <glossdef>
+   <para>An item in a folder.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbv3d">
+  <glossterm>favorites panel</glossterm>
+  <glossdef>
+   <para>A tool used to save links to workspaces and folders most important to you, providing a method of accessing these places quickly.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascis7">
+  <glossterm>file folder</glossterm>
+  <glossdef>
+   <para>A folder whose entries are configured to highlight an attached file and to facilitate file management.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbvqh">
+  <glossterm>filter</glossterm>
+  <glossdef>
+   <para>A setting that limits a <link linkend="b9rtise">folder</link> listing to only the entries that match the filter’s search criteria. For example, you can create a filter that shows only the contents of a folder authored by you or that were created past a certain date.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtise">
+  <glossterm>folder</glossterm>
+  <glossdef>
+   <para>A container for <link linkend="b9rtisd">entries</link> and other folders. Each folder has a type, such as <link linkend="basbgb5">blog</link>, <link linkend="bascjfp">wiki</link>, or <link linkend="basbh7z">calendar</link>, that determines its appearance and features.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbqw8">
+  <glossterm>form</glossterm>
+  <glossdef>
+   <para>An HTML form used to create a workspace, folder, or entry.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbwud">
+  <glossterm>global workspace</glossterm>
+  <glossdef>
+   <para>A <link linkend="b9rtisi">workspace</link> that, by default, allows everyone in your organization to participate.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbynz">
+  <glossterm>guestbook</glossterm>
+  <glossdef>
+   <para>A <link linkend="b9rtise">folder</link> or <link linkend="basbo2i">accessory</link> whose entries indicate who has visited the place.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbzdf">
+  <glossterm>help mode</glossterm>
+  <glossdef>
+   <para>A dimmed page and information icons (“i”). When you click on an information icon, Novell Teaming presents a panel of information about that section of the page.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc25e">
+  <glossterm>inherit</glossterm>
+  <glossdef>
+   <para>A process by which a workspace or folder automatically uses <link linkend="basbkja">configuration</link> settings from its <link linkend="basc2qo">parent</link>.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc4i1">
+  <glossterm>instant message (IM)</glossterm>
+  <glossdef>
+   <para>A quick communication between teammates, using the Conferencing messaging software.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc024">
+  <glossterm>Liferay</glossterm>
+  <glossdef>
+   <para>The <link linkend="basc0hl">portal</link> software within which Novell Teaming runs by default.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc3mt">
+  <glossterm>meeting</glossterm>
+  <glossdef>
+   <para>An online communication by teammates, using the Conferencing messaging software. Conferencing provides tools that assist with online meetings, such as people designated as running the meeting, a way for participants to “raise their hands,” and a whiteboard.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascll8">
+  <glossterm>milestone</glossterm>
+  <glossdef>
+   <para>A <link linkend="b9rtise">folder</link> that, by default, summarizes the status of tasks in a task folder as they relate to meeting <link linkend="bascklm">project</link> milestones.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc4xi">
+  <glossterm>navigator</glossterm>
+  <glossdef>
+   <para>A set of tools that you can use to go anyplace within Novell Teaming you want to go. The tools include “<link linkend="basby2b">My workspace</link>,” “<link linkend="basbv3d">Favorites</link>,” viewing your <link linkend="basbx96">teams</link>, search, <link linkend="basbzdf">Help</link>, and a <link linkend="basc6rs">workspace tree</link>.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbfw4">
+  <glossterm>owner</glossterm>
+  <glossdef>
+   <para>The person who created the workspace, folder, or entry.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc7vf">
+  <glossterm>parallel workflow process</glossterm>
+  <glossdef>
+   <para>A set of <link linkend="basbn2q">state</link> transitions that happen at the same time as other state transitions. A state in the main thread initiates the parallel process, and a state later in the main thread can wait for the completion of the parallel thread.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc2qo">
+  <glossterm>parent</glossterm>
+  <glossdef>
+   <para>A workspace or folder that contains another workspace or folder. The item contained within the parent is sometimes called its child.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc8uy">
+  <glossterm>participant</glossterm>
+  <glossdef>
+   <para>An <link linkend="basbb5e">access role</link> that, generally, by default, allows people to author entries in a folder.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc9pq">
+  <glossterm>permalink</glossterm>
+  <glossdef>
+   <para>A Web address (URL) for a Novell Teaming workspace, folder, or entry that you can copy, paste, and send to teammates so that they can access a page directly by specifying the address in their web browsers.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtisf">
+  <glossterm>personal tag</glossterm>
+  <glossdef>
+   <para>A keyword <link linkend="b9rtisg">tag</link> that you apply to an item, and that only you can see and use.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basby2b">
+  <glossterm>personal workspace</glossterm>
+  <glossdef>
+   <para>A workspace that serves as a person’s home page in Novell Teaming, including contact information, pictures, a personal <link linkend="basbgb5">blog</link>, and more.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascaiw">
+  <glossterm>photo gallery</glossterm>
+  <glossdef>
+   <para>A <link linkend="b9rtise">folder</link> whose entries are pictures.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc0hl">
+  <glossterm>portal page</glossterm>
+  <glossdef>
+   <para>A Web page that can run various applications in sections of its page. For example, Google and Yahoo use portal pages. Sections within a portal page can display the local time, the local weather, your favorite stock quotes, and more.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc1qi">
+  <glossterm>portlet</glossterm>
+  <glossdef>
+   <para>A section on a portal page. Novell Teaming runs within portlets.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basb1o0">
+  <glossterm>presence</glossterm>
+  <glossdef>
+   <para>A person’s online status (online, away from the computer, offline, status unknown), represented in Novell Teaming by people icons of certain colors.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascklm">
+  <glossterm>project-management workspace</glossterm>
+  <glossdef>
+   <para>A <link linkend="b9rtisi">workspace</link> configured to facilitate the tracking of tasks and completion of complex project work.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbb5e">
+  <glossterm>role-based access control</glossterm>
+  <glossdef>
+   <para>A mechanism that controls access by assigning people and groups to roles, and the roles determine the rights assigned to those people. See the online help for a list of Novell Teaming default role definitions.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbcy1">
+  <glossterm>site administrator</glossterm>
+  <glossdef>
+   <para>The person or people who have the right to perform any task in the Novell Teaming installation.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascocd">
+  <glossterm>state</glossterm>
+  <glossdef>
+   <para>See <link linkend="basbn2q">workflow state</link>.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascbib">
+  <glossterm>subscription</glossterm>
+  <glossdef>
+   <para>A way to track new or changed items in Novell Teaming.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtisg">
+  <glossterm>tag</glossterm>
+  <glossdef>
+   <para>A keyword that anyone can apply to a workspace, folder, or entry to make it easier to find. See also <link linkend="b9rtisf">personal tag</link> and <link linkend="basb1xw">community tag</link>. </para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascl0a">
+  <glossterm>task</glossterm>
+  <glossdef>
+   <para>A <link linkend="b9rtise">folder</link> that, by default, contains entries that track progress in regard to completing an assignment.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascfza">
+  <glossterm>team</glossterm>
+  <glossdef>
+   <para>An <link linkend="basbb5e">access role</link> that, by default, allows people to <link linkend="basc8uy">participate</link> in a workspace or folder, to do some minor administrative tasks, and to communicate easily with each other.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbx96">
+  <glossterm>team workspace</glossterm>
+  <glossdef>
+   <para>A <link linkend="b9rtisi">workspace</link> that restricts participation to teammates.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbs53">
+  <glossterm>template</glossterm>
+  <glossdef>
+   <para>A set of default configuration settings used to create a new workspace or folder. A template includes at least one <link linkend="basbq2d">definition</link>, <link linkend="basbaeb">access control</link>, and a possible hierarchy of defined items.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bbgjrf8">
+  <glossterm>type to find</glossterm>
+  <glossdef>
+   <para>A Novell Teaming tool that uses the characters you have typed so far to present a list of possible choices. This tool is active for text boxes whose values are within a defined set: for example, people, places (workspaces and folders), and tags.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbhw5">
+  <glossterm>view</glossterm>
+  <glossdef>
+   <para>A presentation of an item’s content. For example, you can view a discussion folder in either a list or table format. By default, most folders use one view (calendar folders use a calendar view, blog folders use a blog view, and so on).</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc99o">
+  <glossterm>visitor</glossterm>
+  <glossdef>
+   <para>An <link linkend="basbb5e">access role</link> that, by default, allows people to read entries and make <link linkend="basbk2c">comments</link> on them, but not create new entries.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basch8k">
+  <glossterm>WebDAV</glossterm>
+  <glossdef>
+   <para>The Web Distributed Authoring and Versioning protocol. If your system provides a tool that uses this protocol, it allows you to manage Novell Teaming file and folder entries by using the WebDAV window.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="bascjfp">
+  <glossterm>wiki</glossterm>
+  <glossdef>
+   <para>A <link linkend="b9rtise">folder</link> whose entries are authored by all <link linkend="basc8uy">participants</link>.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbm6t">
+  <glossterm>workflow</glossterm>
+  <glossdef>
+   <para>An online representation of a business process (for example, document review, paid time-off requests, document sign-off, and so on). An <link linkend="b9rtisd">entry</link> can have an associated workflow process, which places the entry into various workflow states.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basbn2q">
+  <glossterm>workflow state</glossterm>
+  <glossdef>
+   <para>A status label for an <link linkend="b9rtisd">entry</link> in a workflow process. A state determines who has the right to work with an entry (including who can see it), who needs to be notified, who needs to perform the next task, and which subsequent states are possible.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="b9rtisi">
+  <glossterm>workspace</glossterm>
+  <glossdef>
+   <para>A container for folders and other workspaces.</para>
+  </glossdef>
+ </glossentry>
+ <glossentry id="basc6rs">
+  <glossterm>workspace tree</glossterm>
+  <glossdef>
+   <para>A tool that allows you to navigate the hierarchy of workspaces, sub-workspaces, <link linkend="b9rtise">folders</link>, and subfolders within Novell Teaming.</para>
+  </glossdef>
+ </glossentry>
+</glossary>
+</book>

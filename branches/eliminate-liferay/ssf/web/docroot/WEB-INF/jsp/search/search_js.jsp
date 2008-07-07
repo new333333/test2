@@ -1,0 +1,71 @@
+<%
+/**
+ * The contents of this file are subject to the Common Public Attribution License Version 1.0 (the "CPAL");
+ * you may not use this file except in compliance with the CPAL. You may obtain a copy of the CPAL at
+ * http://www.opensource.org/licenses/cpal_1.0. The CPAL is based on the Mozilla Public License Version 1.1
+ * but Sections 14 and 15 have been added to cover use of software over a computer network and provide for
+ * limited attribution for the Original Developer. In addition, Exhibit A has been modified to be
+ * consistent with Exhibit B.
+ * 
+ * Software distributed under the CPAL is distributed on an "AS IS" basis, WITHOUT WARRANTY OF ANY KIND,
+ * either express or implied. See the CPAL for the specific language governing rights and limitations
+ * under the CPAL.
+ * 
+ * The Original Code is ICEcore. The Original Developer is SiteScape, Inc. All portions of the code
+ * written by SiteScape, Inc. are Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * 
+ * 
+ * Attribution Information
+ * Attribution Copyright Notice: Copyright (c) 1998-2007 SiteScape, Inc. All Rights Reserved.
+ * Attribution Phrase (not exceeding 10 words): [Powered by ICEcore]
+ * Attribution URL: [www.icecore.com]
+ * Graphic Image as provided in the Covered Code [web/docroot/images/pics/powered_by_icecore.png].
+ * Display of Attribution Information is required in Larger Works which are defined in the CPAL as a
+ * work which combines Covered Code or portions thereof with code not governed by the terms of the CPAL.
+ * 
+ * 
+ * SITESCAPE and the SiteScape logo are registered trademarks and ICEcore and the ICEcore logos
+ * are trademarks of SiteScape, Inc.
+ */
+%>
+<%@ include file="/WEB-INF/jsp/common/common.jsp" %>
+<%@ page import="java.util.ArrayList" %>
+<%@ page import="com.sitescape.team.util.CalendarHelper" %>
+<script type="text/javascript">
+dojo.require('dojo.widget.*');
+dojo.require('sitescape.widget.WorkflowSelect');
+dojo.require('sitescape.widget.EntrySelect');
+dojo.require('sitescape.widget.FieldSelect');
+dojo.require('sitescape.widget.SelectPageable');
+dojo.require('sitescape.widget.DropdownDatePickerActivateByInput');
+dojo.require('sitescape.widget.DropdownTimePickerActivateByInput');
+</script>
+<script type="text/javascript" src="<html:rootPath/>js/common/ss_search.js"></script>
+<script type="text/javascript">
+
+var ss_nlt_searchFormLabelWorkflow = "<ssf:nlt tag="searchForm.label.workflow"/>";
+var ss_nlt_searchFormLabelEntry = "<ssf:nlt tag="searchForm.label.entry"/>";
+var ss_nlt_tagsCommunityTags = "<ssf:nlt tag="tags.communityTags"/>";
+var ss_nlt_tagsPersonalTags = "<ssf:nlt tag="tags.personalTags"/>";
+var ss_searchFormLabelAuthor = "<ssf:nlt tag="searchForm.label.author"/>";
+var ss_searchFormLabelDate = "<ssf:nlt tag="searchForm.label.date"/>";
+var ss_searchFormLabelLastActivity = "<ssf:nlt tag="searchForm.label.lastActivity"/>";
+var ss_AdvancedSearchURLNoOperation = "<ssf:url action="advanced_search" actionUrl="true"><ssf:param 
+		name="tabId" value="${tabId}"/></ssf:url>";
+var ss_AdvancedSearchURL = ss_AdvancedSearchURLNoOperation + "&operation=viewPage";
+var ss_currentTabId = "${tabId}";
+
+var ss_overwriteQuestion = "<ssf:nlt tag="search.save.overwriteQuestion"/>";
+var ss_noNameMsg="<ssf:nlt tag="search.save.noName"/>";
+var ss_days_0 = "<ssf:nlt tag="searchForm.lastActivity.0"/>"
+var ss_days_1 = "<ssf:nlt tag="searchForm.lastActivity.1"/>"
+var ss_days_3 = "<ssf:nlt tag="searchForm.lastActivity.3"/>"
+var ss_days_7 = "<ssf:nlt tag="searchForm.lastActivity.7"/>"
+var ss_days_30 = "<ssf:nlt tag="searchForm.lastActivity.30"/>"
+var ss_days_90 = "<ssf:nlt tag="searchForm.lastActivity.90"/>"
+var ss_searchFormMoreOptionsShowLabel = "<ssf:nlt tag="searchForm.advanced.moreOptions"/>";
+var ss_searchFormMoreOptionsHideLabel = "<ssf:nlt tag="searchForm.advanced.moreOptions.hide"/>";
+
+var ss_searchResultSavedSearchInputLegend = "<ssf:nlt tag="searchResult.savedSearch.input.legend"/>";
+var ss_weekStartsOn = "<%= CalendarHelper.getFirstDayOfWeek() - 1 %>"
+</script>

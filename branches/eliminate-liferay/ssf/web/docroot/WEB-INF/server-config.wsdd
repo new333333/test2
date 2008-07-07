@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+  	<globalConfiguration>
+		<parameter name="adminPassword" value="admin"/>
+		<parameter name="sendXsiTypes" value="true"/>
+		<parameter name="sendMultiRefs" value="true"/>
+		<parameter name="sendXMLDeclaration" value="true"/>
+		<parameter name="axis.sendMinimizedElements" value="true"/>
+		<parameter name="attachments.Directory" value="./ssf-ws/attachments"/>
+		<parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
+		<requestFlow>
+			<handler type="java:org.apache.axis.handlers.JWSHandler">
+				<parameter name="scope" value="session"/>
+			</handler>
+			<handler type="java:org.apache.axis.handlers.JWSHandler">
+				<parameter name="scope" value="request"/>
+				<parameter name="extension" value=".jwr"/>
+			</handler>
+		</requestFlow>
+	</globalConfiguration>
+	<handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
+	<handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
+	<handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
+	<transport name="http">
+		<requestFlow>
+			<handler type="URLMapper"/>
+			<handler type="java:org.apache.axis.handlers.http.HTTPAuthHandler"/>
+		</requestFlow>
+	</transport>
+	<transport name="local">
+		<responseFlow>
+			<handler type="LocalResponder"/>
+		</responseFlow>
+	</transport>
+	<!-- NOTE: The Facade service is deprecated as of ICEcore version 1.1. Use TeamingService instead. -->
+	<service name="Facade" provider="java:RPC">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>	
+		<parameter name="allowedMethods" value="*"/>
+		<parameter name="className" value="com.sitescape.team.remoting.ws.JaxRpcFacade"/>
+	</service>
+	<service name="TeamingService" provider="java:RPC" style="rpc" use="encoded">
+	 	<requestFlow>
+   			<handler type="java:org.apache.ws.axis.security.WSDoAllReceiver">
+    			<parameter name="passwordCallbackClass" value="com.sitescape.team.remoting.ws.security.PWCallback"/>
+    			<parameter name="action" value="UsernameToken Timestamp"/>
+   			</handler>
+  		</requestFlow>
+		<parameter name="scope" value="application"/>
+		<parameter name="wsdlTargetNamespace" value="http://ws.remoting.team.sitescape.com"/>
+		<parameter name="wsdlServiceElement" value="TeamingServiceSoapService"/>
+		<parameter name="wsdlServicePort" value="TeamingService"/>
+		<parameter name="className" value="com.sitescape.team.remoting.ws.TeamingServiceEndpoint"/>
+		<parameter name="wsdlPortType" value="TeamingServiceSoap"/>
+		<parameter name="typeMappingVersion" value="1.2"/>
+		<parameter name="allowedMethods" value="*"/>
+		<beanMapping qname="ns:AttachmentsField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.AttachmentsField"/>
+		<beanMapping qname="ns:Attachment" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.AttachmentsField$Attachment"/>
+		<beanMapping qname="ns:AverageRating" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.AverageRating"/>
+		<beanMapping qname="ns:Binder" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Binder"/>
+		<beanMapping qname="ns:CustomBooleanField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.CustomBooleanField"/>
+		<beanMapping qname="ns:CustomDateField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.CustomDateField"/>
+		<beanMapping qname="ns:DefinableEntity" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.DefinableEntity"/>
+		<beanMapping qname="ns:DefinitionBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.DefinitionBrief"/>
+		<beanMapping qname="ns:DefinitionCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.DefinitionCollection"/>
+		<beanMapping qname="ns:Description" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Description"/>
+		<beanMapping qname="ns:Entry" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Entry"/>
+		<beanMapping qname="ns:Field" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Field"/>
+		<beanMapping qname="ns:FolderEntry" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.FolderEntry"/>
+		<beanMapping qname="ns:FolderEntryBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.FolderEntryBrief"/>
+		<beanMapping qname="ns:FolderEntryCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.FolderEntryCollection"/>
+		<beanMapping qname="ns:FunctionMembership" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.FunctionMembership"/>
+		<beanMapping qname="ns:Group" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Group"/>
+		<beanMapping qname="ns:CustomLongArrayField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.CustomLongArrayField"/>
+		<beanMapping qname="ns:Principal" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Principal"/>
+		<beanMapping qname="ns:PrincipalBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.PrincipalBrief"/>
+		<beanMapping qname="ns:PrincipalCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.PrincipalCollection"/>
+		<beanMapping qname="ns:CustomStringArrayField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.CustomStringArrayField"/>
+		<beanMapping qname="ns:CustomStringField" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.CustomStringField"/>
+		<beanMapping qname="ns:TeamBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamBrief"/>
+		<beanMapping qname="ns:TeamCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamCollection"/>
+		<beanMapping qname="ns:TeamMemberCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TeamMemberCollection"/>
+		<beanMapping qname="ns:TemplateBrief" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TemplateBrief"/>
+		<beanMapping qname="ns:TemplateCollection" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.TemplateCollection"/>
+		<beanMapping qname="ns:Timestamp" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Timestamp"/>
+		<beanMapping qname="ns:User" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.User"/>
+		<beanMapping qname="ns:Workflow" xmlns:ns="http://model.ws.remoting.team.sitescape.com" languageSpecificType="java:com.sitescape.team.remoting.ws.model.Workflow"/>
+	</service>
+</deployment>

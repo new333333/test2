@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<definition name="_calendarEntry" caption="__definition_default_calendar_entry" type="1" nextId="36" definitionType="1" databaseId="402883c6115753d80111577dbe29000d">
+  <item name="entryForm" caption="__entry_form_definition" type="form" id="1">
+    <properties/>
+    <item name="entryFormForm" caption="__form" id="2">
+      <properties>
+        <property name="name" value="form1"/>
+        <property name="type" value="form"/>
+      </properties>
+      <item name="title" caption="__title" type="data" id="3">
+        <properties>
+          <property name="name" value="title"/>
+          <property name="caption" value="__title"/>
+          <property name="width" value="60"/>
+          <property name="inline" value=""/>
+          <property name="generated" value=""/>
+          <property name="itemSource" value=""/>
+        </properties>
+      </item>
+      <item name="text" caption="__text" type="data" category="commonEntryData" id="29">
+        <properties>
+          <property name="name" value="location"/>
+          <property name="caption" value="__location"/>
+          <property name="width" value="50"/>
+          <property name="inline" value="false"/>
+          <property name="required" value="false"/>
+        </properties>
+      </item>
+      <item name="description" caption="__description" type="data" id="4">
+        <properties>
+          <property name="name" value="description"/>
+          <property name="caption" value="__description"/>
+          <property name="height" value=""/>
+          <property name="required" value=""/>
+        </properties>
+      </item>
+      <item name="event" caption="__event" type="data" id="22">
+        <properties>
+          <property name="name" value="event"/>
+          <property name="caption" value="__event"/>
+          <property name="hasDuration" value="true"/>
+          <property name="hasRecurrence" value="true"/>
+          <property name="timeZoneSensitiveActive" value="true"/>
+          <property name="freeBusyActive" value="true"/>
+          <property name="required" caption="__required" type="boolean" default="false" value="true">
+            <help>ihelp.designers.required</help>
+          </property>
+        </properties>
+      </item>
+      <item name="user_list" caption="__user_list" type="data" category="commonEntryData" id="33">
+        <properties>
+          <property name="name" value="attendee"/>
+          <property name="caption" value="__calendar_attendee"/>
+          <property name="required" value="false"/>
+        </properties>
+      </item>
+      <item name="eventScheduler" caption="__eventScheduler" type="data" category="commonEntryData" display="form" id="38">
+      	<properties>
+      		<property name="caption" value="scheduler"/>
+      		<property name="sourceEventElement" value="event"/>
+      		<property name="sourceUserListElement" value="attendee"/>
+      	</properties>
+      </item>      
+      <item name="attachFiles" caption="__attach_files" type="data" id="5">
+        <properties>
+          <property name="name" value="ss_attachFile"/>
+          <property name="caption" value="__attach_files"/>
+          <property name="width" value="60"/>
+          <property name="number" value=""/>
+          <property name="storage" value=""/>
+          <property name="hide" value=""/>
+        </properties>
+      </item>
+      <item name="subscribe" caption="__subscribe" category="entryData" id="35">
+        <properties>
+          <property name="name" value="_subscribe"/>
+          <property name="caption" value="__subscribe"/>
+        </properties>
+      </item>
+      <item name="sendMail" caption="__sendMail" category="entryData" id="32">
+        <properties>
+          <property name="name" value="_sendMail"/>
+          <property name="caption" value="__sendMail"/>
+        </properties>
+      </item>
+      <item name="entryFormButtons" caption="__form_buttons" id="6">
+        <properties>
+          <property name="alignment" value=""/>
+        </properties>
+        <item name="okButton" caption="__ok_button" id="7">
+          <properties>
+            <property name="caption" value="__ok"/>
+            <property name="onClick" value=""/>
+          </properties>
+        </item>
+        <item name="cancelButton" caption="__cancel_button" id="8">
+          <properties>
+            <property name="caption" value="__cancel"/>
+            <property name="onClick" value=""/>
+          </properties>
+        </item>
+      </item>
+    </item>
+  </item>
+  <item name="entryView" caption="__entry_view_definition" id="9">
+    <properties>
+      <property name="type" value="entryView"/>
+    </properties>
+    <item name="titleView" caption="__title" id="10">
+      <properties>
+        <property name="caption" value="__title"/>
+      </properties>
+    </item>
+    <item name="entrySignatureView" caption="__entry_signature" id="11">
+      <properties>
+        <property name="caption" value=""/>
+      </properties>
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="30" formItem="text">
+      <properties>
+        <property name="name" value="location"/>
+        <property name="caption" value="__location"/>
+      </properties>
+    </item>
+    <item name="descriptionView" caption="__description" id="12">
+      <properties>
+        <property name="caption" value="__description"/>
+      </properties>
+    </item>
+    <item name="entryDataItem" caption="__entry_data_item" id="23" formItem="event">
+      <properties>
+        <property name="name" value="event"/>
+        <property name="caption" value="__event"/>
+      </properties>
+    </item>
+    <item name="entryDataItem" type="dataView" caption="__entry_data_item" category="entryViewData" id="34" formItem="user_list">
+      <properties>
+        <property name="name" value="attendee"/>
+        <property name="caption" value="__calendar_attendee"/>
+      </properties>
+    </item>
+    <item name="entryWorkflow" caption="__entry_workflow" category="entryViewData" id="25">
+      <properties>
+        <property name="caption" value="__entry_workflow"/>
+      </properties>
+    </item>
+    <item name="entryAttachments" caption="__entry_attachments" id="14">
+      <properties>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryReplies" caption="__entry_replies" category="entryViewData" id="27">
+      <properties>
+        <property name="caption" value="__entry_replies"/>
+      </properties>
+    </item>
+  </item>
+  <item name="entryBlogView" caption="__entry_blog_view_definition" id="16">
+    <properties>
+      <property name="type" value="blog"/>
+    </properties>
+    <item name="titleBlogView" caption="__title" id="17">
+      <properties>
+        <property name="caption" value="__title"/>
+      </properties>
+    </item>
+    <item name="entryBlogDataItem" type="dataView" caption="__entry_data_item" category="blogEntryViewData" id="31" formItem="text">
+      <properties>
+        <property name="name" value="location"/>
+        <property name="caption" value="__location"/>
+      </properties>
+    </item>
+    <item name="descriptionBlogView" caption="__description" id="18">
+      <properties>
+        <property name="caption" value="__description"/>
+      </properties>
+    </item>
+    <item name="entryBlogDataItem" caption="__entry_data_item" id="24" formItem="event">
+      <properties>
+        <property name="name" value="event"/>
+        <property name="caption" value="__event"/>
+      </properties>
+    </item>
+    <item name="entryBlogWorkflow" caption="__entry_workflow" category="blogEntryViewData" id="26">
+      <properties>
+        <property name="caption" value="__entry_workflow"/>
+      </properties>
+    </item>
+    <item name="entryBlogAttachments" caption="__entry_attachments" id="20">
+      <properties>
+        <property name="caption" value="__entry_attachments"/>
+      </properties>
+    </item>
+    <item name="entryBlogReplies" caption="__entry_replies" category="blogEntryViewData" id="28">
+      <properties>
+        <property name="caption" value="__entry_replies"/>
+      </properties>
+    </item>
+  </item>
+  <properties>
+    <property name="name" value="_calendarEntry"/>
+    <property name="caption" value="__definition_default_calendar_entry"/>
+    <property name="family" value="calendar"/>
+    <property name="replyStyle" value="_comment"/>
+  </properties>
+</definition>

@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9xh0tm" pid="b9xh0tm" name="Chapter" level="0" number="7"> <text>Creating a Command for the Workflow</text> </target>
+
+ <target id="b9xh1xb" pid="b9xh0tm" name="BridgeHead" level="1"> <text>What's in this Chapter?</text> </target>
+
+ <target id="b9xh2bg" pid="b9xh2bg" name="Sect1" level="1" number="7.1"> <text>Planning a Command</text> </target>
+
+ <target id="b9xh2dm" pid="b9xh2dm" name="Sect1" level="1" number="7.2"> <text>Developing Commands Interactively</text> </target>
+
+ <target id="b9xgw0i" pid="b9xh2dm" name="BridgeHead" level="2"> <text>To access the new-command-management page directly:</text> </target>
+
+ <target id="b9xgwdj" pid="b9xh2dm" name="Procedure" level="2" number="1"> <text>Access the Time Off Request discussion forum, which contains your time-off workflow process.</text> </target>
+
+ <target id="b9xgwdk" pid="b9xh2dm" name="Step" level="3" number="1"> <text>Access the Time Off Request discussion forum, which contains your time-off workflow process.</text> </target>
+
+ <target id="b9xwavn" pid="b9xh2dm" name="Step" level="3" number="2"> <text>Click the Tools toolbar item.</text> </target>
+
+ <target id="b9xwavp" pid="b9xh2dm" name="Step" level="3" number="3"> <text>Click the Administration menu item.</text> </target>
+
+ <target id="b9xwavs" pid="b9xh2dm" name="Step" level="3" number="4"> <text>Click Develop commands interactively, which is located in the same section of the management page that allows you to create workflow processes.</text> </target>
+
+ <target id="b9xwbcw" pid="b9xh2dm" name="BridgeHead" level="2"> <text>To add the "Request time off " new command:</text> </target>
+
+ <target id="b9xwbfl" pid="b9xh2dm" name="Procedure" level="2" number="1"> <text>Access the new-command-management page from either the management menu in the discussion forum or by clicking the Developing commands interactively tab.</text> </target>
+
+ <target id="b9xwbfm" pid="b9xh2dm" name="Step" level="3" number="1"> <text>Access the new-command-management page from either the management menu in the discussion forum or by clicking the Developing commands interactively tab.</text> </target>
+
+ <target id="b9xwbnd" pid="b9xh2dm" name="Step" level="3" number="2"> <text>If there are existing commands, click Add a command on the toolbar (otherwise, skip this step).</text> </target>
+
+ <target id="b9xwbnf" pid="b9xh2dm" name="Step" level="3" number="3"> <text>In the working area of the page, enter the name of the command in the "Command name" text box, and use wording that sounds like a command (a phrase that begins with a verb):</text> </target>
+
+ <target id="b9xwbni" pid="b9xh2dm" name="Step" level="3" number="4"> <text>Click the Add button.</text> </target>
+
+ <target id="b9xh2f0" pid="b9xh2f0" name="Sect1" level="1" number="7.3"> <text>Modifying Elements</text> </target>
+
+ <target id="b9xwegp" pid="b9xh2f0" name="BridgeHead" level="2"> <text>To modify an element:</text> </target>
+
+ <target id="b9xweiu" pid="b9xh2f0" name="Procedure" level="2" number="1"> <text>Access the new-command-management page, if you are not there already, and view your new command.</text> </target>
+
+ <target id="b9xweiv" pid="b9xh2f0" name="Step" level="3" number="1"> <text>Access the new-command-management page, if you are not there already, and view your new command.</text> </target>
+
+ <target id="b9xwen2" pid="b9xh2f0" name="Step" level="3" number="2"> <text>Click the Title radio button.</text> </target>
+
+ <target id="b9xwen4" pid="b9xh2f0" name="Step" level="3" number="3"> <text>Click the Modify/view button.</text> </target>
+
+ <target id="b9xwen6" pid="b9xh2f0" name="Step" level="3" number="4"> <text>Enter a new caption for the Title element.</text> </target>
+
+ <target id="b9xwen7" pid="b9xh2f0" name="Step" level="3" number="5"> <text>Click OK.</text> </target>
+
+ <target id="b9xh2g8" pid="b9xh2g8" name="Sect1" level="1" number="7.4"> <text>Creating a User List Element</text> </target>
+
+ <target id="b9xwfor" pid="b9xh2g8" name="BridgeHead" level="2"> <text>To create the user list element:</text> </target>
+
+ <target id="b9xwfr5" pid="b9xh2g8" name="Procedure" level="2" number="1"> <text>Access the new-command-management page, if you are not there already, and view your new command.</text> </target>
+
+ <target id="b9xwfr6" pid="b9xh2g8" name="Step" level="3" number="1"> <text>Access the new-command-management page, if you are not there already, and view your new command.</text> </target>
+
+ <target id="b9xwfwy" pid="b9xh2g8" name="Step" level="3" number="2"> <text>Click User List, in the "Add HTML layout element" section of the new-command tools. </text> </target>
+
+ <target id="b9xwfx0" pid="b9xh2g8" name="Step" level="3" number="3"> <text>Complete the "Add element to&#201;" page.</text> </target>
+
+ <target id="b9xwfx2" pid="b9xh2g8" name="Step" level="3" number="4"> <text>Click OK. </text> </target>
+
+ <target id="b9xwfx4" pid="b9xh2g8" name="Step" level="3" number="5"> <text>Click the User list radio button that corresponds to the manger's username.</text> </target>
+
+ <target id="b9xwfx6" pid="b9xh2g8" name="Step" level="3" number="6"> <text>Type "4" in the textbox in between the Move up and Move down buttons.</text> </target>
+
+ <target id="b9xwfx8" pid="b9xh2g8" name="Step" level="3" number="7"> <text> Click the Move up button.</text> </target>
+
+ <target id="b9xh2he" pid="b9xh2he" name="Sect1" level="1" number="7.5"> <text>Create Date Elements (Exercise)</text> </target>
+
+ <target id="b9xh2jc" pid="b9xh2jc" name="Sect1" level="1" number="7.6"> <text>Test the New Command </text> </target>
+
+ <target id="b9xwhot" pid="b9xh2jc" name="BridgeHead" level="2"> <text>To preview the form:</text> </target>
+
+ <target id="b9xwhqr" pid="b9xh2jc" name="Procedure" level="2" number="1"> <text>Access the new-command-management page, if you are not there already, and view your new command.</text> </target>
+
+ <target id="b9xwhqs" pid="b9xh2jc" name="Step" level="3" number="1"> <text>Access the new-command-management page, if you are not there already, and view your new command.</text> </target>
+
+ <target id="b9xwhxd" pid="b9xh2jc" name="Step" level="3" number="2"> <text>Click the Preview tool.</text> </target>
+
+ <target id="b9xwhxe" pid="b9xh2jc" name="Step" level="3" number="3"> <text>Use the windowing or browser commands to close the preview window.</text> </target>
+
+ <target id="b9xwiu6" pid="b9xh2jc" name="BridgeHead" level="2"> <text>To see the view page of your new command:</text> </target>
+
+ <target id="b9xwix9" pid="b9xh2jc" name="Procedure" level="2" number="1"> <text>View a folder or entry page in the discussion forum containing your new command.</text> </target>
+
+ <target id="b9xwixa" pid="b9xh2jc" name="Step" level="3" number="1"> <text>View a folder or entry page in the discussion forum containing your new command.</text> </target>
+
+ <target id="b9xwj1f" pid="b9xh2jc" name="Step" level="3" number="2"> <text>Click the Add toolbar item.</text> </target>
+
+ <target id="b9xwj1h" pid="b9xh2jc" name="Step" level="3" number="3"> <text>Click the Request Time Off menu item.</text> </target>
+
+ <target id="b9xwj1j" pid="b9xh2jc" name="Step" level="3" number="4"> <text>Fill out the form (specify Bob Jones as your manager), and specify any dates.</text> </target>
+
+ <target id="b9xwj1k" pid="b9xh2jc" name="Step" level="3" number="5"> <text>Click OK.</text> </target>
+
+ <target id="b9xh2kg" pid="b9xh2kg" name="Sect1" level="1" number="7.7"> <text>Associate the Command with a Workflow</text> </target>
+
+ <target id="b9xwhnw" pid="b9xh2kg" name="BridgeHead" level="2"> <text>To associate the workflow with the command:</text> </target>
+
+ <target id="b9xwkhb" pid="b9xh2kg" name="Procedure" level="2" number="1"> <text>Access the new-command-management page, if you are not there already, and view your new command.</text> </target>
+
+ <target id="b9xwkhc" pid="b9xh2kg" name="Step" level="3" number="1"> <text>Access the new-command-management page, if you are not there already, and view your new command.</text> </target>
+
+ <target id="b9xwklr" pid="b9xh2kg" name="Step" level="3" number="2"> <text>Click the Associate a workflow process with this command link in the "Edit the command" section of the new-command tools.</text> </target>
+
+ <target id="b9xwklt" pid="b9xh2kg" name="Step" level="3" number="3"> <text>Use the drop-down menu to select Time Off Request. </text> </target>
+
+ <target id="b9xwklu" pid="b9xh2kg" name="Step" level="3" number="4"> <text>Click OK.</text> </target>
+
+ <target id="b9xwljp" pid="b9xh2kg" name="BridgeHead" level="2"> <text>To update the workflow process to work with the new command:</text> </target>
+
+ <target id="b9xwlly" pid="b9xh2kg" name="Procedure" level="2" number="1"> <text>Access the workflow-management page, and view the Time Off Request workflow process.</text> </target>
+
+ <target id="b9xwllz" pid="b9xh2kg" name="Step" level="3" number="1"> <text>Access the workflow-management page, and view the Time Off Request workflow process.</text> </target>
+
+ <target id="b9xwlr8" pid="b9xh2kg" name="Step" level="3" number="2"> <text>Click the Set access rights for all states link in the "Edit the whole workflow" set of workflow tools.</text> </target>
+
+ <target id="b9xwlra" pid="b9xh2kg" name="Step" level="3" number="3"> <text>Replace every instance of "Managers (managers) Group" with the following:</text> </target>
+
+ <target id="b9xwlrb" pid="b9xh2kg" name="Step" level="3" number="4"> <text>Click the Show whole workflow tool.</text> </target>
+
+ <target id="b9xwlrd" pid="b9xh2kg" name="Step" level="3" number="5"> <text>Click the Submit oval in the flowchart in the working area of the page.</text> </target>
+
+ <target id="b9xwlrf" pid="b9xh2kg" name="Step" level="3" number="6"> <text>Click Add or delete notifications in the "Edit the current state" set of workflow tools.</text> </target>
+
+ <target id="b9xwlrj" pid="b9xh2kg" name="Step" level="3" number="7"> <text>Alter the notification for the Submit state, so that the notification goes only to "Request Time Off: Your manager's name."</text> </target>
+
+ <target id="b9xh2lm" pid="b9xh2lm" name="Sect1" level="1" number="7.8"> <text>Disable Extra Commands</text> </target>
+
+ <target id="b9xwofo" pid="b9xh2lm" name="BridgeHead" level="2"> <text>To disable default commands:</text> </target>
+
+ <target id="b9xwohr" pid="b9xh2lm" name="Procedure" level="2" number="1"> <text>View the management menu of the discussion forum in which you created the new command.If you are currently viewing the new-command-management page, click Close in the toolbar.</text> </target>
+
+ <target id="b9xwohs" pid="b9xh2lm" name="Step" level="3" number="1"> <text>View the management menu of the discussion forum in which you created the new command.If you are currently viewing the new-command-management page, click Close in the toolbar.</text> </target>
+
+ <target id="b9xwomo" pid="b9xh2lm" name="Step" level="3" number="2"> <text>Click Modify standard menu commands, located in the same section that allows you to create interactive new commands and workflow processes.</text> </target>
+
+ <target id="b9xwomq" pid="b9xh2lm" name="Step" level="3" number="3"> <text>Deselect all the command options from both the Add and Attach menus, but leave the Reply command selected.</text> </target>
+
+ <target id="b9xwomt" pid="b9xh2lm" name="Step" level="3" number="4"> <text>Click Apply.</text> </target>
+
+ <target id="b9xwomw" pid="b9xh2lm" name="Step" level="3" number="5"> <text>Click Close.</text> </target>
+
+ <target id="b9xwomz" pid="b9xh2lm" name="Step" level="3" number="6"> <text>To return to the forum, click Close.</text> </target>
+
+ <target id="b9xh2ms" pid="b9xh2ms" name="Sect1" level="1" number="7.9"> <text>Display Custom Data in the Folder Listing</text> </target>
+
+ <target id="b9xwqfq" pid="b9xh2ms" name="BridgeHead" level="2"> <text>To add a custom column to the folder listing:</text> </target>
+
+ <target id="b9xwqg9" pid="b9xh2ms" name="Procedure" level="2" number="1"> <text> Access the management menu of the discussion forum that includes your workflow process and new command.</text> </target>
+
+ <target id="b9xwqga" pid="b9xh2ms" name="Step" level="3" number="1"> <text> Access the management menu of the discussion forum that includes your workflow process and new command.</text> </target>
+
+ <target id="b9xwqmu" pid="b9xh2ms" name="Step" level="3" number="2"> <text>Click Modify column layout.</text> </target>
+
+ <target id="b9xwqmw" pid="b9xh2ms" name="Step" level="3" number="3"> <text>Alter the form as follows:</text> </target>
+
+ <target id="b9xwqmy" pid="b9xh2ms" name="Step" level="3" number="4"> <text>Click OK. </text> </target>
+
+ <target id="b9xwqmz" pid="b9xh2ms" name="Step" level="3" number="5"> <text>On the next displayed page, choose to re-index the discussion forum by clicking OK.</text> </target>
+
+ <target id="b9xwqn3" pid="b9xh2ms" name="Step" level="3" number="6"> <text>Click the Time Off Request link to return to the discussion forum.</text> </target>
+
+ <target id="b9xh2oh" pid="b9xh2oh" name="Sect1" level="1" number="7.10"> <text>Testing the Dedicated Application (Exercise)</text> </target>
+
+ <target id="b9xh2po" pid="b9xh2po" name="Sect1" level="1" number="7.11"> <text>Summary</text> </target>
+
+ <target id="b9xh2r5" pid="b9xh2r5" name="Sect1" level="1" number="7.12"> <text>Next Steps</text> </target>
+
+</targets>

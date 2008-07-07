@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="bbevpqp" pid="bbevpqp" name="Appendix" level="0" number="A"> <text>A Sample installer.xml File</text> </target>
+
+</targets>

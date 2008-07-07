@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="b9n76ng" pid="b9n76ng" name="Chapter" level="0" number="1"> <text>Setting Up Conferencing</text> </target>
+
+ <target id="bbj4b5k" pid="bbj4b5k" name="Sect1" level="1" number="1.1"> <text>Installing the Conferencing Client</text> </target>
+
+ <target id="baudj98" pid="bbj4b5k" name="Procedure" level="2" number="1"> <text>Use the URL in the Welcome e-mail you receive to Install the Conferencing client. Use the username and the password in this e-mail to sign on to Conferencing. This e-mail also provides your personal PIN number and additional information. We recommend that you save this e-mail for future reference.</text> </target>
+
+ <target id="baudj99" pid="bbj4b5k" name="Step" level="3" number="1"> <text>Use the URL in the Welcome e-mail you receive to Install the Conferencing client. Use the username and the password in this e-mail to sign on to Conferencing. This e-mail also provides your personal PIN number and additional information. We recommend that you save this e-mail for future reference.</text> </target>
+
+ <target id="baudmhm" pid="bbj4b5k" name="Step" level="3" number="2"> <text>Select Open or Run to invoke the installer after the download completes.</text> </target>
+
+ <target id="b9n7w3h" pid="b9n7w3h" name="Sect1" level="1" number="1.2"> <text>Starting Conferencing</text> </target>
+
+ <target id="bf9cki2" pid="b9n7w3h" name="Sect2" level="2" number="1.2.1"> <text>Signing On</text> </target>
+
+ <target id="b9pnsnf" pid="b9n7w3h" name="Procedure" level="3" number="1"> <text>In Linux and Windows, double-click the Conferencing desktop icon (placed on the desktop during install).</text> </target>
+
+ <target id="b9pnsng" pid="b9n7w3h" name="Step" level="4" number="1"> <text>In Linux and Windows, double-click the Conferencing desktop icon (placed on the desktop during install).</text> </target>
+
+ <target id="bauvkbi" pid="b9n7w3h" name="Step" level="4" number="2"> <text>In the Screen Name field, type your screen name or select it from the menu.</text> </target>
+
+ <target id="bauvlw7" pid="b9n7w3h" name="Step" level="4" number="3"> <text>In the Password field, type your password.</text> </target>
+
+ <target id="bauvnul" pid="b9n7w3h" name="Step" level="4" number="4"> <text>Optional Settings:</text> </target>
+
+ <target id="bauvny2" pid="b9n7w3h" name="Step" level="4" number="5"> <text>Click Sign On to log in.</text> </target>
+
+ <target id="bauw4sw" pid="b9n7w3h" name="Sect2" level="2" number="1.2.2"> <text>Signing Off and Exiting</text> </target>
+
+ <target id="bf9cj2j" pid="b9n7w3h" name="Figure" level="3" number="Figure 1-1"> <text>Options Menu</text> </target>
+
+ <target id="bf9cj2k" pid="b9n7w3h" name="Figure" level="3" number="Figure 1-2"> <text>Meetings Menu</text> </target>
+
+ <target id="bauvzaw" pid="b9n7w3h" name="Sect2" level="2" number="1.2.3"> <text>Signing On As a Non-Registered User</text> </target>
+
+ <target id="bauvzh6" pid="b9n7w3h" name="Procedure" level="3" number="1"> <text> In the Full Name field, type your full name, first name, and then last name.</text> </target>
+
+ <target id="bauvzh7" pid="b9n7w3h" name="Step" level="4" number="1"> <text> In the Full Name field, type your full name, first name, and then last name.</text> </target>
+
+ <target id="bauvzvt" pid="b9n7w3h" name="Step" level="4" number="2"> <text> In the Meeting Pin field, type your Meeting PIN. </text> </target>
+
+ <target id="bauvzvw" pid="b9n7w3h" name="Step" level="4" number="3"> <text> In the Phone field, type your phone number (optional). </text> </target>
+
+ <target id="bauvzvz" pid="b9n7w3h" name="Step" level="4" number="4"> <text> In the Email field, type your e-mail address (optional).</text> </target>
+
+ <target id="bf9cm0r" pid="b9n7w3h" name="Step" level="4" number="5"> <text>Click Sign On to log in.</text> </target>
+
+ <target id="bauw1hf" pid="b9n7w3h" name="Sect2" level="2" number="1.2.4"> <text>Important Information if You Are Behind a Proxy Server</text> </target>
+
+ <target id="bauw2kq" pid="b9n7w3h" name="Procedure" level="3" number="1"> <text>Select Start &#62; Control Panel.</text> </target>
+
+ <target id="bauw2kr" pid="b9n7w3h" name="Step" level="4" number="1"> <text>Select Start &#62; Control Panel.</text> </target>
+
+ <target id="bauw2ll" pid="b9n7w3h" name="Step" level="4" number="2"> <text>Double-click Internet Options.</text> </target>
+
+ <target id="bauw2ol" pid="b9n7w3h" name="Step" level="4" number="3"> <text>Select the Connections tab.</text> </target>
+
+ <target id="bauw2oo" pid="b9n7w3h" name="Step" level="4" number="4"> <text>Click on LAN settings...</text> </target>
+
+ <target id="bauw2or" pid="b9n7w3h" name="Step" level="4" number="5"> <text>Select the Proxy server option and configure with your proxy server settings.</text> </target>
+
+ <target id="bauw3i5" pid="b9n7w3h" name="Sect2" level="2" number="1.2.5"> <text>If Automatic Network Detection Fails</text> </target>
+
+ <target id="bauw3yv" pid="b9n7w3h" name="Procedure" level="3" number="1"> <text>Click Advanced Settings at the bottom of the Sign On screen.</text> </target>
+
+ <target id="bauw3yw" pid="b9n7w3h" name="Step" level="4" number="1"> <text>Click Advanced Settings at the bottom of the Sign On screen.</text> </target>
+
+ <target id="bauw41l" pid="b9n7w3h" name="Step" level="4" number="2"> <text>Select the Skip Hunt Process and Only Use HTTP option.</text> </target>
+
+ <target id="bbk49w6" pid="b9n7w3h" name="Step" level="4" number="3"> <text>Click OK.</text> </target>
+
+ <target id="bauwd85" pid="bauwd85" name="Sect1" level="1" number="1.3"> <text>Configuring Your Personal Contact Information</text> </target>
+
+ <target id="bf9cn6e" pid="bauwd85" name="Sect2" level="2" number="1.3.1"> <text>Setting Up Your Contact Information:</text> </target>
+
+ <target id="bauwdnu" pid="bauwd85" name="Procedure" level="3" number="1"> <text>From the main window, select the Contacts &#62; Edit My Contact Info menu item.</text> </target>
+
+ <target id="bauwdnv" pid="bauwd85" name="Step" level="4" number="1"> <text>From the main window, select the Contacts &#62; Edit My Contact Info menu item.</text> </target>
+
+ <target id="bauwilp" pid="bauwd85" name="Step" level="4" number="2"> <text>Edit your personal information (see the descriptions for the fields below). </text> </target>
+
+ <target id="bf9cn6f" pid="bauwd85" name="Sect2" level="2" number="1.3.2"> <text>Read-Only Fields</text> </target>
+
+ <target id="bf9cn6g" pid="bauwd85" name="Sect2" level="2" number="1.3.3"> <text>Informational Fields</text> </target>
+
+ <target id="bf9cn6h" pid="bauwd85" name="Sect2" level="2" number="1.3.4"> <text>Admin Only Fields</text> </target>
+
+ <target id="bauwsek" pid="bauwsek" name="Sect1" level="1" number="1.4"> <text>Configuring Your Follow Me Phone Number</text> </target>
+
+ <target id="bauwu6l" pid="bauwsek" name="Procedure" level="2" number="1"> <text>Select the Contacts &#62; Edit My Contact Info menu item.</text> </target>
+
+ <target id="bauwu6m" pid="bauwsek" name="Step" level="3" number="1"> <text>Select the Contacts &#62; Edit My Contact Info menu item.</text> </target>
+
+ <target id="bauwucj" pid="bauwsek" name="Step" level="3" number="2"> <text>Add or modify the phone numbers in the Business Phone, Home Phone, Mobile Phone, or Other Phone fields. </text> </target>
+
+ <target id="bauwucl" pid="bauwsek" name="Step" level="3" number="3"> <text>If you have an extension in your phone number type the letter "X" before the extension. For example, (351) 123 4321 x987. </text> </target>
+
+ <target id="bauwucn" pid="bauwsek" name="Step" level="3" number="4"> <text> After you have modified the information, click OK.</text> </target>
+
+ <target id="bauwx6o" pid="bauwx6o" name="Sect1" level="1" number="1.5"> <text>Using Correct Phone Number Formatting</text> </target>
+
+ <target id="bauv26x" pid="bauv26x" name="Sect1" level="1" number="1.6"> <text>Installing and Setting Up the Pidgin Instant Chat Client</text> </target>
+
+ <target id="bf9cx5b" pid="bauv26x" name="Sect2" level="2" number="1.6.1"> <text>Downloading the Pidgin Client</text> </target>
+
+ <target id="bbkj5sl" pid="bauv26x" name="Procedure" level="3" number="1"> <text>Download the pidgin.exe (Windows) or pidgin.rpm (Linux) executable file to your desktop.</text> </target>
+
+ <target id="bbkj5sm" pid="bauv26x" name="Step" level="4" number="1"> <text>Download the pidgin.exe (Windows) or pidgin.rpm (Linux) executable file to your desktop.</text> </target>
+
+ <target id="bbkj5sn" pid="bauv26x" name="Step" level="4" number="2"> <text>In Linux and Windows, double-click the pidgin (.rpm or .exe) installer (placed on the desktop during download), or select Open or Run to invoke the installer.</text> </target>
+
+ <target id="bbkj5so" pid="bauv26x" name="Step" level="4" number="3"> <text>In the Installer Language dialog that appears, select your language from the drop-down list.</text> </target>
+
+ <target id="bbkj5sp" pid="bauv26x" name="Step" level="4" number="4"> <text>Click Finish to complete the installation process. </text> </target>
+
+ <target id="bauvqjt" pid="bauv26x" name="Sect2" level="2" number="1.6.2"> <text>Setting Up Your Pidgin Client</text> </target>
+
+ <target id="bauvqwu" pid="bauv26x" name="Procedure" level="3" number="1"> <text>Start Pidgin.</text> </target>
+
+ <target id="bauvqwv" pid="bauv26x" name="Step" level="4" number="1"> <text>Start Pidgin.</text> </target>
+
+ <target id="bauvr0a" pid="bauv26x" name="Step" level="4" number="2"> <text>In the Accounts dialog that appears, click Add.</text> </target>
+
+ <target id="bauvr0d" pid="bauv26x" name="Step" level="4" number="3"> <text>Under the Basic tab in the Add Account window:</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Select ICEcore from the Protocol drop-down list.</text> </target>
+
+ <target id="bbmkc2u" pid="bauv26x" name="Step" level="6" number="3a"> <text>Select ICEcore from the Protocol drop-down list.</text> </target>
+
+ <target id="bauvr0g" pid="bauv26x" name="Step" level="6" number="3b"> <text>Type in your Conferencing screen name in the Screen Name field.</text> </target>
+
+ <target id="bauvr0j" pid="bauv26x" name="Step" level="6" number="3c"> <text>Type in the Conferencing server address in the Server field.</text> </target>
+
+ <target id="bauvr0m" pid="bauv26x" name="Step" level="6" number="3d"> <text>Type in your Conferencing password in the Password field.</text> </target>
+
+ <target id="bauvr0r" pid="bauv26x" name="Step" level="6" number="3e"> <text>Type in the alias name you would prefer to use in Pidgin instant chat client.</text> </target>
+
+ <target id="bauvr0v" pid="bauv26x" name="Step" level="6" number="3f"> <text>Select the Remember Password option to avoid typing in your password each type you start instant chat.</text> </target>
+
+ <target id="bauvr10" pid="bauv26x" name="Step" level="4" number="4"> <text>Under the Advanced tab, select the ICEcore Options you want for importing your Conferencing contacts:</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Select Show All Personal Contacts to import all your personal contacts from Conferencing.</text> </target>
+
+ <target id="bbmkejq" pid="bauv26x" name="Step" level="6" number="4a"> <text>Select Show All Personal Contacts to import all your personal contacts from Conferencing.</text> </target>
+
+ <target id="bbmkejr" pid="bauv26x" name="Step" level="6" number="4b"> <text>Select Show Community Contacts to import all the contacts from the Conferencing Community Address Book.</text> </target>
+
+ <target id="bauvr14" pid="bauv26x" name="Step" level="4" number="5"> <text>Click Save.</text> </target>
+
+ <target id="bauvqkk" pid="bauv26x" name="Sect2" level="2" number="1.6.3"> <text>Accessing the Pidgin Conferencing Features</text> </target>
+
+ <target id="bf9d2ux" pid="bauv26x" name="Figure" level="3" number="Figure 1-3"> <text>Accounts Menu</text> </target>
+
+</targets>

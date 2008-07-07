@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<targets>
+
+ <target id="bbfekr8" pid="bbfekr8" name="Chapter" level="0" number="4"> <text>Using Custom Entries</text> </target>
+
+ <target id="bbfequg" pid="bbfequg" name="Sect1" level="1" number="4.1"> <text>Creating a Custom Entry</text> </target>
+
+ <target id="bbfzhdh" pid="bbfequg" name="Sect2" level="2" number="4.1.1"> <text>Creating the Custom Entry</text> </target>
+
+ <target id="bbferji" pid="bbfequg" name="Procedure" level="3" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
+
+ <target id="bbferjj" pid="bbfequg" name="Step" level="4" number="1"> <text>From the Teaming Administration portlet on the initial Liferay portal window, click the plus sign (+) to the left of Form and view designers to expand this section and view the available designers. To add the Teaming Administration portlet to the Liferay portal window, click the Add Content link in the upper right corner. This brings up a panel of portlets along the left margin. Expand the Teaming section to add more Novell Teaming features, such as the Teaming Administration portlet.</text> </target>
+
+ <target id="bbfeu64" pid="bbfequg" name="Step" level="4" number="2"> <text>Click Entry designer.</text> </target>
+
+ <target id="bbff2y0" pid="bbfequg" name="Step" level="4" number="3"> <text>In the Designers window that appears, click Entry definitions. </text> </target>
+
+ <target id="bbfigvt" pid="bbfequg" name="Step" level="4" number="4"> <text>On the right side of the window, click Add a new entry definition.</text> </target>
+
+ <target id="bbfion2" pid="bbfequg" name="Step" level="4" number="5"> <text>In the Caption field, type the name for the entry that you want to see in Novell Teaming.</text> </target>
+
+ <target id="bbfijdy" pid="bbfequg" name="Step" level="4" number="6"> <text>In the Name field, type the name for this entry type.</text> </target>
+
+ <target id="bbfiqmr" pid="bbfequg" name="Step" level="4" number="7"> <text>Select the family for this entry from the Family list box.</text> </target>
+
+ <target id="bbfitt8" pid="bbfequg" name="Step" level="4" number="8"> <text>From the Allowed comment types list box, select the comment types you want to allow for this new custom entry (use the Ctrl key to select multiple comment types).</text> </target>
+
+ <target id="bbfze22" pid="bbfequg" name="Step" level="4" number="9"> <text>Click OK at the bottom of the entry form.</text> </target>
+
+ <target id="bbfzhv1" pid="bbfequg" name="Sect2" level="2" number="4.1.2"> <text>The Entry Designer Editing Window</text> </target>
+
+ <target id="bf142eg" pid="bbfequg" name="Figure" level="3" number="Figure 4-1"> <text>Entry Designer Window</text> </target>
+
+ <target id="bbfzt0g" pid="bbfequg" name="Sect2" level="2" number="4.1.3"> <text>Creating a Custom Form for an Entry</text> </target>
+
+ <target id="bbg07aq" pid="bbfequg" name="Procedure" level="3" number="1"> <text>Click the plus sign (+) to the left of Entry form definition to expand this section. </text> </target>
+
+ <target id="bbg07ar" pid="bbfequg" name="Step" level="4" number="1"> <text>Click the plus sign (+) to the left of Entry form definition to expand this section. </text> </target>
+
+ <target id="bbg0ajs" pid="bbfequg" name="Step" level="4" number="2"> <text>Click the plus sign (+) to the left of Form to expand this section and view the current elements in this form.</text> </target>
+
+ <target id="bbg0cgf" pid="bbfequg" name="Step" level="4" number="3"> <text>Delete an element:</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Click the element (Description).</text> </target>
+
+ <target id="bbg0ecs" pid="bbfequg" name="Step" level="6" number="3a"> <text>Click the element (Description).</text> </target>
+
+ <target id="bbg0ekn" pid="bbfequg" name="Step" level="6" number="3b"> <text>In the options dialog that appears to the right, click the Delete option.</text> </target>
+
+ <target id="bbg0h5j" pid="bbfequg" name="Step" level="6" number="3c"> <text>Click OK to confirm that you want to delete the Description element.</text> </target>
+
+ <target id="bbg0e1u" pid="bbfequg" name="Step" level="4" number="4"> <text>Hide an element from appearing in the form view:</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Click the element you want to hide (such as Attachments).</text> </target>
+
+ <target id="bbg0jx1" pid="bbfequg" name="Step" level="6" number="4a"> <text>Click the element you want to hide (such as Attachments).</text> </target>
+
+ <target id="bbg0k4j" pid="bbfequg" name="Step" level="6" number="4b"> <text>In the options dialog, click Modify.</text> </target>
+
+ <target id="bbg0mf6" pid="bbfequg" name="Step" level="6" number="4c"> <text>In the Attachments element form that appears, select the Hide this form element option.</text> </target>
+
+ <target id="bbg0omj" pid="bbfequg" name="Step" level="6" number="4d"> <text>Click OK.</text> </target>
+
+ <target id="bbg0jw2" pid="bbfequg" name="Step" level="4" number="5"> <text>Add an element: </text> </target>
+
+ <target name="SubSteps" level="5"> <text>Click Form.</text> </target>
+
+ <target id="bbg0r4o" pid="bbfequg" name="Step" level="6" number="5a"> <text>Click Form.</text> </target>
+
+ <target id="bbg0r8a" pid="bbfequg" name="Step" level="6" number="5b"> <text>In the options dialog, click Add.</text> </target>
+
+ <target id="bbg0st1" pid="bbfequg" name="Step" level="6" number="5c"> <text>Click Event to add the Event element for entering the time off as an event with a start and end time.</text> </target>
+
+ <target id="bbg11eu" pid="bbfequg" name="Step" level="6" number="5d"> <text>Fill in the Event element form.</text> </target>
+
+ <target id="bbg15p2" pid="bbfequg" name="Step" level="4" number="6"> <text>(Optional) Move an element:</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Click the Time Off Dates and Time element.</text> </target>
+
+ <target id="bbg17mk" pid="bbfequg" name="Step" level="6" number="6a"> <text>Click the Time Off Dates and Time element.</text> </target>
+
+ <target id="bbg17rh" pid="bbfequg" name="Step" level="6" number="6b"> <text>In the options dialog, click Move.</text> </target>
+
+ <target id="bbg18dn" pid="bbfequg" name="Step" level="6" number="6c"> <text>If you want this element to appear below another element, click the element under Form that you want this element to appear under (Title).</text> </target>
+
+ <target id="bbg1an4" pid="bbfequg" name="Step" level="6" number="6d"> <text>Select the Move to below the selected item option and click OK.</text> </target>
+
+ <target id="bbg1d7t" pid="bbfequg" name="Step" level="4" number="7"> <text>Add a required Text element named Total Hours Off and move it below the Time Off Dates and Time element.</text> </target>
+
+ <target id="bbg1dpz" pid="bbfequg" name="Step" level="4" number="8"> <text>Add a required Text element named Reason for Time Off  and move it to below the Title element.</text> </target>
+
+ <target id="bbmq22d" pid="bbfequg" name="Step" level="4" number="9"> <text>Add a container:</text> </target>
+
+ <target name="SubSteps" level="5"> <text>Click Form.</text> </target>
+
+ <target id="bbmqbdd" pid="bbfequg" name="Step" level="6" number="9a"> <text>Click Form.</text> </target>
+
+ <target id="bbmqbde" pid="bbfequg" name="Step" level="6" number="9b"> <text>In the options dialog, click Add.</text> </target>
+
+ <target id="bbmq89q" pid="bbfequg" name="Step" level="6" number="9c"> <text>Click Box.</text> </target>
+
+ <target id="bbmq9nv" pid="bbfequg" name="Step" level="6" number="9d"> <text>Select Square with border and click OK.</text> </target>
+
+ <target id="bbmqago" pid="bbfequg" name="Step" level="6" number="9e"> <text>Click Time Off Dates and Time.</text> </target>
+
+ <target id="bbmqii2" pid="bbfequg" name="Step" level="6" number="9f"> <text>In the options dialog, click Move.</text> </target>
+
+ <target id="bbmqbyq" pid="bbfequg" name="Step" level="6" number="9g"> <text>Click Box.</text> </target>
+
+ <target id="bbmqdhd" pid="bbfequg" name="Step" level="6" number="9h"> <text>Select Move into the selected item and click OK.</text> </target>
+
+ <target id="bbg05pu" pid="bbfequg" name="Sect2" level="2" number="4.1.4"> <text>Creating a Custom View for an Entry</text> </target>
+
+ <target id="bbg1ly1" pid="bbfequg" name="Procedure" level="3" number="1"> <text>Expand Entry view definition.</text> </target>
+
+ <target id="bbg1ly2" pid="bbfequg" name="Step" level="4" number="1"> <text>Expand Entry view definition.</text> </target>
+
+ <target id="bbg1mma" pid="bbfequg" name="Step" level="4" number="2"> <text>Select and delete the Description and Attachments elements.</text> </target>
+
+ <target id="bbg1ngp" pid="bbfequg" name="Step" level="4" number="3"> <text>Click Entry view definition, click Add in the option dialog, and click Time Off Dates and Time.</text> </target>
+
+ <target id="bbg1nps" pid="bbfequg" name="Step" level="4" number="4"> <text>Click OK.</text> </target>
+
+ <target id="bbgeq6z" pid="bbfequg" name="Step" level="4" number="5"> <text>Click Add in the option dialog, click Reason for Time Off, then click OK.</text> </target>
+
+ <target id="bbg1oxh" pid="bbfequg" name="Step" level="4" number="6"> <text>Move the Reason for Time Off element to below the Entry creator and creation date element, and move the Time Off Dates and Time element to below the Reason for Time Off element.</text> </target>
+
+ <target id="bbg062f" pid="bbg062f" name="Sect1" level="1" number="4.2"> <text>Using a Custom Entry</text> </target>
+
+ <target id="bbg26pg" pid="bbg062f" name="Sect2" level="2" number="4.2.1"> <text>Configuring a Folder to Use Your Custom Entry</text> </target>
+
+ <target id="bbg1x4g" pid="bbg062f" name="Procedure" level="3" number="1"> <text>Find the folder you want to use for the team's Time Off entries (Engineering &#62; Time Off Entries for this example procedure).</text> </target>
+
+ <target id="bbg1x4h" pid="bbg062f" name="Step" level="4" number="1"> <text>Find the folder you want to use for the team's Time Off entries (Engineering &#62; Time Off Entries for this example procedure).</text> </target>
+
+ <target id="bbg1y9g" pid="bbg062f" name="Step" level="4" number="2"> <text>Select the Manage &#62; Configure menu item.</text> </target>
+
+ <target id="bbg1z8g" pid="bbg062f" name="Step" level="4" number="3"> <text>Under Allowed Views, select the Discussion folder viewed as a table and Discussion folder viewed as a list options, deselect any others, then click Apply.</text> </target>
+
+ <target id="bbg21xl" pid="bbg062f" name="Step" level="4" number="4"> <text>Under Default view, select the Discussion folder viewed as a list option and click Apply.</text> </target>
+
+ <target id="bbg231u" pid="bbg062f" name="Step" level="4" number="5"> <text>Under Default entry types, select the Time Off entry type (deselect any others) and click Apply.</text> </target>
+
+ <target id="bbg23bs" pid="bbg062f" name="Step" level="4" number="6"> <text>At the top or bottom of this window, click Close.</text> </target>
+
+ <target id="bbgehyt" pid="bbg062f" name="Sect2" level="2" number="4.2.2"> <text>Adding a Time Off Entry</text> </target>
+
+ <target id="bbgei4f" pid="bbg062f" name="Procedure" level="3" number="1"> <text>Select the New &#62; Time Off menu item.</text> </target>
+
+ <target id="bbgei4g" pid="bbg062f" name="Step" level="4" number="1"> <text>Select the New &#62; Time Off menu item.</text> </target>
+
+ <target id="bbgein6" pid="bbg062f" name="Step" level="4" number="2"> <text>Fill out the Time Off entry form.</text> </target>
+
+ <target id="bbgejfx" pid="bbg062f" name="Step" level="4" number="3"> <text>Click OK.</text> </target>
+
+ <target id="bbgeol1" pid="bbg062f" name="Sect2" level="2" number="4.2.3"> <text>View the Time Off Entry</text> </target>
+
+ <target id="bbgeow9" pid="bbg062f" name="Procedure" level="3" number="1"> <text>Click the title of the Time Off entry you want to view.</text> </target>
+
+ <target id="bbgeowa" pid="bbg062f" name="Step" level="4" number="1"> <text>Click the title of the Time Off entry you want to view.</text> </target>
+
+ <target id="bbgep9v" pid="bbg062f" name="Step" level="4" number="2"> <text>View the entry. You can see that it displays the elements selected for this custom view.</text> </target>
+
+</targets>
