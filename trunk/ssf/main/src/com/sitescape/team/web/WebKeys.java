@@ -877,6 +877,7 @@ public class WebKeys {
     public static final String FIND_INSTANCE_CODE="ssFindInstanceCode";
     public static final String FIND_LEAVE_RESULTS_VISIBLE="ssFindLeaveResultsVisible";
     public static final String FIND_SEARCH_SUBFOLDERS="ssFindSearchSubFolders";
+    public static final String FIND_SHOW_USER_TITLE_ONLY="ssShowUserTitleOnly";
     public static final String FIND_FOLDERS_ONLY="ssFindFoldersOnly";
     public static final String FIND_ACCESSIBILITY_TEXT="accessibilityText";
     public static final String FIND_ADD_CURRENT_USER="ssFindAddCurrentUser";
