@@ -1642,8 +1642,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							entryData.put(nameValue, valuesTrimmed);
 							//Now see if there are any attributes added in a set
 							for (String setName : valuesList) {
-								if (inputData.exists(nameValue+"__set__"+setName)) {
-									String[] values2 = inputData.getValues(nameValue+"__set__"+setName);
+								if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET+setName)) {
+									String[] values2 = inputData.getValues(nameValue+ENTRY_ATTRIBUTES_SET+setName);
 									List<String> valuesList2 = new ArrayList();
 									for (int i = 0; i < values2.length; i++) {
 										if (!values2[i].equals("")) {
@@ -1655,13 +1655,42 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 									}
 									String[] valuesTrimmed2 = new String[valuesList2.size()];
 									for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
-									entryData.put(nameValue+"__set__"+setName, valuesTrimmed2);
-									if (inputData.exists(nameValue+"__setMultipleAllowed__"+setName) && 
-											inputData.getSingleValue(nameValue+"__setMultipleAllowed__"+setName).equals("on")) {
-										entryData.put(nameValue+"__setMultipleAllowed__"+setName, true);
+									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
+									if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName) && 
+											inputData.getSingleValue(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName).equals("on")) {
+										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, true);
 									} else {
-										entryData.put(nameValue+"__setMultipleAllowed__"+setName, false);
+										entryData.put(nameValue+ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED+setName, false);
 									}
+								}
+							}
+						}
+					} else if (itemName.equals("entryAttributes")) {
+						//The values are the names of the attribute sets
+						if (inputData.exists(nameValue)) {
+							String[] values = inputData.getValues(nameValue);
+							List<String> valuesList = new ArrayList();
+							for (int i = 0; i < values.length; i++) {
+								if (!values[i].equals("")) {
+									valuesList.add(values[i]);
+								}
+							}
+							String[] valuesTrimmed = new String[valuesList.size()];
+							for (int i = 0; i < valuesList.size(); i++) valuesTrimmed[i] = valuesList.get(i);
+							entryData.put(nameValue, valuesTrimmed);
+							//Now see if there are any attributes added in a set
+							for (String setName : valuesList) {
+								if (inputData.exists(nameValue+ENTRY_ATTRIBUTES_SET+setName)) {
+									String[] values2 = inputData.getValues(nameValue+ENTRY_ATTRIBUTES_SET+setName);
+									List<String> valuesList2 = new ArrayList();
+									for (int i = 0; i < values2.length; i++) {
+										if (!values2[i].equals("")) {
+											valuesList2.add(values2[i]);
+										}
+									}
+									String[] valuesTrimmed2 = new String[valuesList2.size()];
+									for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
+									entryData.put(nameValue+ENTRY_ATTRIBUTES_SET+setName, valuesTrimmed2);
 								}
 							}
 						}

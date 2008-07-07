@@ -85,6 +85,7 @@
     singleItem="true"
     accessibilityText="${accessibilityText}"
     addCurrentUser="${ssFindAddCurrentUser}"
+    showUserTitleOnly="${ssShowUserTitleOnly}"
     /> 
     <c:if test="${ssFindListType == 'user'}">
       <div><span class="ss_fineprint"><ssf:nlt tag="navigation.findUser"/></span></div>

@@ -82,6 +82,10 @@ public interface DefinitionModule {
 	public List<Definition> getDefinitions(Long binderId, Boolean includeAncestors, Integer type);
 	public Document getDefinitionConfig();
 	public Document getDefinitionAsXml(Definition def);
+	
+	public static String ENTRY_ATTRIBUTES_SET = "__set__";
+	public static String ENTRY_ATTRIBUTES_SET_MULTIPLE_ALLOWED = "__setMultipleAllowed__";
+	
 	/**
 	 * Routine to process the input data and return a map of only the entry data
 	 * 
