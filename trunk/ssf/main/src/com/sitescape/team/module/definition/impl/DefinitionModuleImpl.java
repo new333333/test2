@@ -1605,7 +1605,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 								
 					//We have the element name, see if it has a value in the input data
 					if (itemName.equals("description") || itemName.equals("htmlEditorTextarea")) {
-						//Use the helper routine to parse the date into a date object
 						Description description = new Description();
 						if (inputData.exists(nameValue)) {
 							description.setText(inputData.getSingleValue(nameValue));
@@ -1616,7 +1615,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							entryData.put(nameValue, description);
 						}
 					} else if (itemName.equals("folderBranding") || itemName.equals("workspaceBranding")) {
-						//Use the helper routine to parse the date into a date object
 						Description description = new Description();
 						if (inputData.exists(nameValue)) {
 							description.setText(inputData.getSingleValue(nameValue));
@@ -1625,6 +1623,47 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 							WebHelper.scanDescriptionForAttachmentFileUrls(description);
 							WebHelper.scanDescriptionForICLinks(description);
 							entryData.put(nameValue, description.getText());
+						}
+					} else if (itemName.equals("folderAttributeList")) {
+						//The values are the names of the attribute sets
+						if (inputData.exists(nameValue)) {
+							String[] values = inputData.getValues(nameValue);
+							List<String> valuesList = new ArrayList();
+							for (int i = 0; i < values.length; i++) {
+								if (!values[i].equals("")) {
+									if (!inputData.exists(nameValue + "__delete__" + values[i]) || 
+											!inputData.getSingleValue(nameValue + "__delete__" + values[i]).equals("on")) {
+										if (!values[i].contains("__")) valuesList.add(values[i]);
+									}
+								}
+							}
+							String[] valuesTrimmed = new String[valuesList.size()];
+							for (int i = 0; i < valuesList.size(); i++) valuesTrimmed[i] = valuesList.get(i);
+							entryData.put(nameValue, valuesTrimmed);
+							//Now see if there are any attributes added in a set
+							for (String setName : valuesList) {
+								if (inputData.exists(nameValue+"__set__"+setName)) {
+									String[] values2 = inputData.getValues(nameValue+"__set__"+setName);
+									List<String> valuesList2 = new ArrayList();
+									for (int i = 0; i < values2.length; i++) {
+										if (!values2[i].equals("")) {
+											if (!inputData.exists(nameValue + "__delete__" + setName + "__" + values2[i]) || 
+													!inputData.getSingleValue(nameValue + "__delete__" + setName + "__" + values2[i]).equals("on")) { 
+												if (!values2[i].contains("__")) valuesList2.add(values2[i]);
+											}
+										}
+									}
+									String[] valuesTrimmed2 = new String[valuesList2.size()];
+									for (int i = 0; i < valuesList2.size(); i++) valuesTrimmed2[i] = valuesList2.get(i);
+									entryData.put(nameValue+"__set__"+setName, valuesTrimmed2);
+									if (inputData.exists(nameValue+"__setMultipleAllowed__"+setName) && 
+											inputData.getSingleValue(nameValue+"__setMultipleAllowed__"+setName).equals("on")) {
+										entryData.put(nameValue+"__setMultipleAllowed__"+setName, true);
+									} else {
+										entryData.put(nameValue+"__setMultipleAllowed__"+setName, false);
+									}
+								}
+							}
 						}
 					} else if (itemName.equals("date") || itemName.equals("date_time")) {
 						//Use the helper routine to parse the date into a date object

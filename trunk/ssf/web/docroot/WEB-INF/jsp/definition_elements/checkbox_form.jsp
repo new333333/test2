@@ -31,23 +31,14 @@
 <% //Checkbox form element %>
 <%@ include file="/WEB-INF/jsp/definition_elements/init.jsp" %>
 
-<%
-	//Get the form item being displayed
-	Element item = (Element) request.getAttribute("item");
-	String elementName = (String) request.getAttribute("property_name");
-	String caption = (String) request.getAttribute("property_caption");
-	String required = (String) request.getAttribute("property_required");
-	if (required == null) {required = "";}
-	if (required.equals("true")) {
-		required = "<span class=\"ss_required\">*</span>";
-	} else {
-		required = "";
-	}
-%>
 <c:set var="cb_checked" value=""/>
 <c:if test="${ssDefinitionEntry.customAttributes[property_name].value}" >
-<c:set var="cb_checked" value="checked"/>
+  <c:set var="cb_checked" value="checked"/>
 </c:if>
+<c:set var="required" value=""/>
 <div class="ss_entryContent">
-<input type="checkbox" name="<%= elementName %>" id="checkbox_<%= elementName %>" <c:out value="${cb_checked}"/> /> <span class="ss_labelRight"><label for="checkbox_<%= elementName %>"><%= caption %></label><%= required %></span>
+<input type="checkbox" name="${property_name}" 
+  id="checkbox_${property_name}" <c:out value="${cb_checked}"/> 
+/> <span class="ss_labelRight"><label for="checkbox_${property_name}">${property_caption}</label></span><c:if 
+  test="${property_required}" ><span class="ss_required">*</span></c:if>
 </div>

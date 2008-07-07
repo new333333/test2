@@ -250,6 +250,31 @@
 		<webService apply="true" elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderIcon" />
 	</item>
 	
+	<item name="entryAttributes" caption="__attributes" type="data" multipleAllowed="true" 
+		category="entryData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" />
+			<property name="name" caption="__data_name" type="text"
+				characterMask="^[\p{L}\p{Nd}][\p{L}\p{Nd}_-]*$"
+				unique="//item[@type='data']">
+				<help>ihelp.designers.data_name</help>
+			</property>
+			<property name="source" caption="__sourceElementInParentFolder" type="text"/>
+			<property name="required" caption="__required" type="boolean"
+				default="false">
+				<help>ihelp.designers.required</help>
+			</property>
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/entry_attributes_form.jsp"/>
+		</jsps>
+		<index apply="true"
+			fieldBuilder="com.sitescape.team.module.definition.index.FieldBuilderEntryAttributes"/>
+		<webService apply="true"
+			elementBuilder="com.sitescape.team.module.definition.ws.ElementBuilderEntryAttributes"/>
+		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEntryAttributes" />
+	</item>
+	
 	<item name="event" caption="__event" type="data" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
@@ -326,7 +351,7 @@
 		<notify notifyBuilder="com.sitescape.team.module.definition.notify.NotifyBuilderEntry"/>
 	</item>
 <!-- folder entry view items -->
-		<item name="titleView" caption="__title" category="entryViewData"  display="view">
+	<item name="titleView" caption="__title" category="entryViewData"  display="view">
 		<properties>
 			<property name="caption" caption="__caption" type="text" value="__title"/>
 		</properties>
@@ -555,6 +580,18 @@
 			<jsp name="default" value="/WEB-INF/jsp/definition_elements/binder_branding_form.jsp" />
 		</jsps>
 		<help>ihelp.designers.branding</help>
+	</item>
+	
+	<item name="folderAttributeList" caption="__attributeList" type="data" multipleAllowed="true" 
+			category="folderData" display="form">
+		<properties>
+			<property name="caption" caption="__caption" type="text" value="__attributeList"/>
+			<property name="name" caption="__name" type="text" />
+		</properties>
+		<jsps>
+			<jsp name="default" value="/WEB-INF/jsp/definition_elements/binder_attributes_form.jsp" />
+		</jsps>
+		<help>ihelp.designers.attributeList</help>
 	</item>
 	
 <!-- Folder view	-->
@@ -2425,14 +2462,14 @@
 			<option_select definitionType="1" path="//item[@category='entryLayout']" />
 		</options>
 	</item>
-	<item name="remoteApp" caption="__remote_app" type="data" category="entryData" display="form">
+	<item name="remoteApp" caption="__remoteApp" type="data" category="entryData" display="form">
 		<properties>
 			<property name="caption" caption="__caption" type="text"/>
 			<property name="name" caption="__data_name" type="text" 
 			  characterMask="^[a-zA-Z][a-zA-Z0-9_-]*$" unique="//item[@type='data']">
 				<help>ihelp.designers.data_name</help>
 			</property>
-			<property name="remoteApp" caption="__remote_app_name" type="remoteApp"/>
+			<property name="remoteApp" caption="__remoteApp" type="remoteApp"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option name="title" definitionType="1" caption="__title" />
@@ -2447,9 +2484,9 @@
 		<help>ihelp.designers.remote_app</help>
 	</item>
 		
-	<item name="remoteAppView" type="dataView" caption="__remote_app" category="entryViewData" display="view">
+	<item name="remoteAppView" type="dataView" caption="__remoteApp" category="entryViewData" display="view">
 		<properties>
-			<property name="remoteApp" caption="__remote_app_name" type="remoteApp"/>
+			<property name="remoteApp" caption="__remoteApp" type="remoteApp"/>
 		</properties>
 		<options optionCaption="__standard_entry_options">
 			<option_select path="//item[@category='commonEntryViewData']" />
