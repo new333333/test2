@@ -914,7 +914,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 						Element newPropertyEle = newPropertiesEle.addElement("property");
 						//just copy name and value
 						newPropertyEle.addAttribute("name", attrName);
-						if (type.equals("text") || type.equals("remoteApp")) {
+						if (type.equals("text") || type.equals("remoteApp") || type.equals("subProcess")) {
 							newPropertyEle.addAttribute("value", value);
 						} else if (type.equals("textarea")) {
 							newPropertyEle.setText(value);

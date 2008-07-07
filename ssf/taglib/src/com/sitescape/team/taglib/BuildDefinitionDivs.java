@@ -1215,6 +1215,28 @@ public class BuildDefinitionDivs extends TagSupport {
 						}
 						sb.append("</select>\n<br/><br/>\n");
 
+					} else if (type.equals("subProcess")) {
+						String selectedId ="";
+						Element processProperty = (Element)rootElement.selectSingleNode("properties/property[@name='definitionId']");
+						if (processProperty != null) selectedId = processProperty.attributeValue("value", "");
+						sb.append(propertyConfigCaption);
+						sb.append("<select name=\"propertyId_" + 
+								propertyId + "\">\n");
+						sb.append("<option value=\"\">").append(NLT.get("definition.select_subProcess")).append("</option>\n");
+						SortedMap<String, Definition> defs = DefinitionHelper.getAvailableDefinitions(binderId, Definition.WORKFLOW);
+						for (Map.Entry<String, Definition> me:defs.entrySet()) {
+							//Build a list of the entry definitions
+							Definition entryDef = me.getValue();
+							if (entryDef.getId().equals(sourceDocument.getRootElement().attributeValue("databaseId"))) continue;
+							sb.append("<option value=\"").append(entryDef.getId()).append("\"");
+							if (entryDef.getId().equals(selectedId)) {
+								sb.append(" selected=\"selected\"");
+							}
+							sb.append(">").append(me.getKey().replaceAll("&", "&amp;")).append("</option>\n");								
+						}
+
+						sb.append("</select>\n<br/><br/>\n");
+
 					} else {
 						sb.append(propertyConfigCaption);
 						sb.append("<input type=\"text\" class=\"ss_text\" name=\"propertyId_" + propertyId + "\" size=\"40\" ");
