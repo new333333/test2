@@ -36,7 +36,7 @@
 		Element item = (Element) request.getAttribute("item");
 		String alignment = (String) request.getAttribute("property_alignment");
 		String divClass = "ss_buttonBarLeft";
-		if (alignment.equals("right")) {
+		if ("right".equals(alignment)) {
 			divClass = "ss_buttonBarRight";
 		}
 		

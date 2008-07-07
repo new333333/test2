@@ -105,7 +105,7 @@ public class DisplayConfiguration extends TagSupport {
 
 		if (this.configDefinition == null) {
 			release();
-			throw new JspException("No configuration definition available.");
+			throw new JspException("A non-null configuration definition is required.");
 		}
 		List<Element> items = new ArrayList<Element>();
 		if (processThisItem) {
@@ -148,16 +148,14 @@ public class DisplayConfiguration extends TagSupport {
 				pageContext.getOut().print(
 						"<!-- end " + jsps.getFirst() + " -->");
 			} catch (ServletException e) {
+				release();
 				throw new JspException(
 						"Servlet exception when attempting to include JSP "
-								+ jsps.getFirst() + " in "
-								+ configElement.getQualifiedName(), e);
+								+ jsps.getFirst(), e);
 			} catch (IOException e) {
-				throw new JspException("IO error writing JSP "
-						+ jsps.getFirst() + " in "
-						+ configElement.getQualifiedName(), e);
-			} finally {
 				release();
+				throw new JspException("IO error writing JSP "
+						+ jsps.getFirst(), e);
 			}
 		}
 		return SKIP_BODY;
