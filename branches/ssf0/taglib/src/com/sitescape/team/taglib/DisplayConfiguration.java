@@ -28,6 +28,8 @@
  */
 package com.sitescape.team.taglib;
 
+import static com.sitescape.team.module.shared.XmlUtils.maybeGetText;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +48,7 @@ import org.apache.commons.lang.StringUtils;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.Node;
 
 import com.sitescape.team.ObjectKeys;
 import com.sitescape.team.domain.DefinableEntity;
@@ -68,9 +71,11 @@ import com.sitescape.util.servlet.StringServletResponse;
  * 
  */
 public class DisplayConfiguration extends TagSupport {
-	private static final String CUSTOM_JSP_DIR = "/WEB-INF/jsp/custom_jsps/";
+	private static final String CUSTOM_JSP_PATH = "/WEB-INF/jsp/custom_jsps/";
+	private static final String EXTENSION_PATH = "/WEB-INF/opt/";
 	private static final String VIEW_JSP_TYPE = "viewJsp";
 	private static final String MOBILE_JSP_TYPE = "mobileJsp";
+	private static final String EXTENSION_ATTR = "extension";
 	private static final String DATA_VIEW_ATTR = "dataView";
 	private static final String CUSTOM_JSP_ATTR = "customJsp";
 	private static final String CUSTOM_JSP_NAME_ATTR = "customJspName";
@@ -115,6 +120,11 @@ public class DisplayConfiguration extends TagSupport {
 		for (Element item : items) {
 			String name = item.attributeValue("name", "");
 			Element itemDef = configBuilder.getItem(configDefinition, name);
+			if (itemDef == null) {
+				throw new JspException(
+						"Unable to determine definition for item with name \""
+								+ name + "\"");
+			}
 			Pair<String, String> jsps = determineJsps(item, itemDef);
 
 			if (StringUtils.isBlank(jsps.getFirst())) {
@@ -123,7 +133,6 @@ public class DisplayConfiguration extends TagSupport {
 			}
 			RequestDispatcher rd = pageContext.getRequest()
 					.getRequestDispatcher(jsps.getFirst());
-
 			ServletRequest req = new DynamicServletRequest(
 					(HttpServletRequest) pageContext.getRequest());
 
@@ -132,29 +141,25 @@ public class DisplayConfiguration extends TagSupport {
 			StringServletResponse res = new StringServletResponse(
 					(HttpServletResponse) pageContext.getResponse());
 			try {
-				// FIXME ???!!!
+				// XXX ?!?!
 				rd.include(req, res);
 				pageContext.getOut().print("<!-- " + jsps.getFirst() + " -->");
 				pageContext.getOut().print(res.getString());
 				pageContext.getOut().print(
-						"<!-- end "
-								+ jsps.getFirst().substring(
-										jsps.getFirst().lastIndexOf('/') + 1)
-								+ " -->");
+						"<!-- end " + jsps.getFirst() + " -->");
 			} catch (ServletException e) {
 				throw new JspException(
 						"Servlet exception when attempting to include JSP "
 								+ jsps.getFirst() + " in "
 								+ configElement.getQualifiedName(), e);
 			} catch (IOException e) {
-				throw new JspException("IO error writing to JSPWriter for JSP "
+				throw new JspException("IO error writing JSP "
 						+ jsps.getFirst() + " in "
 						+ configElement.getQualifiedName(), e);
 			} finally {
 				release();
 			}
-		} // end for
-		release();
+		}
 		return SKIP_BODY;
 	}
 
@@ -170,12 +175,9 @@ public class DisplayConfiguration extends TagSupport {
 		String name = item.attributeValue("name", "");
 		DefinitionConfigurationBuilder configBuilder = DefinitionHelper
 				.getDefinitionBuilderConfig();
-		if (itemDef == null) {
-			throw new JspException(
-					"Unable to determine item definition for item "
-							+ item.getQualifiedName() + " with name " + name);
-		}
 		String result = null;
+		String prefixPath = item.getDocument().getRootElement().attributeValue(
+				EXTENSION_ATTR) != null ? EXTENSION_PATH : CUSTOM_JSP_PATH;
 		String fallback = configBuilder.getItemJspByStyle(itemDef, name,
 				this.configJspStyle);
 
@@ -183,29 +185,26 @@ public class DisplayConfiguration extends TagSupport {
 			// item[@name='customJsp']
 			result = DefinitionUtils.getPropertyValue(item, "formJsp");
 			if (StringUtils.isNotBlank(result)) {
-				return new Pair<String, String>(CUSTOM_JSP_DIR + result,
+				return new Pair<String, String>(prefixPath + result,
 						fallback);
 			}
 		}
 
-		String jspType = configJspStyle.equals(Definition.JSP_STYLE_MOBILE) ? MOBILE_JSP_TYPE
+		String jspType = Definition.JSP_STYLE_MOBILE.equals(configJspStyle) ? MOBILE_JSP_TYPE
 				: VIEW_JSP_TYPE;
 		if (CUSTOM_JSP_NAME_ATTR.equals(name)) {
 			// item[@name='customJspName']
 			result = DefinitionUtils.getPropertyValue(item, jspType);
 			if (StringUtils.isNotBlank(result)) {
-				return new Pair<String, String>(CUSTOM_JSP_DIR + result,
+				return new Pair<String, String>(prefixPath + result,
 						fallback);
 			}
 		}
-
-		if (!"true".equals(item.selectSingleNode(
-				"jsps/jsp[@name='custom']/@inherit").getText())) {
+		if (!"true".equals(maybeGetText(item, "jsps/jsp[@name='custom']/@inherit", null))) {
 			// <jsp> defined, inherit is false or undefined
-			result = item.selectSingleNode("jsps/jsp[@name='custom']/@value")
-					.getText();
+			result = maybeGetText(item, "jsps/jsp[@name='custom']/@value", null);
 			if (StringUtils.isNotBlank(result)) {
-				return new Pair<String, String>(CUSTOM_JSP_DIR + result,
+				return new Pair<String, String>(prefixPath + result,
 						fallback);
 			}
 		}
@@ -218,20 +217,16 @@ public class DisplayConfiguration extends TagSupport {
 			// item[@formItem='customJsp']
 			result = DefinitionUtils.getPropertyValue(item, jspType);
 			if (StringUtils.isNotBlank(result)) {
-				return new Pair<String, String>(CUSTOM_JSP_DIR + result,
+				return new Pair<String, String>(prefixPath + result,
 						fallback);
 			}
 		}
 		// maybe inherit jsp definition
-		String nameProp = item.selectSingleNode(
-				".//item/properties/property[@name='name']/@value").getText();
-		result = this.configDefinition
-				.selectSingleNode(
-						"//item[@type='form']//item/properties/property[@name='name' and @value='"
-								+ nameProp
-								+ "']/../../jsps/jsp[@name='custom']/@value")
-				.getText();
-		result = StringUtils.isNotBlank(result) ? CUSTOM_JSP_DIR + result
+		String nameProp = maybeGetText(item, ".//item/properties/property[@name='name']/@value", "");
+		result = maybeGetText(this.configDefinition, "//item[@type='form']//item/properties/property[@name='name' and @value='"
+				+ nameProp
+				+ "']/../../jsps/jsp[@name='custom']/@value", null);
+		result = StringUtils.isNotBlank(result) ? prefixPath + result
 				: fallback;
 		return new Pair<String, String>(result, fallback);
 	}
@@ -269,9 +264,9 @@ public class DisplayConfiguration extends TagSupport {
 			if (propertyType.equals("selectbox")) {
 				String requestKey = PROP_LIST_KEY + propertyName;
 				req.setAttribute(requestKey, CollectionUtil.map(
-						new CollectionUtil.Func1<String, String>() {
-							public String apply(String x) {
-								return NLT.get(x);
+						new CollectionUtil.Func1<Node, String>() {
+							public <Source extends Node> String apply(Source x) {
+								return NLT.get(x.getText());
 							}
 						}, item.selectNodes("properties/property[@name='"
 								+ propertyName + "']/@value")));
@@ -280,8 +275,8 @@ public class DisplayConfiguration extends TagSupport {
 			Element selItem = (Element) item
 					.selectSingleNode("properties/property[@name='"
 							+ propertyName + "']");
-			val = (selItem != null && "textarea".equals(propertyType)) ? val
-					: selItem.getText();
+			val = (selItem != null && "textarea".equals(propertyType)) ? selItem.getText()
+					: val;
 			req.setAttribute(property.attributeValue("setAttribute",
 					PROP_KEY + propertyName), val);
 		}

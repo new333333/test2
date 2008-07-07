@@ -30,7 +30,7 @@ package com.sitescape.team.util;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.io.File;
+
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;

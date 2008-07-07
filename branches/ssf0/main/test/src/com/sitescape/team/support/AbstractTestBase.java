@@ -35,6 +35,9 @@ import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.annotation.Resource;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
@@ -50,6 +53,7 @@ import com.sitescape.team.context.request.RequestContext;
 import com.sitescape.team.context.request.RequestContextHolder;
 import com.sitescape.team.dao.impl.CoreDaoImpl;
 import com.sitescape.team.dao.impl.ProfileDaoImpl;
+import com.sitescape.team.domain.Application;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoWorkspaceByTheNameException;
 import com.sitescape.team.domain.ProfileBinder;
@@ -57,6 +61,12 @@ import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.profile.ProfileModule;
 import com.sitescape.team.module.zone.ZoneModule;
+import com.sitescape.team.security.dao.SecurityDao;
+import com.sitescape.team.security.function.Function;
+import com.sitescape.team.security.function.FunctionManager;
+import com.sitescape.team.security.function.WorkAreaFunctionMembership;
+import com.sitescape.team.security.function.WorkAreaFunctionMembershipManager;
+import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.util.Pair;
 
@@ -99,6 +109,12 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 	protected ProfileModule profiles;
 	@Autowired
 	protected ZoneModule zones;
+	@Autowired
+	protected WorkAreaFunctionMembershipManager memberships;
+	@Autowired
+	protected FunctionManager functions;
+	@Autowired
+	protected SecurityDao security;
 
 	/* (non-Javadoc)
 	 * @see org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests#setDataSource(javax.sql.DataSource)
@@ -211,6 +227,48 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 		 RequestContext mRequestContext = createMock(RequestContext.class);
 		 RequestContextHolder.setRequestContext(mRequestContext);
 		 return mRequestContext;
+	}
+	
+	protected RequestContext fakeRequestContext(User u) {
+		RequestContext result = fakeRequestContext();
+		expect(result.getUser()).andStubReturn(u);
+		expect(result.getUserId()).andStubReturn(u.getId());
+		expect(result.getUserName()).andStubReturn(u.getName());
+		return result;
+	}
+	
+	protected RequestContext fakeRequestContext(Pair<User, Workspace> p) {
+		RequestContext result = fakeRequestContext(p.getFirst());
+		expect(result.getZone()).andStubReturn(p.getSecond());
+		expect(result.getZoneId()).andStubReturn(p.getSecond().getZoneId());
+		expect(result.getZoneName()).andStubReturn(p.getSecond().getName());
+		Application app = new Application();
+		app.setTrusted(true);
+		expect(result.getApplication()).andStubReturn(app);
+		expect(result.getApplicationId()).andStubReturn(app.getId());
+		return result;
+	}
+	
+
+	protected void addOperationFor(WorkAreaOperation op, User u) {
+		Workspace ws = coreDao.findById(Workspace.class, u.getWorkspaceId());
+		Function f = new Function();
+		f.setName("test_" + op.getName());
+		f.addOperation(op);
+		f.setZoneId(ws.getZoneId());
+		functions.addFunction(f);
+		WorkAreaFunctionMembership mem = new WorkAreaFunctionMembership();
+		mem.setZoneId(ws.getZoneId());
+		mem.setFunctionId(f.getId());
+		mem.setWorkAreaId(ws.getId());
+		mem.setWorkAreaType(ws.getWorkAreaType());
+		Set<Long> mIds = new HashSet<Long>();
+		mIds.add(u.getId());
+		mem.setMemberIds(mIds);
+		memberships.addWorkAreaFunctionMembership(mem);
+	
+		assert security.checkWorkAreaFunctionMembership(ws.getZoneId(), ws
+				.getId(), ws.getWorkAreaType(), op.getName(), mIds);
 	}
 
 }
