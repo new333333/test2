@@ -50,6 +50,7 @@ public interface FolderService {
 	public void folder_modifyEntry(String accessToken, FolderEntry entry);
 	
 	public long folder_addReply(String accessToken, long parentEntryId, FolderEntry reply, String attachedFileName);
-
+	
+	public void folder_deleteEntry(String accessToken, long binderId, long entryId);
 
 }

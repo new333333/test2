@@ -354,6 +354,12 @@ public class BaseService extends AbstractAllModulesInjected implements ElementBu
 		entryBrief.setDocNumber(entry.getDocNumber());
 		entryBrief.setDocLevel(entry.getDocLevel());
 		entryBrief.setHref(WebUrlUtil.getEntryViewURL(entry));
+		if(entry.getCreation() != null) {
+			entryBrief.setCreation(toTimestampModel(entry.getCreation()));
+		}
+		if(entry.getModification() != null) {
+			entryBrief.setModification(toTimestampModel(entry.getModification()));
+		}
 		if(entry.getAverageRating() != null) {
 			entryBrief.setAverageRating(toAverageRatingModel(entry.getAverageRating()));
 		}	

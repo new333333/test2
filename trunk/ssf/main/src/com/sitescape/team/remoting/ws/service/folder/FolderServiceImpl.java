@@ -324,5 +324,9 @@ public class FolderServiceImpl extends BaseService implements FolderService, Fol
 			throw new RemotingException(e);
 		}			
 	}
+
+	public void folder_deleteEntry(String accessToken, long binderId, long entryId) {
+		getFolderModule().deleteEntry(binderId, entryId);
+	}
 	
 }

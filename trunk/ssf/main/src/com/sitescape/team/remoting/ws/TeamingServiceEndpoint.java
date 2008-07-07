@@ -183,6 +183,9 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public void folder_uploadFileStaged(String accessToken, long binderId, long entryId, String fileUploadDataItemName, String fileName, String stagedFileRelativePath) {
 		getFolderService().folder_uploadFileStaged(accessToken, binderId, entryId, fileUploadDataItemName, fileName, stagedFileRelativePath);
 	}
+	public void folder_deleteEntry(String accessToken, long binderId, long entryId) {
+		getFolderService().folder_deleteEntry(accessToken, binderId, entryId);
+	}
 	public void ical_uploadCalendarEntriesWithXML(String accessToken, long folderId, String iCalDataAsXML) {
 		getIcalService().ical_uploadCalendarEntriesWithXML(accessToken, folderId, iCalDataAsXML);
 	}
