@@ -11,9 +11,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
@@ -32,11 +30,6 @@ import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.module.definition.DefinitionModule;
 import com.sitescape.team.module.extension.ExtensionDeployNotifier;
 import com.sitescape.team.module.template.TemplateModule;
-import com.sitescape.team.security.dao.SecurityDao;
-import com.sitescape.team.security.function.Function;
-import com.sitescape.team.security.function.FunctionManager;
-import com.sitescape.team.security.function.WorkAreaFunctionMembership;
-import com.sitescape.team.security.function.WorkAreaFunctionMembershipManager;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.support.AbstractTestBase;
 import com.sitescape.team.util.CollectionUtil;
@@ -60,12 +53,6 @@ public class WarExtensionDeployerTest<S extends ExtensionDeployNotifier<S>>
 	private DefinitionModule definitions;
 	@Autowired
 	private ResourceLoader loader;
-	@Autowired
-	private WorkAreaFunctionMembershipManager memberships;
-	@Autowired
-	private FunctionManager functions;
-	@Autowired
-	private SecurityDao security;
 	@Autowired
 	private TemplateModule templates;
 
@@ -177,26 +164,5 @@ public class WarExtensionDeployerTest<S extends ExtensionDeployNotifier<S>>
 		expect(rc.getUser()).andStubReturn(u);
 		expect(rc.getApplication()).andReturn(app).times(2);
 		replay(rc);
-	}
-
-	private void addOperationFor(WorkAreaOperation op, User u) {
-		Workspace ws = coreDao.findById(Workspace.class, u.getWorkspaceId());
-		Function f = new Function();
-		f.setName("test_" + op.getName());
-		f.addOperation(op);
-		f.setZoneId(ws.getZoneId());
-		functions.addFunction(f);
-		WorkAreaFunctionMembership mem = new WorkAreaFunctionMembership();
-		mem.setZoneId(ws.getZoneId());
-		mem.setFunctionId(f.getId());
-		mem.setWorkAreaId(ws.getId());
-		mem.setWorkAreaType(ws.getWorkAreaType());
-		Set<Long> mIds = new HashSet<Long>();
-		mIds.add(u.getId());
-		mem.setMemberIds(mIds);
-		memberships.addWorkAreaFunctionMembership(mem);
-
-		assert security.checkWorkAreaFunctionMembership(ws.getZoneId(), ws
-				.getId(), ws.getWorkAreaType(), op.getName(), mIds);
 	}
 }

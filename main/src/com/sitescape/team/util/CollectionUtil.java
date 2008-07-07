@@ -85,6 +85,18 @@ public class CollectionUtil {
 	}
 	
 	/**
+	 * An interface specifying a function which simply returns a value. This is
+	 * especially useful for defining "lazy" computations, as the body of
+	 * {@link #apply()} is not evaluated until explicitly called.
+	 * 
+	 * @param <E> -
+	 *            the type of the returned value
+	 */
+	public interface Func0<E> {
+		E apply();
+	}
+	
+	/**
 	 * 
 	 * An interface specifying a function to take an <code>S</code> to a
 	 * <code>T</code>
@@ -147,10 +159,10 @@ public class CollectionUtil {
 	 * {@link Collection} and accumulates the result, starting with the seed
 	 * value <code>init</code>
 	 * 
-	 * @param <B> -
-	 *            the type of the elements of <code>xs</code>
 	 * @param <A> -
 	 *            the type to be returned
+	 * @param <B> -
+	 *            the type of the elements of <code>xs</code>
 	 * @param f -
 	 *            the accumulation {@link Func2}
 	 * @param init -
@@ -160,7 +172,7 @@ public class CollectionUtil {
 	 * @return the <code>T</code> value of accumulating all elements of
 	 *         <code>xs</code> with <code>init</code>
 	 */
-	public static <B, A> A foldl(Func2<A, B, A> f, A init, Collection<B> xs) {
+	public static <A, B> A foldl(Func2<A, B, A> f, A init, Collection<B> xs) {
 		A result = init;
 		for (B x : xs) {
 			result = f.apply(result, x);
