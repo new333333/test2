@@ -53,7 +53,7 @@ public class ElementBuilderAttachments extends AbstractElementBuilder {
 					value.addAttribute("href", webUrl);
 				}
 				if(attachments != null)
-					attachments.add(new Attachment(att.getFileItem().getName(), webUrl));
+					attachments.add(new Attachment(att.getId(), att.getFileItem().getName(), att.getFileItem().getLength(), webUrl));
 				context.handleAttachment(att, webUrl);
 			}
 		}
