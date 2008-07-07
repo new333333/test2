@@ -2524,7 +2524,6 @@
 			<option name="state" caption="__state" multipleAllowed="true" />
 			<option name="parallelThread" caption="__parallelThread" multipleAllowed="true" />
 			<option name="accessControls"/>
-			<option name="subProcess" caption="__subProcess" multipleAllowed="true" />
 		</options>
 	</item>
 	
@@ -2797,7 +2796,12 @@
 			<option name="workflowAction"/>
 		</options>
 	</item>
-	
+	<!-- not implemented yet -->
+	<item name="subProcess" caption="__subProcess" >
+		<properties>
+			<property name="definitionId" caption="__subProcess_name" type="subProcess"/>
+		</properties>
+	</item>
 	<item name="notifications" caption="__notifications"
 		  multipleAllowedInParent="false">
 		<properties>
