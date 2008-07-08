@@ -54,9 +54,6 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
 </div><br/>
 
-<jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
-<br/>
-<br/>
 <c:set var="actionVar" value="view_ws_listing"/>
 <c:if test="${ssDefinitionEntry.parentBinder.entityType == 'folder'}">
   <c:set var="actionVar" value="view_folder_listing"/>
@@ -71,6 +68,8 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
   href="<ssf:url action="view_folder_listing" binderId="${ssBinder.id}"/>">${ssBinder.title}</a>
 </span>
 <br/><br/>
+<jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
+
 <ssf:ifaccessible>
 <div id="ss_configureCol">
 <% // configure columns area %>
