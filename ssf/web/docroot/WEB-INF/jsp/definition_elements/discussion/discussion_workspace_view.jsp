@@ -34,7 +34,7 @@
 <c:set var="ss_discussionWorkspaceView" value="true" scope="request"/>
 <c:set var="ss_namespace" value="${renderResponse.namespace}" scope="request"/>
 <div align="center">
-<div id="ss_diss_inset">
+<div id="ss_diss_inset" class="discussionView">
 <div id="ss_diss_top">
   <div id="ss_topic_box">
 	<h1>${ssDefinitionEntry.title}</h1>
