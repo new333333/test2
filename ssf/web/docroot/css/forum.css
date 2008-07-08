@@ -419,9 +419,9 @@ ul.ss_userlist li {
 /* rules around the table and under the headers (ss_headerRow), but not between rows */
 /* used for folder listings of entries, usually with alternating shaded rows  */
 table.ss_borderTable {
-  border-left: 1px solid #6799C8; 
-  border-right: 1px solid #6799C8; 
-  border-bottom: 1px solid #6799C8;
+  border-left: .01em solid #6799C8; 
+  border-right: .01em solid #6799C8; 
+  border-bottom: .01em solid #6799C8;
   margin-top: 3px;
   width: 100%;
   }
@@ -431,7 +431,7 @@ table.ss_borderTable tr td {
   padding-bottom: 5px;
   padding-left: 5px;
   padding-right: 2px;
-  border: 1px solid #6799C8;
+  border: .01em solid #6799C8;
   border-collapse: collapse;
 } 
 
@@ -441,7 +441,7 @@ table.ss_borderTable tr.ss_headerRow td {
   padding-bottom: 2px;
   padding-left: 5px;
   padding-right: 2px;
-  border: 1px solid #6799C8;
+  border: .01em solid #6799C8;
   background-color: #f7f7f7;
   text-align:center;
 }
@@ -451,15 +451,15 @@ table.ss_borderTable tr.ss_headerRow th {
   padding-bottom: 2px;
   padding-left: 5px;
   padding-right: 2px;
-  border: 1px solid #6799C8;
+  border: .01em solid #6799C8;
   background-color: #DDE5EF;
   text-align:center;
 }
 /* rules around the table and between rows for Folder View */
 table.ss_borderFolderTable {
-  border-left: 1px solid #6799C8; 
-  border-right: 1px solid #6799C8; 
-  border-bottom: 1px solid #6799C8;
+  border-left: .01em solid #6799C8; 
+  border-right: .01em solid #6799C8; 
+  border-bottom: .01em solid #6799C8;
   margin-top: 3px;
   }
 
@@ -468,7 +468,7 @@ table.ss_borderFolderTable tr.ss_headerRow td {
   padding-bottom: 2px;
   padding-left: 5px;
   padding-right: 2px;
-  border: 1px solid #6799C8;
+  border: .01em solid #6799C8;
   background-color: #f7f7f7;
   text-align:center;
 }
@@ -478,7 +478,7 @@ table.ss_borderFolderTable tr.ss_headerRow th {
   padding-bottom: 2px;
   padding-left: 5px;
   padding-right: 2px;
-  border: 1px solid #6799C8;
+  border: .01em solid #6799C8;
   background-color: #DDE5EF;
   text-align:center;
 }
