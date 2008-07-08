@@ -40,11 +40,14 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.TreeMap;
-
+import java.io.File;
+import java.io.InputStream;
 import org.dom4j.Attribute;
 import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
+import org.dom4j.io.SAXReader;
+import org.xml.sax.SAXException;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,6 +69,8 @@ import com.sitescape.team.domain.Description;
 import com.sitescape.team.domain.Entry;
 import com.sitescape.team.domain.Event;
 import com.sitescape.team.domain.Group;
+import com.sitescape.team.domain.NoPrincipalByTheNameException;
+import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
@@ -84,6 +89,7 @@ import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
 import com.sitescape.team.survey.Survey;
+import com.sitescape.team.util.DirPath;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
@@ -173,12 +179,35 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
    		else checkAccess(getCoreDao().loadBinder(def.getBinderId(), def.getZoneId()), def.getType(), operation);
    	}
    
-	public Definition addDefinition(Document doc, Binder binder, String name, String title, boolean replace) throws AccessControlException {
+	public Definition addDefinition(InputStream indoc, Binder binder, String name, String title, boolean replace) throws AccessControlException, Exception {
+/*The current xsd is really for the configuration file.  The export defintions don't follow all the rules,
+  xsd:sequence in particular.  Until we either fix this or build a new xsd, this validating code is disabled.
+		SAXReader xIn = new SAXReader(true);
+        // The following code turns on XML schema-based validation
+        // features specific to Apache Xerces2 parser. Therefore it
+        // will not work when a different parser is used. 
+		xIn.setFeature("http://apache.org/xml/features/validation/schema", true); // Enables XML Schema validation
+		xIn.setFeature("http://apache.org/xml/features/validation/schema-full-checking",true); // Enables full (if slow) schema checking
+		xIn.setProperty(
+                "http://apache.org/xml/properties/schema/external-noNamespaceSchemaLocation",
+                DirPath.getDTDDirPath() + File.separator + "definition_builder_config.xsd");
+*/
+		SAXReader xIn = new SAXReader(false);
+		Document doc = xIn.read(indoc);  
 		String type = doc.getRootElement().attributeValue("type");
 	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
     	Definition def = doAddDefinition(doc, binder, name, title, replace);
     	return def;
 		
+	}
+	public Definition copyDefinition(String id, Binder binder, String name, String title) throws AccessControlException {
+		Definition srcDef = getDefinition(id);
+		Document doc = (Document)srcDef.getDefinition().clone();
+		doc.getRootElement().addAttribute("internalId", "");
+		doc.getRootElement().addAttribute("databaseId", "");
+		String type = doc.getRootElement().attributeValue("type");
+	   	checkAccess(binder, Integer.valueOf(type), DefinitionOperation.manageDefinition);
+    	return doAddDefinition(doc, binder, name, title, false);
 	}
 	public Definition addDefinition(Binder binder, String name, String title, Integer type, InputDataAccessor inputData) throws AccessControlException {
 	   	checkAccess(binder, type, DefinitionOperation.manageDefinition);
@@ -280,44 +309,8 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 				
 		return def;
 	}
-    public void updateDefinitionReferences(String defId) {
-    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-    	Definition def = getCoreDao().loadDefinition(defId, zoneId);
-    	Binder binder = null;
-    	if (def.getBinderId() != null) binder = getCoreDao().loadBinder(def.getBinderId(), zoneId);
-    	Document doc = def.getDefinition();
-    	if (doc == null) return;
-    	List<Element> replyStyles = doc.getRootElement().selectNodes("//properties/property[@name='replyStyle']");
-    	for (Element styleElement:replyStyles) {
-    		String styleId = styleElement.attributeValue("value", "");
-    		Definition namedDef;
-    		try {
-    			namedDef = getDefinitionByName(binder, true, styleId);
-   				styleId = namedDef.getId();
-   			} catch (NoDefinitionByTheIdException nd) {
-   				styleId = "";
-   			}
-   			styleElement.addAttribute("value", styleId);
-    	}
-		//not just on workflow types
-    	List<Element> conditions = doc.getRootElement().selectNodes("//workflowEntryDataUserList | //workflowCondition");
-    	for (Element condition:conditions) {
-    		String entryId = condition.attributeValue("definitionId", "");
-   			Definition namedDef;
-   	   		try {
-   	   			namedDef = getDefinitionByName(binder, true, entryId);
-   	   			entryId = namedDef.getId();
-   			} catch (NoDefinitionByTheIdException nd) {
-   				entryId = "";
-   			}
-  			condition.addAttribute("definitionId", entryId);
-	    }
-    	//Write out the new definition file
-    	def.setDefinition(doc);
-
-    }
     protected void setDefinition(Definition def, Document doc) {
- 
+    	 
    		//Make sure the definition name and caption remain consistent
     	doc.getRootElement().addAttribute("internalId", def.getInternalId());
     	doc.getRootElement().addAttribute("databaseId", def.getId());
@@ -337,6 +330,101 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     		getWorkflowModule().modifyProcessDefinition(def.getId(), def);
     	}
     }
+    //should be called after all imports are done, to handle definition cross references
+    public void updateDefinitionReferences(String defId) {
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+    	Definition def = getCoreDao().loadDefinition(defId, zoneId);
+    	Binder binder = null;
+    	if (def.getBinderId() != null) binder = getCoreDao().loadBinder(def.getBinderId(), zoneId);
+    	Document doc = def.getDefinition();
+    	if (doc == null) return;
+    	Map<Long, Principal> principalMap = new HashMap();
+    	Map<String, Definition> definitionMap = new HashMap();
+    	Element export = (Element)doc.getRootElement().selectSingleNode("./export-mappings");
+    	if (export == null) return;
+    	List<Element> exportElements = export.selectNodes("./export");
+    	for (Element exp:exportElements) {
+    		String strId = exp.attributeValue("principalId");
+    		if (Validator.isNotNull(strId)) {
+				try {
+					Long id = Long.valueOf(strId);
+					principalMap.put(id, getProfileDao().findPrincipalByName(exp.getTextTrim(), zoneId));
+				} catch (NumberFormatException nb) {
+				} catch (NoPrincipalByTheNameException np) {
+				}
+				
+    		} else {
+    			strId = exp.attributeValue("definitionId");
+    	   		if (Validator.isNotNull(strId)) {
+    	   			try {
+    	   				definitionMap.put(strId, getDefinitionByName(binder, true, exp.getTextTrim()));
+    	   			} catch (NoDefinitionByTheIdException nd) {
+    	   			}
+    	   		}
+    		}
+    	}
+		List<Element> remoteApps = doc.getRootElement().selectNodes("//property[@name='remoteApp']");
+		for (Element remoteApp:remoteApps) {
+			String appId = remoteApp.attributeValue("value", "");
+			if (Validator.isNotNull(appId)) {
+				Principal p = principalMap.get(appId);
+				if (p == null || !(p instanceof Application))
+					remoteApp.addAttribute("value", "");
+				else 
+					remoteApp.addAttribute("value", p.getId().toString());
+			}
+		}	
+		if (def.getType() == Definition.FOLDER_ENTRY) {
+			List<Element> props = doc.getRootElement().selectNodes("//properties/property[@name='replyStyle']");
+			for (Element prop:props) {
+				String styleId = prop.attributeValue("value", "");
+				Definition namedDef = definitionMap.get(styleId);
+				if (namedDef == null)
+					prop.addAttribute("value", "");
+				else
+					prop.addAttribute("value", namedDef.getId());					
+			}
+		}
+		if (def.getType() == Definition.WORKFLOW) {
+			List<Element> conditions = doc.getRootElement().selectNodes("//workflowEntryDataUserList | //workflowCondition ");
+			for (Element condition:conditions) {
+				String entryId = condition.attributeValue("definitionId", "");
+				Definition namedDef = definitionMap.get(entryId);
+				if (namedDef == null)
+					condition.addAttribute("definitionId", "");
+				else
+					condition.addAttribute("definitionId", namedDef.getId());					
+			}  
+			List<Element> props = doc.getRootElement().selectNodes("//item[@name='subProcess']/properties/property[@name='definitionId']");
+			for (Element prop:props) {
+				String entryId = prop.attributeValue("value", "");
+				Definition namedDef = definitionMap.get(entryId);
+				if (namedDef == null)
+					prop.addAttribute("value", "");
+				else
+					prop.addAttribute("value", namedDef.getId());					
+			}	
+			props = doc.getRootElement().selectNodes("//property[@name='userGroupAccess']");
+			for (Element prop:props) {
+				String entryIds = prop.attributeValue("value", "");
+				if (Validator.isNull(entryIds)) continue;
+				Set<Long> ids = LongIdUtil.getIdsAsLongSet(entryIds);
+				StringBuffer buf = new StringBuffer();
+				for (Long id:ids) {
+					Principal p = principalMap.get(id);
+					if (p == null) continue;
+					buf.append(p.getId().toString());
+					buf.append(" ");
+				}
+				prop.addAttribute("value", buf.toString());
+			}		
+    	}
+		//Write out the new definition file
+    	export.detach();
+		def.setDefinition(doc);
+    	
+    }
+ 
     public Document getDefinitionAsXml(Definition def) {
     	//convert enty definitionId references to names
     	Document srcDoc = def.getDefinition();
@@ -344,29 +432,64 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	if (srcDoc != null) outDoc = (Document)srcDoc.clone();
     	else outDoc = DocumentHelper.createDocument();
     	
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
-		List<Element> replyStyles = outDoc.getRootElement().selectNodes("//properties/property[@name='replyStyle']");
-		for (Element styleElement:replyStyles) {
-			String styleId = styleElement.attributeValue("value", "");
-			if (Validator.isNotNull(styleId)) {
+    	Set<Long> principalIds = new HashSet();
+    	Set<String>definitionIds = new HashSet();
+    	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
+		List<Element> remoteApps = outDoc.getRootElement().selectNodes("//property[@name='remoteApp']");
+		for (Element remoteApp:remoteApps) {
+			String appId = remoteApp.attributeValue("value", "");
+			if (Validator.isNotNull(appId)) {
 				try {
-					Definition zoneDef = getCoreDao().loadDefinition(styleId, zoneId);
-					styleElement.addAttribute("value", zoneDef.getName());
-				} catch (NoDefinitionByTheIdException nz) {
+					Long id = Long.valueOf(appId);
+					principalIds.add(id);
+				} catch (NumberFormatException nb) {}
+			}
+		}	
+		if (def.getType() == Definition.FOLDER_ENTRY) {
+			List<Element> replyStyles = outDoc.getRootElement().selectNodes("//property[@name='replyStyle']");
+			for (Element styleElement:replyStyles) {
+				String styleId = styleElement.attributeValue("value", "");
+				if (Validator.isNotNull(styleId)) {
+					definitionIds.add(styleId);
 				}
 			}	
 		}
-		//not just on workflow types
-		List<Element> conditions = outDoc.getRootElement().selectNodes("//workflowEntryDataUserList | //workflowCondition");
-		for (Element condition:conditions) {
-			String entryId = condition.attributeValue("definitionId", "");
-			if (Validator.isNotNull(entryId)) {
-				try {
-					Definition zoneDef = getCoreDao().loadDefinition(entryId, zoneId);
-					condition.addAttribute("definitionId", zoneDef.getName());
-				} catch (NoDefinitionByTheIdException nz) {}
+		
+		if (def.getType() == Definition.WORKFLOW) {
+			List<Element> conditions = outDoc.getRootElement().selectNodes("//workflowEntryDataUserList | //workflowCondition ");
+			for (Element condition:conditions) {
+				String entryId = condition.attributeValue("definitionId", "");
+				if (Validator.isNotNull(entryId)) {
+					definitionIds.add(entryId);
+				}	
+			}  
+			List<Element> props = outDoc.getRootElement().selectNodes("//item[@name='subProcess']/properties/property[@name='definitionId']");
+			for (Element prop:props) {
+				String entryId = prop.attributeValue("value", "");
+				if (Validator.isNotNull(entryId)) {
+					definitionIds.add(entryId);
+				}
 			}	
-    	}    
+			props = outDoc.getRootElement().selectNodes("//property[@name='userGroupAccess']");
+			for (Element prop:props) {
+				String entryId = prop.attributeValue("value", "");
+				principalIds.addAll(LongIdUtil.getIdsAsLongSet(entryId));
+			}		
+    	}
+		//build export properties
+		Element exports = outDoc.getRootElement().addElement("export-mappings");
+		List<Principal> principals = getProfileDao().loadPrincipals(principalIds, zoneId, true);
+		for (Principal p:principals) {
+			Element principalEle = exports.addElement("export");
+			principalEle.addAttribute("principalId", p.getId().toString());
+			principalEle.setText(p.getName());
+		}
+		List<Definition> definitions = getCoreDao().loadObjects(definitionIds, Definition.class, zoneId);
+		for (Definition d:definitions) {
+			Element definitionlEle = exports.addElement("export");
+			definitionlEle.addAttribute("definitionId", d.getId());
+			definitionlEle.setText(d.getName());
+		}
     	return outDoc;
     }
     public Definition getDefinition(String id) {
