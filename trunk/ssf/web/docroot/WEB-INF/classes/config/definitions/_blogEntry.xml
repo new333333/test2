@@ -135,7 +135,9 @@
   <properties> 
     <property name="name" value="_blogEntry"/>  
     <property name="caption" value="__definition_default_blog_entry"/>  
-    <property name="replyStyle" value="_comment"/> 
+    <property name="replyStyle" value="402883c6115753d801115777f284000b"/> 
   </properties>  
-  <export-mappings/>
+  <export-mappings>
+    <export definitionId="402883c6115753d801115777f284000b">_comment</export>
+  </export-mappings>
 </definition>
