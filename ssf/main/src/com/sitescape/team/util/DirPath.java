@@ -47,7 +47,11 @@ public class DirPath {
 		return getImagesDirPath() + File.separator + "thumbnails";
 	}
 	
-    private static String getWebinfDirPath() {
+	public static String getDTDDirPath() {
+		return getWebinfDirPath() + File.separator + "classes" + File.separator + "dtd";
+	}
+
+	private static String getWebinfDirPath() {
     	return SpringContextUtil.getWebappRootDirPath() + File.separator + "WEB-INF";
     }
     

@@ -125,16 +125,13 @@ public class ViewController extends SAbstractController {
 					String name = PortletRequestUtils.getStringParameter(request,"propertyId_name", "");
 					String caption = PortletRequestUtils.getStringParameter(request, "propertyId_caption", "");
 					if (Validator.isNull(caption)) caption = name;
-					Definition def = getDefinitionModule().getDefinition(selectedItem);
-					Document doc = (Document)def.getDefinition().clone();
-					doc.getRootElement().addAttribute("internalId", "");
-					doc.getRootElement().addAttribute("databaseId", "");
+					Definition def;
 					if (Validator.isNotNull(name)) {
 						if (binderId == null) {
-							def = getDefinitionModule().addDefinition(doc, null, name, caption, false);			
+							def = getDefinitionModule().copyDefinition(selectedItem, null, name, caption);			
 							selectedItem = def.getId();
 						} else {
-							def = getDefinitionModule().addDefinition(doc, getBinderModule().getBinder(binderId), name, caption, false);			
+							def = getDefinitionModule().copyDefinition(selectedItem, getBinderModule().getBinder(binderId), name, caption);			
 							selectedItem = def.getId();
 								
 						}
