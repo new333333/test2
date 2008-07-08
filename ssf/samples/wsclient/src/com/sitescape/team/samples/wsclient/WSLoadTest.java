@@ -126,8 +126,8 @@ public class WSLoadTest extends WSClientBase
 			for(int j = 0; j < folderIds.length; j++) {
 				for(int i = 0; i < count; i++) {
 					String s = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><entry>  <attribute name=\"title\" type=\"title\">Load Test Entry " + prefix + i + " " + start.toString()  + "</attribute><attribute name=\"description\" type=\"description\">" + loremIpsum + "</attribute></entry>";
-					Long entryId = (Long) invokeWithCall("FolderService", "addFolderEntry", 
-							new Object[] {null, folderIds[j], definitionId, s, filename},
+					Long entryId = (Long) invokeWithCall("Facade", "addFolderEntry", 
+							new Object[] {folderIds[j], definitionId, s, filename},
 							((filename != null)? new File(filename) : null),
 							null);
 					completed++;
@@ -150,8 +150,8 @@ public class WSLoadTest extends WSClientBase
 		} else {
 			for(int i = 0; i < folderCounts[depth]; i++) {
 				try {
-					Long newFolder = (Long) invokeWithCall("TemplateService", "addBinder", 
-							new Object[] {null, parentFolder, templateId, "Generated folder " + prefix + (i+1)  + safeName(start.toString())}, 
+					Long newFolder = (Long) invokeWithCall("Facade", "addFolder", 
+							new Object[] {parentFolder, templateId, "Generated folder " + prefix + (i+1)  + safeName(start.toString())}, 
 							null, null);
 					createFolders(folderCounts, depth + 1, newFolder, prefix + (i+1) + "-");
 				} catch(Exception e) {

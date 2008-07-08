@@ -51,7 +51,7 @@ import com.sitescape.team.client.ws.model.PrincipalCollection;
  * @author jong
  *
  */
-public class WSClientWithStubs {
+public class TeamingServiceClientWithStub {
 
 	private static final String TEAMING_SERVICE_ADDRESS_WSS 	= "http://localhost:8080/ssf/ws/TeamingService";
 	//private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingService";
@@ -70,14 +70,14 @@ public class WSClientWithStubs {
 		//addFolderEntryByCopying(entry);
 		
 		// Test modify
-		//entry = getFolderEntry(85, 85, false);
-		//modifyFolderEntry(entry);
+		entry = getFolderEntry(85, 80, false);
+		modifyFolderEntry(entry);
 		
 		// Test delete
 		//deleteFolderEntry(85, 47);
 		
 		// Upload files
-		uploadFolderEntryFiles(85, 85);
+		//uploadFolderEntryFiles(85, 85);
 		
 		//getFolderEntries(33);
 		
@@ -182,6 +182,8 @@ public class WSClientWithStubs {
 
 		entry.setTitle(entry.getTitle() + " (Modified)");
 		entry.getDescription().setText(entry.getDescription().getText() + " (Modified)");
+		
+		/*
 		// Set all boolean fields to true
 		for(int i=0; i<entry.getCustomBooleanFields().length; i++) {
 			entry.getCustomBooleanFields()[i].setValue(Boolean.TRUE);			
@@ -216,6 +218,7 @@ public class WSClientWithStubs {
 				entry.getCustomStringArrayFields()[i].setValues(newArray);							
 			}
 		}
+		*/
 
 		stub.folder_modifyEntry(null, entry);
 		
@@ -228,7 +231,7 @@ public class WSClientWithStubs {
 		TeamingServiceSoapBindingStub stub = (TeamingServiceSoapBindingStub) locator.getTeamingService();
 		WebServiceClientUtil.setUserCredentialBasicAuth(stub, USERNAME, PASSWORD);
 
-		// TODO add the code that deletes it 
+		stub.folder_deleteEntry(null, binderId, entryId);
 		
 		System.out.println("ID of the deleted entry: " + entryId);
 	}
