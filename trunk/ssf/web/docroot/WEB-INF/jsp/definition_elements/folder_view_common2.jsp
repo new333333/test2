@@ -48,7 +48,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 		ssFolderTableHeight.equals("0")) ssFolderTableHeight = "400";
 %>
 <div align="center">
-<div id="ss_diss_inset">
+<div id="ss_diss_inset" >
 <div align="left" class="ssPageNavi">
 <% // filter toolbar %>
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_user_filters.jsp" />
