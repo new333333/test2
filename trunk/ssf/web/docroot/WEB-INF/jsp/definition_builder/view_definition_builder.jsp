@@ -533,7 +533,7 @@ function ss_loadNextDiv(option, itemId, itemName, refItemId) {
 	var url = ss_buildAdapterUrl(ss_AjaxBaseUrl, urlParams, "definition_builder"); 
 	
 	var ajaxRequest = new ss_AjaxRequest(url); //Create AjaxRequest object
-	ajaxRequest.setEchoDebugInfo();
+	//ajaxRequest.setEchoDebugInfo();
 	ajaxRequest.setPostRequest(ss_postLoadNextDivRequest);
 	ajaxRequest.setUseGET();
 	ajaxRequest.sendRequest();  //Send the request
