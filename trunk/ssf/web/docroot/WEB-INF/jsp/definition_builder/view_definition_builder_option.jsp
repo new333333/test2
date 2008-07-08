@@ -56,6 +56,8 @@
 		<tr><td><a href="javascript: ;" onClick="return modifyDefinition();"><ssf:nlt tag="definition.modifyProperties"/></a></td></tr>
 		<tr><td><a href="javascript: ;" onClick="return copyDefinition();"><ssf:nlt tag="definition.copyDefinition"/></a></td></tr>
 		<tr><td><a href="javascript: ;" onClick="return deleteDefinition();"><ssf:nlt tag="definition.deleteDefinition"/></a></td></tr>
+		<tr><td><a href="<ssf:url webPath="definitionDownload"><ssf:param
+				name="id_${ssDefinition.id}" value="on"/></ssf:url>"><ssf:nlt tag="definition.exportDefinition"/></a></td></tr>
 		<c:set var="defBinderId" value=""/>
 		<c:if test="${!empty ssDefinition.binderId}">
 			<c:set var="defBinderId" value="${ssDefinition.binderId}"/>

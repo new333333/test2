@@ -82,6 +82,7 @@ import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.Tabs;
 import com.sitescape.team.web.util.Toolbar;
 import com.sitescape.team.web.util.WebHelper;
+import com.sitescape.team.web.util.WebUrlUtil;
 import com.sitescape.util.Validator;
 
 public class ConfigureConfigurationController extends  SAbstractController {
@@ -481,6 +482,9 @@ public class ConfigureConfigurationController extends  SAbstractController {
 			url.setParameter(WebKeys.URL_OPERATION, WebKeys.OPERATION_MODIFY_TEMPLATE);
 			url.setParameter(WebKeys.URL_BINDER_ID, configId);
 			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.modify_template"), url, qualifiersBlock);		
+			//export config
+			String webUrl  = WebUrlUtil.getServletRootURL(request) + "templateDownload?id_" + configId.toString() + "=on";
+			toolbar.addToolbarMenuItem("1_administration", "", NLT.get("toolbar.menu.export_template"), webUrl, qualifiersBlock);		
 			
 		}
 		toolbar.addToolbarMenu("2_administration", NLT.get("toolbar.manageThisTarget"));
