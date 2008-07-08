@@ -43,25 +43,61 @@
 		<tr>
 			<td valign="top" align="right">
 			<% // this should be view entry %>
+			
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
-				<td class="ss_paginationFont">
-			    	<ssf:nlt tag="entry.goTo"/>
-			  	</td><td>		
-			    <input name="entry" id="entry" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
-			
+				<td class="ss_paginationFont" valign="middle">
+			<form name="ss_goToPageForm_${renderResponse.namespace}" id="ss_goToPageForm_${renderResponse.namespace}" method="post" 
+			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
+				name="binderId" value="${ssFolder.id}"/><c:if test="${!empty cTag}"><ssf:param 
+				name="cTag" value="${cTag}"/></c:if><c:if test="${!empty pTag}"><ssf:param 
+				name="pTag" value="${pTag}"/></c:if><c:if test="${!empty yearMonth}"><ssf:param 
+				name="yearMonth" value="${yearMonth}"/></c:if><c:if test="${!empty endDate}"><ssf:param 
+				name="endDate" value="${endDate}"/></c:if><ssf:param 
+				name="operation" value="save_folder_goto_page_info"/></ssf:url>" onSubmit="return(ss_submitPage_${renderResponse.namespace}(this))">
+				&nbsp;&nbsp;
+				
+			<c:if test="${ssPageCount > '1.0'}">
+				<ssf:ifnotaccessible>
+			    	<ssf:nlt tag="entry.goTo"/> (page)
+			    </ssf:ifnotaccessible>
+			    
+			    <ssf:ifaccessible>
+			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
+			    </ssf:ifaccessible>
+			    </td><td valign="middle">
+			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
-				onClick=""><img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
-			&nbsp;&nbsp;
-			</td></tr></tbody></table>	
+				onClick="ss_clickGoToPage_${renderResponse.namespace}('ss_goToPageForm_${renderResponse.namespace}'); return false;">
+				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
+				
+			</c:if>
+			<c:if test="${ssPageCount <= '1.0'}">
+				<ssf:ifnotaccessible>
+			    	<ssf:nlt tag="entry.goTo"/>
+			    </ssf:ifnotaccessible>
+			    
+			    <ssf:ifaccessible>
+			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
+			    </ssf:ifaccessible>
+			    </td><td valign="middle">
+			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_pTB_no" />&nbsp;
+				<a href="" 
+				<ssf:title tag="entry.goTo" />
+				>
+				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
+				&nbsp;&nbsp;
+			</c:if>
+			</form>&nbsp;&nbsp;
+			</td></tr></tbody></table>
 		
 			</td>
 			<td width="50%" valign="top" align="center">
 			<div width="100%" class="ss_paginationDiv">
 			<table valign="top" border="0" cellpadding="1" cellspacing="0" class="ss_pagination_table">
 				<tbody><tr>
-					<td bgcolor="#E9F1F1">
+					<td bgcolor="#E9F1F1" class="ss_pagination_arrows">
 
 						<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 							name="operation" value="save_folder_page_info"/><ssf:param 
@@ -78,7 +114,7 @@
 						>
 						<img src="<html:rootPath/>images/pics/page/back.gif" width="15" height="10" border="0" id="back" <ssf:alt tag="title.goto.first.page"/> align="absmiddle" /></a>&nbsp;&nbsp;
 					</td>
-					<td bgcolor="#E9F1F1" class="ss_paginationFont" style="padding-top:5px;">
+					<td bgcolor="#E9F1F1" class="ss_paginationFont">
 					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 						name="operation" value="save_folder_page_info"/><ssf:param 
 						name="binderId" value="${ssFolder.id}"/><ssf:param 
@@ -98,7 +134,7 @@
 					  <ssf:param name="value" value="${ssPageLast}"/>
 					</ssf:nlt>&nbsp;&nbsp;
 					</td>
-					<td class="ss_paginationFont" bgcolor="#E9F1F1" style="padding-top:5px;">
+					<td bgcolor="#E9F1F1" class="ss_paginationFont">
 						<c:choose>
 				  			<c:when test="${ssPageNext.ssPageNoLink == 'true'}">
 							<ssf:nlt tag="general.Next"/>
@@ -119,7 +155,7 @@
 				  		</c:otherwise>
 						</c:choose>
 					</td>
-					<td bgcolor="#E9F1F1" valign="middle">
+					<td bgcolor="#E9F1F1" class="ss_pagination_arrows">
 					<a href="<ssf:url action="${action}" actionUrl="true"><ssf:param 
 						name="operation" value="save_folder_page_info"/><ssf:param 
 						name="binderId" value="${ssFolder.id}"/><ssf:param 

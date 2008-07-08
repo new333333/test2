@@ -344,7 +344,7 @@ a.ss_new_thread:hover {
 	height:26px !important;
 	<c:if test="<%= isIE %>">
   		vertical-align:top;
-  		padding-top: 4px;
+  		padding-top: 6px;
  	</c:if>
 }
 
@@ -416,14 +416,21 @@ a.ss_new_thread:hover {
 	background-color: #CCDFDE !important;
 	height:26px !important;
 	overflow:hidden;
+	margin-bottom: 5px;
 	}
 	
 .ss_pagination_table {
 	height:26px !important;
+	white-space: nowrap !important;
+	}	
+.ss_pagination_arrows {
+	vertical-align: top;
+	padding-top: 5px;
 	}	
 .ss_pagination_goTable {
 	height:26px !important;
 	background-color: #CCDFDE !important;
+	white-space: nowrap !important;
 }
 .ss_paginationDiv {
 	background-color: #E9F1F1 !important;
