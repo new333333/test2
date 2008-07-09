@@ -205,7 +205,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <%
 					} else {
 %>
-<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="100%"
+<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="2000"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
   >&nbsp;<%= columnText %></td>
@@ -247,7 +247,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <%
 					} else {
 %>
-<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="100%"
+<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="2000"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
  >&nbsp;<%= columnText %></td>
@@ -274,7 +274,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <%
 					} else {
 %>
-<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="100%"
+<td class="<%= rowStyle %>" <%= colIdText %> nowrap width="2000"
   onMouseOver="if (self.ss_showMouseOverInfo) ss_showMouseOverInfo(this);" 
   onMouseOut="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);"
  >&nbsp;<%= columnText %></td>
@@ -298,5 +298,6 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 <form class="ss_style ss_form" name="ss_columnPositionForm" id="ss_columnPositionForm" >
 <input type="hidden" name="column_positions">
 </form>
-<div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup" style="z-index: <%= slidingTableInfoZ %>;"></div>
-<div id="ss_info_popup_sizer" style="position:absolute; visibility:hidden;"></div>
+<div id="ss_info_popup" class="ss_style ss_sliding_table_info_popup" 
+  style="z-index: <%= slidingTableInfoZ %>; overflow-right:hidden;"></div>
+<div id="ss_info_popup_sizer" style="position:absolute; visibility:hidden; overflow-right:hidden;"></div>
