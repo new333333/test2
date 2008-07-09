@@ -40,6 +40,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	border-color:#CCCCCC;
 	border: 1px;
 	padding-bottom:2px;
+	min-width: 650px !important;	
 	}
 
 	/*BRANDING*/
