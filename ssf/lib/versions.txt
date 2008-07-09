@@ -2,6 +2,7 @@ addressing 1.0 (WS-Addressing implementation; required by WSS4J)
 Ant 1.6.2
 Ant Contrib 0.6
 Antlr 2.7.6 (needed by Hibernate)
+Apache Directory Server 1.0.2 (ver 0.9.5.5 of shared libs) (embedded LDAP - apacheds*.jar, shared-xxx.jar)
 ASM (from hibernate distribution, needed by cglib)
 Asm-attrs (from hibernate distribution, needed by cglib)
 Axis 1.4 (removed log4j.properties)
@@ -17,7 +18,7 @@ Commons DBCP 1.2.2
 Commons Fileupload 1.2 (from spring distribution)
 Commons HttpClient 3.1 (from spring distribution)
 Commons io 1.3.1 (from spring distribution)
-Commons Lang 2.0
+Commons Lang 2.4
 Commons Net 1.4.1 (for SendMail test program)
 Commons Logging 1.1.1 (from spring distribution)
 Commons Transaction 1.1.1pre1
@@ -57,8 +58,8 @@ Liferay portal-service.jar 4.3.0
 Liferay util-java.jar 4.3.0
 Log4j 1.2.15 (from spring distribution)
 Lucene 1.9.1+indexupdater
-MINA (Apache) mina-core.jar 1.1.3
-MINA (Apache) mina-filter-ssl.jar 1.1.3
+MINA (Apache) mina-core.jar 1.0.2
+MINA (Apache) mina-filter-ssl.jar 1.0.2
 MINA (Apache) mina-integration-jmx.jar 1.1.3
 mysql-connector-java-5.0.4-bin.jar
 opensaml 1.0.1 (SAML implementation; used by WSS4J)
@@ -77,7 +78,9 @@ Slide WebDAV client library 2.1
 Spring 2.5.4
 Spring test 2.5.4 (comes with Spring)
 Spring MVC spring-webmvc 2.5.4 (comes with Spring)
+Spring LDAP 1.2.1
 Spring Portlet spring-webmvc-portlet 2.5.4 (comes with Spring)
+Spring Security 2.0.3
 Struts 1.2.9 (removed META-INF/MANIFEST.MF) - Copied from Liferay 4.1.2
 SubEthaSMTP subethasmtp.jar 2.0.1
 Trove 1.0.2
@@ -96,3 +99,4 @@ jurt.jar
 jut.jar
 ridl.jar
 unoil.jar					(end OpenOffice 2.0 Jars)
+
