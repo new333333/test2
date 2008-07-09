@@ -40,7 +40,7 @@
 				<constructor-arg ref="contextSource" />
 				<property name="userSearch">
 					<bean id="userSearchOne" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
-					  <constructor-arg index="0" value="ou=Field Service,ou=aspendemocouid,o=novell"/>
+					  <constructor-arg index="0" value="ou=aspendemocouid,o=novell"/>
 					  <constructor-arg index="1" value="(uid={0})"/>
 					  <constructor-arg index="2" ref="contextSource" />
 					</bean>
@@ -67,9 +67,10 @@
 				<constructor-arg ref="contextSource" />
 				<property name="userSearch">
 					<bean id="userSearchTwo" class="org.springframework.security.ldap.search.FilterBasedLdapUserSearch">
-					  <constructor-arg index="0" value="ou=Quality Assurance,ou=aspendemocouid,o=novell"/>
+					  <constructor-arg index="0" value="o=novell"/>
 					  <constructor-arg index="1" value="(uid={0})"/>
 					  <constructor-arg index="2" ref="contextSource" />
+					  <property name="searchSubtree" value="false"/>
 					</bean>
 				</property>
 			</bean>
