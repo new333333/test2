@@ -868,10 +868,6 @@ public class IcalModuleImpl extends CommonDependencyInjection implements IcalMod
 			}
 			end = new Date(new org.joda.time.DateTime(end).plusDays(1).toDate());
 			vEvent = new VEvent(start, end, entry.getTitle());
-			vEvent.getProperties().getProperty(Property.DTSTART)
-					.getParameters().add(Value.DATE);
-			vEvent.getProperties().getProperty(Property.DTEND)
-					.getParameters().add(Value.DATE);
 			
 			// one day events mark as TRANSPARENT
 			// An 'event on a day' - anniversaries and birthdays
