@@ -114,6 +114,19 @@
 -->
 	<bean id="zoneInterceptor" class="com.sitescape.team.dao.interceptor.ZoneInterceptor"/>
 
+	<!-- Hibernate session factory -->
+	<bean id="sessionFactory" class="com.sitescape.team.spring.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="lobHandler"><ref bean="lobHandler"/></property>
+		<property name="configFiles">
+			<list>
+				<value>config/hibernate.cfg.xml</value>
+				<value>optional:config/hibernate-ext.cfg.xml</value>
+			</list>
+		</property>
+		<property name="entityInterceptor"><ref bean="zoneInterceptor"/></property>
+		
+		<!-- Hibernate properties are loaded from a separate file - hibernate.properties -->
+	</bean>
 	<bean id="hibernateConfiguration" class="com.sitescape.team.util.HibernateConfigurationFactory">
 		<property name="sessionFactoryBean"><ref bean="&amp;sessionFactory"/></property>
 	</bean>
@@ -628,6 +641,17 @@
 			</bean>	
 		</property>
 	</bean>
+	<bean id="workflowFactory" class="com.sitescape.team.module.workflow.impl.WorkflowFactory">
+		<property name="hibernateSessionFactory"><ref bean="sessionFactory"/></property>
+	</bean> 
+	
+	<bean id="workflowModule" parent="baseTransactionProxy" depends-on="zoneConfig, workflowFactory" >
+		<property name="target">
+			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.workflow.impl.WorkflowModuleImpl">
+				<property name="transactionTemplate"><ref bean="transactionTemplate"/></property>
+			</bean>
+		</property>
+	</bean>	
 
 	<bean id="dashboardModule" parent="baseTransactionProxy">
 		<property name="target">

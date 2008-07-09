@@ -234,7 +234,6 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
 </c:if>
   </fieldset>
   <br>
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
   
   <% //only display if have workflows - which covers the case where workflow is not supported %>
 <c:if test="${!empty ssAllWorkflowDefinitions}">
@@ -333,7 +332,6 @@ function ss_treeShowIdConfig${renderResponse.namespace}(id, obj, action) {
   </fieldset>
   <br>
 </c:if>
-</ssf:ifAuthorizedByLicense>
   
 </c:if>
 

@@ -41,6 +41,7 @@ JAXRPC 1.1
 JBoss App Server 4.2.1.GA jbosssx.jar
 JBoss Common 1.2.0.GA
 JBoss Portal 2.6.1.GA portal-identity-lib.jar
+JBPM 3.1.4 (not using/shipping jbpm-identity;added sequence name patch to *.hbm.xml files http://jira.jboss.com/jira/browse/JBPM-982)
 JCR 1.0
 JDOM 1.0
 Joda-Time 1.5.2
