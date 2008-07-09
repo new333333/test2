@@ -43,7 +43,7 @@
 		<tr>
 			<td valign="top" align="right">
 			<% // this should be view entry %>
-			
+			<div id="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
 				<td class="ss_paginationFont" valign="middle">
@@ -65,7 +65,7 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
-			    </td><td valign="middle">
+			    </td><td valign="middle" class="ss_paginationGo">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="entry.goTo" />
@@ -81,16 +81,17 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
-			    </td><td valign="middle">
+			    </td><td valign="middle" class="ss_paginationGo">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_pTB_no" />&nbsp;
 				<a href="" 
 				<ssf:title tag="entry.goTo" />
 				>
 				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
-				&nbsp;&nbsp;
+				
 			</c:if>
-			</form>&nbsp;&nbsp;
+			</form>
 			</td></tr></tbody></table>
+			</div>
 		
 			</td>
 			<td width="50%" valign="top" align="center">
@@ -125,7 +126,7 @@
 						name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 						title="<ssf:nlt tag="title.goto.prev.page"/>"
 						onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPagePrevious.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
-						><ssf:nlt tag="general.Previous"/>&nbsp;
+						><ssf:nlt tag="general.Previous"/>&nbsp;&nbsp;
 					</a>&nbsp;&nbsp;
 					</td>
 					<td class="ss_paginationFont ss_pageActive" bgcolor="#E9F1F1" valign="top">
@@ -150,7 +151,7 @@
 							name="endDate" value="${endDate}"/></c:if></ssf:url>" 
 							title="<ssf:nlt tag="title.goto.next.page"/>"
 							onClick="ss_showFolderPage(this, '${ssFolder.id}', '${ssPageNext.ssPageInternalValue}', 'ss_folder_view_common${renderResponse.namespace}', '${cTag}', '${pTag}', '${yearMonth}', '${endDate}');return false;"
-							><ssf:nlt tag="general.Next"/>&nbsp;
+							><ssf:nlt tag="general.Next"/>&nbsp;&nbsp;
 						</a>&nbsp;&nbsp;
 				  		</c:otherwise>
 						</c:choose>
@@ -172,6 +173,7 @@
 			</td>
 			<% // goto page option %>
 			<td valign="top">
+			<div id="ss_goBox">
 			<table border="0" cellpadding="0" cellspacing="0" class="ss_pagination_goTable">
 				<tbody><tr>
 				<td class="ss_paginationFont" valign="middle">
@@ -193,7 +195,7 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
-			    </td><td valign="middle">
+			    </td><td valign="middle"  class="ss_paginationGo">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_paginationTextBox" />&nbsp;
 				<a href="javascript: ;" 
 				<ssf:title tag="title.goto.page" />
@@ -209,7 +211,7 @@
 			    <ssf:ifaccessible>
 			    	<span><label for="ssGoToPage"><ssf:nlt tag="folder.GoToPage"/></label></span>
 			    </ssf:ifaccessible>
-			    </td><td valign="middle">
+			    </td><td valign="middle" class="ss_paginationGo">
 			    <input name="ssGoToPage" id="ssGoToPage" size="7" type="text" class="ss_pTB_no" />&nbsp;
 				<a href="" 
 				<ssf:title tag="title.goto.page" />
@@ -217,8 +219,8 @@
 				<img src="<html:rootPath/>images/pics/page/go.png" width="17" height="12" border="0" align="absmiddle" /></a>
 				
 			</c:if>
-			</form>&nbsp;&nbsp;
-			</td></tr></tbody></table>
+			</form>
+			</td></tr></tbody></table></div>
 
 			</td>
 		</tr>
