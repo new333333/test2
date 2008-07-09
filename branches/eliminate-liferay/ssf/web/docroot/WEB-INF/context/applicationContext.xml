@@ -1038,7 +1038,7 @@ text/calendar											  ics
 	</bean>
 	
 	<!-- ============================== Portal Login Support ============================ -->
-	<bean id="portalLoginBean" class="com.sitescape.team.portal.liferay.LiferayLogin"/>
+	<bean id="portalLoginBean" class="com.sitescape.team.portal.StandaloneLogin"/>
 	
 	<!-- ================================  JMX/MBean Support =============================== -->
 	<bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
