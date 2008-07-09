@@ -629,9 +629,9 @@ div.ss_global_toolbar_maximized table.ss_global_toolbar_maximized td {
 	text-align: center;
 	}
 div.ss_global_toolbar_show_portal {
-	background:url(<html:imagesPath/>icons/toolbar_show_portal.jpg) no-repeat top;
 	}
 div.ss_global_toolbar_hide_portal {
+	background:url(<html:imagesPath/>icons/toolbar_show_portal.jpg) no-repeat top;
 	background:url(<html:imagesPath/>icons/toolbar_hide_portal.jpg) no-repeat top;
 	}
 div.ss_global_toolbar_help {
