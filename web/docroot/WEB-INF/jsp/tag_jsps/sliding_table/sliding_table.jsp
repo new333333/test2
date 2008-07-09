@@ -115,17 +115,23 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
  " width="100%"
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
-<div id="col0" class="ss_style ss_sliding_table_column0">
-<table cellspacing="0" cellpadding="2">
+<div id="col0" class="ss_style ss_sliding_table_column0" width="100%" style="padding-left:1px;">
+<table cellspacing="0" cellpadding="2" width="100%">
  <tr>
-  <td >&nbsp;</td>
+  <td class="ss_sliding_table_row0" width="100%">&nbsp; </td>
  </tr>
 </table>
-<table cellspacing="0" cellpadding="2">
+<table cellspacing="0" cellpadding="2" width="100%">
 <%		
 		for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
+		int rowCount = 1;
+		String rowStyle = "ss_sliding_table_row0";
+		for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
+			rowStyle = "ss_sliding_table_row0";
+			if ((rowCount % 2) == 0) rowStyle = "ss_sliding_table_row1";
+			rowCount++;
 %>
-<tr><td class="ss_sliding_table_row0" nowrap width="100%">&nbsp;</td></tr>
+<tr class="<%= rowStyle %>"><td nowrap width="100%">&nbsp;</td></tr>
 <%
 		}		
 %>
@@ -138,8 +144,8 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 		//Process the same column in each row
 		for (int iCol = 0; iCol < colSize; iCol++) {
 
-			int rowCount = 0;
-			String rowStyle = "ss_sliding_table_row0";
+			rowCount = 0;
+			rowStyle = "ss_sliding_table_row0";
 			for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
 				String rowId = (String)((Map) slidingTableRows.get(iRow)).get("id");
 				if (rowId == null) rowId = "";
@@ -183,7 +189,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 					}
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" 
-  style="position:absolute; z-index:<%= String.valueOf(iCol + slidingTableColumnZ) %>;" 
+  style="position:absolute; z-index:<%= String.valueOf(iCol + slidingTableColumnZ) %>; padding-left:1px;" 
   class="ss_style ss_sliding_table_column1">
 <table cellspacing="0" cellpadding="2" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
