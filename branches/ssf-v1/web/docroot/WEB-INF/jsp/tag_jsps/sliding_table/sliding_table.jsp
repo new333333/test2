@@ -115,7 +115,7 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
  " width="100%"
  onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
 
-<div id="col0" class="ss_style ss_sliding_table_column0" width="100%" style="padding-left:1px;">
+<div id="col0" class="ss_style ss_sliding_table_column0" width="100%">
 <table cellspacing="0" cellpadding="2" width="100%">
  <tr>
   <td class="ss_sliding_table_row0" width="100%">&nbsp; </td>
@@ -188,7 +188,7 @@ ss_colWidths[<%= String.valueOf(iCol + 1) %>] = '<%= columnWidth %>';
 					}
 %>
 <div id="col<%= String.valueOf(iCol + 1) %>" 
-  style="position:absolute; z-index:<%= String.valueOf(iCol + slidingTableColumnZ) %>; padding-left:1px;" 
+  style="position:absolute; z-index:<%= String.valueOf(iCol + slidingTableColumnZ) %>; " 
   class="ss_style ss_sliding_table_column1">
 <table cellspacing="0" cellpadding="2" width="100%">
 <tr class="<%= rowStyle %>" onMouseOver="if (self.ss_clearMouseOverInfo) ss_clearMouseOverInfo(this);">
