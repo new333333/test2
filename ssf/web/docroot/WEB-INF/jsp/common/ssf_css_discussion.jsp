@@ -71,7 +71,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		
 		width:96%;
 		text-align:left;
-		position: relative;
+
 
 	}
 	#ss_diss_top
