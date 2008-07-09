@@ -142,7 +142,7 @@ public class ViewController extends SAbstractController {
 					} catch(NoDefinitionByTheIdException e) {
 							//If the id is already deleted, ignore the error
 					}
-					
+					selectedItem=null;
 				} else if (operation.equals("addItem")) {
 					//Add the new item
 					String itemId = PortletRequestUtils.getStringParameter(request,"selectedId", "");
@@ -193,9 +193,10 @@ public class ViewController extends SAbstractController {
 			response.setRenderParameter(WebKeys.URL_ACTION, WebKeys.ACTION_MANAGE_DEFINITIONS);
 			response.setRenderParameter(WebKeys.URL_OPERATION, "");
 
+		} else {
+			//Pass the selection id to be shown on to the rendering phase
+			response.setRenderParameter("selectedItem", selectedItem);
 		}
-		//Pass the selection id to be shown on to the rendering phase
-		response.setRenderParameter("selectedItem", selectedItem);
 	}
 		
 	public ModelAndView handleRenderRequestInternal(RenderRequest request, 
