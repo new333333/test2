@@ -170,7 +170,7 @@ public class BinderServiceImpl extends BaseService implements BinderService, Bin
 		}
 	}
 	
-	public void binder_setFunctionMemberships(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
+	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
 		if(functionMemberships == null) return;
 		Binder binder = getBinderModule().getBinder(binderId);
 		List<Function> functions = getAdminModule().getFunctions();
