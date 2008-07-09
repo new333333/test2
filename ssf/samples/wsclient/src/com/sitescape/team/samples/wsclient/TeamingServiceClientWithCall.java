@@ -47,8 +47,10 @@ public class TeamingServiceClientWithCall extends WSClientBase
 		try {
 			if(args[0].equals("getWorkspaceTree")) {
 				wsClient.fetchAndPrintXML("TeamingService", "search_getWorkspaceTreeAsXML", new Object[] {null, Long.parseLong(args[1]), Integer.parseInt(args[2]), (args.length > 3)?args[3]:""});
-			} else if(args[0].equals("getPrincipal")) {
-				wsClient.fetchAndPrintDE("TeamingService", "profile_getPrincipal", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
+			} else if(args[0].equals("getUser")) {
+				wsClient.fetchAndPrintDE("TeamingService", "profile_getUser", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
+			} else if(args[0].equals("getGroup")) {
+				wsClient.fetchAndPrintDE("TeamingService", "profile_getGroup", new Object[] {null, Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("getPrincipals")) {
 				wsClient.fetch("TeamingService", "profile_getPrincipals", new Object[] {null, Integer.parseInt(args[1]), Integer.parseInt(args[2])});
 			} else if(args[0].equals("getFolderEntries")) {
@@ -103,7 +105,7 @@ public class TeamingServiceClientWithCall extends WSClientBase
 					binderId = Long.valueOf(args[2]); 
 				}
 				wsClient.fetchAndPrintXML("TeamingService", "search_getHotContent", new Object[] {null, args[1], binderId});
-			} else if(args[0].equals("listDefinitions")) {
+			} else if(args[0].equals("getDefinitions")) {
 				wsClient.fetchAndPrintACK("TeamingService", "definition_getDefinitions", new Object[] {null});
 			} else if(args[0].equals("getTemplates")) {
 				wsClient.fetchAndPrintACK("TeamingService", "template_getTemplates", new Object[] {null});
@@ -190,7 +192,8 @@ public class TeamingServiceClientWithCall extends WSClientBase
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println("getWorkspaceTree <workspace id> <depth> [<page>]");
-		System.out.println("getPrincipal <binder id> <principal id>");
+		System.out.println("getUser <binder id> <user id>");
+		System.out.println("getGroup <binder id> <group id>");
 		System.out.println("getPrincipals <first> <max>");
 		System.out.println("getFolderEntries <folder id>");
 		System.out.println("getTeamMembers <binder id>");
