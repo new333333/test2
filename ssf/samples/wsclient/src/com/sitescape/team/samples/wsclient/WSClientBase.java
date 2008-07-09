@@ -46,6 +46,7 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 
 import com.sitescape.team.client.ws.WebServiceClientUtil;
+import com.sitescape.team.client.ws.model.DefinableEntity;
 
 public abstract class WSClientBase {
 
@@ -262,6 +263,65 @@ public abstract class WSClientBase {
 		catch(IOException e) {
 			System.out.println(e);
 		}
+	}
+	
+	Object fetch(String serviceName, String operation, Object[] args) throws Exception {
+		return fetch(serviceName, operation, args, null);
+	}
+
+	void fetchAndPrintXML(String serviceName, String operation, Object[] args) throws Exception {
+		String wsTreeAsXML = (String) fetch(serviceName, operation, args);
+
+		printXML(wsTreeAsXML);
+	}
+
+	void fetchAndPrintDE(String serviceName, String operation, Object[] args) throws Exception {
+		DefinableEntity entity = (DefinableEntity) fetch(serviceName, operation, args);
+
+		printDefinableEntity(entity);
+	}
+
+	void fetchAndPrintACK(String serviceName, String operation, Object[] args) throws Exception {
+		fetchAndPrintACK(serviceName, operation, args, null);
+	}
+	
+	void fetchAndPrintACK(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		fetch(serviceName, operation, args, filename);
+		System.out.println("Successfully executed " + operation + " on " + serviceName);
+	}
+	
+	void printDefinableEntity(DefinableEntity entity) {
+		if(entity != null) {
+			System.out.println("Entity ID: " + entity.getId());
+			System.out.println("Entity title: " + entity.getTitle());
+		}
+		else {
+			System.out.println("No entity returned");
+		}
+	}
+	
+	void fetchAndPrintIdentifier(String serviceName, String operation, Object[] args) throws Exception {
+		fetchAndPrintIdentifier(serviceName, operation, args, null);
+	}
+	
+	void fetchAndPrintIdentifier(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		Long ident = (Long) fetch(serviceName, operation, args, filename);
+
+		System.out.println(ident);
+	}
+
+	void fetchAndPrintString(String serviceName, String operation, Object[] args) throws Exception {
+		fetchAndPrintString(serviceName, operation, args, null);
+	}
+	
+	void fetchAndPrintString(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		String str = (String) fetch(serviceName, operation, args, filename);
+
+		System.out.println(str);
+	}
+
+	Object fetch(String serviceName, String operation, Object[] args, String filename) throws Exception {
+		return invokeWithCall(serviceName, operation, args, ((filename != null)? new File(filename) : null), null);
 	}
 	
 }

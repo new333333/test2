@@ -28,7 +28,6 @@
  */
 package com.sitescape.team.samples.wsclient;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Calendar;
@@ -90,9 +89,9 @@ public class FacadeClient extends WSClientBase
 			} else if(args[0].equals("modifyEntry")) {
 				String s = readText(args[3]);
 				System.out.println("XML: " + s);
-				wsClient.justDoIt("Facade", "modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});
+				wsClient.fetchAndPrintACK("Facade", "modifyFolderEntry", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), s});
 			} else if(args[0].equals("uploadFile")) {
-				wsClient.justDoIt("Facade", "uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);
+				wsClient.fetchAndPrintACK("Facade", "uploadFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4]}, args[4]);
 			} else if(args[0].equals("uploadCalendar")) {
 				String s = readText(args[2]);
 				System.out.println("XML: " + s);
@@ -100,7 +99,7 @@ public class FacadeClient extends WSClientBase
 				if(args.length > 3) {
 					attachFile = args[3];
 				}
-				wsClient.justDoIt("Facade", "uploadCalendarEntries", new Object[] {Long.parseLong(args[1]), s}, attachFile);
+				wsClient.fetchAndPrintACK("Facade", "uploadCalendarEntries", new Object[] {Long.parseLong(args[1]), s}, attachFile);
 			} else if(args[0].equals("search")) {
 				String s = readText(args[1]);
 				System.out.println("XML: " + s);
@@ -109,7 +108,7 @@ public class FacadeClient extends WSClientBase
 				wsClient.fetchAndPrintString("Facade", "getFolderTitle", new Object[] {Long.parseLong(args[1])});
 			} else if(args[0].equals("setTeamMembers")) {
 				String names[] = args[2].split(",");
-				wsClient.justDoIt("Facade", "setTeamMembers", new Object[] {Long.parseLong(args[1]), names});
+				wsClient.fetchAndPrintACK("Facade", "setTeamMembers", new Object[] {Long.parseLong(args[1]), names});
 			} else if(args[0].equals("setDefinitions")) {
 				String ids[] = args[2].split(",");
 				List idsList = new ArrayList();
@@ -123,19 +122,19 @@ public class FacadeClient extends WSClientBase
 						wfs.add(ids[i] + "," + ids[i+1]);
 					}
 				}
-					wsClient.justDoIt("Facade", "setDefinitions", new Object[] {Long.parseLong(args[1]), idsList, wfs});
+					wsClient.fetchAndPrintACK("Facade", "setDefinitions", new Object[] {Long.parseLong(args[1]), idsList, wfs});
 			} else if(args[0].equals("setFunctionMembership")) {
 				String s = readText(args[2]);
 				System.out.println("XML: " + s);
-				wsClient.justDoIt("Facade", "setFunctionMembership", new Object[] {Long.parseLong(args[1]), s});
+				wsClient.fetchAndPrintACK("Facade", "setFunctionMembership", new Object[] {Long.parseLong(args[1]), s});
 			} else if(args[0].equals("setFunctionMembershipInherited")) {
-				wsClient.justDoIt("Facade", "setFunctionMembershipInherited", new Object[] {Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
+				wsClient.fetchAndPrintACK("Facade", "setFunctionMembershipInherited", new Object[] {Long.parseLong(args[1]), Boolean.parseBoolean(args[2])});
 			} else if(args[0].equals("setOwner")) {
-				wsClient.justDoIt("Facade", "setOwner", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
+				wsClient.fetchAndPrintACK("Facade", "setOwner", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2])});
 			} else if(args[0].equals("indexBinder")) {
-				wsClient.justDoIt("Facade", "indexFolder", new Object[] {Long.parseLong(args[1])});
+				wsClient.fetchAndPrintACK("Facade", "indexFolder", new Object[] {Long.parseLong(args[1])});
 			} else if(args[0].equals("synchronize")) {
-				wsClient.justDoIt("Facade", "synchronizeMirroredFolder", new Object[] {Long.parseLong(args[1])});
+				wsClient.fetchAndPrintACK("Facade", "synchronizeMirroredFolder", new Object[] {Long.parseLong(args[1])});
 			} else if(args[0].equals("migrateEntry")) {
 				String s = readText(args[3]);
 				System.out.println("XML: " + s);
@@ -159,7 +158,7 @@ public class FacadeClient extends WSClientBase
 			} else if(args[0].equals("migrateWorkflow")) {
 				Calendar c1 = Calendar.getInstance();
 				c1.setTime(df.parse((String)args[6]));
-				wsClient.justDoIt("Facade", "migrateEntryWorkflow", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1});
+				wsClient.fetchAndPrintACK("Facade", "migrateEntryWorkflow", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1});
 			} else if(args[0].equals("migrateBinder")) {
 				String s = readText(args[3]);
 				System.out.println("XML: " + s);
@@ -171,11 +170,11 @@ public class FacadeClient extends WSClientBase
 			} else if(args[0].equals("migrateFile")) {
 				Calendar c1 = Calendar.getInstance();
 				c1.setTime(df.parse((String)args[6]));
-				wsClient.justDoIt("Facade", "migrateFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1}, args[4]);
+				wsClient.fetchAndPrintACK("Facade", "migrateFolderFile", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], c1}, args[4]);
 			} else if(args[0].equals("migrateFileStaged")) {
 				Calendar c1 = Calendar.getInstance();
 				c1.setTime(df.parse((String)args[7]));
-				wsClient.justDoIt("Facade", "migrateFolderFileStaged", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
+				wsClient.fetchAndPrintACK("Facade", "migrateFolderFileStaged", new Object[] {Long.parseLong(args[1]), Long.parseLong(args[2]), args[3], args[4], args[5], args[6], c1}, null);
 			} else {
 				System.out.println("Invalid arguments");
 				printUsage();
@@ -186,49 +185,7 @@ public class FacadeClient extends WSClientBase
 			e.printStackTrace();
 		}
 	}
-	
-	Object fetch(String serviceName, String operation, Object[] args) throws Exception {
-		return fetch(serviceName, operation, args, null);
-	}
-
-	void fetchAndPrintXML(String serviceName, String operation, Object[] args) throws Exception {
-		String wsTreeAsXML = (String) fetch(serviceName, operation, args);
-
-		printXML(wsTreeAsXML);
-	}
-
-	void justDoIt(String serviceName, String operation, Object[] args) throws Exception {
-		justDoIt(serviceName, operation, args, null);
-	}
-	
-	void justDoIt(String serviceName, String operation, Object[] args, String filename) throws Exception {
-		fetch(serviceName, operation, args, filename);
-	}
-
-	void fetchAndPrintIdentifier(String serviceName, String operation, Object[] args) throws Exception {
-		fetchAndPrintIdentifier(serviceName, operation, args, null);
-	}
-	
-	void fetchAndPrintIdentifier(String serviceName, String operation, Object[] args, String filename) throws Exception {
-		Long ident = (Long) fetch(serviceName, operation, args, filename);
-
-		System.out.println(ident);
-	}
-
-	void fetchAndPrintString(String serviceName, String operation, Object[] args) throws Exception {
-		fetchAndPrintString(serviceName, operation, args, null);
-	}
-	
-	void fetchAndPrintString(String serviceName, String operation, Object[] args, String filename) throws Exception {
-		String str = (String) fetch(serviceName, operation, args, filename);
-
-		System.out.println(str);
-	}
-
-	Object fetch(String serviceName, String operation, Object[] args, String filename) throws Exception {
-		return invokeWithCall(serviceName, operation, args, ((filename != null)? new File(filename) : null), null);
-	}
-	
+		
 	private static void printUsage() {
 		System.out.println("Usage:");
 		System.out.println("printWorkspaceTree <workspace id> <depth> [<page>]");

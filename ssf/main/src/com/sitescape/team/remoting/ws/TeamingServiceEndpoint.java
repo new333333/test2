@@ -148,9 +148,10 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public String definition_getDefinitionAsXML(String accessToken, String definitionId) {
 		return getDefinitionService().definition_getDefinitionAsXML(accessToken, definitionId);
 	}
+	/*
 	public String definition_getDefinitionsAsXML(String accessToken) {
 		return getDefinitionService().definition_getDefinitionsAsXML(accessToken);
-	}
+	}*/
 	public void folder_addEntryWorkflow(String accessToken, long binderId, long entryId, String definitionId) {
 		getFolderService().folder_addEntryWorkflow(accessToken, binderId, entryId, definitionId);
 	}
@@ -268,8 +269,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public String template_getTemplatesAsXML(String accessToken) {
 		return getTemplateService().template_getTemplatesAsXML(accessToken);
 	}*/
-	public void zone_addZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
-		getZoneService().zone_addZone(accessToken, zoneName, virtualHost, mailDomain);
+	public Long zone_addZone(String accessToken, String zoneName, String virtualHost, String mailDomain) {
+		return getZoneService().zone_addZone(accessToken, zoneName, virtualHost, mailDomain);
 	}
 	public void zone_deleteZone(String accessToken, String zoneName) {
 		getZoneService().zone_deleteZone(accessToken, zoneName);
@@ -329,8 +330,8 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		return getBinderService().binder_addBinder(accessToken, binder);
 	}
 
-	public void binder_setFunctionMemberships(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
-		getBinderService().binder_setFunctionMemberships(accessToken, binderId, functionMemberships);
+	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships) {
+		getBinderService().binder_setFunctionMembership(accessToken, binderId, functionMemberships);
 	}
 
 	public long folder_addEntry(String accessToken, FolderEntry entry, String attachedFileName) {

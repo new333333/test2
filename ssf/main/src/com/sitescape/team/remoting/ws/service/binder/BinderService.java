@@ -50,5 +50,5 @@ public interface BinderService {
 	
 	public long binder_addBinder(String accessToken, Binder binder);
 	
-	public void binder_setFunctionMemberships(String accessToken, long binderId, FunctionMembership[] functionMemberships);
+	public void binder_setFunctionMembership(String accessToken, long binderId, FunctionMembership[] functionMemberships);
 }

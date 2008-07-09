@@ -563,12 +563,12 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
     		return top;
  	}
  	
-	protected void addZone(final String name, final String virtualHost) {
+	protected Long addZone(final String name, final String virtualHost) {
 		final String adminName = SZoneConfig.getAdminUserName(name);
 		RequestContext oldCtx = RequestContextHolder.getRequestContext();
 		RequestContextUtil.setThreadContext(name, adminName);
 		try {
-  	        getTransactionTemplate().execute(new TransactionCallback() {
+  	        return (Long) getTransactionTemplate().execute(new TransactionCallback() {
 	        	public Object doInTransaction(TransactionStatus status) {
 	    			IndexSynchronizationManager.begin();
 
@@ -580,7 +580,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 						zoneM.startScheduledJobs(zone);
 					}
 	    		
-	        		return null;
+	        		return zone.getId();
 	        	}
 	        });
 		} finally  {

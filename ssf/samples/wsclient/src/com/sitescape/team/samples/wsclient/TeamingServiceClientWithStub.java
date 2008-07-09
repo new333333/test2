@@ -29,7 +29,6 @@
 package com.sitescape.team.samples.wsclient;
 
 import java.io.File;
-import java.util.Calendar;
 
 import org.apache.axis.EngineConfiguration;
 

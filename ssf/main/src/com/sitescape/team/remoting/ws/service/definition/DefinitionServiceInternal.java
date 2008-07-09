@@ -32,4 +32,6 @@ public interface DefinitionServiceInternal {
 	
 	public String definition_getDefinitionConfigAsXML(String accessToken);
 
+	public String definition_getDefinitionsAsXML(String accessToken);
+	
 }
