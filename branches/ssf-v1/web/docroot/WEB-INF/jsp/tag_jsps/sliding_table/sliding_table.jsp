@@ -123,7 +123,6 @@ var ss_columnCount = <%= String.valueOf(colSize) %>;
 </table>
 <table cellspacing="0" cellpadding="2" width="100%">
 <%		
-		for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
 		int rowCount = 1;
 		String rowStyle = "ss_sliding_table_row0";
 		for (int iRow = 0; iRow < slidingTableRows.size(); iRow++) {
