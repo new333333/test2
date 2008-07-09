@@ -197,7 +197,6 @@
 					<a href="javascript: ;" onClick="ss_addOption('tag');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
 				</div>
 			</div>	
-<ssf:ifAuthorizedByLicense featureName="com.sitescape.team.module.workflow.Workflow">
 			<div id="ss_workflows_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Workflow"/></h4>
 				<div id="ss_workflows_options" class="ss_options"></div>
@@ -205,7 +204,6 @@
 					<a href="javascript: ;" onClick="ss_addOption('workflow');" class="ss_button"><ssf:nlt tag="searchForm.moreCriteria"/></a>
 				</div>
 			</div>
-</ssf:ifAuthorizedByLicense>
 			<div id="ss_entries_container" class="ss_options_container">
 				<h4 class="ss_sectionTitle"><ssf:nlt tag="searchForm.sectionTitle.Entry"/></h4>
 				<div id="ss_entries_options" class="ss_options"></div>
