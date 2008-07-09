@@ -109,7 +109,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	private Element configRoot;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
 	private static final String[] defaultDefAttrs = new String[]{"internalId", "type"};
-	private boolean hasWorkflow;
 	
 	protected BinderModule binderModule;
 	public void setBinderModule(BinderModule binderModule) {
@@ -130,7 +129,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
 		this.configRoot = this.definitionConfig.getRootElement();
 		
-		this.hasWorkflow = LicenseChecker.isAuthorizedByLicense("com.sitescape.team.module.workflow.Workflow");
 
     }
     /*
@@ -139,7 +137,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
      * @see com.sitescape.team.module.definition.DefinitionModule#testAccess(java.lang.String)
      */
    	public boolean testAccess(Binder binder, Integer type, DefinitionOperation operation) {
-   		if (type == Definition.WORKFLOW && !hasWorkflow) return false;
    		try {
    			checkAccess(binder, type, operation);
    			return true;
@@ -161,7 +158,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
   				getAccessControlManager().checkOperation(binder, WorkAreaOperation.BINDER_ADMINISTRATION); 				
    			}
    		} else if (type.equals(Definition.WORKFLOW)) {
-   			if (!hasWorkflow) throw new NotSupportedException(operation.toString(), "open edition");
    			if (binder ==  null) {
    				if (getAccessControlManager().testOperation(top, WorkAreaOperation.MANAGE_WORKFLOW_DEFINITIONS)) return;
    				getAccessControlManager().checkOperation(top, WorkAreaOperation.SITE_ADMINISTRATION);
