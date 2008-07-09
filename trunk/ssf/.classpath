@@ -105,5 +105,6 @@
 	<classpathentry exported="true" kind="lib" path="lib/slf4j-api.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/subethasmtp.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/commons-net.jar"/>
+	<classpathentry exported="true" kind="lib" path="lib/jbpm.jar"/>
 	<classpathentry kind="output" path="output"/>
 </classpath>
