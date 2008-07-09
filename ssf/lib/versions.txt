@@ -100,3 +100,5 @@ jut.jar
 ridl.jar
 unoil.jar					(end OpenOffice 2.0 Jars)
 
+util-taglib.jar, util-bridges.jar - copied from Liferay 4.3, can be removed after we eliminate references to taglibs from jsps
+
