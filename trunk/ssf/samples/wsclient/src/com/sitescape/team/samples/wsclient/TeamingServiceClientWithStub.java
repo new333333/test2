@@ -53,24 +53,24 @@ import com.sitescape.team.client.ws.model.PrincipalCollection;
 public class TeamingServiceClientWithStub {
 
 	private static final String TEAMING_SERVICE_ADDRESS_WSS 	= "http://localhost:8080/ssf/ws/TeamingService";
-	//private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingService";
-	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8079/ssr/secure/ws/TeamingService";
+	private static final String TEAMING_SERVICE_ADDRESS_BASIC 	= "http://localhost:8080/ssr/secure/ws/TeamingService";
 	
 	private static final String USERNAME = "admin";
-	private static final String PASSWORD = "admin";
+	private static final String PASSWORD = "test";
 	
 	public static void main(String[] args) throws Exception {
 		FolderEntry entry;
 		
 		//getFolderEntryWSSecurity(85, 47, true);
+		getFolderEntry(85, 80, true);
 		
 		// Test add
 		//entry = getFolderEntry(85, 80, false);
 		//addFolderEntryByCopying(entry);
 		
 		// Test modify
-		entry = getFolderEntry(85, 80, false);
-		modifyFolderEntry(entry);
+		//entry = getFolderEntry(85, 80, false);
+		//modifyFolderEntry(entry);
 		
 		// Test delete
 		//deleteFolderEntry(85, 47);

@@ -279,12 +279,6 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 		getZoneService().zone_modifyZone(accessToken, zoneName, virtualHost, mailDomain);
 	}
 
-
-	
-	
-	
-	
-	
 	public FolderEntry folder_getEntry(String accessToken, long binderId, long entryId, boolean includeAttachments) {
 		return getFolderService().folder_getEntry(accessToken, binderId, entryId, includeAttachments);
 	}
@@ -320,11 +314,6 @@ public class TeamingServiceEndpoint implements ServiceLifecycle,
 	public TemplateCollection template_getTemplates(String accessToken) {
 		return getTemplateService().template_getTemplates(accessToken);
 	}
-
-	
-	
-	
-	
 	
 	public long binder_addBinder(String accessToken, Binder binder) {
 		return getBinderService().binder_addBinder(accessToken, binder);
