@@ -71,6 +71,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		
 		width:96%;
 		text-align:left;
+		position: relative;
 
 	}
 	#ss_diss_top
@@ -78,7 +79,6 @@ boolean isIE = BrowserSniffer.is_ie(request);
 		clear:both;
 		float: left;
 		width: 100%;
-		overflow: hidden;
 		color: #526394;
 		font-family: Arial, Helvetica, sans-serif;
 
@@ -333,7 +333,26 @@ a.ss_new_thread:hover {
 	}	
 
 /******* PAGINATION STYLES *************/
+#ss_goBox {
+	<c:if test="<%= isIE %>">
+ 	overflow:hidden;
+ 	height:26px !important;
+ 	</c:if>
+	}
+.ss_paginationGo {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: ${ss_style_font_fineprint} !important;
+	padding-left: 5px;
+	padding-right: 10px;
+	white-space: nowrap;
+	padding-top: 0px;
+	height:26px !important;
+	<c:if test="<%= isIE %>">
+  		vertical-align:top;
+  		padding-top: 3px;
+ 	</c:if>
 
+}
 .ss_paginationFont {
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: ${ss_style_font_fineprint} !important;
@@ -346,16 +365,20 @@ a.ss_new_thread:hover {
   		vertical-align:top;
   		padding-top: 6px;
  	</c:if>
+ 	overflow:hidden;
 }
 
 .ss_paginationFont a{
 	border:solid 1px #DDDDDD !important;
-	margin-right:2px;
+	margin-right:5px;
 }
 .ss_pageActive{
 	color:#408080!important;
 	font-weight:normal;
-	padding:8px 4px 0px 6px;
+	padding:7px 4px 0px 6px;
+		<c:if test="<%= isIE %>">
+  		padding:6px 4px 0px 6px;
+ 	</c:if>
 }
 .ss_paginationFont a:link,
 .ss_paginationFont a:visited {
@@ -415,7 +438,6 @@ a.ss_new_thread:hover {
 .ss_pagination {
 	background-color: #CCDFDE !important;
 	height:26px !important;
-	overflow:hidden;
 	margin-bottom: 5px;
 	}
 	
@@ -434,5 +456,6 @@ a.ss_new_thread:hover {
 }
 .ss_paginationDiv {
 	background-color: #E9F1F1 !important;
+	height:26px !important;
 }
 /*************************************/
