@@ -1585,14 +1585,20 @@ public class BinderHelper {
 				//Add the attributes
 				String name = ele.attributeValue("name");
 				attributeMap = new HashMap();
-				eleMap.put("attributes", attributeMap);
 				itAttr = ele.attributeIterator();
 				while (itAttr.hasNext()) {
 					Attribute attr = (Attribute) itAttr.next();
 					attributeMap.put(attr.getName(), attr.getValue());
 				}
 				//Add the data
-				eleMap.put(name, ele.getData());
+				if (Validator.isNull(name)) {
+					eleMap.put("attributes", attributeMap);
+					continue; //no way to add it
+				}
+				Map dataMap = new HashMap();
+				dataMap.put("attributes", attributeMap);
+				dataMap.put("value", ele.getData());
+				eleMap.put(name, dataMap);
 			}
 		}
 		return changeList;
