@@ -31,17 +31,6 @@
 <%@ include file="/WEB-INF/jsp/common/include.jsp" %>
 <%@ page import="com.sitescape.team.util.NLT" %>
 
-<script type="text/javascript">
-function ${renderResponse.namespace}_showId(id, obj, action) {
-	//Build a url to go to
-	var url = "<ssf:url action="ssActionPlaceHolder" actionUrl="false" ><ssf:param 
-			name="binderId" value="ssBinderIdPlaceHolder"/></ssf:url>"
-	url = ss_replaceSubStr(url, "ssBinderIdPlaceHolder", id);
-	url = ss_replaceSubStr(url, "ssActionPlaceHolder", action);
-	self.location.href = url;
-	return false;
-}
-</script>
 <div class="ss_style ss_portlet">
 
 <c:if test="${!empty ssException}">
@@ -51,8 +40,8 @@ function ${renderResponse.namespace}_showId(id, obj, action) {
 <br/>
 <span class="ss_bold"><ssf:nlt tag="notify.forum.label"/>&nbsp;${ssBinder.title}</span><br/>
 
-<c:set var="ss_breadcrumbsShowIdRoutine" value="${renderResponse.namespace}_showId" scope="request" />
-<c:set var="ss_breadcrumbsTreeName" value="${renderResponse.namespace}" scope="request" />
+<c:set var="ss_breadcrumbsShowIdRoutine" value="ss_treeShowIdNoWS" scope="request" />
+<c:set var="ss_breadcrumbsTreeName" value="${renderResponse.namespace}_tree" scope="request" />
 
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />
 <form class="ss_style ss_form" name="${renderResponse.namespace}fm" method="post" 
