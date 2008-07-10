@@ -70,22 +70,7 @@ if (ssFolderTableHeight == null || ssFolderTableHeight.equals("") ||
 <br/><br/>
 <jsp:include page="/WEB-INF/jsp/forum/view_forum_page_navigation.jsp" />
 
-<ssf:ifaccessible>
-<div id="ss_configureCol">
-<% // configure columns area %>
-	 [<a href="<ssf:url
-			adapter="true" 
-			portletName="ss_forum" 
-			action="__ajax_request" 
-			actionUrl="true" >
-			<ssf:param name="operation" value="configure_folder_columns" />
-			<ssf:param name="binderId" value="${ssBinder.id}" />
-			<ssf:param name="rn" value="ss_randomNumberPlaceholder" />
-			</ssf:url>" onClick="ss_createPopupDiv(this, 'ss_folder_column_menu');return false;">
-		    <span class="ss_muted_label_small ss_underline"><ssf:nlt tag="misc.configureColumns"/> </span> </a>&nbsp;]  
-</div> 
-</ssf:ifaccessible>		
-<!--end of configure columns-->
+
 <div id="ss_folder_table_parent" class="ss_folder">
 
 <div class="ss_folder_border">
