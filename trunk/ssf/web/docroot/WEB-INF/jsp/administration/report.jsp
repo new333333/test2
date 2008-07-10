@@ -85,7 +85,7 @@ String wsTreeName = "search_" + renderResponse.getNamespace();
    <br/>
    <ssf:tree treeName="<%= wsTreeName %>" treeDocument="<%= ssWsDomTree %>"  
      rootOpen="true" topId="${ssWsDomTreeBinderId}" 
-     multiSelect="<%= new ArrayList() %>" multiSelectPrefix="$type" />
+     multiSelect="<%= new ArrayList() %>" multiSelectPrefix="id" />
 
    <br/>
    <br/>
@@ -129,7 +129,7 @@ function <%= wsTreeName %>_showId(forum, obj, action) {
 		cDocument = obj.document;
 	}
 	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>" + action + forum);
+		var r = cDocument.getElementById("ss_tree_checkbox<%= wsTreeName %>id" + forum);
 		if (r) {
 			if (r.checked !== undefined) {
 				r.checked = !r.checked;

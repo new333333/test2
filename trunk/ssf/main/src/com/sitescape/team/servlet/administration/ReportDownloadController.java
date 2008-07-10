@@ -30,26 +30,22 @@ package com.sitescape.team.servlet.administration;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PrintWriter;
-
 import java.text.DateFormat;
-
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-
+import java.util.Collection;
 import javax.activation.FileTypeMap;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.web.bind.RequestUtils;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.sitescape.team.context.request.RequestContextHolder;
@@ -59,12 +55,12 @@ import com.sitescape.team.domain.Principal;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.module.report.ReportModule;
 import com.sitescape.team.module.shared.MapInputData;
+import com.sitescape.team.module.workflow.WorkflowUtils;
 import com.sitescape.team.util.NLT;
-import com.sitescape.util.Validator;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.servlet.SAbstractController;
-import com.sitescape.team.web.tree.DomTreeBuilder;
-import com.sitescape.team.module.workflow.WorkflowUtils;
+import com.sitescape.team.web.tree.TreeHelper;
+import com.sitescape.util.Validator;
 
 public class ReportDownloadController extends  SAbstractController {
 	
@@ -124,39 +120,14 @@ public class ReportDownloadController extends  SAbstractController {
 						"Content-Disposition",
 						"attachment; filename=\"report.csv\"");
 
-			String reportType = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_REPORT_TYPE);
+			String reportType = ServletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_REPORT_TYPE);
 			String[] columns = null;
 			List<Map<String, Object>> report = null;
-			HashSet userIds = null;
 			boolean hasUsers = true;
 			if("binder".equals(reportType)) {
 				//Get the list of binders for reporting
-				hasUsers = RequestUtils.getBooleanParameter(request, WebKeys.URL_BY_USER, false);
-				List<Long> ids = new ArrayList();
-
-				//Get the binders for reporting
-				Iterator itFormData = formData.entrySet().iterator();
-				while (itFormData.hasNext()) {
-					Map.Entry me = (Map.Entry) itFormData.next();
-					String key = (String)me.getKey();
-					if (WebKeys.URL_ID_CHOICES.equals(key)) {
-						String[] values = (String[])me.getValue();
-						for (int i = 0; i < values.length; i++) {
-							String[] valueSplited = values[i].split("\\s");
-							for (int j = 0; j < valueSplited.length; j++) {
-								if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-									if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_FOLDER + WebKeys.URL_ID_CHOICES_SEPARATOR)) {
-										String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-										ids.add(Long.valueOf(binderId));
-									} else if (valueSplited[j].startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE + WebKeys.URL_ID_CHOICES_SEPARATOR)) {
-										String binderId = valueSplited[j].replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-										ids.add(Long.valueOf(binderId));
-									}							
-								}
-							}
-						}
-					}
-				}
+				hasUsers = ServletRequestUtils.getBooleanParameter(request, WebKeys.URL_BY_USER, false);
+				Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 
 				report = getReportModule().generateReport(ids, hasUsers, startDate, endDate);
 				columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
@@ -166,44 +137,16 @@ public class ReportDownloadController extends  SAbstractController {
 				report = getReportModule().generateLoginReport(startDate, endDate);
 				columns = new String[] {ReportModule.USER_ID, ReportModule.LOGIN_COUNT, ReportModule.LAST_LOGIN};
 			} else if ("workflow".equals(reportType)) {
-				if(RequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, "").equals("averages")) {
+				if(ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, "").equals("averages")) {
 					//Get the list of binders for reporting
-					List<Long> ids = new ArrayList();
-
-					//Get the binders for reporting
-					Iterator itFormData = formData.entrySet().iterator();
-					while (itFormData.hasNext()) {
-						Map.Entry me = (Map.Entry) itFormData.next();
-						String key = (String)me.getKey();
-						if (key.startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
-							String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + "_", "");
-							ids.add(Long.valueOf(binderId));
-						} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
-							String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + "_", "");
-							ids.add(Long.valueOf(binderId));
-						}
-					}
+					Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 
 					report = getReportModule().generateWorkflowStateReport(ids, startDate, endDate);
 					columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
 							ReportModule.DEFINITION_ID, ReportModule.STATE, ReportModule.AVERAGE_TI, ReportModule.AVERAGE };
-				} else if(RequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, "").equals("current")) {
+				} else if(ServletRequestUtils.getStringParameter(request, WebKeys.URL_REPORT_FLAVOR, "").equals("current")) {
 					//Get the list of binders for reporting
-					List<Long> ids = new ArrayList();
-
-					//Get the binders for reporting
-					Iterator itFormData = formData.entrySet().iterator();
-					while (itFormData.hasNext()) {
-						Map.Entry me = (Map.Entry) itFormData.next();
-						String key = (String)me.getKey();
-						if (key.startsWith(DomTreeBuilder.NODE_TYPE_FOLDER)) {
-							String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_FOLDER + "_", "");
-							ids.add(Long.valueOf(binderId));
-						} else if (key.startsWith(DomTreeBuilder.NODE_TYPE_WORKSPACE)) {
-							String binderId = key.replaceFirst(DomTreeBuilder.NODE_TYPE_WORKSPACE + "_", "");
-							ids.add(Long.valueOf(binderId));
-						}
-					}
+					Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 
 					report = getReportModule().generateWorkflowStateCountReport(ids);
 					columns = new String[] {ReportModule.BINDER_ID, ReportModule.BINDER_PARENT, ReportModule.BINDER_TITLE,
@@ -211,14 +154,14 @@ public class ReportDownloadController extends  SAbstractController {
 				}
 			} else if ("entry".equals(reportType)) {
 				hasUsers = true;
-				Long binderId = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
-				Long entryId = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
+				Long binderId = ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_BINDER_ID);
+				Long entryId = ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_ENTRY_ID);
 				report = getReportModule().generateActivityReport(binderId, entryId);
 				columns = new String[] {ReportModule.USER_ID, AuditTrail.AuditType.view.name(), AuditTrail.AuditType.add.name(),
 						AuditTrail.AuditType.modify.name(), AuditTrail.AuditType.delete.name()};
 			} else if ("quota".equals(reportType)) {
-				String quotaOption = RequestUtils.getRequiredStringParameter(request, WebKeys.URL_QUOTA_OPTION);
-				Long threshold = RequestUtils.getRequiredLongParameter(request, WebKeys.URL_QUOTA_THRESHOLD);
+				String quotaOption = ServletRequestUtils.getRequiredStringParameter(request, WebKeys.URL_QUOTA_OPTION);
+				Long threshold = ServletRequestUtils.getRequiredLongParameter(request, WebKeys.URL_QUOTA_THRESHOLD);
 				ReportModule.QuotaOption option = ReportModule.QuotaOption.valueOf(quotaOption);
 				report = getReportModule().generateQuotaReport(option, threshold);
 				switch(option) {

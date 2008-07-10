@@ -56,6 +56,7 @@ import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.portlet.SAbstractController;
 import com.sitescape.team.web.tree.DomTreeBuilder;
 import com.sitescape.team.web.tree.SearchTreeHelper;
+import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.PortletRequestUtils;
 import com.sitescape.team.web.util.WebStatusTicket;
@@ -66,22 +67,8 @@ public class ManageSearchIndexController extends  SAbstractController {
 		Map formData = request.getParameterMap();
 		String btnClicked = PortletRequestUtils.getStringParameter(request, "btnClicked", "");
 		if (formData.containsKey("okBtn") || btnClicked.equals("okBtn")) {
-			//Get the list of binders to be indexed
-			List<Long> ids = new ArrayList();
-			Boolean usersandgroups = false;
 			//Get the binders to be indexed
-			String[] values = (String[])formData.get(WebKeys.URL_ID_CHOICES);
-			for (int i = 0; i < values.length; i++) {
-				String[] valueSplited = values[i].split("\\s");
-				for (int j = 0; j < valueSplited.length; j++) {
-					if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-						String binderId = valueSplited[j].replaceFirst("search" + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-						if (!usersAndGroups.equals(binderId)) ids.add(Long.valueOf(binderId));
-						else usersandgroups=true;
-					}
-				}
-			}
-
+			Collection<Long> ids = TreeHelper.getSelectedIds(formData);
 			
 			// Create a new status ticket
 			StatusTicket statusTicket = WebStatusTicket.newStatusTicket(PortletRequestUtils.getStringParameter(request, WebKeys.URL_STATUS_TICKET_ID, "none"), request);
@@ -92,7 +79,8 @@ public class ManageSearchIndexController extends  SAbstractController {
 			}
 			Collection idsIndexed = getBinderModule().indexTree(ids, statusTicket);
 			//if people selected and not yet index; index content only, not the whole ws tree
-			if (usersandgroups) {
+			String idChoices = TreeHelper.getSelectedIdsAsString(formData);
+			if (idChoices.contains(usersAndGroups)) {
 				ProfileBinder pf = getProfileModule().getProfileBinder();
 				if (!idsIndexed.contains(pf.getId()))
 					getBinderModule().indexBinder(pf.getId(), true);

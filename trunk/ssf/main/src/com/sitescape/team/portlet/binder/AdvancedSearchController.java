@@ -29,6 +29,7 @@
 package com.sitescape.team.portlet.binder;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +63,7 @@ import com.sitescape.team.search.filter.SearchFilter;
 import com.sitescape.team.search.filter.SearchFilterKeys;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
+import com.sitescape.team.web.tree.TreeHelper;
 import com.sitescape.team.web.tree.WsDomTreeBuilder;
 import com.sitescape.team.web.util.BinderHelper;
 import com.sitescape.team.web.util.Clipboard;
@@ -327,15 +329,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 		
 		Set workflows = new HashSet();
 		if (WebHelper.isUserLoggedIn(request)) {
-			String[] values = (PortletRequestUtils.getStringParameters(request, WebKeys.URL_ID_CHOICES));
-			for (int i = 0; i < values.length; i++) {
-				String[] valueSplited = values[i].split("\\s");
-				for (int j = 0; j < valueSplited.length; j++) {
-					if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-						String binderId = valueSplited[j].replaceFirst("searchFolders" + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-						workflows.addAll(getDefinitionModule().getDefinitions(Long.valueOf(binderId), Boolean.TRUE, Definition.WORKFLOW));
-					}
-				}
+			Collection<Long> ids = TreeHelper.getSelectedIds(request.getParameterMap());
+			for (Long id:ids) {
+				try {
+					workflows.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.WORKFLOW));
+				} catch (Exception ex) {}
 			}
 			if (workflows.isEmpty()) workflows.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.WORKFLOW));
 		}
@@ -364,15 +362,11 @@ public class AdvancedSearchController extends AbstractBinderController {
 		Map model = new HashMap();
 		Set entries = new HashSet();
 		if (WebHelper.isUserLoggedIn(request)) {
-			String[] values = (PortletRequestUtils.getStringParameters(request, WebKeys.URL_ID_CHOICES));
-			for (int i = 0; i < values.length; i++) {
-				String[] valueSplited = values[i].split("\\s");
-				for (int j = 0; j < valueSplited.length; j++) {
-					if (valueSplited[j] != null && !"".equals(valueSplited[j])) {
-						String binderId = valueSplited[j].replaceFirst("searchFolders" + WebKeys.URL_ID_CHOICES_SEPARATOR, "");
-						entries.addAll(getDefinitionModule().getDefinitions(Long.valueOf(binderId), Boolean.TRUE, Definition.FOLDER_ENTRY));
-					}
-				}
+			Collection<Long> ids = TreeHelper.getSelectedIds(request.getParameterMap());
+			for (Long id:ids) {
+				try {
+					entries.addAll(getDefinitionModule().getDefinitions(id, Boolean.TRUE, Definition.FOLDER_ENTRY));
+				} catch (Exception ex) {}
 			}
 			if (entries.isEmpty()) entries.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY));
 		}
