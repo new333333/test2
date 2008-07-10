@@ -41,6 +41,7 @@ dojo.widget.defineWidget(
 		stepsWidget : null,
 		searchFieldName: "",
 		widgetStepsRef : null,
+	    getSubSearchString: function() {return ""},
 		selectOption : function(/*Event*/ evt){
 			if (this.widgetStepsRef != null) this.widgetStepsRef.destroy();
 			sitescape.widget.WorkflowSelect.superclass.selectOption.call(this, evt);
@@ -64,8 +65,7 @@ dojo.widget.defineWidget(
 			}else{
 				// forces full population of results, if they click
 				// on the arrow it means they want to see more options
-				var idChoices = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
-				this.startSearch(idChoices.value);
+				this.startSearch(this.getSubSearchString());
 			}
 		},
 		loadWorkflowSteps: function(workflowId, stepsIds) {

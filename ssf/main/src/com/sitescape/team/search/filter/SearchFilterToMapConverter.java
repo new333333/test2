@@ -49,11 +49,13 @@ import com.sitescape.team.domain.Binder;
 import com.sitescape.team.domain.Definition;
 import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoBinderByTheIdException;
+import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.util.AllModulesInjected;
 import com.sitescape.team.util.NLT;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.search.Constants;
+import com.sitescape.util.Validator;
 
 public class SearchFilterToMapConverter {
 	
@@ -536,30 +538,29 @@ public class SearchFilterToMapConverter {
 	}
 
 	private Collection prepareEntries(Map convertedQuery) {
-		List entryTypes = bs.getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY);
 		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);		
 		List entriesFromSearch = (List) additionalOptions.get(SearchBlockTypeEntry);
-		if (entryTypes == null || entriesFromSearch == null) {
+		if (entriesFromSearch == null) {
 			return null;
 		}
-		Iterator entriesIt = entryTypes.iterator();
 		Map entriesMap = new HashMap(); 
-		while (entriesIt.hasNext()) {
-			Entry entry = new Entry((Definition) entriesIt.next(), null);
-			entriesMap.put(entry.getId(), entry);
-		}
 		Iterator entriesFromSearchIt = entriesFromSearch.iterator();
 		while (entriesFromSearchIt.hasNext()) {
 			Map entryMap = (Map) entriesFromSearchIt.next();
 			String entryType = (String) entryMap.get(SearchEntryType);
 			String fieldName = (String) entryMap.get(SearchEntryElement);
+			if (Validator.isNull(entryType)) continue;
+			Entry entry =null;
+			try {
+				Definition entryDef = bs.getDefinitionModule().getDefinition(entryType);
+				entry = new Entry(entryDef, null); 
+				entriesMap.put(entryDef.getId(), entry);
+			} catch (NoDefinitionByTheIdException nd) {continue;};
 			
-			if (entryType != null && !entryType.equals("")) {
-				Map fieldsMap = bs.getDefinitionModule().getEntryDefinitionElements(entryType);
-				if (fieldName != null && fieldsMap.get(fieldName) != null) {
-					EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
-					((Entry)entriesMap.get(entryType)).addField(entryField);
-				}	
+			Map fieldsMap = bs.getDefinitionModule().getEntryDefinitionElements(entryType);
+			if (Validator.isNotNull(fieldName) && fieldsMap.get(fieldName) != null) {
+				EntryField entryField = new EntryField(fieldName, (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TitleField), (String)((Map)fieldsMap.get(fieldName)).get(EntryField.TypeField));
+				entry.addField(entryField);	
 			}
 		}
 		return entriesMap.values();
@@ -596,22 +597,23 @@ public class SearchFilterToMapConverter {
 		}
 	}
 	private Collection prepareWorkflows(Map convertedQuery) {
-		List workflows = bs.getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.WORKFLOW);
 		Map additionalOptions = (Map)convertedQuery.get(SearchFilterKeys.SearchAdditionalFilters);		
 		List wfFromSearch = (List) additionalOptions.get(SearchBlockTypeWorkflow);
-		if (workflows == null || wfFromSearch == null) {
+		if (wfFromSearch == null) {
 			return null;
 		}
-		Iterator wfIt = workflows.iterator();
 		Map wfMap = new HashMap();
-		while (wfIt.hasNext()) {
-			Workflow workflow = new Workflow((Definition)wfIt.next(), null); 
-			wfMap.put(workflow.getId(), workflow);
-		}
 		Iterator it = wfFromSearch.iterator();
 		while (it.hasNext()) {
 			Map wfFilter = (Map) it.next();
 			String wfId = (String)wfFilter.get(SearchFilterKeys.SearchWorkflowId);
+			if (Validator.isNull(wfId)) continue;
+			Workflow workflow =null;
+			try {
+				Definition workDef = bs.getDefinitionModule().getDefinition(wfId);
+				workflow = new Workflow(workDef, null); 
+				wfMap.put(workDef.getId(), workflow);
+			} catch (NoDefinitionByTheIdException nd) {continue;};
 			Map steps = bs.getDefinitionModule().getWorkflowDefinitionStates(wfId);
 			if (steps.isEmpty()) continue;
 			List selectedStepsNames = (List) wfFilter.get(SearchFilterKeys.FilterWorkflowStateName);
@@ -621,7 +623,7 @@ public class SearchFilterToMapConverter {
 				Map stepMap = (Map)steps.get(stepName);
 				if (stepMap == null) continue;
 				WorkflowStep wfStep = new WorkflowStep(stepName, (String)stepMap.get(WorkflowStep.TitleField));
-				((Workflow)wfMap.get(wfId)).addStep(wfStep);
+				workflow.addStep(wfStep);
 			}
 		}
 		
