@@ -6023,7 +6023,25 @@ function ss_clearMultiSelect(id) {
 		inputHiddenObj.parentNode.removeChild(inputHiddenObj);
 	}
 }
-
+function ss_checkTree(obj, divName) {
+	if (obj.ownerDocument) {
+		var cDocument = obj.ownerDocument;
+	} else if (obj.document) {
+		cDocument = obj.document;
+	}
+	if (cDocument) {
+		var r = cDocument.getElementById(divName);
+		if (r) {
+			if (r.checked !== undefined) {
+				r.checked = !r.checked;
+			}
+			if (r.onclick !== undefined) {
+				r.onclick();
+			}
+		}
+	}
+	return false;
+}
 function ss_saveTreeId(obj, treeName, placeId, idChoicesInputId) {
 	var idChoices = null;
 	var choicesAreFromParent = false;
