@@ -345,24 +345,8 @@ function ss_addDate(orderNo, type, startDate, endDate) {
 }
 
 /* check/uncheck checkboxes in tree on click in the place name */
-function t_advSearchForm_wsTree_showId(forum, obj) {
-	if (obj.ownerDocument) {
-		var cDocument = obj.ownerDocument;
-	} else if (obj.document) {
-		cDocument = obj.document;
-	}
-	if (cDocument) {
-		var r = cDocument.getElementById("ss_tree_checkboxt_searchForm_wsTreesearchFolders" + forum);
-		if (r) {
-			if (r.checked !== undefined) {
-				r.checked = !r.checked;
-			}
-			if (r.onclick !== undefined) {
-				r.onclick();
-			}
-		}
-	}
-	return false;
+function t_advSearchForm_wsTree_showId(id, obj) {
+	return ss_checkTree(obj, "ss_tree_checkboxt_searchForm_wsTreesearchFolders" + id)
 }
 
 function ss_addFolderAfterPost(response, bindObjId) {
