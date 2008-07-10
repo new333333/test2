@@ -87,7 +87,7 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     protected int nextBinderNumber=1;
     protected String branding; 
     protected Boolean postingEnabled;
-   
+    protected String type;
     public Binder() {
     }
     /**
@@ -262,6 +262,16 @@ public abstract class Binder extends DefinableEntity implements WorkArea, Instan
     	this.binderCount = binderCount;
     }
  
+    /**
+     * @hibernate.property insert="false" update="false"
+     *
+     */
+    protected String getType() {
+    	return type;
+    }
+    protected void setType(String type) {
+    	this.type = type;
+    }
     /**
      * Only used on top workspace.
      * @hibernate.property length="128" 
