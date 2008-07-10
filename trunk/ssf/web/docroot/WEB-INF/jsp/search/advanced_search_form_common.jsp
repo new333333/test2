@@ -105,6 +105,7 @@
 									</div>
 								
 									<div id="ss_foldersTree_${ssNamespace}" style="padding-left: 24px; padding-top: 6px; ">
+								<input type="hidden" name="search_dashboardFolders" id="search_dashboardFolders" value="${ssBinder.id}"/>
 								</c:if>
 								
 								<c:if test="${!activateDashboardFolder && !empty ssBinder}">

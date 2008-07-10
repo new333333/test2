@@ -36,31 +36,6 @@
 
 	<jsp:include page="/WEB-INF/jsp/search/search_js.jsp" />
 
-	<script type="text/javascript">
-	
-		var ss_searchWorkflows = new Array();
-		var ss_searchSteps = new Array();
-	<c:if test="${!empty ssWorkflowDefinitionMap}">
-		<c:forEach var="wf" items="${ssWorkflowDefinitionMap}">
-			ss_searchWorkflows['${wf.id}'] = '<ssf:escapeJavaScript value="${wf.title}"/>';
-			<c:forEach var="step" items="${wf.steps}">
-				ss_searchSteps['${wf.id}-${step.name}'] = '<ssf:escapeJavaScript value="${step.title}"/>';
-			</c:forEach>
-		</c:forEach>
-	</c:if>
-	<c:if test="${!empty ssEntryDefinitionMap}">
-		var ss_searchEntries = new Array();
-		var ss_searchFields = new Array();
-		var ss_searchFieldsTypes = new Array();
-		<c:forEach var="entry" items="${ssEntryDefinitionMap}">
-			ss_searchEntries['${entry.id}'] = '<ssf:escapeJavaScript value="${entry.title}"/>';
-			<c:forEach var="field" items="${entry.fields}">
-				ss_searchFields['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.title}"/>';
-				ss_searchFieldsTypes['${entry.id}-<ssf:escapeJavaScript value="${field.name}"/>'] = '<ssf:escapeJavaScript value="${field.type}"/>';
-			</c:forEach>
-		</c:forEach>
-	</c:if>
-	</script>
 
 <jsp:include page="/WEB-INF/jsp/forum/view_workarea_navbar.jsp" />
 <c:set var="ss_sidebarVisibility" value="${ssUserProperties.sidebarVisibility}"/>

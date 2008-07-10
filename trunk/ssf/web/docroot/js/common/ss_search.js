@@ -129,7 +129,7 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_workflows_options').appendChild(div);
 		
-	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"",
+	var properties = {name:"searchWorkflow"+orderNo+"", id:"searchWorkflow"+orderNo+"",getSubSearchString:ss_getSelectedBinders,
 	 dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflows_widget&idChoices=%{searchString}&randomNumber="+ss_random++, 
 	 nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_workflow_step_widget&randomNumber="+ss_random++, stepsWidget:sDiv, searchFieldName:"searchWorkflowStep"+orderNo, mode: "remote",
 								maxListLength : 10,	autoComplete: false};
@@ -145,7 +145,28 @@ function ss_addWorkflow(orderNo, wfIdValue, stepsValue) {
 	
 	return wfWidget;
 }
-
+function ss_getSelectedBinders() {
+	var value = "";
+	var obj = document.getElementById('search_currentFolder');
+	if (obj !== undefined && obj != null && obj.checked) {
+		obj = document.getElementById('search_dashboardFolders');
+		return 	" searchFolders%" + obj.value;
+	}
+	obj = document.getElementById('t_searchForm_wsTreesearchFolders_idChoices');				
+	if (obj !== undefined && obj != null) value = obj.value;
+	obj = document.getElementById('search_currentAndSubfolders');
+	if (obj !== undefined && obj != null && obj.checked) {
+		//don't allow duplicates
+		var id = " searchFolders%" + obj.name.substr(13);
+		var re = new RegExp(id + " ", "g");
+		value = value.replace(re, " ");
+		re = new RegExp(id + "$", "g");
+		value = value.replace(re, "");
+		value += id;
+	}
+	return value;
+ 
+}
 function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	var div = document.createElement('div');
 	div.id = "block"+ss_userOptionsCounter;
@@ -164,7 +185,7 @@ function ss_addEntry(orderNo, entryId, fieldName, value, valueLabel) {
 	div.appendChild(sDiv);
 	document.getElementById('ss_entries_options').appendChild(div);
 
-	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", 
+	var properties = {name:"ss_entry_def_id"+orderNo+"", id:"ss_entry_def_id"+orderNo+"", getSubSearchString:ss_getSelectedBinders,
 		dataUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_types_widget&idChoices=%{searchString}&randomNumber="+ss_random++, 
 		nestedUrl:ss_AjaxBaseUrl+"&action=advanced_search&operation=get_entry_fields_widget&randomNumber="+ss_random++, 
 		widgetContainer:sDiv, searchFieldIndex:orderNo, mode: "remote",
