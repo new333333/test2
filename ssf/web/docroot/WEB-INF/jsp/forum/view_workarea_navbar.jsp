@@ -255,7 +255,15 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 			    <div id="ss_navbarMyTeamsButton${renderResponse.namespace}" style="display:none;">
 			    </div>
 		</td>
-        <td height="19" colspan="4" valign="top" align="right"><span class="ss_mastheadName">${ssUser.title}</span></td>
+        <td height="19" colspan="4" valign="top" align="right" >
+        <span class="ss_mastheadName">
+        <a title="<ssf:nlt tag="navigation.myWorkspace"/>"
+				  href="<ssf:url 
+				    windowState="${ss_urlWindowState}"
+			      	action="view_ws_listing"
+			      	binderId="${ssUser.workspaceId}"/>"
+              	>${ssUser.title}</a></span>
+        </td>
 	    </tr>
       <tr>
         <td colspan="5">&nbsp;</td>
@@ -265,6 +273,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
   </tr>
   <tr>
     <td bgcolor="#5A9A98">
+    <!-- Start of search area with find boxes -->
     <!-- Beginning of Search Buttons -->
     <table align="center" border="0" cellpadding="0" cellspacing="0" width="90%">
        <tbody>
@@ -575,9 +584,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 
 </table>
 
- <div class="ss_clear_float"></div>
-
-
+<!-- End of Search/Find boxes -->
+   
+</td>
+</tr>
+</table>
 <c:if test="${empty ss_navbarBottomSeen}">
 <c:set var="ss_navbarBottomSeen" value="1"/>
 

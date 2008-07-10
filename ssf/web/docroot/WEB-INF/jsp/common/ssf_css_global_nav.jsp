@@ -39,8 +39,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	background-color:#EBEBEA;
 	border-color:#CCCCCC;
 	border: 1px;
-	padding-bottom:2px;
-	min-width: 650px !important;	
+	padding-bottom:2px;	
 	}
 
 	/*BRANDING*/
@@ -152,6 +151,13 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	font-style: oblique;
 	line-height: 16px;
 	padding-right: 10px;
+	white-space: nowrap;
+}
+.ss_mastheadName a{
+	color:#FFFFFF !important;
+}
+.ss_mastheadName a:hover{
+	color:#555555 !important;
 }
 .ss_mastheadtoplinks {
 
@@ -182,6 +188,28 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	{color: #5A9A98 !important;}
 ss_masthead_favorites a:hover{
 	color: #FF9000 !important;
+}
+	/* NEW CODE FOR SEARCH/FIND LINE */
+#ss_mastNav {
+	color:#FFFFFF;
+	font-size:12px;
+	font-weight:700;
+	padding:0px 1px 0px 5px;
+}
+
+#ss_mastNav ul {
+	border:0px none;
+	list-style-type:none;
+	margin:0px;
+	padding:0px 20px 0px 10px;
+}
+
+#ss_mastNav li {
+
+	font-family:Arial,Helvetica,sans-serif;
+	margin:0px;
+	padding:0px 3px 0px 5px;
+	display:inline !important;
 }
 
 
