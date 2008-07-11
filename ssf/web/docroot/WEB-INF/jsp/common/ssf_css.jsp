@@ -2538,10 +2538,11 @@ div.ss_dashboardContainer {
 	padding: 0px 0px 0px 0px;
 }
 div.ss_utils_bar {
-    float:right;
-    text-align:right;
+/*    float:right;		*/
+    text-align:right;	/* this was here */
 	margin-bottom:0px;
-	background:transparent none repeat scroll 0%;
+	background:transparent none repeat 0%;
+	background-attachment:scroll;
 	width:100%;
 }
 div.ss_line {
@@ -2551,14 +2552,15 @@ div.ss_line {
 	padding: 0px 0px 0px 0px;
 }
 ul.ss_utils_bar {
-	float: right;
+/*	float: right;		*/
 	list-style-type:none;
 	margin:0px;
 	padding:0px;
-	text-align:right;
+	text-align:right;	/* this was here */
 }
 div.ss_utils_bar ul.ss_utils_bar li {
-	float:left;
+/*	float:left;			*/
+/*	text-align: left;	 this is new */	
 	margin: 0px 5px 0px 0px;
 }
 div.ss_utils_bar ul.ss_utils_bar li a, div.ss_utils_bar ul.ss_utils_bar li a:visited {
@@ -4814,10 +4816,9 @@ div.ssPageNavi table td {
 	background-color: #FFFFFF;
 }
 
-div.ss_results_pro_page {
-	position:relative;
-	top: 0px; 
-	margin:0px 2px; 
+.ss_results_pro_page {
+
+	margin-left:-1px; 
 	padding: 1px 4px 1px 4px;
 	border-top:solid #CCCCCC 1px; 
 	border-bottom:solid #CCCCCC 1px;  
