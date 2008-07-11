@@ -155,7 +155,7 @@ var ss_viewEntryPopupHeight = "<c:out value="${ss_entryWindowHeight}"/>px";
   <!-- End of dashboard "add penlet" form -->
 <c:if test="${!empty ssDashboardToolbar}">  
 <div class="ss_dashboardContainer" >
-	<div class="ss_utils_bar" >
+	<div class="ss_utils_bar"  align="right">
 	<ssf:toolbar toolbar="${ssDashboardToolbar}" style="ss_utils_bar" />
 	</div>
 	<div class="ss_clear"></div>
