@@ -68,9 +68,9 @@
 		    <span class="ss_tabs_title"><ssf:nlt tag="misc.configureColumns"/></span> </a> 
 
 	</li>
-	</ul>	
-</div>
-			
+	
+
+			<li style="margin-top:2px;">
 			<% // Show number of entries per page %>
 			<form name="ss_recordsPerPage_${renderResponse.namespace}" id="ss_recordsPerPage_${renderResponse.namespace}" method="post" 
 			    action="<ssf:url action="${action}" actionUrl="true"><ssf:param 
@@ -84,8 +84,8 @@
 			    
 			    <input type="hidden" name="ssEntriesPerPage" />
 			
-				<div class="ss_results_pro_page">
-				  <span class="ss_tabs_title">
+				
+				  <span class="ss_tabs_title ss_results_pro_page">
 	
 				  <ssf:menu title="${ssPageMenuControlTitle}" 
 				    titleId="ss_selectEntriesTitle${renderResponse.namespace}" 
@@ -123,8 +123,10 @@
 				  </ssf:menu>
 
 			    </span>
-			    </div>
+			  
 			</form>
+				</li></ul>
+			</div>
 </ssf:sidebarPanel>
 </c:if>
 
