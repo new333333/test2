@@ -1186,6 +1186,7 @@ div.ss_sliding_table_column0 {
 div.ss_sliding_table_column1 {
   position: absolute; 
   visibility: hidden;
+  overflow-right:hidden;
   display: block; 
   border-left: #ffffff solid 1px;
   margin: 0px;
@@ -1198,6 +1199,7 @@ div.ss_sliding_table_column1 {
 div.ss_sliding_table_column {
   position: absolute; 
   visibility: hidden;
+  overflow-right:hidden;
   display: block; 
   border-left: ${ss_sliding_table_border_color} solid 1px;
   margin: 0px;

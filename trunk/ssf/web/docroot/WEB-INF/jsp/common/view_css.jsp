@@ -289,5 +289,14 @@ if (ss_scripts_loaded && ss_scripts_loaded == "no") {
     <ssf:alt tag="accessible.enableAccessibleMode"/> 
     src="<html:imagesPath/>pics/1pix.gif" /></a><%--
 		--%></c:if></ssf:ifLoggedIn><%--
+
+* The following line is used to call customer supplied customizations.
+* This jsp will be called at least once per page. 
+* (It can be called more than once on portlet pages, so be prepared for that.)
+* This jsp is called before any other Teaming content is displayed. 
+* However, it is not graranteed to be in the <head> section.
+* Jsp files added to the custom_jsps directory will not be overwritten during upgrades
+--%><jsp:include page="/WEB-INF/jsp/custom_jsps/ss_call_out_css_init.jsp" /><%--
+
 	--%></c:if><%--
 --%></c:if>
