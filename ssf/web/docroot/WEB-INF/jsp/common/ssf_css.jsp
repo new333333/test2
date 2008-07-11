@@ -2538,7 +2538,7 @@ div.ss_dashboardContainer {
 	padding: 0px 0px 0px 0px;
 }
 div.ss_utils_bar {
-/*    float:right;		*/
+    float:right;		
     text-align:right;	/* this was here */
 	margin-bottom:0px;
 	background:transparent none repeat 0%;
@@ -2552,14 +2552,14 @@ div.ss_line {
 	padding: 0px 0px 0px 0px;
 }
 ul.ss_utils_bar {
-/*	float: right;		*/
+ 	float: right;		
 	list-style-type:none;
 	margin:0px;
 	padding:0px;
 	text-align:right;	/* this was here */
 }
 div.ss_utils_bar ul.ss_utils_bar li {
-/*	float:left;			*/
+	float:left;			
 /*	text-align: left;	 this is new */	
 	margin: 0px 5px 0px 0px;
 }
