@@ -38,7 +38,7 @@ boolean isIE = BrowserSniffer.is_ie(request);
 	
 	/* COLUMN CONTAINER */
 #ss_dashboard_content {
-	position:relative; /* This fixes the IE7 overflow hidden bug */
+/*	position:relative;  Needed at one time, but breaks view in IE6 */
 	clear:both;
 	float:left;
     width:100%;	/* width of whole page */
@@ -95,7 +95,7 @@ div.ss_canvas {
 #ss_wrap{
 	margin: auto;
 	min-height:100%;
-	position:relative;		/* This fixes the IE7 overflow hidden bug */
+/*	position:relative;		 Needed at one time, but breaks view in IE6 */
 	clear:both;
 	float:left;
     width:100%;			/* width of whole page */
