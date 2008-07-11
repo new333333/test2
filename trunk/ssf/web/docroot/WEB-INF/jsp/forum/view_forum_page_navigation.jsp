@@ -41,7 +41,7 @@
 <table border="0" cellspacing="0px" cellpadding="0px" width="100%">
 		<tbody>
 		<tr>
-			<td width="20%" bgcolor="#FFFFFF" align="right" style="padding-right:10px;">
+			<td width="20%" bgcolor="#FFFFFF" align="right" style="padding-right:10px; white-space:nowrap;">
 
 		<% // configure columns area %>
 	 	[<a href="<ssf:url

@@ -162,9 +162,11 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 <div id="ss_top_nav_wrapper">
 <!-- Begin New Header  -->  
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tbody>
   <tr class="ss_masthead_top" bgcolor="#FFFFFF">
     <td align="left">
       <table width="100%" border="0" cellspacing="0" cellpadding="0">
+      <tbody>
       <tr>
         <td width="59%" rowspan="3" valign="top">
             <jsp:include page="/WEB-INF/jsp/definition_elements/view_binder_branding.jsp" />
@@ -211,7 +213,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
 				    onClick="return(ss_requestLogin(this, '${ssBinder.id}', '${ssUser.workspaceId}', '${ssUser.name}'));"
 				  ><span><ssf:nlt tag="login"/></span></a><input type="hidden" name="url" /></form>
 			</ssf:ifNotLoggedIn></td>
-        <td width="6%" height="24" class="ss_workspace">&nbsp;</span></span></td>
+        <td width="6%" height="24" class="ss_workspace">&nbsp;</td>
         <td width="3%" height="24" class="ss_workspace" colspan="2">
         	
         	
@@ -268,6 +270,7 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
       <tr>
         <td colspan="5">&nbsp;</td>
       </tr>
+      </tbody>
     </table>
    </td>
   </tr>
@@ -581,13 +584,14 @@ function ss_goToMyParentPortletMaximizedView${renderResponse.namespace}(obj) {
         </tbody>
     </table></td>
   </tr>
-
+</tbody>
 </table>
 
 <!-- End of Search/Find boxes -->
    
 </td>
 </tr>
+</tbody>
 </table>
 <c:if test="${empty ss_navbarBottomSeen}">
 <c:set var="ss_navbarBottomSeen" value="1"/>
