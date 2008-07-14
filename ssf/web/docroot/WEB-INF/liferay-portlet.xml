@@ -87,12 +87,6 @@
 		<maximize-edit>true</maximize-edit>
 		<instanceable>false</instanceable>
 	</portlet>
-	<portlet>
-		<portlet-name>ss_workarea</portlet-name>
-		<restore-current-view>false</restore-current-view>
-		<maximize-edit>false</maximize-edit>
-		<instanceable>true</instanceable>
-	</portlet>
 
 <!--
 	<portlet>
