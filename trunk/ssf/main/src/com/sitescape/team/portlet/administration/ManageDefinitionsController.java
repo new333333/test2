@@ -318,7 +318,7 @@ public class ManageDefinitionsController extends  SAbstractController {
 			if (!type.equals(def.getType())) continue;
 			prunedDefs.add(def);
 		}
-		Map<String, Definition> sortedMap = DefinitionHelper.orderDefinitions(prunedDefs);
+		Map<String, Definition> sortedMap = DefinitionHelper.orderDefinitions(prunedDefs, true);
 		for (Map.Entry<String,Definition> me: sortedMap.entrySet()) {
 			Definition def = me.getValue();
 			Element curDefEle = element.addElement("child");

@@ -95,13 +95,14 @@ public class DefinitionHelper {
 	 */	
 	public static SortedMap<String, Definition> getAvailableDefinitions(Long binderId, Integer defType) {
 		List<Definition> definitions = getInstance().getDefinitionModule().getDefinitions(binderId, Boolean.TRUE, defType);
-		return orderDefinitions(definitions);
+		return orderDefinitions(definitions, true);
 	}
-	public static TreeMap orderDefinitions(Collection<Definition> defs) {
+	public static TreeMap orderDefinitions(Collection<Definition> defs, Boolean includeDefinitionName) {
 		TreeMap<String, Definition> orderedDefinitions = new TreeMap(new StringComparator(RequestContextHolder.getRequestContext().getUser().getLocale()));
 		for (Definition def:defs) {
 			if (def.getBinderId() != null) continue;  //do global defs first
-			String title = NLT.getDef(def.getTitle()) + " (" + def.getName()  + ")";
+			String title = NLT.getDef(def.getTitle());
+			if (includeDefinitionName) title = title + " (" + def.getName()  + ")";
 			if (Definition.VISIBILITY_DEPRECATED.equals(def.getVisibility())) {
 				title += " **" + NLT.get("__definition_deprecated");
 			}

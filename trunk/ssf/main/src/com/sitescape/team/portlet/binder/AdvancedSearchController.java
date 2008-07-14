@@ -339,7 +339,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 		}
 		
 		Map model = new HashMap();
-		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, DefinitionHelper.orderDefinitions(workflows));
+		model.put(WebKeys.WORKFLOW_DEFINITION_MAP, DefinitionHelper.orderDefinitions(workflows, false));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_workflows_widget", model);
 	}
@@ -370,7 +370,7 @@ public class AdvancedSearchController extends AbstractBinderController {
 			}
 			if (entries.isEmpty()) entries.addAll(getDefinitionModule().getDefinitions(null, Boolean.TRUE, Definition.FOLDER_ENTRY));
 		}
-		model.put(WebKeys.ENTRY, DefinitionHelper.orderDefinitions(entries));
+		model.put(WebKeys.ENTRY, DefinitionHelper.orderDefinitions(entries, false));
 		response.setContentType("text/json");
 		return new ModelAndView("forum/json/find_entry_types_widget", model);
 	}
