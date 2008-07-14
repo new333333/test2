@@ -703,22 +703,6 @@ style="position:absolute; visibility:hidden;">
 <%@ include file="/WEB-INF/jsp/entry/view_iframe_div.jsp" %>
 <!-- end of iframe div -->
 </c:if>
-<script type="text/javascript">
-function ss_showRecentPlacesDiv${renderResponse.namespace}() {
-	var divObjTarget = self.document.getElementById('ss_recentPlacesDiv${renderResponse.namespace}');
-	var divObjSource = self.document.getElementById('ss_recentPlaces${renderResponse.namespace}');
-	if (divObjTarget.style.display == 'block') {
-		divObjTarget.style.display = 'none';
-	} else {
-		divObjTarget.style.display = 'block';
-		ss_setObjectLeft(divObjTarget, ss_getObjectLeftAbs(divObjSource))
-	}
-}
-function ss_hideRecentPlacesDiv${renderResponse.namespace}() {
-	var divObjTarget = self.document.getElementById('ss_recentPlacesDiv${renderResponse.namespace}');
-	divObjTarget.style.display = 'none';
-}
-</script>
 
 <div style="padding-bottom:0px;"></div>
 <jsp:include page="/WEB-INF/jsp/definition_elements/navigation_links.jsp" />

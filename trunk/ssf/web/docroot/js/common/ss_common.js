@@ -679,53 +679,6 @@ function ss_moveObjectToBody(obj) {
     }
 }
 
-var ss_originalSSParentNodes = new Array();
-var ss_originalSSChildNodeNumber = new Array();
-function ss_moveDivToTopOfBody(divId) {
-	var obj = document.getElementById(divId);
-	if (obj == null) return;
-    var bodyObj = document.getElementsByTagName("body").item(0);
-    if (obj && obj.parentNode.tagName.toLowerCase() != 'body') {
-    	//move the object to the body (at the top)
-    	var startLeft = ss_getObjAbsX(obj)
-    	var startTop = ss_getObjAbsY(obj)
-    	ss_originalSSParentNodes[divId] = obj.parentNode;
-		ss_originalSSChildNodeNumber[divId] = 0;
-		for (var i = 0; i < obj.parentNode.childNodes.length; i++) {
-			if (obj.parentNode.childNodes.item(i) == obj) break;
-			ss_originalSSChildNodeNumber[divId]++;
-		}
-		obj.parentNode.removeChild(obj);
-		obj.style.top = startTop;
-		obj.style.left = startLeft;
-		bodyObj.insertBefore(obj, bodyObj.childNodes.item(0));
-		obj.style.zIndex = ssPortletZ;
-		dojo.lfx.html.slideTo(divId, {top: 0, left:0}, 300, null, ssf_onLayoutChange).play();
-    } else {
-		if (ss_originalSSParentNodes[divId] != null) {
-		
-			bodyObj.removeChild(obj);
-			if (ss_originalSSParentNodes[divId].childNodes.length <= ss_originalSSChildNodeNumber[divId]) {
-				ss_originalSSParentNodes[divId].appendChild(obj);
-			} else {
-				ss_originalSSParentNodes[divId].insertBefore(obj, ss_originalSSParentNodes[divId].childNodes.item(parseInt(ss_originalSSChildNodeNumber[divId] + 1)))
-			}
-	    	var startLeft = parseInt(0 - parseInt(ss_getObjAbsX(obj)))
-	    	var startTop = parseInt(0 - parseInt(ss_getObjAbsY(obj)))
-	    	var endLeft = ss_getObjectLeft(obj)
-	    	var endTop = ss_getObjectTop(obj)
-	    	obj.style.top = startTop;
-	    	obj.style.left = startLeft;
-			dojo.lfx.html.slideTo(divId, {top: endTop, left: endLeft}, 300, null, ssf_onLayoutChange).play();
-		}
-	}
-	//Signal that the layout changed
-	if (ssf_onLayoutChange) ssf_onLayoutChange();
-	
-	//Also signal that a resize might have been done
-	ssf_onresize_event_handler();
-}
-
 //Functions to save the user status
 function ss_updateStatusSoon(obj, evt) {
 	if ((typeof evt.which == "undefined" || !evt.which) && typeof event == "undefined") return;
@@ -1436,6 +1389,7 @@ function ssf_onLayoutChange(obj) {
 }
 
 function ss_getObjAbsX(obj) {
+    return dojo.html.getAbsolutePosition(obj, true).x;
     var x = 0
     var parentObj = obj
     while (parentObj.offsetParent && parentObj.offsetParent != '') {
@@ -1446,6 +1400,7 @@ function ss_getObjAbsX(obj) {
 }
 
 function ss_getObjAbsY(obj) {
+    return dojo.html.getAbsolutePosition(obj, true).y;
     var y = 0
     var parentObj = obj
     while (parentObj.offsetParent && parentObj.offsetParent != '') {
@@ -1456,6 +1411,10 @@ function ss_getObjAbsY(obj) {
 }
 
 function ss_getDivTop(divName) {
+    var obj = self.document.getElementById(divName);
+    if (!obj) return 0;
+    return dojo.html.getAbsolutePosition(obj, true).y;
+
     var top = 0;
     var obj = self.document.getElementById(divName)
     while (1) {
@@ -1468,6 +1427,10 @@ function ss_getDivTop(divName) {
 }
 
 function ss_getDivLeft(divName) {
+    var obj = self.document.getElementById(divName);
+    if (!obj) return 0;
+    return dojo.html.getAbsolutePosition(obj, true).x;
+    
     var left = 0;
     if (ss_isNSN || ss_isNSN6 || ss_isMoz5) {
         var obj = self.document.getElementById(divName)
@@ -1516,54 +1479,6 @@ function ss_getDivWidth(divName) {
     if (!obj) return 0;
     return parseInt(dojo.html.getContentBox(obj).width);
     //return parseInt(obj.offsetWidth);
-}
-
-function ss_getAnchorTop(anchorName) {
-    var top = 0;
-    if (ss_isNSN6 || ss_isMoz5) {
-        var obj = document.anchors[anchorName]
-        while (1) {
-            if (!obj) {break}
-            top += parseInt(obj.offsetTop)
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    } else if (ss_isNSN) {
-        top = document.anchors[anchorName].y
-    } else {
-        var obj = document.all[anchorName]
-        while (1) {
-            if (!obj) {break}
-            top += obj.offsetTop
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    }
-    return parseInt(top);
-}
-
-function ss_getAnchorLeft(anchorName) {
-    var left = 0;
-    if (ss_isNSN6 || ss_isMoz5) {
-        var obj = document.anchors[anchorName]
-        while (1) {
-            if (!obj) {break}
-            left += parseInt(obj.offsetLeft)
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    } else if (ss_isNSN) {
-        left = document.anchors[anchorName].x
-    } else {
-        var obj = document.all[anchorName]
-        while (1) {
-            if (!obj) {break}
-            left += obj.offsetLeft
-            if (obj == obj.offsetParent) {break}
-            obj = obj.offsetParent
-        }
-    }
-    return parseInt(left);
 }
 
 function ss_getImageTop(imageName) {
@@ -1623,23 +1538,11 @@ function ss_getObjectHeight(obj) {
 }
 
 function ss_getObjectLeft(obj) {
-    if (ss_isNSN6 || ss_isMoz5) {
-        return parseInt(obj.style.left)
-    } else if (ss_isNSN) {
-        return parseInt(obj.style.left)
-    } else {
-        return parseInt(obj.style.pixelLeft)
-    }
+    return dojo.html.getAbsolutePosition(obj, true).x;
 }
 
 function ss_getObjectTop(obj) {
-    if (ss_isNSN6 || ss_isMoz5) {
-        return parseInt(obj.style.top)
-    } else if (ss_isNSN) {
-        return parseInt(obj.style.top)
-    } else {
-        return parseInt(obj.style.pixelTop)
-    }
+    return dojo.html.getAbsolutePosition(obj, true).y;
 }
 
 function ss_getObjectLeftAbs(obj) {
@@ -4251,21 +4154,6 @@ function ssTeams(namespace) {
 	}
 }
 
-//
-//         Routine to show/hide portal
-//
-
-
-function ss_toggleShowHidePortal(obj) {
-	ss_moveDivToTopOfBody('ss_portlet_content')
-	var divObj = document.getElementById('ss_portlet_content');
-	var spanObj = document.getElementById('ss_navbarHideShowPortalText');
-    if (divObj && divObj.parentNode.tagName.toLowerCase() == 'body') {
-    	obj.className = "ss_global_toolbar_show_portal";
-    } else {
-    	obj.className = "ss_global_toolbar_hide_portal";
-    }
-}
 //show a div as a popup - no ajax
 function ss_showPopupDiv(divId) {
 	var lightBox = ss_showLightbox(null, ssLightboxZ, .5);
