@@ -109,7 +109,7 @@ function ss_showSlidingTableCols() {
 	
     //Now, position the columns (starting at the left inner side of the ss_sTable boundary)
     var top = parseInt(ss_getSlidingTableY(ss_slidingTableId_2) + ss_sTableMarginTop)
-    var left = ss_getSlidingTableX(ss_slidingTableId_2) + ss_sTableMarginLeft
+    var left = ss_getSlidingTableX(ss_slidingTableId_2) 
     var deltaLeft = 0
     var w = parseInt(ss_sTableInnerWidth - deltaLeft) + "px"
     
