@@ -15,7 +15,7 @@
 	<context:annotation-config />
 
 	<!-- Actual file-change event source, typically called as a timer task -->
-	<bean id="extFileChangePoller" class="com.sitescape.util.FileChangePoller">
+	<bean id="extFileChangePoller" class="com.sitescape.util.DirectoryChangePoller">
 		<property name="target">
 			<bean class="java.io.File">
 				<constructor-arg value="${extension.dir}" />
@@ -27,9 +27,17 @@
 	<bean id="extDeployEventSource"
 		class="com.sitescape.team.module.extension.impl.WrappingExtensionDeployNotifier">
 		<property name="eventSource" ref="extFileChangePoller" />
+		<property name="listeners">
+			<list>
+				<ref local="extDeployer" />
+			</list>
+		</property>
 	</bean>
 	
 	<!-- Extension deployer -->
-	<bean id="extDeployer" class="com.sitescape.team.module.extension.impl.WarExtensionDeployer" />
+	<bean id="extDeployer" class="com.sitescape.team.module.extension.impl.WarExtensionDeployer">
+		<property name="extensionBaseDir" value="${extension.dir}" />
+		<property name="extensionWebDir" value="${extension.web.dir}" />
+	</bean>
 
 </beans>

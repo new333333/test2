@@ -1,9 +1,5 @@
 package com.sitescape.team.util;
 
-import static org.easymock.EasyMock.expect;
-import static org.easymock.EasyMock.expectLastCall;
-import static org.easymock.classextension.EasyMock.replay;
-import static org.easymock.classextension.EasyMock.reset;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
@@ -14,24 +10,12 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.sitescape.team.context.request.RequestContext;
-import com.sitescape.team.dao.util.FilterControls;
-import com.sitescape.team.domain.FileAttachment;
-import com.sitescape.team.domain.FileItem;
-import com.sitescape.team.domain.Group;
-import com.sitescape.team.domain.User;
-import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.support.AbstractTestBase;
 
 public class SimpleEventSourceTest extends AbstractTestBase {
 
 	private class TestEventSource extends
-			SimpleEventSource<TestEventSource, String> {
-		@Override
-		protected TestEventSource myself() {
-			return this;
-		}
-	}
+			SimpleEventSource<TestEventSource, String> { }
 
 	private class TestEventListener implements
 			EventListener<TestEventSource, String> {
@@ -78,7 +62,43 @@ public class SimpleEventSourceTest extends AbstractTestBase {
 			assertNull(l.source);
 			assertNull(l.event);
 		}
-		
+	}
+	
+	@Test
+	public void setListeners() throws Exception {
+		List<TestEventListener> listeners = new ArrayList<TestEventListener>(
+				10);
+		List<EventListener<TestEventSource, String>> ls = new ArrayList<EventListener<TestEventSource,String>>(10);
+		for (int i = 0; i < 10; ++i) {
+			TestEventListener n = new TestEventListener();
+			listeners.add(n);
+			ls.add(n);
+		}
+		source.setListeners(ls);
+		String event = RandomStringUtils.random(20);
+		source.propagate(event);
+		for (TestEventListener l : listeners) {
+			assertEquals(source, l.source);
+			assertEquals(event, l.event);
+		}
 	}
 
+	@Test
+	public void setListenersBeanSemantics() throws Exception {
+		List<TestEventListener> listeners = new ArrayList<TestEventListener>(
+				10);
+		List<EventListener<TestEventSource, String>> ls = new ArrayList<EventListener<TestEventSource, String>>(
+				10);
+		for (int i = 0; i < 10; ++i) {
+			TestEventListener n = new TestEventListener();
+			listeners.add(n);
+			ls.add(n);
+		}
+		source.setListeners(ls);
+		source.propagate(RandomStringUtils.random(20));
+		for (TestEventListener l : notifieds) {
+			assertNull(l.source);
+			assertNull(l.event);
+		}
+	}
 }

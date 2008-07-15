@@ -46,6 +46,7 @@ import org.dom4j.Document;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.sitescape.team.NotSupportedException;
@@ -67,15 +68,19 @@ import com.sitescape.team.domain.Group;
 import com.sitescape.team.domain.NoDefinitionByTheIdException;
 import com.sitescape.team.domain.User;
 import com.sitescape.team.domain.WorkflowState;
+import com.sitescape.team.domain.Workspace;
+import com.sitescape.team.domain.ZoneInfo;
 import com.sitescape.team.domain.EntityIdentifier.EntityType;
 import com.sitescape.team.module.definition.DefinitionConfigurationBuilder;
 import com.sitescape.team.module.definition.DefinitionModule;
+import com.sitescape.team.module.definition.DefinitionService;
 import com.sitescape.team.module.definition.DefinitionUtils;
 import com.sitescape.team.module.impl.CommonDependencyInjection;
 import com.sitescape.team.module.license.LicenseChecker;
 import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.workflow.WorkflowModule;
+import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.repository.RepositoryUtil;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.WorkAreaOperation;
@@ -83,6 +88,7 @@ import com.sitescape.team.survey.Survey;
 import com.sitescape.team.util.FileUploadItem;
 import com.sitescape.team.util.LongIdUtil;
 import com.sitescape.team.util.NLT;
+import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SimpleProfiler;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.team.web.util.WebHelper;
@@ -94,7 +100,8 @@ import com.sitescape.util.Validator;
  * @author hurley
  *
  */
-public class DefinitionModuleImpl extends CommonDependencyInjection implements DefinitionModule, InitializingBean  {
+public class DefinitionModuleImpl extends CommonDependencyInjection implements
+		DefinitionModule, DefinitionService, InitializingBean {
 	private Document definitionConfig;
 	private Element configRoot;
 	private DefinitionConfigurationBuilder definitionBuilderConfig;
@@ -109,6 +116,7 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 	protected WorkflowModule getWorkflowModule() {
 		return workflowModule;
 	}
+	
     public void afterPropertiesSet() {
 		this.definitionConfig = definitionBuilderConfig.getAsMergedDom4jDocument();
 		this.configRoot = this.definitionConfig.getRootElement();
@@ -153,9 +161,14 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
     	checkAccess(Integer.valueOf(type), DefinitionOperation.manageDefinition);
     	return doAddDefinition(doc, replace).getId();
     }
-    protected Definition doAddDefinition(Document doc, boolean replace) {
+    
+    /* (non-Javadoc)
+	 * @see com.sitescape.team.module.definition.DefinitionService#addDefinition(org.dom4j.Document, boolean, com.sitescape.team.domain.ZoneInfo)
+	 */
+	public Definition addDefinition(Document doc, boolean replace, Workspace zone) {
     	Element root = doc.getRootElement();
 		String name = root.attributeValue("name");
+		Long zoneId = zone.getZoneId();
 		String caption = root.attributeValue("caption");
 		if (Validator.isNull(name)) {
 			//make sure doc is updated
@@ -163,7 +176,6 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 			root.addAttribute("name", name);
 		}
 		String type = root.attributeValue("type");
-		Long zoneId = RequestContextHolder.getRequestContext().getZoneId();
 		String id = root.attributeValue("databaseId", "");
 		String internalId = root.attributeValue("internalId", null);
 		Definition def=null;
@@ -251,6 +263,11 @@ public class DefinitionModuleImpl extends CommonDependencyInjection implements D
 		}
 		
 		return def;
+	}
+	
+	public Definition doAddDefinition(Document doc, boolean replace) {
+		return addDefinition(doc, replace, coreDao.findById(Workspace.class, RequestContextHolder
+				.getRequestContext().getZoneId()));
 	}
     public void updateDefinitionReferences(String defId) {
     	Long zoneId = RequestContextHolder.getRequestContext().getZoneId();

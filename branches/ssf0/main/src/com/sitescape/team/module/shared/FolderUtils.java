@@ -166,7 +166,6 @@ public class FolderUtils {
 	/**
 	 * Create a new library folder.
 	 * 
-	 * @param bs
 	 * @param parentBinder parent binder; should be either a folder or a workspace
 	 * @param folderName folder name
 	 * @return

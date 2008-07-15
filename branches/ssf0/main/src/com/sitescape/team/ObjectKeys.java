@@ -361,6 +361,7 @@ public interface ObjectKeys {
     public static final String XTAG_ATTRIBUTE_NAME="name";
     public static final String XTAG_ATTRIBUTE_TYPE="type";
     public static final String XTAG_ATTRIBUTE_INTERNALID="internalId";
+    public static final String XTAG_ATTRIBUTE_EXTENSION="extension";
     
     //change log element attributes
     public static final String XTAG_ATTRIBUTE_OPERATION="operation";

@@ -28,6 +28,13 @@
  */
 package com.sitescape.team.web.util;
 
+import static com.sitescape.team.util.CollectionUtil.foldl;
+import static com.sitescape.team.util.CollectionUtil.map;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletSession;
 import javax.servlet.http.HttpServletRequest;
@@ -37,6 +44,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sitescape.team.context.request.RequestContextHolder;
+import com.sitescape.team.domain.Attachment;
+import com.sitescape.team.domain.Entry;
+import com.sitescape.team.domain.FileAttachment;
 import com.sitescape.team.domain.FolderEntry;
 import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.portletadapter.AdaptedPortletURL;
@@ -44,6 +54,8 @@ import com.sitescape.team.util.Constants;
 import com.sitescape.team.util.SPropsUtil;
 import com.sitescape.team.util.SZoneConfig;
 import com.sitescape.team.util.SpringContextUtil;
+import com.sitescape.team.util.CollectionUtil.Func1;
+import com.sitescape.team.util.CollectionUtil.Func2;
 import com.sitescape.team.web.WebKeys;
 import com.sitescape.util.Http;
 import com.sitescape.util.Validator;
@@ -277,6 +289,52 @@ public class WebUrlUtil {
 		}
 		catch(Exception e) {}
 		return entryUrl;
+	}
+	
+	/**
+	 * Returns a set of absolute URLs to the {@link FileAttachment}s of the
+	 * specified {@link Entry}.
+	 * 
+	 * @param request -
+	 *            an {@link HttpServletRequest} to use as a template for
+	 *            generating the URL
+	 * @param entry -
+	 *            the <code>Entry</code> whose resource URLs are to be
+	 *            generated
+	 * @return a set of absolute URLs to the {@link FileAttachment}s of the
+	 *         specified {@link Entry}.
+	 */
+	public static List<String> getAttachmentUrls(final HttpServletRequest request, final Entry entry) {
+		return map(
+				new Func1<FileAttachment, String>() {
+					public <A extends FileAttachment> String apply(A attachment) {
+						return new StringBuilder(getServletRootURL(request))
+							.append(WebKeys.ACTION_READFILE)
+							.append("/")
+							.append(entry.getEntityType().name())
+							.append("/")
+							.append(entry.getParentBinder().getId())
+							.append("/")
+							.append(entry.getId())
+							.append("/")
+							.append(attachment.getId())
+							.append("/")
+							.append(attachment.getModification().getDate().getTime())
+							.append("/")
+							.append(attachment.getFileItem().getName())
+							.toString();
+					}
+				},
+				foldl(
+						new Func2<Set<FileAttachment>, Attachment, Set<FileAttachment>>() {
+							public <FAS extends Set<FileAttachment>, A extends Attachment> Set<FileAttachment> apply(
+									FAS acc, A a) {
+								if (a instanceof FileAttachment) {
+									acc.add((FileAttachment) a);
+								}
+								return acc;
+							}
+						}, new HashSet<FileAttachment>(), entry.getAttachments()));
 	}
 	
 	private static StringBuffer getSSFContextRootURL(PortletRequest req, Boolean secure, int webProtocol) {

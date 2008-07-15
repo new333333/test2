@@ -14,6 +14,7 @@ import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 import org.dom4j.QName;
 import org.dom4j.io.SAXReader;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
@@ -53,8 +54,9 @@ import com.sitescape.team.module.shared.InputDataAccessor;
 import com.sitescape.team.module.shared.MapInputData;
 import com.sitescape.team.module.shared.ObjectBuilder;
 import com.sitescape.team.module.shared.XmlUtils;
-import com.sitescape.team.module.template.TemplateModule;
+import com.sitescape.team.module.template.TemplateService;
 import com.sitescape.team.module.workspace.WorkspaceModule;
+import com.sitescape.team.module.zone.ZoneModule;
 import com.sitescape.team.search.IndexSynchronizationManager;
 import com.sitescape.team.security.AccessControlException;
 import com.sitescape.team.security.function.Function;
@@ -69,7 +71,7 @@ import com.sitescape.util.Validator;
 import com.sitescape.util.search.Constants;
 
 public class TemplateModuleImpl extends CommonDependencyInjection implements
-		TemplateModule {
+		TemplateService {
 	private static final String[] defaultDefAttrs = new String[]{ObjectKeys.FIELD_INTERNALID, ObjectKeys.FIELD_ENTITY_DEFTYPE};
 
     protected DefinitionModule definitionModule;
@@ -230,7 +232,9 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		
 		Map updates = new HashMap();
 		config.setTitle(config.getTemplateTitle());
-		config = doAddTemplate(config, type, updates);
+		config = doAddTemplate(config, type, updates, RequestContextHolder
+				.getRequestContext().getZone(), RequestContextHolder
+				.getRequestContext().getUser());
 		config.setDefinitionsInherited(false);
 		config.setDefinitions(defs);
 		
@@ -274,75 +278,23 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		template.setDefinitions(definitions);
 		template.setFunctionMembershipInherited(true);
        	String icon = DefinitionUtils.getPropertyValue(entryDef.getDefinition().getRootElement(), "icon");
-       	if (Validator.isNotNull(icon)) template.setIconName(icon);
-		doAddTemplate(template, type, updates);
+       	if (Validator.isNotNull(icon))
+			template.setIconName(icon);
+		doAddTemplate(template, type, updates, RequestContextHolder
+				.getRequestContext().getZone(), RequestContextHolder
+				.getRequestContext().getUser());
 	    return template.getId();
 	 }
 	 
 	 //add top level template
 	 public Long addTemplate(Document doc, boolean replace) {
 		 checkAccess(TemplateOperation.manageTemplate);
-		 Element config = doc.getRootElement();
-		 //check name
-		 String prefix = "";
-		 if (StringUtils.isNotBlank(config.getNamespaceURI())) {
-			 // namespace URI has been declared, associate a prefix
-			 config.addNamespace("_ns", config.getNamespaceURI());
-			 prefix = "_ns:";
-		 }
-		String name = config.selectSingleNode(
-				prefix + ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE + "[@name='"
-						+ ObjectKeys.XTAG_BINDER_NAME + "']").getText();
-		 if (Validator.isNull(name)) {
-			 name = (String)XmlUtils.getCustomAttribute(config, ObjectKeys.XTAG_TEMPLATE_TITLE);
-			 if (Validator.isNull(name)) {
-				 throw new IllegalArgumentException(NLT.get("general.required.name"));
-			 }
-		 }
-		 String internalId = config.attributeValue(new QName(ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, config.getNamespace()));
-		 if (Validator.isNotNull(internalId)) {
-			 try {
-			 //	see if it exists
-				 Binder binder = getCoreDao().loadReservedBinder(internalId, RequestContextHolder.getRequestContext().getZoneId());
-				 if (binder instanceof TemplateBinder) {
-					 //if it exists, delete it
-					 getBinderModule().deleteBinder(binder.getId());
-				 } else {
-					 throw new ConfigurationException("Reserved binder exists with same internal id");
-				 }
-			 } catch (NoBinderByTheNameException nb ) {
-				 //	okay doesn't exists
-			 }; 
-		 } else {
-			 @SuppressWarnings("unchecked")
-			 List<TemplateBinder> binders = getCoreDao().loadObjects(TemplateBinder.class, new FilterControls(ObjectKeys.FIELD_BINDER_NAME, name), RequestContextHolder.getRequestContext().getZoneId());
-			 if (!binders.isEmpty()) {
-				 if (replace) getBinderModule().deleteBinder(binders.get(0).getId());
-				 else throw new NotSupportedException("errorcode.notsupported.duplicateTemplateName", new Object[]{name});
-			 }
-		 }
-		 TemplateBinder template = new TemplateBinder();
-		 //only top level needs a name
-		 template.setName(name);
-		 template.setInternalId((internalId));
-		 doTemplate(template, config);
-		 //see if any child configs need to be copied
-		 @SuppressWarnings("unchecked")
-		 List<Element> nodes = config.selectNodes("./" + ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
-		 for (int i=0; i<nodes.size(); ++i) {
-			 Element element = nodes.get(i);
-			 TemplateBinder child = new TemplateBinder();
-			 template.addBinder(child);
-			 doTemplate(child, element);
-		 }
-		 //need to flush, if multiple loaded in 1 transaction the binderKey may not have been
-		 //flushed which could result in duplicates on the next save when loading multiple nfor updatetTemplates
-		 getCoreDao().flush();
-		 return template.getId();
+		return addTemplate(doc, replace,
+				RequestContextHolder.getRequestContext().getZone()).getId();
 	 }
 	 
 	 
-	 protected void doTemplate(TemplateBinder template, Element config) {
+	 protected void doTemplate(TemplateBinder template, Element config, Workspace zone, UserPrincipal user) {
 		 Integer type = Integer.valueOf(config.attributeValue(ObjectKeys.XTAG_ATTRIBUTE_TYPE));
 		 template.setLibrary(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_LIBRARY), false));
 		 template.setUniqueTitles(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_UNIQUETITLES), false));
@@ -351,7 +303,7 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 		 template.setTeamMembershipInherited(GetterUtil.get(XmlUtils.getProperty(config, ObjectKeys.XTAG_BINDER_INHERITTEAMMEMBERS), true));
 		 //get attribute from document
 		 Map updates = XmlUtils.getCustomAttributes(config);
-		 doAddTemplate(template, type, updates);
+		 doAddTemplate(template, type, updates, zone, user);
 		 //setup after template is saved
 		 if (!template.isTeamMembershipInherited()) XmlUtils.getTeamMembersFromXml(template, config, this);
 		 XmlUtils.getDefinitionsFromXml(template, config, this);
@@ -362,10 +314,10 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 			getDashboardModule().createEntityDashboard(template.getEntityIdentifier(), dashboardConfig);
 		 }
 	 }
-	 protected TemplateBinder doAddTemplate(TemplateBinder template, int type, Map updates) {
-		 template.setZoneId(RequestContextHolder.getRequestContext().getZoneId());
+	 protected TemplateBinder doAddTemplate(TemplateBinder template, int type, Map updates, Workspace zone, UserPrincipal user) {
+		 template.setZoneId(zone.getZoneId());
 		 template.setDefinitionType(type);
-		 template.setCreation(new HistoryStamp(RequestContextHolder.getRequestContext().getUser()));
+		 template.setCreation(new HistoryStamp(user));
 		 template.setModification(template.getCreation());
 		 EntryBuilder.updateEntry(template, updates);
 		 if (Validator.isNull(template.getTitle())) template.setTitle(template.getTemplateTitle());
@@ -757,4 +709,83 @@ public class TemplateModuleImpl extends CommonDependencyInjection implements
 
    		}
    	}
+	public TemplateBinder addTemplate(Document document, boolean replace,
+			Workspace zone) {
+		Element config = document.getRootElement();
+		// check name
+		String prefix = "";
+		if (StringUtils.isNotBlank(config.getNamespaceURI())) {
+			// namespace URI has been declared, associate a prefix
+			config.addNamespace("_ns", config.getNamespaceURI());
+			prefix = "_ns:";
+		}
+		String name = config.selectSingleNode(
+				prefix + ObjectKeys.XTAG_ELEMENT_TYPE_ATTRIBUTE + "[@name='"
+						+ ObjectKeys.XTAG_BINDER_NAME + "']").getText();
+		if (Validator.isNull(name)) {
+			name = (String) XmlUtils.getCustomAttribute(config,
+					ObjectKeys.XTAG_TEMPLATE_TITLE);
+			if (Validator.isNull(name)) {
+				throw new IllegalArgumentException(NLT
+						.get("general.required.name"));
+			}
+		}
+		String internalId = config.attributeValue(new QName(
+				ObjectKeys.XTAG_ATTRIBUTE_INTERNALID, config.getNamespace()));
+		if (Validator.isNotNull(internalId)) {
+			try {
+				// see if it exists
+				Binder binder = getCoreDao().loadReservedBinder(internalId,
+						zone.getZoneId());
+				if (binder instanceof TemplateBinder) {
+					// if it exists, delete it
+					getBinderModule().deleteBinder(binder.getId());
+				} else {
+					throw new ConfigurationException(
+							"Reserved binder exists with same internal id");
+				}
+			} catch (NoBinderByTheNameException nb) {
+				// okay doesn't exists
+			}
+			;
+		} else {
+			@SuppressWarnings("unchecked")
+			List<TemplateBinder> binders = getCoreDao().loadObjects(
+					TemplateBinder.class,
+					new FilterControls(ObjectKeys.FIELD_BINDER_NAME, name),
+					zone.getZoneId());
+			if (!binders.isEmpty()) {
+				if (replace)
+					getBinderModule().deleteBinder(binders.get(0).getId());
+				else
+					throw new NotSupportedException(
+							"errorcode.notsupported.duplicateTemplateName",
+							new Object[] { name });
+			}
+		}
+		TemplateBinder template = new TemplateBinder();
+		// only top level needs a name
+		template.setName(name);
+		template.setInternalId((internalId));
+		doTemplate(template, config, zone, profileDao.findUserByName(
+				SZoneConfig.getAdminUserName(zone.getName()), zone.getName()));
+		// see if any child configs need to be copied
+		@SuppressWarnings("unchecked")
+		List<Element> nodes = config.selectNodes("./"
+				+ ObjectKeys.XTAG_ELEMENT_TYPE_TEMPLATE);
+		for (int i = 0; i < nodes.size(); ++i) {
+			Element element = nodes.get(i);
+			TemplateBinder child = new TemplateBinder();
+			template.addBinder(child);
+			doTemplate(child, element, zone, profileDao.findUserByName(
+					SZoneConfig.getAdminUserName(zone.getName()), zone
+							.getName()));
+		}
+		// need to flush, if multiple loaded in 1 transaction the binderKey may
+		// not have been
+		// flushed which could result in duplicates on the next save when
+		// loading multiple nfor updatetTemplates
+		getCoreDao().flush();
+		return template;
+	}
 }

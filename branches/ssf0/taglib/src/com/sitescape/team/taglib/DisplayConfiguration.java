@@ -72,7 +72,7 @@ import com.sitescape.util.servlet.StringServletResponse;
  */
 public class DisplayConfiguration extends TagSupport {
 	private static final String CUSTOM_JSP_PATH = "/WEB-INF/jsp/custom_jsps/";
-	private static final String EXTENSION_PATH = "/WEB-INF/opt/";
+	private static final String EXTENSION_WEB_PATH = "/opt/";
 	private static final String VIEW_JSP_TYPE = "viewJsp";
 	private static final String MOBILE_JSP_TYPE = "mobileJsp";
 	private static final String EXTENSION_ATTR = "extension";
@@ -174,8 +174,10 @@ public class DisplayConfiguration extends TagSupport {
 		DefinitionConfigurationBuilder configBuilder = DefinitionHelper
 				.getDefinitionBuilderConfig();
 		String result = null;
-		String prefixPath = item.getDocument().getRootElement().attributeValue(
-				EXTENSION_ATTR) != null ? EXTENSION_PATH : CUSTOM_JSP_PATH;
+		String extName = item.getDocument().getRootElement().attributeValue(
+				EXTENSION_ATTR);
+		String prefixPath = extName != null ? EXTENSION_WEB_PATH + extName
+				+ "/" : CUSTOM_JSP_PATH;
 		String fallback = configBuilder.getItemJspByStyle(itemDef, name,
 				this.configJspStyle);
 

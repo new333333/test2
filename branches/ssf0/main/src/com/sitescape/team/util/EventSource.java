@@ -3,6 +3,7 @@
  */
 package com.sitescape.team.util;
 
+import java.util.Collection;
 import java.util.Observable;
 
 /**
@@ -20,4 +21,6 @@ import java.util.Observable;
 public interface EventSource<S extends EventSource<S, E>, E> {
 
 	public void register(EventListener<S, E> listener);
+	
+	public void setListeners(Collection<? extends EventListener<S, E>> listeners);
 }

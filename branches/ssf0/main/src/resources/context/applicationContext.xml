@@ -14,7 +14,9 @@
 		     from SpropsUtil, NOT from the properties file specified below.
 		     In other words, the following 'location' property is ignored,
 		     but nevertheless present here to satisfy initialization requirement. -->
-		<property name="location" value="/ssf.properties" />								
+		<property name="location" value="/ssf.properties" />
+		<!-- 2 == PropertyPlaceholderConfigurer.SYSTEM_PROPERTIES_MODE_OVERRIDE -->
+		<property name="systemPropertiesMode" value="2" />							
 	</bean>
 	
 	<!-- This bean enforces the @Required annotation on bean properties -->
@@ -617,8 +619,8 @@
 		<property name="target">
 			<bean parent="dependOnCommonServicesTemplate" class="com.sitescape.team.module.definition.impl.DefinitionModuleImpl">
 				<property name="workflowModule"><ref bean="workflowModule"/></property>
-				<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>		
-			</bean>	
+				<property name="definitionBuilderConfig"><ref local="definitionBuilderConfig"/></property>
+			</bean>
 		</property>
 	</bean>
 
@@ -1075,8 +1077,6 @@ text/calendar											  ics
 			<list>
 				<!-- Extension hot-deploy listener -->
 				<bean class="org.springframework.scheduling.timer.ScheduledTimerTask">	
-					<!-- delay before first invocation (ms) -->
-					<property name="delay" value="120000" />
 					<!-- period between invocations (ms) -->
 					<property name="period" value="30000" />
 					<property name="timerTask">

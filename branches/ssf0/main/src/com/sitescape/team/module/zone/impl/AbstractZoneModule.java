@@ -131,7 +131,7 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
 		return binderModule;
 	}
 	protected List<ZoneSchedule> startupModules;
-	public void setScheduleModules(List modules) {
+	public void setScheduleModules(List<ZoneSchedule> modules) {
 		startupModules = modules;		
 	}
 	/**
@@ -189,9 +189,21 @@ public abstract class AbstractZoneModule extends CommonDependencyInjection imple
  		
  	}
  	
+	/* (non-Javadoc)
+	 * @see com.sitescape.team.module.zone.ZoneModule#getZoneByName(java.lang.String)
+	 */
+	public Workspace getZoneByName(String name) {
+		return getCoreDao().findTopWorkspace(name);
+	}
 	public Long getZoneIdByZoneName(String zoneName) {
-		Workspace top = getCoreDao().findTopWorkspace(zoneName);
-		return top.getId();
+		return getZoneByName(zoneName).getId();
+	}
+
+	/* (non-Javadoc)
+	 * @see com.sitescape.team.module.zone.ZoneModule#getDefaultZone()
+	 */
+	public Workspace getDefaultZone() {
+		return getZoneByName(SZoneConfig.getDefaultZoneName());
 	}
 	
  	protected void upgradeZoneTx(Workspace zone) {

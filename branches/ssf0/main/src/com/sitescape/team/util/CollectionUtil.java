@@ -110,6 +110,12 @@ public class CollectionUtil {
 		<Source extends S> T apply(Source x);
 	}
 	
+	public static class Id<S> implements Func1<S, S> {
+		public <Source extends S> S apply(Source x) {
+			return x;
+		}
+	}
+	
 	/**
 	 * An interface specifying a {@link Func1} which maps <code>T</code>s to
 	 * {@link Boolean}s.
@@ -146,7 +152,7 @@ public class CollectionUtil {
 	 *         <code>Collection<code> formed by the application of the <code>
 	 * Transform<code> to all elements of the source.
 	 */
-	public static <S, T> List<T> map(Func1<S, T> t, Collection<S> xs) {
+	public static <F extends Func1<S, T>, S, T> List<T> map(F t, Collection<S> xs) {
 		ArrayList<T> result = new ArrayList<T>(xs.size());
 		for (S x : xs) {
 			result.add(t.apply(x));

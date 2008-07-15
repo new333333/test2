@@ -35,6 +35,7 @@ import static org.easymock.classextension.EasyMock.createMock;
 import static org.easymock.classextension.EasyMock.replay;
 import static org.junit.Assert.assertEquals;
 
+import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -99,6 +100,9 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 		} catch (NamingException e) {
 			e.printStackTrace();
 		}
+		// set extension directory location (normally set by ant on 'deploy')
+		System.setProperty("extension.dir", "file:web/docroot/WEB-INF/opt/");
+		System.setProperty("extension.web.dir", "file:web/docroot/opt/");
 	}
 	
 	@Autowired(required = true)
@@ -115,6 +119,7 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 	protected FunctionManager functions;
 	@Autowired
 	protected SecurityDao security;
+	protected SecureRandom rand = new SecureRandom();
 
 	/* (non-Javadoc)
 	 * @see org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests#setDataSource(javax.sql.DataSource)
@@ -126,7 +131,7 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 	}
 
 	protected Pair<User, Workspace> setupWorkspace(String zoneName) {
-		Workspace top;
+		Workspace zone;
 		Long topId = new Long(-1);
 		RequestContext mrc = fakeRequestContext();
 		expect(mrc.getZoneId()).andReturn(topId);
@@ -135,68 +140,68 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 		replay(mrc);
 		User user;
 		try { 
-			top = coreDao.findTopWorkspace(zoneName);
+			zone = coreDao.findTopWorkspace(zoneName);
 			user = profiles.findUserByName(SZoneConfig.getAdminUserName(zoneName));
 		} catch (NoWorkspaceByTheNameException nw) {
-			top = new Workspace();
-			top.setName(zoneName);
+			zone = new Workspace();
+			zone.setName(zoneName);
 			//temporary until have read id
-			top.setZoneId(topId);
-			top.setTitle("administration.initial.workspace.title");
-			top.setPathName("/"+top.getTitle());
-			top.setInternalId(ObjectKeys.TOP_WORKSPACE_INTERNALID);
+			zone.setZoneId(topId);
+			zone.setTitle("administration.initial.workspace.title");
+			zone.setPathName("/"+zone.getTitle());
+			zone.setInternalId(ObjectKeys.TOP_WORKSPACE_INTERNALID);
 			//generate id for top and profiles
-			coreDao.save(top);
-			top.setupRoot();
-			top.setZoneId(top.getId());
+			coreDao.save(zone);
+			zone.setupRoot();
+			zone.setZoneId(zone.getId());
 			
 			ProfileBinder profiles = new ProfileBinder();
 			profiles.setName("_profiles");
 			profiles.setTitle("administration.initial.profile.title");
-			profiles.setPathName(top.getPathName() + "/" + profiles.getTitle());
-			profiles.setZoneId(top.getId());
+			profiles.setPathName(zone.getPathName() + "/" + profiles.getTitle());
+			profiles.setZoneId(zone.getId());
 			profiles.setInternalId(ObjectKeys.PROFILE_ROOT_INTERNALID);
-			top.addBinder(profiles);
+			zone.addBinder(profiles);
 			
 			//generate id for profiles
 			coreDao.save(profiles);
-			coreDao.updateFileName(top, profiles, null, profiles.getTitle());
+			coreDao.updateFileName(zone, profiles, null, profiles.getTitle());
 
 			Workspace global = new Workspace();
 			
 			global.setName("_global");
 			global.setTitle("Global");
-			global.setPathName(top.getPathName() + "/" + global.getTitle());
-			global.setZoneId(top.getId());
+			global.setPathName(zone.getPathName() + "/" + global.getTitle());
+			global.setZoneId(zone.getId());
 			global.setInternalId(ObjectKeys.GLOBAL_ROOT_INTERNALID);
-			top.addBinder(global);
+			zone.addBinder(global);
 			
 			//generate id global
 			coreDao.save(global);
-			coreDao.updateFileName(top, global, null, global.getTitle());
+			coreDao.updateFileName(zone, global, null, global.getTitle());
 
 			Workspace team = new Workspace();
 			team.setName("_teams");
 			team.setTitle("Teams");
-			team.setPathName(top.getPathName() + "/" + team.getTitle());
-			team.setZoneId(top.getId());
+			team.setPathName(zone.getPathName() + "/" + team.getTitle());
+			team.setZoneId(zone.getId());
 			team.setInternalId(ObjectKeys.TEAM_ROOT_INTERNALID);
-			top.addBinder(team);
+			zone.addBinder(team);
 			
 			//generate id for top and profiles
 			coreDao.save(team);
-			coreDao.updateFileName(top, team, null, team.getTitle());
+			coreDao.updateFileName(zone, team, null, team.getTitle());
 			
 			Group group = new Group();
 			group.setName(adminGroup);
 			group.setForeignName(adminGroup);
-			group.setZoneId(top.getId());
+			group.setZoneId(zone.getId());
 			group.setParentBinder(profiles);
 			coreDao.save(group);
 			
 			Group allUsers = new Group();
 			allUsers.setName("allUsers");
-			allUsers.setZoneId(top.getId());
+			allUsers.setZoneId(zone.getId());
 			allUsers.setParentBinder(profiles);
 			allUsers.setInternalId(ObjectKeys.ALL_USERS_GROUP_INTERNALID);
 			coreDao.save(allUsers);
@@ -204,23 +209,32 @@ public abstract class AbstractTestBase extends AbstractTransactionalJUnit4Spring
 			user = new User();
 			user.setName(adminUser);
 			user.setForeignName(adminUser);
-			user.setZoneId(top.getId());
-			user.setWorkspaceId(top.getId());
+			user.setZoneId(zone.getId());
+			user.setWorkspaceId(zone.getId());
 			user.setParentBinder(profiles);
 			coreDao.save(user);
 			group.addMember(user);
 			coreDao.flush();
 			
-			top = coreDao.findTopWorkspace(zoneName);
-			assertEquals(top.getName(), zoneName);
+			zone = coreDao.findTopWorkspace(zoneName);
+			assertEquals(zone.getName(), zoneName);
 		}
-		return new Pair<User, Workspace>(user, top);
+		return new Pair<User, Workspace>(user, zone);
 		
 	}
 	
 	protected void makeOwner(User u, Workspace w) {
 		w.setOwner(u);
 		coreDao.save(w);		
+	}
+	
+	protected RequestContext defaultRequestContext() {
+		RequestContext result = fakeRequestContext(new Pair<User, Workspace>(profileDao
+				.findUserByName(SZoneConfig.getAdminUserName(zones
+						.getDefaultZone().getName()), zones.getDefaultZone()
+						.getZoneId()), zones.getDefaultZone()));
+		replay(result);
+		return result;
 	}
 	
 	protected RequestContext fakeRequestContext() {

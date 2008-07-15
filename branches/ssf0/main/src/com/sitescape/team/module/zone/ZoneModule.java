@@ -30,6 +30,7 @@ package com.sitescape.team.module.zone;
 
 import java.util.List;
 
+import com.sitescape.team.domain.Workspace;
 import com.sitescape.team.domain.ZoneInfo;
 import com.sitescape.team.security.AccessControlException;
 
@@ -136,4 +137,22 @@ public interface ZoneModule {
    	 * @throws AccessControlException
    	 */
    	public void checkAccess() throws AccessControlException;
+   	
+   	/**
+	 * Returns the zone with identified by <code>name</code> as a
+	 * {@link Workspace}
+	 * 
+	 * @param name -
+	 *            the unique {@link String} identifier for the desired zone.
+	 * @return the zone with identified by <code>name</code> as a
+	 *         {@link Workspace}
+	 */
+	public Workspace getZoneByName(String name);
+
+	/**
+	 * Returns the default zone as a {@link Workspace}.
+	 * 
+	 * @return the default zone as a {@link Workspace}.
+	 */
+	public Workspace getDefaultZone();
 }

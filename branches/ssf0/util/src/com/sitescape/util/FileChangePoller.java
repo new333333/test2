@@ -23,18 +23,8 @@ import com.sitescape.team.util.SimpleEventSource;
  */
 public class FileChangePoller extends SimpleEventSource<FileChangePoller, File> {
 
-	private File target;
-	private DateTime lastModified = new DateTime(0L);
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.sitescape.team.util.SimpleEventSource#myself()
-	 */
-	@Override
-	protected FileChangePoller myself() {
-		return this;
-	}
+	protected File target;
+	protected DateTime lastModified = new DateTime(0L);
 
 	/**
 	 * Check if the {@link File} under inspection has been modified since the
@@ -42,10 +32,21 @@ public class FileChangePoller extends SimpleEventSource<FileChangePoller, File> 
 	 * case.
 	 */
 	public synchronized void check() {
-		if (lastModified.isBefore(target.lastModified())) {
-			setLastModified(target.lastModified());
+		if (isModified()) {
 			propagate(target);
+			setLastModified(target.lastModified());
 		}
+	}
+	
+	/**
+	 * Returns whether the target {@link File} has been modified since the last
+	 * known modification.
+	 * 
+	 * @return whether the target {@link File} has been modified since the last
+	 *         known modification.
+	 */
+	protected boolean isModified() {
+		return lastModified.isBefore(target.lastModified());
 	}
 
 	@Required
